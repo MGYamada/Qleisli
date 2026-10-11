@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.NodeTyping
 
 /-! Structural checking of actual meaning and encoding nodes.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Pure headers, finite dimensions and zero-scratch shape are necessary conditions,
 not unitary proofs, entry evidence, finite reconstruction or semantic equations. -/
 

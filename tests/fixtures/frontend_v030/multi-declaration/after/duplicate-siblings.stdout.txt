@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/duplicate-siblings/main.qli:49..50: duplicate declaration `f`
+sized.parse: main:49..50: name: duplicate declaration f
+finite.check: Diagnostic { code: "project", message: "duplicate declaration `f`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/duplicate-siblings/main.qli", span: Span { start: 49, end: 50 }, line: 2, column: 12 }) }

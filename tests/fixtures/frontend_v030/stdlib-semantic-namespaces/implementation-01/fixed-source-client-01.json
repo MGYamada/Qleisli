@@ -1,0 +1,40 @@
+{
+  "source_round_trip": true,
+  "wrong_reversal_outcomes": 8,
+  "commands": [
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "executed_source_sha256": {
+        "main.qli": "4487395b5fe640d927bd1b1d743db646ec261cd901051ff181b675e94812c446"
+      }
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/wrong_reversal",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.4267766952966373},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.21338834764831865},{\"bits\":[true,false,false],\"probability\":0.02144660940672625},{\"bits\":[true,false,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "executed_source_sha256": {
+        "main.qli": "f97394685df8b3f098853b817716bcba36c9e1b72a80e12ee9b593274cac0069"
+      }
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/PathSum.lean": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
+    "lean-kernel/QleisliKernel/Qft.lean": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+    "lean/Qleisli/Qft.lean": "a82e1bd2d17b1c74ae38571199865a4f5dde6b1d633329abfa7413d9094c2dbf",
+    "scripts/test_lean_qft.py": "579aaf0a5046466fc2f6b252463769bb9a8d3ff2be5a8026e8fed126b30a45a9"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "tests/fixtures/frontend_v030/quantum-unit-source/cli-current/replay.py",
+    "--output",
+    "tests/fixtures/frontend_v030/quantum-unit-source/cli-current"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "scope": "Actual 28 checking commands; no build",
+  "stdout_summary": "summary.json"
+}

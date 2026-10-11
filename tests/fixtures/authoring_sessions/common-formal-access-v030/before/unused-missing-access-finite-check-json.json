@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:17:47.381351+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.04375991696724668,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 1,
+  "native_argv_log": "unused-missing-access-finite-check-json.native.jsonl",
+  "native_count_scope": "Actual forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "unused-missing-access-finite-check-json.stdout.bin",
+  "stderr_raw": "unused-missing-access-finite-check-json.stderr.bin",
+  "stdout_sha256": "dd2a88257309a6f6a310559542b7adb88e410a5aa2e6f85373f083dffd056733",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"capability\",\"severity\":\"error\",\"message\":\"missing Apply access in the generic declaration\",\"primary\":{\"path\":\"main.qli\",\"start\":130,\"end\":131,\"line\":2,\"column\":57},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact captured raw byte prefixes remain in separate files.",
+  "parsed_json_shape": "object",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "capability",
+        "severity": "error",
+        "message": "missing Apply access in the generic declaration",
+        "primary": {
+          "path": "main.qli",
+          "start": 130,
+          "end": 131,
+          "line": 2,
+          "column": 57
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

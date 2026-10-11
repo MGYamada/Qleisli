@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"block leaves live quantum owner q","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/lost-owner/main.qli","start":158,"end":181},"related":[]}],"result":null}

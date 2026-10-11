@@ -61,7 +61,7 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
             "oracle.qli",
             &format!(
                 "use std::quantum::z;
-             basis fn marked(a: Bit, b: Bit) -> Bit {{ ({a}) and ({b}) }}
+             classical fn marked((a,b): (Bit,Bit)) -> Bit {{ ({a}) and ({b}) }}
              pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {{
                  with_computed(q, marked) {{ |ancilla| z(ancilla) }}
              }}"
@@ -73,8 +73,8 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
                 &format!(
                     "use search::step;
                  use std::quantum::init0; use std::quantum::join;
-                 use std::routines::hadamard2; use std::routines::measure_z2;
-                 observe fn main() -> (CBit, CBit) {{
+                 use std::transform::hadamard2; use std::measurement::measure_z2;
+                 observe fn main() -> (Bit, Bit) {{
                      let q = hadamard2(join(init0(), init0()));
                      {} measure_z2(q)
                  }}",
@@ -111,7 +111,7 @@ fn bernstein_vazirani_recovers_every_two_bit_secret() {
             "oracle.qli",
             &format!(
                 "use std::quantum::z;
-             basis fn linear(a: Bit, b: Bit) -> Bit {{ {a} xor {b} }}
+             classical fn linear((a,b): (Bit,Bit)) -> Bit {{ {a} xor {b} }}
              pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {{
                  with_computed(q, linear) {{ |ancilla| z(ancilla) }}
              }}"
@@ -126,8 +126,8 @@ fn bell_recovery_source(a: &str, b: &str, c: &str) -> String {
         "use code::encode; use code::recover; use code::decode;
          use std::quantum::init0; use std::quantum::h; use std::quantum::x; use std::quantum::z;
          use std::quantum::cnot; use std::quantum::split; use std::quantum::join;
-         use std::observe::measure_z; use std::routines::measure_x;
-         observe fn main() -> ((CBit, CBit), ((CBit, CBit), (CBit, CBit))) {{
+         use std::observe::measure_z; use std::measurement::measure_x;
+         observe fn main() -> ((Bit, Bit), ((Bit, Bit), (Bit, Bit))) {{
              let (reference, logical) = cnot(h(init0()), init0());
              let (ab, c) = split(encode(logical));
              let (a, b) = split(ab);
@@ -175,8 +175,8 @@ fn parity_measurement_keeps_coherence_within_each_parity_sector() {
         "main.qli",
         "
         use std::quantum::init0; use std::quantum::h;
-        use std::routines::parity_zz; use std::routines::measure_x;
-        observe fn main() -> (CBit, (CBit, CBit)) {
+        use std::measurement::parity_zz; use std::measurement::measure_x;
+        observe fn main() -> (Bit, (Bit, Bit)) {
             let ((a, b), parity) = parity_zz(h(init0()), h(init0()));
             (parity, (measure_x(a), measure_x(b)))
         }",
@@ -191,14 +191,14 @@ fn parity_measurement_keeps_coherence_within_each_parity_sector() {
 
 #[test]
 fn derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks() {
-    let imports = "use std::quantum::init0; use std::routines::parity_zz; use std::routines::hadamard2; use std::routines::measure_x;";
+    let imports = "use std::quantum::init0; use std::measurement::parity_zz; use std::transform::hadamard2; use std::measurement::measure_x;";
     for (declaration, code) in [
         (
             "observe fn main() -> Unit { let q = init0(); let _ = parity_zz(q, q); () }",
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn f(q: Q<Bit>) -> CBit { measure_x(q) } observe fn main() -> Unit { () }",
+            "unitary fn f(q: Q<Bit>) -> Bit { measure_x(q) } observe fn main() -> Unit { () }",
             ErrorCode::Effect,
         ),
         (

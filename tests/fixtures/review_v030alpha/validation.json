@@ -1,0 +1,203 @@
+{
+  "format": "qleisli.review-repairs",
+  "version": 1,
+  "product_version": "0.3.0-alpha",
+  "recorded_at": "2026-10-04T07:24:53.202766+00:00",
+  "scope": "Five review defects and the reproduced classical-history timeout under issue 278; not closure of all capacity or soundness gates",
+  "source_sha256": {
+    "src/contract/function.rs": "a7605360780d0a280bba8c7de355fdb2d037b3df77e83b378d4a55c43335f5f0",
+    "src/interchange/native.rs": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+    "src/bin/qleisli/json.rs": "e05bec3229c78eb6aa02c98aa73afb037870f06eb9b8e6edf2a3418e18a0519a",
+    "tests/function_evidence.rs": "6f87ea0223c774e9310cebf3c3249dd300f842e76de7dd355ded5ac0066f3657",
+    "tests/cli_json.rs": "65d6eaa721e583b237733efe8822ca36019541c62a696a15f6ed52fb93438ba1",
+    "tests/native_raw.rs": "b181c1618d5ee2f472c2b545f1eb3f2d7e5cd45bb0b1595a0c85d0a0bd7629af",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "68d38c8638a18a64a14ac2d17ba7f93b891d70d7578eff40218b28bda89bc4b0",
+    "lean-kernel/Tests.lean": "d9546eb839d0193793b73611dad11c4e60508f2ef89381dd5100005069cf3310",
+    "scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
+    "scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
+    "scripts/maintain_release.py": "c05b7775773dbe6cfc0ec59de734d08a8aece4707caf9f1e996d911330676641",
+    "scripts/test_maintain_release.py": "9e60c8cc0d56d1218d7ef04c5f558ffa8b91c2a87d6502abe77b731f0457ae1d",
+    "scripts/archive_lean_kernel.py": "97054fbb8696bc9df799a825cc46434b07bbe7d69c713327179d3344497062c3",
+    "scripts/test_archive_lean_kernel.py": "202e6087d0fca8f0a7cf61dd3043c6276bba34b9ced2f5ba0429f06784c91962",
+    "scripts/ci_profiles.py": "b8d93985e380788d2ae046080962fdd1248818fcb597b875be87e00fbad169ef",
+    "scripts/test_ci_profiles.py": "01cc6bfb2489240067a67a29284d79a402272e3eb4cfd5b4b5863547cbed555d",
+    "lean/schema-registry.json": "4e7176c32369f2ee9307b803ab4e481f716cba08f58d05e6ffc3371dd0ed3a37",
+    "tests/fixtures/verification_v022/inventory.json": "1845bff6afac0d9639e144afc9cd8ea559e2ddc4a8c63f1efdad983531854b68",
+    "tests/fixtures/verification_v029/coverage.json": "008e38e461484db408af0d14e13bec4bc50137c7958a2995af2ad41d6dea115b"
+  },
+  "native_kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "environment": {
+    "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "os": "macOS",
+    "rust_tests": "debug profile"
+  },
+  "checks": [
+    {
+      "scope": "Rust integration: function_evidence",
+      "passed": 19,
+      "ignored": 1
+    },
+    {
+      "scope": "Rust unit: contract function internals",
+      "passed": 3
+    },
+    {
+      "scope": "Rust integration: cli_json, including leading-option usage errors",
+      "passed": 8
+    },
+    {
+      "scope": "Rust integration: native_raw",
+      "passed": 28,
+      "ignored": 2
+    },
+    {
+      "command": "cargo test --locked --test native_acceptance --test native_roundtrip --test native_paths --test interchange --test meaning_evidence --test function_contracts -- --include-ignored --skip malformed_transport_and_declared_root_bindings_are_rejected",
+      "passed": 36,
+      "filtered": 1
+    },
+    {
+      "scope": "Python maintain_release/archive_lean_kernel/ci_profiles/compact_sized_graph tests",
+      "passed": 33
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "passed": 34
+    },
+    {
+      "command": "python3 scripts/test_check_distribution.py",
+      "passed": 22
+    },
+    {
+      "command": "python3 -B scripts/test_check_lean_kernel.py --compiled",
+      "passed": 28,
+      "ignored": 0
+    },
+    {
+      "command": "python3 scripts/test_sized_corpus.py --small",
+      "positive": 6,
+      "semantic_mutations": 4,
+      "invalid_ir": 2,
+      "source_rejections": 16,
+      "max_qubits": 4
+    },
+    {
+      "scope": "Native sized empty boundary cases",
+      "accepted": 3,
+      "work_counts": [
+        2976,
+        2976,
+        5670
+      ]
+    },
+    {
+      "scope": "Both Lean packages build and Audit.lean",
+      "kernel_declarations": 11457,
+      "mathlib_side_declarations": 3342,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true Tests.lean",
+      "cwd": "lean-kernel",
+      "exit_code": 0
+    },
+    {
+      "command": "lake env leanchecker --fresh QleisliKernel",
+      "cwd": "lean-kernel",
+      "exit_code": 0
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "exit_code": 0
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean",
+      "cwd": "lean-kernel",
+      "exit_code": 0
+    },
+    {
+      "scope": "Rebuilt schema types, audits and exact source binding",
+      "entries": 3,
+      "externally_enabled": 0,
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "exit_code": 0,
+      "groups": 36,
+      "public_boundaries": 20,
+      "constructor_variants": 232
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "source_snapshots": 234
+    },
+    {
+      "scope": "Final maintain_release plan",
+      "changes": [],
+      "source_review": []
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "equivalence": {
+    "retained_cases": 799,
+    "retained_accepted": 263,
+    "history_cases": 164,
+    "history_accepted": 128,
+    "exact_exit_stdout_stderr_match": true,
+    "work_counts_unchanged": true
+  },
+  "timing": {
+    "classical_2000": {
+      "before_seconds": 3.296502291050274,
+      "after_seconds": 0.13549937499919906
+    },
+    "classical_6000": {
+      "before_timeout_seconds": 60,
+      "after_seconds": 1.51,
+      "qubits": 0,
+      "accepted_work": 12016,
+      "input_sha256": "0fb996aabf2a27f76e4738a6eec7379ec6f3c98d4590554556826205bb52c9f4"
+    },
+    "note": "Single-machine observations, not performance guarantees; other jobs may compete for resources"
+  },
+  "public_binding_review": "Compared against HEAD: Rust public surfaces, enum constructors, boundaries, capacities and source group membership remain identical; refresh only reviewed source identities and two current comparison-harness pins",
+  "intermediate_checks": [
+    "An initial cli_json invocation omitted QLEISLI_KERNEL: seven native-dependent checks failed with the expected missing-checker diagnostic. The final run supplied the rebuilt checker and all eight passed.",
+    "The initial inventory and VM29 coverage checks detected stale source bindings; reviewed hashes were refreshed and both final checks passed."
+  ],
+  "not_performed": [
+    "maximum-size stress tests",
+    "interchange 16 MiB malformed transport case",
+    "hosted full release CI and cross-platform matrix",
+    "tagging, publication, commit or push"
+  ],
+  "artifacts": {
+    "README.md": "f6469fc2073b06619b621827a9fa272e86b53cb5857999b606929fcca779e34f",
+    "binding-checks.json": "2795f5b03989788fc796c0f46369d05caa10e2e6f78f00301ee38e82e76a3f90",
+    "classical-6000.qirf.gz": "85516f907a94bbe457265a30283fd5fea4fb9486494e1d687eeac574bf1ba6e7",
+    "history-differential.json.gz": "4a24c6d8071edb78a395fdf6ae04124482daefd40f609b23a74685ed5743d628",
+    "kernel-equivalence.json.gz": "a66cb27ede82397fe624576d0d9b35982aee2ecef8314d4835fc90d8c43e16f8",
+    "original-deep-clone.rs": "5437bacf37caa363eecd00261dcacbd22fc532a77ec003b140be7db1e39fb3fe"
+  }
+}

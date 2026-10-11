@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/check_book.py",
+    "--root",
+    "/private/tmp/qleisli-checked-operation-book"
+  ],
+  "exit_code": 0,
+  "seconds": 0.23766583297401667,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/book-links-01.stdout.txt",
+      "sha256": "5da20284cbd818204fa9326e0d58b899935d15b56122da365e8a037cf699c4da"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/book-links-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

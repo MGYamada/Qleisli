@@ -4,8 +4,9 @@ The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
 inputs and have a separate development execution path. The finite CLI cases
-below use the production frontend. The bounded `qleisli sized` source/CLI slice
-and measured QPE are recorded in the
+below use the production frontend. Bounded source specialization uses the
+ordinary commands with explicit `--entry`/`--module` bindings. Its earlier
+source/CLI slice and measured QPE are recorded in the
 [current checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md);
 general correspondence and full-profile migration remain open.
 The [coherent QPE continuation](sized/qualtran_qpe/README.md) now passes its
@@ -120,15 +121,29 @@ cargo build --bin qleisli
 cargo run --bin qleisli -- run corpus/quantum_katas/teleport
 cargo run --bin qleisli -- run corpus/pennylane_demos/qaoa_maxcut
 python3 scripts/check_input_corpus.py
-python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
+python3 scripts/check_input_corpus.py target/debug/qleisli --quick
 ```
 
 The metadata-only command checks the closed source list, permission records,
 attribution, hashes and authoring snapshots without network access. The last
-command checks all finite unitary matrix entries and protocol instruments.
-Without `--exhaustive`, execution uses all computational inputs plus selected
-interference entries; it is a smaller regression run, not the full matrix check.
+command runs the same representative checks used by every CI profile, including
+release and manual full validation: all shipped entries, X/Y probes for 20
+deterministic representative entries, four semantic faults and all rejection
+cases. Its report identifies selected entries and omitted faults; it does not
+claim full matrix or instrument coverage. Exhaustive corpus execution is no
+longer a CI or release requirement. The standalone `--exhaustive` option remains
+available for focused historical replay. Without either flag, execution uses
+all computational inputs plus selected interference entries.
 A single case can be selected with `--case qualtran/add2`.
+
+Language migrations retain the original authoring sessions and observations.
+The ordered `source_migrations` entries in [manifest.json](manifest.json)
+continue those identities through complete project snapshots, predecessor and
+replacement hashes, and observed checks bound to the replacement sources.
+The validator rejects missing migrations, stale predecessors and incomplete or
+contradictory observations. These records preserve provenance; the semantic
+runner still checks the translated programs independently. The first such
+record is the [explicit predicate-domain migration](migrations/predicate-domain-v030/README.md).
 
 Original Q#/Python files under `upstream/` are frozen, unmodified reference
 material. They are not QLI inputs and are never executed by the harness.

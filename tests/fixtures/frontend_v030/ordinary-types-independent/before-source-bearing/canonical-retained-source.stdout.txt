@@ -1,0 +1,4 @@
+common.parse: ok declarations=4
+finite.check: Diagnostic { code: "type_mismatch", message: "Bit is a basis type; ordinary functions use CBit or Q<basis type>", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli", span: Span { start: 248, end: 251 }, line: 1, column: 249 }) }
+finite.compile: Diagnostic { code: "type_mismatch", message: "Bit is a basis type; ordinary functions use CBit or Q<basis type>", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli", span: Span { start: 248, end: 251 }, line: 1, column: 249 }) }
+sized.generic: Error { code: "unsupported", module: Some("main"), span: Span { start: 98, end: 101 }, message: "sized preparation profile: unsupported runtime type" }

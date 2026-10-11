@@ -7,7 +7,7 @@
 
 use std::quantum::z;
 use std::routines::hadamard2;
-basis fn zero(a: Bit, b: Bit) -> Bit { not a and not b }
+basis fn zero((a, b): (Bit, Bit)) -> Bit { not a and not b }
 pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let q = hadamard2(q);
     let q = with_computed(q, zero) { |flag| z(flag) };

@@ -1,0 +1,45 @@
+{
+  "kind": "fresh final guarded source-access observations",
+  "base_commit": "bd9560e6c76e6a392d115ddcc43fb05fcf15a54f",
+  "worktree_note": "Current uncommitted implementation; no exact-commit CI or source theorem claim.",
+  "implementation_sha256": {
+    "src/frontend/sized/raw.rs": "f54a98b172b140b3cb98f531d281cd45635ed762210aec44267b73cebe755036",
+    "src/frontend/sized/raw/circuit.rs": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
+    "src/frontend/sized/raw/preservation.rs": "18c0376bf36c9ed6808389a2afdb19e078d68ac9a54fee185561e61a99d35226",
+    "src/frontend/sized/raw/preservation/access.rs": "750e3b35b34668814c526b3fc330ec6df960491d55f7f9d3cedbec4f15152d3c"
+  },
+  "observations": [
+    {
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "sha256": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "adjoint-bit.after.stdout.txt",
+      "stderr": "adjoint-bit.after.stderr.txt",
+      "stream_note": "Fresh final guarded implementation observation produced identical stream bytes to the separately retained first after observation."
+    },
+    {
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+      "sha256": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "controlled-unit.after.stdout.txt",
+      "stderr": "controlled-unit.after.stderr.txt",
+      "stream_note": "Fresh final guarded implementation observation produced identical stream bytes to the separately retained first after observation."
+    }
+  ]
+}

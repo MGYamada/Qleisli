@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--lib",
+    "frontend::parser::tests",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "elapsed_seconds": 0.081
+}

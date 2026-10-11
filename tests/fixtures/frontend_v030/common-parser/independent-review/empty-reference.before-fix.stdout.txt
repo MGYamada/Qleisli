@@ -1,0 +1,1 @@
+Err(ParseError { message: "static arguments require a call", span: Span { start: 38, end: 39 } })

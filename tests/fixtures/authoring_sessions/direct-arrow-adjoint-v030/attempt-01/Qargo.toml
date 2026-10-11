@@ -1,0 +1,5 @@
+schema = 2
+[qrate]
+name = "direct-arrow-adjoint"
+version = "0.3.0-alpha"
+edition = "2026"

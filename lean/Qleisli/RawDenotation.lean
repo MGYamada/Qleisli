@@ -4,7 +4,7 @@ import Qleisli.Semantics.Raw
 /-! Complete complex denotation of the actual bounded pure raw checker. Every
 event, clean physical body, dependency action and final output permutation is
 read from the original raw operations. No Rust checking/extraction is assumed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Raw QleisliKernel.Finite Qleisli.Semantics.Exact Qleisli.Semantics.Raw
@@ -19,7 +19,9 @@ theorem circuit_denotes (dependencies : List Dependency) (bits : Nat) (steps : L
     | succ n ih =>
       cases n with
       | zero => rfl
-      | succ n => simpa [QleisliKernel.Semantics.Raw.registerBasis,width] using congrArg Nat.succ ih
+      | succ n =>
+        simp [QleisliKernel.Semantics.Raw.registerBasis,width] at ih ⊢
+        omega
   simpa only [CircuitMeaning,BasisColumn,circuit,QleisliKernel.Raw.registerBasis,width_register] using
     Finite.circuitMatrix_trace dependencies (circuit bits steps) actual work left ok
 

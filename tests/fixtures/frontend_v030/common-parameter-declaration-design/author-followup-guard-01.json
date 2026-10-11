@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.author-followup-constitutional-guard",
+  "version": 1,
+  "observer": "/root/isometry_cli_tests",
+  "classification": "Authorized constitutional identity/continuity check only, not source/CLI/native/test execution or fresh Lean replay.",
+  "command": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "result": {
+    "chunk_id": "7d5d1d",
+    "wall_time_seconds": 1.168484292,
+    "exit_code": 0,
+    "original_token_count": 105,
+    "output": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader obligations and one exactness supplement retain pending proof/enforcement duties; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n"
+  }
+}

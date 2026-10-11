@@ -1,0 +1,9 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 7.49s
+     Running tests/authoring_ergonomics.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/authoring_ergonomics-0cb7aede751ae769)
+     Running tests/checked_operations.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/checked_operations-997cd419f6933e4a)
+     Running tests/operation_parameters.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/operation_parameters-0f98c2d7fdfb7461)
+     Running tests/parser.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/parser-397a51f9e37d96a6)
+     Running tests/predicate_domain.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/predicate_domain-0c24aa237a1a0cc5)
+     Running tests/source_snapshots.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/source_snapshots-2883b5ce4f66fb7f)
+     Running tests/tuple_shapes.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/tuple_shapes-fab908e3a9ed01c6)

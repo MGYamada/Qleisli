@@ -1,0 +1,16 @@
+{
+  "scope": "Presentation-only Markdown code-span repair; mathematical/API prose and all original input-map meanings retained. No validator, source/native/build command executed.",
+  "path": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/README.md",
+  "before": {
+    "bytes": 14583,
+    "sha256": "35fa9e811753fd186d2aac888ea16b6b79b436c417c411a89b2f6bc614ff1982",
+    "mode": 420
+  },
+  "after": {
+    "bytes": 14587,
+    "sha256": "7c1399d849dd075cbe796bae7b6c6ef68341e9582362a1ec024ce7a1d5861629",
+    "mode": 420
+  },
+  "original_retained_at": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/presentation-repair-01/before.md.txt",
+  "original_input_map_policy": "Existing audit inputs.json remains unchanged; its README identity is historical and now binds the archived exact before.md.txt bytes rather than the active repaired README."
+}

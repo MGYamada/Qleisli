@@ -1,0 +1,1 @@
+unitary fn bad(flag:Bit) -> Bit { if flag { 1 } else { () } }

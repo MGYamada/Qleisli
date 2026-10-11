@@ -1,0 +1,62 @@
+{
+  "scalar-control": {
+    "kind": "positive-control",
+    "proposed_contract_expectation": "Existing scalar helper; expected success in both routes."
+  },
+  "generated-phase-table": {
+    "kind": "desired-positive",
+    "proposed_contract_expectation": "Exact finite denominator table and supported Z/S/T schedule, no runtime table."
+  },
+  "literal-table": {
+    "kind": "desired-positive",
+    "proposed_contract_expectation": "Literal lookup agrees with finite generator values."
+  },
+  "computed-size": {
+    "kind": "desired-positive",
+    "proposed_contract_expectation": "Table value specializes a generic width under original affine equality."
+  },
+  "helper-chain": {
+    "kind": "desired-positive",
+    "proposed_contract_expectation": "Acyclic checked table helper calls retain identities."
+  },
+  "empty-generator": {
+    "kind": "desired-positive",
+    "proposed_contract_expectation": "A valid zero-length generator has no elements but its original body is checked."
+  },
+  "empty-index": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Empty array index must reject at the original index."
+  },
+  "out-of-range": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Upper bound is strict; length is not a valid index."
+  },
+  "unproved-index": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "A convenient later concrete index cannot repair missing generic index premises."
+  },
+  "runtime-capture": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Measurement result cannot enter static array elements."
+  },
+  "quantum-capture": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Quantum owners cannot enter static array elements."
+  },
+  "runtime-table-use": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Static arrays are not ordinary runtime return values."
+  },
+  "unused-invalid-body": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Unused helper and possible empty generator cannot hide unguarded subtraction."
+  },
+  "cycle": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Acyclic restriction includes table-returning dependencies."
+  },
+  "wrong-length": {
+    "kind": "deliberate-negative",
+    "proposed_contract_expectation": "Declared length must match generated/literal length."
+  }
+}

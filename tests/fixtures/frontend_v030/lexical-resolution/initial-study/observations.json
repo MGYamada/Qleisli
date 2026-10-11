@@ -1,0 +1,112 @@
+[
+  {
+    "case": "duplicate-pattern",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/duplicate-pattern",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:60..61: name: duplicate name in binding pattern\nfinite.check: Diagnostic { code: \"ownership\", message: \"duplicate name in a binding pattern\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/duplicate-pattern/main.qli\", span: Span { start: 60, end: 61 }, line: 1, column: 61 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "fold-two-activations",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/fold-two-activations",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/fold-two-activations/main.qli\", span: Span { start: 55, end: 107 }, line: 1, column: 56 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "hide-live-owner",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/hide-live-owner",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:48..49: ownership: binding q would drop a live quantum owner\nfinite.check: Diagnostic { code: \"ownership\", message: \"binding would hide unconsumed quantum ownership\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/hide-live-owner/main.qli\", span: Span { start: 48, end: 49 }, line: 1, column: 49 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "initializer-rebind",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/initializer-rebind",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "moved-shadows-import",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/moved-shadows-import",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:71..75: name: h is shadowed or is not a transparent function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"a local value is not callable\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/moved-shadows-import/main.qli\", span: Span { start: 71, end: 72 }, line: 1, column: 72 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "multiple-acyclic",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/multiple-acyclic",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:39..84: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "multiple-unused-invalid",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/multiple-unused-invalid",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:41..78: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` was not returned or explicitly consumed\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/multiple-unused-invalid/main.qli\", span: Span { start: 18, end: 19 }, line: 1, column: 19 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "shadow-static-operation",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/shadow-static-operation",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:75..76: name: binding U shadows a static parameter/index or discards a value\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "static-branch-rebind",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/static-branch-rebind",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/static-branch-rebind/main.qli\", span: Span { start: 35, end: 76 }, line: 1, column: 36 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "zero-fold-capture",
+    "argv": [
+      "/private/tmp/qleisli-binderid-study-af21/observer",
+      "/private/tmp/qleisli-binderid-study-af21/zero-fold-capture",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:97..98: ownership: unbound or consumed value r\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-binderid-study-af21/zero-fold-capture/main.qli\", span: Span { start: 59, end: 100 }, line: 1, column: 60 }) }\n",
+    "stderr": ""
+  }
+]

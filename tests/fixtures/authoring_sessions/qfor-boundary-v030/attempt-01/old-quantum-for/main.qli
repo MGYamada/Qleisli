@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,x}; use std::observe::measure_z; pub observe fn main()->Bit{let q=for static k in 0..1 carry q=init0(){yield x(q);};measure_z(q)}

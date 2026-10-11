@@ -1,0 +1,54 @@
+[
+  {
+    "profile": "finite",
+    "format": "text",
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation"
+    ],
+    "exit_code": 1,
+    "native_invocations": 0,
+    "message": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli:1:62: effect: body effect `Observe` exceeds asserted `Unitary` effect of `f`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body\n"
+  },
+  {
+    "profile": "finite",
+    "format": "json",
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation",
+      "--format=json"
+    ],
+    "exit_code": 1,
+    "native_invocations": 0,
+    "message": "body effect `Observe` exceeds asserted `Unitary` effect of `f`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body"
+  },
+  {
+    "profile": "sized",
+    "format": "text",
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli"
+    ],
+    "exit_code": 1,
+    "native_invocations": 0,
+    "message": "main:61..73: effect: body effect `Observe` exceeds asserted `Unitary` effect of `f`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body\n"
+  },
+  {
+    "profile": "sized",
+    "format": "json",
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli",
+      "--format=json"
+    ],
+    "exit_code": 1,
+    "native_invocations": 0,
+    "message": "body effect `Observe` exceeds asserted `Unitary` effect of `f`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body"
+  }
+]

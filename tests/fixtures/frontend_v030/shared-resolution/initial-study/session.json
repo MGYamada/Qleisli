@@ -1,0 +1,253 @@
+{
+  "kind": "informed bounded compatibility study; not a blind authoring benchmark",
+  "created_before_first_check_utc": "2026-10-04T12:53:28.124474+00:00",
+  "baseline_commit": "6daea68fe7efb75df0b627f2d20bd7b409f0cfd3",
+  "context": "Author has read current finite/sized loaders, call graph code, and issues 25,27,32,41,57,65. Cases intentionally expose known profile differences. Repository remains unchanged; source is in scratch only. No proposed resolver or new source feature is implemented.",
+  "cases": [
+    {
+      "case": "unused-import-cycle",
+      "sources": [
+        {
+          "module": "a",
+          "path": "unused-import-cycle/a.qli",
+          "sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702"
+        },
+        {
+          "module": "b",
+          "path": "unused-import-cycle/b.qli",
+          "sha256": "a877425fe3406b027d8d4d67312cf33511d3646e1d0829224ad5c553281eaa10"
+        }
+      ]
+    },
+    {
+      "case": "self-import-public",
+      "sources": [
+        {
+          "module": "a",
+          "path": "self-import-public/a.qli",
+          "sha256": "e193c60dda25e72fef7d349bf1cbd4a02b4abed663bd8f1b5f6c3a337c61eafa"
+        }
+      ]
+    },
+    {
+      "case": "self-import-private",
+      "sources": [
+        {
+          "module": "a",
+          "path": "self-import-private/a.qli",
+          "sha256": "e989c5dcbbbf458684e7c7f5a7ac6fc185ee8822c24e40471b7838887e8f714a"
+        }
+      ]
+    },
+    {
+      "case": "reserved-module",
+      "sources": [
+        {
+          "module": "if",
+          "path": "reserved-module/if.qli",
+          "sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0"
+        }
+      ]
+    },
+    {
+      "case": "underscore-module",
+      "sources": [
+        {
+          "module": "_",
+          "path": "underscore-module/_.qli",
+          "sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0"
+        }
+      ]
+    },
+    {
+      "case": "private-unused-import",
+      "sources": [
+        {
+          "module": "a",
+          "path": "private-unused-import/a.qli",
+          "sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702"
+        },
+        {
+          "module": "b",
+          "path": "private-unused-import/b.qli",
+          "sha256": "ccf5dfec8bec4ce160322152484fc5f861320dd5e688dd723074696f8cb61337"
+        }
+      ]
+    },
+    {
+      "case": "same-module-two-declarations",
+      "sources": [
+        {
+          "module": "a",
+          "path": "same-module-two-declarations/a.qli",
+          "sha256": "3f2e43892390601f779e4d98834e4d599623108378f23eed59920499f9e65d7a"
+        }
+      ]
+    },
+    {
+      "case": "duplicate-declarations",
+      "sources": [
+        {
+          "module": "a",
+          "path": "duplicate-declarations/a.qli",
+          "sha256": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741"
+        }
+      ]
+    },
+    {
+      "case": "moved-local-shadows-import",
+      "sources": [
+        {
+          "module": "a",
+          "path": "moved-local-shadows-import/a.qli",
+          "sha256": "bfa4e2283db41fad5e0534689f95b0bad9c7b3581aea99fc2bdb8a990740af90"
+        },
+        {
+          "module": "b",
+          "path": "moved-local-shadows-import/b.qli",
+          "sha256": "b3ff8b3137147277aec023d9b4af3f4dfd362537f6722eb09ac84918e9d94ecf"
+        }
+      ]
+    },
+    {
+      "case": "declaration-call-cycle",
+      "sources": [
+        {
+          "module": "a",
+          "path": "declaration-call-cycle/a.qli",
+          "sha256": "736406f1865190d887b734fbe8a32a7f0e847e2dff10047105284686f0017f6c"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "case": "unused-import-cycle",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/unused-import-cycle"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "unused-import-cycle.stdout",
+      "stderr": "unused-import-cycle.stderr"
+    },
+    {
+      "case": "self-import-public",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/self-import-public"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "self-import-public.stdout",
+      "stderr": "self-import-public.stderr"
+    },
+    {
+      "case": "self-import-private",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/self-import-private"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "self-import-private.stdout",
+      "stderr": "self-import-private.stderr"
+    },
+    {
+      "case": "reserved-module",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/reserved-module"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "reserved-module.stdout",
+      "stderr": "reserved-module.stderr"
+    },
+    {
+      "case": "underscore-module",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/underscore-module"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "underscore-module.stdout",
+      "stderr": "underscore-module.stderr"
+    },
+    {
+      "case": "private-unused-import",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/private-unused-import"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "private-unused-import.stdout",
+      "stderr": "private-unused-import.stderr"
+    },
+    {
+      "case": "same-module-two-declarations",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/same-module-two-declarations",
+        "check"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "same-module-two-declarations.stdout",
+      "stderr": "same-module-two-declarations.stderr"
+    },
+    {
+      "case": "duplicate-declarations",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/duplicate-declarations"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "duplicate-declarations.stdout",
+      "stderr": "duplicate-declarations.stderr"
+    },
+    {
+      "case": "moved-local-shadows-import",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/moved-local-shadows-import",
+        "check"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "moved-local-shadows-import.stdout",
+      "stderr": "moved-local-shadows-import.stderr"
+    },
+    {
+      "case": "declaration-call-cycle",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/declaration-call-cycle",
+        "check"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli_kernel",
+      "exit": 0,
+      "stdout": "declaration-call-cycle.stdout",
+      "stderr": "declaration-call-cycle.stderr"
+    },
+    {
+      "case": "same-module-two-declarations",
+      "reason": "Correct observer environment binary path from qleisli_kernel to existing qleisli-kernel; sources unchanged; original failed invocation retained.",
+      "argv": [
+        "/private/tmp/qleisli-resolution-study-6daea68/observer",
+        "/private/tmp/qleisli-resolution-study-6daea68/same-module-two-declarations",
+        "check"
+      ],
+      "env_QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "exit": 0,
+      "stdout": "same-module-two-declarations-native-retry.stdout",
+      "stderr": "same-module-two-declarations-native-retry.stderr"
+    }
+  ],
+  "observer_sha256": "0483c5631a52db127a3e1e3f690c21f4fa5a1f146ab28efff7967fb042371bb8",
+  "linked_library_sha256": "4e6b366452bb6a72372890d47a6eeee878909ece8f0b7234b274c2a82de122dc"
+}

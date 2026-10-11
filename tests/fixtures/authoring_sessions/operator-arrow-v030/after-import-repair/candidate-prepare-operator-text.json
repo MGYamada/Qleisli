@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/candidate-prepare-operator/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:134..136: parse: expected `>`, found `->`\n",
+  "native_invocations": 0,
+  "seconds": 0.0037913749692961574,
+  "recorded_utc": "2026-10-05T12:10:34.395700+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:134..136: parse: expected `>`, found `->`\n"
+}

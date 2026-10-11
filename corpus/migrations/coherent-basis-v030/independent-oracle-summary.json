@@ -1,0 +1,56 @@
+{
+  "format": "qleisli.coherent-basis-independent-oracle-summary",
+  "version": 1,
+  "created_utc": "2026-10-06T04:17:41.084718+00:00",
+  "status": "passed",
+  "results": [
+    {
+      "project": "qualtran/less_than2",
+      "semantic_probes": 2080,
+      "shipped_main": "passed",
+      "rejection_control_executions": 4,
+      "seconds": 1063.353265999991,
+      "exit_code": 0,
+      "identities_unchanged": true,
+      "oracle_script_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+      "binary_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+      "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "tolerance": 1e-11,
+      "upstream_frameworks_executed": false,
+      "observation": {
+        "path": "independent-oracle/qualtran-less_than2/observation.json",
+        "sha256": "c3026802f14cb11488e33341dc49a3b8d5a830a48210616cc48992d126e7ef02"
+      },
+      "report": {
+        "path": "independent-oracle/qualtran-less_than2/report.json",
+        "sha256": "023ad644b3de27bcc6e019c54284c7ea61d59077bf10e2b7799421153bbb0298"
+      }
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "rejection_control_executions": 4,
+      "seconds": 316.169555917033,
+      "exit_code": 0,
+      "identities_unchanged": true,
+      "oracle_script_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+      "binary_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+      "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "tolerance": 1e-11,
+      "upstream_frameworks_executed": false,
+      "observation": {
+        "path": "independent-oracle/pennylane_demos-vqe_excitation/observation.json",
+        "sha256": "bdd75f71f2cf38ee9f13c5e3da69a9fc369c9968b0fe9027f4b2df627de04488"
+      },
+      "report": {
+        "path": "independent-oracle/pennylane_demos-vqe_excitation/report.json",
+        "sha256": "4dc7a6a5268e1303dda771d0d89c3574dabefa7eb7180e12ab451d9aac5906de"
+      }
+    }
+  ],
+  "total_semantic_probes": 2608,
+  "rejection_controls": "The same four distinct curated controls were executed once in each requested case run, eight rejection executions total.",
+  "first_failures": [],
+  "scope": "Only two fixed existing 4/5-qubit selected corpus cases with unchanged independent mathematical oracle. All finite matrix entries are tested by X/Y interference (one extra reference/control qubit), at the reported floating-point tolerance. Every recorded input binding, compiler/native byte identity and original project source stayed unchanged before/after. No all-corpus/max-sized run, oracle/source edits, Rust/Lean build or replay, exact arithmetic theorem, guarantee admission, external qlippy implementation or release certification."
+}

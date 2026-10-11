@@ -1,0 +1,32 @@
+{
+  "scope": "Reviewed diagnostic-only source changes, preserving accepted/rejected programs, source-effect class rules, owner/access checks and native production acceptance. Private changes split host effect/shape diagnostics and suggest annotation-free fn syntax. No new public constructor or metadata API.",
+  "changed_sources": [
+    {
+      "path": "src/frontend/compile/lower/function_contract.rs",
+      "before_sha256": "f47817c2b3cee582e5fbc812827637ea7620e976895fe5efe3e0e5c158bc0a7e",
+      "after_sha256": "23c981c87f2fb4028a76d6410b39aa0e839bafe1d0cc88162a952de99df49082"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "before_sha256": "f314623a98399f69030a1cad3bd7b0bc74f979ecc621f1e1994a91e63f5cb442",
+      "after_sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703"
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "09d59a8cac5dbfea51333d61c09de2556bbf2de12f8af44edc9b188d7bc9e938",
+      "after_sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before_sha256": "506232e31bc8566a3ddb17ffce91308e06fdf33e0cc0755d56705b203adbf529",
+      "after_sha256": "d8e5023d0c3673467dcb1e417af24621a771fff8e1043946d94991356d9d242d"
+    }
+  ],
+  "protected": "Exact QLV1 meanings, admitted evidence, primitive inventories, exactness obligations and native boundary unchanged.",
+  "coverage_review": {
+    "before_surface_sha256": "d7386e1a86f9aac3080a5222d9d71a6221863c2331667f04b740cf534d86ffa5",
+    "after_surface_sha256": "5334172535f6b0a7fec2c91e5b88c48f68093be89cd98c450092f73bba7584b0",
+    "stale_guard_exit": 1,
+    "reason": "Four reviewed private diagnostic sources have full hashes in the bounded surface. No acceptance route, proof gate, constructor, capacity or public API changed."
+  }
+}

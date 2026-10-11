@@ -1,0 +1,71 @@
+{
+  "scope": "Documentation and rendered-link validation only, after the 14 sized / six overlapping catalog count correction.",
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "recorder_sha256": "d3a6b59c429ddb3d6db9b08160ea02639252ebb7915df9d5d8d975f036f00beb",
+  "mdbook": {
+    "path": "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+    "sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:14:57.009127+00:00",
+      "elapsed_seconds": 1.3489864579751156,
+      "exit_code": 0,
+      "stdout": "1.stdout.txt",
+      "stdout_sha256": "40766b5bf3fd64898a777eca30f84b7026c275ef95dda5ff47b26ad4f4433c21",
+      "stderr": "1.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:14:58.360140+00:00",
+      "elapsed_seconds": 0.004926334018819034,
+      "exit_code": 0,
+      "stdout": "2.stdout.txt",
+      "stdout_sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "stderr": "2.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:14:58.365861+00:00",
+      "elapsed_seconds": 0.07120770803885534,
+      "exit_code": 0,
+      "stdout": "3.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "3.stderr.txt",
+      "stderr_sha256": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:14:58.438268+00:00",
+      "elapsed_seconds": 0.3613304999889806,
+      "exit_code": 0,
+      "stdout": "4.stdout.txt",
+      "stdout_sha256": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572",
+      "stderr": "4.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

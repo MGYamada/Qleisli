@@ -1,0 +1,38 @@
+{
+  "PATH_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+  "tools": {
+    "rustc": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+    "cargo": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+    "cargo-clippy": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo-clippy"
+  },
+  "versions": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.85.0 (4d91de4e4 2025-02-17)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.85.0 (d73d2caf9 2024-12-31)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "clippy 0.1.85 (4d91de4e48 2025-02-17)\n",
+      "stderr": ""
+    }
+  ]
+}

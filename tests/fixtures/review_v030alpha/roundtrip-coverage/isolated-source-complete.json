@@ -1,0 +1,28 @@
+{
+  "snapshot_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "archive_command": [
+    "git",
+    "archive",
+    "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+    "Cargo.toml",
+    "Cargo.lock",
+    "src",
+    "lean",
+    "lean-kernel",
+    "tests/native_roundtrip.rs",
+    "examples",
+    "corpus",
+    "stdlib",
+    "tests/fixtures/verification_v029/equivalence/results.json",
+    "tests/fixtures/verification_v029/equivalence/inputs.jsonl.gz",
+    "scripts"
+  ],
+  "archive_sha256": "2a08180373b3839a6f753504e5c786e99ae89c1273603a518c5b0f07dcb80c78",
+  "snapshot_path": "/private/tmp/qleisli-roundtrip-0605d71-1691w56s",
+  "supplement_source_sha256": {
+    "tests/native_roundtrip.rs": "2dcdf54d428ba2448a4e99366e264bd7fda5a29341b3d6a02390dbfd39b69a53",
+    "tests/fixtures/review_v030alpha/roundtrip-coverage/record.py": "db573501cb4cbe39a571d7218f374afe90889700635d9e8f59e456f1a33e527b"
+  },
+  "scope": "Immutable commit source archive plus only the two named test/recorder additions; shared frontend work is excluded, so current-tree integration is separate.",
+  "review_note": "Recorder source discovery now binds examples/corpus/stdlib .qli and Qargo.toml and re-enumerates before/after to detect new files; original isolated-source.json and isolated/results.json remain historical."
+}

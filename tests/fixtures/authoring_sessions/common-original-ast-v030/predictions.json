@@ -1,0 +1,26 @@
+{
+  "format": "qleisli.original-ast-first-predictions",
+  "version": 1,
+  "status": "unexecuted-predictions-not-expected-output",
+  "cases": {
+    "mixed-qif-and-generic": "Desired whole-source positive: all qif and unused Nat/fold bodies. Current finite/sized eligibility/projection barriers are predicted to remain separately visible.",
+    "private-zero-fold-owner": "Desired ownership rejection of duplicated Q<Unit> in an unused zero fold; zero width and zero iterations grant no copying.",
+    "dead-arm-missing-adjoint": "Desired missing Adjoint rejection in the statically dead arm, without a closed-provider repair.",
+    "private-basis-valid": "Desired ordinary total basis positive, including noninjective binary maps, explicit product pattern and a two-argument ordinary call.",
+    "private-basis-bad-result": "Desired exact declared Bit-versus-product result rejection in an unused private basis function.",
+    "qif-formal-controlled": "Desired formal capability positive conditional on Controlled(U); no provider or native evidence is supplied.",
+    "qif-formal-apply-only": "Desired qif capability rejection: Apply(U) alone does not authorize control.",
+    "qif-wrong-effect": "Desired principal-effect rejection of same-shape Observe provider; annotation/identity names supply no unitary proof.",
+    "qif-wrong-shape": "Desired exact provider shape rejection: (Q<Bit>,Unit) is not Q<Bit>, despite equal physical width.",
+    "computed-unary-predicate": "Desired existing source-type/scope positive with one exact domain parameter; concrete exact cleanup remains a separate mandatory gate.",
+    "computed-wrong-arity": "Desired existing computed predicate arity rejection; ordinary two-argument calls are not implicitly packed.",
+    "owner-shadow-move-valid": "Desired legal ownership move before same-name rebind.",
+    "owner-shadow-live-invalid": "Desired rejection of dropping the old live q owner while rebinding q to p.",
+    "static-shadows-global-valid": "Desired resolved local Op formal may shadow a global function name; local capability lookup must not fall back to that global.",
+    "runtime-shadows-static-policy": "Policy probe only: current finite and sized static-shadow rules differ. No new canonical permission or rejection is selected here.",
+    "runtime-shadows-static-call-invalid": "Desired rejection of calling a runtime owner as a static operation, with no fallback by spelling to U.",
+    "natural-runtime-shadow-invalid": "Desired selected static-shadow rejection; finite Nat eligibility may reject earlier. Canonical priority is not adopted.",
+    "bundled-import-control": "Existing loader control only: finite discovers exact fixed bundles; selected supplied-module loading currently does not inject them. Data pins four original sources without copying or namespace injection."
+  },
+  "scope": "Code/Reference-informed predictions only; actual first observations must be retained even when these predictions are wrong."
+}

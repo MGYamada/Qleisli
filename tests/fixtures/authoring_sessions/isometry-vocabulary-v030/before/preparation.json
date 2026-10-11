@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T21:24:21.923603+00:00",
+  "cli_sha256_before": "446ff0cbbc895bf0e10eb5b2d8ee2e4be08ec90308ff4150ac3477c62a8b44ab",
+  "cli_sha256_after": "446ff0cbbc895bf0e10eb5b2d8ee2e4be08ec90308ff4150ac3477c62a8b44ab",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `fn`, `classical fn`, `iso`, `unitary`, `observe`, or `meaning` after `pub`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli",
+          "start": 103,
+          "end": 111
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

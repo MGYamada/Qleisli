@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_docs.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T16:38:39.513241+00:00",
+  "seconds": 1.983625499997288,
+  "stdout": {
+    "path": "docs.stdout.txt",
+    "sha256": "2606cbaacc749bce88c7878b31ddcc6165aee0f4413c814d3214fcd314185381"
+  },
+  "stderr": {
+    "path": "docs.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "Record/doc integrity only; no recorded command executed, no Cargo/Lean build, replay, functional oracle or proof."
+}

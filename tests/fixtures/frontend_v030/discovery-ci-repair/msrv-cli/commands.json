@@ -1,0 +1,59 @@
+[
+  {
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.11216908297501504
+  },
+  {
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.035103832953609526
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--test",
+      "cli",
+      "--test",
+      "cli_json",
+      "--test",
+      "discovery_paths",
+      "--test",
+      "selected_source_cli"
+    ],
+    "exit_code": 0,
+    "seconds": 7.273870290955529
+  },
+  {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5244736670283601
+  },
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.45805558300344273
+  }
+]

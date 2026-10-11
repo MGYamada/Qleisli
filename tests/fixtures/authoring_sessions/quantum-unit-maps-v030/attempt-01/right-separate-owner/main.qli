@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::unit;
+use std::quantum::finish;
+pub unitary fn right(q: Q<Bit>) -> (Q<Bit>, Q<Unit>) { (q,unit(())) }
+pub unitary fn remove((q,u): (Q<Bit>, Q<Unit>)) -> Q<Bit> { let () = finish(u); q }
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { remove(right(q)) }
+
+observe fn main() -> Unit { () }

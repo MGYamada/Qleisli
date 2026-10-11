@@ -1,0 +1,433 @@
+{
+  "format": "qleisli.validation-completion",
+  "version": 1,
+  "previous_packet_sha256": "89a551aba9fa4166f8e735766eed27463d626a538af44a9a7a4f0290a7de13d5",
+  "source_commit": "eb9c36ef9c13b5b968fda6858e61ea4419430144",
+  "checked_current_sources": 184,
+  "unchanged_previous_members": 258,
+  "same_latest_msrv_source_and_native_maps": true,
+  "all_expected_commands_completed": true,
+  "ignore_records": {
+    "validation-latest-all-escalated-retry-01": [
+      [
+        "frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome",
+        "requires freshly built native kernel; CI runs explicitly"
+      ],
+      [
+        "frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation",
+        "requires freshly built native kernel; CI runs explicitly"
+      ],
+      [
+        "interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge",
+        "run scripts/test_verification_decoders.py with the native decoder view"
+      ],
+      [
+        "dependency_depth_and_expanded_execution_cost_are_bounded",
+        "historical Rust maximum-depth/expansion stress; native transport bounds apply and maximum runs are deferred"
+      ],
+      [
+        "frozen_finite_leaf_executes_through_its_actual_definition_index",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "seeded_fresh_shots_match_independent_branches_and_classical_clients",
+        "run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      ],
+      [
+        "small_source_clients_match_independent_complex_reference_branches",
+        "run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      ],
+      [
+        "native_actual_counts_premises_and_encodings_are_checked",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_disjoint_tensor_reconstructs_both_leaves_in_one_budget",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_instrument_binds_all_stages_and_reconstructs_finite_obligations",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_leaf_type_and_owner_are_bound_to_the_embedded_program",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_phase_and_structural_inverse_need_no_dense_matrix_leaf",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_phase_fault_remains_an_obligation_under_zero_repeat",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_detects_coordinated_body_changes_and_wrong_headers",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_permits_different_sharing_in_both_directions",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_shared_powers_reconstruct_one_bound_leaf_without_expansion",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles",
+        "VM-22 optional comparison requires the separately built Lean runtime"
+      ],
+      [
+        "native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries",
+        "requires generated small fixtures and an audited native Lean kernel"
+      ],
+      [
+        "qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations",
+        "requires generated small fixtures"
+      ],
+      [
+        "export_has_independent_capacity_checks",
+        "historical maximum-size export stress; native acceptance has independent work/time limits"
+      ],
+      [
+        "evidence_dags_decode_from_the_native_ticket_and_execute",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_handles_execute_bell_and_feedback_without_legacy_receipts",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_rejection_and_independent_requests_bind_exact_bytes",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_report_retains_the_exact_artifact_request_and_reconstructed_program",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "raw_exports_conversions_and_native_reports_share_the_original_byte_gate",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "many_branches_share_freshness_history_without_leaking_classical_scopes",
+        "historical Rust scaling experiment; maximum-size runs are deferred"
+      ],
+      [
+        "many_live_wires_do_not_require_quadratic_duplicate_checks",
+        "historical Rust scaling experiment; maximum-size runs are deferred"
+      ],
+      [
+        "inspect_authored_qft_hierarchies",
+        "run through scripts/test_hierarchical_qft.py with an audited kernel"
+      ],
+      [
+        "native_fourier_request_faults",
+        "run through scripts/test_hierarchical_fourier_host.py with an audited kernel"
+      ],
+      [
+        "reconstruct_bound_hadamard_requests",
+        "run through scripts/test_hierarchical_fourier_base.py with native bound H requests"
+      ],
+      [
+        "capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit",
+        "historical large expansion exceeds native time/work bounds before the former Rust diagnostic"
+      ],
+      [
+        "long_identity_circuits_normalize_both_flat_and_compound_steps",
+        "historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      ],
+      [
+        "long_source_trajectory_samples_with_the_original_cli_budget",
+        "historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      ],
+      [
+        "many_receipts_round_trip_shared_source_without_repeated_storage_work",
+        "historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ],
+      [
+        "large_inline_th_repetition_matches_the_same_independent_recurrence",
+        "#278 v0.3.1 stress: 1024 directly expanded TH pairs exceed the native timeout on Linux CI"
+      ],
+      [
+        "sized_cli_native_source_check_run_and_fresh_sampling",
+        "requires freshly built Lean kernel; CI runs explicitly"
+      ],
+      [
+        "sized_cli_separates_producer_consistency_from_independent_requests",
+        "requires freshly built Lean kernel; CI runs explicitly"
+      ],
+      [
+        "check_source_fourier_contracts",
+        "run through scripts/test_sized_qft.py with an audited native kernel"
+      ],
+      [
+        "check_source_instrument_contracts",
+        "run through scripts/test_instrument_host.py with an audited native kernel"
+      ],
+      [
+        "inspect_source_produced_corpus",
+        "run through scripts/test_sized_corpus.py with an audited native kernel"
+      ],
+      [
+        "python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_concrete_execution_does_not_replace_generic_size_obligations",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_ghz_and_arithmetic_corpus_agree_with_rust_preparation",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_static_comparisons_keep_type_angles_separate_in_both_dialects",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "direct_finite_source_gates_preserve_entangled_h_x_references",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "rust_source_proposals_check_natively_and_preserve_small_system_coefficients",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "distinct_contract_pairs_and_static_providers_share_one_project_snapshot",
+        "historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ],
+      [
+        "full_256_specializations_survive_a_100kb_project_and_unrelated_comments",
+        "historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ]
+    ],
+    "validation-msrv-all-escalated": [
+      [
+        "frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome",
+        "requires freshly built native kernel; CI runs explicitly"
+      ],
+      [
+        "frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation",
+        "requires freshly built native kernel; CI runs explicitly"
+      ],
+      [
+        "interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge",
+        "run scripts/test_verification_decoders.py with the native decoder view"
+      ],
+      [
+        "dependency_depth_and_expanded_execution_cost_are_bounded",
+        "historical Rust maximum-depth/expansion stress; native transport bounds apply and maximum runs are deferred"
+      ],
+      [
+        "frozen_finite_leaf_executes_through_its_actual_definition_index",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "seeded_fresh_shots_match_independent_branches_and_classical_clients",
+        "run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      ],
+      [
+        "small_source_clients_match_independent_complex_reference_branches",
+        "run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      ],
+      [
+        "native_actual_counts_premises_and_encodings_are_checked",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_disjoint_tensor_reconstructs_both_leaves_in_one_budget",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_instrument_binds_all_stages_and_reconstructs_finite_obligations",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_leaf_type_and_owner_are_bound_to_the_embedded_program",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_phase_and_structural_inverse_need_no_dense_matrix_leaf",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_phase_fault_remains_an_obligation_under_zero_repeat",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_detects_coordinated_body_changes_and_wrong_headers",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_request_permits_different_sharing_in_both_directions",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "native_shared_powers_reconstruct_one_bound_leaf_without_expansion",
+        "requires separately built and audited native Lean runtime"
+      ],
+      [
+        "vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles",
+        "VM-22 optional comparison requires the separately built Lean runtime"
+      ],
+      [
+        "native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries",
+        "requires generated small fixtures and an audited native Lean kernel"
+      ],
+      [
+        "qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations",
+        "requires generated small fixtures"
+      ],
+      [
+        "export_has_independent_capacity_checks",
+        "historical maximum-size export stress; native acceptance has independent work/time limits"
+      ],
+      [
+        "evidence_dags_decode_from_the_native_ticket_and_execute",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_handles_execute_bell_and_feedback_without_legacy_receipts",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_rejection_and_independent_requests_bind_exact_bytes",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "native_report_retains_the_exact_artifact_request_and_reconstructed_program",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "raw_exports_conversions_and_native_reports_share_the_original_byte_gate",
+        "requires the freshly built native Lean checker"
+      ],
+      [
+        "many_branches_share_freshness_history_without_leaking_classical_scopes",
+        "historical Rust scaling experiment; maximum-size runs are deferred"
+      ],
+      [
+        "many_live_wires_do_not_require_quadratic_duplicate_checks",
+        "historical Rust scaling experiment; maximum-size runs are deferred"
+      ],
+      [
+        "inspect_authored_qft_hierarchies",
+        "run through scripts/test_hierarchical_qft.py with an audited kernel"
+      ],
+      [
+        "native_fourier_request_faults",
+        "run through scripts/test_hierarchical_fourier_host.py with an audited kernel"
+      ],
+      [
+        "reconstruct_bound_hadamard_requests",
+        "run through scripts/test_hierarchical_fourier_base.py with native bound H requests"
+      ],
+      [
+        "capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit",
+        "historical large expansion exceeds native time/work bounds before the former Rust diagnostic"
+      ],
+      [
+        "long_identity_circuits_normalize_both_flat_and_compound_steps",
+        "historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      ],
+      [
+        "long_source_trajectory_samples_with_the_original_cli_budget",
+        "historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      ],
+      [
+        "many_receipts_round_trip_shared_source_without_repeated_storage_work",
+        "historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ],
+      [
+        "large_inline_th_repetition_matches_the_same_independent_recurrence",
+        "#278 v0.3.1 stress: 1024 directly expanded TH pairs exceed the native timeout on Linux CI"
+      ],
+      [
+        "sized_cli_native_source_check_run_and_fresh_sampling",
+        "requires freshly built Lean kernel; CI runs explicitly"
+      ],
+      [
+        "sized_cli_separates_producer_consistency_from_independent_requests",
+        "requires freshly built Lean kernel; CI runs explicitly"
+      ],
+      [
+        "check_source_fourier_contracts",
+        "run through scripts/test_sized_qft.py with an audited native kernel"
+      ],
+      [
+        "check_source_instrument_contracts",
+        "run through scripts/test_instrument_host.py with an audited native kernel"
+      ],
+      [
+        "inspect_source_produced_corpus",
+        "run through scripts/test_sized_corpus.py with an audited native kernel"
+      ],
+      [
+        "python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_concrete_execution_does_not_replace_generic_size_obligations",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_ghz_and_arithmetic_corpus_agree_with_rust_preparation",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "python_static_comparisons_keep_type_angles_separate_in_both_dialects",
+        "requires the development Python 3.11+ oracle"
+      ],
+      [
+        "rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "direct_finite_source_gates_preserve_entangled_h_x_references",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "rust_source_proposals_check_natively_and_preserve_small_system_coefficients",
+        "requires the separately built and audited Lean kernel"
+      ],
+      [
+        "distinct_contract_pairs_and_static_providers_share_one_project_snapshot",
+        "historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ],
+      [
+        "full_256_specializations_survive_a_100kb_project_and_unrelated_comments",
+        "historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      ]
+    ]
+  },
+  "scope": "Actual Rust 1.85.0 current-source all-target tests and warnings-denied all-target Clippy. Default ignores remain unexecuted; no fresh local Lean replay, human admission or full current-head hosted CI result."
+}

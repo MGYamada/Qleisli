@@ -1,0 +1,97 @@
+{
+  "scope": "Actual source/inventory/documentation checks; no native/Lean rebuild or release validation",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.643165500019677,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.15888875001110137,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.2891704589710571,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 4.427102375018876,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.5249263329897076,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.10399991599842906,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.0798698749858886,
+      "stdout": "6.stdout.txt",
+      "stderr": "6.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.364640292013064,
+      "stdout": "7.stdout.txt",
+      "stderr": "7.stderr.txt"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.03823912498774007,
+      "stdout": "8.stdout.txt",
+      "stderr": "8.stderr.txt"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "informed bounded lexical regression; not a blind authoring benchmark",
+  "baseline_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "binary_path": "target/debug/qleisli",
+  "binary_sha256": "b7d80f16aa70424c71d1d44bdf3ddea24c11efcd02d704cc4c2f1af0f064805d",
+  "scope": "sized emit-proposal only; successful output is untrusted IR, not native acceptance or source-preservation evidence",
+  "cases": [
+    {
+      "name": "unicode-crlf",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/unicode-crlf.qli",
+      "sha256": "a323c7dc136643ff2cb25e5d62cdea1370fd4b547104a0771e5b5446ad1f87e4"
+    },
+    {
+      "name": "bare-cr",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/bare-cr.qli",
+      "sha256": "0801dcb4970ec1d12282d527dc0fb43d3a576f0da7fbccfe3b43a7f034d4749d"
+    },
+    {
+      "name": "vertical-tab",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/vertical-tab.qli",
+      "sha256": "b60356be7499cac77f9d5ed1e15edfa270fb6f949d4b46ad62770a68868b643b"
+    },
+    {
+      "name": "form-feed",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/form-feed.qli",
+      "sha256": "e81de019676f824f6156fc9b34b80153cd56145f9225eea7fa6f6f4563b9f348"
+    },
+    {
+      "name": "bidi-comment",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/bidi-comment.qli",
+      "sha256": "fdc63f1a9dc0ef31b531bd3e50f21771274014ef6c5eab622f120d952c3e5414"
+    },
+    {
+      "name": "nbsp-comment",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/nbsp-comment.qli",
+      "sha256": "32cc111ebf9c9df36777e3e9d071cc155fbd5d04f8d8070fb83091f6ac040f07"
+    },
+    {
+      "name": "nested-64",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/nested-64.qli",
+      "sha256": "2f1657d6b9d5e291464dd8447c1b980f279674033ed689ebe5bdbe1ae5695a42"
+    },
+    {
+      "name": "nested-65",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/nested-65.qli",
+      "sha256": "c0ba63cb8200f614d1c32df7cfaa39758333e58abeec77efce1350fa2c4b337f"
+    },
+    {
+      "name": "unclosed",
+      "source": "tests/fixtures/frontend_v030/shared-scanner/unclosed.qli",
+      "sha256": "76fdf9baa3d45ab117e524e29cff18c67ef4cf0992b83e7fed9e33a412a26dc3"
+    }
+  ]
+}

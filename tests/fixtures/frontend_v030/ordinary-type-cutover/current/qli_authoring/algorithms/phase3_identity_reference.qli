@@ -1,0 +1,13 @@
+//! A degenerate eigenvalue must not decohere a target entangled with a reference.
+use estimation::phase3;
+use gates::identity;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+observe fn main() -> ((Bit,Bit,Bit),(Bit,Bit)) {
+    let (reference,target) = cnot(h(init0()),init0());
+    let (word,target) = phase3[identity](target);
+    let (reference,target) = cnot(reference,target);
+    (word,(measure_z(h(reference)),measure_z(target)))
+}

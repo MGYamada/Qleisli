@@ -1,0 +1,2 @@
+unitary fn duplicate(q: Q<Unit>) -> (Q<Unit>,Q<Unit>) { (q,q) }
+observe fn main() -> Unit { () }

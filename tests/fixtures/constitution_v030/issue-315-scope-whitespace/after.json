@@ -1,0 +1,14 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+    "a96ea1c588d65f63a646aa37c645ccc8b6d9dd10"
+  ],
+  "exit_code": 0,
+  "seconds": 0.38708379201125354,
+  "checked_commit": "a96ea1c588d65f63a646aa37c645ccc8b6d9dd10",
+  "attributes_note": "Whole committed tree with current working .gitattributes; a separate committed check follows the repair commit.",
+  "original_scope_packet_sha256": "79f41d7db35b9e3f6e733d26a9911bd2dc8e91ce8c982c566a3f2fbb68aba4b1"
+}

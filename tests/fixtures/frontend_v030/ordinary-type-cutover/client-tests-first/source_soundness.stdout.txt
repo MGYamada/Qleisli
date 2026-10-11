@@ -1,0 +1,9 @@
+
+running 4 tests
+test hidden_measurement_histories_add_weights_despite_opposite_final_phases ... ok
+test zero_probability_histories_do_not_execute_or_normalize_an_inactive_arm ... ok
+test adaptive_observation_preserves_joint_weights_correlations_and_coarse_graining ... ok
+test injective_growth_keeps_reference_coherence_while_reset_erases_it ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s
+

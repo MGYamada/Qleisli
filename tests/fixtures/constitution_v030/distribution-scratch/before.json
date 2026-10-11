@@ -1,0 +1,37 @@
+{
+  "scope": "Synthetic command execution only; real local Git/archive/checks; no Rust/Cargo/Lean execution. Captured before production lifecycle edits. Harness removes its own temporary fixture only after observation. Report paths refer to that temporary fixture.",
+  "production_sha256": "3b1df6bb8b96db5a484ecd9e8f5709581039dfd5b8c008cd03541ecfd47e2741",
+  "observations": [
+    {
+      "case": "before-success",
+      "status": "passed",
+      "targets_present_after_validate": [
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmpo_t5k1bs/report-artifacts-q_ym01w6/target/install",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmpo_t5k1bs/report-artifacts-q_ym01w6/target/package",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmpo_t5k1bs/report-artifacts-q_ym01w6/target/package-docs",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmpo_t5k1bs/report-artifacts-q_ym01w6/target/source-production",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmpo_t5k1bs/report-artifacts-q_ym01w6/target/source-research"
+      ],
+      "source_exists_after_validate": true,
+      "package_exists_after_validate": true,
+      "install_exists_after_validate": true,
+      "report": "tests/fixtures/constitution_v030/distribution-scratch/before-success/report.json",
+      "temporary_fixture_removed_by_harness_after_observation": true
+    },
+    {
+      "case": "before-failure",
+      "status": "failed",
+      "targets_present_after_validate": [
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp36flhoiq/report-artifacts-tmu0xz2e/target/install",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp36flhoiq/report-artifacts-tmu0xz2e/target/package",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp36flhoiq/report-artifacts-tmu0xz2e/target/package-docs",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp36flhoiq/report-artifacts-tmu0xz2e/target/source-production"
+      ],
+      "source_exists_after_validate": true,
+      "package_exists_after_validate": true,
+      "install_exists_after_validate": true,
+      "report": "tests/fixtures/constitution_v030/distribution-scratch/before-failure/report.json",
+      "temporary_fixture_removed_by_harness_after_observation": true
+    }
+  ]
+}

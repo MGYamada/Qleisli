@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-10-05T18:48:59.494107+00:00",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli"
+}

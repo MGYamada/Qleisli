@@ -1,0 +1,15 @@
+{
+  "baseline_commit": "cc070079449d4d166b767b09afaa8737fa1613a5",
+  "sources": {
+    "examples/protocols/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/protocols/README.md": "8e5494478055bf8de9c2354905907b8d74968a4313c4af09dbb49e8bee4056a0",
+    "examples/protocols/bell.qli": "7d3665d1f783b67cac871caba6265776042a1c5b0b5e0b6f2af0ba0e455796cf",
+    "examples/protocols/checks.qli": "1775e5ed53f9ee79a65f30e1b74fd1f897f4d6d6c7eed67219cf2df73cc12c71",
+    "examples/protocols/corrections.qli": "886dcf44e53725f9c5c6cd3c0e9e5b1c0c788d68d6569114d3a9a4997356b341",
+    "examples/protocols/dense_coding.qli": "e665e49159e4f98e9d17caf68864d9d64c572209d3ca89741c589b23f1f1e169",
+    "examples/protocols/main.qli": "b356d1436a9c0373dc16cd42ae3cafdeb7e1129a89351cab3de330de1b47ba65",
+    "examples/protocols/states.qli": "7ddbfdc51973d4171f9f77115fc9672371be2aa500ec6fd787b8da68a649c12e",
+    "examples/protocols/swapping.qli": "62d3508530e22b08b898b6b90597fc4070f110baeaa7e25ba21b7fd73b3eb9ed",
+    "examples/protocols/teleportation.qli": "045bd0f0b0a85078c3db02b61df2c8571c7eb38c1847104dbec6f920c5975937"
+  }
+}

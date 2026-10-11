@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/legal-rebinding/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "seconds": 0.07636133400956169,
+  "recorded_utc": "2026-10-05T16:33:57.032562+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 1,
+  "stdout_raw": "legal-rebinding-selected-auto-check-json.stdout.txt",
+  "stderr_raw": "legal-rebinding-selected-auto-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  }
+}

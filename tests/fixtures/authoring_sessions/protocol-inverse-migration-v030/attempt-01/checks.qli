@@ -1,0 +1,13 @@
+//! Source-level test clients: prepare, run the protocol, undo preparation.
+use std::quantum::init0;
+use std::observe::measure_z;
+use teleportation::teleport;
+
+/// Return the random message plus a failure bit (zero for ideal teleportation).
+/// This client is reused unchanged for seven independently selected inputs.
+pub observe fn teleport_prepared[static Prepare: Op<Bit>]() -> ((Bit, Bit), Bit)
+requires Apply(Prepare), Adjoint(Prepare) {
+    let input = Prepare(init0());
+    let (message, output) = teleport(input);
+    (message, measure_z(inverse(Prepare)(output)))
+}

@@ -3,5 +3,5 @@
 // Deliberate QLI rejection fixture; not an external translation.
 use std::quantum::init0;
 use std::observe::measure_z;
-observe fn read(q: Q<Bit>) -> CBit { measure_z(q) }
-observe fn main() -> CBit { adjoint(read,init0()) }
+observe fn read(q: Q<Bit>) -> Bit { measure_z(q) }
+observe fn main() -> Bit { adjoint(read,init0()) }

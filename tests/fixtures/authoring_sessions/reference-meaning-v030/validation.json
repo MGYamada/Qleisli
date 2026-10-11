@@ -1,0 +1,450 @@
+{
+  "format": "qleisli.local-contract-validation",
+  "version": 1,
+  "scope": "Existing apply_contract adapter repair and stale CI test repairs; reference(f) implementation remains pending.",
+  "base_commit": "29f979c231a50b4f72a642a05e9546e47f34aad9",
+  "rust": [
+    {
+      "toolchain": "stable",
+      "executables": {
+        "cargo": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+          "sha256": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+          "version": "cargo 1.99.0 (5f94df478 2026-08-27)"
+        },
+        "rustc": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "sha256": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+          "version": "rustc 1.99.0 (b940084d7 2026-09-28)"
+        },
+        "rustdoc": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustdoc",
+          "sha256": "6fbad8d9ad24774d81de7314568739cf9ed1d46636bd2d65156694637897aeab",
+          "version": "rustdoc 1.99.0 (b940084d7 2026-09-28)"
+        },
+        "cargo-clippy": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-clippy",
+          "sha256": "b28b16ce5c703577f1b0ccc7b3af1792586da9231619566ab3cd4e1a36551759",
+          "version": "clippy 0.1.99 (b940084d7e 2026-09-28)"
+        },
+        "clippy-driver": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/clippy-driver",
+          "sha256": "0469c2c76677f536fb9851501ab39216a25ab4963e2878d4ad1eee94a8952889",
+          "version": "clippy 0.1.99 (b940084d7e 2026-09-28)"
+        }
+      },
+      "checks": [
+        {
+          "command": [
+            "rustup",
+            "run",
+            "stable",
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--lib",
+            "--test",
+            "frontend_ownership_differential",
+            "--test",
+            "function_evidence",
+            "--test",
+            "function_contracts",
+            "--test",
+            "meaning_evidence",
+            "--test",
+            "checked_operations",
+            "--test",
+            "operation_parameters",
+            "--test",
+            "static_operations",
+            "--test",
+            "selected_source_cli",
+            "--test",
+            "source_judgments",
+            "--test",
+            "sized_source",
+            "--test",
+            "selected_function_contracts"
+          ],
+          "status": "passed",
+          "duration_seconds": 657.6850076669361,
+          "exit": 0,
+          "log_sha256": "029a1a3bded844be1c680342ed63c9debcc3a17a7eae46f175db88c951774855",
+          "passed_tests": 343,
+          "retained_ignored_tests": [
+            "frontend::specialize::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome",
+            "frontend::specialize::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation",
+            "interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge",
+            "dependency_depth_and_expanded_execution_cost_are_bounded",
+            "direct_finite_source_gates_preserve_entangled_h_x_references",
+            "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+            "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"
+          ],
+          "ownership_cases": 4000,
+          "ownership_seed": "0x514c4549534c4932",
+          "ownership_paths_per_case": [
+            "check_project",
+            "ParsedProgram::parse"
+          ]
+        },
+        {
+          "command": [
+            "rustup",
+            "run",
+            "stable",
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "duration_seconds": 18.451080832979642,
+          "exit": 0,
+          "log_sha256": "0cb6d093de6544e4e2275c51d55386c8a996dae5bc1aa2ec6689d30e85586d2c"
+        }
+      ],
+      "source_snapshot": {
+        "head": "29f979c231a50b4f72a642a05e9546e47f34aad9",
+        "diff_sha256": "cf650e2174c266ba84327cab5abd5a8ced9fcdff5aa9436f823cebfedf53a447",
+        "untracked_sha256": {
+          "src/frontend/specialize/raw/contracts.rs": "6364a16fbb01751a30e24a39bd2bb88b49f0e6c5dbe9fb112dc432b0cb691a43",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/before.json": "663ebd568e2fd8c6f359226dee48867ebcee95dccbe8662d893e9eda0055418c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/main.qli": "3e786b88ba9a0ee6ac1002e44431a7aa641891e0e97c5db1629b5f0741f71c32",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/after.json": "b25808828d24d4a3600a5c23da219304a1559553c5f9dc55fe604ba4230fd92c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/before.json": "74966e7667476b9547cc28673c9c8ef5fd22feb15409ee5bce7c6b0c2cb56e87",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/main.qli": "105272fd5de65e136f01f0e1c5182ae8f6e5b1efef103061069f720737544c18",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/contract-hhh-selected-after.json": "c7fa63953f341351b6536309be534589aee852910432344fd741cc6e374137d6",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/contract-hhh-selected-corrected-after.json": "2e7d4f6fa98ea87ebcc76eb66061618f8dab1b987b2afb87c97121820d1b8b9c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/unused-operation-selected-after.json": "22f45b56c93fe812bfa8edac8c7d70a78ec2cab36bfec2b3e960edc3d4efb8e9",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/unused-operation-selected-corrected-after.json": "bf00fd223974363ff2933bcce15d730759cba5af6140ea616ab64e88fd29aa30",
+          "tests/selected_function_contracts.rs": "0c0e4eb2867e9b6059c63fd75b4b6357a355ac257e8f412a974b8dca045867f1"
+        }
+      },
+      "native_kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+      "free_bytes_before": 15913951232,
+      "free_bytes_after": 15471005696
+    },
+    {
+      "toolchain": "1.85.0",
+      "executables": {
+        "cargo": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+          "sha256": "dcfda0c91c578ea2a199cb2af9c53796711607cbd8f8ea618dc87dc0febae2cf",
+          "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)"
+        },
+        "rustc": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+          "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+          "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+        },
+        "rustdoc": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustdoc",
+          "sha256": "faceed3e0803a6cdff50d5aa76de747a4607534b18046e2b128728175b32d854",
+          "version": "rustdoc 1.85.0 (4d91de4e4 2025-02-17)"
+        },
+        "cargo-clippy": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo-clippy",
+          "sha256": "3a229c999683281d5ad907b4100727053abbeffe26f42accb1b5ca4d45db8f52",
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)"
+        },
+        "clippy-driver": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/clippy-driver",
+          "sha256": "2f8420b621371f029bf228e7768231ce529519535445a4c854fa487c1094dc12",
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)"
+        }
+      },
+      "checks": [
+        {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--lib",
+            "--test",
+            "frontend_ownership_differential",
+            "--test",
+            "function_evidence",
+            "--test",
+            "function_contracts",
+            "--test",
+            "meaning_evidence",
+            "--test",
+            "checked_operations",
+            "--test",
+            "operation_parameters",
+            "--test",
+            "static_operations",
+            "--test",
+            "selected_source_cli",
+            "--test",
+            "source_judgments",
+            "--test",
+            "sized_source",
+            "--test",
+            "selected_function_contracts"
+          ],
+          "status": "passed",
+          "duration_seconds": 658.8470419159858,
+          "exit": 0,
+          "log_sha256": "013ef753a2e1e534b977be4d91ae43d1dead4872c14884faa43e0f023d49c031",
+          "passed_tests": 343,
+          "retained_ignored_tests": [
+            "frontend::specialize::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome",
+            "frontend::specialize::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation",
+            "interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge",
+            "dependency_depth_and_expanded_execution_cost_are_bounded",
+            "direct_finite_source_gates_preserve_entangled_h_x_references",
+            "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+            "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"
+          ],
+          "ownership_cases": 4000,
+          "ownership_seed": "0x514c4549534c4932",
+          "ownership_paths_per_case": [
+            "check_project",
+            "ParsedProgram::parse"
+          ]
+        },
+        {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "duration_seconds": 18.85651587508619,
+          "exit": 0,
+          "log_sha256": "695c13a7d9b13b6d4fc6255fea62f99e567ae277b642345158107cc2732b6481"
+        }
+      ],
+      "source_snapshot": {
+        "head": "29f979c231a50b4f72a642a05e9546e47f34aad9",
+        "diff_sha256": "cf650e2174c266ba84327cab5abd5a8ced9fcdff5aa9436f823cebfedf53a447",
+        "untracked_sha256": {
+          "src/frontend/specialize/raw/contracts.rs": "6364a16fbb01751a30e24a39bd2bb88b49f0e6c5dbe9fb112dc432b0cb691a43",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/before.json": "663ebd568e2fd8c6f359226dee48867ebcee95dccbe8662d893e9eda0055418c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/main.qli": "3e786b88ba9a0ee6ac1002e44431a7aa641891e0e97c5db1629b5f0741f71c32",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/after.json": "b25808828d24d4a3600a5c23da219304a1559553c5f9dc55fe604ba4230fd92c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/before.json": "74966e7667476b9547cc28673c9c8ef5fd22feb15409ee5bce7c6b0c2cb56e87",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/main.qli": "105272fd5de65e136f01f0e1c5182ae8f6e5b1efef103061069f720737544c18",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/contract-hhh-selected-after.json": "c7fa63953f341351b6536309be534589aee852910432344fd741cc6e374137d6",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/contract-hhh-selected-corrected-after.json": "2e7d4f6fa98ea87ebcc76eb66061618f8dab1b987b2afb87c97121820d1b8b9c",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/unused-operation-selected-after.json": "22f45b56c93fe812bfa8edac8c7d70a78ec2cab36bfec2b3e960edc3d4efb8e9",
+          "tests/fixtures/authoring_sessions/reference-meaning-v030/observations/unused-operation-selected-corrected-after.json": "bf00fd223974363ff2933bcce15d730759cba5af6140ea616ab64e88fd29aa30",
+          "tests/selected_function_contracts.rs": "0c0e4eb2867e9b6059c63fd75b4b6357a355ac257e8f412a974b8dca045867f1"
+        }
+      },
+      "native_kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+      "free_bytes_before": 15914225664,
+      "free_bytes_after": 15470997504
+    }
+  ],
+  "native_comparisons": [
+    {
+      "name": "test_lean_raw",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/test_lean_raw.py",
+        "--record",
+        "/private/tmp/qleisli-selected-contract-native-repairs/test_lean_raw/record.json",
+        "--compiler=/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+      ],
+      "seconds": 52.17523379204795,
+      "record_sha256": "4e59c82a4bdce7d76b7886d6d18b407ee43597d575581891bccebb407aebb372",
+      "counts": {
+        "native_cases": 132,
+        "rust_comparisons": 114,
+        "independent_matrices": 90,
+        "independent_raw_trace_programs": 186,
+        "pure_constructors": 13,
+        "max_semantic_qubits": 3,
+        "rust_source_prefixes": 6,
+        "original_qirf_checks": 6
+      },
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Semantics/Raw.lean": "b4c3eef60e15b742e9c76ab2c19e81cc8b8fed554ba2ec07e20eb1d98d4406fa",
+        "lean-kernel/QleisliKernel/Raw/Structure.lean": "2145c7614a3e79f40ada3bd5af6a272445a6c68e8ce249ccd112c5fe0dd554b3",
+        "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+        "lean-kernel/Protocol/Raw.lean": "d0a717c30c83b9d87999c7673e75dfa9e2789459d9616721fabe9340f33d596d",
+        "lean/Qleisli/Raw.lean": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
+        "scripts/observation_sources.py": "c8c250773926a88ab7ed16431bb3968f4c749bed5ae7bda7fe036fbdf41b999a",
+        "scripts/test_lean_finite.py": "df9ad348c9b24c5ca0d0ba4e3a96e679d883ffbcf046e72682af98500eaefcbd",
+        "scripts/test_lean_exact.py": "ff1181cb30a6abad05ecd36037c87afa75e99ddc8e2df60de6aa256716a9346d",
+        "scripts/check_input_corpus.py": "db3e59038731fa5a0406bcde28adae8ed119cb0ead3c5950c42004115f5b79f3",
+        "scripts/test_lean_raw.py": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
+        "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "be103d9604fdc6efdc726b5a1c81ec2628b9c93acb1b228e56cef933df6732c2",
+        "lean-kernel/QleisliKernel/Raw/Trace.lean": "ec2c28a6523a0c4270c8ab27b419afa8c4227dc85ede3e2a68972deceee55077"
+      }
+    },
+    {
+      "name": "test_lean_observation",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/test_lean_observation.py",
+        "--record",
+        "/private/tmp/qleisli-selected-contract-native-repairs/test_lean_observation/record.json",
+        "--compiler=/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+      ],
+      "seconds": 46.03195679106284,
+      "record_sha256": "b14bd70d8ea77a46a260994864aed9e7f7c34495337c95114bba7dfafa6856c3",
+      "counts": {
+        "native_cases": 160,
+        "rust_checks": 154,
+        "rust_comparisons": 153,
+        "original_constructors": 21,
+        "independent_operators": 156,
+        "hidden_histories": 156,
+        "complete_observing_sources": 5,
+        "max_semantic_qubits": 3
+      },
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Semantics/Observation.lean": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+        "lean-kernel/QleisliKernel/Raw/Observation.lean": "8a03e31224de8dc088dc752752838ba45ad192f469f764906593f4a9596e2edf",
+        "lean-kernel/QleisliKernel/Raw/Instrument.lean": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+        "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+        "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+        "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+        "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+        "scripts/observation_sources.py": "c8c250773926a88ab7ed16431bb3968f4c749bed5ae7bda7fe036fbdf41b999a",
+        "scripts/test_lean_raw.py": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
+        "scripts/test_lean_finite.py": "df9ad348c9b24c5ca0d0ba4e3a96e679d883ffbcf046e72682af98500eaefcbd",
+        "scripts/test_lean_exact.py": "ff1181cb30a6abad05ecd36037c87afa75e99ddc8e2df60de6aa256716a9346d",
+        "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+        "src/ir.rs": "7b585cca62096e0593323e5d1dde57e6cf4565cb7980b2f2d60520653e4e0792",
+        "scripts/test_lean_observation.py": "19a1016f46d19cbb251b613b84bb287a0bc7f46a9c3342d448d2da88c85a172f"
+      }
+    },
+    {
+      "name": "test_lean_streamed_instrument",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/test_lean_streamed_instrument.py",
+        "--record",
+        "/private/tmp/qleisli-selected-contract-native-repairs/test_lean_streamed_instrument/record.json",
+        "--compiler=/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+      ],
+      "seconds": 43.21042154205497,
+      "record_sha256": "8e228744c457619484e8097a0b013dbb8a7a55a0a6236d199d2d11891899246e",
+      "counts": {
+        "native_cases": 164,
+        "rust_comparisons": 153,
+        "independent_operators": 158,
+        "hidden_histories": 158,
+        "original_constructors": 21,
+        "max_semantic_qubits": 3,
+        "complete_observing_sources": 5,
+        "retained_branch_dependency_cases": 4
+      },
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Raw/Coefficient.lean": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+        "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+        "lean-kernel/Protocol/StreamedObservation.lean": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+        "lean/Qleisli/RawCoefficient.lean": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
+        "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+        "lean/Qleisli/Semantics/ObservingAction.lean": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+        "scripts/test_lean_streamed_instrument.py": "4c9475bed0589738415c9b23605e4095b5bb09f2bf4313e68aa68c2528bfb96e",
+        "scripts/test_lean_observation.py": "19a1016f46d19cbb251b613b84bb287a0bc7f46a9c3342d448d2da88c85a172f",
+        "scripts/observation_sources.py": "c8c250773926a88ab7ed16431bb3968f4c749bed5ae7bda7fe036fbdf41b999a",
+        "scripts/test_lean_raw.py": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
+        "scripts/test_lean_finite.py": "df9ad348c9b24c5ca0d0ba4e3a96e679d883ffbcf046e72682af98500eaefcbd",
+        "scripts/test_lean_exact.py": "ff1181cb30a6abad05ecd36037c87afa75e99ddc8e2df60de6aa256716a9346d",
+        "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+        "src/ir.rs": "7b585cca62096e0593323e5d1dde57e6cf4565cb7980b2f2d60520653e4e0792"
+      }
+    },
+    {
+      "name": "test_verification_decoders",
+      "status": "passed",
+      "record_sha256": "9b1b3f7e5b191a84b837b6af7b5832e4b2a9dbc3ab8cdf34b090faa7c98c8bbf",
+      "cases": 392,
+      "raw_constructors": [
+        "apply_unitary",
+        "certified_compute",
+        "classical_and",
+        "classical_branch",
+        "classical_const",
+        "classical_not",
+        "classical_xor",
+        "cnot",
+        "compute_use_uncompute",
+        "discard",
+        "gate",
+        "init0",
+        "join",
+        "lift_basis",
+        "measure_z",
+        "pack_unit",
+        "quantum_if",
+        "reset",
+        "split",
+        "toffoli",
+        "unpack_unit"
+      ],
+      "source_sha256": {
+        "tests/fixtures/verification_v027/DecoderView.lean": "0d7276a8e43b5ca0823633127ce2995338a9ba6d4bd4d118111dff563551941d",
+        "scripts/test_verification_decoders.py": "69c8915d5d85cdb2b78aefd29b1dc7445b6631006628536ea4bd4708a3d48e3f",
+        "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+        "lean-kernel/Protocol/Hierarchical.lean": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
+        "lean-kernel/Protocol/Qirf.lean": "6d033e538ba1d13d54c75757e47fbb17251b54f6037b327f6476c13fe66781cb",
+        "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+        "lean-kernel/Protocol/Raw.lean": "d0a717c30c83b9d87999c7673e75dfa9e2789459d9616721fabe9340f33d596d"
+      }
+    }
+  ],
+  "shared_checks": [
+    {
+      "name": "source-integrity",
+      "status": "passed",
+      "report_sha256": "5e48f177341bed86f3235191b89b79a653485731d19316980f15a3be897795a2"
+    },
+    {
+      "name": "book",
+      "status": "passed",
+      "report_sha256": "da32de6981f0f72c2ed83e9398afa73444cae96e677be6a5c2a8e39b2c1e16da"
+    }
+  ],
+  "changed_rust_source_sha256": {
+    "src/bin/qleisli/source_plan.rs": "feea6ac06fba6d6cf967832dfab4b2e87e7a6a255bf8eb27a6133b5349e47c23",
+    "src/frontend/check/body/operations.rs": "606fbbfc52ac2b96b16c2667944fa8c71f858f94a17d994d38efd8efc44d302c",
+    "src/frontend/compile/lower/function_contract.rs": "ae92c3c0b7f60dc30a9b25a3fdb753d971722cf7e84b000e15329638fc070356",
+    "src/frontend/compile/mod.rs": "2e7079e70cb5db81d0859494904b2b0d695aab2c16e8780420cea175e9ea6b24",
+    "src/frontend/specialize/ast.rs": "a7c78742a1a92ce68e76fc44a39b8c03397a962aa4273cbcad4b50926475c660",
+    "src/frontend/specialize/elaborate.rs": "2c372530e361bd82c7df906eb41e65cb0d905b005c84050f7214b78e1cb49d58",
+    "src/frontend/specialize/lower.rs": "eb41a0029f7a1de07b70323f5f3ffd150ec94ca62ee66c84de839f379091c58a",
+    "src/frontend/specialize/lower/preservation.rs": "d72a14671ef8b1902a90ca48849ce583e2eca1affb88a11033349b882bef2464",
+    "src/frontend/specialize/projection.rs": "7a053ddd6223a5e72034c47e175c057665324d3461a32f4f6a5c939744fceb84",
+    "src/frontend/specialize/raw.rs": "ba5b0aa996a9d718d0fecca5575df2c176dcbdf22dd11c8caeecb0ac777ec41f",
+    "src/frontend/specialize/raw/preservation.rs": "451d8ef3e494643b6c0d6b024cda6eb671344b1fd81b9bbdac609df94bd161f2",
+    "src/frontend/specialize/raw/contracts.rs": "6364a16fbb01751a30e24a39bd2bb88b49f0e6c5dbe9fb112dc432b0cb691a43",
+    "tests/selected_function_contracts.rs": "0c0e4eb2867e9b6059c63fd75b4b6357a355ac257e8f412a974b8dca045867f1"
+  },
+  "limitations": [
+    "Local working-tree component validation, not full hosted CI or a release receipt.",
+    "Rust test snapshots precede the subsequent decoder-test-only fixes and documentation/result transcription; compiled Rust source was not changed.",
+    "The earlier Rustup-labeled host runs do not establish stable/MSRV compiler versions; original logs are retained and the study README corrects those labels.",
+    "All existing Rust ignores remain. The ignored decoder audit was separately executed by test_verification_decoders.py; other explicitly scheduled CI tests and historical maximum-stress deferrals retain their separate status.",
+    "Initial native repair run retained three passing consumers and one failed decoder. Corrected decoder separately passed after fixing its input-case assumption and missing Unit view branches.",
+    "Initial pinned stable Clippy failed on a needless borrow; the corrected all-target run above passed. Earlier CI MSRV lint failed on a collapsible else-if, now repaired without changing behavior.",
+    "Times include concurrent stable/MSRV and native comparison work and are not a speedup benchmark. Existing Cargo targets were reused; no new maximum case was generated.",
+    "Source preservation, full QS/PR/RS/EXACT discharge, guarantee admission and #46 completion are not claimed."
+  ]
+}

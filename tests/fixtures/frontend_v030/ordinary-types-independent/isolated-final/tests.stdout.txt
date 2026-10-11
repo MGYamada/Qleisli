@@ -1,0 +1,19 @@
+
+running 14 tests
+test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+test existing_execution_profile_limits_remain_explicit ... ok
+test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+test sized_unit_patterns_consume_only_actual_unit_values ... ok
+test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... ok
+test finite_boolean_actions_match_an_independent_truth_result ... ok
+test finite_measurement_and_feedforward_keep_their_correlated_action ... ok
+test source_bearing_native_evidence_retains_the_actual_canonical_source ... ok
+test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.94s
+

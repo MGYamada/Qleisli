@@ -1,0 +1,31 @@
+{
+  "format": "qleisli.authoring-first-files",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:45:45.282612+00:00",
+  "baseline_commit": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "files": {
+    "attempt-01/complete-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/complete-call/main.qli": "2cce03a05745338094b461b55ca1836e84c0bcef4ed101f0461ca645ad325da3",
+    "attempt-01/partial-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/partial-call/main.qli": "9e472eabe7c171d25359208c18e391c9ffc7296d042f7e3676ea1fd4de642395",
+    "attempt-01/ordinary-local-callee/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/ordinary-local-callee/main.qli": "db1fdf0c2b549cacee2cc018c55dbb1f454e23c73193593227da17c5124f5b50",
+    "attempt-01/quantum-unit-tuple-callee/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/quantum-unit-tuple-callee/main.qli": "008b34cda450d1ffd4293cf09f1e35625217c549034db4a42370403b112479ee",
+    "attempt-01/quantum-unit-tuple-provider/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/quantum-unit-tuple-provider/main.qli": "35d0dda96c9ce2504378b88ef1692403050a7039f92b82500a5db7d9881f7802",
+    "attempt-01/static-description-reuse/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/static-description-reuse/main.qli": "bdaec9b5a07dab65aaab7f524433f9b3916556c0da3ef8e85f417bcc9a7aa9ec",
+    "attempt-01/owner-duplication/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/owner-duplication/main.qli": "5a2ac049fc780207210c43256bfecd83891bfeaddf5b1126e92fa3f0c241bb10",
+    "attempt-01/classical-condition/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/classical-condition/main.qli": "4f97e254fd605a8e0b636868d1e805aafebdd78512d217c40e741c03cdae5a35",
+    "attempt-01/quantum-condition/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/quantum-condition/main.qli": "22eaf8982596b5c15ef332896b868e79c7f91002e61e5397604ee9b3daf861bc",
+    "attempt-01/explicit-observation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/explicit-observation/main.qli": "2e7ed6848a5c3eb11897f6697717468b09bcb1a9db84c9ff233725479431c9e3",
+    "context.md": "3816045de6f4991cc7a604cc7f9d535c3700e2416bb3c9f833bf8b008e408f76",
+    "predictions-before.json": "5586675b9e23482811b49bb239e87a071a01e9a17fb328658b8e7a4bafd84635"
+  },
+  "status": "first-sources-and-predictions-saved-before-study-cli"
+}

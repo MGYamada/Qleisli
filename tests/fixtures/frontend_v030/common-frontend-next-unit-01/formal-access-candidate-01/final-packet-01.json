@@ -1,0 +1,3265 @@
+{
+  "format": "qleisli.formals-final-packet",
+  "version": 1,
+  "files": {
+    "CHANGELOG.md": {
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615",
+      "bytes": 106160,
+      "mode": 420
+    },
+    "docs/src/reference/type-model.md": {
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97",
+      "bytes": 28842,
+      "mode": 420
+    },
+    "src/frontend/compile/operations.rs": {
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
+      "bytes": 33453,
+      "mode": 420
+    },
+    "src/frontend/formals.rs": {
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "bytes": 3523,
+      "mode": 420
+    },
+    "src/frontend/mod.rs": {
+      "sha256": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df",
+      "bytes": 712,
+      "mode": 420
+    },
+    "src/frontend/sized/ast.rs": {
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
+      "bytes": 4764,
+      "mode": 420
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
+      "bytes": 56513,
+      "mode": 420
+    },
+    "src/frontend/sized/linear.rs": {
+      "sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
+      "bytes": 12700,
+      "mode": 420
+    },
+    "src/frontend/sized/parser.rs": {
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0",
+      "bytes": 15670,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/README.md": {
+      "sha256": "26a8ddb6863570d2a52f940a06992c78d3c719ba85283ebeda131a99f2d4e5fa",
+      "bytes": 19071,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/README.md": {
+      "sha256": "f3b7420b981d49361888e2a4df7e38fb520eb0119887ad054704076a0646ea7a",
+      "bytes": 2886,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-json.command-before.json": {
+      "sha256": "ab0957c0e51df2bf2a52191dc9f3aae226bcdac2eae245d76ac6fd06f51de0bf",
+      "bytes": 460,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-json.json": {
+      "sha256": "f3ddd645d50c018f8933bffb4dc99fddea268d7ebd2c81e4383e4649cbd68883",
+      "bytes": 1306,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-json.stdout.bin": {
+      "sha256": "0a82ce56131f924906633a6ac9d21246390bc484fa010a393597958c2489223e",
+      "bytes": 298,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-text.command-before.json": {
+      "sha256": "f87fac9e04a607abf1aa2c44034016b5084728dfdc7bbf99e5009a5f290c654d",
+      "bytes": 439,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-text.json": {
+      "sha256": "c2ed8dfb1fc9c98424bd5c09d27569e5644128b446a0d37df541aa8236ad8da2",
+      "bytes": 1285,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-text.stderr.bin": {
+      "sha256": "b2ac37ed878d65f44934eddd4236367598ab92e38daf9a8bfc4d1da119fedb3e",
+      "bytes": 197,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-json.command-before.json": {
+      "sha256": "4bf890b23482cc2f5793c24bf1ec11fc3b55aaa8e05853d9b08ce41fcc8abcce",
+      "bytes": 534,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-json.json": {
+      "sha256": "40a5c465b66d257764f597cbf4dcec0696e22b8946976341e584e3c1cac79883",
+      "bytes": 1401,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-json.stdout.bin": {
+      "sha256": "2977f3311b4fa692419f71cb9f5e2d1af454a51aee2a8d689008094fb3fd6d13",
+      "bytes": 403,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-text.command-before.json": {
+      "sha256": "6e8e2ad688c7a849df1b262d384a657c7a66cd58566fcc9eb6e04a29a97aa8c1",
+      "bytes": 513,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-text.json": {
+      "sha256": "598c00ba66d740c711c5d748a8fbb7e880bd7312cb7780615c90797d14763b22",
+      "bytes": 1380,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-text.stderr.bin": {
+      "sha256": "bf4e0964cb777f61d14879134cc82b13523f839bea7130404ab5ab69c754796e",
+      "bytes": 75,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/basis-scan-priority-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-json.command-before.json": {
+      "sha256": "68b18a25ac06efb31880287c22b59b6fd1d384eec627747c5487a89251032c61",
+      "bytes": 457,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-json.json": {
+      "sha256": "3839eeab1e5d1212fc8968be9548d6b26311f7f22d3628a0968a688bc408b658",
+      "bytes": 1294,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-json.stdout.bin": {
+      "sha256": "5d96da92a80d5310c26028a3a10c1841c160278baedef0699cf64066edb2c211",
+      "bytes": 273,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-text.command-before.json": {
+      "sha256": "33ecd011a93f9271a882950a6a6507fec819fdee9d9245673b5131a7e14231f0",
+      "bytes": 436,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-text.json": {
+      "sha256": "5327c2b0d662851206dd2f737379f33f51b8d91157c99fc6bcb9dc756d23fe9d",
+      "bytes": 1274,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-text.stderr.bin": {
+      "sha256": "8cbda75a172ce377153a1075519cc4d716044b6b174fb23d0a14b40a420be9a2",
+      "bytes": 167,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-json.command-before.json": {
+      "sha256": "50d5723c7e9d021f1d9116de6b3bfa839f60e145fd0f66184063c6ae766f3cd5",
+      "bytes": 531,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-json.json": {
+      "sha256": "10bf9f6730c4343ca32177e32221e847ca5a63a127ee7f45f65e96d1c4e81fe6",
+      "bytes": 1389,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "5671b10fc703d8e4fac8e4d5c85a92c7a057c5a0edf6d356a2fb4606c32a2171",
+      "bytes": 387,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-text.command-before.json": {
+      "sha256": "2fe099cad76e9537f14783d0b70e93d2fee21b2fc8b47187824a27ebeed245f2",
+      "bytes": 510,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-text.json": {
+      "sha256": "00ce78f1fa12449840ce6b31c9625442019549efeef1b908dafc8e292ada139e",
+      "bytes": 1368,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "64f2fc21c93e7c9a905e9f439517ffddebe4269199cc9ca9a4e65b88660648b4",
+      "bytes": 62,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/duplicate-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/executed-driver.py.txt": {
+      "sha256": "ecd3c6c89b7b00ca9683eede78ae936c25d7a0be919a4602acd0bcf5e3571296",
+      "bytes": 11026,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/files.json": {
+      "sha256": "b04f3792ab02a6ad4ea15e7562274b92cb2c6f1f6ac3b13af35556c1eb54a86b",
+      "bytes": 34868,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-json.command-before.json": {
+      "sha256": "279a7ad0920ced5de3217e901c01cef9730ba342c38f943380b2c697965b3513",
+      "bytes": 454,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-json.json": {
+      "sha256": "a0d4b47b4e61a3790ae5c8f4c309243137a51c1b851a4f055e5f5f461c67eb43",
+      "bytes": 1282,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-json.stdout.bin": {
+      "sha256": "63d5b8ae09ad0d4b8e77556186480ee19bbfb039c0e6caf887546bd796994ee2",
+      "bytes": 304,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-text.command-before.json": {
+      "sha256": "ea33ecb0c3772aeddf4d1aaee558d708d4ecb25ee4584142f06169d0c0148654",
+      "bytes": 433,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-text.json": {
+      "sha256": "59c40ac3190c1915d6371054f1edf82ac691789fd29e59c895d699be8c412a23",
+      "bytes": 1262,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-text.stderr.bin": {
+      "sha256": "ecc78031afbbc4c429c1b3880ad5d56532619a4607a2a2d937004e4349a676b0",
+      "bytes": 195,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-json.command-before.json": {
+      "sha256": "9e40efef7fb7693229195fd0359aeb8659564be5525a701eca29c9e52d4546e9",
+      "bytes": 528,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-json.json": {
+      "sha256": "2718779cc9839c2a254bd661edd0e135ac259d30c5caa69db60188d1cccab33b",
+      "bytes": 1377,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-json.stdout.bin": {
+      "sha256": "a8586e8874987f788ebf3b5d2b6786b18ffeceea200cb44bc70dbbeaf56f87dd",
+      "bytes": 397,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-text.command-before.json": {
+      "sha256": "7c542f07ef04f4d5723206440f8d6608709d5ccb5a512ec61e0119964a55f217",
+      "bytes": 507,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-text.json": {
+      "sha256": "3110548667401a0ff44f6f149141dc1ee456374d7248e1617c84514eda07c72d",
+      "bytes": 1356,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-text.stderr.bin": {
+      "sha256": "5d03718b57632cc865df577d22d21ba9c2601be11cc7aab175a47078126ba9b4",
+      "bytes": 75,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-basis-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-json.command-before.json": {
+      "sha256": "db107adad2bb4d3831d2670637373cd9d7de6d5e45e3459c8ed4a4bc8a6c8a0d",
+      "bytes": 456,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-json.json": {
+      "sha256": "c6fb0e2ac6c7b4d68de09582ef1485b7f11045786aa63d1c52ecb25d2eee1f5a",
+      "bytes": 1290,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-json.stdout.bin": {
+      "sha256": "981f1535d523bd378755bc2ba9b2069df513019ad5d8fc860a1b41857bf5514b",
+      "bytes": 301,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-text.command-before.json": {
+      "sha256": "dd5a4a67f3bc61bddc07fdbbf41b33635fcba618f12a53b69b09e95f3c54c08d",
+      "bytes": 435,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-text.json": {
+      "sha256": "7938a064c1733a0b88167a3d0dcacb3e21643a762a4977f0c012570d6a8a23cb",
+      "bytes": 1269,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-text.stderr.bin": {
+      "sha256": "b3d11b33e1d44adf0eebba396351066b985de2603a9209ddee4551b0b3ce4267",
+      "bytes": 194,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-json.command-before.json": {
+      "sha256": "ec8bc71e7646582031aa5a50cd2b98838ba2f33f61dd18affdb781596c65f4df",
+      "bytes": 530,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-json.json": {
+      "sha256": "299e2b6b535ba5073247b5c2a01bd79c5ecfa621692f86573fc4a0a23a643a49",
+      "bytes": 1386,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-json.stdout.bin": {
+      "sha256": "f8c91953189de426795a8fb216a8e63317d9eedb56ef91485805aaeca94fff7c",
+      "bytes": 370,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-text.command-before.json": {
+      "sha256": "f48a4bab834a58c904a24f70e65d0069ea043d6747f76df67af2ec14488f2dc3",
+      "bytes": 509,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-text.json": {
+      "sha256": "09591eca22a4430b2b09e76c5da79356fb3562840670ea5a027b5da3acab4f28",
+      "bytes": 1365,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-text.stderr.bin": {
+      "sha256": "4bc154dcf3c78cc7e1a0fab3e3e7ecc5b7644b71d84e194c0a78297562837d14",
+      "bytes": 46,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/forward-natural-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/identity.before.json": {
+      "sha256": "49ae924f7ff7b33e7424f713f58c6f88da17325fd32dd4e85abe30dde3b5c22f",
+      "bytes": 39616,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/identity.final.json": {
+      "sha256": "21cb5b5058d585aba559f086750317c4b6b4de1a4f793911604447be61e62060",
+      "bytes": 39483,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-json.command-before.json": {
+      "sha256": "fafd4b16a4a0d8b651ffec34fca5536f186579b4d22f49cf023e5ed3c2d337af",
+      "bytes": 457,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-json.json": {
+      "sha256": "d9a08fd22b72e66069e02ce2354b829a70e2718272ad22978afa00e1b918d407",
+      "bytes": 1294,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-json.stdout.bin": {
+      "sha256": "0a82ce56131f924906633a6ac9d21246390bc484fa010a393597958c2489223e",
+      "bytes": 298,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-text.command-before.json": {
+      "sha256": "106e9c04ac0462aa619e079a70649accd3d87b8a8e38830caa96f6d2f37609b0",
+      "bytes": 436,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-text.json": {
+      "sha256": "25dc75fb86e89582f84d359170ae68f20dde2d384d2c351c3afcc941fad5f7f6",
+      "bytes": 1273,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-text.stderr.bin": {
+      "sha256": "73e6e84d416c6219bb131f9c6ded3173c3af59beee5dbed308b17c74e53b1347",
+      "bytes": 194,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-json.command-before.json": {
+      "sha256": "5e972a32502524872654555e2766a2a3b47124cc23267bbd772b8c91e37fa910",
+      "bytes": 531,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-json.json": {
+      "sha256": "bcae08836e48b0bca2cbf908b846c0e33a452873bafaabac69b18f33ea891d89",
+      "bytes": 1389,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-json.stdout.bin": {
+      "sha256": "9e54af8e8c07df13be3e2e1f548a34023b43eaaad42d901887953aef523851e5",
+      "bytes": 403,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-text.command-before.json": {
+      "sha256": "4fc5576acaba707ea65fed3662963c750798ec64b4eb0fd28bd973ba7b954dc9",
+      "bytes": 510,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-text.json": {
+      "sha256": "7e0c3c11db1496116e153a14838722d8f314c101f18f43cea270d677ab6bac4b",
+      "bytes": 1368,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-text.stderr.bin": {
+      "sha256": "6c1585bba1a971088e7cbc90d68422a8e7dd1e4b11f56fe9d10cd472cfc4539b",
+      "bytes": 78,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/natural-priority-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/started.json": {
+      "sha256": "07639c7368da1a27528dd602fdcbd457a62d153a46b79f5de243ead6afe18bd6",
+      "bytes": 402,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-json.command-before.json": {
+      "sha256": "b867eeea1dbbc0326c2a379ea6ed01921e8feb0ac51eb36a833ea8b96d2d516d",
+      "bytes": 465,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-json.json": {
+      "sha256": "f5b15042f4548a73f2a54ea0676cf53f794805fddbb599b2f0183eca8a0f751b",
+      "bytes": 1326,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-json.stdout.bin": {
+      "sha256": "ff9b8be145dbdd2a8c33a943cfc8d6895692ea6f7f185974e5ff4ceabd6d3ecb",
+      "bytes": 269,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-text.command-before.json": {
+      "sha256": "108b495494306e799668933784db27387ec20ddc7405a083283a60633dda132e",
+      "bytes": 444,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-text.json": {
+      "sha256": "4bb7bf09511ef45171b72528d69b2305bb0fffa6c41cffdad08b2661bca94030",
+      "bytes": 1305,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-text.stderr.bin": {
+      "sha256": "58085abb9cc8aeaa90059a0082bfcbe3e962f1c881ac450dc6d6a3b67b0b0300",
+      "bytes": 171,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.command-before.json": {
+      "sha256": "21710f2f335525c9ebc7c0f26fec5b5ea1edf250b929d982fb8fca1ddc252595",
+      "bytes": 539,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.json": {
+      "sha256": "1578cf13c74d2319d2272ad8cae96e81552dcca322acd85e81a663baf3aace06",
+      "bytes": 1420,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.stdout.bin": {
+      "sha256": "c0afbdda808a0c33960dd227dfec73a7a335e885884854f6ef32d3e4bfc0c02d",
+      "bytes": 413,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.command-before.json": {
+      "sha256": "ffa2f01b0de8a1c24c6a6101b42c657885d0702d89b8f92abb3c794bce13fa6f",
+      "bytes": 518,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.json": {
+      "sha256": "85e0dc1f018665a02af539a463c1795c03b3a3ecf2f590bc35ca0b4a46a948b3",
+      "bytes": 1400,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.stderr.bin": {
+      "sha256": "c92c631acdaef4b1b5f4be541e50364ec95ff921d22ee2b67af9c7ae96418dac",
+      "bytes": 80,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/summary.json": {
+      "sha256": "41ccc86663b8d11065fb011a03e6cba843979f275a9f392209c2a414acc5ff99",
+      "bytes": 18469,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-json.command-before.json": {
+      "sha256": "407875cd8c2f2a02ec2c47c8c0ad99033aec2848de104564b609c73d7ee2f4f6",
+      "bytes": 462,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-json.json": {
+      "sha256": "f436f4b048e44cc5d64ed1b4f87aa64b833cda8caebf9ab26bbb0d1a809346de",
+      "bytes": 1313,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-json.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-json.stdout.bin": {
+      "sha256": "dd2a88257309a6f6a310559542b7adb88e410a5aa2e6f85373f083dffd056733",
+      "bytes": 293,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-text.command-before.json": {
+      "sha256": "45be2aa7fd63f6080b855d42254b19248173d191776ac2ed8954716ae955f1d0",
+      "bytes": 441,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-text.json": {
+      "sha256": "584862e68088045c897fd1cae3a6dc7b7d29f2259f9705e34dae0e4fb5c9fbb8",
+      "bytes": 1292,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-text.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-text.stderr.bin": {
+      "sha256": "ad757e34234e92b6964e8d9832395cf44181886f11ff7f7d93f3324ca063fe64",
+      "bytes": 192,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-json.command-before.json": {
+      "sha256": "502b19d9b5742100d8c59e4b9bf69235d9e985935d64784e1fb68d01f1b5a360",
+      "bytes": 536,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-json.json": {
+      "sha256": "25227d20c8c4032cadb59dd9c093fff2ea175a83244fcb5590011fcd3474a983",
+      "bytes": 1409,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "1525487b6bc8a15ba6d8ae91738c9d4d54cd5a4cf1f843d84856fe3d9bd76127",
+      "bytes": 384,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-text.command-before.json": {
+      "sha256": "90ff935454ed64f2daa3d1a31a5baee84847c49ede7f0ecf44571740879f14eb",
+      "bytes": 515,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-text.json": {
+      "sha256": "e55f6ca01e1c47f1cf47c34571dda74115684cf49fb242bc1ab16f04e3ee5171",
+      "bytes": 1388,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "ca0404a06e5cce92a47afe77eb13291780828368bf33b1c0d3164bd58e2366ad",
+      "bytes": 54,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/unused-missing-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-json.command-before.json": {
+      "sha256": "afe9009c398b1f9dd3a8bd37201fe1709ef7e18b775e273e2ee1d03b9d93a5d4",
+      "bytes": 462,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-json.json": {
+      "sha256": "7745b34570f84a47c63d7ffb758d3af898171d5fbd54b0ba6ed867e675877706",
+      "bytes": 1314,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-json.stdout.bin": {
+      "sha256": "1a5d19a23410cbad1c5f0c20c4add18040733c8ea0ecadeb3e4a6989de6e4073",
+      "bytes": 299,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-text.command-before.json": {
+      "sha256": "631facdefb9f59a5f3d5247207899b7f58038ea21dad86f4d9581e4a5b2968e2",
+      "bytes": 441,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-text.json": {
+      "sha256": "9b5bbf7f232a38919052a921010df84728798f9213ec3e9992d9e9403fb5ecd7",
+      "bytes": 1294,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-text.stderr.bin": {
+      "sha256": "859fde21a95c10d57dd69e434eaebdfca1e8c8a3be323687c92de9c871ae4a08",
+      "bytes": 199,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-json.command-before.json": {
+      "sha256": "fe78461b0300a17044a616beb658df3cb1d1129254537e53a4d7157dceb3803b",
+      "bytes": 536,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-json.json": {
+      "sha256": "595445416c5336ccfa945885e880eebc82d611e9750b46e1523b8748590ab9c7",
+      "bytes": 1408,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-json.stdout.bin": {
+      "sha256": "25fddc6431e1e9f3a6d68992d5a773b4acfcf49630f43a9e4d0ade6b82ec9034",
+      "bytes": 472,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-text.command-before.json": {
+      "sha256": "3c3225645d1259d19eb24a69d59a8d3fe046c07f268b4785a12b0e8cd089dd5b",
+      "bytes": 515,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-text.json": {
+      "sha256": "ddf43e209dd14da394fb0d8d5ede761ae805f6da027ade69e831c3e470f37f65",
+      "bytes": 1387,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-dependent-basis-selected-auto-check-text.stdout.bin": {
+      "sha256": "e54694593ba5ff99915c73a5dfb6725e315a0707060131483fba90ccd4e59684",
+      "bytes": 373,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-json.command-before.json": {
+      "sha256": "f79867d58f4ec0205df5fc36dda2ca907a9b4e2cd7ed3d122e77607b5cdf6869",
+      "bytes": 456,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-json.json": {
+      "sha256": "9ef721af1814a5519f97554cc64ccbc09b91ef0a0acf093c437037726598a2ed",
+      "bytes": 1289,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-json.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-json.stdout.bin": {
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "bytes": 117,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-text.command-before.json": {
+      "sha256": "d9649963025cbf876561bf53e1cabbfcf374350b175b2c467cb9dbb6231d6634",
+      "bytes": 435,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-text.json": {
+      "sha256": "238f89565289bc148636830bb8ac3db41afff46fe6ddc94826fef9c11f017dba",
+      "bytes": 1267,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-text.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-finite-check-text.stdout.bin": {
+      "sha256": "b3847eeb799a6b0c0d03ce844d3f5cc91865a1983cb9c620eb9f836c1a2b51da",
+      "bytes": 143,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-json.command-before.json": {
+      "sha256": "59029314847a1292d6aa4b57923cf6c8c7ff78e4674aaf11e67c1846e86bea39",
+      "bytes": 530,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-json.json": {
+      "sha256": "74026662082683169f122a3bceba5d3f7245db5edd8a16773661882464ffa7f6",
+      "bytes": 1384,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-json.stdout.bin": {
+      "sha256": "25fddc6431e1e9f3a6d68992d5a773b4acfcf49630f43a9e4d0ade6b82ec9034",
+      "bytes": 472,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-text.command-before.json": {
+      "sha256": "c244362ded752325dd4ed46bede82ad0cea6961cdc12eaaf395060e0d767406f",
+      "bytes": 509,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-text.json": {
+      "sha256": "02177c61d8d9f4f1c7824f8e47a73faa641cf353e2cb6e1752d7b5763a2bb023",
+      "bytes": 1362,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/valid-operation-selected-auto-check-text.stdout.bin": {
+      "sha256": "e54694593ba5ff99915c73a5dfb6725e315a0707060131483fba90ccd4e59684",
+      "bytes": 373,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-json.command-before.json": {
+      "sha256": "f499cb23bae1b6e0e749dd745c55041125a0e9cd968765cfeb5d0f8d0ed97d73",
+      "bytes": 458,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-json.json": {
+      "sha256": "caf59a02bfefc67424c6318f49068e83421db0bce1e5655977a653e89bbfefe7",
+      "bytes": 1298,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-json.stdout.bin": {
+      "sha256": "f3ae2af1b628e128fd16168fd48ebbdef03e35269395ffca0cd3c2afe4fe95e7",
+      "bytes": 300,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-text.command-before.json": {
+      "sha256": "d05517b1627d254003bd19d705e45800b2c967a345dbf362fe11f4149e8c08b3",
+      "bytes": 437,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-text.json": {
+      "sha256": "e67b14bad21cb70de349c69f56eb5edbaa799e0a91e74febb4e63bbba911f9fa",
+      "bytes": 1277,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-text.stderr.bin": {
+      "sha256": "0b6b548448f04c4067aa1e166a89f312786a1a1ade64d58c37807707ec2b2422",
+      "bytes": 195,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-json.command-before.json": {
+      "sha256": "ddc8f143d222711c652e7d81485a33e3939aa6c20883fcee29429bfc1aed7ada",
+      "bytes": 532,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-json.json": {
+      "sha256": "8415b23305c0589a409d085b1d5e9546c2f5c32c22b84f5185dacb22e39f6b3e",
+      "bytes": 1393,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "cdafb771635ea8a49b05319ae078081e8ce30290569be635ced2161f8dbf239c",
+      "bytes": 400,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-text.command-before.json": {
+      "sha256": "054bccd69d5c0ea166bd2dac59a35f0506dac91568ce851de9414b01ebf457d1",
+      "bytes": 511,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-text.json": {
+      "sha256": "176e34b7bdadd2af053c142b13936eb9148405b7eab1f36c1821bf009fdac6f6",
+      "bytes": 1373,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "b641802adb034a173359c6674d2e11a554fbebd90be60ae58fe6f98b250049f5",
+      "bytes": 74,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/wrong-kind-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/README.md": {
+      "sha256": "5d37338be3e9385b0c6f70526332d92a589db3dedff9c083899eaf84240291dd",
+      "bytes": 1872,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/inputs.json": {
+      "sha256": "87c408960956464f8cbbd6c48a626da3642ecc37aabf58fcdd8ea4022a0fbac5",
+      "bytes": 126278,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/observe-after.py": {
+      "sha256": "ecd3c6c89b7b00ca9683eede78ae936c25d7a0be919a4602acd0bcf5e3571296",
+      "bytes": 11026,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/preparation-note-01.json": {
+      "sha256": "185bdbda6b508ef2b3c30f5cab7366505a84e7ba1e9f9d04bef152b9d98b9c56",
+      "bytes": 1131,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/main.qli": {
+      "sha256": "83a6bcb284c22fd4dd7cd5f6223baa87147153c32c2a1bfe2132286a81a9d806",
+      "bytes": 204,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/main.qli": {
+      "sha256": "8123bb2740ec219abfc5962992f82799c5f3288cf5d69ff4fdf86edbd1a5ae92",
+      "bytes": 189,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/main.qli": {
+      "sha256": "463ea4bcc07e3ddcc8323c2993a35fd409d3305b9dd24f3e0df19becca5ee5cc",
+      "bytes": 200,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/main.qli": {
+      "sha256": "50407680955bcfdb616dc472596729e66590fe383a973f7ebb21918e055e6380",
+      "bytes": 216,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/main.qli": {
+      "sha256": "a8fefad1fb6b12b36ca64f242e44465f25ee865a56cb7a87ca221e85a20694d5",
+      "bytes": 200,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli": {
+      "sha256": "d3ab8356c010d97b042ce0d59d2ddb9b664c3ed0c8aecd29868fd0b9aebe7dff",
+      "bytes": 196,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/main.qli": {
+      "sha256": "6c1a62d498f39be483c6d4dab793b273120b98e80712ec87c2a06f540cf63d31",
+      "bytes": 166,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis/main.qli": {
+      "sha256": "5ecd2979bb39a54c22cfa55c86fbb9a4d2813275a985e0566cebd0312a358c72",
+      "bytes": 245,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation/main.qli": {
+      "sha256": "9b7ccca394a09f4161b8a1721da6c36c6a56b639c29153fa67848eabd4b17fa7",
+      "bytes": 188,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli": {
+      "sha256": "453b0dc9265f89d991ceeec7cf6ce0bd8c9d041d6286b8222fcfa7bea24a4ae0",
+      "bytes": 216,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.command-before.json": {
+      "sha256": "57d2dcdd792a3182afb89d82140496bb4007872e3254760809dec0de153b6aee",
+      "bytes": 460,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.json": {
+      "sha256": "79670684023a39a90b04ec04b7e5d51a056499afd6d557f3051b95994f5fb319",
+      "bytes": 2386,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.stdout.bin": {
+      "sha256": "0a82ce56131f924906633a6ac9d21246390bc484fa010a393597958c2489223e",
+      "bytes": 298,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-text.command-before.json": {
+      "sha256": "60c6456a6aa556c1cde721f36fa22bbac1d6c07a0ba1cb997884ebbaff496261",
+      "bytes": 439,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-text.json": {
+      "sha256": "c61a272b365ddca4645ccea5faa4c5f10cfb65046dfd2269e1b1587fc7b76326",
+      "bytes": 1697,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-text.stderr.bin": {
+      "sha256": "b2ac37ed878d65f44934eddd4236367598ab92e38daf9a8bfc4d1da119fedb3e",
+      "bytes": 197,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.command-before.json": {
+      "sha256": "f6e563d2eff4b20807e33db65c0d0674a5c94f25f551e65c07b64867fb221c1a",
+      "bytes": 534,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.json": {
+      "sha256": "f45be29aeb1f2aed23cd780967568ca1b0e58268c1e774bb39abe4418708ee7e",
+      "bytes": 2679,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.stdout.bin": {
+      "sha256": "2977f3311b4fa692419f71cb9f5e2d1af454a51aee2a8d689008094fb3fd6d13",
+      "bytes": 403,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-text.command-before.json": {
+      "sha256": "631820887b8d834c91094edfa027a688fd584a3df17326ca56fec368bd50e639",
+      "bytes": 513,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-text.json": {
+      "sha256": "23a5c146cd58590c57b393986a4ea631520d33fe1465e0d4bd406d25b1f8e61c",
+      "bytes": 1669,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-text.stderr.bin": {
+      "sha256": "bf4e0964cb777f61d14879134cc82b13523f839bea7130404ab5ab69c754796e",
+      "bytes": 75,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.command-before.json": {
+      "sha256": "b493bd76b9792e32a664d947c6ce107f1cd7e0bf3c980fe71cf22ba4fefb66e3",
+      "bytes": 457,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.json": {
+      "sha256": "427d734493dc653a28e3ddceba159fa676c0320ca61536bc684e193d06874a7c",
+      "bytes": 2324,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.stdout.bin": {
+      "sha256": "5d96da92a80d5310c26028a3a10c1841c160278baedef0699cf64066edb2c211",
+      "bytes": 273,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-text.command-before.json": {
+      "sha256": "d9775e5bafa13bb1bb90a92595457301c2400c09b8e8aa9265ec4fb40f236ecf",
+      "bytes": 436,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-text.json": {
+      "sha256": "db744327eb596a1b34dc8e81805c4122bc80c161728c1408188fff288b1f6ba0",
+      "bytes": 1655,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-text.stderr.bin": {
+      "sha256": "8cbda75a172ce377153a1075519cc4d716044b6b174fb23d0a14b40a420be9a2",
+      "bytes": 167,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.command-before.json": {
+      "sha256": "dc02ad429dff12178f38193278196e984cfe11091f983544f8c0b66f90cafb4e",
+      "bytes": 531,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.json": {
+      "sha256": "185059f311472048a1be01e5a16bf2eff93e22689ac1e7290a4340e097d90990",
+      "bytes": 2636,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "5671b10fc703d8e4fac8e4d5c85a92c7a057c5a0edf6d356a2fb4606c32a2171",
+      "bytes": 387,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-text.command-before.json": {
+      "sha256": "92d723c28c4119d00d26176c187667e5fe489439c9d4c834d9f7574885fa72a8",
+      "bytes": 510,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-text.json": {
+      "sha256": "a53a4f565dce6d75dfd75d2ebef4cde5bdd626cfcf78e5327ee2d8b170cdad37",
+      "bytes": 1645,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "64f2fc21c93e7c9a905e9f439517ffddebe4269199cc9ca9a4e65b88660648b4",
+      "bytes": 62,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.command-before.json": {
+      "sha256": "ce118c25dc82426c3887c8a688628b2211d3320670633352d1d87569dc5421bc",
+      "bytes": 454,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.json": {
+      "sha256": "e4593148e08d1e3e6512d6a26b1a76e921c818ea869e831909101bf0b7d0ca69",
+      "bytes": 2374,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.stdout.bin": {
+      "sha256": "63d5b8ae09ad0d4b8e77556186480ee19bbfb039c0e6caf887546bd796994ee2",
+      "bytes": 304,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-text.command-before.json": {
+      "sha256": "40c3e31e1903159638d1b9fb6af59349e0f8932a6bc3b5adf1d0c9c4b304cd7c",
+      "bytes": 433,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-text.json": {
+      "sha256": "236c7b1792da3095d0b57036e4457d7c46e24cb35c7f33ae0c2cdd49a595888a",
+      "bytes": 1671,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-text.stderr.bin": {
+      "sha256": "ecc78031afbbc4c429c1b3880ad5d56532619a4607a2a2d937004e4349a676b0",
+      "bytes": 195,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.command-before.json": {
+      "sha256": "379f6dd39c82dc4698aaa4d9f71db1285d47692fa3a78fe67fef4cceeeaa76f1",
+      "bytes": 528,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.json": {
+      "sha256": "fd17a3dde0e96e6c366439fafdad7cffbb6967085b6377b254e720fdfd3166c6",
+      "bytes": 2643,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.stdout.bin": {
+      "sha256": "a8586e8874987f788ebf3b5d2b6786b18ffeceea200cb44bc70dbbeaf56f87dd",
+      "bytes": 397,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-text.command-before.json": {
+      "sha256": "92d91553c15e70d489cc80924e833d081d7546ef92c8f7d755dbc252c86b1e4a",
+      "bytes": 507,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-text.json": {
+      "sha256": "6c26cd77517c5b6560cbaff0e1fe3e2d1c53ac95ca35d6e88519d9665c292d4b",
+      "bytes": 1646,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-text.stderr.bin": {
+      "sha256": "5d03718b57632cc865df577d22d21ba9c2601be11cc7aab175a47078126ba9b4",
+      "bytes": 75,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.command-before.json": {
+      "sha256": "66638f35bd14ae3bfc07824c5953f50c4e4e9cb95b1bb703f6563a3b20d7fc4b",
+      "bytes": 456,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.json": {
+      "sha256": "d78417dad02317ad9ec71c8b936616d7739dce11ed86cb22679f3047815765c8",
+      "bytes": 2376,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.stdout.bin": {
+      "sha256": "981f1535d523bd378755bc2ba9b2069df513019ad5d8fc860a1b41857bf5514b",
+      "bytes": 301,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-text.command-before.json": {
+      "sha256": "18329d8d8b4221979b7d7bd428f2933456a39dc3a1ac5e0b41cef4f6e42065f8",
+      "bytes": 435,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-text.json": {
+      "sha256": "89678e5bd0e37cd70cb80d42cdda54f7ae36c52dd5b081b86f5e7f9475a6c267",
+      "bytes": 1678,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-text.stderr.bin": {
+      "sha256": "b3d11b33e1d44adf0eebba396351066b985de2603a9209ddee4551b0b3ce4267",
+      "bytes": 194,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.command-before.json": {
+      "sha256": "1ccc182d2900e1a858c5dd8ace13ec83ff05a7f8cafba2a64b59bc5b7038c848",
+      "bytes": 530,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.json": {
+      "sha256": "0157fdba93a560a159bcaf6d089e9433c518808aea1a0264d82c82802acc8dcd",
+      "bytes": 2597,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.stdout.bin": {
+      "sha256": "f8c91953189de426795a8fb216a8e63317d9eedb56ef91485805aaeca94fff7c",
+      "bytes": 370,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-text.command-before.json": {
+      "sha256": "1044ab6c376c26ac561925337078b82c19d8dd01e0c1a2f7fd22516eab8fdcdc",
+      "bytes": 509,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-text.json": {
+      "sha256": "53db684c5dcde6e85e2a3de74f547add580f2dafea2f920bc210dfdff86b3bf7",
+      "bytes": 1625,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-text.stderr.bin": {
+      "sha256": "4bc154dcf3c78cc7e1a0fab3e3e7ecc5b7644b71d84e194c0a78297562837d14",
+      "bytes": 46,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/identity.final.json": {
+      "sha256": "1fbd09e2829bac505169492f73bb010691785bce8546b8cc6c70db70a1bef0ac",
+      "bytes": 39284,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.command-before.json": {
+      "sha256": "d417968878ef7ab4373ccb7ee42204b2f1650b741f6f5de0076e45d65a07bcfd",
+      "bytes": 457,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.json": {
+      "sha256": "55f00b2719b5f112df6c9877479f38f1c5413ad78b82d9f825e1e393ade7f144",
+      "bytes": 2374,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.stdout.bin": {
+      "sha256": "0a82ce56131f924906633a6ac9d21246390bc484fa010a393597958c2489223e",
+      "bytes": 298,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-text.command-before.json": {
+      "sha256": "c1751d31ae8189c09fc04a9f2382673414c3724b221c665dfcc0d87ca63dda6e",
+      "bytes": 436,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-text.json": {
+      "sha256": "2c16299154bc65d7388611ba71247a29ac540696a563b3a86b7ce3af1f80a1d2",
+      "bytes": 1682,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-text.stderr.bin": {
+      "sha256": "73e6e84d416c6219bb131f9c6ded3173c3af59beee5dbed308b17c74e53b1347",
+      "bytes": 194,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.command-before.json": {
+      "sha256": "4df0c69f7b58361707a31241e8261f94eb4374c1e89b1c4259d9cd027701847c",
+      "bytes": 531,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.json": {
+      "sha256": "b8d485151e6c01e067b90f05288e2513d3d29b2a3b90c8a6f80031c5a71788a1",
+      "bytes": 2667,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.stdout.bin": {
+      "sha256": "9e54af8e8c07df13be3e2e1f548a34023b43eaaad42d901887953aef523851e5",
+      "bytes": 403,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-text.command-before.json": {
+      "sha256": "f617b5b3c4b7e81b9dcc58e7046315fcf4f3a3708726911cf8becaceb9a85308",
+      "bytes": 510,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-text.json": {
+      "sha256": "950cdd978e9de335f7cb6b6ab671c0f09a70c21051ab4ed1866aafbf0d2fbd5c",
+      "bytes": 1661,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-text.stderr.bin": {
+      "sha256": "6c1585bba1a971088e7cbc90d68422a8e7dd1e4b11f56fe9d10cd472cfc4539b",
+      "bytes": 78,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/started.json": {
+      "sha256": "213a0e75ecca4f11720238ee893d05d7daca0ef26f49b2270461f51b6700a724",
+      "bytes": 429,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.command-before.json": {
+      "sha256": "4f8af7067323608846e62663a3d9724fe943784a8d7eb0daf86e5fc6984c6d29",
+      "bytes": 465,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.json": {
+      "sha256": "377fd6a0044835a3fe30efe9fa18643b642e0aad67ba15ae3de881ab86a3ef64",
+      "bytes": 2348,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.stdout.bin": {
+      "sha256": "ff9b8be145dbdd2a8c33a943cfc8d6895692ea6f7f185974e5ff4ceabd6d3ecb",
+      "bytes": 269,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-text.command-before.json": {
+      "sha256": "6fe18d25c824f1d4eb4962ec900baae9e63553d0976e56bce15ae1e71424b6e7",
+      "bytes": 444,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-text.json": {
+      "sha256": "8c2bfaaac7a3c0f4b1945feda21c4065488889eaa897ef21d523b7d32317cf3e",
+      "bytes": 1691,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-text.stderr.bin": {
+      "sha256": "58085abb9cc8aeaa90059a0082bfcbe3e962f1c881ac450dc6d6a3b67b0b0300",
+      "bytes": 171,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.command-before.json": {
+      "sha256": "fa5854175f59f0fc73dd6c64f219a5e689cd5a3a85a231732a26ae0e8fefca3e",
+      "bytes": 539,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.json": {
+      "sha256": "500c5d548f5041ab78a21d1d5d227e991ab45683f700fd3c2951930a4218fd23",
+      "bytes": 2719,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.stdout.bin": {
+      "sha256": "c0afbdda808a0c33960dd227dfec73a7a335e885884854f6ef32d3e4bfc0c02d",
+      "bytes": 413,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-text.command-before.json": {
+      "sha256": "33f63d578377e8d3fc904f1e5cfb279ae76cb05ad425bf5a12113ed0abab08dc",
+      "bytes": 518,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-text.json": {
+      "sha256": "7393d979dfc0f009c7341106ba3961d7c805228970d606c1a159676a823cecb9",
+      "bytes": 1695,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-text.stderr.bin": {
+      "sha256": "c92c631acdaef4b1b5f4be541e50364ec95ff921d22ee2b67af9c7ae96418dac",
+      "bytes": 80,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/summary.json": {
+      "sha256": "c5faa44191e9041148681b60d9f24de4d0fc982875f54c8d1d9076ef8c5dfcc2",
+      "bytes": 10082,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.command-before.json": {
+      "sha256": "ff6e26ac48432d8994d18fe0ef6fba2079a0059d7d33319b52798497772cbf50",
+      "bytes": 462,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.json": {
+      "sha256": "c697b8b3435cc1a0b1e3d9c5988e52d9192e27f07e6007a11456d037f6f12f7f",
+      "bytes": 2383,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.stdout.bin": {
+      "sha256": "dd2a88257309a6f6a310559542b7adb88e410a5aa2e6f85373f083dffd056733",
+      "bytes": 293,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-text.command-before.json": {
+      "sha256": "a259de5f773e776e5516c3d8d8aa30f75d52269b8c6f618fc90bb454d10d5d42",
+      "bytes": 441,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-text.json": {
+      "sha256": "5a43e62b56621312d1bf4403437cd4506fbe36d02e58aba0afd84cfc62c4bbd4",
+      "bytes": 1698,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-text.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-text.stderr.bin": {
+      "sha256": "ad757e34234e92b6964e8d9832395cf44181886f11ff7f7d93f3324ca063fe64",
+      "bytes": 192,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.command-before.json": {
+      "sha256": "5ebfe11a75a1660f8c8cc674365962bda8fa4957ce150dabc22f67b6059acfe4",
+      "bytes": 536,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.json": {
+      "sha256": "717949d26cdac8596c3ce737ae4648d37d4857a6980df67a7a26fd1856aa9899",
+      "bytes": 2649,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "1525487b6bc8a15ba6d8ae91738c9d4d54cd5a4cf1f843d84856fe3d9bd76127",
+      "bytes": 384,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-text.command-before.json": {
+      "sha256": "9b6ef1a592214db203f59f0797f60e0fef6cdc11bdddd98e49a4f68fa9f25c6e",
+      "bytes": 515,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-text.json": {
+      "sha256": "80d34f93a00a04882008a7dd5420d16466cb7fa2c46ea439c8e54a9dabecc26c",
+      "bytes": 1657,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "ca0404a06e5cce92a47afe77eb13291780828368bf33b1c0d3164bd58e2366ad",
+      "bytes": 54,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-json.command-before.json": {
+      "sha256": "ed34b4cbcc7d1d1df2a906f1fd8b7491823abe2adbff4e384c9d7eed190c53f0",
+      "bytes": 462,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-json.json": {
+      "sha256": "27e90c1fc2fad6eb570587162d1dc15193f0d8eb37a0de2f917e02a51ebc79fc",
+      "bytes": 2396,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-json.stdout.bin": {
+      "sha256": "1a5d19a23410cbad1c5f0c20c4add18040733c8ea0ecadeb3e4a6989de6e4073",
+      "bytes": 299,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-text.command-before.json": {
+      "sha256": "ed11e98312cf78ad50c53a6e634443c046ac9e64e789c6cad9f562cdc1cb0648",
+      "bytes": 441,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-text.json": {
+      "sha256": "8db069c866ca27243954092c146116c61b415661ddc314adb2d1fde53cb38589",
+      "bytes": 1707,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-text.stderr.bin": {
+      "sha256": "859fde21a95c10d57dd69e434eaebdfca1e8c8a3be323687c92de9c871ae4a08",
+      "bytes": 199,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-json.command-before.json": {
+      "sha256": "24eb79a68b5575250f33df93cbc322ab85848cc969915e519cb5b3ad5809cf25",
+      "bytes": 536,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-json.json": {
+      "sha256": "978460d263edc44a357b15d874f3c5604d65ee69849a9225a75ecf4f205c2490",
+      "bytes": 2828,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-json.stdout.bin": {
+      "sha256": "25fddc6431e1e9f3a6d68992d5a773b4acfcf49630f43a9e4d0ade6b82ec9034",
+      "bytes": 472,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-text.command-before.json": {
+      "sha256": "d8424e3a7477926bb45119020d3ae108047961a86e316f94c1637f4e6a5dfd9d",
+      "bytes": 515,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-text.json": {
+      "sha256": "0fc5953da6865f9e3fc2b148b2549140118b3052e2baf6f294970b9bdc430bf4",
+      "bytes": 2019,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-dependent-basis-selected-auto-check-text.stdout.bin": {
+      "sha256": "e54694593ba5ff99915c73a5dfb6725e315a0707060131483fba90ccd4e59684",
+      "bytes": 373,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-json.command-before.json": {
+      "sha256": "b71fb5187549acb1d3e19bb92e05ee2ee052192e2a5886ef3d670055a91731c5",
+      "bytes": 456,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-json.json": {
+      "sha256": "71784529574d18b15625a9ce97e3af89e88e2b16ff9ba17b95c4e91dd61a796b",
+      "bytes": 1856,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-json.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-json.stdout.bin": {
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "bytes": 117,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-text.command-before.json": {
+      "sha256": "285f9c5773b9d900faf67e054ff5397079a88d6611fb25bfdbf90f302af141bf",
+      "bytes": 435,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-text.json": {
+      "sha256": "9af1c6a1bb55fde1947c7636633db30c7c96ff9df1fb0bef45557f6a9ea8f9ac",
+      "bytes": 1626,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-text.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-finite-check-text.stdout.bin": {
+      "sha256": "b3847eeb799a6b0c0d03ce844d3f5cc91865a1983cb9c620eb9f836c1a2b51da",
+      "bytes": 143,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-json.command-before.json": {
+      "sha256": "0f0de384aba0aa6855d60f2d3db1b7fae0799000f2788156ae5039768a6a5199",
+      "bytes": 530,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-json.json": {
+      "sha256": "b85ac3b4307796b3f651737108c10a833a72c00808e397ac8c084f83d8e7c4be",
+      "bytes": 2804,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-json.stdout.bin": {
+      "sha256": "25fddc6431e1e9f3a6d68992d5a773b4acfcf49630f43a9e4d0ade6b82ec9034",
+      "bytes": 472,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-text.command-before.json": {
+      "sha256": "118403b99768e31c198bba122fe30cee9458dad6b45a74fd8e9705768a96c296",
+      "bytes": 509,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-text.json": {
+      "sha256": "7642175f16f26d2ccd576430dec873b088972ec4fdfd8581bde3ae285e984841",
+      "bytes": 1995,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-text.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/valid-operation-selected-auto-check-text.stdout.bin": {
+      "sha256": "e54694593ba5ff99915c73a5dfb6725e315a0707060131483fba90ccd4e59684",
+      "bytes": 373,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.command-before.json": {
+      "sha256": "78de071621cac7a4cb46934b81599fa00f4130673ed32bdaf86d6a5285128b97",
+      "bytes": 458,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.json": {
+      "sha256": "23791abde323d0f67fd59a6287608ce52a0911fdada2e95a227da43198b8308a",
+      "bytes": 2382,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.stdout.bin": {
+      "sha256": "f3ae2af1b628e128fd16168fd48ebbdef03e35269395ffca0cd3c2afe4fe95e7",
+      "bytes": 300,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-text.command-before.json": {
+      "sha256": "fcacc47355189bb9927f6fb814bcd962ddcd02d1982a9b322d0e0404d8c919f6",
+      "bytes": 437,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-text.json": {
+      "sha256": "e5e58e497f9d66d70b51a345a85f702db32539ed7b91306c1586ccc56c2b77ee",
+      "bytes": 1687,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-text.stderr.bin": {
+      "sha256": "0b6b548448f04c4067aa1e166a89f312786a1a1ade64d58c37807707ec2b2422",
+      "bytes": 195,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.command-before.json": {
+      "sha256": "221d5cba6911f8124077474e98f259b76257a78456bf297888c912b3d335579d",
+      "bytes": 532,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.json": {
+      "sha256": "6d460291dd761ea160c0653ce16eefcc38ea8c65bc27915c9836330bdfe604cc",
+      "bytes": 2665,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.stderr.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.stdout.bin": {
+      "sha256": "cdafb771635ea8a49b05319ae078081e8ce30290569be635ced2161f8dbf239c",
+      "bytes": 400,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-text.command-before.json": {
+      "sha256": "ec926f1e6ae95de15ed88704ab7f95a2766b4c047f004ca1f60745ad9b74b569",
+      "bytes": 511,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-text.json": {
+      "sha256": "4011f6c0b73cfe6ea91007b60941c3e588a8279feecce4932f30f7f8fbdca66b",
+      "bytes": 1662,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-text.stderr.bin": {
+      "sha256": "b641802adb034a173359c6674d2e11a554fbebd90be60ae58fe6f98b250049f5",
+      "bytes": 74,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-text.stdout.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/commands-before.json": {
+      "sha256": "3887d877f89a35aac37b6a961d40610660efb7a36f52c26febf62033d22455e9",
+      "bytes": 24210,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/context.md": {
+      "sha256": "d99dc636a117248d9469bc78e861489d745607fc7fb1a49d71cd3774fdebf940",
+      "bytes": 1858,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/driver.py": {
+      "sha256": "320b75c15abb1479859823ea03feb4034344edb41cdc57f8798c2e9c14893cf6",
+      "bytes": 12152,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/first-files.json": {
+      "sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454",
+      "bytes": 12186,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/identity-prepared.json": {
+      "sha256": "503f2a06aa507edfd83c056afea9f84b39598a01d72cec99b88e3fe6174ae28f",
+      "bytes": 39624,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/preparation-repair-01/driver.before.py": {
+      "sha256": "608fbac45bb00cf8c89ac379e3e4bd116def7f378f8e054269b0706dc30433e5",
+      "bytes": 11633,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/preparation-repair-01/first-files.before.json": {
+      "sha256": "ac7358bf6be9924b99a7708940ac19ad89677af80ecf989bca68a3a80117ee84",
+      "bytes": 11077,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/preparation-repair-01/reason.json": {
+      "sha256": "6dd3574b2f6cc16fe19df78ecb6c8fae327474e15b0011e587b31205f0886631",
+      "bytes": 486,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/project-inputs.json": {
+      "sha256": "b9676ea3a7db3d3bfa982c46a700d28f46c72957aac2c8be943930350ca654cd",
+      "bytes": 12363,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/results-before.md": {
+      "sha256": "1b7bcf474eede26ede15fb5e9790286ec87cdf7dd15a2ad227dfbc0e945f02ae",
+      "bytes": 2468,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/session.before.json": {
+      "sha256": "be3e8ff61748c43a4a7dac94ba2c0d1bf2b5b85dcacc1619b212a4f16f738541",
+      "bytes": 1912,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/session.json": {
+      "sha256": "aeece0eb0546f194b7f55bf0e0556397ff8906dc35a08f449a359c57132a3798",
+      "bytes": 4461,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-formal-access-v030/terminal-after-attempt-01.json": {
+      "sha256": "e218f0e9ced5bb7aef5daf51937e780845440bd82f4e7696dcc2d1f6d9edf7bd",
+      "bytes": 893,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/candidate.md": {
+      "sha256": "da6bacfbc13fbaa4a7a80ab93afb52a9c1be7d223e1e3ad7b507ff171b0eeb02",
+      "bytes": 9384,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/formal-slot-postimplementation-controls-01.inputs.json": {
+      "sha256": "13319d1ee82d9e731665f60f9c4ad5b10a0ca62edb5f1685f38547cea393e3a4",
+      "bytes": 3358,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/formal-slot-postimplementation-controls-01.md": {
+      "sha256": "70ef83cb786fd1a5211d991fc10b517191bab7ae848a8075f37af4b7da60014f",
+      "bytes": 4609,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/github-before-code-32.json": {
+      "sha256": "eaf20256e2508b3e427cf87c02f0e3a02eb72694a633b95240321c11cb5dcee1",
+      "bytes": 3191,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/final-identity-check.json": {
+      "sha256": "94606ef5aa9bf61250b2df67082e93518d878570991993fb41b8d13777378bf0",
+      "bytes": 381,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/inputs-and-audit.json": {
+      "sha256": "218602d99caea7ebfebb9c6d65939368f7b830a68689096b1b4dc5cf6d27c9a8",
+      "bytes": 18449,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/packet-files.json": {
+      "sha256": "407b8178408585644e2a5048afaeca7dcb13d17d087ffa1f52a75f6197e54953",
+      "bytes": 1350,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/review.md": {
+      "sha256": "cc927f3a8d51c491a4493c5d7bb223f12d5e855918bd95c72d6ead9585a8853f",
+      "bytes": 11465,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/reviewer-discovery.json": {
+      "sha256": "f0f02c83af68e2e0a77d9135034ac22cf1a6e6ade96ea8f18aca8ad86bf51cd2",
+      "bytes": 1641,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/startup-continuity.json": {
+      "sha256": "3d515b0df81f08bb40b52c600bffa4688e3ce5539361a5001f9921b2746ea4ff",
+      "bytes": 641,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/startup-continuity.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-implementation-review-by-docs-01/startup-continuity.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-phased-preparation-review-by-cli-tests-inputs.json": {
+      "sha256": "80040fa531bec08917541be44886bcd249eaea1e187549352ea3606b12703a41",
+      "bytes": 33485,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-phased-preparation-review-by-cli-tests.md": {
+      "sha256": "8e644dcf1a37c89fbb78dc0d868b327ea18b910b814a0854ea173445d26e5e5e",
+      "bytes": 11255,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-review-by-cli-tests-inputs.json": {
+      "sha256": "486ff22d1e08cf5d4118cef1704957f34262cf9f601b37f2633145955ab3953e",
+      "bytes": 7252,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-review-by-cli-tests.md": {
+      "sha256": "f39bfff242ad09a73d6f34dac24fd139c2d1380f733ca50443c1650b129cd49b",
+      "bytes": 9833,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-validation-audit-by-cli-01/review.md": {
+      "sha256": "731deeccb561af517125be45a287b2960b6179153a01619572793189205f9f43",
+      "bytes": 5589,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-validation-audit-by-cli-01/selected-inputs.json": {
+      "sha256": "50f16d7c6bda6a71f5e2ee7840edc69e45f3e9fdba0d0c844f70c49158a941f3",
+      "bytes": 18186,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/inputs.json": {
+      "sha256": "7eb1010c1a868382c4149db887950bf38d151bc123a9aa2673dd72ee3c63f658",
+      "bytes": 8372,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/README.md": {
+      "sha256": "17af86b2d5692fd6649a0055fe6ee3abceaaabab1dc2a43f0fe27e9f2e50c0fc",
+      "bytes": 1283,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.coverage.json": {
+      "sha256": "1b73b2779606ed1330279a6a1a9457cc1a20b9d9af38cb2c22b669532f533381",
+      "bytes": 497,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.coverage.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.coverage.stdout.txt": {
+      "sha256": "01988f73bb44af12755aa85e81b748373e9f18116c60fdcae362f0a3846b7164",
+      "bytes": 463,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.inventory.json": {
+      "sha256": "3669f5f5614b44c9a0f443a48de9d3052d67962533a6e8f9c9ad2e3909852871",
+      "bytes": 503,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.inventory.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/after.inventory.stdout.txt": {
+      "sha256": "9d4004245cecb9388bb9b5fbbd5eb1124983d7b0c5b287b75dd8cc53560d2f73",
+      "bytes": 126,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/all-source-bindings.after.json": {
+      "sha256": "2ef1440d8b50a22979afde96c24d6adc162e5e500486eacfbd632ccdebd54cef",
+      "bytes": 28472,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.coverage.json": {
+      "sha256": "bf3ba52d858b3cd53737a811111ce86b626377e2d8f8c4f338d6574896663b5c",
+      "bytes": 500,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.coverage.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.coverage.stdout.txt": {
+      "sha256": "6bf1f5e58aa6cc2f70c03b3667c992750442dcbe69f91e676bd363c8bde5d930",
+      "bytes": 463,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.inventory.json": {
+      "sha256": "e292225271862a0071eea57ce70ef6f7684055c77265f245c7c11b40f3bd9129",
+      "bytes": 506,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.inventory.stderr.txt": {
+      "sha256": "bbd4fda93a95d433982f8b34551361ca894fb2d853a272a71e349c2383bfd4ed",
+      "bytes": 85,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/before.inventory.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/coverage.after.json.gz": {
+      "sha256": "d16de84ef303b34d16632f863fba905c10e19aa3daf8614c2031f043e428da94",
+      "bytes": 11072,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/coverage.before.json.gz": {
+      "sha256": "76cfc95d56b11678be2f572b90b9490524792bbffe5df142bcabceb0d869e872",
+      "bytes": 11078,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/inventory.after.json.gz": {
+      "sha256": "3c123e0145b47e2c06c140b924afdc62222741a629d51d68ece4d282f656a7b3",
+      "bytes": 50747,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/inventory.before.json.gz": {
+      "sha256": "31c097b4b48b9402641e206d280de4c75d032328a0a82a3425d857ef939e2efa",
+      "bytes": 50575,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/results.json": {
+      "sha256": "d98fdf8d076d8293975da2380e3c071072ab6e19ad73fc2800256b0eb6213a40",
+      "bytes": 4083,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/reviewed-inputs.json": {
+      "sha256": "5fc2ac44a2fe178dec5befd5f7dab451ebbd5db5666f09104fc7b86dc68e1db5",
+      "bytes": 1253,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-plan.before.json": {
+      "sha256": "b3f3b08330a0a39ced659c7d5d3865d0981036deb6722b792703be9ef98a3064",
+      "bytes": 27343,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-plan.reviewed.json": {
+      "sha256": "61d7b81c683ae1076474d73bcbc72b81ceb291e1a9e56bce295f29b54978126a",
+      "bytes": 28950,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-sync.json": {
+      "sha256": "cbeeb2b7db573edbac877a31fcc45b04a87b596abe63c997a246a6e80b50f2f2",
+      "bytes": 1026,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-sync.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-sync.stdout.txt": {
+      "sha256": "e7aa6aff1baa165320f9313bbd6889cca96caaf7d09f5cdbed8fcfee406da406",
+      "bytes": 68,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/driver.py": {
+      "sha256": "7d6a1b489bcf1585f82450dfe5933c11f41ec45edf3f87367290f5fa4029c6ac",
+      "bytes": 7188,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.inputs.json": {
+      "sha256": "f6d3d8753e2951189329e51b13c0c79f7535478e8205b38e3e58d26e41896e06",
+      "bytes": 10051,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.md": {
+      "sha256": "1f113b273841607d62ca9107f1919f825f7ea95a4576721b023f487e932e6d09",
+      "bytes": 9623,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/README.md": {
+      "sha256": "4c05ee3875d145c0533079002597f7d56e6fb97ffa9caf4870633187e42d789b",
+      "bytes": 4835,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/00.mdbook-version.json": {
+      "sha256": "fa46144815d26879a8fd07fe18ecdb62aff67453a3260af4a751315b51d26146",
+      "bytes": 637,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/00.mdbook-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/00.mdbook-version.stdout.txt": {
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "bytes": 14,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/01.mdbook-build.json": {
+      "sha256": "b62d410a3f068ddde6cdf1037679115fe5abcfe70ca779dc707fb642bed6ebb3",
+      "bytes": 717,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/01.mdbook-build.stderr.txt": {
+      "sha256": "5e37d5d9b2e17b064b32af94abcc5a05790331b3014f5632f8cd4011383402c2",
+      "bytes": 146,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/01.mdbook-build.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/02.rendered-book.json": {
+      "sha256": "d42c42ba52257f47fba087cd45cd4b861a8447d4cb5873555641d2622fd1f7ec",
+      "bytes": 720,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/02.rendered-book.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/02.rendered-book.stdout.txt": {
+      "sha256": "791c4c5ed2b41e868c3af3c7e0378e1b55e00e72d2f9ca867bd9674ca549e4d2",
+      "bytes": 67,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/03.book-regression.json": {
+      "sha256": "401d8df4444e330e967b23b7048e93c732d7adf367746c434b34ef0a976f7167",
+      "bytes": 656,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/03.book-regression.stderr.txt": {
+      "sha256": "39e318b7c69f4f407e0b4e000b39f47db108a302dbe0cafa0c95519ac6912503",
+      "bytes": 111,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/03.book-regression.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/04.authoring.json": {
+      "sha256": "cd901fd4f2c2fddc74edbaf1c77ef1f8a1318bca97f17f4fc66fe8b6d8325f14",
+      "bytes": 646,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/04.authoring.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/04.authoring.stdout.txt": {
+      "sha256": "3f09fd19a1e76f63bdcd035783dabd391c306b4e1a3d1c0ba7eac29219fc6b4c",
+      "bytes": 95,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/05.authoring-regression.json": {
+      "sha256": "8d9265496d9d687d1c1774184a1bfeeac965d3a115ada970c9c67bd465d9035c",
+      "bytes": 685,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/05.authoring-regression.stderr.txt": {
+      "sha256": "62f4decbacb2e031de4e76f2bc96caa7cf3ec498967ced4083e0885df723cc1e",
+      "bytes": 105,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/05.authoring-regression.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/06.editions.json": {
+      "sha256": "1e6fd920a2359f777bee0311a1379d9c2fb7312aa48f8a1bcbfb7503e65da1c2",
+      "bytes": 633,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/06.editions.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/06.editions.stdout.txt": {
+      "sha256": "2c960bff8b723f8491d25e630dd72098545128ee520726b7c3bb9e5549969862",
+      "bytes": 236,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/07.edition-regression.json": {
+      "sha256": "040f79b5001581d508d03fba88ad107516927b5bebdda4ebe6a51c8d9ddccccb",
+      "bytes": 670,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/07.edition-regression.stderr.txt": {
+      "sha256": "ae6ad4d8195d28d8d5037a0c8092615c1fc65b192c83c8e8409b83d58dc797b0",
+      "bytes": 110,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/07.edition-regression.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/08.docs.json": {
+      "sha256": "b20936984cc9b2be04aabe7dd1f07f96d1b9656b3d04d3c0581ebfd58b107aec",
+      "bytes": 618,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/08.docs.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/08.docs.stdout.txt": {
+      "sha256": "44d8fd3e0b652d1b1f39545b0b133a677b40121fa0e0abc17ef14f0a7305e19c",
+      "bytes": 109,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/09.docs-regression.json": {
+      "sha256": "4ee9d799b61f1ccf98c892d23bd8ac4dd6b8eed66aa553851b9ca245d2e60a81",
+      "bytes": 656,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/09.docs-regression.stderr.txt": {
+      "sha256": "338b2029a9a50a4a701fa1050c63cad8bd10ca054f49d0b36bd4a6f63a40174e",
+      "bytes": 135,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/09.docs-regression.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/10.constitution.json": {
+      "sha256": "941c0fa4429fc55c4012372b66f93646df217fa57c7e7b688093ac3f4c400d1d",
+      "bytes": 716,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/10.constitution.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/10.constitution.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/11.inventory.json": {
+      "sha256": "7e19890f624704cd1afdbf2c752f1491a8e6777c67c4abf1522460f96b756732",
+      "bytes": 652,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/11.inventory.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/11.inventory.stdout.txt": {
+      "sha256": "9d4004245cecb9388bb9b5fbbd5eb1124983d7b0c5b287b75dd8cc53560d2f73",
+      "bytes": 126,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/12.coverage.json": {
+      "sha256": "7383790687a2337e34f1be554bb1416b03b28c14c8e398157d75496bfbf356f5",
+      "bytes": 646,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/12.coverage.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/12.coverage.stdout.txt": {
+      "sha256": "01988f73bb44af12755aa85e81b748373e9f18116c60fdcae362f0a3846b7164",
+      "bytes": 463,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/commands.json": {
+      "sha256": "adf995675c6661b936d031a30667b4da892e42ecc48ed7fb23a2fe0c68615830",
+      "bytes": 10125,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/executed-driver.py.txt": {
+      "sha256": "9e261bfca582b1197b979a6bd3558283e3534995f1245295c58b1e1a7b7d12e0",
+      "bytes": 28621,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/files.json": {
+      "sha256": "40849d924915a0b970dac43142ad347556c3463d26d55a0710457f8399645322",
+      "bytes": 6480,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/identity.after.json": {
+      "sha256": "1005f4b9bcdd40871d7442e109f7f122735b40435a1016eb13c2dcaa24858e64",
+      "bytes": 252171,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/identity.before.json": {
+      "sha256": "2d6895bd9427b758cc5ee5c232667a533918fd55c71a3063f5996fcfbf49c83a",
+      "bytes": 254813,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/rendered-files.json": {
+      "sha256": "3756dac50da04ed95bc22e5d4d0015e121be45fe390d6f9934a173d4eda09148",
+      "bytes": 8855,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/attempt-01/results.json": {
+      "sha256": "6013ee6e87854524be78931b5c6faaec86c3c4f0265f83d67564108575b667d6",
+      "bytes": 3520,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/driver.py": {
+      "sha256": "9e261bfca582b1197b979a6bd3558283e3534995f1245295c58b1e1a7b7d12e0",
+      "bytes": 28621,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/policy-validation/reviewed-inputs.json": {
+      "sha256": "8e067dc5774423707fc603cae104d187c26e97a5261585fab39115128d76894d",
+      "bytes": 254891,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/results-policy-01.md": {
+      "sha256": "cf730a8077f079e0a69453db50ada679acbe68486ffab02640a8ef2fae40b33e",
+      "bytes": 2823,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/results.md": {
+      "sha256": "05bb68af0bd9e867c96864de7afe5bdc5239fbd25e8f226cb9f81753bf8ab798",
+      "bytes": 4581,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/basis-scan-priority.qli": {
+      "sha256": "83a6bcb284c22fd4dd7cd5f6223baa87147153c32c2a1bfe2132286a81a9d806",
+      "bytes": 204,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/duplicate-access.qli": {
+      "sha256": "8123bb2740ec219abfc5962992f82799c5f3288cf5d69ff4fdf86edbd1a5ae92",
+      "bytes": 189,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/forward-basis.qli": {
+      "sha256": "463ea4bcc07e3ddcc8323c2993a35fd409d3305b9dd24f3e0df19becca5ee5cc",
+      "bytes": 200,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/forward-natural.qli": {
+      "sha256": "50407680955bcfdb616dc472596729e66590fe383a973f7ebb21918e055e6380",
+      "bytes": 216,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/natural-priority.qli": {
+      "sha256": "a8fefad1fb6b12b36ca64f242e44465f25ee865a56cb7a87ca221e85a20694d5",
+      "bytes": 200,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/static-runtime-collision.qli": {
+      "sha256": "d3ab8356c010d97b042ce0d59d2ddb9b664c3ed0c8aecd29868fd0b9aebe7dff",
+      "bytes": 196,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/unused-missing-access.qli": {
+      "sha256": "6c1a62d498f39be483c6d4dab793b273120b98e80712ec87c2a06f540cf63d31",
+      "bytes": 166,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/valid-dependent-basis.qli": {
+      "sha256": "5ecd2979bb39a54c22cfa55c86fbb9a4d2813275a985e0566cebd0312a358c72",
+      "bytes": 245,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/valid-operation.qli": {
+      "sha256": "9b7ccca394a09f4161b8a1721da6c36c6a56b639c29153fa67848eabd4b17fa7",
+      "bytes": 188,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/wrong-kind-access.qli": {
+      "sha256": "453b0dc9265f89d991ceeec7cf6ce0bd8c9d041d6286b8222fcfa7bea24a4ae0",
+      "bytes": 216,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/README.md": {
+      "sha256": "a28d9d74cd79c8caeff35ba5e6031011121b8c0fe892c19e73b8c963d01db4b5",
+      "bytes": 2098,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/driver.py": {
+      "sha256": "07a2635d631b626e75b1033b93a9787fc704b09b193ef263d450fa619ef9babb",
+      "bytes": 1681,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/format-repair-01.json": {
+      "sha256": "b371a4ca2ebeb56fa38c448f5a35ac7ced7709bf9c0158c9b229fc0790f57441",
+      "bytes": 576,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/00-cargo-version.json": {
+      "sha256": "489d4aa3d5bf4d7f72c5b451712e1fd6edd1cd11b294c85b72f3f889e5d4ac37",
+      "bytes": 887,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/00-cargo-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/00-cargo-version.stdout.txt": {
+      "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/01-rustc-version.json": {
+      "sha256": "11e354d9ce1140a5f5026b1123f2ccabc2766dda2c62a46729e14ac8f5132b4d",
+      "bytes": 887,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/01-rustc-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/01-rustc-version.stdout.txt": {
+      "sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/02-format.json": {
+      "sha256": "e40285531dc256eedde48bfc0e25d6893dea16f8ec6ab5adb36db3cee50be51a",
+      "bytes": 897,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/02-format.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/02-format.stdout.txt": {
+      "sha256": "efc21ad948fdca7a47aefc6b179035c99c2fe150c709b83780d4ac964357b5e6",
+      "bytes": 1143,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/executed-driver.py.txt": {
+      "sha256": "a9c33268c544dd12817f186472fd065ef76df82a617067e5605ac65267a78433",
+      "bytes": 12621,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/inputs-after.json": {
+      "sha256": "99143994ea2b3e7d7bfb09717937114cee6f5aa07faa68609fa9b9a5fbd5d7d2",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/inputs-before.json": {
+      "sha256": "99143994ea2b3e7d7bfb09717937114cee6f5aa07faa68609fa9b9a5fbd5d7d2",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/planned-commands.json": {
+      "sha256": "267048d03946adf60af9dbfff4fbfedc6454ec1db97fdb45de37b9a18545a241",
+      "bytes": 1751,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/results.json": {
+      "sha256": "5d2b2b86ae6ec20e44710fb5b2c9d66dd6949be4ce3fd095764b27bd9e2de01b",
+      "bytes": 3893,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/00-cargo-version.json": {
+      "sha256": "9513ea45080ec10974de2758cf172d8febc92524afd3393f44e0f360c2807b47",
+      "bytes": 887,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/00-cargo-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/00-cargo-version.stdout.txt": {
+      "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/01-rustc-version.json": {
+      "sha256": "4cffc7440f45bf27b99bffef35aeabb21e4bbff39ed33f6fd85c0b3370cc08d5",
+      "bytes": 887,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/01-rustc-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/01-rustc-version.stdout.txt": {
+      "sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+      "bytes": 47,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/02-format.json": {
+      "sha256": "e47a6c75e7f730f13b9db5fbd607c4d70bdadfe43e30856252205f10b2b879a2",
+      "bytes": 896,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/02-format.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/02-format.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/03-check-all-targets.json": {
+      "sha256": "451cfd95f0f0d5ebfd3e582c26b5d1a06a76aec4e5cb78f509fb7c816903421e",
+      "bytes": 947,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/03-check-all-targets.stderr.txt": {
+      "sha256": "5509be9802be58ed2aa3a4a880e5e7d5073e34155731f7a85d02821a37a1e64f",
+      "bytes": 120,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/03-check-all-targets.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/04-shared-type-tests.json": {
+      "sha256": "4d2bed84a68705498510d57c9e87cabaa7c9be3d888191b1014b9e325bb224ba",
+      "bytes": 1161,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/04-shared-type-tests.stderr.txt": {
+      "sha256": "70885dd22e62612ebcb42d8b06e65c94161c00f7f0df84610aa77b8e35b42013",
+      "bytes": 659,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/04-shared-type-tests.stdout.txt": {
+      "sha256": "b01b0be4490efb84a316f9a70a6f3aea861eca47499486a938e8181add46bc8a",
+      "bytes": 491,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/05-focused-integration-tests.json": {
+      "sha256": "34a507fc665d5b84fac4f6bca42da11a7d2775cfd333d0cae23cafa3956b0aeb",
+      "bytes": 3397,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/05-focused-integration-tests.stderr.txt": {
+      "sha256": "318de7e01482dc57d795ec0e11ebc6c38b2c8868a4ef0cf6073250c34b6d70f4",
+      "bytes": 1848,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/05-focused-integration-tests.stdout.txt": {
+      "sha256": "246b29c8c6cdec687e4a7114a0089ebd99ea14cecec3cc4c7ace6dcbfccce3c6",
+      "bytes": 12867,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/06-clippy-all-targets.json": {
+      "sha256": "9a1be8f773ae9dc24a1ce0593d60d6db05134a72c13e4db5a65d7706d3458667",
+      "bytes": 987,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/06-clippy-all-targets.stderr.txt": {
+      "sha256": "44753826e0b3b37d8c56ffba21f81945dffa615b80fd015af128eb379b42cb07",
+      "bytes": 120,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/06-clippy-all-targets.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/07-rebuilt-cli.json": {
+      "sha256": "3c8317cb9bf1a39a9a45f6feb6295c6d3c4ef634e7b4ef42a5e7642dacee4d80",
+      "bytes": 937,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/07-rebuilt-cli.stderr.txt": {
+      "sha256": "fcce12e8e9a3743502ec98eb1888a43a32489c10219b715f931aa40675ed5311",
+      "bytes": 60,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/07-rebuilt-cli.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/executed-driver.py.txt": {
+      "sha256": "a9c33268c544dd12817f186472fd065ef76df82a617067e5605ac65267a78433",
+      "bytes": 12621,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/inputs-after.json": {
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/inputs-before.json": {
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/planned-commands.json": {
+      "sha256": "267048d03946adf60af9dbfff4fbfedc6454ec1db97fdb45de37b9a18545a241",
+      "bytes": 1751,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/results.json": {
+      "sha256": "552714804303102dfb344b12aeb82ed0050b221ff4497a170f38bd4c3dd3358f",
+      "bytes": 12561,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/00-cargo-version.json": {
+      "sha256": "3c63231db014e75d1f0b64f9d9aee264ab8666a4bb5670ab75eb1f3b19e8cbe2",
+      "bytes": 925,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/00-cargo-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/00-cargo-version.stdout.txt": {
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf",
+      "bytes": 36,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/01-rustc-version.json": {
+      "sha256": "4795428709a1b2389568ee80eee7c54f73b09002bdc0c13cbc867fef0a74de92",
+      "bytes": 926,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/01-rustc-version.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/01-rustc-version.stdout.txt": {
+      "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f",
+      "bytes": 36,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/02-format.json": {
+      "sha256": "9cd2585e0fb96ecc9ac910b23e4ef04686eaf5ee6db3480988a6f49a7772dc5c",
+      "bytes": 935,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/02-format.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/02-format.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/03-check-all-targets.json": {
+      "sha256": "fbd45f534acaae0d3f30e14971969a123e0b21f53b4b68af6182b9c44a70c688",
+      "bytes": 987,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/03-check-all-targets.stderr.txt": {
+      "sha256": "f0811fb02e18c6891e7f06f29f24e23a84b50bb7725a42e7ddd6662001bc0866",
+      "bytes": 539,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/03-check-all-targets.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/04-shared-type-tests.json": {
+      "sha256": "7346f41b88d3c5e0ce06a4453cb8d970e8bdfc5eae7bcd6edc480d81fafea127",
+      "bytes": 1200,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/04-shared-type-tests.stderr.txt": {
+      "sha256": "2269b340eb064871bb4868b016608617d37796af65b7f76e2e2dcba9af6adbef",
+      "bytes": 659,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/04-shared-type-tests.stdout.txt": {
+      "sha256": "fbac058aa5ce598cd2f0822ea7d47a58c2119204aa51999c6d38c15fe207cd5a",
+      "bytes": 491,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/05-focused-integration-tests.json": {
+      "sha256": "9817a48ecf9ee6508c88c9ab3cccd264e2dd9e792708e15dabb06e507df3640f",
+      "bytes": 3435,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/05-focused-integration-tests.stderr.txt": {
+      "sha256": "e10b926a669a1e44d9c95cfbe23222107e5bb10c5fc8dfa88acabcbf9dbfcb7b",
+      "bytes": 1848,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/05-focused-integration-tests.stdout.txt": {
+      "sha256": "0fcde1462b9baa822b933881b2ad119c48be53b434ec3460b0a1fe1d6b0c4c3b",
+      "bytes": 12867,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/06-clippy-all-targets.json": {
+      "sha256": "85957e94d5bf0d0cacf3ed77f2a4eb2dd2dfd7dfdd40600e35627ce96b9a3e78",
+      "bytes": 1027,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/06-clippy-all-targets.stderr.txt": {
+      "sha256": "da4301f20337a9b326dd0f7681deda3c9557ca417532253b182d1f65fc6a1433",
+      "bytes": 120,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/06-clippy-all-targets.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.json": {
+      "sha256": "759d00cfa3bc88e1cba988d84b2e9690657684a5cdf39143dcf27c0fbd11acca",
+      "bytes": 976,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.stderr.txt": {
+      "sha256": "4b395c9c76c7f7fb5221d30df7320c7a2387ff3842c426dbee6a59a54b5cffab",
+      "bytes": 60,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/executed-driver.py.txt": {
+      "sha256": "a9c33268c544dd12817f186472fd065ef76df82a617067e5605ac65267a78433",
+      "bytes": 12621,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-after.json": {
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-before.json": {
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "bytes": 110516,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/planned-commands.json": {
+      "sha256": "05b42c94629d42909599154fd05e763caf9e5738c62418b20575104822888128",
+      "bytes": 2111,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/results.json": {
+      "sha256": "52d39b3fcb9f3ce618910ede307a944a5d903930ef1e2f655cec585ae8102551",
+      "bytes": 12967,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/result-count-correction-01.json": {
+      "sha256": "cc4b8ad667769daa2dd9c420bd4e6a3832a1f0ccde87eb180238088e50f12e7e",
+      "bytes": 1150,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/selection.json": {
+      "sha256": "bbe8eb44a3f83b091d8ddcc09a2bddccbfe949f2936b2f1fe48b5c4c220afc68",
+      "bytes": 1682,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/validation-target.lock": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/inputs.json": {
+      "sha256": "37a1799b2e31f2dbbcf22961313e31f11a91a1f95d7a90731a5a17547fa04555",
+      "bytes": 5566,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/next-unit.md": {
+      "sha256": "1e8e80ad3195a07c6ac8537326734dcd41ea1b848e9b32831b701e6febdb006b",
+      "bytes": 9975,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-candidate-01.md": {
+      "sha256": "096bff87770b84d867973b522238dfaa20f11a3fa36e038b39856128530792c9",
+      "bytes": 13247,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-dataflow-01.md": {
+      "sha256": "e7f9c9b09165e4c59af1074d3c5270332f2893789b4da33947fc9b4bda9d0847",
+      "bytes": 11160,
+      "mode": 420
+    },
+    "tests/fixtures/verification_v022/inventory.json": {
+      "sha256": "5e5bc6ae29bcb0a7355a9a247dfba57e824b39aab26a615a2ced8ba6963a19e7",
+      "bytes": 226402,
+      "mode": 420
+    },
+    "tests/fixtures/verification_v029/coverage.json": {
+      "sha256": "49e46fd99a3af06d23d115220d2cf7c1ceedc59072fdb77f6c3a0f2438553848",
+      "bytes": 89343,
+      "mode": 420
+    },
+    "tests/sized_declarations.rs": {
+      "sha256": "ca9bf6d1cbcbd0b7eeab044bfc511026e4f489f09f8957e8c6059d703953f4d8",
+      "bytes": 19084,
+      "mode": 420
+    }
+  },
+  "self_excluded": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/final-packet-01.json",
+  "source_commit_before_packet": "a4a5dfbcca34fa5e600a5f33703c360f13221ecb",
+  "declared_incomplete_closure": true,
+  "scope": "Actual completed bounded formal/access implementation, original/after observations, reviews, Rust and policy records; future original-AST notes are candidates only. No whole Issue, proof or release completion."
+}

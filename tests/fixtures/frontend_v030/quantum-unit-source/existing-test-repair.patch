@@ -1,0 +1,40 @@
+diff --git a/tests/ordinary_types.rs b/tests/ordinary_types.rs
+index 81405f2..e413a4e 100644
+--- a/tests/ordinary_types.rs
++++ b/tests/ordinary_types.rs
+@@ -360,15 +360,14 @@ fn existing_execution_profile_limits_remain_explicit() {
+             "{error}"
+         );
+     }
+-    for source in [
+-        source!("bit-zero"),
+-        source!("bit-boolean-keywords"),
+-        source!("quantum-unit"),
+-    ] {
+-        let error =
+-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+-        assert_eq!(error.code(), "unsupported", "{error}");
++    for source in [source!("bit-zero"), source!("bit-boolean-keywords")] {
++        let program = elaborate(source);
++        program.lower_raw().unwrap();
++        assert_eq!(program.lower().unwrap_err().code(), "unsupported");
+     }
++    let program = elaborate(source!("quantum-unit"));
++    program.lower().unwrap();
++    assert_eq!(program.lower_raw().unwrap_err().code(), "unsupported");
+     let error = elaborate(source!("unit-forget-readout"))
+         .lower()
+         .unwrap_err();
+diff --git a/tests/sized_source.rs b/tests/sized_source.rs
+index 6a6560e..d51f415 100644
+--- a/tests/sized_source.rs
++++ b/tests/sized_source.rs
+@@ -1972,7 +1972,7 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
+     let source = "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{let copy=q; q}";
+     parse_module(source).unwrap();
+     reject(source, "ownership");
+-    let source = "pub unitary fn f(q:Q<Unit>)->Q<Unit>{q}";
++    let source = "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{q}";
+     let ast = parse_module(source).unwrap();
+     let error = ParsedProgram::parse(sources(source)).unwrap_err();
+     assert_eq!(error.code(), "unsupported");

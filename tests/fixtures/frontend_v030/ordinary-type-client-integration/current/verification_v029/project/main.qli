@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::init0;
+use std::quantum::t;
+use std::observe::measure_z;
+
+// Deliberately unreachable from main: selected checking must still visit it.
+unitary fn unused_phase(q: Q<Bit>) -> Q<Bit> { t(t(q)) }
+observe fn main() -> Bit { measure_z(init0()) }

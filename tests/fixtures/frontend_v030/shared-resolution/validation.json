@@ -1,0 +1,162 @@
+{
+  "kind": "performed validation summary, not a proof certificate",
+  "unique_passed": 171,
+  "unique_ignored": 9,
+  "runs": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "project",
+        "--test",
+        "compile",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "static_operations"
+      ],
+      "passed": 67,
+      "ignored": 0,
+      "scope": {
+        "project": 11,
+        "compile": 30,
+        "operation_parameters": 14,
+        "static_operations": 12
+      },
+      "env": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_source",
+        "--test",
+        "sized_cli",
+        "--test",
+        "frontend_ownership_differential",
+        "--test",
+        "source_scope",
+        "--test",
+        "source_snapshots"
+      ],
+      "passed": 45,
+      "ignored": 7,
+      "scope": {
+        "sized_source": 34,
+        "sized_cli": 5,
+        "frontend_ownership_differential": 1,
+        "source_scope": 3,
+        "source_snapshots": 2
+      },
+      "output": "scoped-tests-completion.log",
+      "output_scope": "completion segment; earlier build/start output is not duplicated",
+      "env": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::"
+      ],
+      "passed": 36,
+      "ignored": 2,
+      "output": "unit-contract-clippy.log",
+      "env": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "function_contracts",
+        "--test",
+        "meaning_evidence"
+      ],
+      "passed": 20,
+      "ignored": 0,
+      "scope": {
+        "function_contracts": 17,
+        "meaning_evidence": 3
+      },
+      "output": "unit-contract-clippy.log",
+      "env": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "shared_resolution"
+      ],
+      "passed": 3,
+      "ignored": 0,
+      "env": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0
+    }
+  ],
+  "other_successful_commands": [
+    [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ],
+    [
+      "python3",
+      "scripts/check_docs.py"
+    ]
+  ],
+  "existing_skips": {
+    "native_kernel_explicit_lanes": 7,
+    "historical_256_specialization_or_receipt_work_limits_issue_274": 2
+  },
+  "new_ignores": 0,
+  "repeated_checks_excluded_from_unique_count": [
+    "Three new resolver unit tests also passed in an earlier focused invocation.",
+    "The lib Clippy check passed before all-target Clippy."
+  ],
+  "test_authoring_correction": {
+    "first_source": "use std::quantum::init0; unitary fn unused()->Q<Bit>{init0()} observe fn main()->(){()}",
+    "actual_first_code": "Unsupported",
+    "first_assertion_expected": "Effect",
+    "correction": "Change only the valid unrelated entry to observe fn main()->CBit{false}; the unused function now reaches the intended Effect rejection. No production source was changed for this test correction."
+  },
+  "scope": "Existing 4000-case ownership differential plus small semantic/native tests. No new maximum-size quantum test."
+}

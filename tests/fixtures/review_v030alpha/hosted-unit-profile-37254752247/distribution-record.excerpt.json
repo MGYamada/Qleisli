@@ -1,0 +1,62 @@
+{
+  "format": "qleisli.distribution-validation",
+  "version": 1,
+  "status": "failed",
+  "scope": "clean HEAD production package and complete repository source archive",
+  "candidate": {
+    "clean": true,
+    "commit": "9e429542b806bbb60027f17a5fbe658667f8146f",
+    "tree": "7c74c14663634ae62b75bdaac13c979254c03b2a"
+  },
+  "started_utc": "2026-10-05T02:19:11.011803+00:00",
+  "finished_utc": "2026-10-05T02:37:03.784579+00:00",
+  "error": "command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/logs/14.stderr",
+  "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "source_root": "/home/runner/work/Qleisli/Qleisli",
+  "source_archive": {
+    "excluded_tracked_files": [],
+    "file_count": 9701,
+    "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/qleisli-0.3.0-alpha-source.tar",
+    "sha256": "2fe01a9dae9d7781d797843cf75c36bc0475ac28bb7a9bc32d67032642f81473"
+  },
+  "crate": {
+    "cargo_verification": "passed",
+    "extracted_metadata_and_lock": "validated offline with --locked",
+    "file_count": 9695,
+    "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/qleisli-0.3.0-alpha.crate",
+    "sha256": "85f2f76477294c5e66d4af3830b70e7668c5656ecd172b47b9e76273b33cfa51"
+  },
+  "installed_quickstart": {
+    "binary": "/home/runner/work/_temp/qleisli-distribution-work-boxafp4q/installed/bin/qleisli",
+    "checks": [
+      "Bell check/run/sample in text and JSON",
+      "embedded qft2",
+      "reject measured-owner reuse"
+    ],
+    "execution": "temporary directory; empty helper-tool PATH",
+    "historical_registry_links_pending_live_check": [],
+    "package": "qleisli",
+    "publication": "not performed",
+    "readmes": "matching Bell source and version",
+    "registry_links": "absolute; current targets exist locally; retired contracts use reviewed immutable refs",
+    "version": "0.3.0-alpha"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/source-production"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-boxafp4q/source",
+      "elapsed_seconds": 985.362,
+      "exit_code": 101,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/logs/14.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/logs/14.stdout"
+    }
+  ]
+}

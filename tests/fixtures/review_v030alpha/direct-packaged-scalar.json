@@ -1,0 +1,107 @@
+{
+  "format": "qleisli.direct-packaged-scalar-review",
+  "version": 1,
+  "issues": [
+    44,
+    32
+  ],
+  "base_commit": "b7d749075593dd6a09541d7fa02c066028d2b1f6",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6023304272",
+  "behavior": "Selected scalar preparation now matches the existing common Q<A> signature, preserving exact closed basis tree, owner, ordered axes and coefficient omega; no native rule, source grammar, primitive meaning or capacity changes. Raw finite provider mapping remains Unit/Bit products only.",
+  "source_sha256": {
+    "src/frontend/sized/primitive.rs": "02acf3aa8bfba3b61e7e28ef68db13d45ab94b0d73525661774c7a303f0e747a",
+    "src/frontend/sized/elaborate.rs": "e58ca8555e7a9f7320ea4c5b6dbf430b8b8b10ec9553f8424006964da4df58e4",
+    "src/frontend/sized/raw/preservation.rs": "2b0c5f674ba6b358e37791447ba430bb36438934963bf8e0d1b3405c5136e735",
+    "tests/quantum_tuple_unitors.rs": "cac26463d0cf2a5fae40c9f6783473d833e99ba6b3bfb582a42cd0d172d1d27d",
+    "tests/classical_functions.rs": "cf3bff6caa6519ed6c5d29dc860e86595e3cf567309cbecb429f5755ecd5295e",
+    "tests/checked_operations.rs": "4597a94f3cdc586ad823531f66bbc54dfa810d5264e14bb70f7bd54d79ff718d"
+  },
+  "independent_validation": [
+    "Independently requested omega-identity for nested, n-ary, zero-wire and Bits-containing packaged bases, at most two system qubits, with joint complex external-reference action; identity requests reject.",
+    "Direct scalar provider checked against original phase Meaning at n=0/1/2; lying identity provider rejects even n=0.",
+    "Independent original-order Raw replay refuses native-valid wrong scalar phases on zero/n-ary/nested product owners.",
+    "checked_op original test retains its old repeat_static concrete limitation; separately supported Z provider is freshly checked, identity-for-Z rejects, and plain unchecked lowering remains barred."
+  ],
+  "authoring": {
+    "first_source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli",
+    "before": "Actual pre-code unsupported concrete scalar refusal at the base commit.",
+    "after": "Same source/argv accepted in edited worktree; separate record, no rewritten baseline.",
+    "schema_repair": "Original ad hoc session bytes preserved unchanged as unselected-checker-original.json (SHA-256 9475edbbfcc56b4b27f4b63f26950b80614e101f66ef373eb9857aff0309ca9e); new supported manifest registers eight newly executed observations and all four original sources without reconstructing missing original timestamps."
+  },
+  "hosted_ci": {
+    "run": 37513891374,
+    "head": "b7d749075593dd6a09541d7fa02c066028d2b1f6",
+    "status": "Normal docs/Rust/MSRV/distribution jobs failed; other jobs still running at observation. No full success or restart claimed.",
+    "failures": {
+      "docs": {
+        "log_sha256": "6c073dcb398d9aefcc9764c2f1e028730d0d0ced7ce9d48430be0e7ac06f30e8",
+        "selected_actual_lines": [
+          "2026-10-06T18:48:14.9511666Z /home/runner/work/Qleisli/Qleisli/tests/fixtures/authoring_sessions/meaning-enforcement-v030/session.json: unknown record format/kind",
+          "2026-10-06T18:48:14.9564010Z ##[error]Process completed with exit code 1."
+        ],
+        "selection": "Actual decisive lines only; large producer debug dumps are not copied into fixtures."
+      },
+      "msrv": {
+        "log_sha256": "d5381991ceddaa2b798475c25d705a8df2f782fba8761600f3d0410e83a6282d",
+        "selected_actual_lines": [
+          "2026-10-06T18:53:09.0861827Z thread 'selected_public_entry_keeps_the_existing_constructor_projection_refusal' panicked at tests/checked_operations.rs:422:10:",
+          "2026-10-06T18:53:09.1589278Z test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s",
+          "2026-10-06T18:53:09.1598949Z ##[error]Process completed with exit code 101."
+        ],
+        "selection": "Actual decisive lines only; large producer debug dumps are not copied into fixtures."
+      },
+      "distribution": {
+        "log_sha256": "80f39c3ed6603ed80444755558a944162d482c7f909e2cf6bd0e562b7568d615",
+        "selected_actual_lines": [
+          "2026-10-06T18:54:14.1032503Z test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s",
+          "2026-10-06T18:54:17.1232743Z ##[error]Process completed with exit code 1."
+        ],
+        "selection": "Actual decisive lines only; large producer debug dumps are not copied into fixtures."
+      }
+    }
+  },
+  "development_failures": [
+    "First test compilation used nonexistent ElaboratedProgram direct input/output methods and retained an unused Kind import; repaired using actual root definition inspection.",
+    "First direct-provider test source replacement did not match retained multiline source; assertion caught the unchanged source, and the actual multiline substring was used.",
+    "First independent equation omitted its outer transport sequence and used owner IDs inconsistent with the declared interface. Fixed the explicitly authored transport placement and fresh owner numbering; semantics still come from omega times identity, never the candidate.",
+    "First schema registration omitted the existing repeated-bit source; added its exact hash and linked retained repeat observation.",
+    "Initial local full-target tests on both toolchains failed only the process-cleanup test because sandbox refused ps:129 passed/1 failed/3 ignored per library; exact commands retried outside sandbox.",
+    "Strengthened the negative native equation to preserve the complete transport tree and change only the scalar coefficient, avoiding rejection merely for different request child arity. This test-only strengthening occurred during the broader run and is separately rerun on both toolchains."
+  ],
+  "checks": {
+    "clippy": "Both latest Rust and actual MSRV1.85.0 all-target Clippy passed -D warnings.",
+    "python": "31 inventory/coverage policy tests and7authoring checker tests passed.",
+    "authoring": "51 supported records,74snapshots,1239observations checked; no recorded command executed.",
+    "inventory": "Only three changed source snapshots refreshed after checking unchanged public surfaces and capacities;275constructors/265sources/20boundaries/22paths/9modes unchanged.",
+    "constitution": "Identity/continuity against reviewed38baae7d19535602b21270e11e97617d45205b37 passed; not fresh Lean replay.",
+    "docs": "2196local links/30anchors/206Lean roots passed; pinnedmdBook0.5.4 build and29HTML/1224links/471anchors passed.",
+    "format": "cargo fmt check and git diff check passed.",
+    "fixture_working_budget": "17907files,133632695bytes including ignored; unchanged18000/150MiB ceilings passed.",
+    "broader_actual_runs": {
+      "latest": {
+        "completed_targets": 23,
+        "passed_so_far": 344,
+        "ignored_so_far": 3,
+        "state": "in progress, currently frontend_ownership_differential 4000 preexisting cases; not a full pass",
+        "session_id": 70724,
+        "transcript": "/private/tmp/qleisli-direct-scalar-latest-tests-retry.log"
+      },
+      "msrv": {
+        "completed_targets": 23,
+        "passed_so_far": 344,
+        "ignored_so_far": 3,
+        "state": "in progress, currently frontend_ownership_differential 4000 preexisting cases; not a full pass",
+        "session_id": 54795,
+        "transcript": "/private/tmp/qleisli-direct-scalar-msrv-tests-retry.log"
+      }
+    },
+    "final_test_strengthening": "The final full-tree zero-scalar negative request passed the focused direct scalar test on latest and actual MSRV after the test-only strengthening."
+  },
+  "constitutional_impact": "Adopted QS/PR/RS/EXACT and both scoped ordinary QLV1 guarantees unchanged. Original AST preservation, runtime/native correspondence, general QS/PR and quantitative RS remain pending. No AI adoption, new guarantee, fresh Lean replay or release approval.",
+  "not_performed": [
+    "Fresh Lean build/audit/replay",
+    "Fresh package/install/release gates for edited source",
+    "New maximum-size cases"
+  ],
+  "completion": "22/111 (19.82%); no Issue closed, original acceptance criteria unchanged."
+}

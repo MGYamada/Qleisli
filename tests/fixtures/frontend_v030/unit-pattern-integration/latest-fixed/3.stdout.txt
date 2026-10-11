@@ -1,0 +1,67 @@
+
+running 3 tests
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 14 tests
+test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+test existing_execution_profile_limits_remain_explicit ... ok
+test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... ok
+test sized_unit_patterns_consume_only_actual_unit_values ... ok
+test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+test finite_measurement_and_feedforward_keep_their_correlated_action ... ok
+test finite_boolean_actions_match_an_independent_truth_result ... ok
+test source_bearing_native_evidence_retains_the_actual_canonical_source ... ok
+test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.57s
+
+
+running 8 tests
+test nary_type_capacity_and_rejected_deep_drops_are_bounded ... ok
+test formerly_silent_reassociation_now_rejects ... ok
+test same_shape_wrong_permutation_does_not_pass_identity_evidence ... ok
+test flat_arity_and_nested_depth_have_distinct_bounds ... ok
+test nary_static_meanings_retain_shape_and_order ... ok
+test nary_owners_include_units_pending_fields_and_branch_frames ... ok
+test explicit_layout_is_exact_and_preserves_an_entangled_reference ... ok
+test documented_type_categories_and_explicit_only_conversions ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.87s
+
+
+running 8 tests
+test runtime_parameter_pattern_grammar_is_not_implicitly_expanded ... ok
+test exact_pattern_shapes_reject_quantum_bit_and_equal_width_products ... ok
+test sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule ... ok
+test unit_basis_patterns_keep_exact_unary_function_and_predicate_arity ... ok
+test coherent_unit_lift_retains_exact_scalar_and_reference_action ... ok
+test effectful_unit_rhs_is_retained_before_the_empty_result_is_bound ... FAILED
+test coherent_control_exposes_unit_phase_for_lift_and_computed_pattern ... ok
+test finite_named_unit_parameters_and_nested_patterns_are_ordinary_values ... ok
+
+failures:
+
+---- effectful_unit_rhs_is_retained_before_the_empty_result_is_bound stdout ----
+
+thread 'effectful_unit_rhs_is_retained_before_the_empty_result_is_bound' (12531918) panicked at tests/unit_patterns.rs:128:5:
+assertion `left == right` failed
+  left: {[true]: 1.0000000000000002}
+ right: {[true]: 1.0}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    effectful_unit_rhs_is_retained_before_the_empty_result_is_bound
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.32s
+

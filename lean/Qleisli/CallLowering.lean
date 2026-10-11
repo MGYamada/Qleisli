@@ -2,7 +2,7 @@ import Qleisli.HierarchicalAcceptance
 import QleisliKernel.Hierarchical.CallLowering
 
 /-! Coordinate semantics of shared calls and their existing-node expansion.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The producer is untrusted. These equations preserve the actual ordered maps;
 ordinary derivation checking of the generated nodes remains mandatory. -/
 

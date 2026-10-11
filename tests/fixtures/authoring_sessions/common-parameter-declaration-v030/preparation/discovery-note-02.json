@@ -1,0 +1,14 @@
+{
+  "kind": "actual-tool-output-transcript-not-cli-observation",
+  "attempted_reads": [
+    "rg src/frontend/compile/generic.rs src/frontend/compile/operations.rs",
+    "sed src/frontend/compile/generic.rs"
+  ],
+  "retained_diagnostics": [
+    "rg: src/frontend/compile/generic.rs: No such file or directory (os error 2)",
+    "sed: src/frontend/compile/generic.rs: No such file or directory"
+  ],
+  "command_note": "These were components of a multi-read command whose final component succeeded. No standalone child exit is inferred.",
+  "repair": "The actual operations.rs method was located and read; it calls signature before static operation elaboration.",
+  "limit": "Transcript only; no standalone initial raw-output file captured."
+}

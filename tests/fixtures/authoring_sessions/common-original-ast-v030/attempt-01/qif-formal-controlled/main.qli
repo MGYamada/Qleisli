@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn conditional[static U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>)
+requires Controlled(U) { qif(c,q) { 0 => U, 1 => U } }
+pub fn main() -> Unit { () }

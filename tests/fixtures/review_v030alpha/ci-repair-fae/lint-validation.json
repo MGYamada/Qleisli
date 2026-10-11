@@ -1,0 +1,99 @@
+{
+  "format": "qleisli.ci-native-roundtrip-lint-repair",
+  "version": 1,
+  "baseline_commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "hosted_run": 37206779468,
+  "msrv_job": 111449523245,
+  "isolated_tree": "/private/tmp/qleisli-ci-repair-fae",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--test",
+        "native_roundtrip",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_before": 101,
+      "toolchain_path_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+      "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+      "clippy": "clippy 0.1.85 (4d91de4e48 2025-02-17)"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_after": 0,
+      "toolchain_path_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--test",
+        "native_roundtrip",
+        "positive_evidence_coverage_reaches_every_retained_path",
+        "--",
+        "--nocapture"
+      ],
+      "exit_after": 0,
+      "rustc": "1.98.1",
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "scope": "one existing positive-evidence test, four retained proposals, at most two qubits"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "nested-shared-dag",
+      "sha256": "ac1e9bc4d0047854fccb92473ca74e7dd7cab0ae8a7bd6b7450cdf3a5b74345f",
+      "bytes": 3012,
+      "matches_retained_artifact": "tests/fixtures/review_v030alpha/roundtrip-coverage/current-schema-integration/10.qirf"
+    },
+    {
+      "name": "certified-use-and-logical",
+      "sha256": "f3be3edb42cd4ff8a6b9ba8044c97bcecfe660115ad70e4ce6d3e75266267532",
+      "bytes": 1371,
+      "matches_retained_artifact": "tests/fixtures/review_v030alpha/roundtrip-coverage/current-schema-integration/02.qirf"
+    },
+    {
+      "name": "branch-true",
+      "sha256": "a2512ed2a66411fb83828323e3da84361379eb6c807968312c30123cbfc5b972",
+      "bytes": 2584,
+      "matches_retained_artifact": "tests/fixtures/review_v030alpha/roundtrip-coverage/current-schema-integration/01.qirf"
+    },
+    {
+      "name": "branch-false",
+      "sha256": "47325fe0bd9680c93d0f6b05fd729064f66527f04bcfeeeaed1e70cdcd0a8c82",
+      "bytes": 2585,
+      "matches_retained_artifact": "tests/fixtures/review_v030alpha/roundtrip-coverage/current-schema-integration/00.qirf"
+    }
+  ],
+  "files": {
+    "hosted-111449523245.log.gz": "d3d1a17363ba961f41e691e902268fc7ccf1715a946ee222e6fd75ca767a5134",
+    "hosted-111449523348.log.gz": "1672d32bef187d4051821fe2b5e04ffbc33acc5db0ef21da1d630bd10eb8f6be",
+    "msrv-clippy-after.stderr.txt": "49e1d7d55fac161021e9fb391e94b1942d6e518e40a71c1ff1f20e12158239ea",
+    "msrv-clippy-after.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "msrv-clippy-before.stderr.txt": "59d5ac2fc663de90e9fdc181588b2d47a3d38bdced2692cbcd49cc361ffabecf",
+    "msrv-clippy-before.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native_roundtrip.rs.after.txt": "d9b89443d14ba44622bec313cd95811eb0efd9605666b53ee776b76d21c072f8",
+    "native_roundtrip.rs.before.txt": "2dcdf54d428ba2448a4e99366e264bd7fda5a29341b3d6a02390dbfd39b69a53",
+    "positive-roundtrip.stderr.gz": "4cc642bec3d586ad855a0df12d383b69857ff1fa8e0b1f0046d9966483169d38",
+    "positive-roundtrip.stdout.gz": "4f2cd5bdf9d7855cdec1d83bb456d54bd2e6cd2f195390415495ba60d558e05e"
+  }
+}

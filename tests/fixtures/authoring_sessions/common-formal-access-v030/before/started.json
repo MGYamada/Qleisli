@@ -1,0 +1,9 @@
+{
+  "recorded_utc": "2026-10-05T18:17:41.257497+00:00",
+  "first_files_sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454",
+  "status": "first-capture-started-no-outcomes-predicted",
+  "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "regular_file_byte_ceiling": 1048576,
+  "outer_seconds": 55
+}

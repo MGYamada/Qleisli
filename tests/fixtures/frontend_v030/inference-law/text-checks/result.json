@@ -1,0 +1,440 @@
+{
+  "inputs": {
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/main.qli": "65e97c18b1824fcec015f0308cc9aa8dcdaae52087ac7b618dcc6ecd4a9ae9b8",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-operation/main.qli": "f9320a27da7c3b4b954898cd1294123631f158255de6a78ce7dd32f2f73b78dd",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli": "a413e5c9ea25621cf2e0950bc8316a456a59079c232269b8c32f026ec7177dd1",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-operation/main.qli": "a36a3e5b855d723bca6a982f0a04ea2ec2b2483e1b9cb515842e842b4742c5e5",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-natural/main.qli": "fff297aa4621acb217c8232bde9294f67d8d1a5c456b13e91c9420597e809f8b",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/main.qli": "c21f44d960779a5996d11b1e72a09c1a619387b0dd9b34082aaf3ef8127a4f35",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli": "21504c61800d49d2ba0266b0d2e390539ad9b2ed7a65314ed1a3d59dca5f0066",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-exact-control/main.qli": "944c752592ad41f81a9c41a5a06dd230fa1012899eee10e6bfe6a8fc7020cd40",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-exact-control/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-natural/main.qli": "36bb7a39df20033fe016772de24730f70e65a28a597c78bd4345a0c4a3bd92e5",
+    "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "inputs_stable": true,
+  "all_24_match_json": true,
+  "observations": [
+    {
+      "label": "natural-missing-both",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-missing-m",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=n=1"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-extra-z",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=n=1",
+        "--nat=m=0",
+        "--nat=z=2"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-missing-and-extra",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=n=1",
+        "--nat=z=2"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-missing-and-extra-reversed",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=z=2",
+        "--nat=n=1"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-exact",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=n=1",
+        "--nat=m=0"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "natural-exact-reversed",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=m=0",
+        "--nat=n=1"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-missing",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-extra",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::identity",
+        "--operation=V=main::flip"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-missing-and-extra",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=V=main::identity"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-wrong-category",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--nat=U=0"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-identity",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::identity"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-flip",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::flip"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-pair-missing-v",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::identity"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "operation-pair-extra-w",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::identity",
+        "--operation=V=main::identity",
+        "--operation=W=main::identity"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "provider-natural-missing",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::keep"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "provider-natural-extra",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::keep",
+        "--operation-nat=U.n=0",
+        "--operation-nat=U.z=1"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "provider-natural-missing-and-extra",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::keep",
+        "--operation-nat=U.z=1"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "provider-natural-exact",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/provider-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+        "--operation=U=main::keep",
+        "--operation-nat=U.n=0"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "call-missing-natural",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "call-extra-natural",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-natural/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "call-missing-operation",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-operation/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "call-extra-operation",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-extra-operation/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 1,
+      "native_invocations": 0,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    },
+    {
+      "label": "call-exact-control",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-exact-control/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py"
+      ],
+      "exit_code": 0,
+      "native_invocations": 1,
+      "cli_sha256": "3918c4c3f15a8ca897e016a0aa8a7a66727af59f4a373f5c63268b811d02f512",
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "matches_json": true
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 The reference index is arbitrary: no product-state or absence-of-entanglement
 assumption is made. A producer must separately establish the coordinate frames,
 freshness and the exact operation being moved across initialization.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.FreshInitialization
 open scoped BigOperators
 

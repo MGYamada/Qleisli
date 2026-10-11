@@ -4,14 +4,29 @@
 use std::fs;
 use std::io::Read;
 use std::path::Path;
+use std::sync::OnceLock;
 
-use super::{LoadFailure, error, io_error, located_error, source_file};
+use super::{BundledRegistry, LoadFailure, error, io_error, located_error, source_file};
 use crate::frontend::{CURRENT_EDITION, ast::Span};
 
 const MAX_MANIFEST_BYTES: u64 = 65_536;
 
 #[cfg(test)]
 std::thread_local! { static PARSES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) }; }
+
+// Only these compile-time embedded bytes are invariant across loads. External
+// manifests and source judgments always run afresh through their normal paths.
+pub(super) fn check_bundled() -> Result<(), LoadFailure> {
+    static RESULT: OnceLock<Result<(), LoadFailure>> = OnceLock::new();
+    RESULT
+        .get_or_init(|| {
+            check_manifest(
+                Path::new(BundledRegistry::manifest_path()),
+                BundledRegistry::manifest(),
+            )
+        })
+        .clone()
+}
 
 // Called once per discovered directory. A nested directory inherits the already
 // checked parent edition; its own manifest, when present, must pass afresh.
@@ -200,13 +215,28 @@ mod tests {
             fs::write(path.join(format!("file{i}.qli")), "").unwrap();
             fs::write(path.join(format!("nested/file{i}.qlt")), "").unwrap();
         }
-        let before = PARSES.with(|count| count.get());
-        super::super::Project::load_with_policy(&path, super::super::SourcePolicy::default())
-            .unwrap();
-        assert_eq!(
-            PARSES.with(|count| count.get()) - before,
-            2,
-            "one local manifest and one embedded stdlib manifest"
-        );
+        // Initialize the process-wide embedded result before measuring this
+        // thread's external parses; another test may already have initialized it.
+        check_bundled().unwrap_or_else(|e| panic!("{}", e.error));
+        for _ in 0..2 {
+            let before = PARSES.with(|count| count.get());
+            check_bundled().unwrap_or_else(|e| panic!("{}", e.error));
+            super::super::Project::load_with_policy(&path, super::super::SourcePolicy::default())
+                .unwrap();
+            assert_eq!(
+                PARSES.with(|count| count.get()) - before,
+                1,
+                "one fresh local parse; no repeat embedded parse"
+            );
+        }
+        fs::write(
+            path.join("Qargo.toml"),
+            "schema-version=2\n[qrate]\nedition='2027'\n",
+        )
+        .unwrap();
+        let failure =
+            super::super::Project::load_with_policy(&path, super::super::SourcePolicy::default())
+                .unwrap_err();
+        assert!(failure.message.contains("unsupported Qleisli edition"));
     }
 }

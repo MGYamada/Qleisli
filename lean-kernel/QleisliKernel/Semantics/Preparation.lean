@@ -3,7 +3,7 @@ import Std
 /-! Fresh-zero coefficient semantics, independent of acceptance and producers.
 The input coefficient function ranges over the retained axes and an arbitrary
 reference. The new axes contribute precisely the computational zero factor.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Semantics.Preparation
 

@@ -1,0 +1,16 @@
+{
+  "status": "authored-before-test-execution",
+  "scope": "New explicitly named bounded integration translations; original fourteen authoring-study sources remain unchanged.",
+  "files": {
+    "current/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "current/measure-then-phase.qli": "d8ddaf653b4077b1ca846d970fcef411dcb1a7f8012347c04f61c91fa3df208a",
+    "current/operations.qli": "1714283d4f67d4024d2b3bc859283bea450a0f98675b379828504809201b29e0",
+    "current/ordered-two-units.qli": "5a52d750a0339fd9f9d9d254df35179361541f7290ed4041aa0f696c483a7b4d",
+    "current/phase-then-measure.qli": "23de60aac0f306858694d538e0f2773dd644d65d8551c793e8abca64ebf7f289",
+    "current/scalar-bit.qli": "2fca1b837d6538d654e219c876f515d916c65ade324ff0443f7bfcd980f70e96",
+    "current/scalar-bits.qli": "0d8fa9fc3c8c4f4e29ec4e35f2ff6e99921ddf87be5954655f98179ec34a45a3",
+    "current/scalar-unit.qli": "7bddd09d8db136f384114bbb8bd8238e9487e24be24b151fb332e01ed65dacd4",
+    "current/unused-invalid.qli": "aa795325004a7c4c78f546e56de29cbaaa8fd41ec349a22d4533ec5188c37e24",
+    "current/unused-zero-provider.qli": "867f0d27ca60c6d7dd72b4da1793efbd9b838ee2ed262da4c926c2e8ae6a90a3"
+  }
+}

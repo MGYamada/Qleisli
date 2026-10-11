@@ -1,0 +1,19 @@
+{
+  "current_root_record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/metadata-review/results.json",
+  "current_guard_exits": {
+    "inventory_before": 1,
+    "inventory_after": 0,
+    "coverage_before": 0,
+    "coverage_after": 0
+  },
+  "current_source_count": 253,
+  "old_root_regression_record": "tests/fixtures/frontend_v030/common-pattern-design/metadata-review/results.json",
+  "historical_metadata_regression_counts": {
+    "inventory": 17,
+    "coverage": 14
+  },
+  "guard_scripts_match_prior_policy_map": true,
+  "metadata_regressions_rerun_by_this_driver": false,
+  "recorded_commands_executed": false,
+  "identity_limit": "Current three-file review is separately bound. The older mutation packet did not freeze regression-script bytes at historical execution; a later policy map is retained, not a manufactured complete historical build/test closure."
+}

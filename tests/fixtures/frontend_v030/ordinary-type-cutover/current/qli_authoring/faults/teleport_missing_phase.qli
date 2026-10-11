@@ -1,0 +1,10 @@
+//! Intentional type-correct protocol fault: omit the phase correction.
+use bell::prepare;
+use bell::measure;
+use std::quantum::x;
+pub observe fn teleport(psi: Q<Bit>) -> ((Bit,Bit),Q<Bit>) {
+    let (alice,bob) = prepare();
+    let (phase_bit,parity_bit) = measure(psi,alice);
+    let bob = if parity_bit { x(bob) } else { bob };
+    ((phase_bit,parity_bit),bob)
+}

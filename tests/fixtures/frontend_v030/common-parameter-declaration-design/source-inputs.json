@@ -1,0 +1,207 @@
+{
+  "format": "qleisli.read-only-design-source-inputs",
+  "version": 1,
+  "scope": "Fixed 40-file inspected subset, not complete production/runtime dependency closure. Existing fixtures retained in place unchanged.",
+  "files": [
+    {
+      "path": "CONSTITUTION.md",
+      "bytes": 20257,
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b"
+    },
+    {
+      "path": "docs/src/design/type-foundation.md",
+      "bytes": 44925,
+      "sha256": "2bd8a4a8bec64faf98ac97ede4e8eb2674d9d4d3bae9dad7b16a65adc3e71faf"
+    },
+    {
+      "path": "docs/src/reference/authority.md",
+      "bytes": 16091,
+      "sha256": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18041,
+      "sha256": "4b6100cfd4030648701114923f8ce33840d89e28c3f9f39475f1a3bdef4590d5"
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28181,
+      "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608"
+    },
+    {
+      "path": "governance/README.md",
+      "bytes": 7009,
+      "sha256": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62"
+    },
+    {
+      "path": "governance/guarantees.json",
+      "bytes": 5535,
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03"
+    },
+    {
+      "path": "src/frontend/compile/basis.rs",
+      "bytes": 13179,
+      "sha256": "302b8c13d53af4d1a65d8a418599ff44933774ca12dab7f93e712a928adfd86a"
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "bytes": 56352,
+      "sha256": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a"
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 8339,
+      "sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc"
+    },
+    {
+      "path": "src/frontend/compile/lower/value.rs",
+      "bytes": 4499,
+      "sha256": "5b6db4005beffeb1818ef6bbac976fcaee8526cc806a44b7cceb95433e69e3c8"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 42146,
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 32732,
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984"
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "bytes": 699,
+      "sha256": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422"
+    },
+    {
+      "path": "src/frontend/pattern.rs",
+      "bytes": 3459,
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede"
+    },
+    {
+      "path": "src/frontend/resolve.rs",
+      "bytes": 15766,
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52146,
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da"
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "bytes": 65744,
+      "sha256": "2c5bc3b41d2b9095ff867bea17a69a33ef4ffc0c0cdcb72b8a2297f31961d947"
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "bytes": 12083,
+      "sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c"
+    },
+    {
+      "path": "src/frontend/source.rs",
+      "bytes": 6142,
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3"
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "bytes": 17970,
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/duplicate-runtime-parameter/main.qli",
+      "bytes": 130,
+      "sha256": "0ebd6f828489bc9a28dcba599d07fff13d913460ab53acc2a7dd3b9feb6f03ef"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/before/duplicate-runtime-parameter-finite-check-json.json",
+      "bytes": 1239,
+      "sha256": "3a0081463da742a91de0782229b15648606cd44a958475cd50bdb297423d1049"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/before/duplicate-runtime-parameter-finite-check-json.stdout.txt",
+      "bytes": 268,
+      "sha256": "0d53727dc34cf8c813a02ec203a4e84af9fbf2b8c5271c659253f86f538ffa97"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/before/duplicate-runtime-parameter-selected-auto-check-json.json",
+      "bytes": 1431,
+      "sha256": "893844d9a13e75e9b8af49bea46c440eca2b6805d05072c21c58b19b8994e4a1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/before/duplicate-runtime-parameter-selected-auto-check-json.stdout.txt",
+      "bytes": 384,
+      "sha256": "111bcb2781a14aff3c2d61c8b85bf50b62a1cd303a85f4be73c9ff8a72afa027"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/results-before.md",
+      "bytes": 5548,
+      "sha256": "147ccb61b3927b79a8cb0ec10e41b90144dc52c13f2a3ba9d2f30633694752fd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/session.json",
+      "bytes": 4384,
+      "sha256": "354e3a08d84c6544338d48c2192775897904e92b53c6e0c14009e077d9cb352e"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/compile-repair-01.json",
+      "bytes": 1640,
+      "sha256": "beba90c09ebabccc8bda82867eae75f34cf0c911a8cc26ecd2ad6dd9678b8e59"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/contract-v2.md",
+      "bytes": 14462,
+      "sha256": "e178b5f0ca7c465eaed0e01cc48879c963b674c2ec6db032c7fb4f9fcf4ad0ae"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/source-inputs.json",
+      "bytes": 1932,
+      "sha256": "bf0c974c881b5240d0c96a7052f22e5361f5bc6697f337ee8c22f9aa7cc9f4c7"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/lexical-resolution/README.md",
+      "bytes": 7209,
+      "sha256": "e10b6874b246e93566d26c805ca083699ca3d327109bd85a8a18cd967486b388"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/lexical-resolution/before/shadow-static-operation.stdout",
+      "bytes": 145,
+      "sha256": "865da868afb89c0ed8834197b644d38b52324dbcfbab91bb49c0a28183cb3a91"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/lexical-resolution/initial-study/shadow-static-operation/main.qli",
+      "bytes": 82,
+      "sha256": "ac20f5ef18c528cc5b3c1d4d3ecb3c95758146b4111772f5593505697b7de56c"
+    }
+  ]
+}

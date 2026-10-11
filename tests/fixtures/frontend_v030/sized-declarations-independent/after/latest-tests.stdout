@@ -1,0 +1,12 @@
+
+running 7 tests
+test first_invalid_sibling_follows_source_order_not_sorted_definition_identity ... ok
+test private_siblings_are_providers_but_not_host_entries_or_external_imports ... ok
+test duplicate_and_import_alias_collisions_remain_located_rejections ... ok
+test every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds ... ok
+test sibling_and_unused_provider_cycles_do_not_become_self_recursion ... ok
+test sibling_order_and_module_partition_preserve_phase_and_labelled_axes ... ok
+test same_named_providers_keep_distinct_meanings_and_specialization_identity ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+

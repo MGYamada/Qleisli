@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_release_ready.py"
+  ],
+  "exit_code": 0,
+  "seconds": 82.62,
+  "inputs_sha256": {
+    "scripts/check_release_ready.py": "f6dc98b3eb4ef2f0fa165733ad64a46bd8fc326d28fa0858b3ffe58f21267b4b",
+    "scripts/test_check_release_ready.py": "fa3c9105fb1554247852055d2dd6bf6fc4453120e52035c6052f77214cfc4695",
+    "scripts/check_constitution.py": "ad6979c0d3e845b1df6aafcb043de3566b2bb658f2fffcf557e93d923a09a973",
+    "scripts/test_check_constitution.py": "dc15cdc21b9875f04663088b31378f298af2c07450188580dd6dc897fb9fd191",
+    ".github/workflows/ci.yml": "1fe239b806220283d250d8b50e7a085ab3db060c879dc88f3d634bdd40fb74f7"
+  },
+  "inputs_unchanged": true,
+  "stdout": "validation/tracked-reference-tests.stdout.txt",
+  "stderr": "validation/tracked-reference-tests.stderr.txt"
+}

@@ -8,7 +8,7 @@
 use std::quantum::z;
 use std::routines::hadamard2;
 use std::routines::reflect_uniform2;
-basis fn marked(a: Bit, b: Bit) -> Bit { a and b }
+basis fn marked((a, b): (Bit, Bit)) -> Bit { a and b }
 pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let q = hadamard2(q);
     let q = with_computed(q, marked) { |flag| z(flag) };

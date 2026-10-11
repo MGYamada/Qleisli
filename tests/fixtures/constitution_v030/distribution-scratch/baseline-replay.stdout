@@ -1,0 +1,26 @@
+[
+  {
+    "case": "success",
+    "result": "passed",
+    "work_status": "legacy-unreported",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 5,
+    "targets_present_after_validate": 5,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "failure",
+    "result": "failed",
+    "work_status": "legacy-unreported",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 4,
+    "targets_present_after_validate": 4,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  }
+]

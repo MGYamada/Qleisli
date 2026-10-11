@@ -1,0 +1,63 @@
+{
+  "format": "qleisli.packaged-product-meaning-review",
+  "version": 1,
+  "issues": [
+    44,
+    32,
+    43
+  ],
+  "base_commit": "e83f17a9694e9adbd3b1802b6bf30f16e351966e",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6022898288",
+  "source_sha256": {
+    "src/frontend/sized/raw.rs": "d7a8f7e6f7872ab0d48069a41d7545c54722fae27eeb7c00115601cba3d62662",
+    "src/frontend/sized/raw/preservation.rs": "c7e1de1c971908540bdee2d2490837b974ea6b9728cb2646602bc1a8bf07aa13",
+    "src/frontend/sized/lower.rs": "b4ffbfe63f34abd5b77d0dc2e0004f84dd9c962e6f1038f845fa7e3975aa555b",
+    "tests/classical_functions.rs": "1a341898229ec5b1d3282bb65cf546572cb15d8478009faf063eea8d17b2f119",
+    "tests/quantum_tuple_unitors.rs": "aa949a01fea9021df9eaa23c82a9c580ed835235e32753c6c527ba6b3626da5b",
+    "scripts/check_production_coverage.py": "1f718dd63f0d197abc8270adb6d2135783ada0628534c1984ce2736446ca7555",
+    "docs/src/reference/type-model.md": "741794f2bef434c151ce04f8312f74380a78f7d67f29f80364fc7aac1d2686fc"
+  },
+  "behavior": {
+    "basis": "Exact packaged Unit/Bit product trees lower to native finite signatures without width-based substitution. Pair association, n-ary tuple arity and zero-width factors remain explicit. Bits tags still refuse this finite representation mapping.",
+    "owners": "Emitter tracks complete ordered wires per typed register. Independent replay stores immutable wire vectors, checks global freshness/aliasing, source field trees, exact split partitions and join operand order. Both preserve suspended callers without assuming separability.",
+    "request": "Original Meaning and original source subject/site select the provider action; native finite leaf checks actual emitted bytes and complete typed returned ports. Actual hierarchy finite nodes retain those bytes/matrices and exact tuple port types.",
+    "limits": "Existing work/storage/depth/call/wire limits retained. Wire vectors and copied basis trees charged within existing counters; no capacity raised."
+  },
+  "checks": {
+    "rust": "100 distinct focused tests on latest Rust: 87 public integration tests (31 classical_functions,11 basis_polymorphism,16 quantum_unit_source,15 operation_parameters,10 selected_source_cli,4 default_construction_boundary),12 private Raw/replay tests,1 updated quantum_tuple_unitors conformance case.",
+    "actual_msrv": "Same 100 tests passed with actual Rust/Cargo 1.85.0 via scripts/run_msrv.py.",
+    "clippy": "Both all-target Clippy passed -D warnings after MSRV nonminimal_bool repair.",
+    "python": "31 coverage/inventory policy tests passed.",
+    "inventories": "Three changed source snapshots reviewed; no new public boundary or native mode.275 constructors/265 sources/20 boundaries;22 paths/9 modes.",
+    "constitution": "Identity/continuity against trusted 38baae7d19535602b21270e11e97617d45205b37 passed; not fresh Lean replay.",
+    "docs": "2193 links/30 anchors/206 Lean roots passed; pinned mdBook0.5.4 and rendered29HTML/1224links/471anchors passed.",
+    "format": "cargo fmt --all -- --check and git diff --check passed."
+  },
+  "independent_cases": [
+    "Nested Unit/Bit/Bit swap and phase-on-Unit factor match joint complex coefficients at n=0/1/2 with an external reference; lying providers rejected even at n=0.",
+    "Zero-wire (Unit,Unit) keeps exact Pair signature and nontrivial omega; (Unit,Bit,Unit) keeps Tuple arity3 signature and identity.",
+    "Independently authored native-valid Raw instructions pass original replay; changed ordered joins, zero-width partitions and owner ordering remain native-valid but replay rejects.",
+    "Historical split/join source now checks against independently requested exact4x4 identity; previous unsupported expectation updated without rewriting historical source/diagnostics."
+  ],
+  "authoring": "tuple-attempt-01 keeps original before.json and actual stdout/stderr at c5f618f3; separate after.json observes unchanged-source selected CLI acceptance.",
+  "development_failures": [
+    "Initial vector replay left a production BasisShape import used only by tests; restricted import to cfg(test).",
+    "Actual MSRV Clippy required equivalent Option::is_none_or spelling; repaired without disabling the lint.",
+    "Existing active Raw tuple regression still expected unsupported; actual acceptance prompted independent exact identity check. The first test edit omitted a local BasisType import; compile failures repaired.",
+    "First combined MSRV conformance invocation applied the quantum_tuple_unitors name filter to two other targets, running zero tests there; both entire targets separately rerun with14passes.",
+    "Strict frozen inventory detected changed sources; reviewed exactly Raw/emitter,independent replay and hierarchy bridge snapshots, retaining proof/gate classifications."
+  ],
+  "constitutional_impact": "No Lean/core/native/protocol/primitive meaning or adopted record changed. Preserves both scoped QLV1 guarantees; original AST/table/step preservation, general execution, PR and quantitative RS remain pending. No new guarantee or interpretation adopted.",
+  "not_performed": [
+    "Full Rust all-target test run for this head",
+    "Fresh Lean build/audit/replay",
+    "Current-head hosted/package/install/release certification",
+    "New maximum-size cases"
+  ],
+  "hosted_ci": {
+    "preceding_run": 37508346409,
+    "commit": "98edfbf3c3d4a8882d1528123af68b364b493a27",
+    "status": "completed success; all normal producer/summary lanes passed;release-readiness skipped. These new local changes are not covered by that preceding run."
+  },
+  "completion": "22/111 (19.82%); original Issue44 criteria unchanged; general profile/acceptance integration still requires audit."
+}

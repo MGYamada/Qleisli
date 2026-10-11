@@ -4,7 +4,7 @@ import QleisliKernel.ExactMatrix
 /-! Fresh bounded reconstruction and encoded equations for VM-24.
 Inputs are original finite data, never Rust decisions or computed matrices.
 This component is not raw-IR extraction or production authority.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Finite
 open Semantics.Exact Semantics.Finite
 
@@ -32,7 +32,7 @@ def treeStep (stack : Option (List Nat)) (atom : Atom) : Option (List Nat) := do
   let depth :: rest ← stack | none
   if depth > 32 then none else
   match atom with
-  | .unit | .bit => some rest
+  | .unit | .bit | .bits _ => some rest
   | .pair => some ((depth+1) :: (depth+1) :: rest)
   | .tuple arity =>
     if arity < 3 || arity > 128 then none

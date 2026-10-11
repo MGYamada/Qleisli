@@ -1,0 +1,27 @@
+// Upstream authors (repository usernames): ixfoduap, KetPuntoG. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qpe/demo.py
+// Selected symbol(s): U; circuit_qpe
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::sdg;
+use std::quantum::id;
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::join;
+use std::quantum::split;
+use std::transforms::qft3;
+unitary fn power0(q: Q<Bit>) -> Q<Bit> { repeat_static(3, t, q) }
+unitary fn power1(q: Q<Bit>) -> Q<Bit> { sdg(q) }
+unitary fn power2(q: Q<Bit>) -> Q<Bit> { repeat_static(12, t, q) }
+
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let (part3, d) = split(q);
+    let (part2, c) = split(part3);
+    let (a, b) = split(part2);
+    let (a, d) = qif(h(a), d) { 0 => id, 1 => power0 };
+    let (b, d) = qif(h(b), d) { 0 => id, 1 => power1 };
+    let (c, d) = qif(h(c), d) { 0 => id, 1 => power2 };
+    join(adjoint(qft3, join(join(a, b), c)), d)
+}

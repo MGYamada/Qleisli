@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-effect",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T19:24:52.616368+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.1247645829571411,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 3,
+  "native_argv_log": "qif-wrong-effect-finite-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "qif-wrong-effect-finite-check-json.stdout.bin",
+  "stderr_raw": "qif-wrong-effect-finite-check-json.stderr.bin",
+  "stdout_sha256": "789feac60613b504ff34b7a47cecc1ac6fb1806be25f31618bb82a0d7ee411eb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "9aff0c7fec58cc43e30574e4039c22e9d07c97e94cd89dd4b8b7041b222d5f4f",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"effect\",\"severity\":\"error\",\"message\":\"static operation requires a function with inferred Unitary effect. Semantic error: \\\"externally unitary\\\" is not supported; an external unitarity claim cannot override the effect inferred from the body\",\"primary\":{\"path\":\"main.qli\",\"start\":393,\"end\":400,\"line\":13,\"column\":42},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "static operation requires a function with inferred Unitary effect. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+        "primary": {
+          "path": "main.qli",
+          "start": 393,
+          "end": 400,
+          "line": 13,
+          "column": 42
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

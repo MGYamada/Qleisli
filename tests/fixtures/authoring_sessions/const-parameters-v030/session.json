@@ -1,0 +1,132 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "status": "actual-first-observations-retained",
+  "task": "Issue #33 contextual const parameter headers with unchanged kind/order/bindings and legacy/name controls",
+  "baseline_commit": "5a7e7a0c93f543f8e1b55bbb50177f1b969ac8c9",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository study; exact deployed model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight complete desired and control programs saved before baseline observations and production edits; zero source repairs.",
+      "sha256": {
+        "operation/main.qli": "04c680d190c076aa53c43ea3dba73abd0a22ddb1a62a9f01dea348632ff03f4a",
+        "no-marker/main.qli": "dbded415e96eba2c209027a5f228caf329e22d89894e0603bba8e61191ca4179",
+        "natural/main.qli": "9a20ea85c7b0dd12338dad53dba6f4fd1cebc104aa90ca5d7bd6c2c7a0551f97",
+        "legacy-control/main.qli": "6ed170872fb72bac041904723415dc8c2840fcf138cc33470d27d459599b0eed",
+        "ordinary-name/main.qli": "3b023e80429d008dc05922258eac1eb181d8dd476cae38b26989b12fd3cb8112",
+        "duplicate/main.qli": "5108cdbb3bf905817de95d403ffe098dc75bca467dd45df0a82b2fcc3094a467",
+        "unused-invalid/main.qli": "7c50c43197dfc6c7be5a443209c826f79786fa6ab4340b756420397442080e96",
+        "basis/main.qli": "5b1170639d02ebf0aaa5615a20537d35412d8b23e38039835b1fbd6157235dfc"
+      },
+      "observations": [
+        "before/basis-project.json",
+        "before/basis-selected.json",
+        "before/duplicate-project.json",
+        "before/duplicate-selected.json",
+        "before/legacy-control-project.json",
+        "before/legacy-control-selected.json",
+        "before/natural-project.json",
+        "before/natural-selected.json",
+        "before/no-marker-project.json",
+        "before/no-marker-selected.json",
+        "before/operation-project.json",
+        "before/operation-selected.json",
+        "before/ordinary-name-project.json",
+        "before/ordinary-name-selected.json",
+        "before/unused-invalid-project.json",
+        "before/unused-invalid-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Repair only the incorrectly authored manifest schema key from schema to schema-version after sixteen actual project refusals; all QLI bytes remain identical.",
+      "sha256": {
+        "operation/main.qli": "04c680d190c076aa53c43ea3dba73abd0a22ddb1a62a9f01dea348632ff03f4a",
+        "no-marker/main.qli": "dbded415e96eba2c209027a5f228caf329e22d89894e0603bba8e61191ca4179",
+        "natural/main.qli": "9a20ea85c7b0dd12338dad53dba6f4fd1cebc104aa90ca5d7bd6c2c7a0551f97",
+        "legacy-control/main.qli": "6ed170872fb72bac041904723415dc8c2840fcf138cc33470d27d459599b0eed",
+        "ordinary-name/main.qli": "3b023e80429d008dc05922258eac1eb181d8dd476cae38b26989b12fd3cb8112",
+        "duplicate/main.qli": "5108cdbb3bf905817de95d403ffe098dc75bca467dd45df0a82b2fcc3094a467",
+        "unused-invalid/main.qli": "7c50c43197dfc6c7be5a443209c826f79786fa6ab4340b756420397442080e96",
+        "basis/main.qli": "5b1170639d02ebf0aaa5615a20537d35412d8b23e38039835b1fbd6157235dfc"
+      },
+      "observations": [
+        "before-repaired/basis-project.json",
+        "before-repaired/basis-selected.json",
+        "before-repaired/duplicate-project.json",
+        "before-repaired/duplicate-selected.json",
+        "before-repaired/legacy-control-project.json",
+        "before-repaired/legacy-control-selected.json",
+        "before-repaired/natural-project.json",
+        "before-repaired/natural-selected.json",
+        "before-repaired/no-marker-project.json",
+        "before-repaired/no-marker-selected.json",
+        "before-repaired/operation-project.json",
+        "before-repaired/operation-selected.json",
+        "before-repaired/ordinary-name-project.json",
+        "before-repaired/ordinary-name-selected.json",
+        "before-repaired/unused-invalid-project.json",
+        "before-repaired/unused-invalid-selected.json",
+        "after/basis-project.json",
+        "after/basis-selected.json",
+        "after/duplicate-project.json",
+        "after/duplicate-selected.json",
+        "after/legacy-control-0-selected.json",
+        "after/legacy-control-3-selected.json",
+        "after/legacy-control-project.json",
+        "after/legacy-control-selected.json",
+        "after/natural-0-selected.json",
+        "after/natural-3-selected.json",
+        "after/natural-project.json",
+        "after/natural-selected.json",
+        "after/no-marker-project.json",
+        "after/no-marker-selected.json",
+        "after/operation-project.json",
+        "after/operation-selected.json",
+        "after/ordinary-name-project.json",
+        "after/ordinary-name-selected.json",
+        "after/unused-invalid-project.json",
+        "after/unused-invalid-selected.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "closed",
+      "reason": "Post-implementation closed validation client, retained before its first check; actual bare Basis-argument refusal. Not a pre-code attempt.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed/main.qli": "2dd07ae7e4414568f62f3b85befa6e88c1eb2ce6dff4256c4962980a32b78fe3",
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "reports": [
+        "after/closed-check.json"
+      ]
+    },
+    {
+      "id": "closed-repaired",
+      "reason": "Repair only explicit type(Bit) after the actual refusal; selected entry remains private and its visibility refusal is retained.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed-repaired/main.qli": "b5a703d7449fc3bc63489152c33ca61e306d3b0ab239398b540238d3048c9607",
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed-repaired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "reports": [
+        "after/closed-repaired-check.json"
+      ]
+    },
+    {
+      "id": "closed-public",
+      "reason": "Repair selected entry visibility only by adding pub after the actual private-entry refusal; both earlier sources and refusals remain fixed. Independent expected readout is zero.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/main.qli": "a858f455eaa2535d5b0373d786a84cb2ba8499d68504b4b5ddbcb8cb028e6b36",
+        "tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "reports": [
+        "after/closed-public-check.json",
+        "after/closed-public-run.json"
+      ]
+    }
+  ]
+}

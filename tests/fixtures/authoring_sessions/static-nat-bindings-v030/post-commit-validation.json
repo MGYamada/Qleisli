@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.static-nat-post-commit-validation",
+  "version": 1,
+  "source_commit": "62e17dad6bcecc0c670aedd047e41397f6dc2185",
+  "latest_rust": {
+    "frontend_library": 63,
+    "existing_ignored": 2,
+    "filtered_unrelated": 52,
+    "new_static_tests": 5,
+    "related_boolean_and_declaration_tests": 19,
+    "unique_passing_total": 87
+  },
+  "msrv": {
+    "version": "1.85.0",
+    "new_static_tests": 5
+  },
+  "python": {
+    "verification_inventory": 17,
+    "production_coverage": 14,
+    "authoring_checker": 7
+  },
+  "budget": {
+    "committed_files": 17539,
+    "committed_bytes": 133012803,
+    "unit_text_lines_added_plus_deleted": 2041,
+    "binary_changes": 0
+  },
+  "hosted_validation": {
+    "run": 37443178912,
+    "source_commit": "38baae7d19535602b21270e11e97617d45205b37",
+    "status_at_observation": "in progress; docs, interop and Mathlib verifier job success; remaining jobs live",
+    "binding_limit": "Hosted run does not include the unpushed static Nat unit."
+  },
+  "limits": [
+    "No full all-target local test result for this unit.",
+    "No new local Lean build/audit/replay needed: native semantic/proof definitions unchanged; identity/continuity checks remain distinct.",
+    "No Issue closure or new constitutional guarantee."
+  ]
+}

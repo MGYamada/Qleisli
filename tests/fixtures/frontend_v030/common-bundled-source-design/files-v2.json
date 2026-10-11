@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.local-design-addendum-files",
+  "version": 1,
+  "prior_manifest": {
+    "path": "files.json",
+    "sha256": "3238224235254d2bd9024aa2e92918f41d5fefabd366d4c97d1720054b0fddb2"
+  },
+  "files": {
+    "contract-v2.md": {
+      "sha256": "7f58f7c3f0d24ecef405e8cf501525aeadd67503d93b4b078212dc2d135f765d",
+      "bytes": 9828
+    },
+    "ordering-addendum.json": {
+      "sha256": "0d1de3977e60b55d355d665f925cb621fdddeb6d54d03f78489f32415b19d128",
+      "bytes": 4951
+    }
+  },
+  "self_excluded": "files-v2.json",
+  "all_prior_artifact_hashes_checked_unchanged": true
+}

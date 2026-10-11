@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+    "--verify-lean"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "fixed_lean_calls_from_reviewed_code": [
+    [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+    ],
+    [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+    ],
+    [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "../tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean"
+    ]
+  ],
+  "fixed_lean_cwd": "lean",
+  "scope": "One real replay in the existing built environment; no build, audit rerun, native binary replay or new guarantee discharge.",
+  "selected_executables": {
+    "lake": "/opt/homebrew/bin/lake",
+    "python3": "/opt/homebrew/bin/python3"
+  }
+}

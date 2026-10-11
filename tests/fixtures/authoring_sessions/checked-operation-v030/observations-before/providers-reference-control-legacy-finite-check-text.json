@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-legacy",
+    "--format=text",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 2,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:20:11.348536+00:00",
+  "elapsed_seconds": 0.003551707952283323,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "providers-reference-control-legacy",
+  "action": "finite-check-text",
+  "output_format": "text",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "7f201a11ae9fb0a9f467d799be9149b2a542ec8b171695660175e584e60aaa6e",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-before/providers-reference-control-legacy-finite-check-text.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "raw_stderr": {
+    "path": "observations-before/providers-reference-control-legacy-finite-check-text.stderr.txt",
+    "sha256": "3e74cc8305a9f3a2d4d469b000e439eba486b0b824c91b7ea365775f72071d4f"
+  },
+  "identity_checked_before_and_after": true,
+  "attestation_limit": "Explicit selected executable bytes; no compiled-HEAD claim, independent native child-start/exit count, source preservation or Lean replay.",
+  "stdout_text": "",
+  "stderr_text": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+}

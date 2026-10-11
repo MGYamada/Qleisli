@@ -1,0 +1,45 @@
+{
+  "format": "qleisli.canonical-diagnostic-expectations-validation",
+  "version": 1,
+  "source_sha256": "0234dc24b67821de7a09689926f8e9af89a948c61ba0928295efd21d830fcfba",
+  "records": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "frontend_types",
+        "--jobs=2",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit_code": 0,
+      "seconds": 12.065,
+      "stdout": "msrv-frontend-types-01.stdout.txt",
+      "stderr": "msrv-frontend-types-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "frontend_types",
+        "--jobs=2",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit_code": 0,
+      "seconds": 10.291,
+      "stdout": "latest-frontend-types-01.stdout.txt",
+      "stderr": "latest-frontend-types-01.stderr.txt"
+    }
+  ],
+  "scope": "Only the stale canonical diagnostic test expectations exposed by hosted bdc run; this later local test repair is not validated by that historical CI run."
+}

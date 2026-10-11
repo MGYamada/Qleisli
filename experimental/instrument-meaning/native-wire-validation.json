@@ -1,0 +1,430 @@
+{
+  "format": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-11T05:14:15.471901+00:00",
+  "baseline_commit": "48d60255410d5f0c81b3c05cda055463dfdf6744",
+  "scope": "Strict native instrument request binds both original QIRF graphs, complete requested types and source identity to fresh exact outcome-map comparison. No private Rust paired handle or observing source overload yet.",
+  "adopted_packet": {
+    "path": "experimental/instrument-meaning/proposal.md",
+    "sha256": "5bd33aa0c2064a61b195ab4f692e5bd15d31af7c44bf2807dfdb1cc1e0f80052",
+    "decision": "https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6104666552"
+  },
+  "source_sha256": {
+    "lean-kernel/Protocol/InstrumentContract.lean": "2a4d227228186d25d0edd316fb37df4f7496b05e1536236120aa17fbd71bea70",
+    "lean-kernel/Protocol/NativeContract.lean": "aaf4799dfb0e2dc9d4c297c559b85180ed3c317cef64cb5f07a888914da70f32",
+    "lean/Qleisli/Semantics/InstrumentEquality.lean": "5b3103464833e877b5e0988d8f10060f2c67f97b63b40a103f59ae7045410389",
+    "lean/Qleisli/RawInstrumentEquality.lean": "a66ce9b0c7b47cc86cef96d872d95e3bf7f511b587762b38efca448f69c744a6",
+    "lean/Qleisli/QirfInstrumentContract.lean": "8ba1e05a39cc8818abf01b0d5d216c09e4297b2969d4a8a98dca7ea20f708952",
+    "lean/Qleisli/NativeContract.lean": "98e2137a4554f795563bee2e2d4c1e4e67c784a374ab8d61bed6cadb7607bbf2",
+    "scripts/test_native_verification.py": "e86aab899a3d8106f69468fe842ac46afecd76e3d481b383094a9db0f598f463",
+    "scripts/check_production_coverage.py": "1aee37d5454600603f8a2bd5cf1059f64c32b07dbe3d4160fdf5138d8dfc2c9f",
+    "experimental/instrument-meaning/check_proof.py": "cad1071a9f915665278d05a545a009bfe7b9e7008627d6b1cf119289027b44ff",
+    "docs/src/reference/production-boundary.md": "bcc3c500f5965b4d2d3fa3d56e403282c4a303383d4ca5a13a7c8f2d850f2dee"
+  },
+  "native": {
+    "command": [
+      "python3",
+      "scripts/test_native_verification.py",
+      "--binary",
+      "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "--record",
+      "/private/tmp/qleisli-instrument-native-wire-fixed"
+    ],
+    "process_checks": 381,
+    "small_corpus_clients": 84,
+    "max_new_live_qubits": 2,
+    "binaries": {
+      "/private/tmp/qleisli-bits-meaning-target/debug/qleisli": "9d9db9e82acd2d190445ea7d4c8268d1ec60926f1894c59d35c0a7c420b8fa1a",
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "98b8a224a35ab83e7017fc34534f1f32e91ff59bc1db34029710dec7932951dc"
+    },
+    "report_sha256": "2bfb282921167533a0b771a8baa755be1a7b6036efe0919d24a911265c283464",
+    "original_gate_cases": 39,
+    "original_gate_report_sha256": "4775d13b45edaa05371ca64f719cb17c454f23f44d89a1a03ae2d863e46254f1",
+    "regressions": [
+      "HH and branch phase preserve exact Z instrument",
+      "hidden discard basis change",
+      "same probabilities with wrong residual channel rejects",
+      "ordered public outcomes",
+      "zero-width input/result owners and ordinary Bits<0>",
+      "same width with different complete types rejects",
+      "false principal Observe label rejects",
+      "both original roots and fresh dependency replacements",
+      "missing/extra fields, matrices, receipts and flags reject",
+      "malformed/deep result trees, u32 overflow, invalid original expected text, invalid UTF-8 and QLV1 framing reject",
+      "request-free whole-root disclosure remains false"
+    ],
+    "initial_failure": "New regression initially mixed a v2 circuit tag into v1 evidence. Strict decoding correctly rejected it. The test now uses original v1 evidence; no checker relaxation."
+  },
+  "formal": {
+    "toolchain": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+    "fresh_compilation": [
+      {
+        "command": [
+          "lake",
+          "build",
+          "Qleisli.NativeContract"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "\u2714 [3470/3472] Built Qleisli.RawInstrumentEquality (19s)\n\u2714 [3471/3472] Built Qleisli.QirfInstrumentContract (2.0s)\n\u2714 [3472/3472] Built Qleisli.NativeContract (4.4s)\nBuild completed successfully (3472 jobs).\n",
+        "stderr": "",
+        "seconds": 31.296494959038682
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/Users/masa/git/Qleisli/lean",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-yioro3me/InstrumentEquality.olean",
+          "/Users/masa/git/Qleisli/lean/Qleisli/Semantics/InstrumentEquality.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 3.009566416963935
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/Users/masa/git/Qleisli/lean",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-yioro3me/RawInstrumentEquality.olean",
+          "/Users/masa/git/Qleisli/lean/Qleisli/RawInstrumentEquality.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 3.807444791891612
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/Users/masa/git/Qleisli/lean",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-yioro3me/QirfInstrumentContract.olean",
+          "/Users/masa/git/Qleisli/lean/Qleisli/QirfInstrumentContract.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 3.8020108750788495
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/Users/masa/git/Qleisli/lean",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-yioro3me/NativeContract.olean",
+          "/Users/masa/git/Qleisli/lean/Qleisli/NativeContract.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 4.515980458934791
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-yioro3me/Audit.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "'Qleisli.Raw.InstrumentEquality.prepare_reference' depends on axioms: [propext, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.coefficient_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.compare_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.compare_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.reconstruct_denotes' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.reconstruct_kraus_complete' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.prepare_projected' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.check_dimensions' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.check_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.instrument_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.check_encoded_sound' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+        "stderr": "",
+        "seconds": 3.628581208991818
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "/Users/masa/git/Qleisli/experimental/instrument-meaning/ComponentChecks.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 1.380468541989103
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "--version"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean",
+        "exit_code": 0,
+        "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+        "stderr": "",
+        "seconds": 0.7008372090058401
+      }
+    ],
+    "axiom_output": "'Qleisli.Raw.InstrumentEquality.prepare_reference' depends on axioms: [propext, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.coefficient_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.compare_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Raw.InstrumentEquality.compare_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.reconstruct_denotes' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.reconstruct_kraus_complete' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.prepare_projected' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.check_dimensions' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Qirf.InstrumentContract.check_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.instrument_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.NativeContract.check_encoded_sound' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+    "component_regressions": 12,
+    "source_revision": "9090ecaa78b9d9342efc6f5b3ceb258721a06d23a3d68b65c0cc5d85759d9ab7",
+    "build_audit_kernel_replay": [
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_lean_kernel.py"
+        ],
+        "cwd": "Qleisli",
+        "exit_code": 0,
+        "seconds": 0.579,
+        "stdout_sha256": "93199e57c4f8ea2b7b421459e1047432b6aaf514700503772c9a3616c764866f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "Checked 118 executable kernel/transport source modules; no external Lake dependencies.\n"
+      },
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 0.153,
+        "stdout_sha256": "81536f53457d5b58302cc4c3068613b37f50638ca3d21d23e18fb2883db119d9",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "Build completed successfully (229 jobs).\n"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "Audit.lean"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 2.221,
+        "stdout_sha256": "bf939e5c3778a4705bfa501cb60348065e5eda9341e80676fe936b3d62a1e8bd",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "Audited 12138 kernel/transport declarations, 1131 pure import modules and 1143 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n"
+      },
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 19.426,
+        "stdout_sha256": "0415bb7a381f576f9bd18caefe6095fa3a82d3a5bfd8feeb2961f82bb2bd10e1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "\u2714 [3569/3570] Built Qleisli (17s)\nBuild completed successfully (3570 jobs).\n"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "Audit.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 31.988,
+        "stdout_sha256": "36ddf9f2ce0706b3f2f7630f6234eb6cae9febd14724fcedbd85475457f0f81e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "Audited 4503 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "leanchecker",
+          "--fresh",
+          "QleisliKernel"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 62.926,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": ""
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "SchemaExport.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 18.67,
+        "stdout_sha256": "f42bab5070273d64611934e6d55246047343df5254342bc602195b629da8f269",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "diagnostics": "{\"checker\":{\"declaration\":\"QleisliKernel.Schema.check\",\"module\":\"QleisliKernel.Schema\",\"readable_type\":\"QleisliKernel.Schema.Request \u2192 QleisliKernel.Schema.Proposal \u2192 Option.{0} QleisliKernel.Schema.Receipt\",\"type\":[\"forall\",\"request\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Request\",[]],[\"forall\",\"proposal\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Proposal\",[]],[\"apply\",[\"constant\",\"Option\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Schema.Receipt\",[]]]]],\"universe_parameters\":[]},\"entries\":[{\"id\":\"qft-dyadic8/1\",\"theorem\":{\"declaration\":\"Qleisli.Schema.qft_sound\",\"module\":\"Qleisli.Schema\",\"readable_type\":\"\u2200 (width : Nat) (proposal : QleisliKernel.Schema.Proposal) (receipt : QleisliKernel.Schema.Receipt),\\n  @Eq.{1} (Option.{0} QleisliKernel.Schema.Receipt)\\n      (QleisliKernel.Schema.check (QleisliKernel.Schema.Request.qft width) proposal)\\n      (@Option.some.{0} QleisliKernel.Schema.Receipt receipt) \u2192\\n    \u2200 (definitions : List.{0} QleisliKernel.QftGraph.Definition) (entry : Nat),\\n      @Eq.{1} QleisliKernel.Schema.Witness proposal.witness (QleisliKernel.Schema.Witness.qft definitions entry) \u2192\\n        \u2203 actual,\\n          And\\n            (@Eq.{1} (Option.{0} QleisliKernel.QftGraph.Action) (QleisliKernel.QftGraph.denote definitions entry)\\n              (@Option.some.{0} QleisliKernel.QftGraph.Action actual))\\n            (And\\n              (@Eq.{1} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                (@HMul.hMul.{0, 0, 0} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (@Matrix.instHMulOfFintypeOfMulOfAddCommMonoid.{0, 0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool)\\n                    (Fin width \u2192 Bool) Complex\\n                    (@Pi.instFintype.{0, 0} (Fin width) (fun a => Bool) (instDecidableEqFin width) (Fin.fintype width)\\n                      fun a => Bool.fintype)\\n                    Complex.instMul\\n                    (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                            (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                              (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                  (@Matrix.conjTranspose.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex\\n                    (@InvolutiveStar.toStar.{0} Complex\\n                      (@StarAddMonoid.toInvolutiveStar.{0} Complex\\n                        (@AddCommMonoid.toAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                            (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                              (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                                (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                                  (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                                    (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                      (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                        (@StarRing.toStarAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                            (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                              (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\"
+      }
+    ],
+    "current_guarantee_binding": [
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 34.88044904102571,
+        "stdout_sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "leanchecker",
+          "--fresh",
+          "Main"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 63.32618500001263,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 21.5994640000863,
+        "stdout_sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 21.87288958299905,
+        "stdout_sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 6.547524583060294,
+        "stdout_sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 4.709408708033152,
+        "stdout_sha256": "bcd75d57d9f100a17704128a2ee2bf91ec810478dbc1f351a50941a19566e81a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "guarantee_mutation_tests": {
+      "command": [
+        "python3",
+        "scripts/test_check_initial_guarantees.py"
+      ],
+      "passed": 50,
+      "seconds": 87.969
+    },
+    "constitutional_base": "db526c9b2f863e120ddaa87f06573271c7d57288"
+  },
+  "compatibility": {
+    "fixed_original_pairs": {
+      "pairs": 799,
+      "accepted": 263,
+      "rejected": 536,
+      "proposal_bound_rejections": 1,
+      "failures": 0
+    },
+    "report_sha256": "8f828ca500f00fadfb40a661e1865fb15eb4ab53af11df0c1feff9e1fb3768ed",
+    "rust_targets": [
+      "finite_leaf",
+      "function_evidence",
+      "native_acceptance",
+      "native_paths",
+      "semantic_contracts"
+    ],
+    "stable": {
+      "rustc": "1.99.0 (b940084d7 2026-09-28)",
+      "passed": 65,
+      "ignored": 1
+    },
+    "msrv": {
+      "wrapper": "scripts/run_msrv.py",
+      "rustc": "1.85.0",
+      "passed": 65,
+      "ignored": 1
+    },
+    "ignored_reason": "Existing maximum dependency-depth/expansion stress remains deferred. Five native-only tests were run separately with --ignored.",
+    "stable_warning": "Local rust-objcopy cannot load libLLVM.dylib while stripping debug information. Cargo completed and all executed tests passed; no toolchain files or dependencies were changed."
+  },
+  "documentation": {
+    "mdbook": "0.5.4",
+    "rendered_html": 30,
+    "links": 1420,
+    "anchors": 620,
+    "book_checker_tests": 12,
+    "source_links": 2376,
+    "source_anchors": 59,
+    "lean_roots": 227,
+    "authoring_records": 80,
+    "snapshots": 123,
+    "observations": 1692
+  },
+  "limits": [
+    "Requested complete signatures do not prove source type recovery or lowering preservation.",
+    "Private paired handle, both source adapters and actual call-boundary replay remain open in #46.",
+    "Pure Meaning phase rules, QIRF representation, existing variants, limits, edition and dependency versions are preserved.",
+    "No new guarantee admission, full QS/PR/RS discharge, hosted completion CI, packaging, release or publication.",
+    "Rust all-target suites and Clippy were not rerun for this Lean-only unit; focused native contract tests ran on stable and MSRV."
+  ]
+}

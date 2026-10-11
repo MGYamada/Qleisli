@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::z;
+basis fn nonzero2((a,b): (Bit,Bit)) -> Bit { not (not a and not b) }
+fn mark(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,nonzero2) { |ancilla| z(ancilla) }
+}
+pub fn main() -> Unit { () }

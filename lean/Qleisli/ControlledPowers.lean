@@ -2,7 +2,7 @@ import Qleisli.QpeComplete
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-! Coherent operator meaning of the actual executable controlled-power action.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The provider premise and external IR/evidence binding remain explicit. -/
 
 namespace Qleisli.ControlledPowers

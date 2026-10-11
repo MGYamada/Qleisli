@@ -1,0 +1,17 @@
+{
+  "label": "after.inventory",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_verification_inventory.py"
+  ],
+  "started_utc": "2026-10-05T18:37:21.386508+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "path": "after.inventory.stdout.txt",
+    "sha256": "9d4004245cecb9388bb9b5fbbd5eb1124983d7b0c5b287b75dd8cc53560d2f73"
+  },
+  "stderr": {
+    "path": "after.inventory.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

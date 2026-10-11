@@ -1,7 +1,7 @@
 import QleisliKernel.Layout
 
 /-! Shared typed coordinate transformations with independently checked call adapters.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.LayoutDag
 open Layout

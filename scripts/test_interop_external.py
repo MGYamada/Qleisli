@@ -7,6 +7,7 @@ or external include lookup occurs. Missing validators fail, never silently skip.
 """
 import argparse
 from pathlib import Path
+from current_source_fixtures import current_source_fixture
 import sys
 import re
 import subprocess
@@ -52,7 +53,7 @@ class ExternalFormats(unittest.TestCase):
         self.check_qasm(self.emit("qasm-canonical", FIXTURES / "bell.qasm"), ["h", "cx"], [1, 0])
         self.check_qasm(self.emit("qasm-canonical", FIXTURES / "gates.qasm"),
                         ["h", "x", "y", "z", "cx", "cz", "swap", "ccx"], [0, 1, 2])
-        self.check_qasm(self.emit("qli-to-qasm", FIXTURES / "terminal"), ["h", "cx"], [1, 0])
+        self.check_qasm(self.emit("qli-to-qasm", current_source_fixture(FIXTURES / "terminal")), ["h", "cx"], [1, 0])
 
     def test_review_target_coefficients_and_reference_parser(self):
         results = check_all(Path(OPTIONS.example).resolve(), openqasm3.parse, self.check_qir)
@@ -92,7 +93,7 @@ class ExternalFormats(unittest.TestCase):
     def test_standard_llvm_and_qir_structure(self):
         self.check_qir(self.emit("qasm-to-qir", FIXTURES / "bell.qasm"), 2, 2)
         self.check_qir(self.emit("qasm-to-qir", FIXTURES / "gates.qasm"), 3, 3)
-        self.check_qir(self.emit("qli-to-qir", FIXTURES / "terminal"), 2, 2)
+        self.check_qir(self.emit("qli-to-qir", current_source_fixture(FIXTURES / "terminal")), 2, 2)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "empty.qasm"
             path.write_text("OPENQASM 3.0;")

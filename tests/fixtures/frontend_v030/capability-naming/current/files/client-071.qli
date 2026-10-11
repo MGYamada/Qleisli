@@ -1,0 +1,2 @@
+unitary fn undo[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U) { adjoint(U)(q) }

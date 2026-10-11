@@ -2,7 +2,7 @@
 """Actual hierarchical node typing, ownership/effects and whole-table checking.
 
 This suite never treats structural typing as semantic proof or finite verification.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

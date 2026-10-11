@@ -1,0 +1,9 @@
+{
+  "path": "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+  "sha256": "4e562b76222ec5993e46617cb4eae325c7fc7278c1f34da1ddb264bd64b63e06",
+  "provenance": "/private/tmp/qleisli-basis-arity-study-0d93a18/validation.json",
+  "kernel": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "retained_build_provenance": "../multi-declaration/after/validation.json",
+  "retained_build_provenance_sha256": "251cdeb054c4309f0c141e21d412c3902444fe6acbab5fc76471e72406ff5990"
+}

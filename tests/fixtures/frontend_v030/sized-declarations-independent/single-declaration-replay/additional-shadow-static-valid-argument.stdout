@@ -1,0 +1,3 @@
+finite.load: ok, 1 local modules
+sized.parse: main:77..81: unsupported: sized preparation profile: unsupported runtime expression
+finite.check: Diagnostic { code: "type_mismatch", message: "a local or spent runtime value cannot be a static operation", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli", span: Span { start: 82, end: 83 }, line: 1, column: 83 }) }

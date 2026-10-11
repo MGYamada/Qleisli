@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"parse error: expected `(`, found `basis`","primary":{"path":"main.qli","start":190,"end":195,"line":4,"column":51},"related":[]}],"result":null}

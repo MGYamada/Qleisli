@@ -1,0 +1,3 @@
+use std::quantum::unit;
+pub unitary fn f[static A:Basis](q:Q<A>)->Q<A>{q;unit(())}
+

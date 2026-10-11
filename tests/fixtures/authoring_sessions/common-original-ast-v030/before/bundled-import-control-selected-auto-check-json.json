@@ -1,0 +1,57 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/bundled-import-control/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T19:25:11.236567+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.003816167009063065,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "bundled-import-control-selected-auto-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "bundled-import-control-selected-auto-check-json.stdout.bin",
+  "stderr_raw": "bundled-import-control-selected-auto-check-json.stderr.bin",
+  "stdout_sha256": "a180b3fd594c13587dd7397252cb6b0a154195d5ae349260c8f7010f27542ef0",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"module\",\"severity\":\"error\",\"message\":\"missing dependency module std::arithmetic\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/bundled-import-control/main.qli\",\"start\":75,\"end\":107},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "module",
+        "severity": "error",
+        "message": "missing dependency module std::arithmetic",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/bundled-import-control/main.qli",
+          "start": 75,
+          "end": 107
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

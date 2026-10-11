@@ -1,0 +1,33 @@
+{
+  "scope": "Local reproduction with explicitly simulated representative hosted pull-request environment; actual Python/Git/CLI with tiny synthetic repositories, not a genuine hosted run. No Cargo/Lean builds.",
+  "reported_hosted_failure": {
+    "commit": "cc11429",
+    "run_id": "37217706111",
+    "job_id": "111481620109"
+  },
+  "environment_overrides": {
+    "GITHUB_ACTIONS": "true",
+    "GITHUB_REPOSITORY": "MGYamada/Qleisli",
+    "GITHUB_EVENT_NAME": "pull_request",
+    "GITHUB_REF": "refs/pull/1/merge",
+    "GITHUB_RUN_ID": "37217706111",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_JOB": "check-docs",
+    "GITHUB_SHA": "cc114298d29293f0f1550656c89af5d15951120e",
+    "RELEASE_READINESS": "false"
+  },
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_release_ready.py",
+    "SyntheticRelease.test_actual_cli_rejects_missing_context_and_unreviewed_requirements",
+    "-v"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "elapsed_seconds": 0.481,
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "source_sha256": {
+    "scripts/test_check_release_ready.py": "fa3c9105fb1554247852055d2dd6bf6fc4453120e52035c6052f77214cfc4695",
+    "scripts/check_release_ready.py": "f6dc98b3eb4ef2f0fa165733ad64a46bd8fc326d28fa0858b3ffe58f21267b4b"
+  }
+}

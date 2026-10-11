@@ -1,0 +1,446 @@
+{
+  "format": "qleisli.component-version-client-smoke",
+  "version": 1,
+  "status": "passed",
+  "preparation_cases": [
+    {
+      "name": "fresh-0",
+      "observed": {
+        "status": "checked",
+        "work": 11232
+      }
+    },
+    {
+      "name": "fresh-1",
+      "observed": {
+        "status": "checked",
+        "work": 42144
+      }
+    },
+    {
+      "name": "fresh-2",
+      "observed": {
+        "status": "checked",
+        "work": 86688
+      }
+    },
+    {
+      "name": "fresh-3",
+      "observed": {
+        "status": "checked",
+        "work": 147424
+      }
+    },
+    {
+      "name": "wrong-required-axis",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "wrong-required-owner",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "implicit-bits1",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "reordered-request",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "missing-node",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "reordered-nodes",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "wrong-body",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "wrong-effect",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "aliased-input-axis",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "aliased-new-owner",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "alter-existing-classical",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "drop-empty-owner",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "drop-existing-target",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "alter-input-frame",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "broken-chain",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "wrong-intermediate-output",
+      "observed": {
+        "status": "contract"
+      }
+    },
+    {
+      "name": "zero-budget",
+      "observed": {
+        "status": "limit"
+      }
+    },
+    {
+      "name": "budget-excess",
+      "observed": {
+        "status": "limit"
+      }
+    }
+  ],
+  "sized_case": {
+    "name": "qpe-n1-m1",
+    "max_qubits": 2,
+    "observed": {
+      "preparation_work": 9504,
+      "readout_work": 16448
+    }
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "commands": [
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "460ee97331ecfc3e951c3a40a22674152f16fc2eddf07cf82e0a3952e360bf25",
+      "stdout": "qleisli.preparation-result 1\nchecked\n11232\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "3644426f077938f7787b23df00f2beea5bf894fe763175ea8caf7b8c8f2eea24",
+      "stdout": "qleisli.preparation-result 1\nchecked\n42144\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "3b3e2856b61bce4910d7d30952456e1c516c4cc5c9a04f3213352e7a69fd1818",
+      "stdout": "qleisli.preparation-result 1\nchecked\n86688\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "2724d0ebbae5257ae7de97d7eb0e6c72a1f1b8cb9534b0e8788b87a5647444b5",
+      "stdout": "qleisli.preparation-result 1\nchecked\n147424\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "f631c8a1cfb3f5d5d019d7afedf411bbdada2c96789dcb8e1dff9c29c1a23630",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "36149db145cfcef931eb0c1181711c7e105308634fd2ad8b3ecd0f5028072a92",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "3e77fc43e7cb281404c0d8508a0aafe08c921f29b847b8a667de3039279ed633",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "8976017ba6b382511617ff615a9bb67a74a3f7255002fb2162ec7e71172c7817",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "a7a2eb79ae27993b63f6287176c8297445d9eb3f1e662569440ddefa340614b2",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "8c2d2bfe78efdbbe34774167d9260554c849d69a3b0373dd513d81687f222613",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "9d4288eea41f487f4252eef7c189937d133a834514383f6eccfd90ac814a6b3c",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "326fa49a0254e002618fe8f7219c54488479c9cc84d44b6bc484e500e94f7659",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "c80c1839ad069c0cc895abb091f390cdf368e586bf30db577913ec4885cf321c",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "c54d9911f6a7d2f222feb36c3f52b94609bf5d4f503eaf31f09d0fc709292017",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "1d28f8b21c8f3f473c1402384757b93e920ca59ce0f5b771553ccce7d2033404",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "e3bcbf1abfb314c6fb32064dd0195203401ec45a76f75c38c804c1fe9f06ac31",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "42b09c74465b98d3117ac3d2e1728d2020e5b5fa253db7fee0b10d8a0c6a68a4",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "27f86a94c00100864653f6cc3daf937158a5affc8d3790edd9ebc66e9a702d0c",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "5abb0b2cbb17836ad675dfd34a0eb1337324878e41a74ae097466418466229db",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "7cfa4260255b39ad1117431ed632c03da34e16504e46f1b77addc2b417999d1f",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "0ca72f656ec8c8c233ce92a02b7d31faa58c20d5724ee47ebef7ef99f3efc4c9",
+      "stdout": "qleisli.preparation-result 1\nerror\nlimit\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "f1533335e2b4c7effbd2ff3f85ab3b27798ff7cba7037f7a12756160d7961542",
+      "stdout": "qleisli.preparation-result 1\nerror\nlimit\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "7a750111f1f6ad1462bb027789fa8bbb232eab81de880f1a5bdd19b7c4eacb14",
+      "stdout": "qleisli.preparation-result 1\nchecked\n9504\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "94b4d2328fffcbc5abbbaf93aa7a37b89f798bc88d3b6be64a435024fde0cec3",
+      "stdout": "qleisli.readout-result 1\nchecked\n16448\n",
+      "stderr": ""
+    }
+  ],
+  "source_modules_sha256": {
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "delayed_fourier": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce",
+    "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+    "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+    "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77"
+  },
+  "scripts_sha256": {
+    "instrument_transport.py": "662a2aab4a0029c88fc9246f7ebda898c30af507f79fa79ef3478b369d207b63",
+    "test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
+    "test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
+    "compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
+    "compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
+    "test_instrument_transport.py": "4050dcc0d3670aa4ccf1dc5c37556b3c78b7354515bccea5c25144e6122b003e"
+  },
+  "scope": "Existing preparation case statuses and one existing two-qubit sized QPE component path; not a rerun of whole suites or Lean oracle compilation"
+}

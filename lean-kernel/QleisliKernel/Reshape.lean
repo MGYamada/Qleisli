@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Artifact
 
 /-! Checked metadata for a canonical, single-owner reshape adapter.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This helper does not add a hierarchy acceptance rule or issue evidence. Source
 production must emit the existing independently checked structural operations.
 -/

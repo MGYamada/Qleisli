@@ -1,0 +1,45 @@
+{
+  "case": "private-u32-packet-observation",
+  "source_sha256": "ce35da9f5458176cbafa826dd497f6a2f24dd7e6bcb26866d44af42b5251af5f",
+  "commands": [
+    {
+      "case": "historical",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-continuity-independent-regressions/packet-probe/Probe.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-historical/lean",
+      "started_at": "2026-10-04T13:17:15.454053+00:00",
+      "elapsed_seconds": 1.842,
+      "exit_code": 0,
+      "stdout": "historical.stdout.txt",
+      "stderr": "historical.stderr.txt"
+    },
+    {
+      "case": "shifted",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-continuity-independent-regressions/packet-probe/Probe.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/private-u32-offset/lean",
+      "started_at": "2026-10-04T13:17:15.454327+00:00",
+      "elapsed_seconds": 1.843,
+      "exit_code": 0,
+      "stdout": "shifted.stdout.txt",
+      "stderr": "shifted.stderr.txt"
+    }
+  ],
+  "files": {
+    "Probe.lean": "ce35da9f5458176cbafa826dd497f6a2f24dd7e6bcb26866d44af42b5251af5f",
+    "historical.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shifted.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "historical.stdout.txt": "f9e085ae7d6607cae178d0f54e04b192923f2dee82c561d43024d5c69ef20ce1",
+    "shifted.stdout.txt": "8550c4b802748b6f0e5228bd9a7b39ecf57d893576b4f1c710de09eb0d4daa90"
+  }
+}

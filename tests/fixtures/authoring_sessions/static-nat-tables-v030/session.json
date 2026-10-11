@@ -1,0 +1,90 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#63 finite static-only exact Nat arrays and bounded phase-table construction",
+  "baseline_commit": "8aaed41447e887d66e3e5a79af97cc9ff8382a34",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository access, exact model/sampling unavailable",
+  "context": "context.md",
+  "prepared_before_first_source_check_utc": "2026-10-06T12:24:43.194749+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Fifteen complete desired/control/negative projects preserved before static table implementation; raw baseline parser refusals are not semantic negative evidence.",
+      "sha256": {
+        "scalar-control/main.qli": "549c7f7ba1c16c0285fd10b7fef7a0c2f2cb110a1c503a02977e3b8c4df4b455",
+        "generated-phase-table/main.qli": "8b2fca68e87e8c7a2322acb693544064c2b5184ddc22ce677b5f9fe221fddaa0",
+        "literal-table/main.qli": "418d0ab8c8f5abf426c4e195989239110c95c2e18a899630eb8329735e6573c4",
+        "computed-size/main.qli": "6bba4639c7237c3d5a0b82562d82cb15164ac41c74f346d84ad3b49beaecfd26",
+        "helper-chain/main.qli": "a4a48bd6b0d2423163fbbb69eb01f48e10444f2d721ba5f3adc81e909347adc9",
+        "empty-generator/main.qli": "66a25c36d35c4db003bbb5dc9f1d6bd9dff12a2c786f5c481a1e3942b768029e",
+        "empty-index/main.qli": "70d7bec2f791250f909deab25b230e37b11b5b6de3afd2fb382bede53076d9e4",
+        "out-of-range/main.qli": "bf6eb0ca950bf371b95e25ce9710e56d7dac3d2eea82e3c82f1f7b54c67f57f5",
+        "unproved-index/main.qli": "27f077daf338477377e2e26475d6039458dda6fc0256742eeba943bd374448cc",
+        "runtime-capture/main.qli": "060bf122b1cfbf98f0c44d3f9ffb74e8eee205072316a4477a600240d228484a",
+        "quantum-capture/main.qli": "2552c60f321e9ece39e092073489cd343c22b77390781a0fc37fdc006b325fd1",
+        "runtime-table-use/main.qli": "c0a9235246c28523eb2ca15103d71a4bd2267f0f6e24df07b3398e2deb4a18f1",
+        "unused-invalid-body/main.qli": "0c4490530edf781929cca927a451abdacf0e65cb47bb5591790a66ba81de9aeb",
+        "cycle/main.qli": "b60abd6cb44dd0e72c600f32124b14f7f9e3de483a473faa36ec10deb88f9751",
+        "wrong-length/main.qli": "8cb58451413316686b3a16acbe9b5f352606d268e3ee360cc451dd31208a1be3"
+      },
+      "observations": [
+        "observations-before/scalar-control-finite.json",
+        "observations-before/scalar-control-selected.json",
+        "observations-before/generated-phase-table-finite.json",
+        "observations-before/generated-phase-table-selected.json",
+        "observations-before/literal-table-finite.json",
+        "observations-before/literal-table-selected.json",
+        "observations-before/computed-size-finite.json",
+        "observations-before/computed-size-selected.json",
+        "observations-before/helper-chain-finite.json",
+        "observations-before/helper-chain-selected.json",
+        "observations-before/empty-generator-finite.json",
+        "observations-before/empty-generator-selected.json",
+        "observations-before/empty-index-finite.json",
+        "observations-before/empty-index-selected.json",
+        "observations-before/out-of-range-finite.json",
+        "observations-before/out-of-range-selected.json",
+        "observations-before/unproved-index-finite.json",
+        "observations-before/unproved-index-selected.json",
+        "observations-before/runtime-capture-finite.json",
+        "observations-before/runtime-capture-selected.json",
+        "observations-before/quantum-capture-finite.json",
+        "observations-before/quantum-capture-selected.json",
+        "observations-before/runtime-table-use-finite.json",
+        "observations-before/runtime-table-use-selected.json",
+        "observations-before/unused-invalid-body-finite.json",
+        "observations-before/unused-invalid-body-selected.json",
+        "observations-before/cycle-finite.json",
+        "observations-before/cycle-selected.json",
+        "observations-before/wrong-length-finite.json",
+        "observations-before/wrong-length-selected.json"
+      ],
+      "reports": [
+        "predictions.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Four informed source repairs before implementation: remove unsupported finite static-if from scalar control, and replace invented prepare with actual imported init0/h/measure_z. The original parse barriers did not diagnose those three name mistakes; repository API inspection did. Other desired/counterexample first sources remain unchanged.",
+      "prepared_before_first_source_check_utc": "2026-10-06T12:25:12.307479+00:00",
+      "sha256": {
+        "scalar-control/main.qli": "e57ce7e26101a61c3e222dd0b6f4fb3de54f4e9ae5a1657139895359d4988970",
+        "generated-phase-table/main.qli": "a20ad39bfdf005f407112d2d955f04574df36a80f9493d2f643757b0eab56e3f",
+        "runtime-capture/main.qli": "46c6b4a39a6c232f38bf4b859a6787c20598f4f6e893959f52e35bfff0d05bd3",
+        "quantum-capture/main.qli": "0cf70c94d924923e508d51197103b23c302d59cac06d4526cc8a2dfc208eeb56"
+      },
+      "observations": [
+        "observations-repair-before/scalar-control-finite.json",
+        "observations-repair-before/scalar-control-selected.json",
+        "observations-repair-before/generated-phase-table-finite.json",
+        "observations-repair-before/generated-phase-table-selected.json",
+        "observations-repair-before/runtime-capture-finite.json",
+        "observations-repair-before/runtime-capture-selected.json",
+        "observations-repair-before/quantum-capture-finite.json",
+        "observations-repair-before/quantum-capture-selected.json"
+      ]
+    }
+  ],
+  "scope": "First-source and actual diagnostic evidence only; no source-preservation theorem, generic QFT delivery, new guarantee or Issue completion."
+}

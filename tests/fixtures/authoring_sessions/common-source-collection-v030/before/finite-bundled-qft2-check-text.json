@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/finite-bundled-qft2",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/native-log.py"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 22,
+  "seconds": 1.196493958006613,
+  "recorded_utc": "2026-10-05T16:12:59.186433+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "transcript": "checked source and verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/finite-bundled-qft2\n"
+}

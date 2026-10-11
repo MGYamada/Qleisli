@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/check_book.py",
+    "--root",
+    "/private/tmp/qleisli-coherent-basis-book"
+  ],
+  "exit_code": 0,
+  "seconds": 0.19369845796609297,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.stdout.txt",
+      "sha256": "5535e04aa0cb0432ff8fe8bb06d8d57ba97dcd48c8b72844d1f104a0923dbe77"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.local-test-compile-observation",
+  "version": 1,
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-j2",
+    "--test",
+    "qli_corpus",
+    "protocol_y_minus_has_the_full_independent_operator_phase",
+    "--",
+    "--exact"
+  ],
+  "exit_code": 101,
+  "first_test_source": "first-oracle.rs.txt",
+  "log": {
+    "external_path": "/private/tmp/qleisli-protocol-inverse-oracle-before.log",
+    "bytes": 1030,
+    "sha256": "f9483450ab6f9063635b3de47c10eba85aceb35ab8ed56e76a1df537af33f5f3"
+  },
+  "cause": "The new test mistakenly used serde_json, which is not a Qleisli dependency. Compilation failed before any oracle case executed.",
+  "repair": "Use the same prewritten complete probe strings with existing Rust formatting; add no JSON dependency. This changes test input transport, not the independently specified matrix or source/native behavior.",
+  "source_capture": "Function-only snapshot of the first failed oracle; the trailing inter-function blank separator is omitted. Imports and surrounding helpers are at the exact baseline tests/qli_corpus.rs. No function statement or raw compile diagnostic is changed."
+}

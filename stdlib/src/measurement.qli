@@ -1,0 +1,33 @@
+//! Complete measurement instruments, implemented as ordinary checked source.
+//!
+//! Logical owners and external-reference behavior follow each declared contract.
+//! Contract identifiers: R003-R005.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::quantum::split;
+use std::observe::measure_z;
+
+/// Measure the X eigenvalue (-1)^b and return the classical result b.
+/// Consume the target owner; interpret the measurement with all references.
+pub fn measure_x(q: Q<Bit>) -> Bit {
+    measure_z(h(q))
+}
+
+/// Measure both bits in Z and consume both quantum owners.
+/// Return (left result, right result), corresponding to register weights 1,2.
+pub fn measure_z2(q: Q<(Bit, Bit)>) -> (Bit, Bit) {
+    let (a, b) = split(q);
+    (measure_z(a), measure_z(b))
+}
+
+/// Measure Z(a) Z(b), consuming the internal meter and returning both data owners.
+/// For result s, the data projector is (I + (-1)^s Z tensor Z)/2.
+/// Preserve coherence within each parity subspace and return ((a,b),s).
+/// Inputs must be distinct owners, but may be entangled with each other or a reference.
+pub fn parity_zz(a: Q<Bit>, b: Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit) {
+    let meter = init0();
+    let (a, meter) = cnot(a, meter);
+    let (b, meter) = cnot(b, meter);
+    ((a, b), measure_z(meter))
+}

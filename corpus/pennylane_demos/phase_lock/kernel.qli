@@ -9,7 +9,7 @@ use std::quantum::h;
 use std::quantum::z;
 use std::quantum::join;
 use std::quantum::split;
-basis fn lock(control: Bit, a: Bit, b: Bit, c: Bit, d: Bit) -> Bit {
+basis fn lock(((((control, a), b), c), d): ((((Bit, Bit), Bit), Bit), Bit)) -> Bit {
     control and not a and b and c and d
 }
 pub unitary fn kernel(q: Q<((((Bit, Bit), Bit), Bit), Bit)>) -> Q<((((Bit, Bit), Bit), Bit), Bit)> {

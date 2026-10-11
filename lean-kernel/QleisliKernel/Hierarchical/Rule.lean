@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Power
 
 /-! Exact local rule matching for whole-space unitary provider equations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Matching alone is not a derivation: every premise must be established on the
 same artifact. Finite payloads and unsupported rules reject in this first pass. -/
 

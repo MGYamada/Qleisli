@@ -1,0 +1,97 @@
+{
+  "issue": 33,
+  "baseline_commit": "b679ba39e2e8ea8c6d95d1e069e1d4806d65141d",
+  "source": "src/frontend/parser.rs",
+  "before_sha256": "a6a0de99c3ce34ba40c9e1d383e4ff50d1271567887e8671bd00290b18f857fb",
+  "current_sha256": "6bbc511849f1ecb8b4cc73fc76763d5b29a07d1dc8221b3cbaf51cb226f2f7f2",
+  "surface_and_capacity": "unchanged",
+  "behavior": "Reject static header markers with a located const migration message; retain static controls and contextual const identifiers.",
+  "first_local_results": [
+    "New test used nonexistent ErrorCode::Parse; corrected to the existing Project wrapper category without changing product error categories.",
+    "Initial sized_source runs: 31 passed, 7 failed, 3 ignored on both toolchains. Remaining measured-client module collections loaded the historical Fourier header. Retained disk-loading and byte-retention comparisons now use a scoped temporary header translation.",
+    "Source integrity initially rejected the parser source pin. Public signatures and capacity constants were compared before refreshing only the reviewed parser hash.",
+    "Full Rust groups found five additional test-only historical header readers and ps(1) was denied by the macOS sandbox. Migrate those readers and repeat outside the sandbox; retain the original failed group results.",
+    "Repaired full groups reached basis_polymorphism and found two failing tests from unmapped dynamic study readers. Inventory/readers were extended for 21 existing Basis, inference, tuple and mixed-Boolean study sources; original bytes and expected semantic outcomes remain unchanged.",
+    "Selector inventory rejected two direct Basis snapshots whose preceding qfor migration must run first. Their const links now start at the actual qfor predecessor, retaining earlier loop adoption and every hash link. A redundant owned-text conversion was removed after Clippy rejection.",
+    "Reviewed broad groups reached body_effects and found one additional dynamic observer header. Expanded the dynamic-reader census, adding thirteen current study selections plus two scalar-operation sources and two iterative fault sources; selected filesystem/CLI readers keep their actual input bytes. Focused runs use --no-fail-fast to collect remaining failures together, without changing accepted outcomes or removing cases.",
+    "Six-target latest/MSRV probes passed body_effects (13), iterative_qpe (5), quantum_unit_source (23), runtime_parameter_patterns (8), and source_judgments (8). Both initially failed one selected_source_cli Fourier input after a test-only translation read the original instead of its existing qfor predecessor. Reusing current_source_text before the asserted header translation restored all 11 latest-Rust CLI tests; the failed probes remain failures. Final full groups remain pending.",
+    "The final focused selected_source_cli run passed all 11 tests on MSRV as well. This is a corrected local run, not a replacement for an initial successful full group or hosted CI.",
+    "Latest all-targets --no-fail-fast diagnostic completed with five failed targets / nine failed tests: ordinary_types 1, qli_corpus 3, repair_diagnostics 1, sized_cli 1 and sized_declarations 3. MSRV shared group stopped at the first ordinary_types failure. Both retained 4,000-case ownership suites passed (360.65 / 413.49 seconds), with unchanged seed, cases and public calls. Fifteen header-only selections, the macro reader and a scoped historical Fourier CLI file repaired these inputs. The static_nat diagnostic remains unsupported at the parameter identifier, whose actual column changes from 25 to 24 because const is one byte shorter. The historical failed runs remain failed evidence."
+  ],
+  "scope": "No generic QFT implementation, new widths, oracle rewrite, IR/native acceptance rule or guarantee admission.",
+  "test_only_source_updates": [
+    {
+      "path": "src/frontend/specialize/fourier.rs",
+      "before_sha256": "5786e6e2c709d95cf692a8cf0d0252475ecda57c265d558cd97ffaf267a6b7a1",
+      "current_sha256": "b53343b76a56bbf8447e09b83d22c5a0ae011c6d1cf8d575ae1f22b9fe75e602"
+    },
+    {
+      "path": "src/frontend/specialize/qpe.rs",
+      "before_sha256": "db75b56e25ec18cf30b95a34168bdd5a7234163510bb8c1890c4bb6cf9933aa6",
+      "current_sha256": "a3837fd67753ca18a036d915187bfeb8da395a9a9869af74bf4b59c5962b283a"
+    }
+  ],
+  "coverage_review": {
+    "before_sha256": "d9cb2ad9cc04177faf6e68e69b91692ce8de612cd439cf042e5f3971ebb651d0",
+    "current_sha256": "f170cc1714f2b2b0c1ccb3758f8b26c72c390182432e0bb0e66f0402b437a1e9",
+    "changes": [
+      "src/frontend/parser.rs",
+      "src/frontend/specialize/fourier.rs",
+      "src/frontend/specialize/qpe.rs"
+    ],
+    "boundaries_capacities_enums_public_signatures": "unchanged",
+    "claims_and_proof_gates": "unchanged"
+  },
+  "focused_final_dynamic_results": [
+    {
+      "toolchain": "latest",
+      "targets": [
+        "ordinary_types",
+        "qli_corpus",
+        "repair_diagnostics",
+        "sized_cli",
+        "sized_declarations"
+      ],
+      "passed": 52,
+      "ignored": 2,
+      "per_target_seconds": [
+        2.6,
+        16.31,
+        2.4,
+        0.5,
+        1.54
+      ],
+      "output_sha256": "a1c6046757cfcb7cde567841611ca1ac3a17dd36464aaca490e4d13a9736f5a6",
+      "exit_code": 0
+    },
+    {
+      "toolchain": "msrv",
+      "targets": [
+        "ordinary_types",
+        "qli_corpus",
+        "repair_diagnostics",
+        "sized_cli",
+        "sized_declarations"
+      ],
+      "passed": 52,
+      "ignored": 2,
+      "per_target_seconds": [
+        2.64,
+        16.26,
+        2.39,
+        0.72,
+        1.35
+      ],
+      "output_sha256": "1cfbef1edf573a20f119d499bfb7b3a8b2c74c7cc68c90a3a443abea7c14ccba",
+      "exit_code": 0
+    }
+  ],
+  "comparison_fixture_review": {
+    "path": "tests/sized_cli.rs",
+    "before_sha256": "47e927397d221b0fd7b76b13650da9cfe3e55a9b87fd221d7f023bafb5b6fe51",
+    "current_sha256": "4b44d639dbd3d382af11be3bfbbd77a85bae09e3464c28136077bc35f0df77f7",
+    "changes": "Retain all assertions, inputs, widths, kernel absence, execution obligations and existing ignores; keep a scoped translated Fourier file alive for actual CLI loading. No expected artifact/oracle changes.",
+    "other_comparison_records": "unchanged"
+  },
+  "inherited_whitespace": "git diff --cached --check reports seven new-file blank lines at EOF in Basis study copies. Their preceding sources already contain those exact blank lines; the strict migration regression preserves every non-header byte. They are retained rather than silently reformatted."
+}

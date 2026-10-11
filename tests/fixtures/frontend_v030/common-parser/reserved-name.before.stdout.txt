@@ -1,0 +1,2 @@
+finite: error 15..17 expected an identifier
+sized: ok

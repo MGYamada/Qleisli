@@ -1,0 +1,11 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+
+unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }
+unitary fn round_trip[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U), Adjointable(U) { adjoint(U)(U(q)) }
+observe fn main() -> Bit {
+    measure_z(h(round_trip[power(eighth_phase,3)](h(init0()))))
+}

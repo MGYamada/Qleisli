@@ -1,0 +1,29 @@
+{
+  "format": "qleisli.alpha-release-acceptance",
+  "version": 1,
+  "product_version": "0.3.0-alpha",
+  "requirements_sha256": "3d186f683833161f9c1a09472d74c9a6e19409553d73211c67cd01a4178d5032",
+  "identities": {
+    "edition": "2026",
+    "qrate_schema": 2,
+    "native_protocol": "qleisli.qirf-native 1"
+  },
+  "schema_registry": {
+    "path": "lean/schema-registry.json",
+    "sha256": "1438dfd983b5f6d7596cd9a607bb2c04cf845a85a09111222d0934b43d569664"
+  },
+  "proof_scope": {
+    "claim": "scoped-pre-v1",
+    "ledger_sha256": "6f4c8bec2d8eb1cabcc54ed6104d41ae1f0ed62e30eec051823fcf244b7bf99d",
+    "admitted": [
+      "QS-QLV1-OWNERSHIP-2026-01",
+      "QS-QLV1-SCOPE-2026-01"
+    ],
+    "pending": [
+      "EXACT-2026-01",
+      "PR-2026-01",
+      "QS-2026-01",
+      "RS-2026-01"
+    ]
+  }
+}

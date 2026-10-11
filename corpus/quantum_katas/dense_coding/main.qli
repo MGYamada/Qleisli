@@ -9,4 +9,4 @@ use std::quantum::init0;
 use std::quantum::x;
 use std::observe::measure_z;
 use kernel::send;
-observe fn main() -> (CBit, CBit) { send(measure_z(x(init0())), measure_z(init0())) }
+observe fn main() -> (Bit, Bit) { send(measure_z(x(init0())), measure_z(init0())) }

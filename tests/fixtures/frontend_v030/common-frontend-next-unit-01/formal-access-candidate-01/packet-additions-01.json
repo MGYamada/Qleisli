@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.formals-packet-additions",
+  "version": 1,
+  "previous_packet": {
+    "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/final-packet-01.json",
+    "sha256": "392ea029335ce94ab2f38587a1914dc41e10de8dcc6a8fe3952ef9bbd038e033"
+  },
+  "files": {
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/.gitattributes": {
+      "sha256": "f8817951e1825318fe54215cbfb2bcddf187fbaafd93a5863b8948e1642b8679",
+      "bytes": 376,
+      "mode": 420
+    }
+  },
+  "reason": "Actual staged whitespace check reported Cargo raw stdout final blank lines in four logs. Scope only Git whitespace interpretation; original raw bytes are unchanged. Written after policy terminal; no test/source meaning changes.",
+  "self_excluded": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/packet-additions-01.json"
+}

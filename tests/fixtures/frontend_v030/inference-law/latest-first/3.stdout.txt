@@ -1,0 +1,41 @@
+
+running 36 tests
+test common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics ... ok
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test common_lexical_tables_survive_cloning_and_distinguish_fold_activations ... ok
+test common_lexical_static_substitution_uses_callee_binders_and_caller_values ... ok
+test contextual_controlled_and_reserved_words_have_one_classification ... ok
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test existing_empty_sized_spellings_remain_common_syntax ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test indexed_projection_preserves_profile_diagnostic_order_before_resolution ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test common_syntax_does_not_grant_missing_profile_or_capability_support ... ok
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test shadowing_moves_tuple_shape_and_effects ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test explicit_module_loading_retains_the_same_ast_as_project_loading ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.25s
+

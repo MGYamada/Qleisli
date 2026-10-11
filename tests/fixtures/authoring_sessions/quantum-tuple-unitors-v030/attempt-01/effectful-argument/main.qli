@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{split,join};
+use std::observe::measure_z;
+observe fn consume_first(q:Q<(Bit,Bit)>)->Q<Bit>{let(a,b)=split(q);let _=measure_z(a);b}
+pub unitary fn f(q:Q<(Bit,Bit)>,u:Q<Unit>)->Q<(Unit,Bit)>{join(u,consume_first(q))}
+
+observe fn main()->Unit{()}

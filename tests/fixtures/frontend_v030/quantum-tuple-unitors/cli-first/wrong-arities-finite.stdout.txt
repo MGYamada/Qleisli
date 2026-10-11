@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"static argument is outside the finite lowering profile","primary":{"path":"main.qli","start":164,"end":165,"line":3,"column":59},"related":[]}],"result":null}

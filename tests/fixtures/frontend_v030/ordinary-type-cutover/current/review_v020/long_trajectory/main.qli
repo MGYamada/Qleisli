@@ -1,0 +1,18 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+unitary fn d0(q: Q<Bit>) -> Q<Bit> { t(h(q)) }
+unitary fn d1(q: Q<Bit>) -> Q<Bit> { d0(d0(q)) }
+unitary fn d2(q: Q<Bit>) -> Q<Bit> { d1(d1(q)) }
+unitary fn d3(q: Q<Bit>) -> Q<Bit> { d2(d2(q)) }
+unitary fn d4(q: Q<Bit>) -> Q<Bit> { d3(d3(q)) }
+unitary fn d5(q: Q<Bit>) -> Q<Bit> { d4(d4(q)) }
+unitary fn d6(q: Q<Bit>) -> Q<Bit> { d5(d5(q)) }
+unitary fn d7(q: Q<Bit>) -> Q<Bit> { d6(d6(q)) }
+unitary fn d8(q: Q<Bit>) -> Q<Bit> { d7(d7(q)) }
+unitary fn d9(q: Q<Bit>) -> Q<Bit> { d8(d8(q)) }
+unitary fn d10(q: Q<Bit>) -> Q<Bit> { d9(d9(q)) }
+unitary fn d11(q: Q<Bit>) -> Q<Bit> { d10(d10(q)) }
+unitary fn d12(q: Q<Bit>) -> Q<Bit> { d11(d11(q)) }
+observe fn main() -> Bit { measure_z(d12(d11(init0()))) }

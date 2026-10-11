@@ -1,0 +1,9 @@
+use iterative::phase3;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> ((Bit,Bit,Bit),Bit) {
+    let (word,target) = phase3[repeat_op(0,eighth_phase)](x(init0()));
+    (word,measure_z(target))
+}

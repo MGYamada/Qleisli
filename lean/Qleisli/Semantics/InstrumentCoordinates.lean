@@ -5,7 +5,7 @@ import Mathlib.Data.List.Nodup
 These lemmas keep declared axis order and exact complex phase. No checker or
 algorithm model is imported. The caller must establish distinct physical axes;
 separate ownership alone is not a product-state premise.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Semantics.Instrument
 open QleisliKernel.Semantics

@@ -1,0 +1,122 @@
+{
+  "format": "qleisli.coherent-basis-first-results",
+  "version": 1,
+  "actual_observations": 44,
+  "successful_commands": 9,
+  "refused_commands": 35,
+  "case_results": [
+    {
+      "case": "entangle-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "entangle-legacy",
+      "exit_code": 0,
+      "code": null,
+      "message": null
+    },
+    {
+      "case": "phase-reference-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "phase-reference-legacy",
+      "exit_code": 0,
+      "code": null,
+      "message": null
+    },
+    {
+      "case": "permutation-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "permutation-legacy",
+      "exit_code": 0,
+      "code": null,
+      "message": null
+    },
+    {
+      "case": "unit-owner-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "unit-owner-legacy",
+      "exit_code": 1,
+      "code": "unsupported",
+      "message": "finite lowering profile does not support `std::quantum::unit`"
+    },
+    {
+      "case": "noninjective-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "noninjective-legacy",
+      "exit_code": 1,
+      "code": "ownership",
+      "message": "coherent basis lift is not injective"
+    },
+    {
+      "case": "quantum-capture-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "quantum-capture-legacy",
+      "exit_code": 1,
+      "code": "unknown_name",
+      "message": "unbound basis value"
+    },
+    {
+      "case": "ordinary-capture-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "ordinary-capture-legacy",
+      "exit_code": 1,
+      "code": "unknown_name",
+      "message": "unbound basis value"
+    },
+    {
+      "case": "owner-reuse-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "owner-reuse-legacy",
+      "exit_code": 1,
+      "code": "ownership",
+      "message": "quantum ownership `q` has already been consumed"
+    },
+    {
+      "case": "measurement-in-body-desired",
+      "exit_code": 1,
+      "code": "parse",
+      "message": "parse error: expected `(`, found `basis`"
+    },
+    {
+      "case": "measurement-in-body-legacy",
+      "exit_code": 1,
+      "code": "type_mismatch",
+      "message": "basis expression requires a basis function"
+    }
+  ],
+  "new_syntax_parse_refusals": 18,
+  "legacy_finite_successful_positive_projects": 3,
+  "selected_coherent_lift_eligibility_still_missing": true,
+  "unit_owner_limit": "The ordinary finite path refuses std::quantum::unit. The selected path refuses its original CoherentLift projection; neither outcome is hidden or converted into a passing positive.",
+  "scope": "Raw results are actual; first-files.json contains independently written intended equations, not computed proofs. No numerical oracle, fresh Lean replay or theorem was run."
+}

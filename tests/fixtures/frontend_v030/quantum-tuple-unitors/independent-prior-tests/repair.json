@@ -1,0 +1,10 @@
+{
+  "status": "authored-before-first-test-execution",
+  "scope": "Q<tuple> identity is now supported. Keep exact tree and one-owner assertions. Selected coherent do/pure remains a separately named unsupported capability; this negative no longer claims the Q<tuple> type itself is unsupported. No historical input is changed.",
+  "current_files": {
+    "tests/frontend_types.rs": "3e24950ebcfaec1401bebb7c1730cc86cc90b59d11663139c9f8d17123d66645",
+    "tests/quantum_unit_maps.rs": "b07101b7c404b6d52c75672768268ec6d9469189affd2f1566ea2f4fd9b7d0ba",
+    "tests/sized_source.rs": "b98a5694cf1439e9a104529b6878982a3b209da4976ca86da5b69e05d043ea5a"
+  },
+  "patch_sha256": "7242bae2eb0b0ed64a04a66838d5fe057856da23a567bbcc5a56ecabd3f4c045"
+}

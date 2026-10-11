@@ -1,0 +1,11 @@
+use std::quantum::{init0,h,x,z,t,cnot,toffoli,split,join};
+use std::observe::{measure_z,reset};
+unitary fn pa(q:Q<Bit>)->Q<Bit>{t(h(q))}
+unitary fn pb(q:Q<Bit>)->Q<Bit>{z(x(q))}
+unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+unitary fn w(q:Q<Bit>)->Q<Bit>{let a=q;let a=apply[then_op(pa,pb)](a);let a=t(a);let a=h(a);a}
+unitary fn u(q:Q<Bit>)->Q<Bit>{repeat_static(1,w,q)}
+unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
+unitary fn reference(q:Q<Bit>)->Q<Bit>{let a=q;let a=h(a);let a=t(a);let a=x(a);let a=z(a);let a=t(a);let a=h(a);a}
+unitary fn checked(q:Q<Bit>)->Q<Bit>{apply_contract(u,reference,q)}
+observe fn main()->(Bit,Bit){let a=init0();let (r,q)=qif(h(init0()),a){0=>identity,1=>checked};let a=q;(measure_z(r),measure_z(a))}

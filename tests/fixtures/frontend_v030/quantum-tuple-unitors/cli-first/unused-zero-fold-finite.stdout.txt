@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"expression is outside the finite lowering profile","primary":{"path":"main.qli","start":157,"end":224,"line":3,"column":52},"related":[]}],"result":null}

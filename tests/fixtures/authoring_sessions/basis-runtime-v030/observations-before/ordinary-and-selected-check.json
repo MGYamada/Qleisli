@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/private/tmp/qleisli-default-boundary-after",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-runtime-v030/attempt-01/ordinary-and/main.qli",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T06:23:56.101978+00:00",
+  "case": "ordinary-and",
+  "mode": "selected",
+  "phase": "before",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "Actual bounded CLI observation; no child-start attestation, source-preservation proof or exact oracle.",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-before/ordinary-and-selected-check.stdout.txt",
+      "sha256": "02d4e40d94395a409cc3c7bb43ecfb2894c05f893dbdb87a6b3d6dec1bb72dde"
+    },
+    "stderr": {
+      "path": "observations-before/ordinary-and-selected-check.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "Basis and Meaning declarations are not ordinary runtime callees",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-runtime-v030/attempt-01/ordinary-and/main.qli",
+          "start": 151,
+          "end": 155
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

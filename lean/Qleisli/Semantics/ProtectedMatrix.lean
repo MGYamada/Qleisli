@@ -3,7 +3,7 @@ import Qleisli.Semantics.Exact
 
 /-! Original physical protected-scope matrix coefficients on the zero image.
 No auxiliary expansion, logical replacement, acceptance or capacity is assumed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.ProtectedMatrix
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Raw
 open Qleisli.Semantics.Exact Qleisli.Semantics.Protected

@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::classical::{empty_bits,prepend_bit};
+classical fn pack(a:Bit,b:Bit)->Bits<2>{prepend_bit[1](a,prepend_bit[0](b,empty_bits()))}
+classical fn nested(b:Bits<2>)->((Bits<2>,Unit),(Bit,Bits<2>)){let alias=b;let _=b;((alias,()),(1,b))} pub unitary fn main()->((Bits<2>,Unit),(Bit,Bits<2>)){nested(pack(0,1))}

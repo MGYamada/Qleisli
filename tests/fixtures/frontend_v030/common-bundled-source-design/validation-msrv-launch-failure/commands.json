@@ -1,0 +1,14 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "+1.85.0",
+      "--version"
+    ],
+    "exit_code": 101,
+    "seconds": 0.04061645799083635,
+    "completed_utc": "2026-10-05T16:24:42.323592+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  }
+]

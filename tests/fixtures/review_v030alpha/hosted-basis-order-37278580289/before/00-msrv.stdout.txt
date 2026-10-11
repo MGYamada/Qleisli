@@ -1,0 +1,18 @@
+
+running 1 test
+test forwarding_checks_callee_size_and_access_premises ... FAILED
+
+failures:
+
+---- forwarding_checks_callee_size_and_access_premises stdout ----
+
+thread 'forwarding_checks_callee_size_and_access_premises' panicked at tests/sized_source.rs:467:35:
+called `Result::unwrap()` on an `Err` value: Error { code: "static", module: Some("dep"), span: Span { start: 40, end: 41 }, message: "unknown natural name n" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    forwarding_checks_callee_size_and_access_premises
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 40 filtered out; finished in 0.00s
+

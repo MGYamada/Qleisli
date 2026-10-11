@@ -1,0 +1,122 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "seconds": 1.3553553750389256,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5030834170174785,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.18845991702983156,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.34244812501128763,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 4.6858054579934105,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.1176362080150284,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3351173749542795,
+      "stdout": "6.stdout.txt",
+      "stderr": "6.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12143558298703283,
+      "stdout": "7.stdout.txt",
+      "stderr": "7.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3397750409785658,
+      "stdout": "8.stdout.txt",
+      "stderr": "8.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.608468874997925,
+      "stdout": "9.stdout.txt",
+      "stderr": "9.stderr.txt"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.04161029198439792,
+      "stdout": "10.stdout.txt",
+      "stderr": "10.stderr.txt"
+    }
+  ],
+  "scope": "Identity/continuity, reviewed metadata, editions, source records, docs and formatting. No fresh Lean replay or release certificate."
+}

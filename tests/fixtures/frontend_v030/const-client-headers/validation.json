@@ -1,0 +1,91 @@
+{
+  "baseline_commit": "9f1c4fbdafe102ef9b68df7e2711023de1d9b560",
+  "comparison": {
+    "status": "passed",
+    "comparisons": [
+      {
+        "entry": "order",
+        "n": 3,
+        "m": 2,
+        "sha256": "539d76aa4b80e3272ddb554ad6e91c140f4bc13933102983853d3e6cf0909e40"
+      },
+      {
+        "entry": "amplitude",
+        "n": 1,
+        "m": 2,
+        "sha256": "8b86f3c42694751cdfe90defd9ddfc78a4d24d2dea4e0af2a515c16ae506bf6b"
+      },
+      {
+        "entry": "amplitude",
+        "n": 1,
+        "m": 3,
+        "sha256": "466d87ae45636f4381326791d4fcdb66f46ff379a081f79a868110d93e05f5f7"
+      },
+      {
+        "entry": "measured_order::order_readout",
+        "sizes": {
+          "n": 2,
+          "m": 2
+        },
+        "sha256": "f46e393ad835825a1c045e3c96f3bcd07af69a22cb90992bdaeb6fccb885cba7"
+      },
+      {
+        "entry": "measured_amplitude::amplitude_readout",
+        "sizes": {
+          "n": 1,
+          "m": 2,
+          "j": 1,
+          "d": 3
+        },
+        "sha256": "896e87880f3466cdf7a97769b72e72babe2bee1f7063230442bf8c4367954661"
+      },
+      {
+        "entry": "measured_retiming::retimed",
+        "sizes": {
+          "n": 2
+        },
+        "sha256": "b4d202b612217d29ff2ea37098079c50f8703509666209d47270a73e6123a075"
+      }
+    ]
+  },
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "rust_checks": {
+    "targets": [
+      "authoring_ergonomics",
+      "basis_polymorphism",
+      "body_effects",
+      "sized_source",
+      "sized_cli",
+      "native_roundtrip"
+    ],
+    "toolchains": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "status": "passed; existing ignored cases retained"
+  },
+  "python_native_checks": [
+    "test_sized_qpe_clients",
+    "test_sized_instrument"
+  ],
+  "source_probabilities": {
+    "latest": 32,
+    "msrv": 32
+  },
+  "fixture_selection_cases": 55,
+  "source_integrity": "5/5 passed",
+  "docs": "2232 links passed",
+  "previous_full_ci": {
+    "commit": "5d4c50ac2a0f6da47bbbc990385fa3027e210153",
+    "run": 37723343703,
+    "attempt": 1,
+    "status": "success",
+    "release_readiness": "skipped"
+  },
+  "limits": [
+    "Not full CI for this new migration.",
+    "Ownership 4000-case suite unchanged; this unit did not rerun it.",
+    "No fresh Lean replay or new constitutional discharge.",
+    "Generic QFT and delayed Fourier source headers excluded from this migration."
+  ]
+}

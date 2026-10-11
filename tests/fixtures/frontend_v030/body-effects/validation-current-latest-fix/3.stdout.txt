@@ -1,0 +1,64 @@
+
+running 59 tests
+test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+test frontend::lexer::common_token_tests::comment_bound_and_doc_recognition_are_independent_of_tokens ... ok
+test frontend::lexer::common_token_tests::bounded_common_tokens_count_pairs_before_owning_spellings ... ok
+test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+test frontend::parser::tests::contextual_naturals_do_not_unreserve_runtime_global_or_operation_names ... ok
+test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+test frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans ... ok
+test frontend::parser::tests::contextual_natural_syntax_does_not_resolve_an_unbound_name ... ok
+test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+test frontend::parser::tests::contextual_naturals_are_retained_in_fold_indices_and_bounds ... ok
+test frontend::project::source_file::tests::macos_nofollow_any_is_gated_by_runtime_version ... ok
+test frontend::parser::tests::contextual_naturals_retain_name_span_type_dimensions_and_constraints ... ok
+test frontend::project::source_file::tests::macos_openat_retains_parent_identity_after_path_replacement ... ok
+test frontend::parser::tests::contextual_naturals_keep_all_comparisons_separate_from_type_angles ... ok
+test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+test frontend::resolve::locals::tests::cloned_and_relocated_syntax_keeps_structural_ids_but_rebuilds_lookup ... ok
+test frontend::resolve::locals::tests::constructed_deep_syntax_and_sibling_scopes_do_not_alias_bindings ... ok
+test frontend::resolve::locals::tests::equal_spans_do_not_merge_initializer_and_rebinding_identities ... ok
+test frontend::resolve::locals::tests::later_static_naturals_and_late_imports_keep_the_same_local_identity ... ok
+test frontend::resolve::locals::tests::static_candidate_does_not_replace_the_runtime_shadow_identity ... ok
+test frontend::resolve::tests::all_declarations_have_canonical_collection_local_identities ... ok
+test frontend::resolve::tests::constructed_empty_import_is_a_located_error ... ok
+test frontend::resolve::tests::sealed_identity_does_not_expand_either_primitive_profile ... ok
+test frontend::project::source_file::tests::macos_fifo_source_replacement_is_rejected_without_a_writer ... ok
+test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+test frontend::parser::tests::contextual_naturals_pass_through_specialization_and_operation_counts ... ok
+test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+test frontend::project::source_file::tests::macos_legacy_walk_rejects_links_and_retains_read_requirement ... ok
+test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+test frontend::sized::lower::preservation::tests::source_trace_charges_idle_zero_width_basis_before_frame_cloning ... ok
+test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+test frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules ... ok
+test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_preserves_entangled_caller_frame_through_an_ordinary_call ... ok
+test frontend::types::tests::equal_width_does_not_identify_type_or_owner_trees ... ok
+test frontend::types::tests::linearity_retains_zero_width_owners_inside_mixed_products ... ok
+test frontend::types::tests::size_obligations_keep_order_and_errors_after_a_sibling_mismatch ... ok
+test frontend::types::tests::size_solver_cannot_equate_different_tuple_or_quantum_shapes ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_rejects_native_valid_gate_control_measurement_and_extra_mutations ... ok
+test frontend::sized::raw::tests::raw_source_replay_rejects_native_valid_semantic_and_structural_mutations ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_unit_maps ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_product_maps ... ok
+
+test result: ok. 57 passed; 0 failed; 2 ignored; 0 measured; 51 filtered out; finished in 0.29s
+

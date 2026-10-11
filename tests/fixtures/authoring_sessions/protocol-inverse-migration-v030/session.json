@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "#33 protocol inverse application migration",
+  "baseline_commit": "cc070079449d4d166b767b09afaa8737fa1613a5",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository and Reference access; exact sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete desired protocol derivative saved before execution and active edits. Only three named adjoint applications change.",
+      "sha256": {
+        "bell.qli": "7d3665d1f783b67cac871caba6265776042a1c5b0b5e0b6f2af0ba0e455796cf",
+        "checks.qli": "a4b3d477444679ed0eead858d09179d09e2aa03a73e3728dfdd0a9599b1023fd",
+        "corrections.qli": "886dcf44e53725f9c5c6cd3c0e9e5b1c0c788d68d6569114d3a9a4997356b341",
+        "dense_coding.qli": "e665e49159e4f98e9d17caf68864d9d64c572209d3ca89741c589b23f1f1e169",
+        "main.qli": "b356d1436a9c0373dc16cd42ae3cafdeb7e1129a89351cab3de330de1b47ba65",
+        "states.qli": "92e9cb2891813d9ec431af1b966dbed3b16ca1e7f78f7b1ed4df11340ddc0228",
+        "swapping.qli": "62d3508530e22b08b898b6b90597fc4070f110baeaa7e25ba21b7fd73b3eb9ed",
+        "teleportation.qli": "045bd0f0b0a85078c3db02b61df2c8571c7eb38c1847104dbec6f920c5975937"
+      },
+      "observations": [
+        "observation-original-check.json",
+        "observation-original-run.json",
+        "observation-snapshot-check.json",
+        "observation-snapshot-run.json",
+        "observation-active-check.json",
+        "observation-active-run.json"
+      ],
+      "reports": [
+        "before-source-hashes.json",
+        "oracle-probes.json",
+        "oracle-compile-failure.json",
+        "active-comparison.json",
+        "validation.json"
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import QleisliKernel.Hierarchical.QpeSchedule
 /-! Actual component equations for the coherent QPE schedule inspector.
 Finite readers consume the exact retained bytes; provider evaluation refers to
 the same artifact and still requires its independent requested meaning.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.HierarchicalQpeSchedule
 open QleisliKernel.Hierarchical
 open Artifact HierarchicalOperators HierarchicalSemantics HierarchicalFiniteEvaluation

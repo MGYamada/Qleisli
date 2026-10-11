@@ -4,7 +4,7 @@
 Returned finite equations are still obligations. Provider requests below freeze
 baseline graphs for mutation tests; numerical probes independently compare full
 complex branch amplitudes. This is not source-preservation or external evidence.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

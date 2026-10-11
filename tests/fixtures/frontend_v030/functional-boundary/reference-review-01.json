@@ -1,0 +1,133 @@
+{
+  "format": "qleisli.functional-boundary-reference-review",
+  "version": 1,
+  "issue": 80,
+  "status": "advisory-reference-review-no-remaining-blocker-observed",
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668",
+  "source_baseline": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "reviewer": {
+    "agent": "/root/basis_syntax_design_review",
+    "independence": "Read-only review of the Reference and ordinary decision against actual source implementation, independently of their author. Reviewer authored tests/functional_boundary.rs; this is not independent review of those tests.",
+    "authority": "Ordinary technical advice only; no Guardian interpretation, adequacy judgment, guarantee admission, Issue closure or release approval."
+  },
+  "original_criteria_review": {
+    "original_count": 14,
+    "mapped_count": 14,
+    "exact_ordered_text_identity": true,
+    "contiguous_ordinals": true,
+    "source_baseline": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+    "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "criterion_map_path": "tests/fixtures/frontend_v030/functional-boundary/criterion-map-01.json",
+    "result": "All 14 original acceptance-criterion strings are retained byte-for-byte and in order in the evidence index. Their classification and explicit limits do not introduce a criterion reduction; the index still awaits final integration review.",
+    "qualification": "This identity and specification review does not itself establish that all verification or release conditions are complete."
+  },
+  "resolved_advisories": [
+    {
+      "concern": "An unqualified constructor table could imply common-source validity guarantees concrete lowering in every profile.",
+      "resolution": "The current text identifies the table as common-source description/interface rules, expressly retains finite explicit-specialization refusal and narrower selected projection, and forbids inferring support from common judgment.",
+      "source_check": "Finite Lowerer::operation rejects Type/Natural/Specialize. Selected argument projection supports Type/Name/Natural/Specialize/Repeat and rejects other static operation constructors."
+    },
+    {
+      "concern": "The phrase local value is not callable could accidentally include a locally bound static Op formal.",
+      "resolution": "The current text says local runtime value; the separate Op-formal application and access requirements remain explicit.",
+      "source_check": "Body::call first admits scoped operation formals with one quantum argument and Apply. Body::named_operation distinguishes scoped Op formals from local or spent runtime values."
+    }
+  ],
+  "assessments": [
+    {
+      "subject": "Capabilities and Meaning",
+      "result": "Separate Apply/Adjoint/Controlled assumptions, exact basis trees, common pending MeaningEquality and finite closed-declaration checking match current code. Common Inverse/Controlled/Repeat/Then/Tensor/Conjugate clear attached Meaning; constructor spelling and Unitary annotations do not discharge it."
+    },
+    {
+      "subject": "Common judgment, finite materialization and selected projection",
+      "result": "The chapter distinguishes source judgment from concrete eligibility and native acceptance. It retains checked_op/meaning-refined selected refusals and finite Specialize refusal; direct runtime-group transforms are linked as distinct from opaque packed endomorphisms."
+    },
+    {
+      "subject": "Eager evaluation, whole-body checking and recursion",
+      "result": "Full call arity, ordered eager runtime evaluation and checking unused declarations/both arms/zero-fold bodies match inspected source rules. Checking is not described as execution. Checked Nat self-decrease, cycle refusals and bounded elaboration remain permitted, without an unrestricted recursion or quantitative-resource theorem claim."
+    },
+    {
+      "subject": "Owners, patterns and Q<Unit>",
+      "result": "Nested tuples remain linear when they contain Q, including zero-width owners. Ordinary patterns, quantum split/join/coherent maps and Observe remain separate. Unit return transport does not erase work or exact scalar phase; linked finite/selected profile limitations remain explicit."
+    },
+    {
+      "subject": "Current and candidate features",
+      "result": "General runtime closures, currying values, ADTs/coherent sums, traits, broader Op arrows/builders, Monad/do and host-I/O effects are not silently admitted. Scoped checked compiler bodies remain permitted and are not confused with reusable closures. Child feature completion is not claimed."
+    },
+    {
+      "subject": "Diagnostics, migration and evidence identity",
+      "result": "Existing do/pure and bind_op migration refusals, real source error stages, stale evidence/source bindings and native gates are distinguished. The chapter does not promise a semantic test of grammar that rejects earlier or claim external qargo/qlippy consumer work."
+    },
+    {
+      "subject": "Constitutional scope",
+      "result": "The current text leaves QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 pending. The two admitted ordinary decoded-QLV1-root ownership/classical-scope guarantees are not enlarged into functional-source preservation or production-wide certification. Edition 2026, exactness and the authority hierarchy are retained."
+    }
+  ],
+  "remaining_blockers": [],
+  "performed": [
+    "Read the current Reference chapter and SUMMARY placement, ordinary Issue80 decision and original Issue80 criteria from previously fetched actual connector responses.",
+    "Inspected relevant common checking, finite lowering, selected projection, recursive ownership/type and effect/evaluation source definitions; re-read the final qualifications against the concrete constructor and local-Op paths.",
+    "Compared all 14 criterion strings and ordinals mechanically against the actual fetched Issue body; inspected the evidence-index limits.",
+    "Read/hash-bound current constitutional originals and adoption/admission records relevant to this review; distinguished the source baseline from the supplied trusted constitutional base.",
+    "Re-hashed the exact current document, related specification/source inputs, preserved pre-review document, repair record and criterion map."
+  ],
+  "not_performed": [
+    "No Cargo, CLI, Lean build/audit/replay, test, Clippy, mdBook or release execution was performed as part of this final read-only specification review.",
+    "No fresh constitutional checker or trusted-base continuity execution was performed in this final read-only review; root owns and reports that verification.",
+    "No Git or GitHub mutation, production-source edit, Issue closure or status/guarantee change was made."
+  ],
+  "validation_attribution": "Root reported 47 unique focused tests on each toolchain and both all-target Clippy/fmt plus the fixed-source study. Those are root's performed checks, not fresh executions by this reviewer; final integration records remain root-owned.",
+  "limits": [
+    "Specification/source inspection and hashes are not formal source/runtime/compiler preservation, forward PR, quantitative RS, physical realization, or exactness discharge.",
+    "This review does not authenticate human identity, independently repeat an admission adequacy judgment, replay proofs or attest a deployed native binary.",
+    "No new feature/proof/release completion is claimed. Generic qft<N> is wholly excluded and no new maximum-scale case was generated.",
+    "The prepared and first-failure source-study artifacts remain root-owned; this review does not rewrite or independently certify their entire provenance."
+  ],
+  "observed_inputs_sha256": {
+    "docs/src/reference/functional-boundary.md": "01b429db92069be0b01882d0cb7dd9c1a971eed7db60598e0c4b0ca023ac28d0",
+    "docs/src/SUMMARY.md": "2a5f7d6b7d9983d9a1e86f364947f2f9ddab54219b3280849989ee7cbd3aedca",
+    "docs/src/reference/source-text.md": "c540633c34b8b88c461ba645117670c23de606a317af2a58adcff96c49da958f",
+    "docs/src/reference/type-model.md": "3f81cb813878414f7433e6c2899e869dd42530e3b57d3ff83c282d1521a25ef5",
+    "docs/src/reference/coherent-basis.md": "4cad938dda84d0c4f6afa7b610d649645fd9b320e697b60eb13d84462a301ded",
+    "docs/src/reference/checked-operations.md": "fa141577dd4acce209d75bbcb280bc013712849d534e7e6779b8e926b90e9f4a",
+    "docs/src/reference/production-boundary.md": "f51d75a0ad542be6d03c9528d7f9d2f0340003d144d87ff5d4a5a64b983dfa4d",
+    "docs/src/reference/authority.md": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9",
+    "docs/src/design/operations.md": "25146ed969877572b5185c8ac7d6c1503dc910eeff6ddde1a325699b2dcc51c0",
+    "src/frontend/ast.rs": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "src/frontend/check.rs": "f0060cecd778ff199ada98d24776244427c0309f4637004ac46a21dff0f9b6e5",
+    "src/frontend/check/body.rs": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+    "src/frontend/check/body/operations.rs": "6d6faa315e9b7839be68df81b68371918ccd721b8d3053fd3f2f3e12215809c4",
+    "src/frontend/check/body/special.rs": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+    "src/frontend/parser.rs": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+    "src/frontend/lexer.rs": "1cc1c470d921fbe8536959f55cfad56dfa779bfa10fb4a5713299bca3b129985",
+    "src/frontend/source.rs": "caa1c9a6f61876f2942c0ad711b4c57064407acdb271998a0991a5fd8b04273b",
+    "src/frontend/compile/profile.rs": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+    "src/frontend/compile/lower/mod.rs": "c75920f6961ee5ee590880ee00f28dc0dd254247a36ac234fa2fee3487cb7848",
+    "src/frontend/compile/lower/operations.rs": "c71bd144ebedab0ef1b27c0d0f28385816a341a6c94597c31f4023fa576468d1",
+    "src/frontend/compile/operations.rs": "540d50f809150256cac8f709ee8e6102907c2dcf615700171626308ee73bd830",
+    "src/frontend/sized.rs": "366007e2fe05a4877c9baf954b8034a95fdaa70857d644dbee6949d6758cbd99",
+    "src/frontend/sized/parser.rs": "9bd9baffd118a4850c068df06e104a0077f32c8303d4b701c81f7e53e6ae754f",
+    "src/frontend/sized/check.rs": "238ffb9c786351885b13ac78980a70bcaceaaf1c94a1248b9b379ade1433728b",
+    "src/frontend/sized/elaborate.rs": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "GOVERNANCE.md": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+    "governance/ratification-2026.json": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+    "governance/interpretations/initial-2026-reviewed.txt": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+    "governance/interpretations/initial-2026-adoption.json": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+    "governance/proposals/exactness-2026.md": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179",
+    "governance/interpretations/exactness-2026-adoption.json": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59",
+    "governance/proposals/initial-guarantees.json": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+    "governance/guarantees/initial-2026-admission.json": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+    "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+    "tests/functional_boundary.rs": "1ff9a7515b6adba4e3fe8ee13feb4c1226a14308653ffd04eed8fba238db7969",
+    "tests/fixtures/frontend_v030/functional-boundary/reference-before-review-01.md.txt": "172e275972d3e73673b7e7f167355f7620d7ec9a29433e2800415537875c9399",
+    "tests/fixtures/frontend_v030/functional-boundary/reference-review-repair-01.json": "f4cbd774d4e2882c3132f6865a1d0a1ae5f3c37aeb9cee40acd862e55da312a7",
+    "tests/fixtures/frontend_v030/functional-boundary/criterion-map-01.json": "471735cc937a41bb1f82adc68f7a92e0ce9d9fbc2865173a408cd5d59665e2df"
+  },
+  "fetched_github_text_sha256": {
+    "issue80_body_utf8": "d7eade522d82d1e1b0dcec9c39054ff3ae183dd1d04a231df3eabe14e83b5601",
+    "ordinary_decision6009479668_body_utf8": "32fb0c34679cc11b2a4460e93cd2ac8a14cbce12829968ea289dec8834d615a7"
+  }
+}

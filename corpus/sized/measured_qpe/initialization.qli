@@ -4,7 +4,6 @@
 use std::quantum::init0;
 use std::registers::empty;
 use std::registers::put_bit;
-use initialization::init_zero;
 
 pub iso fn init_zero[static n: Nat]() -> Q<Bits<n>> {
     if static n == 0 {

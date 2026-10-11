@@ -1,0 +1,163 @@
+{
+  "cases": [
+    {
+      "case": "restricted-legacy-flat",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-flat/main.qli\", span: Span { start: 152, end: 161 }, line: 3, column: 72 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "restricted-unary-flat",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-unary-mismatch-flat",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-flat/main.qli\", span: Span { start: 160, end: 169 }, line: 3, column: 76 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "certified-legacy-flat",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-flat/main.qli\", span: Span { start: 213, end: 222 }, line: 4, column: 72 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "meaning-unary-flat",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-legacy-left",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-unary-left",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-unary-mismatch-left",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-left/main.qli\", span: Span { start: 164, end: 173 }, line: 3, column: 76 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "certified-legacy-left",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "meaning-unary-left",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-legacy-right",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-right/main.qli\", span: Span { start: 156, end: 165 }, line: 3, column: 76 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "restricted-unary-right",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "restricted-unary-mismatch-right",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-right/main.qli\", span: Span { start: 160, end: 169 }, line: 3, column: 72 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "certified-legacy-right",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-right/main.qli\", span: Span { start: 221, end: 230 }, line: 4, column: 76 }) }",
+      "expected_before_observation": "exact-domain rejection"
+    },
+    {
+      "case": "meaning-unary-right",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "meaning-legacy-left",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-legacy-left/main.qli\", span: Span { start: 128, end: 132 }, line: 3, column: 47 }) }",
+      "expected_before_observation": "signature rejection: Meaning already requires one parameter"
+    },
+    {
+      "case": "restricted-zero",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    {
+      "case": "certified-zero",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    {
+      "case": "meaning-zero",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-zero/main.qli\", span: Span { start: 82, end: 86 }, line: 3, column: 36 }) }",
+      "expected_before_observation": "signature rejection"
+    },
+    {
+      "case": "restricted-unit",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    {
+      "case": "certified-unit",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    {
+      "case": "meaning-unit",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept"
+    },
+    {
+      "case": "ordinary-three-arguments",
+      "accepted": true,
+      "diagnostic": "finite.check: ok",
+      "expected_before_observation": "accept: ordinary argument list retains arity three"
+    },
+    {
+      "case": "ordinary-tuple-is-not-three-arguments",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-tuple-is-not-three-arguments/main.qli\", span: Span { start: 122, end: 136 }, line: 3, column: 48 }) }",
+      "expected_before_observation": "arity rejection"
+    },
+    {
+      "case": "ordinary-zero-called-with-unit",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-zero-called-with-unit/main.qli\", span: Span { start: 73, end: 77 }, line: 3, column: 30 }) }",
+      "expected_before_observation": "arity rejection"
+    },
+    {
+      "case": "ordinary-unit-called-with-zero",
+      "accepted": false,
+      "diagnostic": "finite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-unit-called-with-zero/main.qli\", span: Span { start: 73, end: 76 }, line: 3, column: 24 }) }",
+      "expected_before_observation": "arity rejection"
+    }
+  ],
+  "accepted": 14,
+  "rejected": 12,
+  "all_predicted_current_outcomes_match": true
+}

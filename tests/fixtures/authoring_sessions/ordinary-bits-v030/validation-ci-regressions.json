@@ -1,0 +1,76 @@
+{
+  "format": "qleisli.ordinary-bits-ci-maintenance",
+  "version": 1,
+  "failed_run": 37545190749,
+  "failed_head": "aac0157b65a073f1aa25418588522135fd34caef",
+  "failure_logs": {
+    "rust": {
+      "sha256": "1fa5fe1799ea40f37eaef21c04395f343efd156db56fdad505c8e5ec12d6612d",
+      "selected_actual_lines": [
+        "2026-10-06T23:32:08.1061920Z test unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... FAILED",
+        "2026-10-06T23:32:09.2684872Z ---- unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target stdout ----",
+        "2026-10-06T23:32:09.2686097Z thread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' (117747) panicked at tests/mixed_booleans.rs:379:39:",
+        "2026-10-06T23:32:09.3275337Z     unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target",
+        "2026-10-06T23:32:09.3275949Z test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s"
+      ]
+    },
+    "distribution": {
+      "sha256": "a9128da0ae504a57785203abb00a8688a48412283531d008db4cd4fb9a9fc582",
+      "selected_actual_lines": [
+        "2026-10-06T23:33:33.5394186Z     unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target",
+        "2026-10-06T23:33:33.5394920Z test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s"
+      ]
+    },
+    "native": {
+      "sha256": "b4045fe0ef8c81ced10277514d11b9ad08154e7ab084898970cdf5b6d53cb5ea",
+      "selected_actual_lines": [
+        "2026-10-06T23:32:27.0929727Z test unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... FAILED",
+        "2026-10-06T23:32:27.0933402Z ---- unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target stdout ----",
+        "2026-10-06T23:32:27.0934557Z thread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' (84142) panicked at tests/mixed_booleans.rs:379:39:",
+        "2026-10-06T23:32:27.1818014Z     unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target",
+        "2026-10-06T23:32:27.1819052Z test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.06s"
+      ]
+    }
+  },
+  "sources": {
+    "tests/mixed_booleans.rs": "ce82f4cb0bc828daa5a04f37227166e1d3bf4f1ae0bbc92e0e109cdcdc33819f",
+    "tests/selected_source_cli.rs": "fc8811a8c3790b48d6b0d7b2af8e151c8fec183474d7d0012eda948bfd50e02f",
+    "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/packed-bits/main.qli": "ae4d7b426b646b418c99df02541c04c1f7999859928af6daa32308a2c3983dd3"
+  },
+  "repair": "Preserve original counterexample source and first observation. Replace obsolete selected-Raw refusal expectation with fresh native acceptance, independent source-step replay and fixed empty-output distribution. Assert no quantum/classical ports or emitted operation in the closed empty-register artifact. Selected CLI check/run also require actual native calls and scope disclosure. Fine-phase/open-owner refusal tests remain enforced. Hierarchical-only profile has its separate limits.",
+  "performed": [
+    {
+      "command": "python3 scripts/run_msrv.py test --test mixed_booleans --test selected_source_cli -j 2",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 17,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --test mixed_booleans --test selected_source_cli -j 2",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 17,
+      "ignored": 0,
+      "stage": "Before replacing single-element loop with equivalent block; unchanged assertions. Final latest all-target run is separate."
+    },
+    {
+      "command": "cargo clippy --all-targets -j 2 -- -D warnings",
+      "rust": "1.98.1",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/run_msrv.py clippy --all-targets -j 2 -- -D warnings",
+      "rust": "1.85.0",
+      "exit_code": 0
+    }
+  ],
+  "intermediate_failures": [
+    {
+      "checks": "Both toolchains Clippy after the initial test edit",
+      "exit_code": 101,
+      "reason": "single_element_loop; replaced single-case loop with a block, then both all-target Clippy invocations passed. No lint suppression."
+    }
+  ],
+  "scope": "Local macOS maintenance evidence; full latest all-target run still active when this record was written. No hosted success, proof discharge, source-meaning proof or release certification follows from these checks."
+}

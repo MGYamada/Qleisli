@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "body effect `Observe` exceeds asserted `Unitary` effect of `f`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli",
+          "start": 61,
+          "end": 73
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.0038002500077709556,
+  "recorded_utc": "2026-10-05T09:10:33.773156+00:00",
+  "timestamp_note": "Clock observation after completion; not authenticated provenance."
+}

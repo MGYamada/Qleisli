@@ -1,0 +1,4 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running tests/documentation.rs (target/debug/deps/documentation-43eca3fb3da30db3)
+     Running tests/parser.rs (target/debug/deps/parser-9b127f065bfaef57)
+     Running tests/sized_source.rs (target/debug/deps/sized_source-9c7800cc21e8c647)

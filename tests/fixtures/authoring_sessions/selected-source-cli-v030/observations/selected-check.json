@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/selected-source-cli-v030/attempt-01/unit-parameter/main.qli",
+    "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 2,
+  "recorded_utc": "2026-10-04T22:08:24.593411+00:00",
+  "elapsed_seconds": 0.004295416991226375,
+  "stdout_raw": "",
+  "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n",
+  "transcript": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n",
+  "source_sha256": "3a4fa70a4d41b8f6307c9ff9c71949e35b2b7306c6c86357c84e47da9b7ace60",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "ba2913eb473aef4387f24b59cfba68d6476d83c793d64d6f8e3af18d520b1462",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Actual baseline CLI outcome; no native acceptance inferred from an earlier rejection."
+}

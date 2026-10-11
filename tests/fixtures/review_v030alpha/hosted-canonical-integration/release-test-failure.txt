@@ -1,0 +1,15 @@
+2026-10-04T16:42:49.7480149Z .F....................
+2026-10-04T16:42:49.7480547Z ======================================================================
+2026-10-04T16:42:49.7481163Z FAIL: test_actual_cli_rejects_missing_context_and_unreviewed_requirements (__main__.SyntheticRelease.test_actual_cli_rejects_missing_context_and_unreviewed_requirements)
+2026-10-04T16:42:49.7481766Z ----------------------------------------------------------------------
+2026-10-04T16:42:49.7482078Z Traceback (most recent call last):
+2026-10-04T16:42:49.7482578Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_check_release_ready.py", line 293, in test_actual_cli_rejects_missing_context_and_unreviewed_requirements
+2026-10-04T16:42:49.7483314Z     result=self.cli('--base-ref',self.base,env=env); self.assertNotEqual(result.returncode,0); self.assertIn('trusted same-run',result.stderr)
+2026-10-04T16:42:49.7483813Z                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:42:49.7484325Z AssertionError: 'trusted same-run' not found in 'release readiness: release readiness requires a tag or explicit manual request\n'
+2026-10-04T16:42:49.7484673Z 
+2026-10-04T16:42:49.7484822Z ----------------------------------------------------------------------
+2026-10-04T16:42:49.7485136Z Ran 22 tests in 6.553s
+2026-10-04T16:42:49.7485250Z 
+2026-10-04T16:42:49.7485353Z FAILED (failures=1)
+2026-10-04T16:42:49.7642651Z ##[error]Process completed with exit code 1.

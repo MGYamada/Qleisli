@@ -1,0 +1,164 @@
+{
+  "format": "qleisli.unit-criteria-review.v1",
+  "issue": 43,
+  "date": "2026-10-06",
+  "reviewer": "/root",
+  "review_kind": "Development-agent integration audit; not independent human specification/Guardian approval",
+  "implementation_commit": "96fb275dfeeb8b5267310f79b92b0dee4116c933",
+  "criteria": [
+    {
+      "number": 1,
+      "requirement": "Unit/Q<Unit> is the generic T/Q<T> instance",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/types.rs",
+        "tests/quantum_unit_source.rs"
+      ],
+      "finding": "One exact Unit constructor under Q, ordinary Unit has no owner; runtime pattern checking distinguishes them.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 2,
+      "requirement": "No C<Unit> or separate classical Unit type",
+      "evidence": [
+        "src/frontend/types.rs",
+        "docs/src/reference/type-model.md"
+      ],
+      "finding": "The common Kind enum has Unit/Bit/Bits/Parameter/Q/Tuple only. Transport roles and Stage categories do not introduce a second Unit.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 3,
+      "requirement": "Specify H(Unit)=C and phase-bearing zero-wire operations",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "tests/quantum_unit_source.rs"
+      ],
+      "finding": "Reference states one-dimensional Hilbert space; fixed 1x1 exact native requests retain omega and reject substituted phase.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 4,
+      "requirement": "Controlled scalar regressions, including -1 as controlled phase",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "tests/quantum_unit_source.rs"
+      ],
+      "finding": "Four controlled scalar/roundtrip applications give Z; provider replacements accepted against their own changed request fail the original independent request.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 5,
+      "requirement": "Exposed pure introduction/elimination retain phase and independent checking",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "src/frontend/sized/lower.rs"
+      ],
+      "finding": "Hierarchy pack_unit/unpack_unit receives original ordinary/quantum signatures. Independently authored map/scalar requests check actual artifact bytes; finish does not erase scalar.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 6,
+      "requirement": "Left/right unitors have +1 and preserve surrounding/reference states",
+      "evidence": [
+        "tests/quantum_tuple_unitors.rs",
+        "docs/src/reference/type-model.md"
+      ],
+      "finding": "Explicit split/finish and unit/join compose checked structural rules; fixed left/right insertion/removal/roundtrip requests plus actual joint reference coefficients retain exact ordered trees.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 7,
+      "requirement": "Structural simplification cannot erase scalar on a Unit factor",
+      "evidence": [
+        "tests/quantum_tuple_unitors.rs",
+        "tests/quantum_unit_maps.rs"
+      ],
+      "finding": "Removing a phased Unit factor retains omega on every remaining axis/reference; ordinary-result scalar work, reinsertion and nested argument work remain in original chronology.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 8,
+      "requirement": "Explicit Unit/Bits<0> equality/coherence decision",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/types.rs",
+        "tests/quantum_unit_source.rs",
+        "tests/unit_patterns.rs"
+      ],
+      "finding": "Definitionally distinct tags. Same-width/native-valid Unit/Bits0 and empty-pattern substitutions reject; no implicit coherence conversion is introduced.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 9,
+      "requirement": "Zero-width ownership/evidence despite zero physical qubits",
+      "evidence": [
+        "tests/quantum_unit_source.rs",
+        "tests/quantum_unit_maps.rs",
+        "tests/quantum_tuple_unitors.rs",
+        "src/frontend/sized/raw/preservation.rs"
+      ],
+      "finding": "Duplicate/lost/revived/wildcard zero owners and zero-fold invalid bodies reject; fresh Unit owners, exact typed requests and native-valid reordering versus source replay are exercised.",
+      "status": "local_evidence_present"
+    },
+    {
+      "number": 10,
+      "requirement": "Consistent with #22/#196 without another classical modality",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/types.rs",
+        "tests/unit_patterns.rs"
+      ],
+      "finding": "Unmarked ordinary Unit and explicit Q modality; ordinary empty patterns neither read nor consume Q; explicit maps are not general quantum-to-classical coercions.",
+      "status": "local_evidence_present"
+    }
+  ],
+  "source_sha256": {
+    "docs/src/reference/type-model.md": "23717a7181e6f90aaa1b105a424661235e2be29708effa1804177dbbbdb46d07",
+    "src/frontend/sized/lower.rs": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028",
+    "src/frontend/sized/raw/preservation.rs": "c402ba1db98bcbd50f7914728cd697e572f7999f5727c35dea82ae26eb9e924a",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "tests/quantum_tuple_unitors.rs": "287a3a99990eea2f6b39884cdac176c99cf47318a57d956cd79573d26dc8d495",
+    "tests/quantum_unit_maps.rs": "97a7174bae2452369bd268670d53e9c5bc42568ef77a9888a06e6576bd5c4783",
+    "tests/quantum_unit_source.rs": "6363ea4f78c60487aa2a4681772fa67c59b337cbb665027614b8ea717a65671e",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45"
+  },
+  "observed_validation": [
+    {
+      "session": 77386,
+      "command": "cargo test --locked --test quantum_unit_source --test quantum_unit_maps --test quantum_tuple_unitors --test unit_patterns",
+      "rust": "1.98.1",
+      "passed": 48,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    {
+      "session": 56362,
+      "command": "rustup run 1.85.0 cargo test --locked --test quantum_unit_source --test quantum_unit_maps --test quantum_tuple_unitors --test unit_patterns",
+      "rust": "1.85.0",
+      "passed": 48,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    }
+  ],
+  "native_checker_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "evidence_limits": [
+    "Native tests check actual byte-bound requests; numerical external-reference coefficients supplement, rather than replace, exact checking. New systems remain at most two qubits.",
+    "This audit does not prove arbitrary AST/source/runtime preservation, quantitative RS, general backend realization, or production-wide QS/PR/RS/EXACT. Those remain their recorded separate duties.",
+    "Unit introduction/elimination and packaged tuple maps are supported on the explicitly specified selected hierarchy profile. Current Raw target limitations remain visible, with no fallback or erased work. #43 does not require all target profiles to duplicate every structural map; unfinished common-frontend convergence stays tracked under #32. No original condition is removed.",
+    "No new interpretation, guarantee admission, release approval, publication or Issue closure is recorded by this audit.",
+    "Current predecessor CI 37468828239 at 815a053b is still live with a docs whitespace failure fixed locally in 5031481a. The new implementation commits await their hosted checkpoint."
+  ],
+  "closure_status": "All original ten criteria have reviewed local evidence; final integrated checkpoint remains to be recorded without claiming unfinished #32/#44 work complete.",
+  "documentation_checks": {
+    "check_docs_exit_code": 0,
+    "pinned_mdbook": "0.5.4",
+    "book_build_exit_code": 0,
+    "rendered_links_exit_code": 0,
+    "html_files": 29,
+    "local_links": 1224,
+    "anchors": 471
+  }
+}

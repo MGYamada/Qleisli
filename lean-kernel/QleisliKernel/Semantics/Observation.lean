@@ -2,7 +2,7 @@ import QleisliKernel.Semantics.RawTrace
 
 /-! Original observing raw data and independent literal instrument reader.
 No acceptance predicates, receipts, budgets or proposed matrices are imported.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Observation
 open Raw Finite
 

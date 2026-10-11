@@ -1,0 +1,93 @@
+RawProgram {
+    quantum_inputs: [],
+    classical_inputs: [],
+    operations: [
+        Init0 {
+            output: TokenId(
+                0,
+            ),
+            wire: WireId(
+                0,
+            ),
+        },
+        Gate {
+            gate: H,
+            input: TokenId(
+                0,
+            ),
+            output: TokenId(
+                1,
+            ),
+        },
+        MeasureZ {
+            input: TokenId(
+                1,
+            ),
+            output: ClassicalId(
+                0,
+            ),
+        },
+        Init0 {
+            output: TokenId(
+                2,
+            ),
+            wire: WireId(
+                1,
+            ),
+        },
+        ClassicalBranch {
+            condition: ClassicalId(
+                0,
+            ),
+            then_ops: [
+                Gate {
+                    gate: X,
+                    input: TokenId(
+                        2,
+                    ),
+                    output: TokenId(
+                        3,
+                    ),
+                },
+            ],
+            else_ops: [],
+            quantum_phis: [
+                QuantumPhi {
+                    then_token: TokenId(
+                        3,
+                    ),
+                    else_token: TokenId(
+                        2,
+                    ),
+                    output: TokenId(
+                        4,
+                    ),
+                    output_wires: [
+                        WireId(
+                            2,
+                        ),
+                    ],
+                },
+            ],
+            classical_phis: [],
+        },
+        MeasureZ {
+            input: TokenId(
+                4,
+            ),
+            output: ClassicalId(
+                1,
+            ),
+        },
+    ],
+    quantum_outputs: [],
+    classical_outputs: [
+        ClassicalId(
+            0,
+        ),
+        ClassicalId(
+            1,
+        ),
+    ],
+    declared_effect: Observe,
+}

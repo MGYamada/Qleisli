@@ -1,0 +1,21 @@
+{
+  "groups": 36,
+  "public_boundaries": 20,
+  "public_source_files": 96,
+  "constructor_variants": 269,
+  "authority": "Lean",
+  "migration": "single-lean-acceptance-implemented",
+  "target_authority": "Lean",
+  "production_paths": 21,
+  "native_modes": 9,
+  "published_baseline": "0.2.9",
+  "development_version": "0.3.0-alpha",
+  "development_status": "unpublished",
+  "open_gates": [
+    "S05-C1",
+    "S05-C2",
+    "S05-C3",
+    "S05-C4",
+    "S05-C5"
+  ]
+}

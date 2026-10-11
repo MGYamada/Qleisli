@@ -1,0 +1,21 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Ordinary consuming Z readout, with the first bit at result position zero.
+use std::registers::take_bit;
+use std::registers::consume_empty;
+use std::observe::measure_z;
+use std::classical::empty_bits;
+use std::classical::prepend_bit;
+use readout::measure_bits;
+
+pub observe fn measure_bits[static n: Nat](q: Q<Bits<n>>) -> CBits<n> {
+    if static n == 0 {
+        let () = consume_empty(q);
+        empty_bits()
+    } else {
+        let (bit,rest) = take_bit[n,0](q);
+        let first = measure_z(bit);
+        let tail = measure_bits[n-1](rest);
+        prepend_bit[n-1](first,tail)
+    }
+}

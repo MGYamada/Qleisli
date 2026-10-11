@@ -1,0 +1,256 @@
+QleisliKernel.Qirf.checkContract_conditions : ∀ (artifact : QleisliKernel.Qirf.Artifact) (order : Array.{0} Nat)
+  (required : QleisliKernel.Semantics.Finite.Contract) (work left : Nat),
+  Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Qirf.checkContract artifact order required) work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} Unit.unit) left) →
+    ∃ root actual wrapper a b c,
+      And
+        (Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Qirf.Validity.checkRoot artifact order) work)
+          (Prod.mk.{0, 0} (Except.ok.{0, 0} root) a))
+        (And
+          (Eq.{1} (QleisliKernel.Qirf.Artifact.rootInterface artifact)
+            (some.{0}
+              (Prod.mk.{0, 0}
+                (QleisliKernel.Semantics.Finite.Encoding.physical
+                  (QleisliKernel.Semantics.Finite.Contract.input required))
+                (QleisliKernel.Semantics.Finite.Encoding.physical
+                  (QleisliKernel.Semantics.Finite.Contract.input required)))))
+          (And
+            (Eq.{1}
+              (QleisliKernel.Raw.BranchFunction.preflight
+                (QleisliKernel.Semantics.Finite.Encoding.physical
+                  (QleisliKernel.Semantics.Finite.Contract.input required))
+                (QleisliKernel.Qirf.Validity.Root.program root))
+              true)
+            (And
+              (Eq.{1}
+                (ExceptT.run.{0, 0}
+                  (QleisliKernel.Raw.BranchFunction.reconstruct (QleisliKernel.Qirf.Validity.Root.dependencies root)
+                    (QleisliKernel.Qirf.Validity.Root.program root))
+                  a)
+                (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) b))
+              (And
+                (Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Finite.wholeSpace actual) b)
+                  (Prod.mk.{0, 0} (Except.ok.{0, 0} Unit.unit) c))
+                (Eq.{1}
+                  (ExceptT.run.{0, 0}
+                    (QleisliKernel.Finite.check
+                      (List.cons.{0}
+                        {
+                          signature :=
+                            QleisliKernel.Semantics.Finite.Encoding.physical
+                              (QleisliKernel.Semantics.Finite.Contract.input required),
+                          meaning := actual }
+                        List.nil.{0})
+                      (QleisliKernel.Qirf.contractCircuit
+                        (QleisliKernel.Semantics.Finite.Encoding.physical
+                          (QleisliKernel.Semantics.Finite.Contract.input required)))
+                      required required)
+                    c)
+                  (Prod.mk.{0, 0} (Except.ok.{0, 0} wrapper) left))))))
+Qleisli.NativeContract.Wrapper.circuitMatrix_entries : ∀ (signature : QleisliKernel.Semantics.Finite.Basis)
+  (meaning actual : QleisliKernel.Semantics.Exact.Matrix) (work left : Nat),
+  Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Finite.circuitMatrix (List.cons.{0} { signature := signature, meaning := meaning } List.nil.{0})
+          (QleisliKernel.Qirf.contractCircuit signature))
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) left) →
+    And (Eq.{1} (QleisliKernel.Semantics.Exact.Matrix.rows actual) (QleisliKernel.Semantics.Exact.Matrix.rows meaning))
+      (And
+        (Eq.{1} (QleisliKernel.Semantics.Exact.Matrix.cols actual) (QleisliKernel.Semantics.Exact.Matrix.cols meaning))
+        (∀ (row col : Nat),
+          LT.lt.{0} row (QleisliKernel.Semantics.Exact.Matrix.rows meaning) →
+            LT.lt.{0} col (QleisliKernel.Semantics.Exact.Matrix.cols meaning) →
+              Eq.{1} (Qleisli.Semantics.Exact.entry actual row col) (Qleisli.Semantics.Exact.entry meaning row col)))
+Qleisli.NativeContract.Wrapper.check_encoded_original : ∀ (signature : QleisliKernel.Semantics.Finite.Basis)
+  (meaning actual : QleisliKernel.Semantics.Exact.Matrix) (required : QleisliKernel.Semantics.Finite.Contract)
+  (work left : Nat),
+  Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Finite.check (List.cons.{0} { signature := signature, meaning := meaning } List.nil.{0})
+          (QleisliKernel.Qirf.contractCircuit signature) required required)
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) left) →
+    Qleisli.Semantics.Finite.Encoded meaning required
+@Qleisli.NativeContract.Wrapper.check_reference_original : ∀ {R : Type}
+  (signature : QleisliKernel.Semantics.Finite.Basis) (meaning actual : QleisliKernel.Semantics.Exact.Matrix)
+  (required : QleisliKernel.Semantics.Finite.Contract) (work left : Nat),
+  Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Finite.check (List.cons.{0} { signature := signature, meaning := meaning } List.nil.{0})
+          (QleisliKernel.Qirf.contractCircuit signature) required required)
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) left) →
+    ∀ (joint : Nat → R → Complex) (row : Nat) (reference : R),
+      LT.lt.{0} row (QleisliKernel.Semantics.Exact.Matrix.rows meaning) →
+        Eq.{1}
+          (Qleisli.Semantics.Exact.action meaning
+            (fun index r =>
+              Qleisli.Semantics.Exact.action
+                (QleisliKernel.Semantics.Finite.Encoding.map (QleisliKernel.Semantics.Finite.Contract.input required))
+                joint index r)
+            row reference)
+          (Qleisli.Semantics.Exact.action
+            (QleisliKernel.Semantics.Finite.Encoding.map (QleisliKernel.Semantics.Finite.Contract.output required))
+            (fun index r =>
+              Qleisli.Semantics.Exact.action (QleisliKernel.Semantics.Finite.Contract.logical required) joint index r)
+            row reference)
+structure Qleisli.NativeContract.EncodedMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array.{0} Nat)
+  (root : QleisliKernel.Qirf.Validity.Root) (required : QleisliKernel.Semantics.Finite.Contract)
+  (actual : QleisliKernel.Semantics.Exact.Matrix) : Prop
+number of parameters: 5
+fields:
+  Qleisli.NativeContract.EncodedMeaning.rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root
+  Qleisli.NativeContract.EncodedMeaning.interface : Eq.{1} (QleisliKernel.Qirf.Artifact.rootInterface artifact)
+      (some.{0}
+        (Prod.mk.{0, 0}
+          (QleisliKernel.Semantics.Finite.Encoding.physical (QleisliKernel.Semantics.Finite.Contract.input required))
+          (QleisliKernel.Semantics.Finite.Encoding.physical (QleisliKernel.Semantics.Finite.Contract.input required))))
+  Qleisli.NativeContract.EncodedMeaning.classicalInputs : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.classicalInputs (QleisliKernel.Qirf.Validity.Root.program root))
+      List.nil.{0}
+  Qleisli.NativeContract.EncodedMeaning.body : Qleisli.Semantics.ObservingFunction.BodyMeaning
+      (QleisliKernel.Qirf.Validity.Root.dependencies root) (QleisliKernel.Qirf.Validity.Root.program root) actual
+  Qleisli.NativeContract.EncodedMeaning.encoded : Qleisli.Semantics.Finite.Encoded actual required
+  Qleisli.NativeContract.EncodedMeaning.leftInverse : Eq.{1}
+      (HMul.hMul.{0, 0, 0} (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square actual))
+        (Qleisli.Finite.square actual))
+      1
+  Qleisli.NativeContract.EncodedMeaning.rightInverse : Eq.{1}
+      (HMul.hMul.{0, 0, 0} (Qleisli.Finite.square actual)
+        (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square actual)))
+      1
+constructor:
+  Qleisli.NativeContract.EncodedMeaning.mk {artifact : QleisliKernel.Qirf.Artifact} {order : Array.{0} Nat}
+    {root : QleisliKernel.Qirf.Validity.Root} {required : QleisliKernel.Semantics.Finite.Contract}
+    {actual : QleisliKernel.Semantics.Exact.Matrix}
+    (rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root)
+    (interface :
+      Eq.{1} (QleisliKernel.Qirf.Artifact.rootInterface artifact)
+        (some.{0}
+          (Prod.mk.{0, 0}
+            (QleisliKernel.Semantics.Finite.Encoding.physical (QleisliKernel.Semantics.Finite.Contract.input required))
+            (QleisliKernel.Semantics.Finite.Encoding.physical
+              (QleisliKernel.Semantics.Finite.Contract.input required)))))
+    (classicalInputs :
+      Eq.{1}
+        (QleisliKernel.Semantics.Observation.Program.classicalInputs (QleisliKernel.Qirf.Validity.Root.program root))
+        List.nil.{0})
+    (body :
+      Qleisli.Semantics.ObservingFunction.BodyMeaning (QleisliKernel.Qirf.Validity.Root.dependencies root)
+        (QleisliKernel.Qirf.Validity.Root.program root) actual)
+    (encoded : Qleisli.Semantics.Finite.Encoded actual required)
+    (leftInverse :
+      Eq.{1}
+        (HMul.hMul.{0, 0, 0} (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square actual))
+          (Qleisli.Finite.square actual))
+        1)
+    (rightInverse :
+      Eq.{1}
+        (HMul.hMul.{0, 0, 0} (Qleisli.Finite.square actual)
+          (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square actual)))
+        1) :
+    Qleisli.NativeContract.EncodedMeaning artifact order root required actual
+@Qleisli.NativeContract.encoded_meaning : ∀ {artifact : QleisliKernel.Qirf.Artifact} {order : Array.{0} Nat}
+  {value : Lean.Json} {work left : Nat}
+  (binding : QleisliKernel.Protocol.NativeContract.EncodedAcceptance artifact order value work left),
+  ∃ root actual wrapper a b c,
+    And
+      (Eq.{1}
+        (ExceptT.run.{0, 0} (QleisliKernel.Qirf.Validity.checkRoot artifact order)
+          (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.afterContract binding))
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} root) a))
+      (And
+        (Eq.{1}
+          (ExceptT.run.{0, 0}
+            (QleisliKernel.Raw.BranchFunction.reconstruct (QleisliKernel.Qirf.Validity.Root.dependencies root)
+              (QleisliKernel.Qirf.Validity.Root.program root))
+            a)
+          (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) b))
+        (And
+          (Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Finite.wholeSpace actual) b)
+            (Prod.mk.{0, 0} (Except.ok.{0, 0} Unit.unit) c))
+          (And
+            (Eq.{1}
+              (ExceptT.run.{0, 0}
+                (QleisliKernel.Finite.check
+                  (List.cons.{0}
+                    {
+                      signature :=
+                        QleisliKernel.Semantics.Finite.Encoding.physical
+                          (QleisliKernel.Semantics.Finite.Contract.input
+                            (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding)),
+                      meaning := actual }
+                    List.nil.{0})
+                  (QleisliKernel.Qirf.contractCircuit
+                    (QleisliKernel.Semantics.Finite.Encoding.physical
+                      (QleisliKernel.Semantics.Finite.Contract.input
+                        (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding))))
+                  (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding)
+                  (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding))
+                c)
+              (Prod.mk.{0, 0} (Except.ok.{0, 0} wrapper) left))
+            (Qleisli.NativeContract.EncodedMeaning artifact order root
+              (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding) actual))))
+Qleisli.NativeContract.check_encoded_sound : ∀ (bytes : ByteArray) (answer : Bool) (work left : Nat),
+  Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.NativeContract.check bytes) work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} answer) left) →
+    ∃ binding,
+      match QleisliKernel.Protocol.NativeContract.Acceptance.request binding with
+      | QleisliKernel.Protocol.NativeContract.RequestAcceptance.encoded request =>
+        ∃ root actual,
+          Qleisli.NativeContract.EncodedMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+            (QleisliKernel.Protocol.NativeContract.Acceptance.order binding) root
+            (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required request) actual
+      | QleisliKernel.Protocol.NativeContract.RequestAcceptance.leaf request =>
+        And
+          (Eq.{1} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.actual request)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix request))
+          (Qleisli.NativeContract.LeafMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+            (QleisliKernel.Protocol.NativeContract.Acceptance.order binding)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.root request)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature request)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.input request)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.output request)
+            (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix request))
+@Qleisli.NativeContract.encoded_reference : ∀ {R : Type} {artifact : QleisliKernel.Qirf.Artifact}
+  {order : Array.{0} Nat} {value : Lean.Json} {work left : Nat}
+  (binding : QleisliKernel.Protocol.NativeContract.EncodedAcceptance artifact order value work left),
+  ∃ root actual,
+    And
+      (Qleisli.NativeContract.EncodedMeaning artifact order root
+        (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding) actual)
+      (∀ (joint : Nat → R → Complex) (row : Nat) (reference : R),
+        LT.lt.{0} row (QleisliKernel.Semantics.Exact.Matrix.rows actual) →
+          Eq.{1}
+            (Qleisli.Semantics.Exact.action actual
+              (fun index r =>
+                Qleisli.Semantics.Exact.action
+                  (QleisliKernel.Semantics.Finite.Encoding.map
+                    (QleisliKernel.Semantics.Finite.Contract.input
+                      (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding)))
+                  joint index r)
+              row reference)
+            (Qleisli.Semantics.Exact.action
+              (QleisliKernel.Semantics.Finite.Encoding.map
+                (QleisliKernel.Semantics.Finite.Contract.output
+                  (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding)))
+              (fun index r =>
+                Qleisli.Semantics.Exact.action
+                  (QleisliKernel.Semantics.Finite.Contract.logical
+                    (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required binding))
+                  joint index r)
+              row reference))
+'QleisliKernel.Qirf.checkContract_conditions' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.Wrapper.circuitMatrix_entries' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.NativeContract.Wrapper.check_encoded_original' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.NativeContract.Wrapper.check_reference_original' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.NativeContract.encoded_meaning' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.check_encoded_sound' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.encoded_reference' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]

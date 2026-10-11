@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/private/tmp/qleisli-const-parameter-study/attempt-02/operation",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "recorded_utc": "2026-10-07T22:16:34.815583+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": "",
+  "seconds": 0.3475214170757681,
+  "compiler_sha256": "6af97d5cc0572e20c7b935ff1d98589365e5b5f797503c5f76b20e7788368702",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+}

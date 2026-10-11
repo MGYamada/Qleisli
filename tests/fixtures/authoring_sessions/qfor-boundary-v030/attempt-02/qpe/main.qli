@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,h,x,phase}; use std::observe::measure_z; fn quarter(q:Q<Bit>)->Q<Bit>{phase[1,2](q)} pub observe fn main()->(Bit,Bit){let(c,t)=qfor static k in 0..2 carry pair=(h(init0()),x(init0())){let(c,t)=pair;yield controlled(quarter)(c,t);};(measure_z(h(c)),measure_z(t))}

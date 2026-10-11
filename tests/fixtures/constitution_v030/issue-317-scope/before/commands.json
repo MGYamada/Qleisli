@@ -1,0 +1,43 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:14:26.610440+00:00",
+    "seconds": 1.3055736249662004,
+    "stderr": "01.stderr.txt",
+    "stdout": "01.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_check_release_ready.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:14:27.916037+00:00",
+    "seconds": 77.94114504102618,
+    "stderr": "02.stderr.txt",
+    "stdout": "02.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_ci_profiles.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:15:45.857461+00:00",
+    "seconds": 0.7670708330115303,
+    "stderr": "03.stderr.txt",
+    "stdout": "03.stdout.txt",
+    "timeout_seconds": 180
+  }
+]

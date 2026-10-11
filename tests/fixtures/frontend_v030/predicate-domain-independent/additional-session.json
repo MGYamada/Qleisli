@@ -1,0 +1,11 @@
+{
+  "saved_before_observation": true,
+  "purpose": "Same-zero-width different Unit tree and ordinary zero/Unit argument distinction.",
+  "source_sha256": {
+    "sources/zero-width-wrong-restricted/main.qli": "4bc4596a7afcf5f420f45e2407a416ddff0829b2a75448800d92abb05b41b045",
+    "sources/zero-width-wrong-certified/main.qli": "6e478d0ab6ef5651e95371a8af1ef65b2a227a4f8c93d0688d566d7546398626",
+    "sources/zero-width-wrong-meaning/main.qli": "3fa86d68322df87566c303a447ec17bdd7ea1ff24ef6d528f3fad98bb03464a0",
+    "sources/ordinary-nullary-packed/main.qli": "0cdbc7cc32e1ecd89abef771ff1883b13ca44280c8355e536d8edb35dbdb28fd",
+    "sources/ordinary-unit-omitted/main.qli": "6ae943e57f97d75c90ceddbdb00b29be87d9a06fb0725fe215d15b256f4c80ec"
+  }
+}

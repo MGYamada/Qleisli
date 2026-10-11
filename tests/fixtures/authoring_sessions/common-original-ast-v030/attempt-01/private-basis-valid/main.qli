@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+basis fn xor_pair(a: Bit, b: Bit) -> Bit { a xor b }
+basis fn and_pair(a: Bit, b: Bit) -> Bit { a and b }
+basis fn nonzero2((a,b): (Bit,Bit)) -> Bit { not (not a and not b) }
+basis fn through_call((a,b): (Bit,Bit)) -> Bit { xor_pair(a,b) }
+pub fn main() -> Unit { () }

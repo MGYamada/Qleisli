@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"Qargo.toml requires schema-version = 2","primary":{"path":"Qargo.toml","start":0,"end":25,"line":1,"column":1},"related":[]}],"result":null}

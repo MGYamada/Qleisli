@@ -1,0 +1,23 @@
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::transforms::qft3;
+
+// Type-correct semantic fault: erase QFT's required final bit reversal.
+unitary fn wrong_qft(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let q = qft3(q);
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    join(join(c, b), a)
+}
+
+observe fn main() -> (Bit, Bit, Bit) {
+    let q = join(join(x(init0()), init0()), init0());
+    let q = wrong_qft(q);
+    let q = adjoint(qft3, q);
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    (measure_z(a), measure_z(b), measure_z(c))
+}

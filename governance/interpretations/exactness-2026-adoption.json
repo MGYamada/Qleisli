@@ -1,0 +1,44 @@
+{
+  "format": "qleisli.human-interpretation-adoption",
+  "version": 1,
+  "edition": "2026",
+  "adopted_on": "2026-10-05",
+  "timezone": "Asia/Tokyo",
+  "guardian": {
+    "name": "Masahiko G. Yamada",
+    "capacity": "sole natural-human holder of the Constitution Guardian Office",
+    "appointment_record": {
+      "path": "governance/ratification-2026.json",
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+    }
+  },
+  "interpretation_ids": [
+    "EXACT-2026-01"
+  ],
+  "jurisdictions": [
+    "QS",
+    "PR",
+    "RS"
+  ],
+  "reviewed_packet": {
+    "reviewed_path": "governance/proposals/exactness-2026.md",
+    "snapshot_path": "governance/proposals/exactness-2026.md",
+    "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+  },
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "question_item_id": "[\"request_user_input_async\",\"call_Vw210Lr46gg2F2sY0hMXn5VK\",0]",
+    "question": "#311の[追加解釈候補 EXACT-2026-01](/Users/masa/git/Qleisli/governance/proposals/exactness-2026.md)（SHA-256: b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179）をGuardianとして採択しますか？ edition 2026ではεの誤差保証を厳密なQS・PR・RS義務の代替にせず、厳密な命題の証拠を作る数値計算は許容します。#31・#163の実装要件と既存2保証は維持します。憲法本文は変更せず、採択は証明完了を意味しません。独立レビュー済みです。この確認は、承認済み計画と[憲法第V・VI条](/Users/masa/git/Qleisli/CONSTITUTION.md:94)が新しい拘束的解釈に人間の明示判断を求めるためです。",
+    "answer": "提示された本文どおりEXACT-2026-01を採択する",
+    "first_clock_observation_after_reply_utc": "2026-10-04T22:30:39Z",
+    "timestamp_note": "The observation is not the timestamp of the human message; the message supplied no timestamp."
+  },
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The appointed human Guardian explicitly adopts the exact identified supplement; the assistant only transcribes that act.",
+    "authentication_limit": "This checked-in transcript is reviewable provenance, not a cryptographic signature or independent authentication of the human identity."
+  },
+  "status": "binding-pending-discharge",
+  "scope": "Applies the adopted exactness boundary across existing QS-2026-01, PR-2026-01 and RS-2026-01 under Constitution Articles V and VI. Preserves original interpretation/admission records and both scoped QLV1 guarantees; adds no fourth Fundamental Theorem, proof discharge, reduction of #31/#163 engineering criteria, release approval or publication. Enforcement integration and additional proof obligations remain separately tracked."
+}

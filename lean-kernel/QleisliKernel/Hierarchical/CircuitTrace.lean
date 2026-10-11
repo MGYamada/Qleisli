@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Wiring
 
 /-! Routing and ordered opaque operations from actual circuit bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The cache is constructed from actual definitions. An atom is an independently
 requested actual index and complete interface, never a submitted trace. This
 component returns derivations and pending atom equations, not semantic evidence.

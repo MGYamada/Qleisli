@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/qli_corpus.rs (target/debug/deps/qli_corpus-218412045b0dfbd2)

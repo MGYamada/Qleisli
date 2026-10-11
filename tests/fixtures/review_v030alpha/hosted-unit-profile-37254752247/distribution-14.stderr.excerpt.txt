@@ -1,0 +1,2 @@
+     Running tests/frontend_types.rs (/home/runner/work/_temp/qleisli-distribution-target/source-production/debug/deps/frontend_types-bdfb9ade6936865d)
+error: test failed, to rerun pass `--test frontend_types`

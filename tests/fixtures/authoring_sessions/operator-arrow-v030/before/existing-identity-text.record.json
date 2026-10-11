@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-identity/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:0..0: visibility: dependency main::entry is private\n",
+  "native_invocations": 0,
+  "seconds": 0.006052915996406227,
+  "transcript": "main:0..0: visibility: dependency main::entry is private\n",
+  "recorded_utc": "2026-10-05T12:08:27.684288+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-identity-text.json",
+    "sha256": "f0ce2eddfe55a4ceb4be700401d48f1287265d65faafce0ecf3f60598729f211"
+  }
+}

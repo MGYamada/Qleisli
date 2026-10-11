@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.ordinary-independent-artifact-review",
+  "version": 1,
+  "reviewer": "/root/isometry_cli_tests",
+  "transcriber": "/root",
+  "provenance": "Actual subsequent collaboration final report; this transcription is not independent authentication of identity.",
+  "review_mode": "Read-only raw observations, hash maps, current metadata and adversarial source-path trace. No new CLI, build, test execution or edits.",
+  "conclusion": "No new actionable concern.",
+  "findings": [
+    "All 23 replay comparisons recomputed from original files: statuses, stdout/stderr, native counts and proposal bytes match",
+    "31 first-input, 98 baseline, 236 packet and 24 metadata-review hashes match; packet inventory complete",
+    "Inventory changes only four expected existing source hashes and adds private source.rs; existing surfaces and parsed non-source metadata equal",
+    "Coverage changes only surface_sha256, independently recomputed as 683d27715d20cc2eaa9e387c2699d07a7b1f6cf666e30e57d8ad57967dc3a0df",
+    "Mutable Project origin/import fields grant no compiler privilege; compilation rebuilds resolution and public compilation reloads source",
+    "Sized AST access is immutable and every declaration remains checked",
+    "Existing bounded negatives cover unused invalid bodies, reserved std injection, private imports and unreachable branches"
+  ],
+  "limits": "Ordinary implementation and artifact review only; no proof discharge, constitutional authority, common checker completion, release approval or current full-CI claim."
+}

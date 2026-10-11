@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/private/tmp/qleisli-constructor-budget-counterexamples-20261010/repeat-adjoint.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::entry\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "stderr": "",
+  "recorded_utc": "2026-10-10T12:58:27.538512+00:00",
+  "binary_sha256": "9a4c30fd3ebc18156351b338b1c5e6d6509adee25b56392edd60f40bf6e7c4be",
+  "kernel_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731",
+  "source_sha256": "8621440a71925bed7d9a91afea195a81d0d39528275ea240f9a28639e48ab156"
+}

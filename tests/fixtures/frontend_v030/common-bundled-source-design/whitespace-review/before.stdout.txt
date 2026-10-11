@@ -1,0 +1,2 @@
+tests/fixtures/frontend_v030/common-bundled-source-design/validation-latest/02.stdout.txt:127: new blank line at EOF.
+tests/fixtures/frontend_v030/common-bundled-source-design/validation-msrv/02.stdout.txt:127: new blank line at EOF.

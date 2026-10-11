@@ -1,0 +1,13 @@
+
+running 8 tests
+test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 78 filtered out; finished in 0.02s
+

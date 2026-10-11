@@ -1,0 +1,116 @@
+{
+  "format": "qleisli.namespace-corpus-selection-final-checks",
+  "version": 1,
+  "started_utc": "2026-10-06T03:35:58.833713+00:00",
+  "source_sha256": {
+    "tests/native_roundtrip.rs": "b96ec713a698e4992f6610c0999746438682493ebe5f50326e171238ad7bf8f9",
+    "tests/input_corpus.rs": "390fe41cd914df128a389b1247a540ab93a02723b1abf243e7497392be2c06be",
+    "tests/common/mod.rs": "c8ea19ebb4c8f4cfee3ecf7f2e48c25e68df950e4c8d56410f3a4af596d08128",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+    "corpus/migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "corpus/negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "source_identity": {
+    "files": 329,
+    "sha256": "f74e939cd10b92619a1a1d0166abc3f2b63b3494127b97e5a24d6b63463ffb34",
+    "encoding": "SHA-256 of compact sorted relative-path:SHA-256 JSON for all src/stdlib regular files, Rust test sources and explicit selector/manifest/Cargo bindings."
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "environment_overrides": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "records": [
+    {
+      "name": "msrv-clippy",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--jobs=2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 9.008,
+      "sources_unchanged": true,
+      "stdout": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-msrv-clippy.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-msrv-clippy.stderr.txt",
+        "sha256": "9fc830140f8548eebcb03f70c554d16529eb988d49cc12e91e602e35d4afed1d",
+        "bytes": 389
+      }
+    },
+    {
+      "name": "latest-clippy",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--jobs=2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 8.152,
+      "sources_unchanged": true,
+      "stdout": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-latest-clippy.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-latest-clippy.stderr.txt",
+        "sha256": "23958cd330fbd8f86ec413044a49609b1ee48021f6edb007af8bff938d3d2e77",
+        "bytes": 539
+      }
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 0.597,
+      "sources_unchanged": true,
+      "stdout": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-format.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-format.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Only requested all-target static Clippy checks on both retained Rust toolchains and formatting; no all-target runtime rerun, Lean build, new maximum case or generic QFT work.",
+  "status": "passed"
+}

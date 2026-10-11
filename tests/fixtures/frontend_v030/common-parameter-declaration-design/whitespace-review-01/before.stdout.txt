@@ -1,0 +1,3 @@
+tests/fixtures/frontend_v030/common-parameter-declaration-design/author-followup-audit-01.md:144: new blank line at EOF.
+tests/fixtures/frontend_v030/common-parameter-declaration-design/independent-implementation-review.md:139: new blank line at EOF.
+tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/README.md:14: new blank line at EOF.

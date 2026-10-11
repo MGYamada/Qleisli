@@ -1,0 +1,57 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:17:46.460930+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.004173459019511938,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "wrong-kind-access-selected-auto-check-json.native.jsonl",
+  "native_count_scope": "Actual forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "wrong-kind-access-selected-auto-check-json.stdout.bin",
+  "stderr_raw": "wrong-kind-access-selected-auto-check-json.stderr.bin",
+  "stdout_sha256": "cdafb771635ea8a49b05319ae078081e8ce30290569be635ced2161f8dbf239c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"access\",\"severity\":\"error\",\"message\":\"access requirement names no operation parameter: n\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli\",\"start\":167,\"end\":177},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact captured raw byte prefixes remain in separate files.",
+  "parsed_json_shape": "object",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "access",
+        "severity": "error",
+        "message": "access requirement names no operation parameter: n",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli",
+          "start": 167,
+          "end": 177
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

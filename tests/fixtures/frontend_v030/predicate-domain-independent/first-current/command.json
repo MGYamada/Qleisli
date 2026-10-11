@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "predicate_domain"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "exit_code": 101,
+  "test_sha256": "4833902bb027360031c167cc6a79570d74f5f7e32bc74d536dec219a395fb912"
+}

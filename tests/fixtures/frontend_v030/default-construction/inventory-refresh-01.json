@@ -1,0 +1,23 @@
+{
+  "format": "qleisli.reviewed-default-diagnostic-inventory-refresh",
+  "version": 1,
+  "only_change": {
+    "source": "src/frontend/check/body.rs",
+    "old_sha256": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab",
+    "new_sha256": "9a7d136aa7057463abf32a8c7c7275d185ece5fa767d47d5a2916fb608c90b46"
+  },
+  "before": {
+    "path": "tests/fixtures/frontend_v030/default-construction/inventory-before-default-01.json",
+    "sha256": "2020ebfcba640c504587108a7710e350c4547b89736d32e0304ea53dcc519c56"
+  },
+  "after": {
+    "path": "tests/fixtures/verification_v022/inventory.json",
+    "sha256": "448a7336ca1b859662fda62c82cb87b3c90a568f2f465ab7b770ea73fc74f81f"
+  },
+  "independent_review": {
+    "path": "tests/fixtures/frontend_v030/default-construction/independent-review-01.json",
+    "sha256": "2bb66c2ef969b5460397ab619c3323d685534c0887396b1b46c65f89ba4e9c99"
+  },
+  "public_surface_constructors_boundaries_capacities_unchanged": true,
+  "scope": "One unresolved-default error message after existing refusal, not changed source acceptance or proof/guarantee status."
+}

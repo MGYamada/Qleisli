@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::unit;
+use std::quantum::finish;
+use std::quantum::phase_eighth;
+unitary fn scalar(u: Unit) -> Unit { finish(phase_eighth(unit(u))) }
+pub unitary fn f(u: Unit) -> Q<Unit> { unit(scalar(u)) }
+
+observe fn main() -> Unit { () }

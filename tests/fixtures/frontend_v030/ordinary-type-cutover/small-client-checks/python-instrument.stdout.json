@@ -1,0 +1,94 @@
+{
+  "scope": "Small two-qubit Python source proposal, independent numerical QPE action and actual native preparation/readout component checks. Hierarchy graph acceptance, whole-instrument/source preservation and full Python/Rust bridge replay are not claimed.",
+  "source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "delayed_fourier": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "ea7ded07d1871d095bcccefda81edf9959930a50f94470a6abf851f3188f1801",
+    "measurement": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+    "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "measured_order": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+    "measured_retiming": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+    "measured_amplitude": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "components": {
+    "preparation_work": 9504,
+    "readout_work": 16448
+  },
+  "semantics": {
+    "coefficients": 16,
+    "maximum_error": 1.2412670766236366e-16
+  },
+  "negative_sources": [
+    {
+      "case": "unitary-wrapper",
+      "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+    },
+    {
+      "case": "unitary-initializer",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "iso-readout",
+      "diagnostic": "iso body cannot perform observe operation measure_z"
+    },
+    {
+      "case": "missing-access",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "wrong-classical-width",
+      "diagnostic": "return type/tuple shape mismatch"
+    },
+    {
+      "case": "drop-empty-owner",
+      "diagnostic": "unreturned quantum owners: q"
+    },
+    {
+      "case": "consume-nonempty",
+      "diagnostic": "unknown, captured or already moved value q"
+    },
+    {
+      "case": "reuse-measured-bit",
+      "diagnostic": "unknown, captured or already moved value bit"
+    },
+    {
+      "case": "duplicate-classical-pattern",
+      "diagnostic": "duplicate binding in one pattern"
+    },
+    {
+      "case": "wrong-prepend-width",
+      "diagnostic": "prepend_bit requires Bit and exactly Bits<n>, with n < 8"
+    },
+    {
+      "case": "cycle-initializer",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "unknown-empty-branch",
+      "diagnostic": "unknown or unimported operation missing"
+    },
+    {
+      "case": "runtime-feedback",
+      "diagnostic": "expected 'static', found 'target' at token 82"
+    },
+    {
+      "case": "bad-init-arity",
+      "diagnostic": "operation argument shape/arity mismatch"
+    },
+    {
+      "case": "unknown-static-size",
+      "diagnostic": "unbound static natural missing"
+    }
+  ],
+  "obsolete_classical_spelling_rejected": true
+}

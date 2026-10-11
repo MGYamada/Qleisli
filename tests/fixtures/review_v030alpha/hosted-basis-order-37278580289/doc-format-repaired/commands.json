@@ -1,0 +1,23 @@
+[
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.8496521249762736,
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.027727041975595057,
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  }
+]

@@ -1,0 +1,1 @@
+pub unitary fn probe[const n: Nat](q: Q<Bit>) -> Q<Bit> { n }

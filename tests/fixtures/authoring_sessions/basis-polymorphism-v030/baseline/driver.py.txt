@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""Observe the frozen desired source; do not execute commands from records."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[3]
+CLI = Path('/private/tmp/qleisli-bounded-validation-target/debug/qleisli')
+NATIVE = ROOT / 'lean-kernel/.lake/build/bin/qleisli-kernel'
+OUT = HERE / 'baseline'
+OUT.mkdir(exist_ok=False)
+OBS = HERE / 'observations'
+OBS.mkdir(exist_ok=False)
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+first = json.loads((HERE / 'first-files.json').read_text())['files']
+assert all(digest(HERE / p) == sha for p, sha in first.items())
+wrapper = HERE / 'native-log.py'
+wrapper.chmod(0o755)
+identities = {'cli_sha256': digest(CLI), 'native_sha256': digest(NATIVE),
+              'wrapper_sha256': digest(wrapper), 'first_files_sha256': digest(HERE / 'first-files.json')}
+(OUT / 'inputs.json').write_text(json.dumps(identities, indent=2) + '\n')
+(OUT / 'driver.py.txt').write_bytes(Path(__file__).read_bytes())
+rows = []
+observations = []
+for project in sorted((HERE / 'attempt-01').iterdir()):
+    name = project.name
+    entry = 'repeat' if name == 'opaque-repeat' else 'outer' if name == 'opaque-forward' else 'f'
+    argv = [str(CLI), 'check', f'--entry=main::{entry}',
+            f'--module=main={project / "main.qli"}', '--format=json']
+    if name in ('opaque-repeat', 'concrete-control'):
+        argv += ['--nat=k=2', '--operation=U=main::identity_bit']
+    log = OUT / f'{name}.native.jsonl'
+    log.write_bytes(b'')
+    env = dict(os.environ, QLEISLI_KERNEL=str(wrapper), QLEISLI_HIERARCHY_KERNEL=str(wrapper),
+               QLEISLI_STUDY_NATIVE_LOG=str(log), QLEISLI_STUDY_NATIVE=str(NATIVE))
+    start = time.monotonic()
+    result = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, timeout=30)
+    (OUT / f'{name}.stdout.txt').write_bytes(result.stdout)
+    (OUT / f'{name}.stderr.txt').write_bytes(result.stderr)
+    data = json.loads(result.stdout)
+    count = len(log.read_text().splitlines())
+    event = {'command': argv, 'exit_code': result.returncode,
+             'recorded_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+             'timestamp_note': 'Clock observation after command completion, not authenticated provenance.',
+             'stdout': data, 'native_invocations': count, 'seconds': time.monotonic() - start}
+    observation = f'observations/baseline-{name}.json'
+    (HERE / observation).write_text(json.dumps(event, indent=2, ensure_ascii=False) + '\n')
+    observations.append(observation)
+    rows.append({'project': name, 'exit_code': result.returncode,
+                 'native_invocations': count, 'codes': [d['code'] for d in data['diagnostics']]})
+    print(rows[-1], flush=True)
+assert all(digest(HERE / p) == sha for p, sha in first.items())
+assert digest(CLI) == identities['cli_sha256'] and digest(NATIVE) == identities['native_sha256']
+assert all(r['exit_code'] == 1 and r['native_invocations'] == 0 and r['codes'] == ['parse']
+           for r in rows if r['project'] != 'concrete-control')
+assert next(r for r in rows if r['project'] == 'concrete-control')['exit_code'] == 0
+(OUT / 'result.json').write_text(json.dumps({'identities': identities, 'sources_stable': True,
+    'results': rows, 'scope': 'Eight desired abstract forms reach parser rejection only; one concrete control reaches native checking. No generic proof or later diagnostic claim.'}, indent=2) + '\n')
+sources = {str(p.relative_to(HERE / 'attempt-01')): digest(p)
+           for p in sorted((HERE / 'attempt-01').rglob('*.qli'))}
+session = {'format': 1, 'kind': 'informed_first_attempt', 'task': 'Opaque finite Basis polymorphism and exact specialization for Issue #44',
+    'baseline_commit': 'faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2', 'project_version': '0.3.0-alpha',
+    'author': 'Codex; informed prior repository context; deployed model and sampling not recorded',
+    'context': 'context.md', 'attempts': [{'id': 'attempt-01', 'reason': 'Nine first programs frozen before observation; abstract programs are desired forms, not implemented or repaired.',
+         'sha256': sources, 'observations': observations}]}
+(HERE / 'session.json').write_text(json.dumps(session, indent=2) + '\n')

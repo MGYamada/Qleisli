@@ -1,0 +1,154 @@
+{
+  "format": "qleisli.qft-scope-archive-doc-validation",
+  "version": 1,
+  "records": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "00.stdout.txt",
+          "bytes": 109,
+          "sha256": "c78220d63631284c342f51d8418a1d1c87d3fb2bf0309db992177ecf373d253c"
+        },
+        "stderr": {
+          "path": "00.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "01.stdout.txt",
+          "bytes": 236,
+          "sha256": "21557a56b418d62729a087abd9a3da3375421eb84f9c0ac7a6271ab6cd01a471"
+        },
+        "stderr": {
+          "path": "01.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "02.stdout.txt",
+          "bytes": 95,
+          "sha256": "48cdc1ba229a04c40ca202f6127d73a84535db7b608a56888d804cd48f814c79"
+        },
+        "stderr": {
+          "path": "02.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "03.stdout.txt",
+          "bytes": 420,
+          "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35"
+        },
+        "stderr": {
+          "path": "03.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "04.stdout.txt",
+          "bytes": 14,
+          "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96"
+        },
+        "stderr": {
+          "path": "04.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs",
+        "--dest-dir",
+        "/private/tmp/qleisli-qft-scope-book-i34_q6ex/book"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "05.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "05.stderr.txt",
+          "bytes": 142,
+          "sha256": "af7af5c1b860bf436324afc6676e1279731b39d4d34c3122abae6c7b7d695f70"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py",
+        "--root",
+        "/private/tmp/qleisli-qft-scope-book-i34_q6ex/book"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "06.stdout.txt",
+          "bytes": 67,
+          "sha256": "74485319bf903ce809c30d7361655c71d00cb6bd62a9f43bee4a69f5e3a34719"
+        },
+        "stderr": {
+          "path": "06.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "all_passed": true,
+  "not_run": [
+    "QFT compiler/native invocation or proof work",
+    "Rust/Lean builds or replay",
+    "full CI",
+    "release readiness"
+  ],
+  "scope": "Current docs/book links, explicit editions, remaining active authoring sessions and constitutional identity after user-authorized trial archival only."
+}

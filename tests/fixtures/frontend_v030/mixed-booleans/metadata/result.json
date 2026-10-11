@@ -1,0 +1,117 @@
+{
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit": 0,
+      "seconds": 0.529050457989797,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit": 0,
+      "seconds": 0.12524533399846405,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "exit": 0,
+      "seconds": 0.9941579169826582,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_run_native_ci.py"
+      ],
+      "exit": 0,
+      "seconds": 0.7084938749903813,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit": 0,
+      "seconds": 0.1236100000096485,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_constitution.py"
+      ],
+      "exit": 0,
+      "seconds": 0.2460870830109343,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit": 0,
+      "seconds": 3.5182132920017466,
+      "stdout": "6.stdout.txt",
+      "stderr": "6.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit": 0,
+      "seconds": 1.82082308299141,
+      "stdout": "7.stdout.txt",
+      "stderr": "7.stderr.txt"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit": 0,
+      "seconds": 0.012332583020906895,
+      "stdout": "8.stdout.txt",
+      "stderr": "8.stderr.txt"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit": 0,
+      "seconds": 0.09474812500411645,
+      "stdout": "9.stdout.txt",
+      "stderr": "9.stderr.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit": 0,
+      "seconds": 0.22850966698024422,
+      "stdout": "10.stdout.txt",
+      "stderr": "10.stderr.txt"
+    }
+  ],
+  "book_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "scope": "Metadata/identity, relevant small Python regressions and pinned rendered book; no fresh Lean replay"
+}

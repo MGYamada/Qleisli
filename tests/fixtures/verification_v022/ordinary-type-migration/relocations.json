@@ -1,0 +1,170 @@
+{
+  "format": "qleisli.vm22-historical-source-relocation",
+  "version": 1,
+  "baseline_commit": "2bd973125a0233018edf75a86be2c3d9f51a3d18",
+  "baseline_inventory_sha256": "d79097879af0e1ab255e0a435ded695a3d6aaec74de287053657a9fe3047ef85",
+  "reason": "Canonical ordinary type spelling under issue #27 changes active sources. Preserve every historical pinned byte and digest; current sources continue to run through active test harnesses. This record is not a new semantic or proof result.",
+  "entries": [
+    {
+      "group": "corpus",
+      "original_path": "corpus/negative/dirty_auxiliary/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/dirty_auxiliary/main.qli",
+      "original_sha256": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
+      "current_sha256": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/negative/duplicate_owner/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/duplicate_owner/main.qli",
+      "original_sha256": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
+      "current_sha256": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/negative/measured_owner/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measured_owner/main.qli",
+      "original_sha256": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
+      "current_sha256": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/negative/measurement_adjoint/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measurement_adjoint/main.qli",
+      "original_sha256": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
+      "current_sha256": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/pennylane_demos/phase_kickback1/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/phase_kickback1/main.qli",
+      "original_sha256": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+      "current_sha256": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/pennylane_demos/rx_quarter/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rx_quarter/main.qli",
+      "original_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "current_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/qualtran/bitwise_not2/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/bitwise_not2/main.qli",
+      "original_sha256": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+      "current_sha256": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/qualtran/xor_constant2/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor_constant2/main.qli",
+      "original_sha256": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+      "current_sha256": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/quantum_katas/fredkin3/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/fredkin3/main.qli",
+      "original_sha256": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+      "current_sha256": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be"
+    },
+    {
+      "group": "corpus",
+      "original_path": "corpus/quantum_katas/swap2/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/swap2/main.qli",
+      "original_sha256": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+      "current_sha256": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59"
+    },
+    {
+      "group": "corpus",
+      "original_path": "examples/bell/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bell/main.qli",
+      "original_sha256": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
+      "current_sha256": "8a661821aa78ca3a3f8ef4c3547838f171bd1a1e74edbf7d248704249e593246"
+    },
+    {
+      "group": "corpus",
+      "original_path": "examples/feedback/control.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/control.qli",
+      "original_sha256": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
+      "current_sha256": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6"
+    },
+    {
+      "group": "corpus",
+      "original_path": "examples/feedback/main.qli",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/main.qli",
+      "original_sha256": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
+      "current_sha256": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9"
+    },
+    {
+      "group": "comparison",
+      "original_path": "scripts/compile_sized_corpus.py",
+      "preserved_path": "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py",
+      "original_sha256": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
+      "current_sha256": "abc86a3e3bc7a05eda8c59cfa10c49b3f943267a0e1c4322ce4a00915640bdfd"
+    },
+    {
+      "group": "comparison",
+      "original_path": "scripts/compile_sized_instrument.py",
+      "preserved_path": "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_instrument.py",
+      "original_sha256": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
+      "current_sha256": "77562fda8e6b7ac007f21adb1494eb66998f005d1288ba4bccb22fd4f55cbf76"
+    },
+    {
+      "group": "comparison",
+      "original_path": "scripts/test_sized_instrument.py",
+      "preserved_path": "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_sized_instrument.py",
+      "original_sha256": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
+      "current_sha256": "c8c780906224f9c71aec02cc97a8eb9572b196de0271e147f5d127fd3455060d"
+    },
+    {
+      "group": "comparison",
+      "original_path": "scripts/test_compact_sized_graph.py",
+      "preserved_path": "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_compact_sized_graph.py",
+      "original_sha256": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
+      "current_sha256": "1d032ddb66a6213ce43494adc703f5ce43cd15dd25704d1177bc4ebdc9ee1e22"
+    },
+    {
+      "group": "comparison",
+      "original_path": "tests/sized_source.rs",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs",
+      "original_sha256": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
+      "current_sha256": "75dbb78ea289addbe590682f8f4a480697d221e936a27f6154b75c273fe6387f"
+    },
+    {
+      "group": "comparison",
+      "original_path": "tests/frontend_ownership_differential.rs",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs",
+      "original_sha256": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
+      "current_sha256": "0ba23894e340587d3efceca158ed193a5f080e9a22b2355afe71ee947ff40411"
+    },
+    {
+      "group": "comparison",
+      "original_path": "tests/with_computed_diagnostics.rs",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs",
+      "original_sha256": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
+      "current_sha256": "591a9ec21283da2b48ba5b3321982d2a11410a2d4123e9f5f5244c7df0700aa0"
+    },
+    {
+      "group": "comparison",
+      "original_path": "tests/sized_review_dialects.rs",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_dialects.rs",
+      "original_sha256": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
+      "current_sha256": "742afae152ef8bcdc63341258bc38fb91c20c4abf935824731150448056a37fc"
+    },
+    {
+      "group": "comparison",
+      "original_path": "tests/sized_review_diagnostics.rs",
+      "preserved_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_diagnostics.rs",
+      "original_sha256": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
+      "current_sha256": "2cbeed338bc53ba527e1a43f293fdcc08cf6425db6640986d8313374398a729e"
+    },
+    {
+      "group": "comparison",
+      "original_path": "scripts/test_rust_fourier_factoring.py",
+      "preserved_path": "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_rust_fourier_factoring.py",
+      "original_sha256": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
+      "current_sha256": "9489bab7ea5abc3cd6eb09902ccc6354b49839dab89a5dabbbb50a41e8536f91"
+    }
+  ]
+}

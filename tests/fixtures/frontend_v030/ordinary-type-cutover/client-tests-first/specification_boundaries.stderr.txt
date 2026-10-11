@@ -1,0 +1,18 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+warning: unused variable: `av`
+  --> tests/specification_boundaries.rs:97:17
+   |
+97 |             let av = u8::from(a);
+   |                 ^^ help: if this is intentional, prefix it with an underscore: `_av`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `bv`
+  --> tests/specification_boundaries.rs:98:17
+   |
+98 |             let bv = u8::from(b);
+   |                 ^^ help: if this is intentional, prefix it with an underscore: `_bv`
+
+warning: `qleisli` (test "specification_boundaries") generated 2 warnings (run `cargo fix --test "specification_boundaries" -p qleisli` to apply 2 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.35s
+     Running tests/specification_boundaries.rs (target/debug/deps/specification_boundaries-39fc61c4dd56124a)

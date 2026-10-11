@@ -1,0 +1,15 @@
+test_actual_cli_rejects_missing_context_and_unreviewed_requirements (__main__.SyntheticRelease.test_actual_cli_rejects_missing_context_and_unreviewed_requirements) ... FAIL
+
+======================================================================
+FAIL: test_actual_cli_rejects_missing_context_and_unreviewed_requirements (__main__.SyntheticRelease.test_actual_cli_rejects_missing_context_and_unreviewed_requirements)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_check_release_ready.py", line 293, in test_actual_cli_rejects_missing_context_and_unreviewed_requirements
+    result=self.cli('--base-ref',self.base,env=env); self.assertNotEqual(result.returncode,0); self.assertIn('trusted same-run',result.stderr)
+                                                                                               ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'trusted same-run' not found in 'release readiness: release readiness requires a tag or explicit manual request\n'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.331s
+
+FAILED (failures=1)

@@ -1,0 +1,33 @@
+{
+  "files": {
+    "attempt-01/caller-frame/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/caller-frame/main.qli": "afac6c14d605a65372998cc75cc23f587c4a4b81d278d6683b252640f901f48d",
+    "attempt-01/closed-zero/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/closed-zero/main.qli": "9b3409bf9dcd7e5b48248e9abfc78135dc28bdd830ee62146a2992a97818c910",
+    "attempt-01/duplicate-unit/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/duplicate-unit/main.qli": "4f73131e16e648bf4900472026085787e5776f5adfaa4be6ccc3d4b4405f41c2",
+    "attempt-01/empty-classical/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/empty-classical/main.qli": "ba4ec2d9cb6d99355f0d5c25da23443aafcd344a33435e95baf85db8c73edc68",
+    "attempt-01/false-unitary/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/false-unitary/main.qli": "4a3a68bab79b0bc80a753959b069a342f03bb23b33c9c8b7f9e6a1ddbaee5e5e",
+    "attempt-01/fresh-unit-phase/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/fresh-unit-phase/main.qli": "bda33116357e98524b460d2cda82774214b6cdd6f22d9f348ead500e0a73b422",
+    "attempt-01/helper-phase/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/helper-phase/main.qli": "1f0addd28f5d31dfee0e2fb4024859cd6299532edb4c52c711b2925eca9c7e43",
+    "attempt-01/lost-unit/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/lost-unit/main.qli": "06fb9aac4b2f70770b236815983c9524ec22cbdca504d33526ba2ba2eb6ebca0",
+    "attempt-01/observing-assertion/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/observing-assertion/main.qli": "8c99be859ffd217a581288e164ee69f1e75b497c3fd4762b1cb876b028eb1864",
+    "attempt-01/pure-control/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/pure-control/main.qli": "4f03fbb5df6f926e46592d0a746ccbb3c6551fb46a3f239a3994fbb673a5fce3",
+    "attempt-01/retained-unit/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/retained-unit/main.qli": "b3f83eda513f5fde8436b4375352d1ca419337d7e2bdb8713c892379e9d6ea9c",
+    "attempt-01/unit-phase/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/unit-phase/main.qli": "4c81bebf3a2f3cded0dcabce0f15d8a199b04802b965b90ecc4862d10bd6da41",
+    "attempt-01/unit-zero/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/unit-zero/main.qli": "d530cf128c4d9e7ae9e651245c78a72364f438b7d6118d5916db3154c6e9815b",
+    "attempt-01/wrong-empty-basis/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/wrong-empty-basis/main.qli": "8734d3baaa6c1881c4f6a689e48d2e4e80b2db38ea8f62ebc593b8f67087c2b0"
+  },
+  "scope": "Complete original sources/manifests before the first CLI observation or implementation."
+}

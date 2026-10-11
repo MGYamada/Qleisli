@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/host-wide-pure/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "main:0..25: project: Qargo.toml requires schema-version = 2\n",
+  "native_invocations": 0,
+  "seconds": 0.004109959001652896,
+  "recorded_utc": "2026-10-05T10:01:55.424335+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

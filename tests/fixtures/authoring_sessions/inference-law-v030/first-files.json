@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-10-05T03:51:55.170552+00:00",
+  "head_at_authoring": "8a6a7167f0abd359fb8cac695033778cbca6203f",
+  "files": {
+    "attempt-01/call-exact-control/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/call-exact-control/main.qli": "944c752592ad41f81a9c41a5a06dd230fa1012899eee10e6bfe6a8fc7020cd40",
+    "attempt-01/call-extra-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/call-extra-natural/main.qli": "36bb7a39df20033fe016772de24730f70e65a28a597c78bd4345a0c4a3bd92e5",
+    "attempt-01/call-extra-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/call-extra-operation/main.qli": "a36a3e5b855d723bca6a982f0a04ea2ec2b2483e1b9cb515842e842b4742c5e5",
+    "attempt-01/call-missing-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/call-missing-natural/main.qli": "fff297aa4621acb217c8232bde9294f67d8d1a5c456b13e91c9420597e809f8b",
+    "attempt-01/call-missing-operation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/call-missing-operation/main.qli": "f9320a27da7c3b4b954898cd1294123631f158255de6a78ce7dd32f2f73b78dd",
+    "attempt-01/natural-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/natural-pair/main.qli": "a413e5c9ea25621cf2e0950bc8316a456a59079c232269b8c32f026ec7177dd1",
+    "attempt-01/operation-choice/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/operation-choice/main.qli": "21504c61800d49d2ba0266b0d2e390539ad9b2ed7a65314ed1a3d59dca5f0066",
+    "attempt-01/operation-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/operation-pair/main.qli": "c21f44d960779a5996d11b1e72a09c1a619387b0dd9b34082aaf3ef8127a4f35",
+    "attempt-01/provider-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/provider-natural/main.qli": "65e97c18b1824fcec015f0308cc9aa8dcdaae52087ac7b618dcc6ecd4a9ae9b8",
+    "context.md": "191bef01cd85ae509e565c7ce911207ad6b02e3c3f35ebec9c985244ff32cdd8",
+    "contract.md": "c5265fe7b9cca76865e4b91b579a40fe6d79bdf47cb124a847e9ca7be3fedf03",
+    "expectations.json": "d913a00bed30b4af47cbac7ea8e5b3732586bb0fc6e7e79188832da7d31a837c",
+    "native-log.py": "05cfc35b4e6bec0d7a47d34112906148c504b39a8f1271a47f30c7f3c7caa2be"
+  }
+}

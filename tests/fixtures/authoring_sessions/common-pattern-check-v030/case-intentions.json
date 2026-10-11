@@ -1,0 +1,37 @@
+{
+  "status": "intentions-not-observed-outcomes",
+  "cases": [
+    {
+      "id": "nested-runtime-parameter",
+      "intent": "Desired supported nested ordinary parameter pattern, one argument and two quantum owners."
+    },
+    {
+      "id": "duplicate-runtime-parameter",
+      "intent": "Deliberate duplicate runtime parameter; declaration-wide rejection is required before use."
+    },
+    {
+      "id": "legal-rebinding",
+      "intent": "Desired consume-before-rebind control; the right-hand call consumes the prior q."
+    },
+    {
+      "id": "hidden-live-owner",
+      "intent": "Deliberate shadow hiding a still-live first owner; naming is not disposal."
+    },
+    {
+      "id": "duplicate-join-input",
+      "intent": "Deliberate reuse while evaluating join arguments left-to-right; it cannot duplicate an owner."
+    },
+    {
+      "id": "quantum-unit-wildcard",
+      "intent": "Deliberate wildcard disposal of a zero-width quantum Unit owner."
+    },
+    {
+      "id": "empty-register-wildcard",
+      "intent": "Deliberate wildcard disposal of a zero-width Bits owner. Finite profile may reject the type first."
+    },
+    {
+      "id": "unused-invalid-sibling",
+      "intent": "Deliberate invalid private sibling not called by entry; complete declaration coverage is required."
+    }
+  ]
+}

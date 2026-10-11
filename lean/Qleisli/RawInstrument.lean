@@ -5,7 +5,7 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! Actual observing acceptance, exact Kraus completeness and joint density
 semantics. No Rust verification premise or producer-provided Gram is used.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Instrument
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.Observation QleisliKernel.Raw.Instrument QleisliKernel.Finite

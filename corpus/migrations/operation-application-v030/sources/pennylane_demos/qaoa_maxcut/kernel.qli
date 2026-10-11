@@ -1,0 +1,42 @@
+// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py
+// Selected symbol(s): U_B; U_C; circuit
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::s;
+use std::quantum::phase_eighth;
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+// This scalar is needed: S alone is not RZ(pi/2) under control.
+unitary fn rz_quarter(q: Q<Bit>) -> Q<Bit> { inverse(phase_eighth)(s(q)) }
+unitary fn rx_quarter(q: Q<Bit>) -> Q<Bit> { h(rz_quarter(h(q))) }
+unitary fn ry_quarter(q: Q<Bit>) -> Q<Bit> { h(z(q)) }
+
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let (part3, d) = split(q);
+    let (part2, c) = split(part3);
+    let (a, b) = split(part2);
+    let a = h(a);
+    let b = h(b);
+    let c = h(c);
+    let d = h(d);
+    let (a, b) = cnot(a, b);
+    let b = rz_quarter(b);
+    let (a, b) = cnot(a, b);
+    let (a, d) = cnot(a, d);
+    let d = rz_quarter(d);
+    let (a, d) = cnot(a, d);
+    let (b, c) = cnot(b, c);
+    let c = rz_quarter(c);
+    let (b, c) = cnot(b, c);
+    let (c, d) = cnot(c, d);
+    let d = rz_quarter(d);
+    let (c, d) = cnot(c, d);
+    join(join(join(rx_quarter(a), rx_quarter(b)), rx_quarter(c)), rx_quarter(d))
+}

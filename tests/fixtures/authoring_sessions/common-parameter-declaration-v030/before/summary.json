@@ -1,0 +1,329 @@
+{
+  "rows": [
+    {
+      "case": "duplicate-static-natural",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/duplicate-static-natural-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-natural",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/duplicate-static-natural-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-natural",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/duplicate-static-natural-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-natural",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/duplicate-static-natural-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/static-runtime-collision-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/static-runtime-collision-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/static-runtime-collision-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/static-runtime-collision-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "nested-runtime-duplicate",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/nested-runtime-duplicate-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "nested-runtime-duplicate",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/nested-runtime-duplicate-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "nested-runtime-duplicate",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/nested-runtime-duplicate-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "nested-runtime-duplicate",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/nested-runtime-duplicate-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "first-type-before-later-duplicate",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/first-type-before-later-duplicate-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "first-type-before-later-duplicate",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/first-type-before-later-duplicate-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "first-type-before-later-duplicate",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/first-type-before-later-duplicate-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "first-type-before-later-duplicate",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/first-type-before-later-duplicate-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-before-empty-register",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/duplicate-before-empty-register-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-before-empty-register",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/duplicate-before-empty-register-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-before-empty-register",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/duplicate-before-empty-register-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-before-empty-register",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/duplicate-before-empty-register-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "forward-operation-kind",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/forward-operation-kind-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "forward-operation-kind",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/forward-operation-kind-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "forward-operation-kind",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/forward-operation-kind-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "forward-operation-kind",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/forward-operation-kind-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/unused-invalid-sibling-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 1
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 1
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/unused-invalid-sibling-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "valid-nested-unit-quantum",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/valid-nested-unit-quantum-finite-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 20
+    },
+    {
+      "case": "valid-nested-unit-quantum",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/valid-nested-unit-quantum-finite-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 20
+    },
+    {
+      "case": "valid-nested-unit-quantum",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/valid-nested-unit-quantum-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1
+    },
+    {
+      "case": "valid-nested-unit-quantum",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/valid-nested-unit-quantum-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1
+    },
+    {
+      "case": "duplicate-static-operation-unit",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/duplicate-static-operation-unit-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-operation-unit",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/duplicate-static-operation-unit-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-operation-unit",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/duplicate-static-operation-unit-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "duplicate-static-operation-unit",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/duplicate-static-operation-unit-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "symbolic-type-before-later-duplicate",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/symbolic-type-before-later-duplicate-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "symbolic-type-before-later-duplicate",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/symbolic-type-before-later-duplicate-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "symbolic-type-before-later-duplicate",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/symbolic-type-before-later-duplicate-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    },
+    {
+      "case": "symbolic-type-before-later-duplicate",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/symbolic-type-before-later-duplicate-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0
+    }
+  ],
+  "actual_observation_count": 40,
+  "source_repairs": 0,
+  "predictions_used_as_assertions": false,
+  "no_runtime_or_algorithm_oracle": true,
+  "native_consistency_is_not_source_preservation": true
+}

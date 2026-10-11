@@ -1,0 +1,25 @@
+{
+  "before": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 2,
+    "stdout": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch:5: trailing whitespace.\n+ \ntests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch:17: trailing whitespace.\n+ \ntests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch:27: trailing whitespace.\n+ \ntests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch:39: trailing whitespace.\n+ \n",
+    "stderr": ""
+  },
+  "reason": "The retained unified repair patch includes original blank context lines. Preserve its recorded bytes and apply a whitespace attribute only to that raw patch artifact.",
+  "after": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

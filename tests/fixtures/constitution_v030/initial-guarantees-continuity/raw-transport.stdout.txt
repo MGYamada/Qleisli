@@ -1,0 +1,6 @@
+'Qleisli.RawRepresentationTransport.encodeProgram_injective' depends on axioms: [propext, Quot.sound]
+'Qleisli.RawRepresentationTransport.wholeTrace_preserved' depends on axioms: [propext, Quot.sound]
+'Qleisli.RawRepresentationTransport.originalRoot_ownership' depends on axioms: [propext, Quot.sound]
+'Qleisli.RawRepresentationTransport.originalRoot_scope' depends on axioms: [propext, Quot.sound]
+'QleisliKernel.Protocol.Validity.check_ownershipSafe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Qleisli.NativeValidity.check_scopeSafe' depends on axioms: [propext, Classical.choice, Quot.sound]

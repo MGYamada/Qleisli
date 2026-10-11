@@ -1,0 +1,38 @@
+{
+  "format": "qleisli.parameter-name-final-record",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T17:25:35.928934+00:00",
+  "reviewed_baseline": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "production_hashes": {
+    "src/frontend/pattern.rs": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+    "src/frontend/compile/mod.rs": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+    "src/frontend/sized/check.rs": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1"
+  },
+  "first_files_unchanged": 34,
+  "before_packet_files_unchanged": 200,
+  "after_comparisons": 40,
+  "after_native_calls": 44,
+  "rust_actual": {
+    "latest": {
+      "passed": 118,
+      "failed": 0,
+      "ignored": 3,
+      "groups": 12
+    },
+    "msrv": {
+      "passed": 118,
+      "failed": 0,
+      "ignored": 3,
+      "groups": 12
+    }
+  },
+  "policy_commands": 13,
+  "policy_regressions": 66,
+  "policy_declared_inputs": 817,
+  "whole_plan": {
+    "selected": 111,
+    "confirmed_complete": 14,
+    "percent": 12.61
+  },
+  "scope": "Local bounded implementation and retained actual records only. No source-preservation, whole-Issue completion, new proof/guarantee, hosted exact-head CI or release claim."
+}

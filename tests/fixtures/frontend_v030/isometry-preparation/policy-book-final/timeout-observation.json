@@ -1,0 +1,12 @@
+{
+  "kind": "actual tool-level failure",
+  "command": [
+    "python3",
+    "scripts/test_check_constitution.py"
+  ],
+  "timeout_seconds": 120,
+  "wrapper_exit_code": 1,
+  "recorded_utc": "2026-10-05T15:01:41.319530+00:00",
+  "result": "subprocess.TimeoutExpired: Command [python3, scripts/test_check_constitution.py] timed out after 120 seconds",
+  "scope": "The first six completed commands remain in commands.json. The timed-out unittest did not produce a successful record; the remaining authoring-checker regression/book/whitespace commands were not reached. The wrapper did not retain the timed-out child partial output; no passing count or original stderr is reconstructed."
+}

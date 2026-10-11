@@ -1,0 +1,4 @@
+use std::quantum::t;
+
+// Replace this one operation to change the unitary whose phase is sampled.
+pub unitary fn evolve(q: Q<Bit>) -> Q<Bit> { t(q) }

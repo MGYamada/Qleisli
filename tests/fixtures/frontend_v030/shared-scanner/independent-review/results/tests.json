@@ -1,0 +1,53 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "parser",
+        "--test",
+        "documentation",
+        "--test",
+        "sized_source"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.259,
+      "stdout": "integration.stdout.txt",
+      "stderr": "integration.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::sized::parser::token_tests",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {},
+      "exit_code": 0,
+      "elapsed_seconds": 0.088,
+      "stdout": "adapter-unit.stdout.txt",
+      "stderr": "adapter-unit.stderr.txt"
+    }
+  ],
+  "total_passed": 61,
+  "total_failed": 0,
+  "total_ignored": 3,
+  "unit_filtered_out": 80,
+  "scope": "Retained parser/documentation/sized_source suites and three adapter unit tests only; no full Rust suite, corpus replay, Lean rebuild or newly generated maximum-size quantum case.",
+  "ignored_reason": "Three pre-existing sized_source tests are explicitly ignored: requires the separately built and audited Lean kernel. This scanner review retained default ignore selection even though QLEISLI_KERNEL was supplied for the documentation test; it did not pass --ignored.",
+  "ignored_tests": [
+    "direct_finite_source_gates_preserve_entangled_h_x_references",
+    "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+    "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"
+  ]
+}

@@ -1,0 +1,5 @@
+pub unitary fn inner[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A>
+requires Apply(U) { U(q) }
+pub unitary fn outer[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A>
+requires Apply(U) { inner[A,U](q) }
+

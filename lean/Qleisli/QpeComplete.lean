@@ -4,7 +4,7 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-! Completeness of the actual checked QPE instrument, conditional on the
 independently verified provider's whole-space isometry equation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Qpe
 open scoped BigOperators Matrix

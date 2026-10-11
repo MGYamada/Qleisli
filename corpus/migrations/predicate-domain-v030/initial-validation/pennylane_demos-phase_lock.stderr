@@ -1,0 +1,8 @@
+[
+  {
+    "stage": "run",
+    "id": "pennylane_demos/phase_lock",
+    "type": "ValueError",
+    "message": "current source differs from latest attempt: quantum_katas/grover2/kernel.qli"
+  }
+]

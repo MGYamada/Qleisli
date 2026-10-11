@@ -1,0 +1,24 @@
+{
+  "recorded_utc": "2026-10-05T00:06:05.394479+00:00",
+  "head": "d753962de3eedd39629c8441f2b82521ce01d70f",
+  "binary": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280"
+  },
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "build_result": {
+    "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-final/result.json",
+    "sha256": "3d443d99a171b50e6228315448a955fa2161f8768d2cf5da75d9c5dc4b91b3ba"
+  },
+  "build_sources": {
+    "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-final/sources.json",
+    "sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+    "count": 366
+  },
+  "baseline_manifest_sha256": "292bf6372b934da1e692540cb01f5d9fe75f2169256c2a77b157a1ca146f6fb7",
+  "driver_sha256": "98c1d7c813f5d1d7f56e556c580433545d41b072572a37f4307f8b063c10cb56",
+  "binding_scope": "Existing final-build target; no build is performed by this driver. All final-build source hashes match before and after execution."
+}

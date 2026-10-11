@@ -1,0 +1,701 @@
+{
+  "format": "qleisli.independent-implementation-review-inputs",
+  "version": 1,
+  "reviewer": "/root/isometry_cli_tests",
+  "independence": "Reviewer did not author the production implementation. Reviewer authored candidate-01.md; preceding author audit is not independent candidate review.",
+  "observed_utc": "2026-10-05T17:17:24.271027+00:00",
+  "baseline_git_ref": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "observed_head": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "scope": "Stable actual three-file source review and fixed bounded inspected/identity subset. Not compiled HEAD, full runtime closure, proof or after-replay attestation.",
+  "production": [
+    {
+      "path": "src/frontend/pattern.rs",
+      "bytes": 4506,
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52569,
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1"
+    }
+  ],
+  "inspected_input_count": 125,
+  "inspected_inputs": [
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18041,
+      "sha256": "4b6100cfd4030648701114923f8ce33840d89e28c3f9f39475f1a3bdef4590d5"
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28181,
+      "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608"
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984"
+    },
+    {
+      "path": "src/frontend/resolve.rs",
+      "bytes": 15766,
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c"
+    },
+    {
+      "path": "src/interchange/native.rs",
+      "bytes": 18198,
+      "sha256": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-before-empty-register/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-before-empty-register/main.qli",
+      "bytes": 188,
+      "sha256": "a19c19836d41bae5b2e59b49a227483e999592e85819ed2979d6dc6b4e8ff4c8"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural/main.qli",
+      "bytes": 206,
+      "sha256": "cace87151b58f17a99d68ab73175f41e31c66a039a74fe6d031d671f8a561617"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/main.qli",
+      "bytes": 220,
+      "sha256": "f7c9342f0bcf4afa689310f016edf645fc38b24879e45a12bd3fe73ff8d63d40"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/main.qli",
+      "bytes": 154,
+      "sha256": "54d0814ae3c702e1da20a7e0bad97ce1b276a84a8263b82fcaeb79da2e996a0e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli",
+      "bytes": 232,
+      "sha256": "754a9b1c0e96a2380c4a0e3798feb7c14a98215245433ed372c5da5a7ad53d24"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/nested-runtime-duplicate/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/nested-runtime-duplicate/main.qli",
+      "bytes": 156,
+      "sha256": "810627da0e72e7fd5d555a459f96b66be76f823dc7087c799c5b4a83b1512799"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/main.qli",
+      "bytes": 217,
+      "sha256": "d46af92834b9cdefea18f73bfdc74ead9eb2e347fc5d4be4d1751f58d9c1d3f0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/symbolic-type-before-later-duplicate/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/symbolic-type-before-later-duplicate/main.qli",
+      "bytes": 243,
+      "sha256": "d35213938f7bbf9daf22629d377870b576eb52881f7b85178d3455ac67f77557"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/main.qli",
+      "bytes": 184,
+      "sha256": "2fc43241bd48565eb368d8290fdfc69439f89ac334498b9e84a51c4c8ef57384"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/valid-nested-unit-quantum/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/valid-nested-unit-quantum/main.qli",
+      "bytes": 185,
+      "sha256": "5be9684a8b093d39392eaedf1e0faf8b74ee271e8f96ac6b7917446474b4dd97"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.json",
+      "bytes": 1563,
+      "sha256": "b48419744535cdce912a71941db83e4433dc7b32d103207d2d093b997942f8a8"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.stdout.txt",
+      "bytes": 301,
+      "sha256": "57ff3f89625a8739a648bf1f0f168891c9070921cb5670517f3792efc28e508b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.json",
+      "bytes": 1742,
+      "sha256": "945d11eb60cd359cb642a14626ffe1f261f14b36f629113f1924436576b617f6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.stdout.txt",
+      "bytes": 397,
+      "sha256": "730229bc07898f73b75448a58ac689073e30d97f4715fcefbb28ad39f55f6e5b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.json",
+      "bytes": 1533,
+      "sha256": "532d3aa045f341f1e3d11769a12a21537bb98847a6baee457ebcd1276b6d5ecc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.stdout.txt",
+      "bytes": 300,
+      "sha256": "87fbe00256d46900cac65a2d590e50f7f574203476346f9f513ab59598ac07b5"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.json",
+      "bytes": 1708,
+      "sha256": "e22d90e1705acf4b2b1d29ec1897764472fc15ddae1aeef052a7e685cb361fab"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.stdout.txt",
+      "bytes": 391,
+      "sha256": "7d0a661086048dad9b0a8dade79e27fcb855ca61968e7937b3b270705c309080"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.json",
+      "bytes": 1531,
+      "sha256": "9bfb456881329e0d3d305caad1b95593826c9d4788eb250df67fabcb3b4573a6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.stdout.txt",
+      "bytes": 271,
+      "sha256": "8ea80a2225ae147245d331d44498054eb786a06a8663676f479b43c4765203d3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.json",
+      "bytes": 1744,
+      "sha256": "6831499ae9cfa0b4c2a627a3856eb0989452e328b0d347fc8a4d60a2286ec6a6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.stdout.txt",
+      "bytes": 398,
+      "sha256": "73b40d7e32e583bb02ce4937ff5e4437b7e964aabdef5add657541f57bbb1c1c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.json",
+      "bytes": 1573,
+      "sha256": "b7e205ae503c09809422958e925862e36b5868d9a296eefdb81494ccc4c0890f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.stdout.txt",
+      "bytes": 304,
+      "sha256": "dfccdad1fb4b74d964fa06151738840101bd5ed055e6058d6a0cf9d3d7190972"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.json",
+      "bytes": 1757,
+      "sha256": "ec6b441a2871572c53ec5a2a999d0f0281f67f9a4bc4ffb0e02e51a3d9336bd6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.stdout.txt",
+      "bytes": 404,
+      "sha256": "7d66938d489573d9749f85dc2c00a8dd94e89cb628efa9e7861ec458e94b9aef"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.json",
+      "bytes": 1526,
+      "sha256": "56285825e6d3eee372ebb4a3645b0d708c0beb6beca02555a5ff0b8f0d12b530"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.stdout.txt",
+      "bytes": 301,
+      "sha256": "5eda170edd5504ca2781294e5b53add4ff64101ed7cfc6d921105ce574dfec18"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.json",
+      "bytes": 1694,
+      "sha256": "50c7bcf6371131d7719d5594d4a873847fcf9e220f58622516caa59c824c45bc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.stdout.txt",
+      "bytes": 385,
+      "sha256": "2fecdb859f4b2bbdc6b2eae222e95abb18f9729a0a00e1bc039b845cd3494bac"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.json",
+      "bytes": 1500,
+      "sha256": "1549216995e9e8f72c112222ee6517ad5b9b58c235bd538a492950ee8ac794fd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.stdout.txt",
+      "bytes": 269,
+      "sha256": "ed9fe06ae2fa91d137cabe58b0f9103df09cde23ad30d6ce3d0b54b34586ea49"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.json",
+      "bytes": 1707,
+      "sha256": "8d052ba8f3007a7bf3aa622abe78d367292a529c22257c40bc43525e0ceed556"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.stdout.txt",
+      "bytes": 390,
+      "sha256": "0d6cb64f1b3ec54646bbd6251c2dac064bb8778c7eb16c96a34e2181dc9dd7d0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.json",
+      "bytes": 1502,
+      "sha256": "eac8b1a54e00d7bd7636436711fb6846bb810ba0781ba528009da5a9fbeea175"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.stdout.txt",
+      "bytes": 269,
+      "sha256": "3b3bc1f391fe2c7c1a6a1c06d855fc623fdac0534dc856a6a0c8923494e2ccd2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.json",
+      "bytes": 1742,
+      "sha256": "f3c6eefc99bdf6f1b416370ab757578188e84553746bd629321ccb84d9615cbc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.stdout.txt",
+      "bytes": 425,
+      "sha256": "27a77926f91605b8edc226a09df6a582e3b4c44502d3fbf344b9d01dff80497a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/summary.json",
+      "bytes": 10476,
+      "sha256": "dc0d33503555865ea79232aee9ce8cd3f3330f19de004a5a934a85f12345098d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.json",
+      "bytes": 1581,
+      "sha256": "91e014b7868e8e050a23e9873bff35ea82db9ee50faa414e75d0c0641c47a5e0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.stdout.txt",
+      "bytes": 300,
+      "sha256": "304ee6dfef6e9c2b0ada9e35cc69f11c627f545e3e257a37af14985c093b3307"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.json",
+      "bytes": 1777,
+      "sha256": "a88ede4898b7ddf5b69bfa15c20fdd3c56cf830d58a5e68c903f007308201a1b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.stdout.txt",
+      "bytes": 412,
+      "sha256": "818514cb01a2748d9ce3dd21fbb7a60b45791b078177062b837c25063bfe2944"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.json",
+      "bytes": 1493,
+      "sha256": "77fb3fb4e5953b8dbb420c97354338d19756aaee79df29c59510ae59b6db8042"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.native.jsonl",
+      "bytes": 33,
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.stdout.txt",
+      "bytes": 269,
+      "sha256": "9e42565a65e1bc1570f7be5101bec660261e6267180b1f82b49f2ec7322a2617"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.json",
+      "bytes": 1697,
+      "sha256": "25747be5e7898d7788e79052a012dbca7328ab26e22ec8a39cb08c5835be737b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.native.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.stdout.txt",
+      "bytes": 388,
+      "sha256": "2be2a15c005b872e3f250c18ff0044aa9f92fb71fa65da4674e0b8bed4f0fb48"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.json",
+      "bytes": 1228,
+      "sha256": "8bb52a7ce5d43b708bbc7cf4ee60f22b7e7024b6a0d5387c246cbf12437b42cd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.native.jsonl",
+      "bytes": 660,
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.stdout.txt",
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.json",
+      "bytes": 1781,
+      "sha256": "bfbcf47638b2b04dba31834c81cdf573e8922588a384d6e5d11a0633a7130d5f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.native.jsonl",
+      "bytes": 47,
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.stdout.txt",
+      "bytes": 473,
+      "sha256": "03dff55b92a509b4fe91b3ba558632d2cd814b959e15e091e464588bb0421291"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/first-files.json",
+      "bytes": 4254,
+      "sha256": "b7babe5509ef85fd2aa10b27d07b346083645971a7d26a608d3915f5dda6e2a2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/results-before.md",
+      "bytes": 3278,
+      "sha256": "cc2ac246e1eac8edfeffc39a215b24c8dc039a074c57b246423f03fa9c4daf26"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/author-design.md",
+      "bytes": 11177,
+      "sha256": "78179937c1e00fa342bb874c050e5ac4041692cca5e94e00029cd2deaa8f3621"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/author-followup-guard-01.json",
+      "bytes": 1008,
+      "sha256": "30d3e737fb231a19dd941bb404ec6be3af1ffbe5427f31f5a00257e783443ed4"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/contract-before-code.md",
+      "bytes": 5501,
+      "sha256": "558ec3f68f6c7f84a248ed30039eb8655625a08fe61a48d3c32f975100bd1ad1"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/initial.patch",
+      "bytes": 7321,
+      "sha256": "dea1b4682f27eee1187ede6362504c6029ab75b1e86d01ae1776228ac98f5f46"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-before.json",
+      "bytes": 1074,
+      "sha256": "3226409f71ef9fb5feec0bddafba14d755c9eba31fb452a318d1544770ecb5ea"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-before/src/frontend/compile/mod.rs",
+      "bytes": 42146,
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-before/src/frontend/pattern.rs",
+      "bytes": 3459,
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-before/src/frontend/sized/check.rs",
+      "bytes": 52146,
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-initial.json",
+      "bytes": 1123,
+      "sha256": "8e8aee45e6df8dad683eb2d10c350a81a59f199f17ee68f693d45dbbd8283cb7"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-initial/src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-initial/src/frontend/pattern.rs",
+      "bytes": 4506,
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/implementation-01/source-initial/src/frontend/sized/check.rs",
+      "bytes": 52515,
+      "sha256": "2f7e0062f84ebbc05c89a48e961a4a262b814e33cfe9036308f32638e0f50fea"
+    }
+  ],
+  "stable_guard": {
+    "root_barrier_received_before_source_review": true,
+    "initial_and_final_observed_production_hashes_match": true,
+    "before_snapshots_match_git_baseline": true,
+    "existing_pattern_binder_tail_byte_identical": true,
+    "first_edit_sized_difference": "Only observed formatting; first-edit map/snapshot unchanged.",
+    "original_candidate_first_five_sizes_hashes_still_match": true
+  },
+  "existing_read_json_subset": {
+    "count": 20,
+    "successful": 2,
+    "rejected": 18,
+    "native_invocations": 22,
+    "raw_hash_parsed_stdout_and_native_count_correspondence": "matches",
+    "execution": "Root prior executions only; not rerun by reviewer."
+  },
+  "review_output": {
+    "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/independent-implementation-review.md",
+    "bytes": 8429,
+    "sha256": "4c43a26ac2d127c9a9dda9848877640d8a4d203147ee06b1d24c35c82af5ee1c"
+  },
+  "prior_constitutional_guard": {
+    "record": "author-followup-guard-01.json",
+    "base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "exit_code": 0,
+    "new_guard_for_final_review": false
+  },
+  "performed": [
+    "read-only source/contract/baseline record inspection",
+    "read-only Git diff/show",
+    "metadata byte/hash comparisons",
+    "new review and map only"
+  ],
+  "not_performed": [
+    "builds",
+    "tests",
+    "qleisli/native execution",
+    "production edits",
+    "old packet edits",
+    "Git/Issue mutations",
+    "new adoption/guarantee",
+    "after replay"
+  ],
+  "excluded": [
+    "independent-implementation-review-inputs.json"
+  ]
+}

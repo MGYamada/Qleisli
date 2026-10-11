@@ -1,0 +1,12 @@
+{
+  "recorded_utc": "2026-10-05T16:15:17.904396+00:00",
+  "authoring_counts": [
+    1,
+    23
+  ],
+  "baseline_outputs_and_first_inputs_unchanged": true,
+  "after_replay_performed": false,
+  "packet_whitespace_files": 134,
+  "git_no_index_note": "Exit 1 with empty --check output means a new file differs from /dev/null and has no whitespace diagnostic.",
+  "scope": "Record integrity and whitespace only; no new source check/build/replay or proof."
+}

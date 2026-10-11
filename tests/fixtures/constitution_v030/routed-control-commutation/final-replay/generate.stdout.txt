@@ -1,0 +1,7 @@
+ab: native whole-artifact inspection passed; 256 amplitudes; structural work 243506; exact work 131
+ba: native whole-artifact inspection passed; 256 amplitudes; structural work 243506; exact work 131
+overlap-ab: native whole-artifact inspection passed; 256 amplitudes; structural work 210092; exact work 131
+overlap-ba: native whole-artifact inspection passed; 256 amplitudes; structural work 210092; exact work 131
+wrong-output-route: native whole-artifact inspection passed; 256 amplitudes; structural work 243506; exact work 131
+unit-ab: native whole-artifact inspection passed; 16 amplitudes; structural work 203127; exact work 0
+unit-ba: native whole-artifact inspection passed; 16 amplitudes; structural work 203127; exact work 0

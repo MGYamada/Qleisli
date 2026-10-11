@@ -1,0 +1,186 @@
+{
+  "status": "observed",
+  "results": [
+    {
+      "category": "attempt-01",
+      "name": "runtime-unit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-runtime-unit.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "runtime-nested",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-runtime-nested.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "runtime-mixed-owner",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-runtime-mixed-owner.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "basis-unit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-basis-unit.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "computed-unit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-computed-unit.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "coherent-unit-phase",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-coherent-unit-phase.json"
+    },
+    {
+      "category": "attempt-01",
+      "name": "effectful-unit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/attempt-01-effectful-unit.json"
+    },
+    {
+      "category": "controls",
+      "name": "named-unit",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "observation": "observations/controls-named-unit.json"
+    },
+    {
+      "category": "controls",
+      "name": "named-coherent-phase",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "observation": "observations/controls-named-coherent-phase.json"
+    },
+    {
+      "category": "controls",
+      "name": "named-effectful-unit",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "observation": "observations/controls-named-effectful-unit.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "runtime-quantum-unit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-runtime-quantum-unit.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "runtime-bit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-runtime-bit.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "runtime-unit-product",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-runtime-unit-product.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "basis-bit",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-basis-bit.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "coherent-unit-product",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-coherent-unit-product.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "unitary-effect",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-unitary-effect.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "nullary-predicate",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "arity"
+      ],
+      "observation": "observations/counterexamples-nullary-predicate.json"
+    },
+    {
+      "category": "counterexamples",
+      "name": "ordinary-bits-zero",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "observation": "observations/counterexamples-ordinary-bits-zero.json"
+    },
+    {
+      "category": "desired-unsupported",
+      "name": "runtime-parameter-pattern",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "parse"
+      ],
+      "observation": "observations/desired-unsupported-runtime-parameter-pattern.json"
+    }
+  ],
+  "sources_and_executables_unchanged": true,
+  "current_source_sha256_after": {
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "src/frontend/ast.rs": "d030ccea0dcd5a22362e2f80cc49d1134dcd8b7a32b6af245259f24de39a763e",
+    "src/frontend/parser.rs": "02d30ba4a770080de0d30b152e4afc42a3b9f9ed14034efae01aeb0c2a0107d0",
+    "src/frontend/types.rs": "3217e86016c514b65510809e2dc19848eb3db29437ea9c915fdc3758701abe48",
+    "src/frontend/resolve/locals.rs": "9a0575f82bea44d8cecefa1c360ecdb34eecb0b6240e2c834ed0f955bf03fa90",
+    "src/frontend/compile/profile.rs": "62d7817d59d2425d73c48bd5a9c123ebacba7851da1cf5c0ea0a249ce857d7de",
+    "src/frontend/compile/basis.rs": "b3cecb102484ea1f562c82f89c81838696afa4ce67556db2fb7c30b93bda0dd2",
+    "src/frontend/compile/lower/mod.rs": "54d3ddf9d7c8b41e9adc7e10d867f6fb3f6de8e526f0a6f4209ad3244f9f627c",
+    "src/frontend/compile/lower/primitives.rs": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+    "src/frontend/sized/check.rs": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
+    "src/frontend/sized/elaborate.rs": "ca9aed2642cfe2600b3155fa76ed0408db62ca0df3ff6e246093751a3b5302a9"
+  },
+  "scope": "Nineteen fixed small check commands using the recorded existing binary. Rejections retained as actual diagnostics; source success is not a preservation theorem."
+}

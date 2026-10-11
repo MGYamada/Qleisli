@@ -1,0 +1,2 @@
+use std::quantum::cnot;
+unitary fn duplicate(q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { cnot(q,q) }

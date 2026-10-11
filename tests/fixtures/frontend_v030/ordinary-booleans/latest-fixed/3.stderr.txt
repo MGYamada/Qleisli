@@ -1,0 +1,11 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 0.71s
+     Running tests/frontend_types.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/frontend_types-f5b7d97e61407465)
+     Running tests/ordinary_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/ordinary_booleans-a8f60bea464ae928)
+     Running tests/parser.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/parser-505caf4e08ee6ac4)
+     Running tests/runtime_parameter_patterns.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/runtime_parameter_patterns-e022d3d46684bda2)
+     Running tests/sized_declarations.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_declarations-144ff112b3c1d010)
+     Running tests/source_judgments.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/source_judgments-88cd24fa89919d42)
+     Running tests/specification_boundaries.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/specification_boundaries-b0cb2c6a58c00c44)
+     Running tests/tuple_shapes.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/tuple_shapes-8e5a0d4010991be0)
+     Running tests/unit_patterns.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/unit_patterns-b821bf4148b4bf36)

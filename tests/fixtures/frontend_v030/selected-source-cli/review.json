@@ -1,0 +1,27 @@
+{
+  "kind": "Independent assistant implementation/oracle reviews; no human Guardian judgment or formal proof",
+  "recorded_utc": "2026-10-04T22:41:59.969583+00:00",
+  "base_commit": "a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+  "reviews": [
+    {
+      "reviewer": "review_frontend",
+      "scope": "Typed hierarchy eligibility and common CLI plan",
+      "findings": "Only five original profile mismatches become Ineligible; real errors and full-body lowering remain terminal. Fixed requests and profile selection precede native; no error-string or post-native fallback. Raw accept/source matcher/execution and hierarchy provider paths reviewed. No remaining actionable finding."
+    },
+    {
+      "reviewer": "review_platform",
+      "scope": "CLI arguments, metadata and envelope compatibility",
+      "findings": "Malformed UTF-8 command labelling corrected to select the first raw positional argument before UTF-8 decoding; existing project JSON boundary retained."
+    },
+    {
+      "reviewer": "review_kernel",
+      "scope": "Independent selected-source semantic and request-rejection fixtures",
+      "findings": "Retained three actual test-authoring failures, repaired Raw/Q<Unit>/closed QPE expectations, and froze nine tests. Fixed H/QPE requests and analytic amplitudes distinguish native acceptance from generated consistency."
+    }
+  ],
+  "pre_execution_correction": "Self-review added typed SamplingError conversion before first build; no fabricated failed compile.",
+  "observed_regression": "First actual CLI test run exposed changed legacy broken-pipe text; fixed to retain sized result. Historical usage golden retained; current derivative reviewed.",
+  "selected_sources_sha256": "974db80591484bb804b5cdf82b76b4133271284c37ab4f09eb835443f85bc031",
+  "selected_test_sha256": "9df52b807d7e22d4db31326484b4d90bd506c54d04f46fb23eb89ee0bd9ac29e",
+  "scope": "The reviewer summaries do not replace actual root-run latest/MSRV results; source preservation and full frontend convergence remain open."
+}

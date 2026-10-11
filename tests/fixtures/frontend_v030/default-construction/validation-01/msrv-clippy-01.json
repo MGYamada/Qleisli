@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "clippy",
+    "--locked",
+    "--offline",
+    "--jobs",
+    "2",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 0,
+  "seconds": 7.207466208026744,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/msrv-clippy-01.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/msrv-clippy-01.stderr.txt",
+      "sha256": "8bddf7901d039d955debce77192a2055c64ceaa4231b953a22fed929d7ae2800"
+    }
+  }
+}

@@ -3,7 +3,8 @@
   "documentation_only": [
     "AGENTS.md",
     "CLAUDE.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CONSTITUTIONALCI.md"
   ],
   "result_records": [
     "tests/fixtures/releases/v[0-9]*/publication.json",

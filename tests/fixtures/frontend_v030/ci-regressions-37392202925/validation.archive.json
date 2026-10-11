@@ -1,0 +1,705 @@
+{
+  "archive": "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation.tar.gz",
+  "archive_sha256": "e20e88904fb28058d73a97694225f1b8f1d3673e04148f2a01a109f446bffc49",
+  "entries": {
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-build-04.stderr.txt": {
+      "bytes": 128,
+      "mode": "100644",
+      "sha256": "5988244e3fb67d04e7eb992579d284c56f43d3ec58d0df4acb4b47a0de4344f2"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-build-04.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-links-04.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-links-04.stdout.txt": {
+      "bytes": 67,
+      "mode": "100644",
+      "sha256": "74485319bf903ce809c30d7361655c71d00cb6bd62a9f43bee4a69f5e3a34719"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-repair-04-results.json": {
+      "bytes": 5101,
+      "mode": "100644",
+      "sha256": "947d555df99941c88bf25cd5428066f746548706f2850a2df9fee8e8f8ca9964"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-version-04.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/book-version-04.stdout.txt": {
+      "bytes": 14,
+      "mode": "100644",
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/focused-repair-02-results.json": {
+      "bytes": 3231,
+      "mode": "100644",
+      "sha256": "c1904fba89555bb6b79fe287f44018f2d34e835b2806cdf296a2c829a136a261"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/focused-repair-03-results.json": {
+      "bytes": 16800,
+      "mode": "100644",
+      "sha256": "909eb77de4e1c60e80a93c368def2d0aadcfc9b15e49ef6e6d202de339bd72e4"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/focused-repair-04-results.json": {
+      "bytes": 21755,
+      "mode": "100644",
+      "sha256": "3086875290d2a815941e290002d7bf2d815f56a9cff0a7106447130879e5f7e9"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/format.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/format.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-cargo-version-04.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-cargo-version-04.stdout.txt": {
+      "bytes": 47,
+      "mode": "100644",
+      "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-clippy-04.stderr.txt": {
+      "bytes": 539,
+      "mode": "100644",
+      "sha256": "ad9a9a24c17a2ff13cfdab92b33b92fa11413c9fb1e3ad53f07984219384de15"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-clippy-04.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-format-04.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-format-04.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-frontend-units-04.stderr.txt": {
+      "bytes": 242,
+      "mode": "100644",
+      "sha256": "d5af699a3bf620f71620a2019078b88df0d655e3e8359213cda52e8cb64712e1"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-frontend-units-04.stdout.txt": {
+      "bytes": 7597,
+      "mode": "100644",
+      "sha256": "62a227573e58b7f8e8836fd777eba6a229ae82a2f66c01dc95701413dfd13e5b"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-targets-04.stderr.txt": {
+      "bytes": 2407,
+      "mode": "100644",
+      "sha256": "e2a60d3be7b94ab70ed06cdf1b12e3d1340d16e9d8655326905563fda67bb6d8"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/latest-targets-04.stdout.txt": {
+      "bytes": 10485,
+      "mode": "100644",
+      "sha256": "2055470b439d04813d4287e913bb7826410dc079fded3dec45633e9c7199e41b"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-all-targets.stderr.txt": {
+      "bytes": 13466,
+      "mode": "100644",
+      "sha256": "3c53e125df14361d0ba3ee43b5594650637e225af75c22828c7081b0a39bbd9c"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-all-targets.stdout.txt": {
+      "bytes": 445368,
+      "mode": "100644",
+      "sha256": "6353f3aeb851730555e454d9e90759664316c33fadb9b080fbe49d0d2c446400"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-cargo-version-04.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-cargo-version-04.stdout.txt": {
+      "bytes": 36,
+      "mode": "100644",
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-cargo-version.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-cargo-version.stdout.txt": {
+      "bytes": 36,
+      "mode": "100644",
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-clippy-04.stderr.txt": {
+      "bytes": 539,
+      "mode": "100644",
+      "sha256": "6f2e242ac38e84b4a38cfbebaf1e99543d9a5c6003949497f7d6c87af8ac5455"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-clippy-04.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-compiled-source.json": {
+      "bytes": 12047,
+      "mode": "100644",
+      "sha256": "5e2f475b589280bdca4c81779b74bbd3956374648460da066ef4dcc2b0de3a45"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-compiled-source.patch": {
+      "bytes": 4962,
+      "mode": "100644",
+      "sha256": "432e44e8000fa125cc652c0160a026444b70023e06e65c34b1a8815e0c4707e7"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-empty-unit-03.stderr.txt": {
+      "bytes": 242,
+      "mode": "100644",
+      "sha256": "edb4fe094335e73a565a2bbaadeebd742215454d7769beacb3b074637690f794"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-empty-unit-03.stdout.txt": {
+      "bytes": 227,
+      "mode": "100644",
+      "sha256": "2ac08939f179a4c2ce49f505e2efa379b1f4613b94a5e2f4df93d4659251a77d"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-frontend-units-04.stderr.txt": {
+      "bytes": 242,
+      "mode": "100644",
+      "sha256": "5d7ac655edd5ea7755f412273966f9c910ea5b641f44c445b31ddf849b6781e7"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-frontend-units-04.stdout.txt": {
+      "bytes": 7597,
+      "mode": "100644",
+      "sha256": "59166466b33c70729a67219d9c1d28446d560fba4f159b3319f553379d9f2c26"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-empty-unit.stderr.txt": {
+      "bytes": 242,
+      "mode": "100644",
+      "sha256": "a401986ee00447a3fcf371082cfeec0100841a0cab8b17cc9f97afcc6bd7e40e"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-empty-unit.stdout.txt": {
+      "bytes": 115,
+      "mode": "100644",
+      "sha256": "de49d3190d51ee113273c2d5c69c10a50f22ad7ab09c4db788df6b73de0ea827"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-targets-03.stderr.txt": {
+      "bytes": 2091,
+      "mode": "100644",
+      "sha256": "fc5810ec71789a6113e3f795c42d7215d9ef0487342f77476c2a07f7e24d8e51"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-targets-03.stdout.txt": {
+      "bytes": 10928,
+      "mode": "100644",
+      "sha256": "209944f2d3435d02e341093ac98af6fa02a97689069e5b306c46570af33f9093"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-targets.stderr.txt": {
+      "bytes": 1196,
+      "mode": "100644",
+      "sha256": "1b4a283cc7ce0c4dd7fb3209a8e925b2c327683f1afb05de496967b09421d622"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-repaired-targets.stdout.txt": {
+      "bytes": 3987,
+      "mode": "100644",
+      "sha256": "d0323bb626cccf8b6fccd2e35c1e4f8809e8e5ce50b3acb373c059d596c2f98f"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-results.json": {
+      "bytes": 11937,
+      "mode": "100644",
+      "sha256": "9a2360e735b646ecac694f27091a806f80e0e7c256ba8bb250fc7a1f5362db6a"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-rustc-version.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-rustc-version.stdout.txt": {
+      "bytes": 36,
+      "mode": "100644",
+      "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-targets-04.stderr.txt": {
+      "bytes": 1987,
+      "mode": "100644",
+      "sha256": "21b041da5d5d180b6032cc246b886b183be4d4d617e746925decfb621dd5f154"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/msrv-targets-04.stdout.txt": {
+      "bytes": 10485,
+      "mode": "100644",
+      "sha256": "e1dc2c5e2112ab574a998074ce756166a7fa11d691699589e20e8142e626ee85"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-authoring.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-authoring.stdout.txt": {
+      "bytes": 95,
+      "mode": "100644",
+      "sha256": "b0384c59a26ef40343b934ab60313fc86337bc79f124dad05642ac5da1d88612"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-ci-profiles.stderr.txt": {
+      "bytes": 104,
+      "mode": "100644",
+      "sha256": "3d6ebff2e4ecc7ba01d16593233baeab1d8a1cc7ed2f6f0f8a9d1e087eb426be"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-ci-profiles.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-constitution-regressions.stderr.txt": {
+      "bytes": 164,
+      "mode": "100644",
+      "sha256": "dfcef7cd1932055fc8c3a02954a51db3dd65d984bb988f3b4bed4267a6f539e6"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-constitution-regressions.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-constitution.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-constitution.stdout.txt": {
+      "bytes": 420,
+      "mode": "100644",
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-coverage-regressions.stderr.txt": {
+      "bytes": 113,
+      "mode": "100644",
+      "sha256": "71ab122970d1d8d1e03661736ec77aa89dc9072101b9890eff8b09067b18b3ea"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-coverage-regressions.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-coverage.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-coverage.stdout.txt": {
+      "bytes": 464,
+      "mode": "100644",
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-docs.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-docs.stdout.txt": {
+      "bytes": 109,
+      "mode": "100644",
+      "sha256": "62e797ae49770510f848ce7c72b4add5e7faf84e40de9c66ce95a76c4b5c778f"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-editions.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-editions.stdout.txt": {
+      "bytes": 236,
+      "mode": "100644",
+      "sha256": "a147c95f92665bbc926f73fee98f3aa38174315eaac6ad6c99dc414893d299cd"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-inventory.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-04-inventory.stdout.txt": {
+      "bytes": 126,
+      "mode": "100644",
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/policy-repair-04-results.json": {
+      "bytes": 3655,
+      "mode": "100644",
+      "sha256": "141c10f22a46a545d01bd423e5f302576b907b99285f2ab336a68b2d4e703727"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-parser.json": {
+      "bytes": 874,
+      "mode": "100644",
+      "sha256": "f37c37bc0418627f2967f634f37c746d0fd1e317c666e837d5b2a2c2c840bbd7"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-parser.stderr.txt": {
+      "bytes": 113,
+      "mode": "100644",
+      "sha256": "ff3b1438544d9aa2c552401f0123d54eac06b91b0295f3773671c14161e22544"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-parser.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-plan.json": {
+      "bytes": 7096,
+      "mode": "100644",
+      "sha256": "b9a66e92d6aee73ba924dc3a21315cd04f3b254058441a475f2625f618d6ab78"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-completion.json": {
+      "bytes": 3205,
+      "mode": "100644",
+      "sha256": "5abacf9cae69e75289af90b209506036721b250fd6bd9f9a973e79d53a8e3a05"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-circuit-trace-report.json": {
+      "bytes": 9709,
+      "mode": "100644",
+      "sha256": "0d950a2f08c40635dc0c039735490bbd7df3615152e27521c2c44e7af896cf68"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-circuit-trace.command.json": {
+      "bytes": 2054,
+      "mode": "100644",
+      "sha256": "fdce01569fffbc95c10d873ceb42c37b2155c9fff0c3a249260242b3e2719dbd"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-circuit-trace.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-circuit-trace.stdout.txt": {
+      "bytes": 716,
+      "mode": "100644",
+      "sha256": "b347a85e262892e8ad64e07bb1f725322cad17b33be3d8340a7c156a22b4caeb"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-execution-report.json": {
+      "bytes": 13891,
+      "mode": "100644",
+      "sha256": "99e7684d0bd4ca4164d22e998671190d2421fc644513a08ce9d5ca05b9948cc6"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-execution.command.json": {
+      "bytes": 2025,
+      "mode": "100644",
+      "sha256": "9b59a4bede0bd1fa2aff81bf1f897bdb9f2978f14cbd148a4511aa8beca2a074"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-execution.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-execution.stdout.txt": {
+      "bytes": 1854,
+      "mode": "100644",
+      "sha256": "553c680a80dab862f95aaba3be5d9d69ee8921cba9b40ac28621a776ed2293d2"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-instrument-report.json": {
+      "bytes": 5510,
+      "mode": "100644",
+      "sha256": "4f2c1e36eeebadd55ad686a2935f2af9d202378590331c166d17924e0c768dc4"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-instrument.command.json": {
+      "bytes": 2061,
+      "mode": "100644",
+      "sha256": "12a635afc016a2443995c29fcda32686c395b230113ae89e620344c1f20705de"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-instrument.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-instrument.stdout.txt": {
+      "bytes": 2182,
+      "mode": "100644",
+      "sha256": "3abc204cfa1c08da0e55bc0fd4a485cb55010396c0e82cd48f255404328eb682"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root-report.json": {
+      "bytes": 4528,
+      "mode": "100644",
+      "sha256": "2b77da65bf4f3c0176e9d14b31ca662cd7fe41c0571f8786c31f5150210ce2e9"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root.command.json": {
+      "bytes": 2019,
+      "mode": "100644",
+      "sha256": "43ee7deef2b31f763a299bce00d1865f734bc3109c54d1cd94a5f4b571be5825"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root.stdout.txt": {
+      "bytes": 1531,
+      "mode": "100644",
+      "sha256": "f1def667c32550569a321253734f6fa4af46eeb7f48769f68a2fe0dc399c1051"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-schedule-report.json": {
+      "bytes": 6107,
+      "mode": "100644",
+      "sha256": "775e80fbc0e46c03e5e41c0afd62b050b8af857c81815e80d83aa9baf61798d7"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-schedule.command.json": {
+      "bytes": 2048,
+      "mode": "100644",
+      "sha256": "c190aaaf9e1c4cc4dc6682b10a5d1930afa04d3ddf9a3031026f2ee2ddd801ae"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-schedule.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-schedule.stdout.txt": {
+      "bytes": 588,
+      "mode": "100644",
+      "sha256": "21dc100b77a76192482670fa5aadd44a5cd1b6265824adfb3211350dd4e10794"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-routed-power-report.json": {
+      "bytes": 7658,
+      "mode": "100644",
+      "sha256": "9dbfb59dfc0f15c335542dd2a2e9bf94437c26c7c29ee6910eeb4165b8ba2efc"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-routed-power.command.json": {
+      "bytes": 2047,
+      "mode": "100644",
+      "sha256": "90120c43ea0060d6d2c85861a0d9031a973739b1baeb1e75057b52a864171d73"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-routed-power.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-routed-power.stdout.txt": {
+      "bytes": 727,
+      "mode": "100644",
+      "sha256": "10fbd36cbef2fedf89e5dbdb3586c10dbd8c6ed9b7e48bbcc910a193734531e0"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-instrument-host-report.json": {
+      "bytes": 6585,
+      "mode": "100644",
+      "sha256": "7a09b9def0130727556e79f3f883568bd49e37303da9abb8bb33491259a98f5f"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-instrument-host.command.json": {
+      "bytes": 1977,
+      "mode": "100644",
+      "sha256": "234f3f514cde1f8cdcafc1a3e5f5712be087187c51f0408f3da1add6d86db648"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-instrument-host.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-instrument-host.stdout.txt": {
+      "bytes": 372,
+      "mode": "100644",
+      "sha256": "68c6aa5bdf372812d4b89b2010f14d56319289ac61f0b5e1d86418871401e55d"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-parser.json": {
+      "bytes": 1209,
+      "mode": "100644",
+      "sha256": "5513fcacf19419f350d4a8460122bfe300bc021c8efa7327fdca6fa0000683a2"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-parser.stderr.txt": {
+      "bytes": 115,
+      "mode": "100644",
+      "sha256": "f67aafa5114f64ef456e964aa360b3ae2e1c4b3ac10a1b1620490aea30364e9c"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-parser.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-plan.json": {
+      "bytes": 57587,
+      "mode": "100644",
+      "sha256": "998ea599b3bbedf8867dc15b17799e9d4d2124f1666135bb3b5ea94ef928af1c"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-qpe-instrument-host-report.json": {
+      "bytes": 2148,
+      "mode": "100644",
+      "sha256": "37852930e51b00198f7314cbc3145daa1e9551e699ff1d87727a44aff996808e"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-qpe-instrument-host.command.json": {
+      "bytes": 2005,
+      "mode": "100644",
+      "sha256": "f5585979346674cf29ac67101e69a3805a46f3927cf31f1d77bb10ec13561918"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-qpe-instrument-host.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-qpe-instrument-host.stdout.txt": {
+      "bytes": 682,
+      "mode": "100644",
+      "sha256": "5b3c9c481ad5f7eb5687ba40132e61ad9c19a0958cece7a22e0af8e8d3e94106"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-arithmetic-report.json": {
+      "bytes": 23124,
+      "mode": "100644",
+      "sha256": "c71602d6fad9de949964b53a2f5ffc24fce4c4fea384df8e5b6ef6878fbf0d6b"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-arithmetic.command.json": {
+      "bytes": 1984,
+      "mode": "100644",
+      "sha256": "60aed19b17e5779ae50b72880220e15261bf9d9aca4ada0e6bdd81970ea1acf6"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-arithmetic.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-arithmetic.stdout.txt": {
+      "bytes": 4546,
+      "mode": "100644",
+      "sha256": "ed42650d0ae8ca659c7a1af128973b0cbaf88d33fc00259994dbab6f0e10b602"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-instrument-report.json": {
+      "bytes": 13791,
+      "mode": "100644",
+      "sha256": "ebb6e6a0338ea7d700991eb96d6b54d1a991f5604931b8790d8aa74061c42638"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-instrument.command.json": {
+      "bytes": 1985,
+      "mode": "100644",
+      "sha256": "815413190f8438d170748450122b2c0c5cfb168c810af5c1cac371925e2a90df"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-instrument.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-instrument.stdout.txt": {
+      "bytes": 3225,
+      "mode": "100644",
+      "sha256": "115699e9812ac8294bcada0b69b79104fc2a1f941d85a6beb7001c8fff01f7b3"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-qft-small-report.json": {
+      "bytes": 20249,
+      "mode": "100644",
+      "sha256": "97920f2c9501246cfbb98e8d8eacb66e740dafbd9f62616807f05e6a6166b454"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-qft-small.command.json": {
+      "bytes": 1978,
+      "mode": "100644",
+      "sha256": "6a9ef20a94ebb0965fe610d4c6004c30b55fece52c8628cafbf39107d49f8021"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-qft-small.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-sized-qft-small.stdout.txt": {
+      "bytes": 10463,
+      "mode": "100644",
+      "sha256": "a909fc486a0854c5ca31536639ef9a926b9b06794f6f53b5038d518f50e92c5a"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-summary.json": {
+      "bytes": 24730,
+      "mode": "100644",
+      "sha256": "f18825a88f5d420a13d87f26ae053712c025f3e0e114c35e913e48a8c48879b2"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-coverage-summary.json": {
+      "bytes": 2414,
+      "mode": "100644",
+      "sha256": "31c5b43f5720a2dc188d45891257b72074c3ec4a50834d8cf4cb535d01553c42"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-coverage.command.json": {
+      "bytes": 1046,
+      "mode": "100644",
+      "sha256": "6602bdbfd8809531df96d8eaf2e85e8477a1e9142243968a72ef98476f5a399a"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-coverage.patch": {
+      "bytes": 3235,
+      "mode": "100644",
+      "sha256": "c76ce56a91ac5f814e5ee3aaea503defa1f277a1aec24bf8eb8416236d374a69"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-coverage.stderr.txt": {
+      "bytes": 115,
+      "mode": "100644",
+      "sha256": "a72764dd3cb2d481158861c9fa54cf1763547067c96413a9a88cac6047124b05"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-coverage.stdout.txt": {
+      "bytes": 596,
+      "mode": "100644",
+      "sha256": "be8235b83d4282a140a6ee8fe4b654aeab05b0435de80c0a5b67e53eef1debfe"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-ci-review.txt": {
+      "bytes": 2296,
+      "mode": "100644",
+      "sha256": "a773e45e11002f1dc83ee3828eddc9490802cc783051f188ef300442aa29fb16"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-host-plan.json": {
+      "bytes": 52534,
+      "mode": "100644",
+      "sha256": "35aacd6faf9b004eb31e924b919b898ffbed66a51c67d486e4c29587fcb2be34"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-host-summary.json": {
+      "bytes": 3907,
+      "mode": "100644",
+      "sha256": "90b91f6563384730682b96eecceb9fc4c5259e5d0d857528bc7b13cd47b902bd"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-instrument-host-report.json": {
+      "bytes": 6646,
+      "mode": "100644",
+      "sha256": "85e307bb18dbf6888a2f0795968821042c6fc7ef5c8e5625f35c1a3f7f2f06e1"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-instrument-host.command.json": {
+      "bytes": 1524,
+      "mode": "100644",
+      "sha256": "471b48f4d200039bcfd52c2cc69a043431ad217038890c5d035879808c516868"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-instrument-host.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-instrument-host.stdout.txt": {
+      "bytes": 372,
+      "mode": "100644",
+      "sha256": "68c6aa5bdf372812d4b89b2010f14d56319289ac61f0b5e1d86418871401e55d"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-parser.command.json": {
+      "bytes": 1041,
+      "mode": "100644",
+      "sha256": "39dc56eb20a273f40481eca1b4748cd19f98ba6ce79bbfa7097bc4caa5c0d248"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-parser.stderr.txt": {
+      "bytes": 115,
+      "mode": "100644",
+      "sha256": "f05c9dcb3ef455e95549d9840c0a8e99739ca260b9eed5a9c5a02556aeaec053"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-parser.stdout.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host-report.json": {
+      "bytes": 2148,
+      "mode": "100644",
+      "sha256": "805dc928f0531c31b737c65ce81eb3bcdad6ad29e6b536b2d0b70ff8d33a3e62"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host.command.json": {
+      "bytes": 1548,
+      "mode": "100644",
+      "sha256": "461e425958f1263bafd9edef5ee24204bdd036a03c0f1c7742c5d6cafedcd84b"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host.stderr.txt": {
+      "bytes": 0,
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host.stdout.txt": {
+      "bytes": 682,
+      "mode": "100644",
+      "sha256": "5b3c9c481ad5f7eb5687ba40132e61ad9c19a0958cece7a22e0af8e8d3e94106"
+    }
+  },
+  "format": "qleisli.historical-fixture-archive",
+  "prefix": "tests/fixtures/frontend_v030/ci-regressions-37392202925/validation",
+  "source_commit": "f73551fdb8257fd06d5d6fc615095a54962df40d",
+  "version": 1
+}

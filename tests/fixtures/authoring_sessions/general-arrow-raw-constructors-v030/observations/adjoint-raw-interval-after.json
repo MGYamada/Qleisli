@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T22:00:45.934842+00:00",
+  "cli_sha256_before": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "cli_sha256_after": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "source_sha256": "09b664c012a4882de4e5f0382e0384a7344ca6233f087f5bb1574936b05eafbc",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Raw Meaning interval checking for inverse or controlled access is not yet supported",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+          "start": 291,
+          "end": 295
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

@@ -1,0 +1,98 @@
+{
+  "format": "qleisli.fixed-operation-migration-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-07T05:11:50.373119+00:00",
+  "baseline_commit": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+  "rust_all_targets": {
+    "latest": {
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j2",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "completed_targets": 102,
+      "passed": 959,
+      "failed": 0,
+      "ignored": 52,
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-migration-full-latest.log",
+        "bytes": 108946,
+        "sha256": "096fc2d7f8747545ed99593c6b0ab7259a1453ff035e061149e487601fefc95b"
+      }
+    },
+    "msrv": {
+      "cargo": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "-j2",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "completed_targets": 102,
+      "passed": 959,
+      "failed": 0,
+      "ignored": 52,
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-migration-full-msrv.log",
+        "bytes": 109456,
+        "sha256": "1e8b96ae30fbeeebaacfe1795b149dfc3a50486a6ab478810c3c51c0f0b29365"
+      }
+    }
+  },
+  "clippy": {
+    "latest": {
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-migration-clippy-latest.log",
+        "bytes": 120,
+        "sha256": "508557fce2b644946cad477fa22d5651ba0d1d9dd0721e4d689a2ef4b175eac6"
+      }
+    },
+    "msrv": {
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-migration-clippy-msrv.log",
+        "bytes": 120,
+        "sha256": "2b457659dbe235e022cfa27fc3fa5e7e46949cab51676c1539c04a360644806d"
+      }
+    }
+  },
+  "source_kernel": {
+    "command": [
+      "python3",
+      "scripts/test_source_kernel.py"
+    ],
+    "exit_code": 0,
+    "tests": 4,
+    "log": {
+      "external_path": "/private/tmp/qleisli-canonical-migration-source-kernel.log",
+      "bytes": 103,
+      "sha256": "334b60ce434c1273348364f0a26a4d010cf43506fd2776d6ff307c656ff68e8b"
+    }
+  },
+  "active_cli_comparison": "active-comparison.json",
+  "independent_existing_oracles": [
+    "tests/static_operations.rs: finite QPE roots, off-grid Fourier action, phase and reference correlations",
+    "tests/iterative_qpe.rs: output-indexed Fourier instruments, feedback signs, bit ordering and reference tomography",
+    "tests/order_finding.rs: fixed N=15 full-register behavior and retained target/reference correlations",
+    "tests/qli_corpus.rs: algorithmic counterexamples and canonical controlled QPE",
+    "tests/checked_operations.rs: exact phase/Meaning, access and zero-width owner boundaries"
+  ],
+  "static_checks": {
+    "fmt": "passed",
+    "working_diff_whitespace": "passed",
+    "docs_links": "passed",
+    "production_coverage": "passed",
+    "verification_inventory": "passed",
+    "authoring_integrity": "56 records, 84 snapshots, 1320 observations; commands not replayed",
+    "constitutional_identity_and_continuity": "passed against reviewed base 38baae7d19535602b21270e11e97617d45205b37; no fresh Lean replay"
+  },
+  "limits": "The 52 existing ignored tests remain ignored; no ignore attribute, capacity, policy budget, dependency or native acceptance rule changed. Current production Rust/Lean sources are unchanged from the baseline; this packet changes four example files and three stale controlled assertions. General QFT, full source preservation, production-wide QS/PR/quantitative RS, exact-commit release gates and Issue completion are not claimed."
+}

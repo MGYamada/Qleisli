@@ -2,7 +2,7 @@ import Qleisli.HierarchicalGradient
 import QleisliKernel.Hierarchical.FourierControl
 
 /-! Discharge actual Fourier control/gradient equations from bounded inspection.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The exact diagonal is derived from physical bodies, not supplied as a premise. -/
 
 namespace Qleisli.HierarchicalFourierControl

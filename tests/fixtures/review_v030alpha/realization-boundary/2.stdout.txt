@@ -1,0 +1,1 @@
+16 target cases; 352 complex entries; maximum 5 physical qubits; phases/axes/clean workspace agree

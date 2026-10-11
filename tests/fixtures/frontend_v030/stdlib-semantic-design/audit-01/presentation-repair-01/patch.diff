@@ -1,0 +1,11 @@
+--- a/tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/README.md
++++ b/tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/README.md
+@@ -77,7 +77,7 @@
+ Names denote the mathematics; algorithm selection is separate policy. Generic
+ family identities own the canonical name, fixed specializations remain
+ subordinate where retained. Existing static declaration/call spelling is
+-qft[static N:Nat]/qft[N](q); angle brackets express semantic identity, not an
++`qft[static N:Nat]`/`qft[N](q)`; angle brackets express semantic identity, not an
+ implemented source call syntax. No aliases for retired arithmetic, transforms
+ or routines have a demonstrated requirement in the inspected record.
+ 

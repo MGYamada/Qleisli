@@ -1,0 +1,1 @@
+pub unitary fn f[const n:Nat,const m:Nat](q:Q<Bit>)->Q<Bit>{q}

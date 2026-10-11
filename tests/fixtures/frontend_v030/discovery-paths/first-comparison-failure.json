@@ -1,0 +1,11 @@
+{
+  "scope": "Recorded from the actual comparison assertion and diagnostic inspection; not a raw subprocess transcript",
+  "failed_contract": "Discovery path absent from separate selected-source/sized usage",
+  "after_repair_indices": [
+    10,
+    13,
+    14
+  ],
+  "native_invocations": 0,
+  "source_rejections_unchanged": true
+}

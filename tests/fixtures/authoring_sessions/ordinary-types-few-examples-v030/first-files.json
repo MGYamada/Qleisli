@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "recorded_utc": "2026-10-06T06:44:02.028993+00:00",
+  "context": "First authored response preserved before any actual check. Focused first sources only, not a full repository snapshot.",
+  "files": {
+    "attempt-01/copy-ordinary/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/copy-ordinary/main.qli": "7a2123c2082b1abbb449868357a5a1394b7b1fd6f8ea5fc2e185a252f4d14342",
+    "attempt-01/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-owner/main.qli": "4abe94caead6cc86f1e32236529112e7e7c19297e4ec858710e5afdc9b62c286",
+    "attempt-01/implicit-readout/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/implicit-readout/main.qli": "a46cbab063ea93b90beadb1465e42043e906aab2711f244b8b178b10ef19383f",
+    "attempt-01/observe-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/observe-pair/main.qli": "bf49b141a8d6d634022fa26050488613c0da85d410d0582dd0ee01c7be7f85f9",
+    "context.md": "2c3112e907065dc9eaf3f8398b423ad97876d9a10a4a2471db99e688710cae7a",
+    "predictions.json": "23bee2ec69cfe4150f3c0c17ce0ea1812f1b1b85fd207388d2be3a31da8a5a66"
+  }
+}

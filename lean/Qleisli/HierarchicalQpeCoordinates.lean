@@ -3,7 +3,7 @@ import Qleisli.HierarchicalRoutedPower
 import Qleisli.HierarchicalCircuitTrace
 
 /-! Ordered physical coordinates for phase-sensitive QPE composition.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Every H, controlled-provider power and inverse-Fourier equation remains an
 explicit component premise. No whole-circuit equation or checking flag is used
 as the meaning of a proposed QPE implementation.

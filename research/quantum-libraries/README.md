@@ -15,7 +15,7 @@ in the current default environment. The survey below retains its separate
 4.34.1 experiment and original validation scope.
 
 Qleisli's [license](../../LICENSE) and [attribution](../../NOTICE) apply to the
-original probes and this report: Apache-2.0, Copyright 2026 Masahiko G. Yamada.
+original probes and this report: Apache-2.0, Copyright 2026 Qleisli Project Contributors.
 No upstream implementation has been copied into this directory. Both surveyed
 repositories separately use Apache-2.0 and retain their own authorship.
 

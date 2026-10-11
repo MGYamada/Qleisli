@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 6.48s
+     Running tests/body_effects.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/body_effects-1bccd0daabefb9bb)
+     Running tests/isometry_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/isometry_source-8f0b8d5d516420ae)
+     Running tests/quantum_tuple_unitors.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_tuple_unitors-8c0d20f669306ca1)
+     Running tests/quantum_unit_maps.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_unit_maps-b2dbf4bb0faf0033)
+     Running tests/selected_source_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/selected_source_cli-27f8497ec1219a28)
+     Running tests/sized_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_source-0b3e9cf53d68ee71)

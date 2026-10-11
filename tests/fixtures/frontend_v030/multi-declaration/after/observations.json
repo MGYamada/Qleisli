@@ -1,0 +1,62 @@
+[
+  {
+    "case": "duplicate-siblings",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/duplicate-siblings/main.qli:49..50: duplicate declaration `f`\nsized.parse: main:49..50: name: duplicate declaration f\nfinite.check: Diagnostic { code: \"project\", message: \"duplicate declaration `f`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/duplicate-siblings/main.qli\", span: Span { start: 49, end: 50 }, line: 2, column: 12 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "import-collides-sibling",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-collides-sibling/main.qli:9..13: name `gate` collides with another declaration or import\nsized.parse: main:0..14: name: import shadows the local function\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-collides-sibling/main.qli\", span: Span { start: 9, end: 13 }, line: 1, column: 10 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "import-rename-still-unsupported",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-rename-still-unsupported/main.qli:14..16: parse error: expected `;`, found identifier\nsized.parse: main:14..16: parse: expected `;`, found identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `;`, found identifier\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-rename-still-unsupported/main.qli\", span: Span { start: 14, end: 16 }, line: 1, column: 15 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "import-terminal-bindings",
+    "stdout": "finite.load: ok, 3 local modules\nsized.parse: ok\nfinite.check: ok\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "mutual-siblings",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/mutual-siblings/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "private-forward-sibling",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: ok\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "private-imported-sibling",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-imported-sibling/main.qli:9..15: `dep::helper` is not public\nsized.parse: main:0..16: visibility: dependency dep::helper is private\nfinite.check: Diagnostic { code: \"project\", message: \"`dep::helper` is not public\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-imported-sibling/main.qli\", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "public-sibling-provider",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: ok\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "same-name-separate-modules",
+    "stdout": "finite.load: ok, 3 local modules\nsized.parse: ok\nfinite.check: ok\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "unused-bad-function",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:69..73: ownership: function leaves live quantum arguments unconsumed\nfinite.check: Diagnostic { code: \"unsupported\", message: \"empty tuple type syntax is outside the finite profile; use Unit\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/unused-bad-function/main.qli\", span: Span { start: 67, end: 69 }, line: 2, column: 30 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  }
+]

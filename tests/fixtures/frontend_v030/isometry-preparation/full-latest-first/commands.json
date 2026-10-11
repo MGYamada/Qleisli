@@ -1,0 +1,16 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--all-targets"
+    ],
+    "exit_code": 101,
+    "seconds": 66.39119387499522,
+    "recorded_utc": "2026-10-05T14:58:35.161072+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt",
+    "timed_out": false
+  }
+]

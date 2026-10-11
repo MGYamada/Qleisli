@@ -1,0 +1,28 @@
+{
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "seconds": 0.019840541994199157
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_primitive_catalog.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/review_v030alpha/hosted-catalog-37257529673/validation/mutation.json"
+      ],
+      "exit": 0,
+      "seconds": 4.400057167047635
+    }
+  ],
+  "sources_stable": true,
+  "source_count": 101,
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "scope": "Actual compile-time omission calibration on current tuple candidate, temporary copied crate and target automatically removed by existing harness; not a new native acceptance or runtime test."
+}

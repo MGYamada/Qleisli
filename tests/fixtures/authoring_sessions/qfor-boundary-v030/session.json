@@ -1,0 +1,128 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#194 explicit qfor quantum threading and ordinary for boundary",
+  "baseline_commit": "ce59bbb1463f30ea4162ef8facd82cb3f0695e69",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/specification access; exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Twelve complete desired/control/negative sources retained before qfor implementation. No generic QFT source.",
+      "sha256": {
+        "zero-owner/main.qli": "852bc5585596abafc831498d6d88f667feed337c27459608e95fee5508443749",
+        "ghz/main.qli": "1bcd781baa4ec95243b05fcfc5f9ec5f315156713802b761b447820e206754e5",
+        "qpe/main.qli": "6786dc2e1d5bc6c1cef15515017b279b9a7b8f4e0fee5beaf7253fa167c8e1db",
+        "arithmetic/main.qli": "ad5e16fea352fea92475c04c1eb199bae407aca15a07c927561101214fcfd46c",
+        "mixed-carry/main.qli": "73b9e1a682f40ce8f5b55063b1984e26388726f467e4c28a656bdfcb1a01c22e",
+        "unit-owner/main.qli": "6b52893b323cc31f41f30766b7c7ee19b33d828f1c5ce74ac39cee61c303ecb0",
+        "ordinary-control/main.qli": "39a3d1c3af7d2db6df6c747e020f1125db14a66f29f548e20928052f2a7a4036",
+        "old-quantum-for/main.qli": "e69dd2410a29b90a9101c3b95dde5c08e438f9a657507f32850854bbbc61b6d4",
+        "ordinary-qfor/main.qli": "4978ed4f6fd3dac5f1e25bbac1b6e20b70c2148db658e20a00d4b064622e4959",
+        "hidden-owner/main.qli": "0d570cbca3056545ccfcc15434db18e089503f5c3c282ddea39d6ef9c6918995",
+        "carry-shape/main.qli": "28451650b3322ddc437a3227113472c569fcc7b739fe2b82d82e216b7f04b427",
+        "zero-missing-yield/main.qli": "19467567808f4bab3a8891b4418a547e784f2a380362b6ebf45b0d3b2328668a"
+      },
+      "observations": [
+        "observations-before/zero-owner-finite.json",
+        "observations-before/zero-owner-selected.json",
+        "observations-before/ghz-finite.json",
+        "observations-before/ghz-selected.json",
+        "observations-before/qpe-finite.json",
+        "observations-before/qpe-selected.json",
+        "observations-before/arithmetic-finite.json",
+        "observations-before/arithmetic-selected.json",
+        "observations-before/mixed-carry-finite.json",
+        "observations-before/mixed-carry-selected.json",
+        "observations-before/unit-owner-finite.json",
+        "observations-before/unit-owner-selected.json",
+        "observations-before/ordinary-control-finite.json",
+        "observations-before/ordinary-control-selected.json",
+        "observations-before/old-quantum-for-finite.json",
+        "observations-before/old-quantum-for-selected.json",
+        "observations-before/ordinary-qfor-finite.json",
+        "observations-before/ordinary-qfor-selected.json",
+        "observations-before/hidden-owner-finite.json",
+        "observations-before/hidden-owner-selected.json",
+        "observations-before/carry-shape-finite.json",
+        "observations-before/carry-shape-selected.json",
+        "observations-before/zero-missing-yield-finite.json",
+        "observations-before/zero-missing-yield-selected.json",
+        "observations-after/zero-owner-finite.json",
+        "observations-after/zero-owner-selected.json",
+        "observations-after/ghz-finite.json",
+        "observations-after/ghz-selected.json",
+        "observations-after/qpe-finite.json",
+        "observations-after/qpe-selected.json",
+        "observations-after/arithmetic-finite.json",
+        "observations-after/arithmetic-selected.json",
+        "observations-after/mixed-carry-finite.json",
+        "observations-after/mixed-carry-selected.json",
+        "observations-after/unit-owner-finite.json",
+        "observations-after/unit-owner-selected.json",
+        "observations-after/ordinary-control-finite.json",
+        "observations-after/ordinary-control-selected.json",
+        "observations-after/old-quantum-for-finite.json",
+        "observations-after/old-quantum-for-selected.json",
+        "observations-after/ordinary-qfor-finite.json",
+        "observations-after/ordinary-qfor-selected.json",
+        "observations-after/hidden-owner-finite.json",
+        "observations-after/hidden-owner-selected.json",
+        "observations-after/carry-shape-finite.json",
+        "observations-after/carry-shape-selected.json",
+        "observations-after/zero-missing-yield-finite.json",
+        "observations-after/zero-missing-yield-selected.json",
+        "observations-after/attempt-01-zero-owner-run-selected.json",
+        "observations-after/attempt-01-ghz-run-selected.json",
+        "observations-after/attempt-01-arithmetic-run-selected.json",
+        "observations-after/attempt-01-mixed-carry-run-selected.json",
+        "observations-after/attempt-01-ordinary-control-run-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Repair three author mistakes after actual AFTER checks: phase primitive is not a direct operation provider, so use an ordinary wrapper; unit requires its explicit ordinary Unit argument. Preserve all attempt-01 bytes and failures.",
+      "sha256": {
+        "qpe/main.qli": "d54f87c320e37b2f3ce916fe6e714d337281cf5e0e15b304532c041c7f50ef4b",
+        "unit-owner/main.qli": "549cc13f54c3f3248e3efccfae13bdcbe97540e06cdf39f6cca6e7ea6582f010",
+        "carry-shape/main.qli": "19dfc68070eb52ec9bf1b5f0ef6d9524338a8155a55fc21ba58746707482b945"
+      },
+      "observations": [
+        "observations-after/attempt-02-qpe-check-finite.json",
+        "observations-after/attempt-02-qpe-check-selected.json",
+        "observations-after/attempt-02-unit-owner-check-finite.json",
+        "observations-after/attempt-02-unit-owner-check-selected.json",
+        "observations-after/attempt-02-carry-shape-check-finite.json",
+        "observations-after/attempt-02-carry-shape-check-selected.json",
+        "observations-after/attempt-02-qpe-run-selected.json",
+        "observations-after/attempt-02-unit-owner-run-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Actual attempt-02 selected-source lowering rejects controlled ordinary quarter provider. Use the existing direct controlled_phase primitive for this bounded client; preserve the unsupported source and diagnostics. No new provider support is claimed.",
+      "sha256": {
+        "qpe/main.qli": "0a497d7dbc9f9458b6787d3022cbceab6b62c9d27bfda4274f6053eeaf6f8bc6"
+      },
+      "observations": [
+        "observations-after/attempt-03-qpe-check-finite.json",
+        "observations-after/attempt-03-qpe-check-selected.json",
+        "observations-after/attempt-03-qpe-run-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-04",
+      "reason": "Direct dyadic controlled_phase also lacks closed finite lowering in attempt-03. Retain both unsupported phase clients. Use the existing CNOT phase-kickback eigenstate for a one-bit exact pi-phase estimation client, with independently expected output (1,1). No dyadic controlled provider extension is claimed.",
+      "sha256": {
+        "qpe/main.qli": "f2f3a5fba457dbf207c5ade64fe09b226f7e2fbfab2f4fbae19f1cf7690b43e9"
+      },
+      "observations": [
+        "observations-after/attempt-04-qpe-check-finite.json",
+        "observations-after/attempt-04-qpe-check-selected.json",
+        "observations-after/attempt-04-qpe-run-selected.json"
+      ]
+    }
+  ],
+  "scope": "Original desired sources and actual baseline observations, not blind model success, qfor semantics, source-preservation proof or Issue completion."
+}

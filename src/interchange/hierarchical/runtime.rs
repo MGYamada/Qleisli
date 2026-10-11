@@ -57,6 +57,19 @@ pub(super) struct Response {
 }
 
 fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
+    // Main rejects a product-version mismatch before dispatching to a mode,
+    // using the common failure frame. Only this exact failure is recognized;
+    // a generic success frame never authorizes hierarchical reconstruction.
+    if bytes == b"qleisli.qirf-native 1\nerror\nversion\n" {
+        return Err(Error::new(
+            "version",
+            format!(
+                "Lean {}: native checker product version does not match {}",
+                mode.description(),
+                env!("CARGO_PKG_VERSION")
+            ),
+        ));
+    }
     let text =
         std::str::from_utf8(bytes).map_err(|_| Error::format("invalid runtime response UTF-8"))?;
     let mut lines = text.split('\n');
@@ -163,6 +176,36 @@ mod response_diagnostics_tests {
     use super::{Mode, response_indices};
 
     #[test]
+    fn isometry_hierarchy_version_failure_is_explicit_and_never_accepts_generic_frames() {
+        for mode in [
+            Mode::Inspect,
+            Mode::Request,
+            Mode::Fourier,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            let error = response_indices(b"qleisli.qirf-native 1\nerror\nversion\n", mode)
+                .err()
+                .unwrap();
+            assert_eq!(error.code, "version");
+            assert!(
+                error
+                    .to_string()
+                    .contains("native checker product version does not match")
+            );
+            for frame in [
+                b"qleisli.qirf-native 1\nerror\nversion\nextra\n".as_slice(),
+                b"qleisli.qirf-native 1\nerror\nversion".as_slice(),
+                b"qleisli.qirf-native 1\nerror\ninvalid_ir\n".as_slice(),
+                b"qleisli.qirf-native 1\nok\n".as_slice(),
+                b"qleisli.qirf-native 2\nerror\nversion\n".as_slice(),
+            ] {
+                assert_eq!(response_indices(frame, mode).err().unwrap().code, "format");
+            }
+        }
+    }
+
+    #[test]
     fn native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
         for mode in [
             Mode::Inspect,
@@ -200,28 +243,11 @@ mod response_diagnostics_tests {
     #[cfg(unix)]
     #[test]
     fn nonzero_runtime_exit_preserves_framing_errors_and_checker_rejections() {
-        use std::{
-            fs,
-            os::unix::fs::PermissionsExt,
-            time::{SystemTime, UNIX_EPOCH},
-        };
-        let directory = std::env::temp_dir().join(format!(
-            "qleisli-runtime-frame-{}-{}",
-            std::process::id(),
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        ));
-        fs::create_dir(&directory).unwrap();
-        struct Cleanup(std::path::PathBuf);
-        impl Drop for Cleanup {
-            fn drop(&mut self) {
-                let _ = fs::remove_dir_all(&self.0);
-            }
-        }
-        let _cleanup = Cleanup(directory.clone());
-        let executable = directory.join("checker");
+        // Never rewrite an executable while parallel tests can spawn children:
+        // inherited write descriptors can cause Linux ETXTBSY even after the
+        // parent's write has closed. This immutable fixture varies via stdin.
+        let executable = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v029/framing-rejection.sh");
         for mode in [
             Mode::Inspect,
             Mode::Request,
@@ -229,19 +255,14 @@ mod response_diagnostics_tests {
             Mode::Instrument,
             Mode::QpeInstrument,
         ] {
-            let good = format!("{}\nerror\ncontract\n", mode.header());
-            for (reply, expected) in [
-                (good.clone(), "contract"),
-                (format!("{good}extra\n"), "format"),
-                (good.trim_end().to_owned(), "format"),
+            for (case, expected) in [
+                ("complete", "contract"),
+                ("extra", "format"),
+                ("missing-newline", "format"),
             ] {
-                fs::write(
-                    &executable,
-                    format!("#!/bin/sh\nprintf '%s' '{reply}'\nexit 1\n"),
-                )
-                .unwrap();
-                fs::set_permissions(&executable, fs::Permissions::from_mode(0o700)).unwrap();
-                let error = super::check(&executable, vec![], mode).err().unwrap();
+                let error = super::check(&executable, format!("{case}\n").into_bytes(), mode)
+                    .err()
+                    .unwrap();
                 assert_eq!(error.code, expected, "{}", error.message);
             }
         }

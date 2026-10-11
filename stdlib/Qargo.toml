@@ -2,7 +2,7 @@ schema-version = 2
 
 [qrate]
 name = "std"
-version = "0.2.9"
+version = "0.3.0-alpha"
 edition = "2026"
 
 [source]

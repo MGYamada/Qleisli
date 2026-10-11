@@ -1,0 +1,5 @@
+ INFO Book building has started
+ INFO Running the html backend
+ WARN unclosed HTML tag `<bit>` found in `reference/type-model.md` while exiting Paragraph
+HTML tags must be closed before exiting a markdown element.
+ INFO HTML book written to `/Users/masa/git/Qleisli/docs/../target/mdbook`

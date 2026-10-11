@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `use` or a function declaration",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
+          "start": 0,
+          "end": 2
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.00690462498459965,
+  "recorded_utc": "2026-10-05T08:32:04.928841+00:00",
+  "timestamp_note": "Clock observation after completion; not authenticated provenance."
+}

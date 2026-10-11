@@ -1,0 +1,273 @@
+{
+  "format": "qleisli.coherent-basis-corpus-before-observations",
+  "version": 1,
+  "started_utc": "2026-10-06T03:53:43.598917+00:00",
+  "ended_utc": "2026-10-06T03:53:46.706031+00:00",
+  "binary": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8"
+  },
+  "native": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "first_sources_sha256": "71dbee1670094b69dff88ada3e68c161662337b9886d412ffaa69c7fca6e47e9",
+  "sources": {
+    "qualtran/less_than2/kernel.qli": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20",
+    "qualtran/less_than2/main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+    "pennylane_demos/vqe_excitation/kernel.qli": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41",
+    "pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd"
+  },
+  "results": [
+    {
+      "project": "qualtran/less_than2",
+      "action": "check",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4249249590211548,
+      "recorded_utc": "2026-10-06T03:53:44.123890+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/qualtran-less_than2-check.stdout.txt",
+        "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+      },
+      "raw_stderr": {
+        "path": "observations-before/qualtran-less_than2-check.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    },
+    {
+      "project": "qualtran/less_than2",
+      "action": "run",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.3947219160036184,
+      "recorded_utc": "2026-10-06T03:53:44.618887+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/qualtran-less_than2-run.stdout.txt",
+        "sha256": "beb216c287401d7a1635fdbe4935c943e4cd0178b895755bf754a85326107dc5"
+      },
+      "raw_stderr": {
+        "path": "observations-before/qualtran-less_than2-run.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    },
+    {
+      "project": "qualtran/less_than2",
+      "action": "emit-ir",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than2",
+        "--output=/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/qualtran-less_than2.qirf",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.41409450001083314,
+      "recorded_utc": "2026-10-06T03:53:45.133041+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/qualtran-less_than2.qirf\"}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "emit-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "path": "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/qualtran-less_than2.qirf"
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/qualtran-less_than2-emit-ir.stdout.txt",
+        "sha256": "419d1f55c02baba5f370ee405e28e3f572946009c601cc5cd3c8ecf7999a18a3"
+      },
+      "raw_stderr": {
+        "path": "observations-before/qualtran-less_than2-emit-ir.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "action": "check",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.402018417022191,
+      "recorded_utc": "2026-10-06T03:53:45.633725+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-check.stdout.txt",
+        "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+      },
+      "raw_stderr": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-check.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "action": "run",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4151432089856826,
+      "recorded_utc": "2026-10-06T03:53:46.153644+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                true,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-run.stdout.txt",
+        "sha256": "6ab036d6040bdb4a2d5a12551e017ed9201a274e22c762abe7b2071aa6244b4c"
+      },
+      "raw_stderr": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-run.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "action": "emit-ir",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+        "--output=/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.3994165000040084,
+      "recorded_utc": "2026-10-06T03:53:46.655457+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf\"}}\n",
+      "stderr": "",
+      "parsed_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "emit-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "path": "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf"
+        }
+      },
+      "raw_stdout": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-emit-ir.stdout.txt",
+        "sha256": "bf0e6b8c9e253ed9e07a73b91b07a1959dd2ddf9e5d56b3c71c9a8200dd434d7"
+      },
+      "raw_stderr": {
+        "path": "observations-before/pennylane_demos-vqe_excitation-emit-ir.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity_checked_before_and_after": true
+    }
+  ],
+  "artifacts": {
+    "observations-before/artifacts/pennylane_demos-vqe_excitation.qirf": {
+      "sha256": "a3c16b61ee953917c7c51791b167093527cc389fedd66f8ce4807e3d4330badd",
+      "bytes": 1348
+    },
+    "observations-before/artifacts/qualtran-less_than2.qirf": {
+      "sha256": "9359fe6a1b6ef7bb2985fee84a1a4bbf0d69e3b47ec91e4149e39c01648dcbc5",
+      "bytes": 1266
+    }
+  },
+  "scope": "Six bounded actual OLD commands on existing 5/4-qubit finite corpus projects. No independent upstream oracle, theorem replay, build, new maximum case, guarantee admission or release validation."
+}

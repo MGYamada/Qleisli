@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub fn n(q: Q<Bit>) -> Q<Bit> { q }
+pub fn keep[static n: Nat](q: Q<Bit>) -> Q<Bit>
+requires Controlled(n) { q }
+pub fn main() -> Unit { () }

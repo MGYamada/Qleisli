@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/reset-result-discarded/main.qli:6:5: ownership: expression statement would discard quantum ownership; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.

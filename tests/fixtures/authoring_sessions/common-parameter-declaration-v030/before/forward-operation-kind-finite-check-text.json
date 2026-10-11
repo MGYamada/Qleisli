@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.011715542001184076,
+  "recorded_utc": "2026-10-05T17:12:03.520424+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "forward-operation-kind-finite-check-text.native.jsonl",
+  "stdout_raw": "forward-operation-kind-finite-check-text.stdout.txt",
+  "stderr_raw": "forward-operation-kind-finite-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ee9975d59bb43a695d2cc1cd411337c4e08cf7f337fe43c5ecb9701f5b32e2c5",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli:4:33: unsupported: register types are outside the finite lowering profile\n"
+}

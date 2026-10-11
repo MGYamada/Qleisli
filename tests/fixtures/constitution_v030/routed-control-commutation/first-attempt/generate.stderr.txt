@@ -1,0 +1,4 @@
+
+thread 'main' (11548498) panicked at /Users/masa/git/Qleisli/tests/fixtures/constitution_v030/routed-control-commutation/Generate.rs:9:39:
+called `Result::unwrap()` on an `Err` value: Error { code: "name", module: Some("main"), span: Span { start: 137, end: 155 }, message: "unresolved function controlled" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

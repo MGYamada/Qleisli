@@ -1,0 +1,429 @@
+{
+  "format": "qleisli.reference-meaning-local-validation",
+  "version": 1,
+  "base_commit": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+  "adoption": "https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6103631623",
+  "scope": "Closed principal-Unitary reference Meanings, mixed monomial/reference compose and tensor, original artifact/dependency attachment in both concrete source adapters",
+  "checked_changed_rust_sources": {
+    "src/frontend/ast.rs": "64867002103b64537366b9d474d6603f8f6c5bdff6ca0a55bff3a93da892b072",
+    "src/frontend/check.rs": "79e54ea7b2bee0ab230992ad9f937e388842c005340f82e6bc3a4be74976c988",
+    "src/frontend/check/body.rs": "ab3c60b8a8e2093b981604032074419623583a63cc35e8a852ceb0ac836585c3",
+    "src/frontend/check/body/special.rs": "5ef410fd47e232a71a820d8c2e576dd38b5bae1c5c1677eb13b7fef33e0d7032",
+    "src/frontend/check/declarations.rs": "592354b281833e171ded7003db5703c15d1e0b2a6a06e40d2b5490447a0d86d1",
+    "src/frontend/compile/lower/function_contract.rs": "15a6393a10256e07856959a069b31147d5e8b2db3ac6951b0318db68ee89f435",
+    "src/frontend/compile/mod.rs": "48a3b08fba3c18c01e4e379ddae6448b40334b3c9ceec65c19a1cb5acc256d50",
+    "src/frontend/compile/operations.rs": "bd48bb0fa042a524d175c7612875630c3b7c7d59da216a21211c8524a30294ea",
+    "src/frontend/documentation.rs": "239495d8a77186891cfb148955a57504a288fcd03b3743259608a3c56696d9c8",
+    "src/frontend/meaning.rs": "0eb9148a353a9e468caa573f2cf0bdad3eee4899af3c4873a8de4a18e0b23c9c",
+    "src/frontend/mod.rs": "0217e2e36230b516646fcae1e8f80dbfdc247e2a0511fa523458e58318013b17",
+    "src/frontend/parser.rs": "2b45b2e6520329112a4672deb9f7d3f4788c9ab15166076fade1323d1ab56672",
+    "src/frontend/resolve/locals.rs": "e2e274cc224b82364fa9f790eb538d89e6821a0c2157eb217569a9f409a62d0c",
+    "src/frontend/specialize/elaborate.rs": "368e920c6f88a180df10fc196c3722490ddca680b58b488e9be7122fb8119de6",
+    "src/frontend/specialize/lower.rs": "b4d6844043add97171a4690924dac2e88b42483c6eb4b2f67615b7759d0b0668",
+    "src/frontend/specialize/meaning.rs": "a6d5291ac476383694326631e4f01589470d60e66b59b78738399ea0328d0f2b",
+    "src/frontend/specialize/raw.rs": "7d2496dc4407da60d1c80b1ecf29f2c949c46b0db2d5c40cfbfdd65aacef4fd1",
+    "src/frontend/specialize/raw/circuit.rs": "ca0941db7e2e8dbdd0d88ccdde3bb0b82ae2da52c6dd61ca2d900f23cee657cd",
+    "src/frontend/specialize/raw/contracts.rs": "9d3688bec16d09f61a9fcb3c5964ba7a8a8c1e72fa328425cbbe327531bafa0a",
+    "src/frontend/specialize/raw/preservation.rs": "be7875ee6735e4b31fc2476228c92457fb98ed2a0d94733f9e6a3aa9679e7010",
+    "src/frontend/specialize/raw/preservation/access.rs": "e6e5f85f2adeee22da5cf24eb0939f6acefb19e8381cb78bc31973a712e1c08d",
+    "src/frontend/specialize/raw/preservation/access_meaning.rs": "7c470677efcf7086ddacd21269b615b0f85715a51075a3637948e1fdc3cf73bf",
+    "tests/reference_meanings.rs": "3cab990de54616e87e67ecf8add09c1da3e0fa6348504193b4c3c7c6278a686b"
+  },
+  "runs": [
+    {
+      "toolchain": "stable",
+      "executables": {
+        "cargo": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+          "sha256": "fc7aa5077deca8abc0651f329e8ec1d968f520e996a93b428f9935014362b382",
+          "version": "cargo 1.99.0 (5f94df478 2026-08-27)"
+        },
+        "rustc": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "sha256": "dd6f58440b3418aa9157ae3f05d71eecff741ca41bc4eec120e7e8f2d933b9a0",
+          "version": "rustc 1.99.0 (b940084d7 2026-09-28)"
+        },
+        "rustdoc": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustdoc",
+          "sha256": "6fbad8d9ad24774d81de7314568739cf9ed1d46636bd2d65156694637897aeab",
+          "version": "rustdoc 1.99.0 (b940084d7 2026-09-28)"
+        },
+        "cargo-clippy": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-clippy",
+          "sha256": "b28b16ce5c703577f1b0ccc7b3af1792586da9231619566ab3cd4e1a36551759",
+          "version": "clippy 0.1.99 (b940084d7e 2026-09-28)"
+        },
+        "clippy-driver": {
+          "path": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/clippy-driver",
+          "sha256": "0469c2c76677f536fb9851501ab39216a25ab4963e2878d4ad1eee94a8952889",
+          "version": "clippy 0.1.99 (b940084d7e 2026-09-28)"
+        }
+      },
+      "source_before": {
+        "head": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+        "diff_sha256": "931e4ce1794ef7d81d08762d6b1fabf48c20be2f39df954e476193f6848d872d",
+        "untracked_sha256": {
+          "src/frontend/meaning.rs": "0eb9148a353a9e468caa573f2cf0bdad3eee4899af3c4873a8de4a18e0b23c9c",
+          "tests/reference_meanings.rs": "3cab990de54616e87e67ecf8add09c1da3e0fa6348504193b4c3c7c6278a686b"
+        }
+      },
+      "source_unchanged": true,
+      "kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+      "checks": [
+        {
+          "command": [
+            "rustup",
+            "run",
+            "stable",
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--lib",
+            "--test",
+            "frontend_ownership_differential",
+            "--test",
+            "function_evidence",
+            "--test",
+            "function_contracts",
+            "--test",
+            "meaning_evidence",
+            "--test",
+            "checked_operations",
+            "--test",
+            "operation_parameters",
+            "--test",
+            "static_operations",
+            "--test",
+            "selected_source_cli",
+            "--test",
+            "source_judgments",
+            "--test",
+            "sized_source",
+            "--test",
+            "selected_function_contracts",
+            "--test",
+            "reference_meanings",
+            "--test",
+            "classical_functions",
+            "--test",
+            "general_operation_arrows",
+            "--test",
+            "exclusive_access"
+          ],
+          "status": "passed",
+          "duration_seconds": 643.099531874992,
+          "exit": 0,
+          "log": "/private/tmp/qleisli-reference-meaning-validation/reference-permitted-stable-test.log",
+          "log_sha256": "2c6235e6267dfad5097f5093a51159ec23cd5b228fa35512eac6af0d8a99672e",
+          "test_targets": 16,
+          "passed": 451,
+          "failed": 0,
+          "existing_ignored": 7
+        },
+        {
+          "command": [
+            "rustup",
+            "run",
+            "stable",
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "duration_seconds": 2.297607208020054,
+          "exit": 0,
+          "log": "/private/tmp/qleisli-reference-meaning-validation/reference-permitted-stable-clippy.log",
+          "log_sha256": "f02dbd83fb2053bc69cc5f51da089f09417289d933b1e2525d05e15f7b43cd9f"
+        }
+      ],
+      "free_bytes_before": 12923154432,
+      "free_bytes_after": 12806463488
+    },
+    {
+      "toolchain": "1.85.0",
+      "executables": {
+        "cargo": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+          "sha256": "dcfda0c91c578ea2a199cb2af9c53796711607cbd8f8ea618dc87dc0febae2cf",
+          "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)"
+        },
+        "rustc": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+          "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+          "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+        },
+        "rustdoc": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustdoc",
+          "sha256": "faceed3e0803a6cdff50d5aa76de747a4607534b18046e2b128728175b32d854",
+          "version": "rustdoc 1.85.0 (4d91de4e4 2025-02-17)"
+        },
+        "cargo-clippy": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo-clippy",
+          "sha256": "3a229c999683281d5ad907b4100727053abbeffe26f42accb1b5ca4d45db8f52",
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)"
+        },
+        "clippy-driver": {
+          "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/clippy-driver",
+          "sha256": "2f8420b621371f029bf228e7768231ce529519535445a4c854fa487c1094dc12",
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)"
+        }
+      },
+      "source_before": {
+        "head": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+        "diff_sha256": "931e4ce1794ef7d81d08762d6b1fabf48c20be2f39df954e476193f6848d872d",
+        "untracked_sha256": {
+          "src/frontend/meaning.rs": "0eb9148a353a9e468caa573f2cf0bdad3eee4899af3c4873a8de4a18e0b23c9c",
+          "tests/reference_meanings.rs": "3cab990de54616e87e67ecf8add09c1da3e0fa6348504193b4c3c7c6278a686b"
+        }
+      },
+      "source_unchanged": true,
+      "kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+      "checks": [
+        {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--lib",
+            "--test",
+            "frontend_ownership_differential",
+            "--test",
+            "function_evidence",
+            "--test",
+            "function_contracts",
+            "--test",
+            "meaning_evidence",
+            "--test",
+            "checked_operations",
+            "--test",
+            "operation_parameters",
+            "--test",
+            "static_operations",
+            "--test",
+            "selected_source_cli",
+            "--test",
+            "source_judgments",
+            "--test",
+            "sized_source",
+            "--test",
+            "selected_function_contracts",
+            "--test",
+            "reference_meanings",
+            "--test",
+            "classical_functions",
+            "--test",
+            "general_operation_arrows",
+            "--test",
+            "exclusive_access"
+          ],
+          "status": "passed",
+          "duration_seconds": 646.4930129999993,
+          "exit": 0,
+          "log": "/private/tmp/qleisli-reference-meaning-validation/reference-permitted-1.85.0-test.log",
+          "log_sha256": "e469ede4d446b4d4985d9870bfe102ac916763625ca4137efe27e397609402e3",
+          "test_targets": 16,
+          "passed": 451,
+          "failed": 0,
+          "existing_ignored": 7
+        },
+        {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "duration_seconds": 1.6995831669773906,
+          "exit": 0,
+          "log": "/private/tmp/qleisli-reference-meaning-validation/reference-permitted-1.85.0-clippy.log",
+          "log_sha256": "87da7d94b4d1e8ad746bce4a3e16bfd3103926c6d003808c5a2a630eecc08659"
+        }
+      ],
+      "free_bytes_before": 12915998720,
+      "free_bytes_after": 12803780608
+    }
+  ],
+  "ownership": {
+    "cases": 4000,
+    "seed": "0x514c4549534c4932",
+    "order_and_expected_results": "unchanged",
+    "public_source_calls": "both existing public paths for every case; no acceptance-result cache",
+    "native_invocation_count": "not separately instrumented in this unit"
+  },
+  "sandbox_failures": [
+    {
+      "toolchain": "stable",
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--lib",
+        "--test",
+        "frontend_ownership_differential",
+        "--test",
+        "function_evidence",
+        "--test",
+        "function_contracts",
+        "--test",
+        "meaning_evidence",
+        "--test",
+        "checked_operations",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "static_operations",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "source_judgments",
+        "--test",
+        "sized_source",
+        "--test",
+        "selected_function_contracts",
+        "--test",
+        "reference_meanings",
+        "--test",
+        "classical_functions",
+        "--test",
+        "general_operation_arrows",
+        "--test",
+        "exclusive_access"
+      ],
+      "exit": 101,
+      "log": "/private/tmp/qleisli-reference-meaning-validation/reference-exact-stable-test.log",
+      "log_sha256": "9f3bce2f4e2999ea27939b911a86739e1c993c8b4c9b61c80b951bd4234941a9",
+      "result": "166 passed; 1 failed; 3 ignored; Cargo stopped before integration targets",
+      "reason": "Sandbox denied ps at src/interchange/process.rs:225 (Operation not permitted). Same complete commands later passed with process-inspection permission; no code/test change."
+    },
+    {
+      "toolchain": "1.85.0",
+      "command": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--lib",
+        "--test",
+        "frontend_ownership_differential",
+        "--test",
+        "function_evidence",
+        "--test",
+        "function_contracts",
+        "--test",
+        "meaning_evidence",
+        "--test",
+        "checked_operations",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "static_operations",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "source_judgments",
+        "--test",
+        "sized_source",
+        "--test",
+        "selected_function_contracts",
+        "--test",
+        "reference_meanings",
+        "--test",
+        "classical_functions",
+        "--test",
+        "general_operation_arrows",
+        "--test",
+        "exclusive_access"
+      ],
+      "exit": 101,
+      "log": "/private/tmp/qleisli-reference-meaning-validation/reference-exact-1.85.0-test.log",
+      "log_sha256": "0572ad0d4308cc44168fe29b18431d9ef2cab7be454c6087dc92afcd21853a21",
+      "result": "166 passed; 1 failed; 3 ignored; Cargo stopped before integration targets",
+      "reason": "Sandbox denied ps at src/interchange/process.rs:225 (Operation not permitted). Same complete commands later passed with process-inspection permission; no code/test change."
+    }
+  ],
+  "shared_checks": [
+    {
+      "group": "source-integrity",
+      "status": "passed",
+      "commands": 5,
+      "binding": {
+        "head": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+        "working_inputs_sha256": "9a8dc32c8efb046fe69f51359178c43b26fb2fef1da4b52b6e1b662d482f5ac4"
+      },
+      "result": "/private/tmp/qleisli-reference-source-integrity/results.json",
+      "result_sha256": "b15d5c89b88bddaa89119366866462aa78687ab860f7bf201854a62bbca7d2a7"
+    },
+    {
+      "group": "book",
+      "status": "passed",
+      "commands": 3,
+      "binding": {
+        "head": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+        "working_inputs_sha256": "9a8dc32c8efb046fe69f51359178c43b26fb2fef1da4b52b6e1b662d482f5ac4"
+      },
+      "result": "/private/tmp/qleisli-reference-book-pinned/results.json",
+      "result_sha256": "e1cbe58df5049af1d6160d2feee0bd08da9ebaa1e80e5f36339199a3752a2b90"
+    },
+    {
+      "group": "repository-integrity",
+      "status": "passed",
+      "commands": 34,
+      "binding": {
+        "head": "eb56721b675e0adb085fc661609c0ba26671f9cf",
+        "working_inputs_sha256": "9a8dc32c8efb046fe69f51359178c43b26fb2fef1da4b52b6e1b662d482f5ac4"
+      },
+      "result": "/private/tmp/qleisli-reference-repository-integrity/results.json",
+      "result_sha256": "010609d543a5d0dbabca108e657a9194728e2a0fb25642647982a00b8741142a"
+    }
+  ],
+  "constitutional_check": {
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "db526c9b2f863e120ddaa87f06573271c7d57288"
+    ],
+    "exit": 0,
+    "scope": "Identity and current evidence continuity; not a fresh Lean replay"
+  },
+  "test_authoring_corrections": [
+    "Initial helper probes used an unimported/obsolete apply form, invalid controlled argument grouping and an unavailable Exact API; corrected to existing canonical APIs before the ten-test pass.",
+    "Static helper rejection occurs at the earlier static rule, not the predicted type rule; the assertion was corrected to the actual rule.",
+    "Identity-reference target preparation may have no operation bindings; tests now preserve that distinction.",
+    "These are test-authoring errors, not native semantic passes. No historical source or observation was replaced."
+  ],
+  "tool_limitation": "Installed Rust 1.99.0 rust-objcopy emitted a debug-strip warning because its libLLVM.dylib was unavailable during build. Compilation/tests and all-target Clippy passed; no repository checking rule or test was bypassed.",
+  "metadata_after_tests": "Only documentation/session/validation records were subsequently updated. Changed Rust source hashes were rechecked unchanged; final source-integrity and book checks are recorded separately in the Issue/PR.",
+  "remaining": [
+    "Instrument Meaning and independent user-selected observing requests",
+    "Exact QFT2/QFT3 specification obligations, distinct from excluded generic QFT implementation",
+    "General same-basis matrix-versus-composite hierarchy equality",
+    "General AST/source preservation, native compiler/runtime proof, QS/PR/RS/EXACT completion, release gates"
+  ],
+  "not_run_for_this_working_unit": [
+    "Full Rust workspace/native comparison inventory and package/install",
+    "New Lean build/audit/replay: no Lean executable/proof changes in this unit",
+    "Hosted CI for reference-Meaning changes: #57 completion run applies only to the base commit"
+  ],
+  "timing": "Concurrent validation with 451 tests per toolchain; not a controlled performance comparison with earlier 343-test runs",
+  "logs_policy": "Routine complete logs remain outside fixtures; this focused record retains their digests and commands."
+}

@@ -4,7 +4,7 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (q, r) = cnot(h(init0()), init0());
     let (b, r) = feedback(q, r);
     (b, measure_z(r))

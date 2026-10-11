@@ -1,0 +1,49 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/reflection",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T00:32:33Z",
+  "recorded_utc_note": "UTC clock observation immediately before transcribing these retained events. This is recording time, not the unavailable execution timestamp.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "missing module `std::reflection`",
+        "primary": {
+          "path": "main.qli",
+          "start": 223,
+          "end": 261,
+          "line": 4,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "raw_stdout": "reflection.stdout.txt",
+  "raw_stderr": "reflection.stderr.txt",
+  "seconds": 0.006,
+  "capture": "capture.json",
+  "binary": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "ab944ab6f1bc7342ec1dedeea5b6350d1b0e5cdc8c487d9ef1ba3dc08022c094"
+  },
+  "native": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "git_head": "7f6529ef93838d565552c3f501ce016ef1d1d2b4",
+  "source_state_note": "Actual checks before #317 namespace migration; the CLI was built for local MSRV all-targets validation. Its source has the reviewed uncommitted empty-pattern diagnostic repair. These are source discovery observations, not semantic oracles or issue completion.",
+  "scope": "Actual source-discovery check. Raw source/CLI/native identities and diagnostic results are distinct; this record is not a complete compiled-source closure, native binary attestation, semantic oracle, execution result, proof or Issue completion."
+}

@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/runtime-nested",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T17:13:54.107682+00:00",
+  "elapsed_seconds": 0.004786000004969537,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "empty tuple patterns are outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 131,
+          "end": 133,
+          "line": 2,
+          "column": 58
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"empty tuple patterns are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":131,\"end\":133,\"line\":2,\"column\":58},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "source_sha256": "85ca642388847b4025addf0852d12a67abf963cb6bf770e35a60cbfee88c2bba",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "3dfd46195b43c254f8a21635b7462d28467069a162f6f02cdbf1207fd1229be0",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+}

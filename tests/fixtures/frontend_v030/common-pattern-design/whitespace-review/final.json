@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 0,
+  "stdout": "final.stdout.txt",
+  "stderr": "final.stderr.txt",
+  "observed_utc": "2026-10-05T16:59:23.079076+00:00",
+  "earlier_attempts_preserved": true,
+  "repair": "Also preserve exactly the two actual diagnostic transcripts containing literal +space patch-context lines; no raw byte normalization or general source exception."
+}

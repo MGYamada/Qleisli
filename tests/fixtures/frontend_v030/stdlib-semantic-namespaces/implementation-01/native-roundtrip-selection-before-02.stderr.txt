@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.04s
+     Running tests/native_roundtrip.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/native_roundtrip-871ae3a47fa5c635)
+
+thread 'compiled_programs_reencode_exactly_and_caches_match_implementations' (17203381) panicked at tests/native_roundtrip.rs:194:74:
+called `Result::unwrap()` on an `Err` value: CompileError { code: Project, path: "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2/kernel.qli", span: Span { start: 469, end: 498 }, line: 9, column: 1, message: "missing module `std::routines`" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test native_roundtrip`

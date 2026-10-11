@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/structured-exit-v030/attempt-02/early-return",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-08T19:32:13.642611+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `}`, found identifier",
+        "primary": {
+          "path": "main.qli",
+          "start": 40,
+          "end": 41,
+          "line": 1,
+          "column": 41
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

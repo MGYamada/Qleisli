@@ -1,0 +1,380 @@
+[
+  {
+    "case": "empty-specialization-reference",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 37..38 expected a static operation description\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 38..39 static arguments require a call\nsized: error parse 38..39 static arguments require a call\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "fold-empty-yield",
+    "source": "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 40..41 unexpected character `.`\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 61..62 expected `(`, found `}`\nsized: error parse 61..62 expected `(`, found `}`\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "ordinary-for-name",
+    "source": "pub unitary fn for(q:Q<Bit>)->Q<Bit>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "ordinary-yield-name",
+    "source": "pub unitary fn f(yield:Q<Bit>)->Q<Bit>{yield}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: error parse 44..45 yield is only valid in a static fold\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "paren-natural",
+    "source": "pub unitary fn f[static n:Nat](q:Q<Bits<(n)>>)->Q<Bits<n>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 26..29 expected `Op`, found identifier\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-30",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{((((((((((((((((((((((((((((((q))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-30",
+    "source": "pub unitary fn f(q:Q<Bits<((((((((((((((((((((((((((((((1))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-60",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-60",
+    "source": "pub unitary fn f(q:Q<Bits<((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-61",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-61",
+    "source": "pub unitary fn f(q:Q<Bits<(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-62",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: ok declarations=1\nsized: ok\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-62",
+    "source": "pub unitary fn f(q:Q<Bits<((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: ok\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 88..89 syntax nesting exceeds the initial 64-level limit\nsized: error limit 88..89 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-63",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-63",
+    "source": "pub unitary fn f(q:Q<Bits<(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: error limit 89..90 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 88..89 syntax nesting exceeds the initial 64-level limit\nsized: error limit 88..89 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-64",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-64",
+    "source": "pub unitary fn f(q:Q<Bits<((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: error limit 89..90 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 88..89 syntax nesting exceeds the initial 64-level limit\nsized: error limit 88..89 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-65",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-65",
+    "source": "pub unitary fn f(q:Q<Bits<(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: error limit 89..90 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 88..89 syntax nesting exceeds the initial 64-level limit\nsized: error limit 88..89 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "group-80",
+    "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((q))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 98..99 syntax nesting exceeds the initial 64-level limit\nsized: error limit 98..99 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "case": "natural-group-80",
+    "source": "pub unitary fn f(q:Q<Bits<((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((1))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))>>)->Q<Bits<1>>{q}",
+    "observations": [
+      {
+        "stage": "before",
+        "exit": 0,
+        "stdout": "finite: error 21..25 expected `(`, found identifier\nsized: error limit 89..90 sized syntax nesting exceeds 64\n",
+        "stderr": ""
+      },
+      {
+        "stage": "after",
+        "exit": 0,
+        "stdout": "finite: error 88..89 syntax nesting exceeds the initial 64-level limit\nsized: error limit 88..89 syntax nesting exceeds the initial 64-level limit\n",
+        "stderr": ""
+      }
+    ]
+  }
+]

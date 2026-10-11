@@ -1,0 +1,15 @@
+//! Teleport a supplied input, preserving its correlations with any reference.
+//! The ideal corrected branch for each two-bit message has weight 1/4.
+//! This description is a protocol contract, not a theorem supplied by typing.
+use bell::prepare;
+use bell::measure;
+use corrections::pauli;
+
+/// Consume psi; return ((phase bit, parity bit), the corrected receiver).
+/// psi and the sender's Bell half are measured; the receiver is a new owner.
+pub observe fn teleport(psi: Q<Bit>) -> ((CBit, CBit), Q<Bit>) {
+    let (alice, bob) = prepare();
+    let (phase_bit, parity_bit) = measure(psi, alice);
+    let bob = pauli(phase_bit, parity_bit, bob);
+    ((phase_bit, parity_bit), bob)
+}

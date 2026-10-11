@@ -1,0 +1,14 @@
+{
+  "format": "qleisli.guarantee-ledger",
+  "version": 1,
+  "edition": "2026",
+  "status": "bootstrap-awaiting-initial-interpretations",
+  "ratification": {
+    "path": "governance/ratification-2026.json",
+    "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+  },
+  "binding_interpretations": [],
+  "pending_obligations": [],
+  "discharged_guarantees": [],
+  "scope": "No formal guarantee has yet been admitted to this constitutional ledger. Existing proofs and the open QS/PR/RS duties retain their recorded status outside this bootstrap inventory. Empty lists neither discharge nor waive those duties."
+}

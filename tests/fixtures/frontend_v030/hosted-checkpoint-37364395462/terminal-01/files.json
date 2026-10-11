@@ -1,0 +1,22 @@
+{
+  "files": {
+    "README.md": {
+      "sha256": "ba825c5d302fdc786c5fe2d97934383483216dbf10dce5a2d55bfe351a0ee7b8",
+      "bytes": 1567
+    },
+    "normalized-jobs.json": {
+      "sha256": "255903f4655996d6fba67e9176d85b4fde4497a317781a72a601f701f48a69e6",
+      "bytes": 38088
+    },
+    "provenance.json": {
+      "sha256": "be3e2acf3ad1f6b21a257d5e0b43b568be8a92488e0456d1210066e38d31bfa5",
+      "bytes": 447
+    },
+    "run.json": {
+      "sha256": "d9d2c56180340b8a83a7b1797653a7eaa2c6326b708364d0d85a22756c798588",
+      "bytes": 12394
+    }
+  },
+  "self_excluded": "files.json",
+  "scope": "Terminal metadata packet only."
+}

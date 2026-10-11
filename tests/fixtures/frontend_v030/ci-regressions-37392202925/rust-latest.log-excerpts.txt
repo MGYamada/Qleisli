@@ -1,0 +1,17 @@
+2026-10-06T00:06:44.6077319Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a675d87a9e0c550200e179bcd2cc375f7c45458a:refs/remotes/pull/307/merge
+2026-10-06T00:06:47.7673838Z HEAD is now at a675d87 Merge 7f6529ef93838d565552c3f501ce016ef1d1d2b4 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T00:06:47.7743248Z a675d87a9e0c550200e179bcd2cc375f7c45458a
+2026-10-06T00:09:11.6306301Z ##[group]Run cargo +1.98.1 test --all-targets
+2026-10-06T00:10:09.4594273Z test frontend::parser::tests::contextual_naturals_are_retained_in_fold_indices_and_bounds ... ok
+2026-10-06T00:10:09.5064755Z test frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules ... FAILED
+2026-10-06T00:10:09.5068399Z test frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans ... ok
+2026-10-06T00:10:09.5108978Z test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+2026-10-06T00:11:33.7356998Z 
+2026-10-06T00:11:33.7357967Z thread 'frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules' (12976) panicked at src/frontend/compile/mod.rs:960:13:
+2026-10-06T00:11:33.7359405Z assertion failed: error.message.contains(message)
+2026-10-06T00:11:33.7360189Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T00:11:33.7360748Z 
+2026-10-06T00:11:33.7362327Z 
+2026-10-06T00:11:33.7362788Z test result: FAILED. 109 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 84.54s
+2026-10-06T00:11:33.7363689Z 
+2026-10-06T00:11:33.7363898Z error: test failed, to rerun pass `--lib`

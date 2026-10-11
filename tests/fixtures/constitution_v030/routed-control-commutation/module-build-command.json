@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "lake",
+    "build",
+    "Qleisli.RoutedControlCommutation"
+  ],
+  "cwd": "/Users/masa/git/Qleisli/lean",
+  "started_at": "2026-10-04T15:19:09.133657+00:00",
+  "elapsed_seconds": 11.62798887497047,
+  "exit_code": 0,
+  "stdout": "module-build.stdout.txt",
+  "stderr": "module-build.stderr.txt"
+}

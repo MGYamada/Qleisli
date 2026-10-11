@@ -1,0 +1,40 @@
+{
+  "inputs_stable": true,
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3743674590368755
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12320145795820281
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.16732920898357406
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "8a6a7167f0abd359fb8cac695033778cbca6203f"
+      ],
+      "exit_code": 0,
+      "seconds": 1.0939322499907576
+    }
+  ],
+  "passed": true
+}

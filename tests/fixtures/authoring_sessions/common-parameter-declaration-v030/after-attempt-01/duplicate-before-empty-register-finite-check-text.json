@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-before-empty-register",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.012132834002841264,
+  "recorded_utc": "2026-10-05T17:16:44.903533+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "duplicate-before-empty-register-finite-check-text.native.jsonl",
+  "stdout_raw": "duplicate-before-empty-register-finite-check-text.stdout.txt",
+  "stderr_raw": "duplicate-before-empty-register-finite-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c18c16021450f996197e11e332cae654b3baaa700d18aa3a1d2a514e97db1898"
+}

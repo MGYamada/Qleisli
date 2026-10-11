@@ -1,0 +1,30 @@
+---- frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans stdout ----
+
+thread 'frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans' (18040620) panicked at src/frontend/parser/tests.rs:15:44:
+called `Result::unwrap()` on an `Err` value: ParseError { message: "`basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct", span: Span { start: 0, end: 5 } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads stdout ----
+
+thread 'interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads' (18040949) panicked at src/interchange/process.rs:229:22:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+
+failures:
+    frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans
+    interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads
+
+test result: FAILED. 112 passed; 2 failed; 3 ignored; 0 measured; 0 filtered out; finished in 59.52s
+
+---- every_derived_stdlib_body_exports_its_effect_without_runtime_annotation stdout ----
+
+thread 'every_derived_stdlib_body_exports_its_effect_without_runtime_annotation' (18046589) panicked at tests/body_effects.rs:298:5:
+assertion failed: report.function_effect("std::reflection::nonzero2").is_none()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    every_derived_stdlib_body_exports_its_effect_without_runtime_annotation
+
+test result: FAILED. 12 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.58s
+

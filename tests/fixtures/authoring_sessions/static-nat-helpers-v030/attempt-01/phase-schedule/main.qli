@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{phase,h,init0};use std::observe::measure_z;
+static fn exponent[static stage:Nat]()->Nat{stage+1}
+pub unitary fn schedule[static count:Nat](q:Q<Bit>)->Q<Bit> requires count<=3{for static i in 0..count carry r=q{static let k=exponent[i]();yield phase[1,k](r);}}
+pub observe fn main()->Bit{measure_z(h(schedule[3](h(init0()))))}

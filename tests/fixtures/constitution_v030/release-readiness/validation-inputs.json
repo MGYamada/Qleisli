@@ -1,0 +1,11 @@
+{
+  "scope": "Source identity snapshot taken while the initial successful validation batch was in progress, before the exact-Git-evidence-reference strengthening. It does not bind every later command in that batch. tracked-reference-validation.json separately binds the complete final release suite before and after execution.",
+  "sha256": {
+    "scripts/check_release_ready.py": "fc7049fe16d9dca66f4dfb861c91166679243da6341ae4d7a854239f4a8c1583",
+    "scripts/test_check_release_ready.py": "d819125a38713bc59f7ae06dbcc2ccd435bcd5120610352ab30216e591a114b4",
+    "scripts/check_constitution.py": "ad6979c0d3e845b1df6aafcb043de3566b2bb658f2fffcf557e93d923a09a973",
+    "scripts/test_check_constitution.py": "dc15cdc21b9875f04663088b31378f298af2c07450188580dd6dc897fb9fd191",
+    ".github/workflows/ci.yml": "1fe239b806220283d250d8b50e7a085ab3db060c879dc88f3d634bdd40fb74f7",
+    ".github/ci/README.md": "701b0271dfbe0ec5f0531a844dfca74936c437cb8fc5f42e646b58413b49e03e"
+  }
+}

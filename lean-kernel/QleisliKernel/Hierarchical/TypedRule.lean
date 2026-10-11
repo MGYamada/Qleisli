@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Finite
 
 /-! Reuse actual complete-artifact typing when matching ordinary proof rules.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This entry alone is not acceptance: its soundness requires the actual typing
 pass on the same immutable artifact. No serialized typed flag is an input. -/
 

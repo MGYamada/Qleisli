@@ -1,0 +1,134 @@
+{
+  "format": "qleisli.coherent-basis-active-source-migration",
+  "version": 1,
+  "baseline_commit": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "files": [
+    {
+      "path": "tests/tuple_shapes.rs",
+      "before_sha256": "f1eae88acec0054daa06dad29a70131a7531792355420a4c387330ba5a298ea7",
+      "after_sha256": "734ac614e99bb77b99d513d626ca93f52a88281332fa2ecafd963fbda08a7f34",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/static_semantics.rs",
+      "before_sha256": "75a215327a58a7e1c12e05c3421042300a31337018ed674ded27d980b9b06869",
+      "after_sha256": "0e7db5509fce8f44227d860ba7d7336d5cff5e93628dde795f68663dd0445012",
+      "source_forms": 5
+    },
+    {
+      "path": "tests/source_semantics.rs",
+      "before_sha256": "8b20d237560794455fe31cd90dda28b8438b17c05aaf9145c49d02e22a0e38de",
+      "after_sha256": "dd56d9f5af665b6cf7fd5be5f7f9ce7d67d555d65997687b17cb21eaec6d739d",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/review_v027.rs",
+      "before_sha256": "2d00a4f7d0d770230e3e0480de2882bdefdb3c6e9234c961987e146e863ad4c6",
+      "after_sha256": "85889ffdeed918a480e4ab8914a396a8c88a4884e002666d5406deafd0bf6c1c",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/compile.rs",
+      "before_sha256": "553534a142e4782385a4711646bcadcd60977cbb7cafa880f340bbd9be270396",
+      "after_sha256": "d207264e562d73eceb01ab04d1ea5aafe8aa77b0510d30e75dcb11a73b62e033",
+      "source_forms": 10
+    },
+    {
+      "path": "tests/function_contracts.rs",
+      "before_sha256": "23d34a745c7beacf431c7f1a384c0684bf8482b0703dfcc3074f1a70eb82a5da",
+      "after_sha256": "82c960d18668ecffbdd4747c8547da00397bfaa9c1dc494fa5d364759a561f50",
+      "source_forms": 2
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "before_sha256": "8a3db2710909bfd04df56d666f44bc06af87a01c3726be3d049926543f822937",
+      "after_sha256": "b9256ab7c9b525765a2c6f20e59eaac1a1b97715fcf76218e2cb35c8a2916537",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/quantum_unit_maps.rs",
+      "before_sha256": "0e6323ada15254786785eebb3afda498aa36db5af78b2c3801723c1d9f2953dd",
+      "after_sha256": "e1772ed10410b5a08b638c4896ac0ed1f696aa3e58823d57298043f8a0e66c4e",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/frontend_types.rs",
+      "before_sha256": "0234dc24b67821de7a09689926f8e9af89a948c61ba0928295efd21d830fcfba",
+      "after_sha256": "fb5d5604afd483e4beff0ef2973943d69586a814d15e92128b64880cb020de33",
+      "source_forms": 2
+    },
+    {
+      "path": "tests/source_judgments.rs",
+      "before_sha256": "18fcabb4f6fd4e5dd427406f4a191c244050e83fafc7ce1d37f40e0d3065a2e1",
+      "after_sha256": "196063a34cc58b3f1f5ba59dd60817b49dc6ebf0657e2b0ca7db9d0af4bcd6a2",
+      "source_forms": 5
+    },
+    {
+      "path": "tests/specification_boundaries.rs",
+      "before_sha256": "aea7d3b6655e5895d163613c8431d5f7c9d8a834b23123b9cce27d6105414e5f",
+      "after_sha256": "7f7e8774c93ccf8e1acf504c2a692f51d4cd27ac05fa7c12239dafe86b6fa84e",
+      "source_forms": 23
+    },
+    {
+      "path": "tests/certified_source.rs",
+      "before_sha256": "9c1ec934cf8a79d114a23b33da914c6509024df7c5c1d9c0c28502ae6d7e4290",
+      "after_sha256": "3e8f63b5943649f3624a99f36ff95e8a82cee72d17897c127fc4d8578e2dfc0b",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/source_scope.rs",
+      "before_sha256": "8c58678622f83b1764b75421faeb138d82d5dac3a3c9777381da64a6a2e49433",
+      "after_sha256": "eb27371bd4a6b97c85752ee79d6b653385971c4518654fea35618940f147c726",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/source_ir_correspondence.rs",
+      "before_sha256": "918ac9c180714116540c8a298de743cedad2c04fe9b311805a8accb7b1544dd1",
+      "after_sha256": "db33c9a8bc4966bf8dd0131a8132a03ad4d2f8044cc28a4c6d86c20a32ad88cd",
+      "source_forms": 9
+    },
+    {
+      "path": "tests/source_soundness.rs",
+      "before_sha256": "c800dd20e25dfaf5cda9e23c7eb9cee07a9ed660097240bec100c30d17cacca5",
+      "after_sha256": "6e5e3d21061559ef3f9b153390b6c929f53b22fa712caef6afa041ab3317a3eb",
+      "source_forms": 1
+    },
+    {
+      "path": "tests/static_operations.rs",
+      "before_sha256": "4a81d045902cd240319d920a80344eb0944d649f47e8a37136d8df9435b5a407",
+      "after_sha256": "e3ab31ae464d09eba44ec6d2486feabdf34b74951d2d96dc15cdafe546381d36",
+      "source_forms": 2
+    },
+    {
+      "path": "tests/repair_diagnostics.rs",
+      "before_sha256": "1676117a67a4e383e4fe13c1b7259cdd937d6e7f4d327d1cd98bc5f351e19439",
+      "after_sha256": "d2fff41217e9c05ab776d1bae7ce3ce040765432412d1a369a61890bf90826af",
+      "source_forms": 2
+    },
+    {
+      "path": "tests/project.rs",
+      "before_sha256": "4d594b4ad188369dd153e7b3cf2d67843f14cc5da9ed54988bce8dc48fc12920",
+      "after_sha256": "feaf97234894719126d16666ce3f8cd6ec5060035f08b6f4831574fae17a1ff0",
+      "source_forms": 1
+    },
+    {
+      "path": "examples/bell/bell.qli",
+      "before_sha256": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+      "after_sha256": "6d51d7f1ea4823255d73e560c9ea27d8880f6cdabf6c82811a2f9d303dd41476",
+      "source_forms": 1
+    },
+    {
+      "path": "examples/bit_flip_code/code.qli",
+      "before_sha256": "f3a1c5516dfe14c6a6b70dba2c626202ddb72fb0f7e02fa8525177cecaeef4a1",
+      "after_sha256": "ce187a38d9e0edb0d1f7aa7b4ef2ac0be528cb24103518629d40b3b70edc6a5c",
+      "source_forms": 1
+    },
+    {
+      "path": "examples/semantic_contracts/main.qli",
+      "before_sha256": "ae48f9f5f1c325c8bf047a326073441bda6a0459496d60c1d37c5ff161ce329b",
+      "after_sha256": "bb2f4e0f44a0c5fba19683afc1c684a0aabc6ac52ca59bb02b0fbb26a6ba04ae",
+      "source_forms": 1
+    }
+  ],
+  "scope": "Only source spelling is rewritten. Test logic/assertions/capacities, lowering/checking, original fixtures and first captures are unchanged. Existing repeat(8192)/stress sources were neither expanded nor run."
+}

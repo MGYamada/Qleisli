@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/legal-rebinding",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "seconds": 0.867395083012525,
+  "recorded_utc": "2026-10-05T16:33:56.590678+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 20,
+  "stdout_raw": "legal-rebinding-finite-check-json.stdout.txt",
+  "stderr_raw": "legal-rebinding-finite-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  }
+}

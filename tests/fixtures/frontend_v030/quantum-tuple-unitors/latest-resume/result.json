@@ -1,0 +1,97 @@
+{
+  "base_commit": "9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43",
+  "driver_sha256": "d4b98f93187a20fb0a46aa4af79f39eda4a62e8bf3cc9ab2481f9260dd4cbe4a",
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.041685666947159916,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.020224374951794744,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.040940458013210446,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "frontend::sized"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 6.15895183297107,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "sized_cli",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 5.8310704590403475,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 2.511549999995623,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    }
+  ],
+  "source_manifest_sha256": "be10441d15d4df8a78109c3d6ce3cea8c8eb4216c9178beb3e3cc56c7b6d8a36",
+  "source_count": 594,
+  "integration_targets_executed": false,
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+  "target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "free_bytes_before": 19906560000,
+  "free_bytes_after": 19906560000,
+  "scope": "Continuation after a separately recorded integration pass: sized library tests, existing ignored native CLI tests, all-target Clippy, library rustdoc and formatting; does not rerun integration targets"
+}

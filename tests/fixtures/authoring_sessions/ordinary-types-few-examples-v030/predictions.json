@@ -1,0 +1,23 @@
+{
+  "author": "/root/ordinary_type_few_examples",
+  "context": "Two examples only; no forked history, tools, repository reads or repair.",
+  "transport": "Qargo.toml schema2/edition2026 supplied by observer after source authorship.",
+  "predictions": [
+    {
+      "case": "copy-ordinary",
+      "text": "passes checking if ordinary `Bit` values permit duplication and omission."
+    },
+    {
+      "case": "observe-pair",
+      "text": "passes checking if each observation consumes its quantum owner and produces an ordinary `Bit`."
+    },
+    {
+      "case": "implicit-readout",
+      "text": "fails checking because the returned `Q<Bit>` does not match `Bit`."
+    },
+    {
+      "case": "duplicate-owner",
+      "text": "fails checking because the second observation reuses the quantum owner consumed by the first."
+    }
+  ]
+}

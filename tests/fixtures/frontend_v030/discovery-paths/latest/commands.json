@@ -1,0 +1,64 @@
+[
+  {
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.09826375002739951
+  },
+  {
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.03301720804302022
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--test",
+      "discovery_paths",
+      "--test",
+      "selected_source_cli"
+    ],
+    "exit_code": 0,
+    "seconds": 2.3310539999511093
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_cli_json.py",
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli"
+    ],
+    "exit_code": 0,
+    "seconds": 5.036719791009091
+  },
+  {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 0.6478916669730097
+  },
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.4684230419807136
+  }
+]

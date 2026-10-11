@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/frontend_types.rs (target/debug/deps/frontend_types-7e0910c083a74a80)

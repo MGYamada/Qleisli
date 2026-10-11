@@ -138,10 +138,10 @@
     },
     {
       "id": "source",
-      "producer": "Human/AI .qli, module loader and public source policies",
-      "consumer": "compile/check diagnostic/policy variants; generated RawProgram independently verified",
-      "obligation": "Grammar/types/linear moves/effects and bounded source work; valid output IR alone does not prove original-source preservation; static lowering remains untrusted",
-      "reference": "docs/frontend-v0.md; docs/type-system.md",
+      "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
+      "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
+      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation",
+      "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
       ],
@@ -629,8 +629,8 @@
     {
       "id": "sized-source",
       "producer": "Retained ordinary sized-source modules and explicit natural/operation bindings",
-      "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and additive qleisli sized CLI",
-      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem.",
+      "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and ordinary explicit-entry CLI; source-bound finite ordinary Raw proposals with independent step replay",
+      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation.",
       "reference": "docs/sized-corpus-source.md",
       "replacement": [
         "VM-28"
@@ -662,6 +662,78 @@
         "path": "tests/hierarchical_qpe_host.rs",
         "test": "qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations"
       }
+    },
+    {
+      "id": "finite-bits-interface",
+      "producer": "Atomic BasisType::Bits(u32), finite Meaning and retained root interfaces",
+      "consumer": "Native finite/QIRF decoders and independent exact contract checking",
+      "obligation": "Keep Bits<0>, Bits<1> and wider registers structurally distinct from Unit, Bit and same-width product trees; retain exact phase under coherent control; reject malformed or out-of-capacity widths",
+      "reference": "docs/src/reference/type-model.md; tests/meaning_evidence.rs; tests/interchange.rs",
+      "replacement": [
+        "VM-24"
+      ],
+      "positive": {
+        "path": "tests/meaning_evidence.rs",
+        "test": "controlled_bits_zero_phase_is_an_exact_relative_phase"
+      },
+      "negative": {
+        "path": "tests/interchange.rs",
+        "test": "native_bits_wire_atoms_keep_exact_tags_and_reject_malformed_widths"
+      }
+    },
+    {
+      "id": "source-excl",
+      "producer": "Original shared source AST with explicit whole-owner excl call arguments",
+      "consumer": "Common original-body judgment, finite lowering and selected projection; fresh native acceptance of emitted artifacts",
+      "obligation": "Actual Unitary body effect; distinct live lexical Q<A> owners; exact ordered return partition; retain updated values without reviving spent/shadowed owners. General access and ctrl source lowering remain pending.",
+      "reference": "docs/src/reference/rust-boundary.md#whole-owner-exclusive-calls and docs/src/reference/elaboration.md#whole-owner-exclusive-calls; lookup-model premises in lean/Qleisli/ExclusiveScope.lean",
+      "replacement": [
+        "VM-29"
+      ],
+      "positive": {
+        "path": "tests/exclusive_access.rs",
+        "test": "reassembled_owner_and_callee_binders_do_not_restore_old_snapshot"
+      },
+      "negative": {
+        "path": "tests/exclusive_access.rs",
+        "test": "exact_owner_shape_and_actual_body_effect_are_required"
+      }
+    },
+    {
+      "id": "raw-PackUnit",
+      "producer": "source/raw",
+      "consumer": "native Raw dispatch; extraction; simulation",
+      "obligation": "Create a fresh zero-axis logical owner with exact +1 action; retain consumed identities and the complete physical frame",
+      "reference": "docs/src/reference/type-model.md; docs/src/reference/primitive-boundary.md",
+      "replacement": [
+        "VM-25"
+      ],
+      "positive": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      },
+      "negative": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      }
+    },
+    {
+      "id": "raw-UnpackUnit",
+      "producer": "source/raw",
+      "consumer": "native Raw dispatch; extraction; simulation",
+      "obligation": "Consume exactly one live zero-axis owner with exact +1 action; retain its issued identity and preceding scalar work",
+      "reference": "docs/src/reference/type-model.md; docs/src/reference/primitive-boundary.md",
+      "replacement": [
+        "VM-25"
+      ],
+      "positive": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      },
+      "negative": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      }
     }
   ],
   "enums": [
@@ -673,8 +745,8 @@
           "declaration": "Unitary",
           "group": "raw-core"
         },
-        "Iso": {
-          "declaration": "Iso",
+        "Isometry": {
+          "declaration": "Isometry",
           "group": "raw-core"
         },
         "Observe": {
@@ -870,6 +942,14 @@
         "ComputeUseUncompute": {
           "declaration": "ComputeUseUncompute { source: TokenId, source_out: TokenId, targets: Vec<TargetTransition>, ancilla_wires: Vec<WireId>, function: Vec<u16>, use_ops: Vec<ProtectedUse>, }",
           "group": "raw-ComputeUseUncompute"
+        },
+        "PackUnit": {
+          "declaration": "PackUnit { output: TokenId, }",
+          "group": "raw-PackUnit"
+        },
+        "UnpackUnit": {
+          "declaration": "UnpackUnit { input: TokenId, }",
+          "group": "raw-UnpackUnit"
         }
       }
     },
@@ -892,6 +972,10 @@
         "Tuple": {
           "declaration": "Tuple(Vec<BasisType>)",
           "group": "finite-contract"
+        },
+        "Bits": {
+          "declaration": "Bits(u32)",
+          "group": "finite-bits-interface"
         }
       }
     },
@@ -991,12 +1075,12 @@
           "declaration": "Meaning",
           "group": "source"
         },
-        "Basis": {
-          "declaration": "Basis",
+        "Classical": {
+          "declaration": "Classical",
           "group": "source"
         },
-        "Iso": {
-          "declaration": "Iso",
+        "Isometry": {
+          "declaration": "Isometry",
           "group": "source"
         },
         "Unitary": {
@@ -1005,6 +1089,14 @@
         },
         "Observe": {
           "declaration": "Observe",
+          "group": "source"
+        },
+        "Inferred": {
+          "declaration": "Inferred",
+          "group": "source"
+        },
+        "Static": {
+          "declaration": "Static",
           "group": "source"
         }
       }
@@ -1021,8 +1113,8 @@
           "declaration": "Bit",
           "group": "source"
         },
-        "CBit": {
-          "declaration": "CBit",
+        "Bits": {
+          "declaration": "Bits(Natural)",
           "group": "source"
         },
         "Q": {
@@ -1031,6 +1123,10 @@
         },
         "Tuple": {
           "declaration": "Tuple(Vec<Type>)",
+          "group": "source"
+        },
+        "Named": {
+          "declaration": "Named(Ident)",
           "group": "source"
         }
       }
@@ -1050,6 +1146,22 @@
         "Quantum": {
           "declaration": "Quantum(Block)",
           "group": "source"
+        },
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
+        "MeaningCompose": {
+          "declaration": "MeaningCompose { first: Ident, second: Ident }",
+          "group": "source"
+        },
+        "MeaningTensor": {
+          "declaration": "MeaningTensor { left: Ident, right: Ident }",
+          "group": "source"
+        },
+        "MeaningReference": {
+          "declaration": "MeaningReference { function: Ident }",
+          "group": "source"
         }
       }
     },
@@ -1058,11 +1170,23 @@
       "name": "StmtKind",
       "members": {
         "Let": {
-          "declaration": "Let { pattern: Pattern, value: Expr }",
+          "declaration": "Let { pattern: Pattern, value: Expr, }",
           "group": "source"
         },
         "Expr": {
           "declaration": "Expr(Expr)",
+          "group": "source"
+        },
+        "StaticLet": {
+          "declaration": "StaticLet { name: Ident, value: Natural, }",
+          "group": "source"
+        },
+        "MutableLet": {
+          "declaration": "MutableLet { marker: Span, pattern: Pattern, value: Expr, }",
+          "group": "source"
+        },
+        "Assign": {
+          "declaration": "Assign { target: Ident, value: Expr, }",
           "group": "source"
         }
       }
@@ -1094,7 +1218,7 @@
           "group": "source"
         },
         "Adjoint": {
-          "declaration": "Adjoint { function: Ident, input: Box<Expr>, }",
+          "declaration": "Adjoint { operation: StaticOp, input: Box<Expr>, }",
           "group": "source"
         },
         "RepeatStatic": {
@@ -1105,12 +1229,24 @@
           "declaration": "QuantumIf { control: Box<Expr>, target: Box<Expr>, zero: Ident, one: Ident, }",
           "group": "source"
         },
+        "Controlled": {
+          "declaration": "Controlled { operation: StaticOp, args: Vec<Expr>, }",
+          "group": "source"
+        },
+        "StaticIf": {
+          "declaration": "StaticIf { predicate: Predicate, then_branch: Block, else_branch: Block, }",
+          "group": "source"
+        },
+        "StaticFold": {
+          "declaration": "StaticFold { quantum: bool, index: Ident, start: Natural, end: Natural, carry: Pattern, initial: Box<Expr>, body: Block, }",
+          "group": "source"
+        },
         "Name": {
           "declaration": "Name(Ident)",
           "group": "source"
         },
-        "CBit": {
-          "declaration": "CBit(bool)",
+        "Bit": {
+          "declaration": "Bit(bool)",
           "group": "source"
         },
         "Unit": {
@@ -1151,6 +1287,18 @@
         },
         "CertifiedComputed": {
           "declaration": "CertifiedComputed { source: Box<Expr>, function: Ident, logical: Box<Ident>, data_binder: Box<Ident>, ancilla_binder: Box<Ident>, body: Block, }",
+          "group": "source"
+        },
+        "ApplyStatic": {
+          "declaration": "ApplyStatic { operation: StaticOp, input: Box<Expr>, }",
+          "group": "source"
+        },
+        "AccessCall": {
+          "declaration": "AccessCall { callee: Ident, static_args: Vec<StaticOp>, args: Vec<AccessArgument>, }",
+          "group": "source-excl"
+        },
+        "UnsupportedClosure": {
+          "declaration": "UnsupportedClosure(Box<UnsupportedClosure>)",
           "group": "source"
         }
       }
@@ -1202,11 +1350,23 @@
           "group": "source"
         },
         "Repeat": {
-          "declaration": "Repeat(u16, Box<StaticOp>)",
+          "declaration": "Repeat(Count, Box<StaticOp>)",
+          "group": "source"
+        },
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
+        "Specialize": {
+          "declaration": "Specialize { name: Ident, arguments: Vec<StaticOp>, }",
           "group": "source"
         },
         "Conjugate": {
           "declaration": "Conjugate(Box<StaticOp>, Box<StaticOp>)",
+          "group": "source"
+        },
+        "Type": {
+          "declaration": "Type(Type)",
           "group": "source"
         }
       }
@@ -1409,12 +1569,16 @@
           "declaration": "Pub",
           "group": "source"
         },
+        "Classical": {
+          "declaration": "Classical",
+          "group": "source"
+        },
         "Basis": {
           "declaration": "Basis",
           "group": "source"
         },
-        "Iso": {
-          "declaration": "Iso",
+        "Isometry": {
+          "declaration": "Isometry",
           "group": "source"
         },
         "Unitary": {
@@ -1483,6 +1647,42 @@
         },
         "FatArrow": {
           "declaration": "FatArrow",
+          "group": "source"
+        },
+        "Plus": {
+          "declaration": "Plus",
+          "group": "source"
+        },
+        "Minus": {
+          "declaration": "Minus",
+          "group": "source"
+        },
+        "Star": {
+          "declaration": "Star",
+          "group": "source"
+        },
+        "Caret": {
+          "declaration": "Caret",
+          "group": "source"
+        },
+        "DotDot": {
+          "declaration": "DotDot",
+          "group": "source"
+        },
+        "EqualEqual": {
+          "declaration": "EqualEqual",
+          "group": "source"
+        },
+        "NotEqual": {
+          "declaration": "NotEqual",
+          "group": "source"
+        },
+        "LessEqual": {
+          "declaration": "LessEqual",
+          "group": "source"
+        },
+        "GreaterEqual": {
+          "declaration": "GreaterEqual",
           "group": "source"
         },
         "Not": {
@@ -1579,6 +1779,10 @@
         },
         "Eof": {
           "declaration": "Eof",
+          "group": "source"
+        },
+        "Qfor": {
+          "declaration": "Qfor",
           "group": "source"
         }
       }
@@ -1820,894 +2024,1078 @@
           "group": "hierarchical-execution"
         }
       }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "StaticParamKind",
+      "members": {
+        "Natural": {
+          "declaration": "Natural",
+          "group": "source"
+        },
+        "Operation": {
+          "declaration": "Operation { basis: Type, codomain: Option<Box<Type>>, meaning: Option<Ident>, }",
+          "group": "source"
+        },
+        "Basis": {
+          "declaration": "Basis",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Requirement",
+      "members": {
+        "Access": {
+          "declaration": "Access(AccessConstraint)",
+          "group": "source"
+        },
+        "Predicate": {
+          "declaration": "Predicate(Predicate)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "NatKind",
+      "members": {
+        "Number": {
+          "declaration": "Number(i128)",
+          "group": "source"
+        },
+        "Name": {
+          "declaration": "Name(String)",
+          "group": "source"
+        },
+        "Add": {
+          "declaration": "Add(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        },
+        "Sub": {
+          "declaration": "Sub(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        },
+        "Mul": {
+          "declaration": "Mul(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        },
+        "Call": {
+          "declaration": "Call { callee: Ident, arguments: Vec<Natural>, }",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Compare",
+      "members": {
+        "Eq": {
+          "declaration": "Eq",
+          "group": "source"
+        },
+        "Ne": {
+          "declaration": "Ne",
+          "group": "source"
+        },
+        "Lt": {
+          "declaration": "Lt",
+          "group": "source"
+        },
+        "Le": {
+          "declaration": "Le",
+          "group": "source"
+        },
+        "Gt": {
+          "declaration": "Gt",
+          "group": "source"
+        },
+        "Ge": {
+          "declaration": "Ge",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Count",
+      "members": {
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
+        "Power": {
+          "declaration": "Power(Natural)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/specialize/elaborate.rs",
+      "name": "HierarchyEligibility",
+      "members": {
+        "Eligible": {
+          "declaration": "Eligible",
+          "group": "sized-source"
+        },
+        "Ineligible": {
+          "declaration": "Ineligible(Error)",
+          "group": "sized-source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "QuantumAccess",
+      "members": {
+        "Excl": {
+          "declaration": "Excl",
+          "group": "source-excl"
+        },
+        "Ctrl": {
+          "declaration": "Ctrl",
+          "group": "source-excl"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "AxisSelection",
+      "members": {
+        "Index": {
+          "declaration": "Index(Natural)",
+          "group": "source-excl"
+        },
+        "Range": {
+          "declaration": "Range { start: Natural, end: Natural }",
+          "group": "source-excl"
+        }
+      }
     }
   ],
   "sources": [
     {
       "path": "lean-kernel/Audit.lean",
-      "sha256": "5af8e11d1a2c16367f579c111e2645d08f9c688dd26002a9a3a393ff62122baa",
+      "sha256": "15aa91d53d840dd7da6e43877c4846ac401b6792f6cc0dc1905fe468958ef59c",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Cli/Common.lean",
-      "sha256": "50a6d25a1207e94ef9abca1a7b4170152e0b23b19b76fc77e82e645568675587",
+      "sha256": "a06429168fedf0a5997fadeac786ad4d0ca9fc259d2a10fd460a701c51488c8c",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Cli/Finite.lean",
-      "sha256": "d57544b88b1a8e2493ff669def7ca98a0ae2e78ce636a733ea5834e91cf3fadc",
+      "sha256": "c513812b72f9752033159059fc145a246c30f59583ca24bee57481566b66b427",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Cli/Hierarchical.lean",
-      "sha256": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff",
+      "sha256": "cc776268f9d08d54ca1eaac900766d6ddb9678f73c17e2c54ee2863e57add378",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Cli/Validity.lean",
-      "sha256": "ccdfbc73066325e4f0d75db0aa6aeae38e309f23796e310109e21bb369dd0a81",
+      "sha256": "ed997410d7bf6c815288605e543cae81ded5274155f631fcfc7b54b1dbd4bd18",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "e83ce9406572d4a1d4fd814693fd01d0d42c986cb146a5c04dd12e38ef97f12c",
+      "sha256": "ed1854a67d0cf1e4a3334ef3bbb876a31aac323c7fb3ec3aff819428fe5a13d7",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol.lean",
-      "sha256": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
+      "sha256": "6d8da093f740b80d92cee67c3294c13418713d9ba7591caed530dd8b83422e51",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/BranchFunction.lean",
-      "sha256": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+      "sha256": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Core.lean",
-      "sha256": "c952a7bf9a9bafda2c43d24405f3e039544bc79eeaa4ab000ffc522e59efc042",
+      "sha256": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/FiniteCodec.lean",
-      "sha256": "abc49b87f81dd3e336a046ca4d777977bffad9f5c153708011fbe20c3c4c9eed",
+      "sha256": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Hierarchical.lean",
-      "sha256": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
+      "sha256": "a098e44ed67362fe3ab388b19fb3abd7fc8d1381f9a38a000e93e9efe9cc59a3",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
-      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+      "sha256": "8d3231c6de519a0bc8ca9b4047a944ef5c1a6183be14323aafcb90b87647cc41",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Layout.lean",
-      "sha256": "da6b03a187ac74be6ee6b594c1b1af61bc77ea2ceb63e6a8e5afa8f78502e3d3",
+      "sha256": "4107974670f6da2fd205b90ddfb9f927b6b26cca98ec8e3685d04b59e4c683b6",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "ca5296a69c772b016ca38ce96dfdb357714c99a26f9707677cbaa568c394eee6",
+      "sha256": "40bc67fd21ce0eb588a85dd59d91dde9b772e2c46085f0014f81c36b3a4ab406",
       "group": "finite-contract",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Observation.lean",
-      "sha256": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+      "sha256": "2b443801de48698dffd94de3223a21f5b39d93d319d2694a1ef966ddcc384605",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Product.lean",
-      "sha256": "4c36ce65067bbeccf6fca21b6c921e7df6293943e5e57b6319fa3426d3ebe55f",
+      "sha256": "de0fb9c84bbb5dd53f64db35b28cf50041dff6326c7efb6b8dc2d8d53df64257",
       "group": "transport",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Qirf.lean",
-      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+      "sha256": "22396327be5425646fa9953602ce8edeb542d82159a7c39858062a1d65dd76f1",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Raw.lean",
-      "sha256": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
+      "sha256": "fbfdf5daed8bfa93c102612c76d3ba216bd162beb4d2a3255303b8b1b0a08982",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/StreamedObservation.lean",
-      "sha256": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+      "sha256": "90745fbd89f92f68d344d82ffeae2d64780a4e76ff7c2544ac5ab1bbdd7ba9ca",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/Validity.lean",
-      "sha256": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+      "sha256": "9cde3cb39ee7734154f599caa11ee371fe910c7d4a08f1948daafb889c493d47",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "e0b03e2074d78620e5da5d0f8aee5a571d585b8d88a046ac78d0a9a3a66413f5",
+      "sha256": "bc5da95118cb887a4a728d65f116a95cb8d208cdde37303b9e5fa3b61c2371b7",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Composition.lean",
-      "sha256": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+      "sha256": "29aebc9aab04a0cc621a4fde7705521446e9ac34e819117d095116370df78b46",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/ControlledPowers.lean",
-      "sha256": "177f68975a739c93cbd096d9d7b677627b57286225a61513dcac38dc94516515",
+      "sha256": "9d74683f8f136d3358fdd3aea042bf39d214c738037f4c827b9355d5a46e4dfd",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Dag.lean",
-      "sha256": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+      "sha256": "21c94f141113b67ca72e2a694baba74a23653bd780d848ec2959ad855550dba2",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Exact.lean",
-      "sha256": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+      "sha256": "288b56dd7ce23d31a6a12d035fb3e54e1ab4d4b913d07be5c94355715423be01",
       "group": "scalar",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/ExactCapacity.lean",
-      "sha256": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+      "sha256": "31d2c0351b4fa3a88344ce39bd8eece3723eacc6b2bfb901b144f222a337cdd7",
       "group": "scalar",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/ExactMatrix.lean",
-      "sha256": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+      "sha256": "58081fc970bd1e5861c01c125e7e57ab8f3f9bd5ff0da9e2c23ad68daf057a8f",
       "group": "scalar",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Finite.lean",
-      "sha256": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+      "sha256": "d05c7c2734a790413d915e25cddf1754d1da4b7a23e8f004bd79cb966c50aa76",
       "group": "finite-contract",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean",
-      "sha256": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b",
+      "sha256": "3dab1eaa96c14ba28c439724c243494055c379092a8bf92cc2fe493a068afa0d",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean",
-      "sha256": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+      "sha256": "d43b420537512ff6a0e3d049af055f82a8c06a196d8af9a6e9ca74ad8e8429f9",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean",
-      "sha256": "46ea27e589f1f61460e6e8659a65497cd2fec746d8eb55ddb8cb73bbe1e4e60c",
+      "sha256": "6b79d1e40c623174387ecdc9d706c0f145e61933c96aa9136a756bef491e80cf",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean",
-      "sha256": "2c6ae1ebfde3d329c2893d77c78bde062bb1fcbda26154a039d8091bd36b4bdb",
+      "sha256": "593aef5e710998f9610d3de83427eb4e6e6657308602a2fa51f3b0bd6f243578",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean",
-      "sha256": "1e4efe077528b3c3b631735bdfa41aeafa508ea263af3e11d3d8e4f2a7640f3c",
+      "sha256": "c7009a3a6ba51ab51a89821b33d40dac951d7aa6ef0bd58b0acec9dfa36e8a94",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean",
-      "sha256": "53dc0763bfe18e0fbcbf4904723106eae68c144d4c5d0108d2a3f5b4f841028c",
+      "sha256": "1e8dcfd29a23771ffd6b3bdd4231e657fa50010dbd1f723ff8987ab5a554d7b8",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Finite.lean",
-      "sha256": "0ba3bc69488f9f57cccfd8d6a1d2013bb8a0c736c80d93bc837f5b76d561e169",
+      "sha256": "fba456800ab757a88e6d65f5e4e5af8024df434b9b7e8d6423bcf5c4d8e2cf0b",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean",
-      "sha256": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
+      "sha256": "a8823787e839c7b72c969775b5b15d76d5d4485f88e0a9d47d919f7d846dc68e",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean",
-      "sha256": "0efb2979b63ae3dd6e7d110b5833084c4bb2c3e0cc2c6dfa88bbe2d7a5a0ea2e",
+      "sha256": "df04c5381e30fc62e416fb5f51143501785f2d54b42a71612a4d792958b37a8f",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean",
-      "sha256": "dab9d37274e5b7d614c9086b13d1306fae609ee6e8f06f4c8b22c8827866592b",
+      "sha256": "0c7b01e4839a5d1679149a1f14bcdfd98e85270d36dd929cf33440260ed43ab6",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean",
-      "sha256": "a6b834a16be24bde9850532d72b66f991cc11736dac767b7a2543a9cb9ffd313",
+      "sha256": "58ace2d2f1e1c4e3d3c394ff4862d44c68bab1c201d4bc414dc3bac0e0d03bcf",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean",
-      "sha256": "97edcde096268a7169a4ba8524c739d398d0b42d4c111f9c1e724ca9c54f8078",
+      "sha256": "fdbaca3ebbfa3525b17dea493cc92ade1c0ed6ee23a36c4f7cc976e9e61f49ff",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean",
-      "sha256": "e0a22a0340a9bfdccd121eb216f32303cbef40fe5aea4bf2889799343d20f3ee",
+      "sha256": "26c97a98373b8c6c1b2f3aa9d477b579922b87041f4915b55ba4719b28f4d1ee",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean",
-      "sha256": "ccb7ed04759bd76270f08cfd841dc62fad081a0f83f1de218ebef449cb51c1b7",
+      "sha256": "f091675ddd854018c6b36063566a8334b7402d5e979e7477de85f1aee09eb06e",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Graph.lean",
-      "sha256": "b5481da36cad98ffb3636b3a80404c4094053e5a42d50f0efa0f483595f25406",
+      "sha256": "72c6f0721f3d8cdfe6bdfb6cb78b78ef6a8c718405f76fea8774196a15d43114",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean",
-      "sha256": "56f42f53dd9ffcdf8000dc09939cfeeadf6d1923757a70e90cbcbf975814dfdf",
+      "sha256": "63fd2a3c766f83cad6e4a3a5ee145c657b6c38ebf575eaf793b937178058a076",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean",
-      "sha256": "c51d1b0d8c35237baef48d584a1753157294609e6d9a310a188e1854bd538306",
+      "sha256": "7daa4debc5773ac65528a322bdbe7138635f79496dd51216f9ae12053ab91abf",
       "group": "instrument",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Limits.lean",
-      "sha256": "381f7ad3470eed56bfb0463ac66e7bea1ef59575bad0a997cde65e476369ed44",
+      "sha256": "a91e18f73bb7b1dc7ddc5b23a09a15e08acaa19f0e138846e3e41d26772811df",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean",
-      "sha256": "9f9b47b7f2501baa6fa0eeee32e8a7b80abe6d440a98c6d6321efcb8a67a0157",
+      "sha256": "30b60ba7253763e6862249e37111dab726d2ea7681f13d92948ff330ac979079",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Ports.lean",
-      "sha256": "d7e58e94cfafc9e2ad6fa2b12304440b8100cc7c7a8fc241af8d6ffc798adc19",
+      "sha256": "7c4d142b25e0276fc087c4a19d00c8b96bc7ec9c10c4ac5f14541f06adc43585",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Power.lean",
-      "sha256": "6dca41ad09443838f98096a101f374da36ab71698d8d2a3458c6026cb004c911",
+      "sha256": "519c87d9ad051b48ecf50073db44385869b0c834d54a796bbefdf7997873d03f",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean",
-      "sha256": "a841a9a26610d39f266d1a57dac3d1312dc2374b3c7cc34673fbaff5fd1dac0c",
+      "sha256": "fb7b30b2462e6888968709ffc4e367a493322a62c69c10f860da01ff1436577b",
       "group": "preparation",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean",
-      "sha256": "16a8bb64f8ab37800755f339d3e572687d6402fd90ab7f3faeebdd7bff9d8a4b",
+      "sha256": "245de16fdbbd6dac4077698428f1944c7ac3c27f8f345cc2e5cffa445b22c2b8",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean",
-      "sha256": "fe68609c9b3df4ae6fe608db377f883253f1b2b1eef5e7abd122a3ff8eb73ff4",
+      "sha256": "9f8c8a7cb8fd06672cbfe9efc9ebe1cd3aad9c37f74b70b7ce5bd8318fe56129",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean",
-      "sha256": "05f2157a148246d991d48b67babfb5758e2411a41d42a2018959d846d14e4910",
+      "sha256": "1f3da8a6eb4687e53947cd8806d43b1e03ab949e72dbf8090497982ecdfc1271",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Readout.lean",
-      "sha256": "d7778da47232a789ca40be2efee9180c29cd2ba94b61d07a0a2abfbe3fa1ba8a",
+      "sha256": "1a3110efb3eb8f943a077da8bc7d6e7b534e717a364da74db40846fc1cd2f793",
       "group": "readout",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Root.lean",
-      "sha256": "d4c0a92a6b117bd2e2a08461c1dcdc3be1cbd50780cc39e63e94dae3dc0ccf9b",
+      "sha256": "b5865e5132155e7eb1b7452072c16c5f61d503dd9f370ad02156291f9ca26276",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean",
-      "sha256": "b87825ff3ab228b383c2f34356ca4bbfc9ae00d0b3cef9607aa3acb631601e12",
+      "sha256": "5cda9ded3429b409ebe2cfeeac50b2e6979e4bb0593770bca1f2ab23cb9ad102",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Rule.lean",
-      "sha256": "becc740a86dd09df2e499b133a1bf9426bb97dcf03835a2acd81647e8e0f7840",
+      "sha256": "223836917901bd46c0109a4653d126fc0bef538ef6eb9a794405201750fe18d4",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Structural.lean",
-      "sha256": "5d12fbf817f76943850a72a376cc0cc66155507c81796a55fa04c6be43d76d2c",
+      "sha256": "625157ad1b815f1c01e93c5266092e50eef96a3d3028a34134f09ce8ae598f29",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean",
-      "sha256": "2d2d3b0dfc5867ddd1a8dc5f0ae83cd477933568c53cac199c918d222ae3242a",
+      "sha256": "3f2f58732ead24c4937fe663ffbad37b7eb3fd5f6b35443deffe25b0486c7d36",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean",
-      "sha256": "6493361fb5384c72c0f3a192fe81d75a7c0a0eea2d266ff04bed0bc3a6048cc7",
+      "sha256": "9c5f8f8494711eeaa124849f951fd04adecb92e8bbdb75187977aca75f3d5f40",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchy.lean",
-      "sha256": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+      "sha256": "fa7120185ff176d7d0890e72184616f81485a5b4bd5717f03c841d1fb4987b6c",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Interference.lean",
-      "sha256": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+      "sha256": "cec3e4b296743aa0a7388185cf2542f12e2c497da5231811fe43e154dfba557a",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Layout.lean",
-      "sha256": "3252fa96de9ccddc41f7a4e40e1a6df8c9c55dbf62c88bd45db0115a887c48b4",
+      "sha256": "f23bf534bc9f4ff5bc60f19b2638fcaf3facc227336b7c99b3393ae6766ac6ce",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/LayoutDag.lean",
-      "sha256": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+      "sha256": "4b7c9d9c232bf383318f48bb8933d9d53ca2977929fd69bfb0c9e2de4d6fbfc6",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/ObservationBinding.lean",
-      "sha256": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+      "sha256": "51f6db520b84c88605191091d730417d106a37bb50b920e083998e360791dd5e",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/PathSum.lean",
-      "sha256": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
+      "sha256": "06c8fb18f4d02af22021bfedd43194911c5b799c772c2eaa8b8cc6bdef4bf665",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/PhaseLayout.lean",
-      "sha256": "364a651c6beb8dd326e11e2856b25434f2448965df78c88659b797291ff2b5ec",
+      "sha256": "d94c628b5e7e090b84c9904c829e915af490639fefe5a7cf0be25d31ccc56877",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/PhasePolynomial.lean",
-      "sha256": "62bd1477722a0ae223cc3ebef8938473e8be1b069c19fed48a5f26cdf451b2d2",
+      "sha256": "0e4a77f2b97bf13236d5095cfb268a3a4e37b099a70b498e82ffcfcdab6abbc9",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/PhasePolynomial/Operations.lean",
-      "sha256": "2c1de4db33f55a4c7da81eee9264ab899afdc3518a7e4b46f304a690afcca69e",
+      "sha256": "4111e8e190a384078c4f8c42e59ec90fd2e587920ee4ddc185055153cdcfd966",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/PhaseWord.lean",
-      "sha256": "c084d5d13440121cd2f72e219f479fe762e9125c08c94a55d3eb48e234092926",
+      "sha256": "fb680c82271744be72f0a5159029276294b24de5a652a71b40d689bfd60ad457",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qft.lean",
-      "sha256": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+      "sha256": "cc608e9f90c0420d28edde90f7926bb0af06c8e323ee169b878058125704fd1c",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/QftGraph.lean",
-      "sha256": "737b23fb404cc08df4b955e2eb876fa8ecca2cbe273d6971868f26d9126157d3",
+      "sha256": "aeb037e3a4d3051ffe501177c39a6bbdeada43cde74079b7487ff87a1914d3ca",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf.lean",
-      "sha256": "17277e76f5154cf1624a5b6cceda3fd18186bf05e9fd7877256b4726167635bb",
+      "sha256": "8d73acd1f8f9f58ed98861213adfe6a43beb8a44cf1babdd18e4718d37f33d59",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
-      "sha256": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+      "sha256": "5d5e6fbcbafe64663d5b469bc1e687ac27667e8f85575722eb503fa12dbea5a8",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
-      "sha256": "8a09a09d19ba749131b56269971091f4c8b4a58e3f720387775ee61bded22eaa",
+      "sha256": "639ccf22dc8aeb24453533f54d3509f69ddbc7c164d8a9c639a990c3ea0027c9",
       "group": "finite-contract",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
-      "sha256": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+      "sha256": "103f853f6096dbb7e4ab1de68f7a3e6a36abe614eb40050655909976c39ee003",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
-      "sha256": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2",
+      "sha256": "bb347bbefdd12db50a0d64b7facafe68137734ee6f89c5c81469dc3e47e2e7d6",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qpe.lean",
-      "sha256": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+      "sha256": "b118381bd382300726a277f576a9fb1c0bef1907e8cb530c874eef68bb8a4489",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/BranchFunction.lean",
-      "sha256": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+      "sha256": "8a08694846bc28baae2f71759b1faca451dd48eea4d18ba7c9387bb8747b0abe",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Coefficient.lean",
-      "sha256": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+      "sha256": "42d89f7c58e7dd551b7748f3ad72a518a106dddf07cdbd424d2ffb0e4698247e",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Finite.lean",
-      "sha256": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+      "sha256": "c1ef78482ba2ca014d1b11e465605691720a270c0d4c1ef36a9ed5cef2702223",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Function.lean",
-      "sha256": "6eafada4f9ab878470a28735daad5106026ba70a6cb83f0bd49004dba540c740",
+      "sha256": "5d0de687dfaa0d35c1147e0414d367cb8a3338ba34a249fdaee4fa3256092c5c",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Instrument.lean",
-      "sha256": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+      "sha256": "b026dab1962c5c5f969bf17606d4d2d8f94a231c9bcd9cdbb4d7ede7147b841b",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean",
+      "sha256": "6ac362c61ac7a20c7b865e7268006a8722cf611b56eff841f19edbd28a4b9bc0",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
-      "sha256": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+      "sha256": "c6989c7d8415deeb9213cafdb56b0d00e18d547ca8aaca6896f86db7902d952f",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean",
-      "sha256": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+      "sha256": "62459f93da8a084815a201efc92ec4e37389a61c94149aaf9d9a6ad57b03f9d3",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/ObservationScope.lean",
-      "sha256": "83986a17c17efd5fbe9c8220f0195eee9b53ec087a6b01f46c52d4145f4995b9",
+      "sha256": "5f201bb93891008146244ff8c990a3f9916bccd293f1a5d1adcc5c773ec61a95",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
-      "sha256": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
+      "sha256": "963e05793393baadba88458e46d0a7d4e964259144a69c7f86a78df565a8a829",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Protected.lean",
-      "sha256": "1792118b9824adb2c18d8a5c6d52b2f2c6479176a460185b316ca0ad6c5d5ac0",
+      "sha256": "c2b5084ddb9662ec01da8e4e4292486a92a8f0f3389f425bedce3b3d244de10b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/ProtectedEvaluation.lean",
-      "sha256": "19f3b780bbedd7f78d900fb68f8593683dc3d110e108ee4c61c7de80f9b4e20d",
+      "sha256": "268813d255e2136227829a6660704abca764ec0a15b2f95f9b069292290b9d36",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Pure.lean",
-      "sha256": "83c6c70ce4f34c06a56f9438662aef1cddfc69eb32d114b5d2b6c8adaef6a466",
+      "sha256": "be4a08a8778cc86d4f387f115e5f4a7ad97ca014332b526a6113f731518747f7",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean",
-      "sha256": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+      "sha256": "e5b911d93cd3f049bc8e1982e4a19358613085e454b5e07fc4851bf5a4e9ec25",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Structure.lean",
-      "sha256": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+      "sha256": "d8eaeffd4129fe91256f9b42e2f9997df73b2bea566ee203e8d6f17f67e82b7e",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Trace.lean",
-      "sha256": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d",
+      "sha256": "896a9574df00499b4ab84cce70ad4a5b2f71d752430a39bde1fa03dcdf1c984c",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Reshape.lean",
-      "sha256": "9497443e33e1b3d00b309a7599c77a24f90b0828956ec38b58afb39234bad793",
+      "sha256": "3d71d4a62e50cc8764022698e5d5a232e7228ef74b4243e7c2349907ab3494c1",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Schema.lean",
-      "sha256": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
+      "sha256": "ebc26051e5647fe2b0b8a049de366dad5c4789f377176ec48708310ff0004bf8",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
-      "sha256": "de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0",
+      "sha256": "73be05fc1ed4fd9ba5e4d6a2cd652e22af6221a2f7e31c7c4f09e025c228cf0f",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Exact.lean",
-      "sha256": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303",
+      "sha256": "d8ed218a15dbac1136c94024fbc513b4aaf864680e199e86a698cc8d7236df22",
       "group": "scalar",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Finite.lean",
-      "sha256": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+      "sha256": "f650569fd5a30e02a0f942fed3843914a180f43be5b6712a0449448c3950edde",
       "group": "finite-contract",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Function.lean",
-      "sha256": "119ed5646e8098dd0e6c0a569a16e517b71c6833d2b4265cb1e0bb114cd6cacc",
+      "sha256": "cee88f211ecc3148bde6b0c20fdcd30cd6930a81c9699eb5f830e1a72555079b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Observation.lean",
-      "sha256": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+      "sha256": "4d9badc2d9b93e0f1a29aaedce08da4e6af22f9985d913751502f7debf71531e",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean",
-      "sha256": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+      "sha256": "6565b90c5c6de60a6286a9e20c2ff6ae57e0cb4541c021b50622cc6de8e15d2f",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
-      "sha256": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+      "sha256": "fde66c12b5764ab16ff2f850c950a473a75d555770ffc783c1050389f3f12905",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean",
-      "sha256": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+      "sha256": "e4e1a8385e49ce21c919608cd44c3507596801d6ee90b0f4a3cd2d6985da1258",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean",
-      "sha256": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
+      "sha256": "3749be9773165dc64b7883863096b7896a502b84977407303bcff2e69a4edfd0",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Preparation.lean",
-      "sha256": "db784406ef6338e1b65cb0ad13af6c6b38ae5f04140b2efbecedf4c2db9201ed",
+      "sha256": "fb8bbfeb74154c9cb76a94625c855a838fc0abf0446cab509c512f5d29222b52",
       "group": "preparation",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Protected.lean",
-      "sha256": "9a145100d2a3b839551a9af480eeb36697d19a33da5c5b561569c6c4d775d5e0",
+      "sha256": "355e1c5fd4d4b71d609db8ec66f4e26bd4cc756b70cc9c7a16be57ce49b8978b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Qirf.lean",
-      "sha256": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86",
+      "sha256": "1ea57e0728752984c35e51db44b4136374f50c1c6be9d6f47b0143556bacff60",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Raw.lean",
-      "sha256": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+      "sha256": "0b4ee452e1b540bce6a993f7dc24a823e5db004e4359d768133a0fe0dc629c03",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/RawTrace.lean",
-      "sha256": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+      "sha256": "a2683717ab43af3236c157eeb41f3e2f5b9079a1d86330f54f406415d80ebf22",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Readout.lean",
-      "sha256": "0ae67265e9aa8ae355de2c7a711c14ce2b7812a5c256cb2920c7b825e06ec8bc",
+      "sha256": "1c97c7917590ebe10114dca1d1af3281c6dbdadf6ea28f74b32e7ffcf25b4656",
       "group": "readout",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Uniform.lean",
-      "sha256": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+      "sha256": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+      "sha256": "4692536a6cb2c6de04f3065adc70c1f0c502dd88d9f89b18a1128ae153db47a1",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "35412ea8be973253b2039e64c149a9e8a5974c02388942e1de7b8b78f658cfd2",
+      "sha256": "616ddc36de4dd0c6671140e021fa62511245c94b5d4e9c27994be277af652396",
       "group": "raw-core",
       "surface": null
     },
     {
+      "path": "lean/Qleisli/FiniteBasisTransport.lean",
+      "sha256": "3d234023de811671edf63cc1aeaf739e7dd3a8658d9de3c3a82dcf5aac6d89e9",
+      "group": "finite-bits-interface",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeContract.lean",
+      "sha256": "41446591d1af04b844333dd58220752203a01fb83237dc8240d230e332dc4106",
+      "group": "finite-contract",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/NativeHierarchy.lean",
-      "sha256": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
+      "sha256": "0a3c262722c3a30046eb4f6ee4fe7186a667ae733a1cb9f406e4b96510a64c52",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli/NativeValidity.lean",
-      "sha256": "42bc339072dc89df5b0f6fd08b458153da5b492ba01d12fd22a27ea3405881e5",
+      "sha256": "bd528d8cd91afe78c8d9fdd3dbbe892daa1c787b8724ea9aa5795dfb1f13483d",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Qirf.lean",
-      "sha256": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
+      "sha256": "8e65edd57e560b09613b00b9123ae5e293a967a39002785dc70ca85419c4d05a",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli/QirfValidity.lean",
-      "sha256": "9813f7f221321b2515c693d4c2f76e46af9115604556f74a6822c6215d56c409",
+      "sha256": "6c690a977a27f160073b869b407bcecef285b181015c89e29453cdd0b01eb566",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Raw.lean",
-      "sha256": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
+      "sha256": "ea98c35979022039d0af89400bc707f1d8d27e2365e10446754170f6c4e96fb2",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawBranchFunction.lean",
-      "sha256": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+      "sha256": "e891e667b50f45429b82b2a5d5f5f76fa1d2750e4e2ad0df96fd3990307c3b9c",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawCoefficient.lean",
-      "sha256": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
+      "sha256": "b5f327124a4b446422d737e2fbc2bbdec4f8c3a349a9a7ebdefdf1be8357f778",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawDenotation.lean",
-      "sha256": "3dcfa99abe873decec825013991e403ecfd7239ebc305c5395a13d3b9a1a51e4",
+      "sha256": "9437f72720ca53e068b6a34d0cf2b4a08b57127b77d8765ea1a3e57361a3f11a",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawFunction.lean",
-      "sha256": "3d89ce3f86dcf17aa6090b25e3bf18b0589f10792f56f150e652ff9394a34efc",
+      "sha256": "7b887864371950cf8621bce37a1edefd27ec4db8375ec9e025aca28cf6f6a271",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawInstrument.lean",
-      "sha256": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+      "sha256": "749ab7da16164fef39995145149a500b884cf1078eb462442ba4bae840cc31cc",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawInstrumentDenotation.lean",
-      "sha256": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+      "sha256": "d97d3ba3ad8ac2744aae7eee5ca6fb4965cefab9a1943974015523a18f9314fb",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawProtected.lean",
-      "sha256": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
+      "sha256": "821dc9938d915e52906b58b872b8ba9bf82dba456f9201e647dfd614ef8dfe88",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawProtectedCommutation.lean",
+      "sha256": "813beed5ec112923db8d3779c7281cf065886be899de8c720be35a01a4042328",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawProtectedEvaluation.lean",
-      "sha256": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
+      "sha256": "175485db8bfad38ce2c338433503b6c0ea586c419609baca3b29a5e6f7068151",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawPure.lean",
-      "sha256": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
+      "sha256": "84ab47f7289210673abc1524484f17774a308804aca497d863118a853bd13393",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawStreamedInstrument.lean",
-      "sha256": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+      "sha256": "c8d0f3684f7a24f28c2af023eebe266af9315f805a7265b7397d61ef3a082d72",
       "group": "raw-core",
       "surface": null
     },
     {
+      "path": "lean/Qleisli/RoutedControlCommutation.lean",
+      "sha256": "b0a940328561899330b31b35961c22feefb2104ef719082e115a8f70ae2d64b9",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/Semantics/ObservingAction.lean",
-      "sha256": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+      "sha256": "4155642faecd1d3aa93e1efadfdc0d82e538a0459daf083d2c378560ce75e3b4",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/ObservingFunction.lean",
-      "sha256": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
+      "sha256": "0d5f60e035394997b9d6f680f5d6e303633a35506838efa569b23b2fc24dd655",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/Protected.lean",
-      "sha256": "477f6a11e5582861e19cab9c9cda100766585280e1239b53b3365f70234b0d7f",
+      "sha256": "b47591643e3053f1253d9f3d8f6e485f3c19a896e9fd6c56c83fb2e726d808cd",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/ProtectedMatrix.lean",
-      "sha256": "38f56fb5249705313736880e0d6e60d1be8a6a255168d64877c4e3228d308b35",
+      "sha256": "96286f9e1f858d7fc6e59a1122bff03f6f7e96b0c0070d9d12cf0f0b292cc633",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/Qirf.lean",
-      "sha256": "f37cb57590e8d780894b1a5a940582457d3c493df409546b94c659d66d725bc3",
+      "sha256": "1fbb968811cdbef93c3acb1e075ecf8bfe02c7bb4fa5afb1dda5df557a509a05",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/Raw.lean",
-      "sha256": "f06aaa32286366d32915d8730011de29e6390d2e43049a0553e5a1a634901ee8",
+      "sha256": "8134ab72d192aad0bbff206b8adc7c1f9690db00f2e214dff13dfdca0398c61d",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/RawAction.lean",
-      "sha256": "40e4ff0b8d3e3b20ca6e64959f72742c5b6876a2f2b460edfa363c8745bab7fb",
+      "sha256": "39656b462667becb7766ef6db29dd30e66022010ca2b7f72c7e5051c60ca2ed7",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/RawFunction.lean",
-      "sha256": "bcfd2976d4ade6bf6911a02f4d318e66fa12954a503b21a8d789fbaeca2e3947",
+      "sha256": "1ed575d460267d6b0e70d204e83027b9fcd6ae95f3cc619c555f224903244071",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/RawInstrument.lean",
-      "sha256": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+      "sha256": "68256d5af69fad25aa1fbc4846512451c3998f5e1fa476024f7e162d418eb9c3",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Semantics/RawPure.lean",
-      "sha256": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
+      "sha256": "687f3658a624d520c48d83525d9d7991cd5fab64db6eccd8781afdae549a1792",
       "group": "raw-core",
       "surface": null
     },
     {
+      "path": "lean/Qleisli/SharedControlCommutation.lean",
+      "sha256": "58f269b3d02af4836ba93db1669926105e3504601cd534cb3928b6fba06b35fd",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "python/qleisli/__init__.py",
-      "sha256": "fcc8837550a505bc37d9f85b05c5659f06e9e27d9d78fdb3d088a3b86bb590e6",
+      "sha256": "bc53002ba36969d062008490ae30ce76db25a365d2261383888d5b8eb863f107",
       "group": "foreign",
       "surface": null
     },
     {
       "path": "python/qleisli/__main__.py",
-      "sha256": "7c0ca09223cb98192ca4e5a16b330685b2cee43debb0d8576acbd40fc8bffb5a",
+      "sha256": "e0be211b21e3e9dce4c5d88deda4968c0e9796480af07ad31e4f6607ad357018",
       "group": "foreign",
       "surface": null
     },
     {
       "path": "python/qleisli/_qir.py",
-      "sha256": "5f29fb4e3a1cb720ac42244744fc0d93ea6bb2d5f80a6e41e6018bbbe4d6324b",
+      "sha256": "584d48ba6480f6c40fc0a742eb7cb94f2a6a7f5dcecd9c1817ae814ee1a874d9",
       "group": "foreign",
       "surface": null
     },
     {
       "path": "scripts/test_instrument_host.py",
-      "sha256": "1320846b61fb3b7c40adaced11f0f68fe3ccebbbbcfe0af49f9429fab29c84c0",
+      "sha256": "271274bbe737c6bedd43943488ec234b15cd4c159d3bcba750dc33658a5b2479",
       "group": "instrument",
       "surface": null
     },
     {
       "path": "scripts/test_lean_branch_function.py",
-      "sha256": "2cc11b1b9314e1022f41637a866f27b7e6bf4f9da94a40f4a1892893ff377d8b",
+      "sha256": "fa6f1c1778200d662ffe6c48b4a6e64069a3fad2048f084a6a31a7175735827b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "700c83c7c0098a0683ca4519f0f85c8026ef71f534df4cbf2604f8a2c82c6317",
+      "sha256": "14cd6e4a520227df5c8e54b12a3ef0e1e955c4d374fa013b4ddd5fb9a372618a",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "ecac7a86f35a062265eef48bd045f8904ffc8e0667aea2e945d7416219cc71b2",
+      "sha256": "085ebb83fda7f0a1fe5c28433e5b8cc704e7a86b5282c0883b701d3b275030cf",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw_completion.py",
-      "sha256": "6f51ec96df255d165f28956d28169cee80b53c83b0a6c69f41c05c8901567e11",
+      "sha256": "495c1e340da7c27e37ae21ab716f68734565db8ce171e3d4ed03d0f28c8adaff",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_streamed_instrument.py",
-      "sha256": "fdba1047f30a2dcde8699c3762b75dfa1f31868bc24088e3e368b8cf35b8bc10",
+      "sha256": "dba590babf92794e5023fc29bf9504d02eaff3287411f199b24cf866ebf36634",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "5863d1652709663ce577d012ceb6e45a43249ee5e5cc11d431a2fb1a0ae8a096",
+      "sha256": "adb753e033dff705e70f3f1cb5dc493b3c6a4a91acb60c6bccd1307415d65601",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2717,7 +3105,7 @@
     },
     {
       "path": "src/bin/qleisli/artifacts.rs",
-      "sha256": "a6c50b60764b070f4deeb0f1b38794c21f8d7108a5d2a88c0893e7810c974d47",
+      "sha256": "8bfe629c5b881651fea5a5fde17b889abd6d27af9d03edec790852547d93646e",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2737,7 +3125,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "792880ca3d3d0f8daafe5a948162c87e8055aaa90f364d79b69761ae8d4a2d4c",
+      "sha256": "59bb912e4ed836f3d54c68d48a504f9bb0bf7449bbf685f80dc8cdbd02697124",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2747,7 +3135,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "bf2058bf12225c43e304be7746bb6e3f767a3eaf086f8b719ef5200fbc5d47ed",
+      "sha256": "254694ac9ee8fd1453dcf7f3ebe7bdcaa90aae4125187a546688c8215ad7f0c4",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2768,19 +3156,24 @@
       }
     },
     {
-      "path": "src/bin/qleisli/sized.rs",
-      "sha256": "bf0be6d54c6ddf53ea1ce4ff43751d116401be2afceb498c07063f63bbd71479",
+      "path": "src/bin/qleisli/source_commands.rs",
+      "sha256": "320edbe1938d5240aa3c7bc7cccaa03992854dc5910c2b1a421839a752e004d2",
+      "group": "execution",
       "surface": {
         "declarations": [],
-        "functions": [],
+        "functions": [
+          "pub fn canonicalize(mut self) -> Self",
+          "pub fn compile(&self, kernel: &Kernel) -> Result<qleisli::AcceptedProgram, Diagnostic>",
+          "pub fn path(&self) -> &Path",
+          "pub fn select(options: &Options) -> Result<Self, Diagnostic>"
+        ],
         "capacity_constants": []
-      },
-      "group": "sized-source"
+      }
     },
     {
-      "path": "src/bin/qleisli/sized/options.rs",
-      "sha256": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+      "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
+      "sha256": "8bee921d3a97e022359541d1e65eee43330ed96665595f879bc5cda7d2af9b0a",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2788,9 +3181,9 @@
       }
     },
     {
-      "path": "src/bin/qleisli/source_commands.rs",
-      "sha256": "386fb4823e63dac7fb66f2b4095a72e322e83d29ce258047a29baa57566dfd60",
-      "group": "execution",
+      "path": "src/bin/qleisli/source_plan/options.rs",
+      "group": "sized-source",
+      "sha256": "0a3108a0c848a987101793910bf14c83cfff01accc2868583bc5f640b5e27224",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2841,7 +3234,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "55eea7babd677a05d799087284e3ffa6a14408f814731f4d0af52cb572dcb6f3",
+      "sha256": "6682668286a75f43fb8ffec51e6ff4517af26b250c35c408ca2443bdbd2842ff",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -2850,7 +3243,7 @@
         ],
         "functions": [
           "pub fn check( signature: BasisType, implementation: RawProgram, specification: RawProgram, identity: FunctionIdentity, budget: &mut Budget, ) -> Result<Self, ContractError>",
-          "pub fn check_binding( &self, identity: &FunctionIdentity, implementation: &RawProgram, specification: &RawProgram, ) -> Result<(), ContractError>",
+          "pub fn check_binding( &self, signature: &BasisType, identity: &FunctionIdentity, implementation: &RawProgram, specification: &RawProgram, ) -> Result<(), ContractError>",
           "pub fn checker(&self) -> &std::path::Path",
           "pub fn circuit(&self) -> &Circuit",
           "pub fn depth(&self) -> usize",
@@ -2872,7 +3265,7 @@
     },
     {
       "path": "src/contract/meaning.rs",
-      "sha256": "4605b2f0e58143919a98332b3bdaee02909a5044d902253a21060026e241e3f7",
+      "sha256": "3dcd705b288a9e55ef124601e977623ad1387cbb4b2ef33d7d2ef818778c302c",
       "group": "finite-meaning",
       "surface": {
         "declarations": [
@@ -2897,7 +3290,7 @@
     },
     {
       "path": "src/contract/mod.rs",
-      "sha256": "4aa9dc811c8c09aa629e7d7411fd036a7906dc128e71142627986ff31747a580",
+      "sha256": "e75ac9d3684aea6ba1216be24db6ff6502cdcef154098b03e8354a487f655969",
       "group": "finite-contract",
       "surface": {
         "declarations": [
@@ -2949,15 +3342,19 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "2c5a7d97c82d6337be23c8ed6ec4163bf1724d662dbffe9d347ce961b9b75ca4",
+      "sha256": "64867002103b64537366b9d474d6603f8f6c5bdff6ca0a55bff3a93da892b072",
       "group": "source",
       "surface": {
         "declarations": [
           "Access",
+          "AccessArgument",
           "AccessConstraint",
+          "AxisSelection",
           "BasisExpr",
           "BasisExprKind",
           "Block",
+          "Compare",
+          "Count",
           "Decl",
           "Expr",
           "ExprKind",
@@ -2965,17 +3362,24 @@
           "FnKind",
           "Ident",
           "Module",
+          "NatKind",
+          "Natural",
           "Param",
           "Pattern",
           "PatternKind",
+          "Predicate",
+          "QuantumAccess",
+          "Requirement",
           "Span",
           "StaticOp",
           "StaticOpKind",
           "StaticParam",
+          "StaticParamKind",
           "Stmt",
           "StmtKind",
           "Type",
           "TypeKind",
+          "UnsupportedClosure",
           "UseDecl"
         ],
         "functions": [
@@ -2986,8 +3390,105 @@
       }
     },
     {
+      "path": "src/frontend/check.rs",
+      "sha256": "3096d423f26bcc5ea7f93d141d3b440fc0be1f3d3e0ed8806395f1ec7d1f397f",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn charge(&self, span: Span, cells: usize) -> Result<()>",
+          "pub fn finite() -> Self",
+          "pub fn in_module(mut self, module: &str) -> Self",
+          "pub fn interface(&self, id: DefId) -> &Interface",
+          "pub fn new(code: &'static str, span: Span, message: impl Into<String>) -> Self",
+          "pub fn preparation_charge(&self, span: Span, cells: usize) -> super::error::Result<()>",
+          "pub fn selected() -> Self"
+        ],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "sha256": "ab3c60b8a8e2093b981604032074419623583a63cc35e8a852ceb0ac836585c3",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "sha256": "606fbbfc52ac2b96b16c2667944fa8c71f858f94a17d994d38efd8efc44d302c",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "sha256": "cdd84f01a9a4dfbc193571de789ca8ad202aa2a39ddf7e778287c699ec29f1eb",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/declarations.rs",
+      "sha256": "592354b281833e171ded7003db5703c15d1e0b2a6a06e40d2b5490447a0d86d1",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "sha256": "d9d6f2569f75c24b3a4f0ee8dbc3d73fd44aeeea649e403384c42bc19d20fe53",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "sha256": "b571be2b5fed4ad1a7b0c72988172b5bb5f879c797fc1606c4a1bd401feef37e",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn dependent(self) -> bool",
+          "pub fn effect(self) -> Effect",
+          "pub fn fixed( self, ns: &[Linear], context: &Context, span: Span, budget: &Budget, ) -> Result<(Vec<Ty>, Ty)>",
+          "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn natural_arity(self) -> usize",
+          "pub fn output(self, input: Vec<Ty>, span: Span, budget: &Budget) -> Result<Ty>",
+          "pub fn path(self) -> &'static str",
+          "pub fn runtime_arity(self) -> usize"
+        ],
+        "capacity_constants": []
+      },
+      "group": "source"
+    },
+    {
+      "path": "src/frontend/check/static_helpers.rs",
+      "sha256": "3f0188477d5e37f59e0c234e442bdc8508776830e8c71085bac739956d87f276",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "f37a935885ab3ff57945d5fb4d3a6096ad741e0dd276a2bd42c12f707537c0ce",
+      "sha256": "f6f89e4715acf40003e4b3361c759f3e796c0ba4c9c24adf65c009adfa05cbd7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2997,7 +3498,7 @@
     },
     {
       "path": "src/frontend/compile/circuit.rs",
-      "sha256": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
+      "sha256": "f32846624f203b38dfc2b45fcc2eef53362dc55d6fd61cf0e814b4d7fdf11c0f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3007,7 +3508,7 @@
     },
     {
       "path": "src/frontend/compile/lower/branch.rs",
-      "sha256": "71abef9520176904ce2f372408e103b23647f44310e26cc3ed3c8254be5df755",
+      "sha256": "123fa3537170f92c4e81181beec07563b159cacb4aed12aeaa2245a3e5482caa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3017,7 +3518,17 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "9fea23f2834063d2fdc9ce67414c4ca48b840d5693b677ddc8f9ebb3ad64e4e8",
+      "sha256": "e24d2040312abb6ffb10e7b3cac364988789fe4ae85c84f8968dd18b8cbca7a7",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/classical.rs",
+      "sha256": "14454ab49676a860cc622f09d6f5c9c0f118cbeb2fb8b3bd2e105779452164fb",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3027,7 +3538,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "50f11ce3fccd9649abeca96cbb7f10a6d1ed6e1e742e2985abb24d7f36976a27",
+      "sha256": "214cc2304bb72db7741cd6950c78e744256bd6749a05fe6aa815229f9010ead8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3037,7 +3548,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "d2432ea2d33bbe9c8592d3fee1d12a6ce21a63360fe72b7db3b2fed40e2e9bae",
+      "sha256": "383846975c23aa103c3e8b1763be262e09b5f1d8c74e6816f8bb58b8958ba6f8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3047,7 +3558,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "031060a254996cc1953ee08619c00018e8a2a5ff248c6408d583a2852c330b57",
+      "sha256": "6b7deb61bc0f51c0eb28f6fa1a8ba63e2ee838a1a5d9f0c2aba11718ccb92d32",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3057,7 +3568,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+      "sha256": "cf72836eb875b6f0852f24dc9c60a14f062321d061780faf9fa43799f2b01539",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3067,7 +3578,7 @@
     },
     {
       "path": "src/frontend/compile/lower/scope.rs",
-      "sha256": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+      "sha256": "e4d3e09afbca1a3918e65a8b827d62ac67c154e0ecfb81469e5d21bd9c6c490a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3077,7 +3588,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "d34fa819051de9f8a3313c7f716c79ec101fc278be3238a431b2ba7e7341fcea",
+      "sha256": "d55b844def57f866750df3960ea58e020aba70f4fc82421b9f704d38f70ff225",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3087,7 +3598,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+      "sha256": "5fe243278e0d7f7fb06ef9bb241f0cb350dce5d9a25e79c93e6238861c34a84d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3097,12 +3608,13 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "6ff5c0d0c0500c3b385893e08f0abc5a5a32fa8d6af518e58429e4551fde1335",
+      "sha256": "a1a941234b6e009d3ee15a251651cfe174234fdc19214d138bfb292c1259292b",
       "group": "source",
       "surface": {
         "declarations": [
           "CompileError",
-          "ErrorCode"
+          "ErrorCode",
+          "ProjectEffects"
         ],
         "functions": [
           "pub fn check_project(root: &Path) -> Result<(), CompileError>",
@@ -3116,7 +3628,10 @@
           "pub fn compile_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
           "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<AcceptedProgram, Diagnostic>",
           "pub fn compile_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
-          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>"
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn documentation(&self, module: &str) -> Option<Result<String, super::parser::ParseError>>",
+          "pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect>",
+          "pub fn project_effects_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<ProjectEffects, Diagnostic>"
         ],
         "capacity_constants": [
           "const MAX_BITS: usize = 12;",
@@ -3129,7 +3644,17 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "1b743356c933fb07da6484c82ae4b3ecba702be796a0d4e22dcc8712e5593abe",
+      "sha256": "bd48bb0fa042a524d175c7612875630c3b7c7d59da216a21211c8524a30294ea",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "sha256": "467899cc118ce1ba921d13396f6762098cc82bfee61ad154401ffb9c691cc54d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3139,7 +3664,7 @@
     },
     {
       "path": "src/frontend/core.rs",
-      "sha256": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+      "sha256": "b3408205fbc00db5179ddfa7587a70b9cf300f89608820707b039018be4cb9c2",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3153,7 +3678,7 @@
     },
     {
       "path": "src/frontend/diagnostic.rs",
-      "sha256": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+      "sha256": "6dc493549ea758c25e11f77184d6cb04c35fbd493dbcf3ced841a954cb93ca68",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3166,7 +3691,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+      "sha256": "239495d8a77186891cfb148955a57504a288fcd03b3743259608a3c56696d9c8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3184,8 +3709,63 @@
       }
     },
     {
+      "path": "src/frontend/effects.rs",
+      "sha256": "11f14b59895e6e273214f6aed6fda1d6b8750d25b84df6863045a4843c44044d",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "FunctionEffect"
+        ],
+        "functions": [
+          "pub fn add(&mut self, effect: Effect, span: Span)",
+          "pub fn asserted(self) -> Option<Effect>",
+          "pub fn call(&mut self, id: DefId, span: Span)",
+          "pub fn inferred(self) -> Effect",
+          "pub fn inferred_with(&self, effects: &BTreeMap<DefId, Effect>) -> Option<Effect>",
+          "pub fn merge(&mut self, body: &Self)",
+          "pub fn new(span: Span) -> Self",
+          "pub fn origin(&self, effects: &BTreeMap<DefId, Effect>) -> Span",
+          "pub fn require_unitary(&mut self, id: DefId, span: Span)",
+          "pub fn storage_cells(&self) -> usize"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/error.rs",
+      "sha256": "a70dce4284a164d9cdf7b6055d68913ffd86c4382af8a959c8bda5b0f8629fd9",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "Error"
+        ],
+        "functions": [
+          "pub fn code(&self) -> &str",
+          "pub fn message(&self) -> &str",
+          "pub fn module(&self) -> Option<&str>",
+          "pub fn span(&self) -> Span"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "sha256": "3daa302b5153e36186350caac11fa1970eb81f233e2938f0ded12a7a2b11a33a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn advance<E>( &mut self, ordinal: usize, source: &StaticParam, key: BinderKey, check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<Type<N>>, Option<M>), E>, ) -> Result<(), E>",
+          "pub fn grant(&mut self, key: Option<&BinderKey>, access: Access) -> Result<(), AccessError>",
+          "pub fn into_operations(self, count: usize) -> BTreeMap<BinderKey, Operation<N, M>>",
+          "pub fn new() -> Self"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/lexer.rs",
-      "sha256": "ec0260843907a15231277da77cc9a1b5fc13667f8a455826ca558e188a9a99cd",
+      "sha256": "a0f0e0272bf33c546a06d98f8f980090c85602a5825ec59825b5f4b22303bb17",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3202,7 +3782,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "342b8de6e0dacfe18dcf923ce083c6d2c8c1c5dc75760b24ed75b2234c2fe86a",
+      "sha256": "114ef681c244cf03fcaa4594f79661ac176301a78dd8de641ea604ff0507bb3b",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3211,18 +3791,38 @@
           "core",
           "diagnostic",
           "documentation",
+          "effects",
           "lexer",
           "parser",
-          "project",
-          "sized"
+          "project"
         ],
         "functions": [],
         "capacity_constants": []
       }
     },
     {
+      "path": "src/frontend/ordinary.rs",
+      "sha256": "6f313a04ac0e4a6e2446b1e3b8fe93c998e9d372bdbb9c8fef5768c8b73adebf",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/ordinary/finite.rs",
+      "sha256": "8fd5f24a45bf58497e241a2d08c6948acc318cbcc85e2d79dbed7079b4ad34be",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/parser.rs",
-      "sha256": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
+      "sha256": "2b45b2e6520329112a4672deb9f7d3f4788c9ab15166076fade1323d1ab56672",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3241,8 +3841,28 @@
       }
     },
     {
+      "path": "src/frontend/parser/tests.rs",
+      "sha256": "d1c5946de23f53b5e36c0313fadbd5842328def878e95b767fc62372fbae5016",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/pattern.rs",
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/project.rs",
-      "sha256": "86445800bcaa9eea13b923335e79958a97283eec916f2e2e14af315e450746b8",
+      "sha256": "714905039ae5f7329f0c222ee9b91daa25d5a6365c93428487a1857f63b5f6cb",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3265,7 +3885,7 @@
     },
     {
       "path": "src/frontend/project/edition.rs",
-      "sha256": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
+      "sha256": "6b68936c818b0910fb685d5113df005b1ea560b3bdecab0db31802831b312ca1",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3277,7 +3897,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "8614136fba9798fcf6bb911ddc301acd6f9d4059ae5a74e18e8ed5a53be0e043",
+      "sha256": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3304,34 +3924,120 @@
       }
     },
     {
-      "path": "src/frontend/sized.rs",
-      "sha256": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+      "path": "src/frontend/raw_state.rs",
+      "sha256": "3a7f11aed665163ada6543c05e07d32d624bb74dc612eb1db497146fe91c6a5a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/resolve.rs",
+      "sha256": "8cec720c14c5929abbccd3842fccf62c1d930fdef2f1f400685e29c96016452a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn declaration(&self, id: DefId) -> &Declaration",
+          "pub fn declarations(&self) -> impl Iterator<Item = (DefId, &Declaration)>",
+          "pub fn imports(&self, caller: ModuleId, ast: &Module) -> Result<Scope, Failure>",
+          "pub fn imports_budgeted<E: From<Failure>>( &self, caller: ModuleId, ast: &Module, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Scope, E>",
+          "pub fn local(&self, module: ModuleId, name: &str) -> Option<DefId>",
+          "pub fn lookup(&self, module: ModuleId, name: &str) -> Option<Target>",
+          "pub fn module(&self, name: &str) -> Option<ModuleId>",
+          "pub fn module_name(&self, id: ModuleId) -> &str",
+          "pub fn new<'a>( modules: impl IntoIterator<Item = (&'a str, &'a Module)>, ) -> Result<Self, Failure>",
+          "pub fn new_budgeted<'a, E: From<Failure>>( modules: impl IntoIterator<Item = (&'a str, &'a Module)>, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Self, E>",
+          "pub fn path(&self, id: DefId) -> String",
+          "pub fn qualified(&self, path: &str) -> Result<DefId, FailureKind>",
+          "pub fn scope(&self, module: ModuleId) -> &Scope",
+          "pub fn set_scope(&mut self, module: ModuleId, scope: Scope)",
+          "pub fn set_scope_budgeted<E>( &mut self, module: ModuleId, scope: Scope, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
+          "pub fn target_path(&self, target: Target) -> String",
+          "pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "sha256": "e2e274cc224b82364fa9f790eb538d89e6821a0c2157eb217569a9f409a62d0c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn binder(&self, id: BinderId) -> &BinderInfo",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn from_occurrences( tables: BTreeMap<DefId, Arc<Table>>, occurrences: OccurrencesForest<'ast>, ) -> Self",
+          "pub fn info(&self, id: BinderId) -> &BinderInfo",
+          "pub fn insert_budgeted<E>( &mut self, occurrences: Occurrences<'ast>, span: Span, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn local_key(&self, name: &Ident) -> Option<&BinderKey>",
+          "pub fn natural_usage(&self, natural: &Natural) -> UseSiteId",
+          "pub fn new_budgeted<E>( definition: DefId, declaration: &'ast Decl, global: impl Fn(&str) -> Option<Target>, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Self, E>",
+          "pub fn resolve(&self, name: &Ident) -> ResolvedUse",
+          "pub fn take_occurrences(&mut self) -> Occurrences<'ast>",
+          "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> UseSiteId"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/scanner.rs",
+      "sha256": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn into_docs(self) -> Vec<DocComment>",
+          "pub fn join(&mut self, token: &mut Token, suffix: char) -> bool",
+          "pub fn new(source: &'a str, max_comment_depth: Option<usize>, retain_docs: bool) -> Self",
+          "pub fn next(&mut self) -> Result<Token, ScanError>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize.rs",
+      "sha256": "981aaa5652c4273f8324d10aade84d2d8dc90feffcf07b1b56caa8946024d2b3",
       "group": "sized-source",
       "surface": {
         "declarations": [
-          "Error",
+          "BasisBinding",
           "Instantiation",
           "OperationBinding",
           "ParsedProgram"
         ],
         "functions": [
-          "pub fn code(&self) -> &str",
           "pub fn definition(&self) -> &str",
+          "pub fn documentation( &self, module: &str, ) -> Option<std::result::Result<String, super::parser::ParseError>>",
           "pub fn elaborate(&self) -> Result<ElaboratedProgram>",
           "pub fn entry(&self) -> &str",
+          "pub fn finite_meaning_target( &self, path: &str, ) -> Result<crate::contract::meaning::FiniteMeaning>",
+          "pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect>",
           "pub fn instantiate( &self, entry: &str, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
+          "pub fn instantiate_with_types( &self, entry: &str, types: BTreeMap<String, BasisBinding>, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
           "pub fn load(files: BTreeMap<String, PathBuf>) -> Result<Self>",
-          "pub fn message(&self) -> &str",
-          "pub fn module(&self) -> Option<&str>",
           "pub fn module_names(&self) -> impl Iterator<Item = &str>",
           "pub fn naturals(&self) -> &BTreeMap<String, u32>",
           "pub fn naturals(&self) -> &BTreeMap<String, u32>",
           "pub fn new(definition: impl Into<String>, naturals: BTreeMap<String, u32>) -> Self",
           "pub fn operations(&self) -> &BTreeMap<String, OperationBinding>",
+          "pub fn parse(source: &str) -> Result<Self>",
           "pub fn parse(sources: BTreeMap<String, String>) -> Result<Self>",
           "pub fn program(&self) -> &ParsedProgram",
           "pub fn source(&self, module: &str) -> Option<&str>",
-          "pub fn span(&self) -> Span"
+          "pub fn syntax(&self, module: &str) -> Option<&super::ast::Module>",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
+          "pub fn with_types( definition: impl Into<String>, types: BTreeMap<String, BasisBinding>, naturals: BTreeMap<String, u32>, ) -> Self"
         ],
         "capacity_constants": [
           "const MAX_MODULES: usize = 64;",
@@ -3341,32 +4047,40 @@
       }
     },
     {
-      "path": "src/frontend/sized/ast.rs",
-      "sha256": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+      "path": "src/frontend/specialize/ast.rs",
+      "sha256": "a7c78742a1a92ce68e76fc44a39b8c03397a962aa4273cbcad4b50926475c660",
       "group": "sized-source",
       "surface": {
         "declarations": [],
-        "functions": [],
+        "functions": [
+          "pub fn finish( self, lexical: Arc<Table>, effect: crate::frontend::effects::FunctionEffect, ) -> Function",
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
         "capacity_constants": []
       }
     },
     {
-      "path": "src/frontend/sized/check.rs",
-      "sha256": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+      "path": "src/frontend/specialize/bindings.rs",
+      "sha256": "cc52f8f61a427037d36040d2cb1413585d0b810d90b3c31d88368aec11d03ae2",
       "group": "sized-source",
       "surface": {
         "declarations": [],
-        "functions": [],
+        "functions": [
+          "pub fn output(&self) -> &SourceType"
+        ],
         "capacity_constants": []
       }
     },
     {
-      "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+      "path": "src/frontend/specialize/elaborate.rs",
+      "sha256": "74766c764a04d18298e2053415665da7c945538a16312eb27cffc229deef6055",
       "group": "sized-source",
       "surface": {
         "declarations": [
           "ElaboratedProgram",
+          "HierarchyEligibility",
           "SourceDefinition",
           "SourceOperation",
           "SourceStep",
@@ -3374,9 +4088,13 @@
           "SourceValue"
         ],
         "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
           "pub fn call_instances(&self) -> usize",
           "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_function_contracts( &self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<Self>",
           "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn check_operation_meanings<'a>( &'a self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<super::CheckedSourceMeanings<'a>>",
           "pub fn child(&self) -> Option<&Self>",
           "pub fn definition(&self) -> Option<usize>",
           "pub fn definitions(&self) -> &[SourceDefinition]",
@@ -3385,6 +4103,10 @@
           "pub fn fields(&self) -> &[SourceType]",
           "pub fn fields(&self) -> &[SourceValue]",
           "pub fn fold_iterations(&self) -> usize",
+          "pub fn has_control_obligations(&self) -> bool",
+          "pub fn has_function_contracts(&self) -> bool",
+          "pub fn has_operation_meanings(&self) -> bool",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
           "pub fn identity(&self) -> Option<u32>",
           "pub fn inputs(&self) -> &[SourceValue]",
           "pub fn inputs(&self) -> &[SourceValue]",
@@ -3393,6 +4115,10 @@
           "pub fn kind(&self) -> &'static str",
           "pub fn kind(&self) -> &'static str",
           "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
+          "pub fn lower_raw_operation(&self, name: &str) -> Result<super::RawSourceProposal>",
+          "pub fn lower_raw_operation_at( &self, caller: usize, name: &str, ) -> Result<super::RawSourceProposal>",
+          "pub fn lower_raw_with_kernel( &self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<super::RawSourceProposal>",
           "pub fn module(&self) -> &str",
           "pub fn module(&self) -> &str",
           "pub fn natural_arguments(&self) -> &[u32]",
@@ -3412,6 +4138,7 @@
           "pub fn span(&self) -> Span",
           "pub fn steps(&self) -> &[SourceStep]",
           "pub fn ty(&self) -> &SourceType",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
           "pub fn width(&self) -> Option<u32>"
         ],
         "capacity_constants": [
@@ -3424,8 +4151,8 @@
       }
     },
     {
-      "path": "src/frontend/sized/fourier.rs",
-      "sha256": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
+      "path": "src/frontend/specialize/fourier.rs",
+      "sha256": "3d41b23d55789050beb19e19d395207c3f795efec249a7c6941fcd655ba9bb1d",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3434,29 +4161,34 @@
       "group": "sized-source"
     },
     {
-      "path": "src/frontend/sized/linear.rs",
-      "sha256": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
-      "group": "sized-source",
+      "path": "src/frontend/linear.rs",
+      "sha256": "63af6b8c486eb23d8da07a1e4ac52add16101d1da5c094ada71e54e7f5b28ac0",
+      "group": "source",
       "surface": {
         "declarations": [],
         "functions": [
-          "pub fn add(&self, b: &Self) -> Result<Self>",
-          "pub fn compare( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, ) -> Result<Self>",
+          "pub fn add_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn compare_budgeted( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
           "pub fn constant(n: i128) -> Self",
-          "pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool>",
-          "pub fn natural(names: impl IntoIterator<Item = String>) -> Result<Self>",
-          "pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool>",
-          "pub fn push(&self, inequalities: &[Linear]) -> Self",
-          "pub fn scale(&self, n: i128) -> Result<Self>",
-          "pub fn sub(&self, b: &Self) -> Result<Self>",
-          "pub fn variable(name: &str) -> Self"
+          "pub fn constant_budgeted( n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn feasible_budgeted( &self, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn natural_refs_budgeted<'a>( names: impl IntoIterator<Item = &'a BinderKey>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn proves_le_budgeted( &self, a: &Linear, b: &Linear, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn push_budgeted( &self, inequalities: &[Linear], span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn scale_budgeted( &self, n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn storage_cells(&self) -> Result<usize>",
+          "pub fn sub_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn substitute_budgeted( &self, values: &BTreeMap<BinderKey, Self>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn variable_budgeted( name: &BinderKey, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>"
         ],
         "capacity_constants": []
       }
     },
     {
-      "path": "src/frontend/sized/lower.rs",
-      "sha256": "4edbcf115c9756713317056b9eeefadef42543cf97e8710fd94f3346e1d89e68",
+      "path": "src/frontend/specialize/lower.rs",
+      "sha256": "4a7205f7fe4e6a84e6c4b402667a875f5c988c7609313a4458bd0cf924da4dc5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3478,8 +4210,8 @@
       }
     },
     {
-      "path": "src/frontend/sized/lower/preservation.rs",
-      "sha256": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+      "path": "src/frontend/specialize/lower/preservation.rs",
+      "sha256": "d72a14671ef8b1902a90ca48849ce583e2eca1affb88a11033349b882bef2464",
       "surface": {
         "declarations": [
           "FramePort",
@@ -3489,6 +4221,8 @@
         ],
         "functions": [
           "pub fn axes(&self) -> &[u32]",
+          "pub fn basis(&self) -> &SourceType",
+          "pub fn basis_kind(&self) -> &'static str",
           "pub fn call_path(&self) -> &[usize]",
           "pub fn crossed_events(&self) -> &[usize]",
           "pub fn definition(&self) -> usize",
@@ -3510,8 +4244,8 @@
       "group": "sized-source"
     },
     {
-      "path": "src/frontend/sized/parser.rs",
-      "sha256": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13",
+      "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
+      "sha256": "0cef4aa328836e5271042e3597a62fe4ac44562deb109666d78e72493c5f85dd",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3520,21 +4254,43 @@
       }
     },
     {
-      "path": "src/frontend/sized/primitive.rs",
-      "sha256": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+      "path": "src/frontend/specialize/meaning.rs",
+      "sha256": "7b5f18f0ac3117f030a31935bb2eb9d7de78a13c2ce8bbcc2618b89e47bb90a9",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/projection.rs",
+      "sha256": "7a053ddd6223a5e72034c47e175c057665324d3461a32f4f6a5c939744fceb84",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/primitive.rs",
+      "sha256": "250457dcac0f211a17559c1897cc430f8564d4a19b99a22ae1b59ee4fd0a4b1b",
       "group": "sized-source",
       "surface": {
         "declarations": [],
         "functions": [
+          "pub fn dependent(self) -> bool",
           "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn runtime_arity(self) -> usize",
           "pub fn signature(self) -> Signature"
         ],
         "capacity_constants": []
       }
     },
     {
-      "path": "src/frontend/sized/qpe.rs",
-      "sha256": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+      "path": "src/frontend/specialize/qpe.rs",
+      "sha256": "a3837fd67753ca18a036d915187bfeb8da395a9a9869af74bf4b59c5962b283a",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -3547,6 +4303,145 @@
         "capacity_constants": []
       },
       "group": "sized-source"
+    },
+    {
+      "path": "src/frontend/specialize/raw.rs",
+      "sha256": "7493a62d3d0c1935c041f7428b27d0640a1c1f279862a8fa342d9b6961adecc0",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [
+          "CheckedSourceMeanings",
+          "RawSourceProposal",
+          "SourceMeaningCheck"
+        ],
+        "functions": [
+          "pub fn check_finite_meaning<'a>( &'a self, kernel: &native::Kernel, required: &'a FiniteMeaning, budget: &mut Budget, ) -> Result<SourceMeaningCheck<'a>>",
+          "pub fn checked_bindings(&self) -> usize",
+          "pub fn definition(&self) -> &super::SourceDefinition",
+          "pub fn definition_index(&self) -> usize",
+          "pub fn leaf(&self) -> &CheckedUnitaryLeaf",
+          "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw( &self, kernel: &native::Kernel, budget: &mut Budget, ) -> Result<RawSourceProposal>",
+          "pub fn operation(&self) -> Option<&super::SourceOperation>",
+          "pub fn operation_binding(&self) -> Option<(usize, &str)>",
+          "pub fn operation_depth(&self) -> usize",
+          "pub fn operation_step(&self) -> Option<(usize, usize)>",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn proposal(&self) -> &native::Proposal",
+          "pub fn required(&self) -> &FiniteMeaning",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source(&self) -> &RawSourceProposal",
+          "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE_QUBITS: usize = 16;",
+          "const MAX_OPERATIONS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/circuit.rs",
+      "sha256": "8ed00e01432bd5b63c0d0dd65d25bd8b700d46c8abc9cb95c72cc5a38debb7b0",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/contracts.rs",
+      "sha256": "7dd880e0c236adb3b09a44497ed70edd77f7338f8c48fa0be4ea084bd6016cb0",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation.rs",
+      "sha256": "fc98030c17312b7564332d41e2449b407371464087a876d909744fd16a39b021",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE: usize = 16;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation/access.rs",
+      "sha256": "efe1ba3a18a34308a94bf14afbde74e9872c66a6eba8ce4085380de5ddf3644a",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation/access_meaning.rs",
+      "sha256": "b82cd109fd8e96a10f3fd69f8ffb96064911682a22813542e6d82b2146da68cf",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/source.rs",
+      "sha256": "7af877d0f58b3ba3e0531679279883a49313ab1266da06c9a9ad08574c0bc430",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn bundled(source: &'static BundledSource, policy: ParsePolicy) -> Result<Self, Failure>",
+          "pub fn finish(self) -> SourceCollection",
+          "pub fn get(&self, name: &str) -> Option<&Source>",
+          "pub fn insert(&mut self, source: Source) -> Result<(), String>",
+          "pub fn into_entries(self) -> impl Iterator<Item = Source>",
+          "pub fn into_parts(self) -> (String, Option<PathBuf>, String, Module, bool)",
+          "pub fn iter(&self) -> impl Iterator<Item = (&str, &Source)>",
+          "pub fn local( name: String, path: Option<PathBuf>, text: String, policy: ParsePolicy, ) -> Result<Self, Failure>",
+          "pub fn manifest() -> &'static str",
+          "pub fn manifest_path() -> &'static str",
+          "pub fn path(&self) -> &'static str",
+          "pub fn path(&self) -> Option<&std::path::Path>",
+          "pub fn sources() -> &'static [BundledSource]",
+          "pub fn span(&self) -> Span",
+          "pub fn syntax(&self) -> &Module",
+          "pub fn text(&self) -> &'static str",
+          "pub fn text(&self) -> &str"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "sha256": "0b0a3775c8aaa600f01010c37a3c9d1dca20e909dd8fc218d3516f8bf92e1d8b",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "Type"
+        ],
+        "functions": [
+          "pub fn new(inputs: &'a [Type<N>], output: &'a Type<N>) -> Option<Self>",
+          "pub fn quantum_basis(&self) -> Option<&Self>"
+        ],
+        "capacity_constants": []
+      }
     },
     {
       "path": "src/host.rs",
@@ -3590,7 +4485,7 @@
     },
     {
       "path": "src/interchange/codec.rs",
-      "sha256": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+      "sha256": "1ec5892bd13cdfd5051cad03ffef8575fdb838c43961eb98863ba6642335186d",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3600,7 +4495,7 @@
     },
     {
       "path": "src/interchange/codec/evidence.rs",
-      "sha256": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+      "sha256": "393969b0dc65bca4086d2e1c6a80f373fd5441925d53b673ad46db106d50c502",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3610,7 +4505,7 @@
     },
     {
       "path": "src/interchange/codec/operations.rs",
-      "sha256": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+      "sha256": "206994136f8fb6af1e5565ae7a239d6c95feb8d46d1b686f79eee171e4045a0e",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3620,7 +4515,7 @@
     },
     {
       "path": "src/interchange/codec/scalars.rs",
-      "sha256": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+      "sha256": "3f24353b859c48f7d7396861d58be782a418d3869d712b243d779651169ce93f",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3630,7 +4525,7 @@
     },
     {
       "path": "src/interchange/finite_leaf.rs",
-      "sha256": "095706e42eb58485d759bf866313dcfba126e2a4222dd4e9f8bb57e6a77de45a",
+      "sha256": "e481d08849423de1601440206e48af5e604eb730c25347ae31b57a15b83f6b65",
       "group": "finite-leaf",
       "surface": {
         "declarations": [
@@ -3661,7 +4556,7 @@
     },
     {
       "path": "src/interchange/finite_matrix.rs",
-      "sha256": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+      "sha256": "c283ba36466275deea9591f279371c87d114d0ecf11dd270d6a6381be236c8c7",
       "group": "finite-leaf",
       "surface": {
         "declarations": [],
@@ -3674,7 +4569,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
+      "sha256": "16389e8055c6beb1ede9ef9c24fb7745eaf94168e01fd7e2cfdfcf02148ecb3b",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3730,7 +4625,7 @@
     },
     {
       "path": "src/interchange/hierarchical/bridge/instrument.rs",
-      "sha256": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+      "sha256": "f1e0c2c1842e0f8457a422f69270232a7242f0cf0e7b95c7e3f1dec6973c0464",
       "group": "instrument",
       "surface": {
         "declarations": [],
@@ -3740,7 +4635,7 @@
     },
     {
       "path": "src/interchange/hierarchical/bridge/qpe.rs",
-      "sha256": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+      "sha256": "1651132063b1b3f1053d62f24970ca015f5589611f2305c570e603ca0fc11488",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3750,7 +4645,7 @@
     },
     {
       "path": "src/interchange/hierarchical/bridge/request.rs",
-      "sha256": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+      "sha256": "7ffac65ab5f2d7b55ea0fc9e31f3e382bb6bc7cd38490be56429bb00cb7fc92b",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3760,7 +4655,7 @@
     },
     {
       "path": "src/interchange/hierarchical/execution.rs",
-      "sha256": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+      "sha256": "b02a4451e4b42cbde024fb6d5897244f5a0d2d6b2ad8f4574a8456bede971e5f",
       "group": "hierarchical-execution",
       "surface": {
         "declarations": [
@@ -3785,7 +4680,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
+      "sha256": "a7885f3d227356cd81773a1ed092caee1e316d7865e88f75cb4ace4174c2e765",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3817,7 +4712,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
+      "sha256": "781303e7ee553e28993f1fcecd421cc9f1cf05635926c0334f83dd04ac215773",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3845,7 +4740,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "1f6e797001b081509c6206db94f2343e4672197f9cf92dee2da9069153106b82",
+      "sha256": "fea23e5b0a73d427375d7f771aa752ad0b340964ad6d7e5804cc7d6647288047",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3896,7 +4791,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "0f7e9f24fef3bc0da1cfc0f7e116e143697fab27a8faf1e029f5c17fea397ae4",
+      "sha256": "abdd7d794efb010d86fda2fa23e67f047f9aa72fc229acc346c2eed887e1ff7d",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -3906,7 +4801,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
+      "sha256": "b38489cbdc7930a027b20a394dd57533c795f27a4573c74496176b99be1461ac",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3916,7 +4811,7 @@
     },
     {
       "path": "src/interchange/native/view.rs",
-      "sha256": "c10cf04a4b938fd152b42cacd567d2faf9fbdaee9c50176725f207f75745908d",
+      "sha256": "6115cd8549265e82de2f685fbf84aa2418a4efa50938859ec07eb3c526ee613d",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3926,7 +4821,7 @@
     },
     {
       "path": "src/interchange/process.rs",
-      "sha256": "f9661d21e3b163c12aea0ad780995bd99737126d04493f606f0cef4a455c4a5a",
+      "sha256": "8511f65cb91098ee3090e0b87bcffe59c10bf30e71340b848ad501a1ebead2ce",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3981,7 +4876,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "2c95c01b949a883e00cd9e2d09ecf14cb5eb414ecd7879d06ff7ce983b50ef3f",
+      "sha256": "dd50b77a2fefa0a98f6247e22bfd04f2435900a237066078cf2bb0fabbbe3ae9",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -4008,7 +4903,7 @@
     },
     {
       "path": "src/ir.rs",
-      "sha256": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
+      "sha256": "7b585cca62096e0593323e5d1dde57e6cf4565cb7980b2f2d60520653e4e0792",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -4050,7 +4945,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "8557fff1c2319dd73ae56f6119d76a6295740312ebcee6bbf532da4caa356150",
+      "sha256": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -4068,7 +4963,7 @@
     },
     {
       "path": "src/sim.rs",
-      "sha256": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+      "sha256": "3e64ab42a749d79ba84f0b0236ae28e9698f3af656b8c945c253bafaa659d8fb",
       "group": "execution",
       "surface": {
         "declarations": [
@@ -4135,28 +5030,183 @@
       }
     },
     {
-      "path": "stdlib/src/arithmetic.qli",
-      "sha256": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
-      "group": "source",
-      "surface": null
-    },
-    {
       "path": "stdlib/src/basis.qli",
-      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "sha256": "e91479c3f78593ad4b07b411178feeef9dec482aa201c4930fa8b2e36d537c23",
       "group": "source",
       "surface": null
     },
     {
-      "path": "stdlib/src/routines.qli",
-      "sha256": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+      "path": "stdlib/src/gate.qli",
+      "sha256": "f76b54b2e5bebe0ff21fa51d2d15a69645dc5ceb04c13cf03e1a27758b663542",
       "group": "source",
       "surface": null
     },
     {
-      "path": "stdlib/src/transforms.qli",
-      "sha256": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+      "path": "stdlib/src/measurement.qli",
+      "sha256": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "stdlib/src/reflection.qli",
+      "sha256": "4a983705c170a3ba30787e2a0f92797cc26b4306fd66924036f4e57da6cae512",
+      "group": "source",
+      "surface": null
+    },
+    {
+      "path": "stdlib/src/transform.qli",
+      "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
+      "group": "source",
+      "surface": null
+    },
+    {
+      "path": "scripts/observation_sources.py",
+      "sha256": "783bc6b63615d6c750592b1a162386462b886be89dfdd62f5ed19013570f0b1f",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
+      "sha256": "c046b942a031b2837296c3fe44bcdd1c7fb08be27341d11be9e5f6c651c7b262",
+      "group": "finite-leaf",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/ControlAccess.lean",
+      "sha256": "61492db5e8a2c8dbe1a0db137f80ffabf2c6684a932417a44bf80ce3562b5bc3",
+      "group": "finite-meaning",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/ControlAccess.lean",
+      "sha256": "90938b8ef731ee1d1fa565a09fca6f0e0251e7aecff7b70ee226cc55cf2b64c3",
+      "group": "finite-meaning",
+      "surface": null
+    },
+    {
+      "path": "src/frontend/check/body/places.rs",
+      "sha256": "4d040f60878b3236ab8a728c7684a28d749c92fbdcd5a8e15cbef392f4eac7fe",
+      "group": "source-excl",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/elaborate/places.rs",
+      "sha256": "125a17491c21d9038fbe4cc8f96fd6f90467003ee16ded305268dc114e2deda0",
+      "group": "source-excl",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Unit.lean",
+      "sha256": "31b71c21419cabfaaaae373a63d4c022fce1a07391556dbcda47e335848f4363",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/RawUnit.lean",
+      "sha256": "cdbe18d78fe1fab9bf2d76d9f0f430a7afc583f5b2cc1d25bd17dce35cca10e8",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawUnit.lean",
+      "sha256": "ef1fa9904f1dc8b0a14c3f2eaa5f399b348c9d655e8a6bebb253cd4adf54cf38",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawRepresentationTransport.lean",
+      "sha256": "6daf4e9bf20c46c298f2dd880c4a855c327e12ab9db8d4ee48a5dfdf7eecf692",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean",
+      "sha256": "910243bc1d616869eb3e9085ddbbbbea1c9e36d8b3b8f41537e0e65abed4c375",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Observation.lean",
+      "sha256": "8e46dd0b075a5dec495e8b3cd0c5475282c384410d7dc77d21ff3795c67f0b7c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Ownership.lean",
+      "sha256": "f4fa8a81779f00efab88ecd20553e712fc8fd5176f7c498e5b70357cf1cf8dde",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Raw.lean",
+      "sha256": "c239dd4a33b3741f05b79412933038cb619a2b9505ff30dace0d72ca0fa6506b",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean",
+      "sha256": "ad7425e103c35afd9012ad54a8b4b964c98c0195d7129b8125cc32c0059ba419",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "src/frontend/meaning.rs",
+      "sha256": "cfe5bda4d43bd73713c6db63546a2e095bc7cb811c6e969d4541890821b64e09",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean",
+      "sha256": "b8f23d9a3e15eecad316cc5221eab2afc80fd27005eb0b4f2bb8b1546301b910",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean",
+      "sha256": "ff6d695fb0d42cf836df240cafba9e28cecdd10fa8b8025f04a6b348b4b3c59c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/InstrumentContract.lean",
+      "sha256": "58cc76d2f1d91dcbe558219e3bd50fad0099613b2822354ab515c588d675325c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "src/contract/instrument.rs",
+      "sha256": "64503885dae5cbf14fc239aa7ee9e7715639eda9c27936c1bb5da947bcb51199",
+      "group": "function-evidence",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_NODES: usize = 4096;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/instrument.rs",
+      "sha256": "e728105bdce34a25eb7b74a0e9962db73eddf79d11bd5daf4a802eec5d82e594",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -4211,7 +5261,7 @@
       ],
       "status": "native-only production implementation; full Soundness remains pending",
       "request": "Independent specification body or finite meaning, signature and immutable dependency/source identity",
-      "binding": "Reverify and extract BOTH raw bodies; compare full operators and ordered outputs, then freeze graph",
+      "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
       "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
@@ -4275,12 +5325,12 @@
         "compile/check_project_with_kernel",
         "QrateSource::{compile_with_kernel,check_with_kernel}"
       ],
-      "status": "native-only production implementation; full Soundness remains pending",
+      "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
-      "binding": "Same generated IR independently verified; source-preservation proof remains open",
-      "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
+      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending",
+      "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
-      "limits": "Parser nesting64/tuple64; source tree4096/depth64; calls/static expansion1M work/depth64; source policy1MiB/file16MiB/project or explicit legacy",
+      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
         "VM-28"
@@ -4457,17 +5507,25 @@
         "ElaboratedProgram::lower",
         "HierarchyProposal::validate_initialization_moves",
         "HierarchyProposal::qpe_binding",
-        "qleisli sized check/run/sample/emit-proposal",
+        "qleisli check/run/sample/emit-proposal --entry/--module",
         "HierarchyProposal::validate_initialization_moves_native",
-        "sized check/run/sample through native-only reports"
+        "sized check/run/sample through native-only reports",
+        "ElaboratedProgram::lower_raw",
+        "RawSourceProposal::validate_source_steps",
+        "ElaboratedProgram::hierarchy_eligibility",
+        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings",
+        "BasisBinding::parse",
+        "ParsedProgram::instantiate_with_types",
+        "OperationBinding::with_types",
+        "selected --type/--operation-type explicit closed Basis bindings"
       ],
-      "status": "compatible default plus explicit selected native route; full authority transfer remains v0.5.0",
-      "request": "Original module bytes, selected public entry and complete natural/operation bindings",
-      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence.",
-      "encoding": "Explicit Q<Bit>/Q<Bits<n>>, CBit/CBits and arity-preserving tuples; zero-width owners remain linear; actual calls/repeats/owner frames preserved",
-      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile",
-      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent",
-      "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts.",
+      "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
+      "request": "Original module bytes, selected public entry and complete explicit Basis/Nat/operation bindings; provider Basis substitutions belong to the provider declaration and do not select runtime input",
+      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation. Opaque Basis substitutions retain resolved lexical identity, exact closed tags/tuple tree and provider-local bindings; cache keys include the complete exact type tree, not only width. Generic declarations are checked before any concrete binding or specialization.",
+      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Finite unit/finish and selected coherent lifts are still unsupported, with no implicit profile retry. The selected preparation profile implements ordered static A:Basis, contextual type(T) call arguments and resolved type forwarding, with no reflection, decomposition or preparation of opaque bases. General Meaning refinements and final common project-profile convergence remain pending.",
+      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged. Every type substitution is checked against the expanded 4096-node/depth-64 tree before cloning; specialization type metadata is charged to the existing aggregate cell budget. Host Basis bindings retain the same eight-bit selected-profile limit.",
+      "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
       "replacement": [
         "VM-28"
       ]
@@ -4665,8 +5723,8 @@
     },
     {
       "id": "source-structure",
-      "scope": "parse and lowering guards",
-      "value": "nesting64/tuple64/group-import64; tree4096/depth64,12-bit finite basis,1M work/depth64",
+      "scope": "Common parser/type guards and separate finite concrete lowering; no source-preservation or resource guarantee",
+      "value": "nesting64/tuple64/group-import64; common type4096/depth64; finite Basis12-bit and separate lowering/evidence1M work/depth64; common source work is a distinct preceding budget",
       "source": "src/frontend/compile/mod.rs",
       "test": "tests/static_operations.rs#nested_static_expansion_is_bounded_in_work_and_depth",
       "replacement": [
@@ -4813,9 +5871,9 @@
     },
     {
       "id": "sized-source-preparation",
-      "scope": "Additive untrusted generic checking and concrete source elaboration/lowering; not production finite source capacity",
-      "value": "64 modules/1MiB total; 10000 tokens/module; 4096 type/value cells and16384/scope; concrete calls/folds1024, call depth16, traversal64, steps10000/value cells100000; proposal16MiB",
-      "source": "src/frontend/sized.rs",
+      "scope": "Selected loader policy and concrete closed substitution/elaboration/lowering after complete shared original-source checking; not finite loader or native authority",
+      "value": "64 total modules=4 actual bundles plus1..60 supplied locals;65536 bytes/module,1048576 aggregate including bundles;10000 tokens/module;type4096/depth64 and16384 retained live-scope cells;closed-binding validation has a separate100000-work allowance;concrete calls/folds1024,call depth16,traversal64,steps10000/value cells100000 including charged type/owner/copy work;proposal16MiB",
+      "source": "src/frontend/specialize.rs",
       "test": "tests/sized_source.rs#concrete_elaboration_limits_are_aggregate_and_keep_empty_owners",
       "replacement": [
         "VM-28"
@@ -4880,6 +5938,16 @@
       "replacement": [
         "VM-29"
       ]
+    },
+    {
+      "id": "common-original-source-work",
+      "scope": "Both actual source consumers check every original declaration/body before concrete eligibility; engineering capacity, not constitutional quantitative RS or source-preservation evidence",
+      "value": "1000000 project-wide common work units for original visits, resolution/index/interfaces/owner/type/effect/dependency storage, copied trees and solver contexts; selected additionally retains16384 live-scope cells, finite does not acquire that scope ceiling; finite separate1000000 lowering/evidence work remains",
+      "source": "src/frontend/check.rs",
+      "test": "tests/sized_source.rs#symbolic_capacity_errors_keep_obligation_spans_and_causes",
+      "replacement": [
+        "VM-28"
+      ]
     }
   ],
   "corpus": {
@@ -4903,34 +5971,34 @@
       "corpus/authoring/v022-simple/check-initial.json": "cc3b819ef38acf1c48773bf7e730f6606ad26d2191cca24f383979d65c80887e",
       "corpus/authoring/v022-simple/semantic-validation.json": "4539e0a8e7065b0e1dcd5f72c22f406af0a280aa2e759d330c947fab9dd55cfc",
       "corpus/authoring/v022-simple/session.json": "8fa9f929aa453728cab3a206643be8ce555276b37986b033ad23c0a304826373",
-      "corpus/negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
-      "corpus/negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
       "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
-      "corpus/negative/measured_owner/main.qli": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
-      "corpus/negative/measurement_adjoint/main.qli": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measured_owner/main.qli": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measurement_adjoint/main.qli": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
       "corpus/pennylane_demos/phase_kickback1/README.md": "843a011e783c0798cc759c6549564a5358379d07aa84a062062f990145da0f55",
       "corpus/pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
-      "corpus/pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
       "corpus/pennylane_demos/rx_quarter/README.md": "cd35a7700d8f90a27ac894e2a675a7d40c90f8a46149bf11d85e2be3e1ed9826",
       "corpus/pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
-      "corpus/pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
       "corpus/qualtran/bitwise_not2/README.md": "53e93a50d0ee657d4d06e09f33da299fe6edc1f4b011236e6f05be7c3e248a55",
       "corpus/qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
-      "corpus/qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
       "corpus/qualtran/xor_constant2/README.md": "adc6fe0ec024e5e3cdc4ebf4243d9f3863982257525421bdffc54e70000c532a",
       "corpus/qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
-      "corpus/qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
       "corpus/quantum_katas/fredkin3/README.md": "ca656477241fed81c6af9ff22c91882af3fce4e450b5935b2244a1573f478028",
       "corpus/quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
-      "corpus/quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
       "corpus/quantum_katas/swap2/README.md": "3fcdbc4a08fcef4efba29ce6d06af3e1c4b59cac24e1e65af558e569e33f53a3",
       "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
-      "corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
       "corpus/validation-v0.2.2.json": "0cde88f0e1e98f5ed8acf0e59b3b983bc9e663f37c44e54eaefe81af10bd181c",
-      "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
-      "examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
-      "examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
-      "examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
+      "tests/fixtures/frontend_v030/coherent-basis/before/examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
       "tests/fixtures/verification_v022/corpus-manifest.json": "6a571c10c44d09e4861c7b7a702052c4b248f5343f259a4dfa3de6327c319f31",
       "tests/fixtures/verification_v022/corpus-semantic-faults.json": "6f8564810fba9b7e8ab012868022d993b1b4393c27ce035db500b454a809ef89"
     }
@@ -4997,46 +6065,48 @@
       "tests/fixtures/verification_v022/hierarchy/h.wrong-phase.request.json": "2680dc9e5af50c780436fed1d421f124177fbbaa38b7e4729601518af9b9c898",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
-      "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
-      "tests/verification_boundary.rs": "f21dbdd1d1cb095ee873294222b5ff2cb53e95365cc87356a054a5188bb04e5b",
+      "scripts/test_verification_baseline.py": "ceb527102f0c25f24f4a93e995e4b90da28e398320dadc11833826a1537a3935",
+      "tests/verification_boundary.rs": "f2fbed6e9c8d023d22dc1b6afb1019d7be1aec1ada4491621a737f013dae4105",
       "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
-      "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded",
-      "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
-      "scripts/compile_sized_corpus.py": "6bc931a56a3585771fa79b2d82e4c8a6801970b22d057294730eb523e9939fb5",
-      "scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
-      "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
-      "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
-      "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
-      "scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
-      "scripts/test_compact_sized_graph.py": "c242e5468b3da433c24a76bd00b8a425b30babc7b9d86d88780e8ad59d49fee8",
-      "scripts/test_hierarchical_instrument.py": "d51ff8e84b6b5e66d09b518f06a89f111b479685c7b3f8a620b46abd07849d43",
-      "tests/sized_corpus.rs": "78ebff4a5dc00aec6e06497b7c632d5df65fae4fa6cff3547d2a55ad90371832",
-      "scripts/test_instrument_host.py": "1320846b61fb3b7c40adaced11f0f68fe3ccebbbbcfe0af49f9429fab29c84c0",
-      "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
-      "scripts/test_hierarchical_contract_typing.py": "1c4bc5213f62e11ed85f97e5a13abf1f882db436daaed707907298ba1c8d7392",
-      "scripts/test_hierarchical_request.py": "498f141cfc29868d8a89cc0f567763db88fcc9357c4f2b53bf3ea191be719d8c",
-      "scripts/test_hierarchical_routed_power.py": "746d772fa7b2be51885e12f910a79548aa2ce4909607c3546f321fbaec02898d",
-      "scripts/test_hierarchical_execution.py": "f3fb1b727fa22a608c1c7fae5fc6923ddb7d3216e92c50d6df7c216f5044431d",
-      "tests/hierarchical_execution.rs": "5f18806249cd22c9a0cd61814d5220cdeb6f861918c328696e8d200ee37bdb29",
-      "scripts/test_hierarchical_circuit_trace.py": "5214be5ad0baf5bcb0681bd8854516737e4f9b575c6b0e021aa8fce2480d25a8",
-      "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
-      "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
-      "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "f40aaf032319517fbf2efa9b5ad0d9a508f34e7f0b55e1eae28e2ea22a131d85",
-      "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
-      "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
-      "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
-      "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
+      "scripts/test_hierarchical_readout.py": "872aa491218b9cf3aa6f33527a67567a874ba9366f1b25891c8e2e7b953d31a7",
+      "scripts/test_sized_qpe_readout.py": "a196c637ad6dc0c6845d587240ee370ed953f46d3aa7adc0337f25fcb4231f3b",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
+      "scripts/compact_sized_graph.py": "5246c9e2524823dbf1bf13f3a4e03a5006ea6d43d908fbc16540629d3c959bf9",
+      "scripts/instrument_transport.py": "79598b86f25c96dc0a6d82616f27aa8fdf203f3d5827bbdaf7cd7dff962711ac",
+      "scripts/test_hierarchical_preparation.py": "4847a275b523a2ec474afb89f928f1db1a410aa510f00bf871c0fe47a4831ad0",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
+      "scripts/test_hierarchical_instrument.py": "b267b62dc9ca4145eb093c90f52492fa41e3f6c8f781a62027cb72f795bcd3b2",
+      "tests/sized_corpus.rs": "c41e60eb4c31c52dc4ce18922217a630100290a7f515245fcf7077874d532947",
+      "scripts/test_instrument_host.py": "271274bbe737c6bedd43943488ec234b15cd4c159d3bcba750dc33658a5b2479",
+      "scripts/test_sized_qft.py": "ba5aa3164371f5cc479de027dd5bd9901e48a4e5fc2e36e6804fe3754e898ea4",
+      "scripts/test_hierarchical_contract_typing.py": "71e8f180b1ce221c43ae07bc0d77cfaa4d8156162ec6a0d073b079cb9bb80ce8",
+      "scripts/test_hierarchical_request.py": "b06e8197e9553dde4a618b7d7cc71c88f050a80df7b584b67b0981768dee02f4",
+      "scripts/test_hierarchical_routed_power.py": "55aac6c84042428e098eb5ee7dcfae7a13ff4bf3f383603fece3e3a6a04ccc16",
+      "scripts/test_hierarchical_execution.py": "26889aed1ee1c903ec0b808f29cadfd70bb3b1fca4d932d3bd6b709b5d9f735a",
+      "tests/hierarchical_execution.rs": "d737df81769497302e0dd3d2e4052e8220b80f79a925436c845e2ffd8b082332",
+      "scripts/test_hierarchical_circuit_trace.py": "46e6aee8b9914ff74f195df5cf9320777d16d9882b043fcffd61ca0ac9664af4",
+      "scripts/test_hierarchical_qpe_schedule.py": "f47ef4809c20b4dd2b86caccb4cb1443140190c0d2072ddfdb4ff91ed682e87e",
+      "scripts/test_hierarchical_qpe_root.py": "cf6faaa710045a9d6ff3ce8b4a86b64cefa35ca8bfd7417fbbb5b5f78b460d0c",
+      "scripts/test_hierarchical_qpe_instrument.py": "4d30f3d65a146e01359eff89fe5947bc54a8cad245619384167d3a1351f36dc4",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
+      "tests/sized_linear_seeded.rs": "41d854e33e8fdb30eb8e8d7882cadbc8e84b6856a650c9d11afef317cbea2357",
+      "tests/sized_cli.rs": "c1998e81b13d9de915325580802bb22814ca492b5e99ffd92eca5be098af3b80",
+      "tests/hierarchical_qpe_host.rs": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
+      "scripts/test_qpe_instrument_host.py": "0c42d4bf75096ce7d45d3c65e8e16e51ed920bcf7f5b21a8bfe6712b8ad82d5c",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",
-      "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
-      "tests/with_computed_diagnostics.rs": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc",
-      "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
-      "tests/sized_review_diagnostics.rs": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_diagnostics.rs": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
       "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
       "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
-      "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
       "tests/fixtures/qpe_capacity_v023/Profile.lean": "7aceb8cb9607a0833df0951b57e297e990baf539a0771110bf4503634cd64905",
-      "tests/fixtures/qpe_capacity_v023/run_profile.py": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564"
+      "tests/fixtures/qpe_capacity_v023/run_profile.py": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564",
+      "tests/fixtures/verification_v022/ordinary-type-migration/relocations.json": "d20741ef457c892393ead181582e81d774e1030e1863151b7321446f2add3c20",
+      "tests/fixtures/verification_v022/ordinary-type-migration/inventory-before.json": "d79097879af0e1ab255e0a435ded695a3d6aaec74de287053657a9fe3047ef85"
     },
     "reference": "scripts/test_verification_baseline.py: direct complex basis columns with explicit scratch cleanup; fixed source distributions; never issues evidence",
     "commands": [

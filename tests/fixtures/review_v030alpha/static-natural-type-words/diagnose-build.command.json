@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "diagnose.rs",
+    "--extern",
+    "qleisli=target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=target/debug/deps",
+    "-o",
+    "diagnose"
+  ],
+  "cwd": "/private/tmp/qleisli-sized-type-word-ci-fae0e6a",
+  "exit_code": 0,
+  "elapsed_seconds": 0.324
+}

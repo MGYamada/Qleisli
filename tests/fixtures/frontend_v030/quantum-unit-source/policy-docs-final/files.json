@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "scope": "Final documentation check after primitive catalog count correction; excludes this manifest.",
+  "files": {
+    "README.md": "98262cb0dccebb788ee883aec2d98f35773e53d45dea595173c7e3d3ff34f349",
+    "actual/1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/1.stdout.txt": "40766b5bf3fd64898a777eca30f84b7026c275ef95dda5ff47b26ad4f4433c21",
+    "actual/2.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/2.stdout.txt": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+    "actual/3.stderr.txt": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+    "actual/3.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/4.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/4.stdout.txt": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572",
+    "actual/commands.json": "ebbc42e466d5bad8709cb00aa6ff231c4c16db2173299d2e1edc4833f3c1e588",
+    "actual/inputs-after.json": "847cdf7585792e99cfffd9ec8aa1052d738746bcc3c3da5312c248a126018de9",
+    "actual/inputs-before.json": "847cdf7585792e99cfffd9ec8aa1052d738746bcc3c3da5312c248a126018de9",
+    "actual/result.json": "3bb7ec9fadd15f863ee07df8e7f2e57683fa2cf97b6299ecea876c2ad6bf3a8f",
+    "record.py": "d3a6b59c429ddb3d6db9b08160ea02639252ebb7915df9d5d8d975f036f00beb"
+  }
+}

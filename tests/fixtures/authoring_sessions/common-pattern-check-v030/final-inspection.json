@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-10-05T16:39:34.844789+00:00",
+  "first_map_sha256": "5b5c704e6ba5610f6f915e436bfc1ea84c7d1cd402f01d8f85924f66fd55db85",
+  "completed_map_sha256": "a8620894684e6cbd05b43225d41d108d7cdf9434a699b41b109eba85458f02d4",
+  "first_inputs_checked": 23,
+  "completed_baseline_files_checked": 191,
+  "all_frozen_study_files_unchanged": true,
+  "baseline_terminal_maps_equal": true,
+  "baseline_source_input_count": 234,
+  "postbaseline_current_source_differences": [],
+  "postbaseline_cli_sha256": "3ba4bff2b98644f56d82d02800a784dc9c49a25bb6e66cdb784eb6b2401345f1",
+  "postbaseline_native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "postbaseline_cli_matches": true,
+  "postbaseline_native_matches": true,
+  "scope": "Identity audit only. Source changes after the completed baseline barrier are not retroactively baseline edits."
+}

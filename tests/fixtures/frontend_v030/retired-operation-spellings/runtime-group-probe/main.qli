@@ -1,0 +1,3 @@
+use std::quantum::{z,h};
+unitary fn pair(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){(z(a),h(b))}
+pub unitary fn entry(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){power(pair,2)((a,b))}

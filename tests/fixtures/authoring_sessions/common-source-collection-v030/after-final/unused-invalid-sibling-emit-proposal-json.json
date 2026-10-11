@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unused-invalid-sibling/main.qli",
+    "--module=helper=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unused-invalid-sibling/helper.qli",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/after-final/unused-invalid-sibling-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.0051639999728649855,
+  "recorded_utc": "2026-10-05T16:21:37.208325+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "unbound or consumed value q",
+        "primary": {
+          "module": "helper",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unused-invalid-sibling/helper.qli",
+          "start": 278,
+          "end": 279
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "format": "qleisli.native-discovery-local-validation",
+  "version": 1,
+  "status": "passed-declared-local-checks",
+  "changed_production_logic": false,
+  "commands": [
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/latest-native-roundtrip-01.json",
+      "sha256": "ba47315b12b9ce313390bbad3bb3f8e761c6065ce6f40f9839eabf8538d47719"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/msrv-native-roundtrip-01.json",
+      "sha256": "a41e6f2c7925bc6df9b3c7dcca66abb33e0a4ab9ce65c0b723aaef58e49d1607"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/fmt-01.json",
+      "sha256": "f72cf4d8f33a6173bfa2f6a8dd549aa28753e0bfcf3eefb3686accc7d67029d8"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/latest-clippy-01.json",
+      "sha256": "09687f7294e1b5b8259b2b67c1175ef5a95a71e49c5b014add77bcd40322cacb"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/msrv-clippy-01.json",
+      "sha256": "8c11678f6dfd0ace360579ffc1863a6199d7e28d0b8d627d91e37f17407fa76f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/continuity-01.json",
+      "sha256": "c32ef675e4e2404cc201eea07791771fb3a08ff18a416a16c534db208b6011be"
+    }
+  ],
+  "declared_inputs_unchanged": true,
+  "inputs": {
+    "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/observed-inputs-01.json",
+    "sha256": "2215c8e0a0ef86f01003c640d6c8f24c9384dbb83eb311a992a5578c19cf021b"
+  },
+  "hosted_failure": {
+    "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/hosted-01/observations-01.json",
+    "sha256": "d315664a8c3b3cf7b85a78e9a18dce2c7901d34e79b6b9d476a1e86c777de73c"
+  },
+  "coverage": {
+    "native_roundtrip_tests_each_toolchain": 5,
+    "logical_projects": 101,
+    "corpus_projects": 87,
+    "examples": 14,
+    "namespace_snapshots": 6,
+    "coherent_basis_snapshots": 2
+  },
+  "limits": [
+    "No complete Cargo/Lean dependency closure asserted",
+    "No new maximum-size case or generic QFT work",
+    "No local full all-target runtime suite",
+    "No fresh local Lean build/audit/replay",
+    "No distribution inner-log cause verification",
+    "No current full hosted CI/release/package/install success"
+  ]
+}

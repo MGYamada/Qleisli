@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T21:10:17.270603+00:00",
+  "elapsed_seconds": 0.008906667004339397,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `phase`\",\"primary\":{\"path\":\"main.qli\",\"start\":102,\"end\":107,\"line\":2,\"column\":28},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "source_sha256": "079e719e08dc6eaad32e80240fae5762f58a6a88fc44e7d076f8ba649f0303bb",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "522c0c188efd71e7d0d834a367a3789d9d04bad6f15c10a9931fd3259339d77f",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "mode": "finite",
+  "scope": "Diagnostic/native check at the stages actually reached.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "sealed module `std::quantum` has no public name `phase`",
+        "primary": {
+          "path": "main.qli",
+          "start": 102,
+          "end": 107,
+          "line": 2,
+          "column": 28
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

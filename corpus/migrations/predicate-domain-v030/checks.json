@@ -1,0 +1,116 @@
+{
+  "source_commit": "18f55693e31585dde67eeddeb064e77c138f9a57",
+  "snapshot": "/private/tmp/qleisli-predicate-domain-staged",
+  "binary": "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+  "binary_sha256": "58a68f1f89bac25e221d5e392587560c994144df359360b1073150a2d5ab1959",
+  "kernel": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "created_utc": "2026-10-04T15:56:08.729932+00:00",
+  "sources": {
+    "quantum_katas/grover2/kernel.qli": "42a14bc04dfd58d54a527e8798acc49381a054e5e421c362f6e4e75450705071",
+    "quantum_katas/grover2/main.qli": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+    "qualtran/and_phase/kernel.qli": "c393a6c5c239552134c6673dd67998ca4e46a2c93af5355ccd9b895d813368f4",
+    "qualtran/and_phase/main.qli": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8",
+    "qualtran/reflection2/kernel.qli": "f794eacadbc7fd46ed6fc8bef7dbe2d0c262bec6d9a132b9e436e89b35cc3dea",
+    "qualtran/reflection2/main.qli": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf",
+    "pennylane_demos/vqe_excitation/kernel.qli": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41",
+    "pennylane_demos/vqe_excitation/main.qli": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090",
+    "pennylane_demos/phase_lock/kernel.qli": "6794ed8c4a7af4190e645fa283c1954488fd49e6607b8261478062e45077cb54",
+    "pennylane_demos/phase_lock/main.qli": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa",
+    "quantum_katas/deutsch_jozsa3/kernel.qli": "f3235adb5697826c472fb01b251494daee7c9b8bb524a53b3cdb2cc931afec91",
+    "quantum_katas/deutsch_jozsa3/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff"
+  },
+  "scope": "Actual native source checks of the six affected complete projects. Semantic probes recorded separately; this record is not their substitute.",
+  "results": [
+    {
+      "project": "quantum_katas/grover2",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/grover2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.584523291036021
+    },
+    {
+      "project": "qualtran/and_phase",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/qualtran/and_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4575075829634443
+    },
+    {
+      "project": "qualtran/reflection2",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/qualtran/reflection2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4563172920024954
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/vqe_excitation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.45276070898398757
+    },
+    {
+      "project": "pennylane_demos/phase_lock",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/phase_lock",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4569846670492552
+    },
+    {
+      "project": "quantum_katas/deutsch_jozsa3",
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/deutsch_jozsa3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4762620839755982
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "format": "qleisli.authoring-metadata-check",
+  "version": 1,
+  "command": [
+    "python3",
+    "-B",
+    "scripts/check_authoring_sessions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-06T04:48:45.787269+00:00",
+  "raw_streams": {
+    "stdout": {
+      "path": "metadata-check-first.stdout.txt",
+      "sha256": "1edd3ff89f19038f80564e4b1eea4aa0ad8268f9cbb84959bce7e4bed50796f1",
+      "bytes": 95
+    },
+    "stderr": {
+      "path": "metadata-check-first.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "stdout_text": "Checked 40 authoring records, 55 snapshots and 911 observations; no recorded command executed.\n",
+  "stderr_text": "",
+  "scope": "Actual metadata/inventory check, no saved command replay or source/compiler execution."
+}

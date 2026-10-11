@@ -1,0 +1,8 @@
+# Preserve frozen patch context, genuine libtest EOFs and captured error bytes.
+implementation-01/**/*.patch -text -whitespace
+implementation-01/**/*.patch.txt -text -whitespace
+implementation-01/test-repairs/isometry-docs-source-eligibility-01/*.stderr-segment.txt -text -whitespace
+implementation-01/validation/*/*.stdout.txt -text -whitespace
+implementation-01/validation/*/05-focused-integration-tests.stderr.txt -text -whitespace
+implementation-01/whitespace-first-01/stdout.txt -text -whitespace
+provider-access-before-code-01.json -text -whitespace

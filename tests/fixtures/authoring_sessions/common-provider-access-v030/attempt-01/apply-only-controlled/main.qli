@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn eligibility_barrier[static A: Basis](q: Q<A>) -> Q<A> { q }
+fn forwards[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { U(q) }
+fn control[static W: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>)
+requires Controlled(W) { controlled(W)(c,q) }
+pub fn probe[static V: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>)
+requires Apply(V) { control[forwards[V]](c,q) }

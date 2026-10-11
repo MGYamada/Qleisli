@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/observing-assertion/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004487917001824826,
+  "recorded_utc": "2026-10-05T13:07:49.629590+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "body effect `Observe` exceeds asserted `Iso` effect of `entry`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/observing-assertion/main.qli",
+          "start": 137,
+          "end": 155
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

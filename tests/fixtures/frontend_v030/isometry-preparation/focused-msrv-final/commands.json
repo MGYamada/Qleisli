@@ -1,0 +1,90 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--lib",
+      "isometry_"
+    ],
+    "exit_code": 0,
+    "seconds": 7.564451624988578,
+    "recorded_utc": "2026-10-05T14:56:26.805354+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "isometry_source",
+      "--test",
+      "body_effects",
+      "--test",
+      "selected_source_cli",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors"
+    ],
+    "exit_code": 0,
+    "seconds": 15.257929166953545,
+    "recorded_utc": "2026-10-05T14:56:42.064123+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors",
+      "--",
+      "--ignored"
+    ],
+    "exit_code": 0,
+    "seconds": 3.478938374959398,
+    "recorded_utc": "2026-10-05T14:56:45.543360+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 6.419133291987237,
+    "recorded_utc": "2026-10-05T14:56:51.962814+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.9570417499635369,
+    "recorded_utc": "2026-10-05T14:56:52.920132+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt"
+  }
+]

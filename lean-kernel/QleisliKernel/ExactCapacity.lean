@@ -3,7 +3,7 @@ import QleisliKernel.Exact
 /-! Admission and machine-capacity facts for the actual VM-23 definitions.
 These theorems delimit the common Rust/Lean input domain; they do not prove a
 Rust compiler, native runtime or serialization adapter correct.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Exact
 open Semantics.Exact

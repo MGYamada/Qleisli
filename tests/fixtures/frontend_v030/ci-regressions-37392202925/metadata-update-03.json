@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.ci-regression-metadata-update",
+  "version": 1,
+  "sources": [
+    {
+      "path": "src/frontend/check/body.rs",
+      "old_sha256": "35a55058006bc9f9e7750f6f5d12041e6860ff609e77a12123df4c49c71ba3c3",
+      "new_sha256": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "old_sha256": "707bd546aeedf9e9f10ae5f4a691f36a075adea63586b706a7d0f66528c90559",
+      "new_sha256": "cc10b70d978675f968fe30b340d55c9612dd18d10225643239e85a791a51d90a",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "old_sha256": "7776b428be08ef7546319a5c58c7073f3bcc11f33f20cdc592655e947ce88800",
+      "new_sha256": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "old_sha256": "2e4139705a5e192e951b5ca5ec11658c5c59aa663d75ba90d23bc7670694aa29",
+      "new_sha256": "bd8dfc2f928bee5415a232d4b220b03e2200cc88ebf27886aaaa850291a8c68f",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "old_sha256": "29c384ff3eebbf724c8c5d922d74780bb118b144e4b8fe901a34dcfbfa21d77b",
+      "new_sha256": "01c50d14dc89756d4d4131a0bbb0a01d3bfe1c83fe54ea451d3f980195ad7ed4",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "old_sha256": "4768ee9a2d9460b7ef91280e9a906bdb985d5d00c5332c3261972a171f6096a2",
+      "new_sha256": "98a0d14d0052e2281cc4c4b07e41f92c933ff836eb43cb0eda285cc07a66874e",
+      "public_surface_unchanged": true
+    }
+  ],
+  "coverage": {
+    "old_surface_sha256": "3b054678d7fe3021ae7e3c474b2aaeacce9b66c15dcc627104917dcf4cfe2375",
+    "new_surface_sha256": "6a0b3f2b9dc39fd963b44fc5c70494a6effe12b79a979d426db164273e4aade4",
+    "routes_and_proof_statuses_unchanged": true
+  },
+  "reason": "Independently reviewed diagnostic repairs, canonical type/size rendering and post-rejection lexical capture explanation only. Exact public signatures, constructors, capacities, native rules, scopes and proof status remain unchanged."
+}

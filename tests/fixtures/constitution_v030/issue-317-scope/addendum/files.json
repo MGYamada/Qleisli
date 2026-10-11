@@ -1,0 +1,26 @@
+{
+  "format": "qleisli.issue-317-addendum-files",
+  "version": 1,
+  "files": {
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/README.md": "d2fa5b726377c4016f8f3f72c4c30806cfa36eb83fa1f08248f7c10ea58917d2",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/audit.json": "0e6057f2b5dad159a667e0ff3865a4a39ea09a59e78e378ce9510fc769ff901c",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/before-code-contract.md": "0dbb2c10369c9f5e7c038458d8213a2a8416bcdd6e62db87a1768d8279ec37fb",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/checkpoint-proposal.first.md.txt": "55c17ecaf40003f98b21cf2bdee0896e9376874ce2d404ee47c636b72e3c1fa5",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/checkpoint-proposal.md": "2ed54bbf86d56e4798b1da094cd8f97eb075c8ce963ef1486b95462826f92d8e",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/contract-updates.json": "bbcaaf714396521ed5bd5b82c52ff4c258ab89ba4ff5dcaadbadd834341c079a",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/draft-format-review.json": "b0ae9cbc3182d2d81484a4697998d5986eb468b220b51a7b4c720fb2a39cac3b",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/files.before-draft-format.json": "bc4bccf2d6f48cf50c72e0624f5cb9fdc4683bbf993284d0b82e03ca8155de77",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/generic-qft-addition.md": "e66e7e1aafe45c4da81d4dd3a8c7381fa25605e2527a8d042c33896aa2e9b6a3",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-142.api.json": "32f71ccf416be5dccc34f48f1d498a5b71db7e1218499fa83961d8f19a3d1a89",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-142.md": "8cbcd20df299c491394e69d9d7b8e8eadbe5a3f096074da0e146e68a4e390644",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-152.after-alignment.md": "da0e35c3187ba665829af399b41ed0d675750635a5ae9b7c61a8fd3bcc4e88e5",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-152.api.json": "cc7eec2301f45c621a0b6800ad0fceff0e702d791242f73e118e05b46d6279c4",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-152.md": "cba493ef58474d451c785e1094490cc7756cd60d541a065608a2de076c3d4184",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-317.after-contract.md": "bf566febe2fba1f2e14b67e26b5513ce41a5fbb9544ee6a4cc2c9e509a218086",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-317.api.json": "700472fd8f2f535b0f4397798d70ff19fff2e0131b65de5b09a77f39cf34fb53",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/issue-317.md": "591bb92fd57c1af3310890575cbd5a92509eea1efc8efff7adf5e7428d0c9823",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/provenance.json": "13d278b6e9ff713a39b8931781a6858521ff89cd8fc2e13b46eea8c4f7cf60b8",
+    "tests/fixtures/constitution_v030/issue-317-scope/addendum/tracker-replacements.json": "c6cc61a9a4e70311e76977d730c39dc5a81dadddf59152c3672492fdce5b2848"
+  },
+  "scope": "Final new raw read/first-draft/current-contract/update snapshots, excluding this map; the original twenty-criterion parent packet remains unchanged."
+}

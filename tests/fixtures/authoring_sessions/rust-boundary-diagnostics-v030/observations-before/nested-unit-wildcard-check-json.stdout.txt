@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"wildcard would discard quantum ownership","primary":{"path":"main.qli","start":168,"end":169,"line":5,"column":9},"related":[]}],"result":null}

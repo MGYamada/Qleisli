@@ -1,0 +1,16 @@
+
+running 11 tests
+test exact_scalar_arithmetic_matches_cyclotomic_and_hadamard_identities ... ok
+test scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types ... ok
+test nested_qif_preserves_zero_one_controls_and_branch_phases ... ok
+test review_same_wire_obstructions_do_not_reject_semantic_unitaries ... ok
+test product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control ... ok
+test adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries ... ok
+test computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control ... ok
+test finite_repetition_preserves_the_phase_of_a_noncommuting_operator ... ok
+test closed_classical_computation_selects_static_branches_and_preserves_output_axes ... ok
+test sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations ... ok
+test sealed_phase_aliases_match_exact_operators_and_their_static_clients ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.80s
+

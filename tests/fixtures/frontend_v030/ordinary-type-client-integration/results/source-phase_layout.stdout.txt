@@ -1,0 +1,1 @@
+Finite source interference: all 4 outcomes match the independent Fourier formula.

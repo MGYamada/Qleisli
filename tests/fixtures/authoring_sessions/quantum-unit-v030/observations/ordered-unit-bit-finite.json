@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/ordered-unit-bit"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 0,
+  "recorded_utc": "2026-10-04T23:02:36.067396+00:00",
+  "elapsed_seconds": 0.4510032500256784,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": "",
+  "source_sha256": "3a58d35866c8b02f0459b9af4b8f2b4ca42afbb2c21743233c62ec8b049f46c6",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "e8dc6a969d9a58ebb9b3f32b2307a36d0fb24679492f0ce086a397434159303e",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  }
+}

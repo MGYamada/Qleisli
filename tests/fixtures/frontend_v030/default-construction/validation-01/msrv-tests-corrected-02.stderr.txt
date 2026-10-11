@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 6.66s
+     Running tests/default_construction_boundary.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/default_construction_boundary-28624ac0395c1903)
+error: test failed, to rerun pass `--test default_construction_boundary`

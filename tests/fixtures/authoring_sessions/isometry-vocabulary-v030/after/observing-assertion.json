@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T21:31:27.674243+00:00",
+  "cli_sha256_before": "5462fef2e76f38ade67b6f0c95815f25b91b138f5b2f28e203fbc21e65bf1a6e",
+  "cli_sha256_after": "5462fef2e76f38ade67b6f0c95815f25b91b138f5b2f28e203fbc21e65bf1a6e",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "body effect `Observe` exceeds asserted `Iso` effect of `main`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli",
+          "start": 160,
+          "end": 178
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

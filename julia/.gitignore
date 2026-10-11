@@ -1,0 +1,3 @@
+# Keep generated output and optional project-local package caches out of Git.
+/.julia/
+/output/

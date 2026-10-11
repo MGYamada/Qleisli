@@ -1,0 +1,4 @@
+use std::quantum::z;
+basis fn perm()->Unit{()}
+meaning Target:Unit=permutation_by(perm);
+observe fn main()->CBit{false}

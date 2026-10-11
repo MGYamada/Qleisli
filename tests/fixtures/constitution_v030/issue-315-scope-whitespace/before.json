@@ -1,0 +1,14 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+    "a96ea1c588d65f63a646aa37c645ccc8b6d9dd10"
+  ],
+  "exit_code": 2,
+  "seconds": 0.47092170803807676,
+  "checked_commit": "a96ea1c588d65f63a646aa37c645ccc8b6d9dd10",
+  "original_scope_packet_sha256": "79f41d7db35b9e3f6e733d26a9911bd2dc8e91ce8c982c566a3f2fbb68aba4b1",
+  "scope": "Whole committed tree check, matching the hosted docs step. The preceding staged diff check did not inspect the already committed parent scope packet."
+}

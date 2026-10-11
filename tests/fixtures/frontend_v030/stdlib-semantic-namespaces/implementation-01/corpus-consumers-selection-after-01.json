@@ -1,0 +1,59 @@
+{
+  "format": "qleisli.namespace-native-selection-validation",
+  "version": 1,
+  "attempt": "after-01",
+  "command": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--offline",
+    "--no-fail-fast",
+    "--test",
+    "native_roundtrip",
+    "--test",
+    "input_corpus"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "env": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "started_utc": "2026-10-06T03:17:32.643534+00:00",
+  "source_sha256": {
+    "tests/native_roundtrip.rs": "b96ec713a698e4992f6610c0999746438682493ebe5f50326e171238ad7bf8f9",
+    "tests/input_corpus.rs": "390fe41cd914df128a389b1247a540ab93a02723b1abf243e7497392be2c06be",
+    "tests/common/mod.rs": "c8ea19ebb4c8f4cfee3ecf7f2e48c25e68df950e4c8d56410f3a4af596d08128",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+    "corpus/migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "corpus/negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Existing two targets against the unchanged final native checker: exact accepted-view reencoding/cache/Meaning tests, 101 logical projects, 87 finite corpus smoke clients and retained negative rejection checks. No new Lean build, maximum cases or generic QFT work.",
+  "exit_code": 0,
+  "elapsed_seconds": 110.833,
+  "stdout": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-after-01.stdout.txt",
+    "sha256": "5d5fe005c573b3a6930e342456c037656b8c4b37e2a6618128e18ad82e743125",
+    "bytes": 678
+  },
+  "stderr": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-after-01.stderr.txt",
+    "sha256": "8030ef8eb0a1cb0180ba1d6126f21a300d737335807ba493bdf062c6e62b69e5",
+    "bytes": 379
+  },
+  "prior_attempt_note": "before-01 did not run a test: Homebrew cargo does not accept rustup +toolchain syntax. Its raw failure is preserved.",
+  "setup_note": "An earlier wrapper exited before invoking Cargo while attempting to hash a nonexistent guessed corpus/migrations/negative-diagnostics-v030/current-manifest.json. No test was run or log overwritten. This invocation obtains the actual derivative path from corpus/manifest.json.",
+  "production_source_tree": {
+    "files": 118,
+    "sha256": "7359015289a21c424ab47e6fb1de91508ed22c67155ea7227b653c5f2d7b8248",
+    "encoding": "SHA-256 of compact, sorted JSON relative-path:SHA-256 map for all regular files under src/ and stdlib/; no source files generated."
+  },
+  "sources_unchanged": true
+}

@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/empty-register-wildcard/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/before/empty-register-wildcard-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.004561042005661875,
+  "recorded_utc": "2026-10-05T16:34:00.288819+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "empty-register-wildcard-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "empty-register-wildcard-selected-auto-emit-proposal-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "wildcard would discard quantum ownership",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/empty-register-wildcard/main.qli",
+          "start": 88,
+          "end": 89
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

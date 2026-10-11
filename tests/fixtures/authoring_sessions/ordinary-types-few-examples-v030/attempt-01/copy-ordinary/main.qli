@@ -1,0 +1,13 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+
+use std::transform::init0;
+use std::observe::measure_z;
+
+fn duplicate_first(a: Bit, b: Bit) -> (Bit, Bit) { (a, a) }
+
+pub fn main() -> (Bit, Bit) {
+    let a = measure_z(init0());
+    let b = measure_z(init0());
+    duplicate_first(a, b)
+}

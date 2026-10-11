@@ -1,0 +1,299 @@
+{
+  "commands": 28,
+  "stable": true,
+  "expected_results": true,
+  "profiles": {
+    "selected": {
+      "accepted": 8,
+      "rejected": 6,
+      "unchanged": 2
+    },
+    "finite": {
+      "accepted": 6,
+      "rejected": 8,
+      "unchanged": 14
+    }
+  },
+  "results": [
+    {
+      "case": "id",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "id",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "helper-move",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "helper-move",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "ordered-unit-bit",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "ordered-unit-bit",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "phase-eighth",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "phase-eighth",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "provider-apply",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "provider-apply",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "provider-control",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": false,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "provider-control",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "unit-as-bits0",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "type"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "unit-as-bits0",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "bits0-as-unit",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "type"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "bits0-as-unit",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "duplicate-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "duplicate-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "lost-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "lost-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "wildcard-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "wildcard-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "zero-fold-invalid",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "ownership"
+      ],
+      "unchanged": false,
+      "classification": "intended exact-type/ownership rejection",
+      "expected_current_result": true
+    },
+    {
+      "case": "zero-fold-invalid",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "ordinary-unit",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "ordinary-unit",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    },
+    {
+      "case": "empty-bits",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostic_codes": [],
+      "unchanged": true,
+      "classification": "selected hierarchy acceptance",
+      "expected_current_result": true
+    },
+    {
+      "case": "empty-bits",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostic_codes": [
+        "unsupported"
+      ],
+      "unchanged": true,
+      "classification": "unchanged finite result",
+      "expected_current_result": true
+    }
+  ]
+}

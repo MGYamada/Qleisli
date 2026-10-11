@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn identity[static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
+pub unitary fn twice[static n:Nat](q:Q<Bits<2*n>>)->Q<Bits<2*n>>{static let size=n+n;identity[size](q)}
+pub observe fn main()->Bit{0}

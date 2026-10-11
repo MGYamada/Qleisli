@@ -1,0 +1,23 @@
+{
+  "format": "qleisli.ordinary-scope-review",
+  "version": 1,
+  "reviewer": "/root/review_isometry_adapter",
+  "independence": "Read-only review of scope records and exact historical criterion snapshots; no source or GitHub writes.",
+  "reviewed_authorization_sha256": "659f73def263132f0d485bf61db3284cf86542d828c4f4b2dbdb7a1a6fab46a2",
+  "reviewed_final_overrides_sha256": "0fa862b8b987279aa710159b975ef645982a436e75b0648e7cbfdd097edde951",
+  "finding": "Initial wording froze all active sources/tests, conflicting with required namespace migration; root narrowed this to historical packets and explicitly retained active migration preserving behavior/notices. Final review reported no blocker.",
+  "criterion_accounting": {
+    "selected_issues": 111,
+    "confirmed_complete": 14,
+    "percentage": 12.61,
+    "issue_317_historical_criteria": 24,
+    "issue_317_current_criteria": 21,
+    "excluded_historical_criteria": [
+      21,
+      22,
+      23
+    ],
+    "general_family_rule_retained": 24
+  },
+  "gate": "No release/requirements.json or acceptance.json exists. No schema/checker change: the eventual exact caller-reviewed applicable snapshot records the explicit human exclusion. Candidate records cannot self-authorize scope changes."
+}

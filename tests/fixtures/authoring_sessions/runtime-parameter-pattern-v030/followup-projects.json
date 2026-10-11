@@ -1,0 +1,29 @@
+{
+  "reason": "Before any production edit or observation of these sources, root requested two additional closed named controls for unchanged artifact replay; independent reviewer requested zero-fold and nested wildcard owner negatives. Original 21 first sources remain untouched.",
+  "projects": [
+    {
+      "name": "closed-named-unit",
+      "path": "followups/closed-named-unit",
+      "source_sha256": "83256758fd97d562e842aff629a29646bc33ff8438563c4b2e55ef1d28e26b53",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "closed-named-swap",
+      "path": "followups/closed-named-swap",
+      "source_sha256": "0c3f84e159280b1c05a21ae1b90547be998545090c36cc616e08972d8b9b6531",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "zero-fold-quantum-wildcard",
+      "path": "followups/zero-fold-quantum-wildcard",
+      "source_sha256": "b66a3e45b89eedf01b33cb7556cf3e8f6c6f0297ad845027b86ade578ae32f2e",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "let-nested-quantum-wildcard",
+      "path": "followups/let-nested-quantum-wildcard",
+      "source_sha256": "022812ae2472c1ac5b71b21a07c5f7a06f67200bc8a9b60d9ebf5f44b3d3537e",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  ]
+}

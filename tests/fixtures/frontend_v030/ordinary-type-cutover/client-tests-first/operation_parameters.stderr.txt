@@ -1,0 +1,3 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running tests/operation_parameters.rs (target/debug/deps/operation_parameters-e82ead800812bcff)
+error: test failed, to rerun pass `--test operation_parameters`

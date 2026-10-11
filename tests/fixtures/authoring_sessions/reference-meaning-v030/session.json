@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Compare an endomorphic reference-Meaning candidate with existing independent function contracts under #46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "6558e7691102e880a1db75345ab8b13769c62e49",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze unadopted reference-Meaning syntax and separate existing-API positive/exact-phase controls before checking or production changes.",
+      "sha256": {
+        "candidate/main.qli": "6758a1fc807a8061d505009f73b3d0d5aa489d40cd2ec626ed255a561542c926",
+        "contract-hhh/main.qli": "e690b03f88bf55ffdc60db1a50d72bb184ca360764f19897ee5c9145d255a0fa",
+        "contract-identity/main.qli": "6a8e416e1fb55c635274cdca71bff012d78ea3fc5df40ed16339da1ab7eb6f49",
+        "contract-negative-h/main.qli": "a45b53c7813808002c90caa0039a9e69f64f5a58b29e92b5df0d538745ee36d1"
+      },
+      "manifest_sha256": {
+        "candidate/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-hhh/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-identity/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-negative-h/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/candidate-project-check.json",
+        "observations/contract-hhh-project-check.json",
+        "observations/contract-hhh-project-run.json",
+        "observations/contract-identity-project-check.json",
+        "observations/contract-negative-h-project-check.json",
+        "observations/contract-hhh-selected-check.json",
+        "observations/contract-hhh-selected-after.json",
+        "observations/contract-hhh-selected-corrected-after.json",
+        "observations/candidate-project-after.json",
+        "observations/candidate-raw-after.json",
+        "observations/candidate-hierarchy-after.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "unused-nat",
+      "reason": "Initial probe used an unused static Nat parameter; the ordinary profile refuses Nat before reaching the false contract, so this is not evidence of equality checking. Source and actual before report were frozen before the ordinary-obligation repair; this session transcription follows those observations. The recorded CLI digest identifies a partially implemented working tree, not a clean commit.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-nat/main.qli": "3e786b88ba9a0ee6ac1002e44431a7aa641891e0e97c5db1629b5f0741f71c32"
+      },
+      "reports": [
+        "counterexamples/unused-nat/before.json"
+      ]
+    },
+    {
+      "id": "unused-operation",
+      "reason": "Repair the probe to an admitted unused Op parameter. The pre-fix ordinary CLI wrongly accepts identity against independently written H in the unused generic body. Source and actual before report were frozen before the ordinary-obligation repair; this session transcription follows those observations. The recorded CLI digest identifies a partially implemented working tree, not a clean commit.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/reference-meaning-v030/counterexamples/unused-operation/main.qli": "105272fd5de65e136f01f0e1c5182ae8f6e5b1efef103061069f720737544c18"
+      },
+      "reports": [
+        "counterexamples/unused-operation/before.json",
+        "counterexamples/unused-operation/after.json",
+        "observations/unused-operation-selected-after.json",
+        "observations/unused-operation-selected-corrected-after.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+[
+  {
+    "category": "attempt-01",
+    "name": "runtime-unit",
+    "path": "attempt-01/runtime-unit",
+    "source_sha256": "e76a64e5b8d0159745086c56fb12af5bcd78074d03c82ce154c1c9ac115b8e97",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-runtime-unit.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "runtime-nested",
+    "path": "attempt-01/runtime-nested",
+    "source_sha256": "85ca642388847b4025addf0852d12a67abf963cb6bf770e35a60cbfee88c2bba",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-runtime-nested.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "runtime-mixed-owner",
+    "path": "attempt-01/runtime-mixed-owner",
+    "source_sha256": "d0f9d18486b2d08f047f89ba57c12909547b55dd20aeae2c649f0de6187d3ef6",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-runtime-mixed-owner.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "basis-unit",
+    "path": "attempt-01/basis-unit",
+    "source_sha256": "044729c55a775124fb1866fae7990b12a53be43f10c1b98dfab7c24c190d427d",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-basis-unit.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "computed-unit",
+    "path": "attempt-01/computed-unit",
+    "source_sha256": "c3e636e120826ad2a5d74a4d8d0c2ecb351fe180048a2bc1b21123780fa6249f",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-computed-unit.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "coherent-unit-phase",
+    "path": "attempt-01/coherent-unit-phase",
+    "source_sha256": "4a5eb64d7452a209386542804d6f573be9ecca63ae28dd7a38b9fef15a728484",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-coherent-unit-phase.json"
+  },
+  {
+    "category": "attempt-01",
+    "name": "effectful-unit",
+    "path": "attempt-01/effectful-unit",
+    "source_sha256": "866d944a9c600694c2bd7b34f696cee0eaf55e9a075525bdff9423b273b8d68f",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/attempt-01-effectful-unit.json"
+  },
+  {
+    "category": "controls",
+    "name": "named-unit",
+    "path": "controls/named-unit",
+    "source_sha256": "8d39ea06ccdd8d1b23324ab31378646e316c72dbeb391290f60f46c80fc3abcf",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/controls-named-unit.json"
+  },
+  {
+    "category": "controls",
+    "name": "named-coherent-phase",
+    "path": "controls/named-coherent-phase",
+    "source_sha256": "2a8846aea1215a6127fac8ad332d59a32446073434982469b2c780f9fea40264",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/controls-named-coherent-phase.json"
+  },
+  {
+    "category": "controls",
+    "name": "named-effectful-unit",
+    "path": "controls/named-effectful-unit",
+    "source_sha256": "eff5d95ab8d8f5bb9321b0c7772cf3351425369674cc23cf59be7833a0e4e91d",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/controls-named-effectful-unit.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "runtime-quantum-unit",
+    "path": "counterexamples/runtime-quantum-unit",
+    "source_sha256": "d747af59a67f8f3b7daca0be7bdd9774afb49adfee487474703c1711dae88651",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-runtime-quantum-unit.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "runtime-bit",
+    "path": "counterexamples/runtime-bit",
+    "source_sha256": "bedb05dcecc8e4b033995d97cb8e51418bc7b8e7dff45cb33d0722ec12ede25d",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-runtime-bit.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "runtime-unit-product",
+    "path": "counterexamples/runtime-unit-product",
+    "source_sha256": "f7e75df981f9ef879bb9dc84b16d1fd04b5539be71159f8ce4c777ff2b1046b7",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-runtime-unit-product.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "basis-bit",
+    "path": "counterexamples/basis-bit",
+    "source_sha256": "4b727a3b457bae0f3d9fab044f3ab3e51fcfb684ef828d69a409bbe78aed3e76",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-basis-bit.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "coherent-unit-product",
+    "path": "counterexamples/coherent-unit-product",
+    "source_sha256": "be44bf455a77b9d945d8f9bec732be9d82b6728488c850a84eca6657d58e2b28",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-coherent-unit-product.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "unitary-effect",
+    "path": "counterexamples/unitary-effect",
+    "source_sha256": "01ffaf7cd2a87ecc95e1447aaa9461a9a54e6602035f63d0e0f8b37e16a9027d",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-unitary-effect.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "nullary-predicate",
+    "path": "counterexamples/nullary-predicate",
+    "source_sha256": "3916347dad8f9a091def34da439ba365bbc5316074028e5c51deca7f565ab021",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-nullary-predicate.json"
+  },
+  {
+    "category": "counterexamples",
+    "name": "ordinary-bits-zero",
+    "path": "counterexamples/ordinary-bits-zero",
+    "source_sha256": "6fffdb3f0a054561db47413d052d9f292c491d8b3edb18dcbfe5c14fdf31efb0",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/counterexamples-ordinary-bits-zero.json"
+  },
+  {
+    "category": "desired-unsupported",
+    "name": "runtime-parameter-pattern",
+    "path": "desired-unsupported/runtime-parameter-pattern",
+    "source_sha256": "5bccf667e1986ef914ce4f923ac471b47fe0315e9e68778918ff92e08302bb56",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observation": "observations/desired-unsupported-runtime-parameter-pattern.json"
+  }
+]

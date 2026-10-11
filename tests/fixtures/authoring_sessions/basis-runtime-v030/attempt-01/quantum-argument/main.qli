@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+basis fn flip_label(x: Bit) -> Bit { not x }
+unitary fn forbidden(q: Q<Bit>) -> Bit { flip_label(q) }
+pub fn main() -> Bit { 0 }

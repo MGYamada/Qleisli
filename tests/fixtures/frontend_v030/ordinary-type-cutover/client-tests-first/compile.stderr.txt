@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.56s
+     Running tests/compile.rs (target/debug/deps/compile-21be87d151c5bc8a)
+error: test failed, to rerun pass `--test compile`

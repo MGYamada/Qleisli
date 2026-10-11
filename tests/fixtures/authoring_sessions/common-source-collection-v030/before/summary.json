@@ -1,0 +1,211 @@
+{
+  "rows": [
+    {
+      "case": "finite-bundled-qft2",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/finite-bundled-qft2-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 22,
+      "proposal_emitted": false
+    },
+    {
+      "case": "finite-bundled-qft2",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/finite-bundled-qft2-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 22,
+      "proposal_emitted": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/local-helper-private-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/local-helper-private-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/local-helper-private-emit-proposal-json.json",
+      "exit_code": 0,
+      "native_invocations": 0,
+      "proposal_emitted": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/unused-invalid-sibling-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/external-private-import-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/external-private-import-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/external-private-import-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/unsupported-basis-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/unsupported-basis-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/unsupported-basis-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/profile-before-late-parse-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/profile-before-late-parse-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/profile-before-late-parse-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/parse-before-late-profile-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/parse-before-late-profile-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/parse-before-late-profile-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/reserved-std-injection-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/reserved-std-injection-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/reserved-std-injection-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    }
+  ]
+}

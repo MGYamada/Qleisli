@@ -1,0 +1,15 @@
+use std::quantum::{init0, cnot};
+use std::observe::measure_z;
+
+observe fn reference(q: Q<Bit>) -> (Q<Bit>, Bit) {
+    let (q, copy) = cnot(q, init0());
+    (q, measure_z(copy))
+}
+observe fn replacement(q: Q<Bit>) -> (Q<Bit>, Bit) {
+    let outcome = measure_z(q);
+    (init0(), outcome)
+}
+
+pub observe fn main(q: Q<Bit>) -> (Q<Bit>, Bit) {
+    apply_contract(replacement, reference, q)
+}

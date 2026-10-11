@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind"
+  ],
+  "exit_code": 1,
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind/main.qli:1:5: parse: parse error: expected `fn`, `basis`, `iso`, `unitary`, `observe`, or `meaning` after `pub`\n",
+  "native_invocations": 0,
+  "seconds": 0.004415874951519072,
+  "recorded_utc": "2026-10-05T10:12:36.645903+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind/main.qli:1:5: parse: parse error: expected `fn`, `basis`, `iso`, `unitary`, `observe`, or `meaning` after `pub`\n"
+}

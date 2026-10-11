@@ -1,0 +1,29 @@
+[
+  {
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.10004154196940362
+  },
+  {
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.03231629100628197
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--all-targets"
+    ],
+    "exit_code": 101,
+    "seconds": 67.32044316601241
+  }
+]

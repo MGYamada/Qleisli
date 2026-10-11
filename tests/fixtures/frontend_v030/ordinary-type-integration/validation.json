@@ -1,0 +1,117 @@
+{
+  "format": "qleisli.ordinary-type-integration-review",
+  "version": 1,
+  "date": "2026-10-05",
+  "scope": "Root integration metadata and rendered documentation checks after independent executable observations. This summary records tool-observed results; it is not a saved raw command transcript or evidence of a fresh Rust/Lean build.",
+  "checks": [
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "summary": "263 constructors, 244 current sources, 20 boundaries; rerun after rustfmt"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "tests": 17,
+      "summary": "Run before formatting-only inventory hash refresh"
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "exit_code": 0,
+      "summary": "36 groups, 20 boundaries, 89 public source files, 21 paths, 9 modes; final bound inventory digest refreshed after rustfmt"
+    },
+    {
+      "command": "python3 scripts/test_check_production_coverage.py",
+      "exit_code": 0,
+      "tests": 14
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "exit_code": 0,
+      "summary": "87 cases, three upstream sources; policy/provenance only"
+    },
+    {
+      "command": "python3 scripts/test_check_input_corpus.py",
+      "exit_code": 0,
+      "tests": 56
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "exit_code": 0,
+      "tests": 15,
+      "summary": "Synthetic failure outputs are expected negative tests; 67 groups, 81 commands"
+    },
+    {
+      "command": "python3 scripts/check_constitution.py --base-ref HEAD",
+      "exit_code": 0,
+      "summary": "Source identity only; two admitted guarantees and three pending obligations; not a fresh Lean replay"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "summary": "Three schemas, none externally enabled; source identity only"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "summary": "1677 local links, 12 Markdown anchors, 206 Lean roots"
+    },
+    {
+      "command": "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook build docs",
+      "exit_code": 0,
+      "summary": "Initial unclosed HTML warning fixed with code-span quoting; final run without warnings"
+    },
+    {
+      "command": "python3 scripts/check_book.py",
+      "exit_code": 0,
+      "summary": "20 HTML files, 741 links, 266 anchors, including print page"
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0,
+      "summary": "Initial check rejected formatting; cargo fmt applied to 19 files; final check passed; no compilation"
+    },
+    {
+      "command": "python3 scripts/check_imaginary_v1_examples.py",
+      "exit_code": 0,
+      "summary": "58 bounded mathematical checks, no imaginary source compilation"
+    },
+    {
+      "command": "python3 scripts/check_semantic_contract_examples.py",
+      "exit_code": 0,
+      "summary": "39 exact rational/algebraic assertions"
+    }
+  ],
+  "historical_pins": {
+    "corpus": 47,
+    "comparison": 88,
+    "relocated_unchanged": 23,
+    "record": "tests/fixtures/verification_v022/ordinary-type-migration/relocations.json"
+  },
+  "prior_records_unchanged": [
+    "tests/fixtures/frontend_v030/ordinary-type-cutover/files.json",
+    "tests/fixtures/frontend_v030/ordinary-types-independent/validation-final.json",
+    "corpus/migrations/ordinary-type-v030/files.json"
+  ],
+  "root_integrated_files": {
+    "README.md": "8060db8aad2aa8a1e90912679204845b7869d46c53760fcd2e7f405b6d9b81ef",
+    "README.crates.md": "896a294a14a16a38cc15c7f02038d382eb801c40cb05d3a273a1b269362ec591",
+    "src/lib.rs": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
+    "docs/src/reference/type-model.md": "2a5e364c7d01446518e8bd180520e24212fd601aa3a31255611f0f9adb8db2d5",
+    "docs/src/reference/source-text.md": "33497d638be47693034454171635abca23f3ae8925db13d8d5573e2c34e32014",
+    "docs/src/reference/primitive-boundary.md": "77e69b8e7ebf658b5a3a51ef4c3df8cc6420c09fabfab27626d36803708e2fbf",
+    "docs/src/design/type-foundation.md": "2bd8a4a8bec64faf98ac97ede4e8eb2674d9d4d3bae9dad7b16a65adc3e71faf",
+    "docs/src/imaginary-v1/requirements.md": "f375a54910fb8c0a6a49e297b258bdbdafa2b5e1b7a4353c4bed3ea871364648",
+    ".github/ci/native-comparisons.json": "feab6c41d6c09b0f7eac8234f6b47077eb591040e392036cb260102cb7282fc2",
+    "scripts/test_run_native_ci.py": "121304be646402eb5375cf1deb98463be6456d8097365d5f228d645cbcd9c3ea",
+    "tests/fixtures/verification_v022/inventory.json": "6526502ba37c35454263227a421ea8a0ba577161aeea8bebcda86175018ae253",
+    "tests/fixtures/verification_v029/coverage.json": "18a62b4bb1d2988c0d7eddb42058273532d2a542a3812b9ec7c22f19c1240631"
+  },
+  "pending": [
+    "Repaired compile and operation_parameters Rust targets rerun",
+    "Remaining Rust integration execution and Python/Rust bridge",
+    "All-target latest/MSRV Clippy",
+    "Full CI on integration commit; older hosted run is not evidence for this tree"
+  ],
+  "disk_policy": "No additional Rust/Lean build or full repository snapshot. Reused existing native/CLI binaries for the separately recorded baseline comparison. Historical temporary trees have not been deleted."
+}

@@ -2,7 +2,7 @@ import QleisliKernel.Semantics.ObservingFunction
 
 /-! Original QIRF data and budget-independent requested table interpretation.
 No acceptance rule, work policy, transport decoder or producer receipt is used.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf
 open Semantics.Finite Semantics.Observation
 

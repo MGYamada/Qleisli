@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.mixed-boolean-test-repair",
+  "version": 1,
+  "before": {
+    "path": "tests/fixtures/frontend_v030/mixed-booleans/first-test.rs.txt",
+    "sha256": "3fa6f50fb33114f27972fe29f706bc6957d84a109c729df23775f867576ff8c1",
+    "status": "unexecuted draft"
+  },
+  "after": {
+    "path": "tests/mixed_booleans.rs",
+    "sha256": "872c311d274f578c8c98773e817869b739089fb383421e43f573b5a541a3d924",
+    "status": "unexecuted repaired draft"
+  },
+  "patch": {
+    "path": "tests/fixtures/frontend_v030/mixed-booleans/test-repair.patch",
+    "sha256": "c79ed60a621515ef6adf7f78fa7799c5f3078b48c2bcbfc278e45b22e8cbdde5"
+  },
+  "reason": "Independent review found phase[9,3] violates existing concrete j < 2^k domain. Remove that positive and assert located limit rejection at elaboration; do not change production source rules.",
+  "api_review": "FiniteMeaning::phase takes BasisType and Vec<u8>; target_ir returns RawProgram. FunctionEvidence::check takes owned RawProgram inputs, FunctionIdentity and &mut Budget. Natural arguments remain u32. Current test signatures match these public APIs.",
+  "validation": "Rustfmt and diff check only; no test execution/build. Original source study and diagnostics untouched."
+}

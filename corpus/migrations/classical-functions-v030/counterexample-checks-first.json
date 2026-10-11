@@ -1,0 +1,188 @@
+{
+  "format": 1,
+  "kind": "actual-bounded-migration-checks",
+  "scope": "Actual public CLI checks of the explicitly prepared source snapshots. Configured native bytes are recorded, not child-start/completion attestation, source-preservation proof, new guarantee discharge or release certification. No Cargo rebuild or new Lean build/audit/replay was performed.",
+  "compiler": {
+    "path": "/private/tmp/qleisli-classical-functions-after",
+    "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a",
+    "bytes": 23170928
+  },
+  "native_kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "bytes": 91666928
+  },
+  "sources": {
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": "86614711f7e5382be6ad15cda98581f099f4b6e7f93190aae0e86ea73eb4ad0d",
+    "semantic_faults/majority_replaced_by_parity/main.qli": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+    "semantic_faults/erased_rotation_scalar/kernel.qli": "c88ce68c96d63d2129ee3cbd812005754ad99377dcc102ba34eebcbb8bb700c8",
+    "semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+    "semantic_faults/rx_missing_scalar/kernel.qli": "6e9ba0d10ba0b2775c0d93c46cc6e55c5af61bea6f93efadb338c3ac77f7c949",
+    "semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "semantic_faults/zz_erased_scalar/kernel.qli": "6609439105c38fbdef41758e2a56cf64f03761b60185a5d654df34285c0f7975",
+    "semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": "951cb4730a8de869a8849a68895cb155e0abcc1c413a369e0b2b56da88f69c86",
+    "semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "semantic_faults/reflection_minus_missing_phase/kernel.qli": "d4e8e161fc1a93fd16abf7ddfeef1f1de0dc407e141cb58f64f060cb1c4ad0aa",
+    "semantic_faults/reflection_minus_missing_phase/main.qli": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+    "semantic_faults/controlled_reflection_missing_phase/kernel.qli": "952d2527f437962ccfc4ab3974043b3515a1d3a10c7c3764104d7c2adaaef9eb",
+    "semantic_faults/controlled_reflection_missing_phase/main.qli": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+    "negative/dirty_auxiliary/main.qli": "58eb819f711ebaa0a7b2a2903c8419465f56c97da004f653ccfe63d5ba951345"
+  },
+  "results": [
+    {
+      "project": "semantic_faults/majority_replaced_by_parity",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/majority_replaced_by_parity",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:28.647778+00:00",
+      "recorded_utc": "2026-10-06T06:36:29.020676+00:00",
+      "seconds": 0.3728936670231633,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:29.020735+00:00",
+      "recorded_utc": "2026-10-06T06:36:29.726825+00:00",
+      "seconds": 0.706103999982588,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:29.726898+00:00",
+      "recorded_utc": "2026-10-06T06:36:30.166813+00:00",
+      "seconds": 0.4399298749631271,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:30.166897+00:00",
+      "recorded_utc": "2026-10-06T06:36:30.566068+00:00",
+      "seconds": 0.39918375003617257,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:30.566141+00:00",
+      "recorded_utc": "2026-10-06T06:36:31.053404+00:00",
+      "seconds": 0.4872780420118943,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/reflection_minus_missing_phase",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/reflection_minus_missing_phase",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:31.053482+00:00",
+      "recorded_utc": "2026-10-06T06:36:31.390943+00:00",
+      "seconds": 0.33747720799874514,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/controlled_reflection_missing_phase",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/controlled_reflection_missing_phase",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:31.391018+00:00",
+      "recorded_utc": "2026-10-06T06:36:31.846795+00:00",
+      "seconds": 0.45579370798077434,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "negative/dirty_auxiliary",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/negative/dirty_auxiliary",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:31.846872+00:00",
+      "recorded_utc": "2026-10-06T06:36:31.852702+00:00",
+      "seconds": 0.005841417005285621,
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"main.qli\",\"start\":331,\"end\":349,\"line\":9,\"column\":45},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ],
+  "compiler_identity_stable": true,
+  "native_kernel_identity_stable": true
+}

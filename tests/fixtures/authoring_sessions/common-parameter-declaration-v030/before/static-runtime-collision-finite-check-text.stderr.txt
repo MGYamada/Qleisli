@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/main.qli:4:41: ownership: duplicate parameter name

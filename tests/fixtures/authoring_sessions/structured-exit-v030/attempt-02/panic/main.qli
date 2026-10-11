@@ -1,0 +1,2 @@
+unitary fn bad(q:Q<Bit>)->Q<Bit>{panic!();q}
+observe fn main()->Bit{1}

@@ -1,0 +1,37 @@
+{
+  "tool_chunk": "312819",
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "basis_polymorphism"
+  ],
+  "exit_code": 101,
+  "passed": 8,
+  "failed": 1,
+  "failure": "CLI test expected modern ir_profile field in legacy sized result; actual legacy result retains verification/execution authority and intentionally omits modern profile metadata.",
+  "actual_failed_result": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "quantum_bits": 0,
+      "amplitudes": [
+        [
+          1.0,
+          0.0
+        ]
+      ],
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir"
+    }
+  }
+}

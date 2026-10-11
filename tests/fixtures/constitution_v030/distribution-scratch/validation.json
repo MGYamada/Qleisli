@@ -1,0 +1,58 @@
+{
+  "scope": "Synthetic lifecycle validation; no real Cargo/Rust/client/Lean execution",
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "sources": {
+    "scripts/check_distribution.py": "062020e85affce94baa5cd834aae626341b473cef18407a9dd6c0013c5a95a97",
+    "scripts/test_check_distribution.py": "98ce492c7cf78102800e20a8d2010f6557b4ad72bf3f3ac8e0bd2032a42f9f16",
+    "tests/fixtures/constitution_v030/distribution-scratch/record.py": "84da54b6b1d16b06cbab072cbbb266d5fc0f4cbab971c90537942e70623f7fca"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/fixtures/constitution_v030/distribution-scratch/record.py",
+        "--output",
+        "tests/fixtures/constitution_v030/distribution-scratch/after"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 3.304,
+      "stdout": "after-record.stdout",
+      "stderr": "after-record.stderr"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_check_distribution.py",
+        "-v"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 4.508,
+      "stdout": "unit-tests.stdout",
+      "stderr": "unit-tests.stderr"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/fixtures/constitution_v030/distribution-scratch/record.py",
+        "--baseline",
+        "tests/fixtures/constitution_v030/distribution-scratch/before-check_distribution.py.txt",
+        "--output",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-scratch-recorder-check-ms83wa68/record"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 0.935,
+      "stdout": "baseline-replay.stdout",
+      "stderr": "baseline-replay.stderr",
+      "scope": "Replay of saved pre-change validator with final synthetic driver; output scratch removed only after observation."
+    }
+  ]
+}

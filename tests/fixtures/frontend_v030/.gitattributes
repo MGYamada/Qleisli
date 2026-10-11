@@ -1,0 +1,4 @@
+# Preserve frozen review/checkpoint prose bytes bound by retained input maps.
+common-parameter-declaration-design/author-followup-audit-01.md -whitespace
+common-parameter-declaration-design/independent-implementation-review.md -whitespace
+common-pattern-implemented-checkpoint/README.md -whitespace

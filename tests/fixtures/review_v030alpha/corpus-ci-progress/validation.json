@@ -1,0 +1,38 @@
+{
+  "format": "qleisli.corpus-ci-progress-validation",
+  "version": 1,
+  "created_utc": "2026-10-06T10:33:38.805867+00:00",
+  "source_base": "f8c96283f63762578bfdde174426ee02fd83a8f8",
+  "scope": "Diagnostic progress only; no shard, coverage reduction, native acceptance cache, report schema or oracle equation change.",
+  "changed_source_sha256": "099565c85194324bae30fa69d8862c327f880cd73c2c3252e4f1899aa29c00bd",
+  "checks": [
+    {
+      "command": "python3 scripts/test_check_input_corpus.py",
+      "passed": 74,
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py /private/tmp/qleisli-bounded-validation-target/debug/qleisli --case quantum_katas/minus_state1 --exhaustive --report /private/tmp/qleisli-corpus-progress-smoke.json",
+      "exit_code": 0,
+      "cases": 1,
+      "semantic_probes": 10,
+      "negative_cases": 4,
+      "semantic_faults": 1,
+      "report_sha256": "594ee497f4d494d363b5080a0664d9a63af353b0891ed6e4c5e5ec10eb6053bc",
+      "case_progress": "10 probes checked, 5.1s elapsed; per-case progress and explicit completion messages emitted on stderr"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "local_links": 2181,
+      "exit_code": 0
+    }
+  ],
+  "full_ci_status": "Older head 38baae7d continues exhaustive corpus run 37443178912; this change has not run on GitHub.",
+  "runtime_audit": {
+    "manifest_cases": 87,
+    "unitary_driver_calls": 15848,
+    "additional": "Shipped/protocol/fault/negative executions",
+    "workers": 4
+  },
+  "remaining": "Balanced CI sharding with complete inventory and exact-commit release receipt aggregation; current instrumentation does not shorten the running job."
+}

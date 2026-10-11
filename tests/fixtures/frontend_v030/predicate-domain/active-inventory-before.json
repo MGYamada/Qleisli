@@ -1,0 +1,1208 @@
+[
+  {
+    "path": "stdlib/src/routines.qli",
+    "category": "active",
+    "sha256": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "nonzero2"
+    ],
+    "basis_functions": {
+      "nonzero2": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 24
+      }
+    }
+  },
+  {
+    "path": "examples/bernstein_vazirani/oracle.qli",
+    "category": "active",
+    "sha256": "3af6324a523b1f05ba570a0400bccaef1a0c9865bd884f95fcd501dc7b8879ea",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "linear"
+    ],
+    "basis_functions": {
+      "linear": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 4
+      }
+    }
+  },
+  {
+    "path": "examples/function_contracts/implementation.qli",
+    "category": "active",
+    "sha256": "9c96958d64b4b36ed542c8e649c4e021eb2d80d90b95d50b4345f620885992af",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "copy_label"
+    ],
+    "basis_functions": {
+      "copy_label": {
+        "arity": 1,
+        "params": "value: Bit",
+        "line": 5
+      }
+    }
+  },
+  {
+    "path": "examples/grover/oracle.qli",
+    "category": "active",
+    "sha256": "efd57b65aa0091d2f23e05ab7e26a6db00bcbfff05deacf68f36f4d98ed86c38",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 4
+      }
+    }
+  },
+  {
+    "path": "examples/operation_algorithms/oracles.qli",
+    "category": "active",
+    "sha256": "fc3e4ec61026daa36ec35c560123872761ed5bd5d86cb6539a4328b24a550a7c",
+    "computed_occurrences": 5,
+    "matched_predicate_names": [
+      "is00",
+      "is10",
+      "is01",
+      "is11",
+      "nonzero"
+    ],
+    "basis_functions": {
+      "is00": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 4
+      },
+      "is10": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 5
+      },
+      "is01": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 6
+      },
+      "is11": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 7
+      },
+      "nonzero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 8
+      },
+      "phase11": {
+        "arity": 1,
+        "params": "(a,b): (Bit,Bit)",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "examples/phase_oracle/oracle.qli",
+    "category": "active",
+    "sha256": "548092541547542d35e7a31b3b451e35ebfa21786cb7a0a96e3e80f825cad524",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "predicate"
+    ],
+    "basis_functions": {
+      "predicate": {
+        "arity": 1,
+        "params": "x: Bit",
+        "line": 3
+      }
+    }
+  },
+  {
+    "path": "examples/semantic_contracts/main.qli",
+    "category": "active",
+    "sha256": "afb79b8a5bb953aea12fddbee66a604d2e1de7bc1642523af0afc6a3d245bfe2",
+    "computed_occurrences": 3,
+    "matched_predicate_names": [
+      "copy_bit",
+      "copy_bit",
+      "copy_bit"
+    ],
+    "basis_functions": {
+      "copy_bit": {
+        "arity": 1,
+        "params": "value: Bit",
+        "line": 7
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/pennylane_demos/phase_lock/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "bbc6b8744a117960182aed249ac94d4f08e56a082431336fc6560e8ed4309b57",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_maxcut/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "2b5230bfa872f5e738734d9e635ca48cea507b7a4f2e8519614d11f5db5ee820",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "2481b6bc6bda60d9a7451c343736c5b695fd44737839c4c04d7d76d8862bc35f",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/pennylane_demos/qubit_rotation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "b5013c8b52ef18820181352fc5182bfe75bb8d593e4079bffbec0485fd4f67b8",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "3e7353a7717e94a7013b6e76088ec4a9973959974848f23a179ff2056698962d",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 18
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 19
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/qualtran/and_phase/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d3cb10bbc068ddb22dd544fa42821ae47c604e2d0e78d58ff98ae914f0b5cab0",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/qualtran/reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "2ce0f4334aa1d7f055ab566d5f6b0857f8f6b86c1ca32bd26774646e766b63ad",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 19
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-01/quantum_katas/grover2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "a73837d063e74fe7404e7a9cbd8c9d46997b70271556c178ffd4c8c44970b925",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 20
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/pennylane_demos/phase_lock/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "bbc6b8744a117960182aed249ac94d4f08e56a082431336fc6560e8ed4309b57",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_maxcut/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "425098e66ee7e9109122a2d0607165af04b04a54e816a2a5a3d6239f328be5ce",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "3311ce41f277d48e4d026bbf5b9e193d3a6142e24a9b685bbf31b292d192b3e5",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/pennylane_demos/qubit_rotation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "006e4523d0576b1b3e3ddf0a55a91cd21ac6ddad7b65d18a6e9d5be2ff8ae1b6",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "b49462b235fb1314492c211d195891b9bf57bd4b12b7f71c32222f007b555c1e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 18
+      },
+      "flip": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 19
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 22
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/qualtran/and_phase/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d3cb10bbc068ddb22dd544fa42821ae47c604e2d0e78d58ff98ae914f0b5cab0",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 18
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/qualtran/reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "2ce0f4334aa1d7f055ab566d5f6b0857f8f6b86c1ca32bd26774646e766b63ad",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 19
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-02/quantum_katas/grover2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "a73837d063e74fe7404e7a9cbd8c9d46997b70271556c178ffd4c8c44970b925",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 20
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/pennylane_demos/phase_lock/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "bead7c17c8619bb2cb791f5a65ef8e0c2dc91435515c5e5c91b02f62558747a8",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_maxcut/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "26ca16de43d6862a00afe1003733f8dcc94bd6bcee8f630e871c54b7c1c1ea74",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d062e4e0f47c49ea6350c3a159cdc777fe0e8152d121e332ad40625536b4501c",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/pennylane_demos/qubit_rotation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "fcb5793030013cd63751acbd0aa64f87534192aa49e81d2c398f9231d13c479d",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "b4a2692660dd15fba342444f4346081628e8b9cc8be215bcf9e356ce597cbe3a",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 9
+      },
+      "flip": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 10
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/qualtran/and_phase/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 9
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/qualtran/reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 10
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-03/quantum_katas/grover2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/pennylane_demos/phase_lock/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_maxcut/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "26ca16de43d6862a00afe1003733f8dcc94bd6bcee8f630e871c54b7c1c1ea74",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d062e4e0f47c49ea6350c3a159cdc777fe0e8152d121e332ad40625536b4501c",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/pennylane_demos/qubit_rotation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "fcb5793030013cd63751acbd0aa64f87534192aa49e81d2c398f9231d13c479d",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 9
+      },
+      "flip": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 10
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/qualtran/and_phase/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 9
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/qualtran/reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 10
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-04/quantum_katas/grover2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-05/pennylane_demos/phase_lock/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-05/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 9
+      },
+      "flip": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 10
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-05/qualtran/and_phase/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 9
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-05/qualtran/reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 10
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/attempt-05/quantum_katas/grover2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v021-expansion/attempt-01/pennylane_demos/kernel_overlap2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "10d81029ed2d6978b1c4773f6411f182d13cc96902246f13234c7d97c8edbdef",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v021-expansion/attempt-01/quantum_katas/deutsch_jozsa3/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "majority"
+    ],
+    "basis_functions": {
+      "majority": {
+        "arity": 3,
+        "params": "a: Bit, b: Bit, c: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v021-expansion/attempt-02/quantum_katas/deutsch_jozsa3/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "majority"
+    ],
+    "basis_functions": {
+      "majority": {
+        "arity": 3,
+        "params": "a: Bit, b: Bit, c: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v022-simple/attempt-01/pennylane_demos/rx_quarter/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v023-small/attempt-01/pennylane_demos/ising_zz_quarter2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "af6353a2e64e2a9074c447fef3071077454a6ae95b71ff9ce58e492e7c458b86",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v024-small/attempt-01/pennylane_demos/rx_negative_quarter/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "f48c774d21a515b33fcff6ce050526c7a8c24e63bd24128458e9dba9e460ba5a",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v026-small/attempt-01/qualtran/control_zero_reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "bf9e21f5202ce08f74ba709448cf9d02b3a1792719a172b5b45b4ffb6b195495",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v026-small/attempt-01/qualtran/reflection_minus1/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "4551b6874e7a15eb06c0188407e7d124a577545fea6d08d29ca30a203c8e3e0a",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v026-small/attempt-02/qualtran/control_zero_reflection2/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "3d5818827242495d3663697f257004c0bffe7f54ca97c1972346d4197f862b5b",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/authoring/v026-small/attempt-02/qualtran/reflection_minus1/kernel.qli",
+    "category": "authoring-history",
+    "sha256": "3744de242c1fafd0f4e9e1f2e1692d87f99edb92d59de4bc8881babccca36c24",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/negative/dirty_auxiliary/main.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "identity"
+    ],
+    "basis_functions": {
+      "identity": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 7
+      }
+    }
+  },
+  {
+    "path": "corpus/pennylane_demos/phase_lock/kernel.qli",
+    "category": "active",
+    "sha256": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "lock"
+    ],
+    "basis_functions": {
+      "lock": {
+        "arity": 5,
+        "params": "control: Bit, a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/pennylane_demos/rx_quarter/kernel.qli",
+    "category": "active",
+    "sha256": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/pennylane_demos/vqe_excitation/kernel.qli",
+    "category": "active",
+    "sha256": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "occupied"
+    ],
+    "basis_functions": {
+      "occupied": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 9
+      },
+      "flip": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 10
+      },
+      "swap_excitation": {
+        "arity": 4,
+        "params": "a: Bit, b: Bit, c: Bit, d: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/qualtran/and_phase/kernel.qli",
+    "category": "active",
+    "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "both"
+    ],
+    "basis_functions": {
+      "both": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 9
+      }
+    }
+  },
+  {
+    "path": "corpus/qualtran/control_zero_reflection2/kernel.qli",
+    "category": "active",
+    "sha256": "3d5818827242495d3663697f257004c0bffe7f54ca97c1972346d4197f862b5b",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/qualtran/reflection2/kernel.qli",
+    "category": "active",
+    "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 10
+      }
+    }
+  },
+  {
+    "path": "corpus/qualtran/reflection_minus1/kernel.qli",
+    "category": "active",
+    "sha256": "3744de242c1fafd0f4e9e1f2e1692d87f99edb92d59de4bc8881babccca36c24",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/quantum_katas/deutsch_jozsa3/kernel.qli",
+    "category": "active",
+    "sha256": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "majority"
+    ],
+    "basis_functions": {
+      "majority": {
+        "arity": 3,
+        "params": "a: Bit, b: Bit, c: Bit",
+        "line": 13
+      }
+    }
+  },
+  {
+    "path": "corpus/quantum_katas/grover2/kernel.qli",
+    "category": "active",
+    "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "marked"
+    ],
+    "basis_functions": {
+      "marked": {
+        "arity": 2,
+        "params": "a: Bit, b: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/controlled_reflection_missing_phase/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "02faaf87e82ef63146c27ef1a6bb95be02a5a7b6889f56e92566d7c80d83d922",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 12
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/erased_rotation_scalar/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "f5d5a00a71b5f9a274afc6df177de1467a89eea5bd120670b176be0e97ab6d68",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/majority_replaced_by_parity/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "17c8cc4bc5ef631d733f5bc624fc71abe8333ee9a28350bab8b0ddad5698782a",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "majority"
+    ],
+    "basis_functions": {
+      "majority": {
+        "arity": 3,
+        "params": "a: Bit, b: Bit, c: Bit",
+        "line": 14
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/negative_rx_missing_scalar/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "93ca56300f737fd097c367eccc41f1415af59f28249cf4cae12f57eb8eb9477e",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/reflection_minus_missing_phase/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "e29e61e1fa4ceb8f4fa311ea21d25be4d81a708813e433d6a18c2a0aa48401ac",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "zero"
+    ],
+    "basis_functions": {
+      "zero": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 11
+      }
+    }
+  },
+  {
+    "path": "corpus/semantic_faults/zz_erased_scalar/kernel.qli",
+    "category": "negative-or-semantic-fault",
+    "sha256": "146c773dc671e295e31b9e9cf619261f7a0d34db8801c34c7ff8c7b1fec4f0f4",
+    "computed_occurrences": 1,
+    "matched_predicate_names": [
+      "one"
+    ],
+    "basis_functions": {
+      "one": {
+        "arity": 1,
+        "params": "a: Bit",
+        "line": 14
+      }
+    }
+  }
+]

@@ -2,9 +2,9 @@ import Qleisli.QirfValidity
 import Protocol.Validity
 
 /-! The actual native QLV1 entry point reaches the composed QIRF theorem.
-The packet reader and ordinary root's ResourceSafe/ScopeSafe are explicitly bound;
+The packet reader and ordinary root's OwnershipSafe/ScopeSafe are explicitly bound;
 parser/compiler, full EffectSound and hierarchical coverage remain separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.NativeValidity
 open QleisliKernel.Protocol.Validity
 

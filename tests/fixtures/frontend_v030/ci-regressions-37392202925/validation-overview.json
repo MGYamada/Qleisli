@@ -1,0 +1,234 @@
+{
+  "format": "qleisli.ci-repair-validation-overview",
+  "version": 1,
+  "recorded_utc": "2026-10-06T02:31:42.634117+00:00",
+  "status": "focused-local-validation-passed-full-current-ci-not-established",
+  "scope": "Derived from retained actual command records; counts are not Issue completion, fresh Lean replay, source-preservation proof or release approval.",
+  "historical_failures": [
+    {
+      "stage": "original-local-msrv-all-targets",
+      "record": {
+        "path": "validation/msrv-results.json",
+        "sha256": "9a2360e735b646ecac694f27091a806f80e0e7c256ba8bb250fc7a1f5362db6a"
+      },
+      "compiled_source_record": {
+        "path": "validation/msrv-compiled-source.json",
+        "sha256": "5e2f475b589280bdca4c81779b74bbd3956374648460da066ef4dcc2b0de3a45"
+      },
+      "exit_code": 101,
+      "tests": {
+        "passed": 792,
+        "failed": 24,
+        "ignored": 52,
+        "filtered_out": 0
+      },
+      "current_source": false
+    },
+    {
+      "stage": "focused-repair-03-before-provenance-fix",
+      "record": {
+        "path": "validation/focused-repair-03-results.json",
+        "sha256": "909eb77de4e1c60e80a93c368def2d0aadcfc9b15e49ef6e6d202de339bd72e4"
+      },
+      "exit_code": 101,
+      "tests": {
+        "passed": 119,
+        "failed": 1,
+        "ignored": 0,
+        "filtered_out": 0
+      },
+      "failure": "Nested h argument span was relocated again to outer measure_z: 195 instead of 205.",
+      "separate_exact_empty_pattern_unit_test": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "filtered_out": 115
+      }
+    }
+  ],
+  "rust_final": {
+    "record": {
+      "path": "validation/focused-repair-04-results.json",
+      "sha256": "3086875290d2a815941e290002d7bf2d815f56a9cff0a7106447130879e5f7e9"
+    },
+    "source_identity_check": {
+      "bound_files": 124,
+      "changed_since_record": []
+    },
+    "toolchains": [
+      {
+        "id": "msrv",
+        "cargo_version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+        "integration_targets": 14,
+        "integration": {
+          "passed": 120,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        "frontend_units": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 2,
+          "filtered_out": 52
+        },
+        "combined_passed": 182,
+        "clippy_exit_code": 0
+      },
+      {
+        "id": "latest",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+        "integration_targets": 14,
+        "integration": {
+          "passed": 120,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        "frontend_units": {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 2,
+          "filtered_out": 52
+        },
+        "combined_passed": 182,
+        "clippy_exit_code": 0
+      }
+    ],
+    "format_exit_code": 0,
+    "ignored_frontend_tests": [
+      "frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome",
+      "frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation"
+    ],
+    "ignored_reason": "Existing tests require a freshly built native kernel and explicit CI execution; this focused run did not enable them.",
+    "scope": "14 selected integration targets plus frontend-filtered library tests on each toolchain; not all current Rust targets."
+  },
+  "python_earlier": {
+    "record": {
+      "path": "validation/python-repair-04-summary.json",
+      "sha256": "f18825a88f5d420a13d87f26ae053712c025f3e0e114c35e913e48a8c48879b2"
+    },
+    "source_manifest": {
+      "path": "validation/python-repair-04-plan.json",
+      "sha256": "998ea599b3bbedf8867dc15b17799e9d4d2124f1666135bb3b5ea94ef928af1c"
+    },
+    "comparisons_passed": 11,
+    "comparisons_failed": 0,
+    "source_identity_check_now": {
+      "bound_files": 459,
+      "changed_since_record": [
+        "scripts/test_run_native_ci.py",
+        "src/frontend/check.rs",
+        "src/frontend/check/body/operations.rs",
+        "src/frontend/sized/check.rs"
+      ]
+    },
+    "scope": "Earlier bounded comparisons precede the final Rust diagnostic-provenance changes. They were not all rerun on the later source map."
+  },
+  "python_final": {
+    "record": {
+      "path": "validation/python-repair-05-host-summary.json",
+      "sha256": "90b91f6563384730682b96eecceb9fc4c5259e5d0d857528bc7b13cd47b902bd"
+    },
+    "source_manifest": {
+      "path": "validation/python-repair-05-host-plan.json",
+      "sha256": "35aacd6faf9b004eb31e924b919b898ffbed66a51c67d486e4c29587fcb2be34"
+    },
+    "comparisons_passed": 2,
+    "comparisons_failed": 0,
+    "comparisons": [
+      "instrument-host",
+      "qpe-instrument-host"
+    ],
+    "source_identity_check": {
+      "bound_files": 465,
+      "changed_since_record": []
+    },
+    "parser_and_scheduler_record": {
+      "path": "validation/python-repair-05-ci-coverage-summary.json",
+      "sha256": "31c5b43f5720a2dc188d45891257b72074c3ec4a50834d8cf4cb535d01553c42"
+    },
+    "parser_and_scheduler_tests": [
+      {
+        "id": "ci-coverage",
+        "tests": 16,
+        "exit_code": 0,
+        "stderr": {
+          "path": "validation/python-repair-05-ci-coverage.stderr.txt",
+          "sha256": "a72764dd3cb2d481158861c9fa54cf1763547067c96413a9a88cac6047124b05"
+        }
+      },
+      {
+        "id": "parser",
+        "tests": 16,
+        "exit_code": 0,
+        "stderr": {
+          "path": "validation/python-repair-05-parser.stderr.txt",
+          "sha256": "f05c9dcb3ef455e95549d9840c0a8e99739ca260b9eed5a9c5a02556aeaec053"
+        }
+      }
+    ],
+    "scope": "Two refreshed existing host/native comparisons on the final bound source map, plus bounded scheduler/parser regressions; not the entire native comparison manifest."
+  },
+  "policy_final": {
+    "record": {
+      "path": "validation/policy-repair-04-results.json",
+      "sha256": "141c10f22a46a545d01bd423e5f302576b907b99285f2ab336a68b2d4e703727"
+    },
+    "commands_passed": 9,
+    "commands_failed": 0,
+    "base_ref": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "source_identity_check": {
+      "bound_files": 5,
+      "changed_since_record": []
+    },
+    "scope": "Current identity, coverage and policy regression checks; no live Lean replay or completed release gate."
+  },
+  "book_final": {
+    "record": {
+      "path": "validation/book-repair-04-results.json",
+      "sha256": "947d555df99941c88bf25cd5428066f746548706f2850a2df9fee8e8f8ca9964"
+    },
+    "version": "mdbook v0.5.4",
+    "tool": {
+      "path": "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e"
+    },
+    "commands_passed": 3,
+    "source_identity_check": {
+      "bound_files": 26,
+      "changed_since_record": []
+    },
+    "html_files": 23,
+    "local_links": 922,
+    "anchors": 345,
+    "output_directory": "/private/tmp/qleisli-ci-repair-book",
+    "scope": "Fixed external mdBook rendering and generated HTML/print local-link checks only; no semantic acceptance, proof, full CI or release validation."
+  },
+  "reviews": [
+    {
+      "path": "review.md",
+      "sha256": "d929cb1193af82a7c822d83a11743c65a2f0feba63dba82c1cb579558b398a80"
+    },
+    {
+      "path": "review-final-03.md",
+      "sha256": "a5930b7869a8b823d500d440e9423e40c755bc773cbc092861a72fcf6047d8d6"
+    },
+    {
+      "path": "review-final-04.md",
+      "sha256": "fda34702fdf236e9c77adcb131ea25f03c2970e0def9b22242563c26e601e29d"
+    },
+    {
+      "path": "review-display-04.md",
+      "sha256": "8f634fbcf59089edccbebbf1e8403fb92c11883af7489e8f6dbb34fa36d15cd2",
+      "scope": "Separate independent canonical-display review; metadata observations retain their historical snapshot."
+    }
+  ],
+  "limitations": [
+    "Original hosted workflow failures and local failure records remain historical facts.",
+    "Read-only review03 found no actionable defect but did not establish passing tests; later MSRV03 exposed the nested span bug. normalize/Linear review authorship qualifiers remain in both supplements.",
+    "No full current Rust all-targets, whole native comparison manifest, packaging/fresh installation, complete hosted CI, fresh Lean replay or release validation is claimed.",
+    "Generic qft<N> implementation completion remains excluded from all v0.3.0 and the current goal."
+  ],
+  "recorded_utc_clock_source": "Host Python datetime.now(timezone.utc) observation; not an execution timestamp or human adoption time."
+}

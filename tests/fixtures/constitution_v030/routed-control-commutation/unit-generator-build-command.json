@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/routed-control-commutation/Generate.rs",
+    "--extern",
+    "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-routed-control-generate-unit"
+  ],
+  "cwd": "/Users/masa/git/Qleisli/lean",
+  "started_at": "2026-10-04T15:25:54.209882+00:00",
+  "elapsed_seconds": 0.7159112920053303,
+  "exit_code": 0,
+  "stdout": "unit-generator-build.stdout.txt",
+  "stderr": "unit-generator-build.stderr.txt"
+}

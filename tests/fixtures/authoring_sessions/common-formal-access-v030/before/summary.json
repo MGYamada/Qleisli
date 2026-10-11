@@ -1,0 +1,330 @@
+{
+  "rows": [
+    {
+      "case": "valid-operation",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/valid-operation-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "valid-operation",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/valid-operation-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "valid-operation",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/valid-operation-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "valid-operation",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/valid-operation-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/valid-dependent-basis-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/valid-dependent-basis-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/valid-dependent-basis-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/valid-dependent-basis-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "forward-natural",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/forward-natural-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-natural",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/forward-natural-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-natural",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/forward-natural-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-natural",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/forward-natural-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-basis",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/forward-basis-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-basis",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/forward-basis-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-basis",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/forward-basis-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "forward-basis",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/forward-basis-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/duplicate-access-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/duplicate-access-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/duplicate-access-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/duplicate-access-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/wrong-kind-access-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/wrong-kind-access-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/wrong-kind-access-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/wrong-kind-access-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/static-runtime-collision-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/static-runtime-collision-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/static-runtime-collision-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/static-runtime-collision-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/unused-missing-access-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/unused-missing-access-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/unused-missing-access-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/unused-missing-access-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-priority",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/natural-priority-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-priority",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/natural-priority-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-priority",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/natural-priority-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-priority",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/natural-priority-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "before/basis-scan-priority-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "before/basis-scan-priority-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "before/basis-scan-priority-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "before/basis-scan-priority-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    }
+  ],
+  "actual_observation_count": 40,
+  "native_forwarded_attempts": 46,
+  "source_repairs": 0,
+  "predictions_used_as_assertions": false,
+  "source_meaning_verified": false,
+  "scope": "Forty completed check captures; no runtime oracle, source preservation or native-start attestation."
+}

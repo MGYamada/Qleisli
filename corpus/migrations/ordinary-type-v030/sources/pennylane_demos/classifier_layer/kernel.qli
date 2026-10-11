@@ -1,0 +1,27 @@
+// Upstream authors (repository usernames): mariaschuld. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_variational_classifier/demo.py
+// Selected symbol(s): layer (four-wire version)
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let (part3, d) = split(q);
+    let (part2, c) = split(part3);
+    let (a, b) = split(part2);
+    let a = h(z(a));
+    let b = h(z(b));
+    let c = h(z(c));
+    let d = h(z(d));
+    let (a, b) = cnot(a, b);
+    let (b, c) = cnot(b, c);
+    let (c, d) = cnot(c, d);
+    let (d, a) = cnot(d, a);
+    join(join(join(a, b), c), d)
+}

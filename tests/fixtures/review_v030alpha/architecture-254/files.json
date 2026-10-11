@@ -1,0 +1,24 @@
+{
+  "scope": "Frozen validation evidence and reviewed inputs; not constitutional admission or full release readiness",
+  "files": {
+    "README.md": "aa8c27f700034d57d84a11879b12701526514b34d5c02f1ff2fbcb4fc3fef132",
+    "docs/src/SUMMARY.md": "032a5cd48ba827ea03db22bab6bb160517214b8173a2e0f20878f6649d6ff83c",
+    "docs/src/building.md": "c21f9382f4aea08b87c12cb3d6c6643da0bf9cb05a043863ef0151c0c4cf1779",
+    "docs/src/reference/architecture.md": "2adb364404375ef161edebcde85fcf731f89d4dc22c6188e6b0a528b0a30b4bc",
+    "docs/src/reference/authority.md": "338ae73c7f358fd62c63ec53bfca9f1f7006ccbaa7d97f2b8d7aac87e266191b",
+    "tests/fixtures/review_v030alpha/architecture-254/README.md": "ac49e4fd4c6358d66a115c854fe80d7565a4960bb832a4ec40b0bbb96f5ce446",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/0.stdout.txt": "2bd696fb3cb77fa6bebaa4cfb947bd38e65e05774cdc0a10e20eaafdfb76ab3e",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/1.stdout.txt": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/2.stderr.txt": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/2.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/3.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/3.stdout.txt": "018f86df287c90fb358e978e0b5e7650a83aaedf31461d902b9724ee5d04f549",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/4.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/4.stdout.txt": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/inputs-after.json": "68280b4ada5aea82cc42d793f694f4a7fb7b5148793cd5cd71411d5d0f8e2242",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/inputs-before.json": "68280b4ada5aea82cc42d793f694f4a7fb7b5148793cd5cd71411d5d0f8e2242",
+    "tests/fixtures/review_v030alpha/architecture-254/validation/result.json": "afe18c0590c3012fcc672139d33845fc323750d826ae6c7f2496c65a4a420d18"
+  }
+}

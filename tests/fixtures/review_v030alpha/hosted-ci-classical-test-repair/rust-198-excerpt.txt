@@ -1,0 +1,11 @@
+2026-10-06T07:05:33.6964843Z ---- frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans stdout ----
+2026-10-06T07:05:33.6965449Z 
+2026-10-06T07:05:33.6966140Z thread 'frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans' (13654) panicked at src/frontend/parser/tests.rs:15:44:
+2026-10-06T07:05:33.6968320Z called `Result::unwrap()` on an `Err` value: ParseError { message: "`basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct", span: Span { start: 0, end: 5 } }
+2026-10-06T07:05:33.6969490Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T07:05:33.6969794Z 
+2026-10-06T07:05:33.6969803Z 
+2026-10-06T07:05:33.6969882Z failures:
+2026-10-06T07:05:33.6970289Z     frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans
+2026-10-06T07:05:33.6970683Z 
+2026-10-06T07:05:33.6970955Z test result: FAILED. 110 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 84.69s

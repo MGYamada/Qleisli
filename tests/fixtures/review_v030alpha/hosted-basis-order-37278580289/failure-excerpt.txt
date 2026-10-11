@@ -1,0 +1,26 @@
+2026-10-05T08:00:52.3265673Z test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+2026-10-05T08:00:52.3265995Z 
+2026-10-05T08:00:52.3266071Z failures:
+2026-10-05T08:00:52.3266163Z 
+2026-10-05T08:00:52.3266324Z ---- forwarding_checks_callee_size_and_access_premises stdout ----
+2026-10-05T08:00:52.3266546Z 
+2026-10-05T08:00:52.3266810Z thread 'forwarding_checks_callee_size_and_access_premises' panicked at tests/sized_source.rs:467:35:
+2026-10-05T08:00:52.3267773Z called `Result::unwrap()` on an `Err` value: Error { code: "static", module: Some("dep"), span: Span { start: 40, end: 41 }, message: "unknown natural name n" }
+2026-10-05T08:00:52.3268349Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-05T08:00:52.3268576Z 
+2026-10-05T08:00:52.3268584Z 
+2026-10-05T08:00:52.3268650Z failures:
+2026-10-05T08:00:52.3268840Z     forwarding_checks_callee_size_and_access_premises
+2026-10-05T08:00:52.3269013Z 
+2026-10-05T08:00:52.3269221Z test result: FAILED. 37 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.51s
+2026-10-05T08:00:52.3269485Z 
+2026-10-05T08:00:52.3274276Z error: test failed, to rerun pass `--test sized_source`
+2026-10-05T08:00:52.3297153Z ##[error]Process completed with exit code 101.
+2026-10-05T08:00:52.3427101Z Post job cleanup.
+2026-10-05T08:00:52.4353301Z [command]/usr/bin/git version
+2026-10-05T08:00:52.4389314Z git version 2.55.0
+2026-10-05T08:00:52.4420905Z Temporarily overriding HOME='/home/runner/work/_temp/cec4033d-6ae6-4a7c-8ff1-59a3a127e081' before making global git config changes
+2026-10-05T08:00:52.4421898Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-05T08:00:52.4432746Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Qleisli/Qleisli
+2026-10-05T08:00:52.4458260Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-05T08:00:52.4487869Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"

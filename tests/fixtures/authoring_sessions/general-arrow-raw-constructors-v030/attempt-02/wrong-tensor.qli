@@ -1,0 +1,8 @@
+use std::quantum::{x,phase};
+fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+fn id(q:Q<Bit>)->Q<Bit>{q}
+fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+classical fn left((a,b):(Bit,Bit))->(Bit,Bit){(not a,b)}
+meaning M:(Bit,Bit)=permutation_by(left);
+fn invoke[const U:Op<(Bit,Bit),M>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){U(q)}
+pub fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{invoke[tensor_op(id,flip)](q)}

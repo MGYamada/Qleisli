@@ -1,0 +1,1 @@
+use std::quantum::init0; use std::quantum::x; use std::observe::measure_z; unitary fn ordinary(b: CBit) -> CBit { b } unitary fn implementation(q: Q<Bit>) -> Q<Bit> { x(q) } unitary fn specification(q: Q<Bit>) -> Q<Bit> { x(q) } observe fn main() -> CBit { ordinary(measure_z(apply_contract(implementation,specification,init0()))) }

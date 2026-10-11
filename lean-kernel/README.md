@@ -12,9 +12,15 @@ remain separate.
 retains typed QIRF stage results and proves the actual packet check reaches
 independent finite original-body/reference semantics. The compatibility proof
 preserves every input, failure and remaining work value.
-[Ordinary ResourceSafe](../tests/fixtures/resource_safe_v028/README.md) additionally
+[Ordinary OwnershipSafe](../tests/fixtures/resource_safe_v028/README.md) additionally
 proves independent linear ownership through actual native acceptance for all
 19 constructors and both arms. Full EffectSound/hierarchical S05 remains open.
+The ownership predicate and its checker-facing theorems use `OwnershipSafe`
+terminology under [Issue #287](https://github.com/MGYamada/Qleisli/issues/287).
+Ownership/linearity and [exact clean-workspace discharge](https://github.com/MGYamada/Qleisli/issues/157)
+are distinct QS obligations; [quantitative Resource Safety](https://github.com/MGYamada/Qleisli/issues/280)
+requires resource bounds and their preservation. These ownership proofs do not
+discharge that RS obligation. Historical fixture names and records are retained.
 
 ## Code organization
 
@@ -256,5 +262,5 @@ amplitudes and the phase/layout checker's weighted basis transitions. The
 [QFT proof](../lean/Qleisli/Qft.lean) establishes the matched circuit's positive
 normalized Fourier coefficients and their extension to arbitrary references.
 
-Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0; see
+Copyright 2026 Qleisli Project Contributors. Licensed under Apache-2.0; see
 [LICENSE](../LICENSE) and [NOTICE](../NOTICE).

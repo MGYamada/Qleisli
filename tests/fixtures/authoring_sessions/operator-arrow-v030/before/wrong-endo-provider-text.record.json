@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/wrong-endo-provider/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:47..55: name: unresolved function split\n",
+  "native_invocations": 0,
+  "seconds": 0.005481666012201458,
+  "transcript": "main:47..55: name: unresolved function split\n",
+  "recorded_utc": "2026-10-05T12:08:27.687507+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/wrong-endo-provider-text.json",
+    "sha256": "df8d36b90e9f6509a9ee743999869059c60280a3182e2062dcf8e3d84ee11bbd"
+  }
+}

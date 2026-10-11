@@ -1,0 +1,12 @@
+--- a/lean-kernel/QleisliKernel/Semantics/Ownership.lean
++++ b/lean-kernel/QleisliKernel/Semantics/Ownership.lean
+@@ -184,7 +184,8 @@
+ 
+ /-- Linear ownership safety for a complete ordinary raw program. Classical
+ SSA/effect correctness, quantum cleanup meaning, costs and hierarchy are separate. -/
+-def OwnershipSafe (program : Observation.Program) : Prop :=
++-- Formatting-only continuity regression; the elaborated definition is unchanged.
++def   OwnershipSafe (program : Observation.Program) : Prop :=
+   ∃ initial final, Inputs {} program.inputs initial ∧
+     Run initial program.operations final ∧ Returned final program.outputs
+ 

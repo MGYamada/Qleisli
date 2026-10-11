@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/Superposition/ReferenceImplementation.qs
+// Selected symbol: ZeroAndBitstringSuperposition_Reference; bits=[true,false,true]
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use kernel::kernel;
+
+observe fn main() -> (CBit, CBit, CBit) {
+    let q = join(join(init0(), init0()), init0());
+    let q = kernel(q);
+    let (prefix2, w2) = split(q);
+    let (w0, w1) = split(prefix2);
+    (measure_z(w0), measure_z(w1), measure_z(w2))
+}

@@ -1,0 +1,95 @@
+{
+  "source_cases": 18,
+  "finite_observations_unchanged": 36,
+  "sized_accepted": [
+    "phase-same",
+    "phase-backward",
+    "phase-split",
+    "providers",
+    "self-recursion"
+  ],
+  "sized_rejected": 13,
+  "changed_sized_observations": [
+    {
+      "case": "phase-same",
+      "before": "sized.parse: main:114..165: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: ok"
+    },
+    {
+      "case": "phase-backward",
+      "before": "sized.parse: main:77..137: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: ok"
+    },
+    {
+      "case": "providers",
+      "before": "sized.parse: a:64..114: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: ok"
+    },
+    {
+      "case": "unused-type",
+      "before": "sized.parse: main:42..81: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:78..80: type: type or tuple/size shape mismatch: expected Bit, found Tuple([])"
+    },
+    {
+      "case": "unused-owner",
+      "before": "sized.parse: main:42..93: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:90..91: ownership: unbound or consumed value q"
+    },
+    {
+      "case": "unused-static-arm",
+      "before": "sized.parse: main:42..129: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:125..126: ownership: unbound or consumed value q"
+    },
+    {
+      "case": "zero-fold-capture",
+      "before": "sized.parse: main:42..148: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:139..140: ownership: unbound or consumed value r"
+    },
+    {
+      "case": "sibling-cycle",
+      "before": "sized.parse: main:41..77: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported"
+    },
+    {
+      "case": "unused-provider-cycle",
+      "before": "sized.parse: main:47..83: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported"
+    },
+    {
+      "case": "self-recursion",
+      "before": "sized.parse: main:95..137: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: ok"
+    },
+    {
+      "case": "nondecreasing-recursion",
+      "before": "sized.parse: main:93..135: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:83..90: cycle: self-recursion needs a strictly decreasing natural argument"
+    },
+    {
+      "case": "private-import",
+      "before": "sized.parse: dep:50..88: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:0..16: visibility: dependency dep::hidden is private"
+    },
+    {
+      "case": "collision",
+      "before": "sized.parse: main:57..93: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:0..14: name: import shadows the local function"
+    },
+    {
+      "case": "duplicate",
+      "before": "sized.parse: main:42..79: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:53..58: name: duplicate declaration entry"
+    },
+    {
+      "case": "source-order-errors",
+      "before": "sized.parse: main:42..80: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after": "sized.parse: main:77..79: type: type or tuple/size shape mismatch: expected Bit, found Tuple([])"
+    }
+  ],
+  "unchanged_sized_observations": [
+    "phase-split",
+    "rename",
+    "ambiguous-import"
+  ],
+  "scope": "Rejections formerly stopped at the second-declaration profile gate now reach existing generic/type/ownership/import/cycle checks. Runtime syntax and finite profile are unchanged."
+}

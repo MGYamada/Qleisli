@@ -1,0 +1,298 @@
+{
+  "format": "qleisli.coherent-basis-source-map",
+  "version": 1,
+  "issue": 81,
+  "project_version": "0.3.0-alpha",
+  "scope": "Explicit syntax-only derivatives of previously selected current sources. Prior original/type/predicate/namespace bytes remain unchanged. One existing CoherentLift AST maps to basis input as pattern { basis expression }; no automatic runtime repair or semantic/proof claim. Two malformed reserved-function first sources remain unchanged with their earlier parse failures.",
+  "files": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli",
+      "before_sha256": "df95d8cdd2414cb488e2cc03a221691b8f0710ee20c0151d255b178e60ceba21",
+      "current_sha256": "4fd0eb857ba7e4ff5954193d3e059f7b899a501c146a1745b6cbd9991088c84f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli",
+      "before_sha256": "5551c5ecc5d670ceafd9aed9264a576b5cc9036dec30090f49a57c8310f487be",
+      "current_sha256": "d6231f600dec0c5569e947cc998fedff157045433daae336c1ad0725b9416392"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v023/c3x.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli",
+      "before_sha256": "0a47cf9fdd4a6addf0cae8a9ee7f513d1842b5919cc0161a716a9df0a4ad516a",
+      "current_sha256": "56bcf70d8ea71361f0f60276d40f0bfaf321bce00c6640e1072c878636eb0bf0"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/nary_lift.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/ergonomics/nary_lift.qli",
+      "before_sha256": "1be97cd7b3f14a7d631a51c710074b75179d44961447b8f532ddb6bdb4ef597d",
+      "current_sha256": "fda42952887733c20dce4c0be096c15c94f30ed98c59a206968d784ffe358a86"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/wildcard_not_injective.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/ergonomics/wildcard_not_injective.qli",
+      "before_sha256": "18f5af7585be6279d51d2fc14d67f717bef478f6cb2b852282749870acf089d4",
+      "current_sha256": "da40d4e416cb214aef5000005f210573c8eb5503f48a8804c321fabe8a7add77"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-flat/main.qli",
+      "before_sha256": "dac5196a4c59cc33bd912d265a7ecf59b54b291b3b577a375143ad7ba0fcefb0",
+      "current_sha256": "48744546a676cfdee8c64d225c71d059c3d5dc9124b1c9b81063ba7f139ecfb3"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-left/main.qli",
+      "before_sha256": "a764887a0d615fe520c9957e30830eae41e358dc6838d2d6a300b41db6452a05",
+      "current_sha256": "1e5cab4ffc0d54af2dd00fce553f91db8913d01cc833453414f3d5a9c0917886"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/main.qli",
+      "before_sha256": "3d9bcf682641a21b6ce9a23b541ca016ada5b6134825afce60f0de32e64a4d39",
+      "current_sha256": "cc08a965d3db15d040cf73a6617b794ebe7c699af927ab59690f47eb309fdf28"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli",
+      "before_sha256": "5473666c1c21a4a2f4d71f0fceeffa5c79680936db46f91f79eef127eae9bd72",
+      "current_sha256": "e4fd5c9a6b93d82c4b6451212ff431d7f4873d896569c38fe17c047b7c8dfa19"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-certified/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-certified/main.qli",
+      "before_sha256": "108e2df6b900292072daba1270d016bd92f637fcd9408093a5ee6854f4630de5",
+      "current_sha256": "20e118cca8b62221da16161dbcf0ce82e97a9d5c969fe1d157aac531b503a246"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-right/main.qli",
+      "before_sha256": "8b050bc54f00b2436da73e13a6e859e2f2d78388f6e5e316100062ba60ad4654",
+      "current_sha256": "0d24cd6f9c126ade917378d36b453e6f00c720c1340fb34cac614bcb4441f1d9"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli",
+      "before_sha256": "fe8a84cffa4d2e6afbd2c37b85c1f7bffc5ce0184461524e7e885f9f0d8a7396",
+      "current_sha256": "642003effc9422386d09b2fd06a209ce8009ddd69c33dc13f291042837007bfc"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli",
+      "before_sha256": "67e73dd5800f44ed70f02b3a372bb714bd045f4e8c3c2e564e1ce8a51c1e4ed9",
+      "current_sha256": "d38617f872dda07bb0bf4539e8ec2389f124a772e7ea8dcb1a5b9ac844b0a1e5"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli",
+      "before_sha256": "e9875e1c8c529f8bd0d28ae1e82601e5e12f1d4b516e89bd3a4f963767b5db8c",
+      "current_sha256": "dd5a1f486d98a6b3c40ca4ed7c51165985634c685986b8c5383d80ba965668e3"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-flat/main.qli",
+      "before_sha256": "c769db14d795acf31ca1e860d482a576f055fe25544a6ad7c956a903465376ed",
+      "current_sha256": "b458e72abe52f820221722a441c3058de534cc2848c003b1c0a3e2391872abfb"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-left/main.qli",
+      "before_sha256": "c35dd2b8f8613862fa4c32250a8fb353df1965fb2d398053f8236aecb5640101",
+      "current_sha256": "85276e3c70c32ae03cfea68d0b56f7e5fddaab19c9e631e3b5216aab8ae05f98"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli",
+      "before_sha256": "10c19fdc36e038aeac341966dab48d18152ccb57d21a2b1ac4fc75829513ecab",
+      "current_sha256": "41f6859fd21d14610c90d322cf9520e22ed4fc935a8e45e481022cd0c6f3c90e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli",
+      "before_sha256": "1d035148e28cb39a48186b959c021de99f53f4ff4f6780c0e0cc267685ce305d",
+      "current_sha256": "4071f53209a8bdb251ca12bdca3a7ce24a7310cb3a2a5b9e469772a920317b31"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-restricted/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-restricted/main.qli",
+      "before_sha256": "dbc4b528e27892645fa9b4a493371d042c19cb6712aea2083c6be3d2953cea16",
+      "current_sha256": "e0ab9f159f984825f3fb2bf87dcae7395fd8e43bcb497b384c313871aed2a0a9"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli",
+      "before_sha256": "69e515be2f6b2a33b95ed153ca31dd2c151b9fa20b0ec250d27dedabbf86fe80",
+      "current_sha256": "caf80f5de07130bca65213de03dd95ed9a5f3f39b59b54c99826f292ab2b9a5c"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli",
+      "before_sha256": "4437e0dc43905862328454b6a0c65baf661f4cd5fcd472405e739ed6cf67ee2d",
+      "current_sha256": "4fd9a3cfc270e67bd3a98c29d642a373075184e84b619bcdeea7ef43939dc0c8"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli",
+      "before_sha256": "1d2ed1bb37f55989a4acb5f12d7459db201f323f4875642dfbce3240255440fe",
+      "current_sha256": "8c7fc9c31a048f245340c9cd3b0e01fcaecb06e6f4875f4adb71a56f52474349"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/main.qli",
+      "before_sha256": "15af4091ae30159c8792a78bbdc462beb66d6efbc6751a65436e34f318507638",
+      "current_sha256": "0c6137998a3a7dafe51e9df2e76cf2fe946f67fa5bd6e8b846bdb9ca4a125808"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli",
+      "before_sha256": "893644e90825ed82f54b79ab68721ff0623b1810cbf35538e38107f15dc70fb1",
+      "current_sha256": "a4ffd6b9a601d3861bac90008ddb85d47b8f45d9797ebb5e268de77776272ae0"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli",
+      "before_sha256": "083bde790a829985187d5b41c1291b36e9c1f51f7a67b80864aaed9b89f72c58",
+      "current_sha256": "2794bcb993f44a41277130b52f9d68ba5af209a2e0139abd56205616acc99a5e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-right/main.qli",
+      "before_sha256": "66ff00e93463c344fc3bcc7c9ad9b59f4166d0cb3043147b4bbfb649a9153cca",
+      "current_sha256": "da1e2ce5e22b4182d5b59f873f87fe2840fa048a8227ca85c11ec282c9427d42"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli",
+      "before_sha256": "24e517d6568d76c2a353482187af6888faecd9c51a3dfb5e07ca55da5bb9230c",
+      "current_sha256": "b0ca66c8ee7fd0951e0b6f9d3e4344bf6f62817666beb7d1d7d632a8403247b2"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli",
+      "before_sha256": "02f2d6ad38ad553894d663ed2600776b63000b4c7a032d918cc01e6edc28df84",
+      "current_sha256": "d0ddbc74c41681bb7a1cae9a316d4df8134b0b72ca8fa6b25788ba64f786673e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli",
+      "before_sha256": "09b908561b5a22cfd3b14fa954f0870cc01c46a5fda713cbbe895e8e0d6a68b1",
+      "current_sha256": "c90cd2eb616b7f5aac6ccc4b0ca9b0ba4353d3d1aa44a65adeb7d397cb30ab13"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli",
+      "before_sha256": "9b7a7c48cf752754afbd2233dae125fe56494a85c2752d3747d95f9a63cc2cc2",
+      "current_sha256": "2defc465a650517f4b3611fb69f0b070973026ae1ba3c326e7108615418fd2a1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli",
+      "before_sha256": "52249304de3ed6ec55d6339b7f669f79079373b6e4fd66d6278d66c9810b1489",
+      "current_sha256": "39be16ab677c6b6546e054dc84231bdf09adc140331bc0af4c71780fef483028"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "before_sha256": "8ddd118bfdc66660716379cff2ed6c2d808e725dea96d8beeb4e0bf06409028f",
+      "current_sha256": "dae94000dfba8fa816f70b0d82ecfed6e5a6a99889d8ea390897dd6c433a7866"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli",
+      "before_sha256": "4c0be1655092c87189f2e65e66973a29d07c3b48068d83a0b3a726737014c437",
+      "current_sha256": "acb8af15c238dc97e74c21035eebf302cda8848baffd411aa925cfab504e48c7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli",
+      "before_sha256": "249cd49ac1859b9805904e9a6a69f63d5fad8663e886926dc8c60df6028aced0",
+      "current_sha256": "bd85716c7049cd54090c6e93655f8a423fcc40bfed4199a72ab9b0e320f7be1b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "before_sha256": "889dc1546eca129eca7d61a053d266958cf77c087c935af1f19a077021411d1d",
+      "current_sha256": "72f2cfb0f252e1f806cf67cd019831b984a872ff661433427cc9ac64cbffda0e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli",
+      "before_sha256": "b14913e67a5aaf2a7ac343c8c92edddf491ae4e3c6abb27e2e2b82d7e3c9d2fe",
+      "current_sha256": "9a4b60cbef76cf9e877670225389a23264ed165a885c1e6e53d161f31a2e8155"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli",
+      "before_sha256": "a62a0f42eda5601ee35510b58645d5fb6a8b15c37320c2c646efc5bf0294a3d8",
+      "current_sha256": "bb4f6eb8063f056259d950510665732972b638a340b74d4c767c48a7e1153a40"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli",
+      "before_sha256": "656e0ac1cfe69ad49f12f7c99dee04da58eb3fb407a6e32460daf38416cf7dc1",
+      "current_sha256": "e197e6908e62631be82443a233acc3568c5ae8d501230f2c14f281106cc0eee7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli",
+      "before_sha256": "01336d2adff289c786192210a9f12211997af235c5281c854f56bab3038b81f5",
+      "current_sha256": "1772a50a67f8394fbe0fd2ba00c5bafd2aa65a1d8abd9b06b3f2163744948c8b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli",
+      "before_sha256": "98b5c54bebc2b18d4d689636d67ec387d0c8461096cdcb4f0dd6c56ae9e352b4",
+      "current_sha256": "69725be6729c2fc83c33bc151f46baafcc4e92a7afc18974f999ce8d02e0eae7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli",
+      "before_sha256": "ad1e3b3043e3c51662b30aed8229d2d43cf2efaec8699ac741d1fbb318458c97",
+      "current_sha256": "2d8464fdff79aec33a640bf28d4ac75ae0d9494b4f8446756e9af49620abd803"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/multi_parameter.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/multi_parameter.qli",
+      "before_sha256": "75200cec17e09f7064c5568053817cdccee91a5bb94e2e806a53c491ac429122",
+      "current_sha256": "ab034fc23a53156d76039af63bae995e05e4920d849edc87f7bc8d9b9a77faa5"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "before_sha256": "cb1a4e90644996fe78d2250f999781e7cd1fc1f28d4f65196e676dd7f04ac009",
+      "current_sha256": "c6a0f119e37346a62a05fdcba3f4bbeaef2e0b5abcd0487fdefd9151dba4fbfb"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "before_sha256": "16cf0b06d3dc535be20c1a86fdda2921cd39a1f059a562a7523e3b376b362880",
+      "current_sha256": "d25a0438ebd907b94458ccd31abe66304cd79af4fa8090d83345683abf9041d4"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product/main.qli",
+      "before_sha256": "be44bf455a77b9d945d8f9bec732be9d82b6728488c850a84eca6657d58e2b28",
+      "current_sha256": "7f5baf4c2f54cf16d49fd0e58de0c34d8137a29e0a93be1f4592749c6cea1fa9"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
+      "before_sha256": "19abda964324199ef3e3d8e1b0696a0404bc6540160912291571642db49bb768",
+      "current_sha256": "1d2602f5ec2a2cb56e49832b5f68298c6b46a1649667fdc4d3861001716b20db"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
+      "before_sha256": "c64bfd2353604b7eda35efb966976827fcbd5dfb4298fd2545087c7ee2bd44c6",
+      "current_sha256": "451e2ee0031d27ae223db52c835b3babde1b1ffc9adbef347b6bc1ed2df74ec7"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/computed-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/computed-control/main.qli",
+      "before_sha256": "38c914c9f5c35ea018048b6181812c7f2aa1cc9435e291e21498ac7d73149e75",
+      "current_sha256": "d54568627efcc803c6bd7d0ac1ac984f316a287ff4f32fb1d24c74bb8148ed73"
+    }
+  ],
+  "projects": []
+}

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sized",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero/main.qli",
+    "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T21:10:13.062443+00:00",
+  "elapsed_seconds": 0.004506250028498471,
+  "stdout_raw": "",
+  "stderr": "main:133..190: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+  "source_sha256": "16f73b4cfdae748d95704f67921a9fdd19654cc6d11417eaf3ef10895b0642a8",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "522c0c188efd71e7d0d834a367a3789d9d04bad6f15c10a9931fd3259339d77f",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "mode": "sized",
+  "scope": "Diagnostic/native check at the stages actually reached.",
+  "transcript": "main:133..190: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n"
+}

@@ -1,0 +1,2 @@
+finite: ok declarations=1
+sized: error static 39..40 unknown natural name n

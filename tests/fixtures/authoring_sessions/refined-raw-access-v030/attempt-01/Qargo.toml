@@ -1,0 +1,5 @@
+schema-version = 2
+[qrate]
+name = "refined-raw-access-study"
+version = "0.3.0-alpha"
+edition = "2026"

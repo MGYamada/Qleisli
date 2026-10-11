@@ -1,0 +1,50 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/provider-control"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T00:06:07.808092+00:00",
+  "elapsed_seconds": 0.004833624989259988,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"expression is outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":231,\"end\":249,\"line\":3,\"column\":105},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "expression is outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 231,
+          "end": 249,
+          "line": 3,
+          "column": 105
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "baseline_observation": "tests/fixtures/authoring_sessions/quantum-unit-v030/observations/provider-control-finite.json",
+  "baseline_observation_sha256": "c55455000f7179c1a7b7b70b551cc3a56250878bfe5cb20b576fb7997e36d1dd",
+  "source_sha256": "c38383f0e152b7eff0dc73a5523d200da407a7e2f69d85dc515ef17aa8981f53",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "same_argv_and_explicit_environment": true,
+  "baseline_exit_stdout_stderr_unchanged": true,
+  "classification": "unchanged finite result",
+  "expected_current_result": true
+}

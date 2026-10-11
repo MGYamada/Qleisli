@@ -1,0 +1,102 @@
+{
+  "format": "qleisli.hosted-terminal-history-identity",
+  "version": 1,
+  "files": {
+    "README.md": {
+      "sha256": "6c0bf98e4c89f7360f4d527a34050923e4c326f12592c55a09c2d05ce2afd0c5",
+      "bytes": 2500,
+      "mode": 420
+    },
+    "artifact-audit.py": {
+      "sha256": "ef7104da84288e48da567aa1aeaa6326a77559ab2d5a84a239a738a575a6b9e0",
+      "bytes": 5467,
+      "mode": 420
+    },
+    "byte-readback.json": {
+      "sha256": "54c5b297ccf6849db068232680a1e6983b19697357370a8d37ebf7b85f43fae5",
+      "bytes": 337,
+      "mode": 420
+    },
+    "checkout-audit.json": {
+      "sha256": "270c40132d6391c0c9059d5141a68b70eb5664f7ce2be3670558f5526b7235e4",
+      "bytes": 4260,
+      "mode": 420
+    },
+    "decoded-log-identities.json": {
+      "sha256": "6f893c5f478be33ed202b2829c45796ffab0902432beab1c467dfd482adf019b",
+      "bytes": 2734,
+      "mode": 420
+    },
+    "files.json": {
+      "sha256": "112ea61732c1848521e52e5e9b7baa5587f9a7a9748842f13694531086926828",
+      "bytes": 2869,
+      "mode": 420
+    },
+    "jobs.connector.json": {
+      "sha256": "2ef5587cb076e7bea6ccf28aac5b6b983742a9f110779088942472d0c6760f63",
+      "bytes": 36838,
+      "mode": 420
+    },
+    "local-checks.json": {
+      "sha256": "0bac59525a797028e7aea0b32d7b4b4216839dfbce0600d1267fd775c0b28f7d",
+      "bytes": 1718,
+      "mode": 420
+    },
+    "logs/changes-111851329117.log.txt.gz": {
+      "sha256": "d30d9775b3976c3f432f97fcaad806631a6ad06de6029288da5e7d0898620f6d",
+      "bytes": 101369,
+      "mode": 420
+    },
+    "logs/check-docs-111851435760.log.txt.gz": {
+      "sha256": "e595122a014e5d7397ea9320507d9dfd6275b3b4f69e10acfd48572e015035a9",
+      "bytes": 12886,
+      "mode": 420
+    },
+    "logs/check-interop-111851435941.log.txt.gz": {
+      "sha256": "948b0533aec2e11302a2e30be58888e9e8361c24647de9156eadd548383ab0a2",
+      "bytes": 12773,
+      "mode": 420
+    },
+    "logs/check-lean-111851436073.log.txt.gz": {
+      "sha256": "93798cc63d66f7f97a15a71bf90f58a3f443cec6ec2ec051a4e875e5d3e40322",
+      "bytes": 7490,
+      "mode": 420
+    },
+    "logs/check-lean-kernel-111851435887.log.txt.gz": {
+      "sha256": "cd0a4e06cd11e4b17c2ea2d14153ad5790fb471f1b08dd0b13123330dfe1cbac",
+      "bytes": 15062,
+      "mode": 420
+    },
+    "logs/check-macos-source-111851435978.log.txt.gz": {
+      "sha256": "1a7eb69773d9bcb920337424d81a4b2187a490e6ce94a803f4e11767447fe728",
+      "bytes": 15975,
+      "mode": 420
+    },
+    "merge.api.json": {
+      "sha256": "b6831e5303b55c7c1c9159f8467431a7b0b9652b73ecd8afe763b5f438dc7320",
+      "bytes": 2607,
+      "mode": 420
+    },
+    "requests.json": {
+      "sha256": "d833bfa80f7d904c8972752a00b60672ed9139ffa6c0164ca9361888c2a1e959",
+      "bytes": 4473,
+      "mode": 420
+    },
+    "run.api.json": {
+      "sha256": "dced6d66807ca61a9458f314f4271e39d1fa01d41954e71640ee91d998cd0605",
+      "bytes": 12403,
+      "mode": 420
+    },
+    "snapshot.json": {
+      "sha256": "06304249bc23ea52a0f768c6137e59a144e53ddeeca4c45adb36ab2a12f54564",
+      "bytes": 34635,
+      "mode": 420
+    },
+    "workflow-9256fe9.yml": {
+      "sha256": "a2b64c61efce2acf37eb5baa6f20c16c0461accc2c6ad9e49e1ae181a186c25c",
+      "bytes": 40360,
+      "mode": 420
+    }
+  },
+  "scope": "Existing checkpoint bytes before additive terminal records; no historical file edited."
+}

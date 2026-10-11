@@ -4,7 +4,7 @@ import QleisliKernel.Hierarchical.Graph
 
 /-! Fresh QIRF graph reconstruction. Original table indices, complete raw
 bodies and source identity data are retained; no host receipts are inputs.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf
 open Semantics.Exact Semantics.Finite Semantics.Observation Semantics.ObservingFunction Finite
 

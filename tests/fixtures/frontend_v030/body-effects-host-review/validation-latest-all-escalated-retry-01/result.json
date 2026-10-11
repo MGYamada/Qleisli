@@ -1,0 +1,42 @@
+{
+  "mode": "latest-all-escalated",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.1326423329883255,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.037022083008196205,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 969.4220760419848,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded current consumers. Existing ignores retained. No new maximum-size quantum case, fresh Lean replay or release certificate."
+}

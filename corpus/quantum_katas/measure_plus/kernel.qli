@@ -9,4 +9,4 @@ use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
 
-pub observe fn is_plus(q: Q<Bit>) -> CBit { measure_z(x(h(q))) }
+pub observe fn is_plus(q: Q<Bit>) -> Bit { measure_z(x(h(q))) }

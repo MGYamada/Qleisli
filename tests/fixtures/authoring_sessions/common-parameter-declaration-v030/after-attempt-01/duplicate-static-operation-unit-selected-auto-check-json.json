@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.0067454579984769225,
+  "recorded_utc": "2026-10-05T17:16:50.171869+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "duplicate-static-operation-unit-selected-auto-check-json.native.jsonl",
+  "stdout_raw": "duplicate-static-operation-unit-selected-auto-check-json.stdout.txt",
+  "stderr_raw": "duplicate-static-operation-unit-selected-auto-check-json.stderr.txt",
+  "stdout_sha256": "73b40d7e32e583bb02ce4937ff5e4437b7e964aabdef5add657541f57bbb1c1c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

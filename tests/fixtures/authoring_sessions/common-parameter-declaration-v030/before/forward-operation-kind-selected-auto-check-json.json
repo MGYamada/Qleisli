@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.007105750031769276,
+  "recorded_utc": "2026-10-05T17:12:03.972592+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "forward-operation-kind-selected-auto-check-json.native.jsonl",
+  "stdout_raw": "forward-operation-kind-selected-auto-check-json.stdout.txt",
+  "stderr_raw": "forward-operation-kind-selected-auto-check-json.stderr.txt",
+  "stdout_sha256": "2fecdb859f4b2bbdc6b2eae222e95abb18f9729a0a00e1bc039b845cd3494bac",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "static",
+        "severity": "error",
+        "message": "unknown natural name n",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli",
+          "start": 161,
+          "end": 162
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

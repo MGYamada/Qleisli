@@ -12,7 +12,7 @@ use std::quantum::z;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-pub observe fn teleport(q: Q<Bit>) -> ((CBit, CBit), Q<Bit>) {
+pub observe fn teleport(q: Q<Bit>) -> ((Bit, Bit), Q<Bit>) {
     let (alice, bob) = cnot(h(init0()), init0());
     let (q, alice) = cnot(q, alice);
     let phase = measure_z(h(q));

@@ -1,0 +1,23 @@
+
+running 18 tests
+test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_preserves_entangled_caller_frame_through_an_ordinary_call ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+test frontend::sized::raw::tests::raw_source_replay_rejects_native_valid_semantic_and_structural_mutations ... ok
+test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_rejects_native_valid_gate_control_measurement_and_extra_mutations ... ok
+
+test result: ok. 16 passed; 0 failed; 2 ignored; 0 measured; 89 filtered out; finished in 0.17s
+

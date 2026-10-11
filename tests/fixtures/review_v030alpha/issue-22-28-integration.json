@@ -1,0 +1,229 @@
+{
+  "format": 1,
+  "kind": "acceptance-criteria-integration-reconciliation",
+  "recorded_utc": "2026-10-06T12:26:43.877732+00:00",
+  "verified_implementation_commit": "8aaed41447e887d66e3e5a79af97cc9ff8382a34",
+  "hosted_ci": {
+    "run_id": 37458610937,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37458610937",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-10-06T12:23:53Z",
+    "successful_validation_jobs": [
+      "changes",
+      "check-rust",
+      "check-rust-msrv",
+      "check-lean",
+      "check-lean-kernel",
+      "check-docs",
+      "check-interop",
+      "check-macos-source",
+      "check-distribution"
+    ],
+    "release_readiness": "skipped; this ordinary PR run is not a release/manual full-validation run"
+  },
+  "issue22": {
+    "original_criteria_count": 10,
+    "independent_review": "tests/fixtures/frontend_v030/classical-functions/validation/issue-22-review.json",
+    "review_scope": "Existing ten criterion findings inspected against current Reference, complete source judgment, tests and retained two-example authoring observations. Historical review remains unchanged; this record supplies the later integrated CI result.",
+    "findings": [
+      {
+        "number": 1,
+        "requirement": "Ordinary finite types are unmarked; Q<T> denotes quantum ownership.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 2,
+        "requirement": "CBit, CBits<n> and general surface C<T> are absent from the adopted model.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 3,
+        "requirement": "Measurement examples express Q<Bit> -> Bit and Q<Bits<n>> -> Bits<n>.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 4,
+        "requirement": "Classical control takes Bit; coherent control takes and preserves Q<Bit>.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 5,
+        "requirement": "One finite predicate/decoder can be reused ordinarily and in checked coherent/static contexts where typing permits.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 6,
+        "requirement": "Implicit inspection of Q<A> as ordinary A rejects on every public source path.",
+        "status": "evidence_present_with_proof_limit"
+      },
+      {
+        "number": 7,
+        "requirement": "Sized QPE and measured clients migrate CBits<m> to Bits<m>.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 8,
+        "requirement": "Diagnostics do not teach a parallel C-type universe.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 9,
+        "requirement": "Unit and Q<Unit> obey the same T/Q<T> model.",
+        "status": "evidence_present"
+      },
+      {
+        "number": 10,
+        "requirement": "A first author given a few examples infers Bit versus Q<Bit> without inventing CBit.",
+        "status": "bounded_first_author_observation_matches_predictions"
+      }
+    ],
+    "limits": "No new C type universe or implicit quantum inspection. Selected coherent lifting and finite Bits runtime lowering remain explicit profile limits. Few-example authoring evidence is bounded, with the invalid first API prompt preserved; not a general model benchmark or universal source theorem."
+  },
+  "issue28": {
+    "original_criteria_count": 10,
+    "findings": [
+      {
+        "number": 1,
+        "requirement": "Normative static types and expressions",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md"
+        ]
+      },
+      {
+        "number": 2,
+        "requirement": "Exact normalization and distinct failure categories",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "src/frontend/check/normalize.rs",
+          "src/frontend/sized/elaborate.rs",
+          "tests/static_helpers.rs"
+        ]
+      },
+      {
+        "number": 3,
+        "requirement": "Termination: finite folds, acyclic static helpers and strictly decreasing admitted runtime self-calls",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "src/frontend/check/static_helpers.rs",
+          "tests/sized_source.rs"
+        ]
+      },
+      {
+        "number": 4,
+        "requirement": "Bits<n> formation includes exact zero width and separate owners",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "tests/ordinary_types.rs",
+          "tests/static_naturals.rs"
+        ]
+      },
+      {
+        "number": 5,
+        "requirement": "Ordinary for static / quantum qfor and complete zero-iteration body checks",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "tests/sized_source.rs",
+          "tests/qfor.rs"
+        ]
+      },
+      {
+        "number": 6,
+        "requirement": "Static operation repetition retains independent inverse/control capability checks",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "tests/static_operations.rs",
+          "tests/sized_source.rs"
+        ]
+      },
+      {
+        "number": 7,
+        "requirement": "Complete original definition checking precedes closed specialization",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "src/frontend/check.rs",
+          "src/frontend/compile/mod.rs",
+          "src/frontend/sized.rs",
+          "tests/source_judgments.rs"
+        ]
+      },
+      {
+        "number": 8,
+        "requirement": "Capacity errors differ from mathematical well-formedness and program resources",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "docs/src/reference/static-language.md",
+          "tests/static_helpers.rs",
+          "tests/sized_source.rs"
+        ]
+      },
+      {
+        "number": 9,
+        "requirement": "One shared QPE body instantiated at (n,m)=(1,1),(1,3),(2,2)",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "tests/sized_source.rs"
+        ]
+      },
+      {
+        "number": 10,
+        "requirement": "Compact identity fold: one definition, zero source steps and one call for widths0-3 and rounds0/1/3; bounded independent native/reference checks follow elaboration",
+        "status": "implementation-and-conformance-evidence-present",
+        "evidence": [
+          "tests/static_naturals.rs",
+          "tests/fixtures/review_v030alpha/static-compact-elaboration/validation.json"
+        ]
+      }
+    ],
+    "limits": "Criterion9 is QFT/QPE alternative, satisfied here by shared QPE instances; no generic QFT obligation reinstated. Criterion10 is the concrete compact elaboration demonstration, not a universal complexity or quantitative RS theorem. Finite collections/phase tables remain #63, general builders #60/#61."
+  },
+  "source_bindings_sha256": {
+    "corpus/sized/measured_qpe/readout.qli": "8084c175d049101af682c4d2f693c094ca36baa060754d992cd69d68db87ea58",
+    "docs/src/reference/source-text.md": "1adae32d31782e875aca1efd86aac58b64b3089f579416be63832135b957ddb4",
+    "docs/src/reference/static-language.md": "364e0c2c037f4cd0a8fa4b41af679620266a63da0d018638a514780911d1ff4e",
+    "docs/src/reference/type-model.md": "12125fe1acb00185fb8b06f26012e21ced973eef80743856d93607c417d56dda",
+    "src/frontend/check.rs": "c85f5f62fcab1340703c6e5eaaf5028a44dde7c4e3fa73fb46518ecd3a1f2dec",
+    "src/frontend/check/normalize.rs": "a4d6d12cbeaf9e40c0296f969fbc3b552054e5feb3114c9aaed18b1228218ee5",
+    "src/frontend/check/static_helpers.rs": "3f002e3e8a2d0c745b1ce98c5e95ae221ea1a56fe21bb03bb3f977628a0b522a",
+    "src/frontend/compile/mod.rs": "92edb1dcbf5765cc4ea9e5aa52aa24330d6e0638f1925708e41d360095cc9660",
+    "src/frontend/sized.rs": "3ee1c8d39f2e20757b58a1f3e926e477915607bed42ff243d777982c3e2177d3",
+    "src/frontend/sized/elaborate.rs": "e9b93ea899151fba253ab63bf7cfa8baec8b45a7afca291cb1d6a89382ac0662",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "tests/classical_functions.rs": "e2c05db9abab26a7a08692e7bf9b7291f4669af3794a192290b74fb4630e90c8",
+    "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/assessment.json": "4b25a0d77e29d4178128d86af18be758a4cfd61d586d2a9b4f95affbd359246e",
+    "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/session.json": "3165b6d04c0fbb24f536f2b0a8d15f35de35290980b10d7c8c0c9a2cf257dee5",
+    "tests/fixtures/frontend_v030/classical-functions/validation/issue-22-review.json": "d10c497d61c8be54d0b73d525c816da746757c9174be32271c7fe87661a5e0fa",
+    "tests/fixtures/review_v030alpha/static-compact-elaboration/validation.json": "dc1101ac0d62a8b18f92bb9cda86b5faa9bb7d6c0fec1fea861c9ea4816217f1",
+    "tests/ordinary_types.rs": "df68d2a9bb763c660b08484d9680c35f7fd73577558bf451988633601160fc9c",
+    "tests/qfor.rs": "fef70946934fcec049127e7d39368072397c398e341441e10e13288b00b5ac54",
+    "tests/quantum_tuple_unitors.rs": "287a3a99990eea2f6b39884cdac176c99cf47318a57d956cd79573d26dc8d495",
+    "tests/quantum_unit_source.rs": "92f7e75994e33338268e4d95e93fd95b56d9ff6f51a4f0f8bed83c2351b7076a",
+    "tests/sized_source.rs": "59c5a7667ff09464958852315067b590b842acf4c290bc69e16c38a15aa83754",
+    "tests/source_judgments.rs": "a8284448bada4e95fe810f77d9c404a49ff83b5e6404a794f14714724bb053d4",
+    "tests/static_helpers.rs": "cf2241590213cc23664bb0a3b3d60b239c6f2298e1a0f3ad0f562422712bca38",
+    "tests/static_naturals.rs": "a5c1eea973bc68682b8bccfbaf046032b5b3c2c5a613ea6349b5261ee3f19271",
+    "tests/static_operations.rs": "2303a966c63490f33fa730f80cdfe2a9abe8bb914416a34572b67a5caa9555e4",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45"
+  },
+  "constitutional_scope": "Edition2026, existing adopted QS/PR/RS/EXACT interpretations and both ordinary decoded-QLV1 ownership/scope guarantees unchanged. Broader proofs/enforcement remain pending. Neither Issue closure nor green PR CI is guarantee admission, full conformance or release approval.",
+  "local_integration": "Exactac347 Rust879passed,0failed,52existingignored; quick corpus87cases/40semantic probes/4semantic faults/4negative controls; two explicit ignored native CLI checks passed. 8aa changes fixture binding/evidence metadata only; hosted CI checks exact8aa.",
+  "repository_changes_after_verified_commit": "This reconciliation and #63 first-source study are evidence/doc changes only; no Rust/Lean/source-test implementation has changed since8aa. The Reference removes stale wording tying unimplemented #63 collections to #28. No acceptance condition was waived or reduced.",
+  "local_record_checks": {
+    "authoring_sessions": "49 records,70 snapshots,1217 actual recorded observations; no command replay",
+    "authoring_checker_tests": "7 passed",
+    "docs": "2185 local links,30 Markdown anchors,206 Lean root modules",
+    "mdbook": "fixed0.5.4 build passed;29HTML files,1222local links,470anchors including print",
+    "constitution": "passed against trusted38baae7d19535602b21270e11e97617d45205b37; identity/continuity only, not fresh local replay",
+    "fixture_budget": "17799 all-working fixture files,133411371bytes; allowed, no limit raised",
+    "git_diff_check": "passed",
+    "scope": "These checks cover the subsequent evidence/doc-only worktree; hosted CI result remains bound to exact8aa implementation."
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "status": "passed",
+  "native_cases": 51,
+  "rust_comparisons": 45,
+  "native_boundary_differences": [
+    {
+      "name": "empty_source_name_allowed",
+      "component": true,
+      "native": false,
+      "reason": "QIRF requires nonempty source path labels"
+    },
+    {
+      "name": "depth_32",
+      "component": true,
+      "native": false,
+      "reason": "production QIRF graph/work bounds"
+    },
+    {
+      "name": "expanded_524288",
+      "component": true,
+      "native": false,
+      "reason": "production QIRF graph/work bounds"
+    }
+  ],
+  "exact_original_operators": 69,
+  "max_semantic_qubits": 2,
+  "native_bindings": {
+    "native_binary_sha256": "e395db580f4fff026e4fde8ddf2a49e454298ecf59766307d7cfa19ba5212d34",
+    "native_input_sha256": "a44424a7eca739be133ecd561f11744927d58f2c558251f7dab504d43f1bfea7",
+    "native_stdout_sha256": "cd98f1d36c2d7102466c9356b16acfbe209ee6f464244d0fa65d15ef9208621d",
+    "rust_binary_sha256": "69e6c989c9f0e51910d86bbab57bada85bd3b7665d55075df5554b49e82d01cf",
+    "rust_stdout_sha256": "67165e3212feb6d4fe00f0cc4bf88738132fcee9398e4c3e175036036f121bfa"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (220 jobs).\n",
+      "stderr": "",
+      "seconds": 0.3384624589816667
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-branch-functions-phzo0lpa",
+        "-c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-branch-functions-phzo0lpa/Main.c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-branch-functions-phzo0lpa/Main.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 8.059078375052195
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanc",
+        "-O3",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-branch-functions-phzo0lpa/native-test",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-branch-functions-phzo0lpa/Main.c",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 1.98298833303852
+    },
+    {
+      "driver_source_sha256": "5bc24fe4bd1133e89082e88df79ddf6095b45cbae5cf02c800b4837befb336db",
+      "executable_sha256": "e395db580f4fff026e4fde8ddf2a49e454298ecf59766307d7cfa19ba5212d34"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ObservationBinding.lean": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+    "lean-kernel/QleisliKernel/Raw/BranchFunction.lean": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+    "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+    "lean-kernel/Protocol/BranchFunction.lean": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+    "lean/Qleisli/RawBranchFunction.lean": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+    "lean/Qleisli/Semantics/ObservingFunction.lean": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
+    "scripts/test_lean_branch_function.py": "41ecbe863bcf07aeeb0283ffb4893812f355e1737f26965a011b0d36430f851a"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "kind": "informed read-only next-unit study",
+  "baseline": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "status": "sources frozen before observing baseline",
+  "sources": {
+    "private-forward-sibling/main.qli": "d86bb79dd6af8564d4341fc7e44099a09c6831416c81b99013a125529c771ce8",
+    "public-sibling-provider/main.qli": "d8a45795a59d776689e3f1f7fccd09ee75880b072b57a4ce90c9534103e80ff8",
+    "same-name-separate-modules/a.qli": "d5f354c30921b1715a4bb3d3fe13485588133aa4bd5c41bbf1c36955890a9b5b",
+    "same-name-separate-modules/b.qli": "d5f354c30921b1715a4bb3d3fe13485588133aa4bd5c41bbf1c36955890a9b5b",
+    "same-name-separate-modules/main.qli": "6c48d699b5e8f71e34fdce7bfa78168a20253b83894f1551d48d591d4631968f",
+    "import-terminal-bindings/a.qli": "b0b2437b842a54c120072806b5e3a91cd992593e2b45be34d3f9e4bd2906db7d",
+    "import-terminal-bindings/b.qli": "71d62682d8a24a73f9ee16bd951d4a528a6a32d920d325e383c5e90e69c48470",
+    "import-terminal-bindings/main.qli": "15d47c56a182c989eec046eb70321ad019126921d928cfb105815338ff679877",
+    "unused-bad-function/main.qli": "4e142765ab163e10274032c7b86182c1b88627a697b45b6006ca8a1f58c54c0a",
+    "mutual-siblings/main.qli": "b97a39eea8cca4e7dca9776e12fcfc12abb8054155a5cec65034496cbd45907c",
+    "duplicate-siblings/main.qli": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741",
+    "private-imported-sibling/dep.qli": "4b46fa141d4a192dfd3b33fdb1465bd11e816290cd0b8830e2789ae7b2b13cd9",
+    "private-imported-sibling/main.qli": "b2f900a8017fdd62e7427e3e0ca7e9e7a4ed466af6ef2406e990b3bb4037f5eb",
+    "import-rename-still-unsupported/dep.qli": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+    "import-rename-still-unsupported/main.qli": "a345d9aa61b2d318b15bb3dece7ded5803fce1965edfefbcbf03c5a2d189edc3",
+    "import-collides-sibling/dep.qli": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+    "import-collides-sibling/main.qli": "1df82d61a60c0aabd2343b97bb48424206a9e0b8b140e2af2c822a93d7f41f3b"
+  },
+  "scope": "candidate behavior only; no multi-declaration adoption or implementation claimed"
+}

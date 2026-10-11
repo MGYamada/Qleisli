@@ -1,0 +1,125 @@
+{
+  "format": "qleisli.instrument-capability-mutation-validation",
+  "version": 1,
+  "failed_hosted_attempt": {
+    "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+    "attempt": 1,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37813662906",
+    "job_id": 113437238454,
+    "comparison_id": "sized-instrument",
+    "successful_comparison_groups": 66,
+    "failed_comparison_groups": 1,
+    "condition": "The mutation precondition refused an absent retired Controlled(U) substring.",
+    "script_sha256": "820b5c111c2701e0622d1f1f1cd93b43291a4eb2a68f065691edba112c5eda70"
+  },
+  "local_reproduction": {
+    "status": "failed",
+    "exit_code": 1,
+    "command": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONPATH=scripts",
+      "python3",
+      "-c",
+      "from test_sized_instrument import sources, source_rejections; source_rejections(sources())"
+    ],
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from test_sized_instrument import sources, source_rejections; source_rejections(sources())\n                                                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/Users/masa/git/Qleisli/scripts/test_sized_instrument.py\", line 76, in source_rejections\n    assert before in base[module]\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+    "log_sha256": "a3065f9ddbc058733078163a77a570dfd94a8511c259d2585c6024c116e66224"
+  },
+  "repaired_local_source_check": {
+    "status": "passed",
+    "exit_code": 0,
+    "command": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONPATH=scripts",
+      "python3",
+      "-c",
+      "import json; from test_sized_instrument import sources, source_rejections; rows=source_rejections(sources()); assert len(rows)==15; print(json.dumps(rows,indent=2))"
+    ],
+    "script_sha256": "71eeaed87d96115b157352312babc82e50c09d8c662c404642c67645c8fddf41",
+    "source_sha256": {
+      "rotation": "7a91346aa9c66429833368d122834e57960e11e338936d167cff9e9c39fe49b4",
+      "order": "2bf2411d669c031097b611f35696adb1ff13a7e7cc04468967462b7670ea2c16",
+      "modular": "5e99d00f955ecc07733e8675ea0fe9800082b779da013832d616e3037198066f",
+      "amplitude": "94b8460a645603d508f2e936869de81cd5b4cbf88725ee84ca59734c23c40494",
+      "reflection": "4a6f0150d9a54bc781c63ca8fc02c1da0b11561c9d358a6f26273865a6e5af00",
+      "delayed_fourier": "4ee23667711a938d293e3d03073ed0a9c93b6cf04fe0bdf505679b96de7f8fa0",
+      "amplification": "cf3fc2cdec6e8aed187c35846482ce3acd639c12639e5d2346e9afbb601143f6",
+      "evolution": "3c6ff3e06b02a18b108ea11d89cab2c9f4ede69b2404221b01046be91ff2742a",
+      "estimation": "5606bc82ca37faa21f865d32af87da8add4286d3d9440e9d99e6c41674c2c698",
+      "preparation": "03411fa8cfcd57ba8c05608240892001585407c54c86d9b5cdd4149a07e4232c",
+      "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "readout": "c62a3dd87ba5b9d2aa0594d4c72c7da0f21c34fd51ede49f0cf166a32b7b9b68",
+      "measurement": "bd78c37e15af80c4c915e56d3f4467306932849108c98d3c1264a14ae5a4b5ed",
+      "initialization": "5a72ca447d72a4d5b82e9b68b61bf1226d817a18110acebda89d644109356672",
+      "measured_order": "43f975320664163cb9344ed0e563676ada2915a4bd8e368809f85a649db30fc3",
+      "measured_retiming": "f66aad8cdde1bf0841eb46f99537cdaeffc8e6b14a42271e88a58502ff36376e",
+      "measured_amplitude": "2f202bc0bffba8328572b30590928885d99a0a4729ed42a0d8b56a2431dd8f8f"
+    },
+    "rejected_cases": [
+      {
+        "case": "unitary-wrapper",
+        "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+      },
+      {
+        "case": "unitary-initializer",
+        "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+      },
+      {
+        "case": "iso-readout",
+        "diagnostic": "iso body cannot perform observe operation measure_z"
+      },
+      {
+        "case": "missing-access",
+        "diagnostic": "operation use requires declared Controlled access"
+      },
+      {
+        "case": "wrong-classical-width",
+        "diagnostic": "return type/tuple shape mismatch"
+      },
+      {
+        "case": "drop-empty-owner",
+        "diagnostic": "unreturned quantum owners: q"
+      },
+      {
+        "case": "consume-nonempty",
+        "diagnostic": "unknown, captured or already moved value q"
+      },
+      {
+        "case": "reuse-measured-bit",
+        "diagnostic": "unknown, captured or already moved value bit"
+      },
+      {
+        "case": "duplicate-classical-pattern",
+        "diagnostic": "duplicate binding in one pattern"
+      },
+      {
+        "case": "wrong-prepend-width",
+        "diagnostic": "prepend_bit requires Bit and exactly Bits<n>, with n < 8"
+      },
+      {
+        "case": "cycle-initializer",
+        "diagnostic": "cyclic or excessive source operation instantiation"
+      },
+      {
+        "case": "unknown-empty-branch",
+        "diagnostic": "unknown or unimported operation missing"
+      },
+      {
+        "case": "runtime-feedback",
+        "diagnostic": "expected 'static', found 'target' at token 82"
+      },
+      {
+        "case": "bad-init-arity",
+        "diagnostic": "operation argument shape/arity mismatch"
+      },
+      {
+        "case": "unknown-static-size",
+        "diagnostic": "unbound static natural missing"
+      }
+    ]
+  },
+  "scope": "Repair the existing missing-capability mutation to remove Controllable(U). All fifteen negative source cases and the explicit mutation guard are retained. This isolated Python producer check performs no native acceptance or independent instrument oracle comparison. The complete sized-instrument group and new exact-head hosted CI remain separate required validations. No historical fixture or oracle is regenerated, no check is omitted, and the failed hosted attempt is not replaced by a rerun."
+}

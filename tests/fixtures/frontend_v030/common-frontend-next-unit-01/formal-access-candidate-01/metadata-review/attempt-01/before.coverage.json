@@ -1,0 +1,17 @@
+{
+  "label": "before.coverage",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_production_coverage.py"
+  ],
+  "started_utc": "2026-10-05T18:37:13.696995+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "path": "before.coverage.stdout.txt",
+    "sha256": "6bf1f5e58aa6cc2f70c03b3667c992750442dcbe69f91e676bd363c8bde5d930"
+  },
+  "stderr": {
+    "path": "before.coverage.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Raw operation materialization does not yet support retained operation constructors",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+          "start": 334,
+          "end": 348
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"Raw operation materialization does not yet support retained operation constructors\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli\",\"start\":334,\"end\":348},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "recorded_utc": "2026-10-10T13:21:10.749712+00:00",
+  "binary_sha256": "3ea2c49dc35dd057978097eb96d10d0f2d80c31eaa4cafcbdba80211a7c21bd5",
+  "kernel_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731"
+}

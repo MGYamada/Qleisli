@@ -1,0 +1,125 @@
+{
+  "format": "qleisli.component-version-regression",
+  "version": 1,
+  "status": "passed",
+  "product_version": "0.3.0-alpha",
+  "tests": 5,
+  "max_qubits": 1,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "sources": {
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "scripts/instrument_transport.py": "662a2aab4a0029c88fc9246f7ebda898c30af507f79fa79ef3478b369d207b63",
+    "scripts/test_instrument_transport.py": "4050dcc0d3670aa4ccf1dc5c37556b3c78b7354515bccea5c25144e6122b003e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "17321e713dcfa2bb1615a62e6af81076c36dd4f685c29e5101eef763a4ea9ed4",
+      "stdout": "qleisli.preparation-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "4a09611edcc848263f7d9f0511a2c04bf48f860c715f2793c084c48c0a51e109",
+      "stdout": "qleisli.readout-result 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "0b875a67ad657f5693194fb40144c164ee511d48c08c0c079c92830d96d0d36f",
+      "stdout": "qleisli.preparation-result 1\nchecked\n7968\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "input_sha256": "3405ec62d9cba978c934c1925eba51ac5596edf06189a65ec54d4265fb578705",
+      "stdout": "qleisli.readout-result 1\nchecked\n14400\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check"
+      ],
+      "exit_code": 1,
+      "input_sha256": "0b875a67ad657f5693194fb40144c164ee511d48c08c0c079c92830d96d0d36f",
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "input_sha256": "0b875a67ad657f5693194fb40144c164ee511d48c08c0c079c92830d96d0d36f",
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check"
+      ],
+      "exit_code": 1,
+      "input_sha256": "3405ec62d9cba978c934c1925eba51ac5596edf06189a65ec54d4265fb578705",
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "input_sha256": "3405ec62d9cba978c934c1925eba51ac5596edf06189a65ec54d4265fb578705",
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "451e35646147b90cb4d76fd8ad460bdc261d86736f22cabd94638ce15ef728e1",
+      "stdout": "qleisli.preparation-result 1\nerror\nformat\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "input_sha256": "3578b1002ffce5cf8335b85cb9e74682ab83a4a2630f04b521d1a64fc9f16d70",
+      "stdout": "qleisli.readout-result 1\nerror\nformat\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Actual preparation/readout component checks; no whole-instrument acceptance"
+}

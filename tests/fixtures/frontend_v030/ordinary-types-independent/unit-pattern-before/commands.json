@@ -1,0 +1,67 @@
+[
+  {
+    "label": "version",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:53:27.750966+00:00",
+    "seconds": 0.02124195802025497,
+    "exit_code": 0,
+    "stdout": "version.stdout.txt",
+    "stderr": "version.stderr.txt"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:53:27.772362+00:00",
+    "seconds": 0.11421804100973532,
+    "exit_code": 0,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/Observe.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:53:27.886789+00:00",
+    "seconds": 0.4676209579920396,
+    "exit_code": 0,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "unit-pattern-consume",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-before/unit-pattern-consume",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:53:28.757656+00:00",
+    "seconds": 0.4490667089703493,
+    "exit_code": 0,
+    "stdout": "unit-pattern-consume.stdout.txt",
+    "stderr": "unit-pattern-consume.stderr.txt"
+  }
+]

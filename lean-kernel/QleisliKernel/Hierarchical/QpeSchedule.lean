@@ -6,7 +6,7 @@ import QleisliKernel.Hierarchical.FourierRoot
 This inspector returns finite H and provider obligations; it does not issue a
 named instrument receipt. Complete artifact typing, provider-request binding,
 zero preparation and ordered readout remain separate required obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Hierarchical.QpeSchedule
 open Artifact
 

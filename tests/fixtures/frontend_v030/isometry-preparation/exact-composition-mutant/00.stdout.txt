@@ -1,0 +1,10 @@
+
+running 5 tests
+test contract::exact::tests::isometry_checks_cross_column_inner_products ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_native_valid_phased_finish_cannot_implement_original_source ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_helper_retains_entangled_caller_frame_and_axis_order ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_empty_branch_preserves_complex_phase_and_external_reference ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_roots_match_independently_authored_exact_composition_requests ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 109 filtered out; finished in 0.62s
+

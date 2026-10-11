@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-iso-reset",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "body effect `Observe` exceeds declared `Iso` effect of `f`",
+        "primary": {
+          "path": "main.qli",
+          "start": 56,
+          "end": 64,
+          "line": 1,
+          "column": 57
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.4357812500093132,
+  "recorded_utc": "2026-10-05T08:32:04.835111+00:00",
+  "timestamp_note": "Clock observation after completion; not authenticated provenance."
+}

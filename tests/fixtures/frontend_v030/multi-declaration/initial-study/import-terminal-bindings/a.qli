@@ -1,0 +1,1 @@
+pub unitary fn flip(q:Q<Bit>)->Q<Bit>{q}

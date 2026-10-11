@@ -1,0 +1,17 @@
+{
+  "case": "quantum_katas/deutsch_jozsa3",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "quantum_katas/deutsch_jozsa3",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-fixed-replay/quantum_katas-deutsch_jozsa3.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+  "exit_code": 0,
+  "seconds": 40.46478120802203,
+  "stdout": "quantum_katas-deutsch_jozsa3.stdout",
+  "stderr": "quantum_katas-deutsch_jozsa3.stderr"
+}

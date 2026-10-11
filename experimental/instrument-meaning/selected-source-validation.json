@@ -1,0 +1,242 @@
+{
+  "format": "qleisli.instrument-selected-source-validation",
+  "version": 1,
+  "date": "2026-10-11",
+  "base_commit": "21da7cdf47cd8b19aaaea4db78b66e7eb8a88d38",
+  "proposal_sha256": "5bd33aa0c2064a61b195ab4f692e5bd15d31af7c44bf2807dfdb1cc1e0f80052",
+  "scope": "Remaining selected Raw instrument integration and fixed F4/F8 specification checks for Issue #46. Historical partial-unit and failed authoring evidence remains unchanged. Hosted completion CI is a separate exact-commit record on GitHub.",
+  "source_sha256": {
+    "scripts/check_production_coverage.py": "65cd9abc79c3a231ca215fe7cb20b1c4c1db7281a2e25b0a10301d308445ed93",
+    "src/bin/qleisli/source_plan.rs": "8bee921d3a97e022359541d1e65eee43330ed96665595f879bc5cda7d2af9b0a",
+    "src/contract/instrument.rs": "98d14ea1b91a70939fe93f65d4b540e37fb5036fef16124318d7f3dfab0e882c",
+    "src/frontend/compile/circuit.rs": "f32846624f203b38dfc2b45fcc2eef53362dc55d6fd61cf0e814b4d7fdf11c0f",
+    "src/frontend/compile/lower/function_contract.rs": "214cc2304bb72db7741cd6950c78e744256bd6749a05fe6aa815229f9010ead8",
+    "src/frontend/raw_state.rs": "66f38403087c69e09013fd6500bc7ee06b3a43d1180fefada5588a569672ce66",
+    "src/frontend/specialize/elaborate.rs": "74766c764a04d18298e2053415665da7c945538a16312eb27cffc229deef6055",
+    "src/frontend/specialize/lower.rs": "4a7205f7fe4e6a84e6c4b402667a875f5c988c7609313a4458bd0cf924da4dc5",
+    "src/frontend/specialize/raw.rs": "56180b507ac5296b8ff8697c317f39863697e153aa64c3b2060b9335578d86d4",
+    "src/frontend/specialize/raw/contracts.rs": "b5fbf8f83ec8e5bb5db0ed69d1be44303e036aaca2d73f7d44312339906a9a79",
+    "src/frontend/specialize/raw/preservation.rs": "2549f92beb96abde44b681a5c75f7b7ce15686cc206eb68933a7e8bf9860b1b3",
+    "tests/reference_meanings.rs": "4b8d051cdca309c1f86c3cb62bccdff46f1dcfca8c4b727605b3b6b8dc72d2eb",
+    "tests/selected_function_contracts.rs": "e287ed0d0b9819e9f4c3c2b0dbe90eccbcaf5147e7f52f1475aa1c526cb29e64"
+  },
+  "checks": [
+    {
+      "name": "latest-unrestricted",
+      "toolchain": "1.99.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-latest-unrestricted.log",
+      "log_sha256": "e382dd55ab6d5f6476fc6d0a8900b1924d734f2dbb7ad9d8a88a4e5d3962afff",
+      "results": [
+        {
+          "target": "Running unittests src/lib.rs",
+          "result": "test result: ok. 171 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 69.32s"
+        },
+        {
+          "target": "Running tests/exclusive_access.rs",
+          "result": "test result: ok. 41 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.29s"
+        },
+        {
+          "target": "Running tests/frontend_ownership_differential.rs",
+          "result": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 494.44s"
+        },
+        {
+          "target": "Running tests/function_contracts.rs",
+          "result": "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.71s"
+        },
+        {
+          "target": "Running tests/meaning_evidence.rs",
+          "result": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s"
+        },
+        {
+          "target": "Running tests/native_acceptance.rs",
+          "result": "test result: ok. 1 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "target": "Running tests/reference_meanings.rs",
+          "result": "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.10s"
+        },
+        {
+          "target": "Running tests/selected_function_contracts.rs",
+          "result": "test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.99s"
+        },
+        {
+          "target": "Running tests/selected_source_cli.rs",
+          "result": "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.08s"
+        }
+      ]
+    },
+    {
+      "name": "msrv-final",
+      "toolchain": "1.85.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-msrv-final.log",
+      "log_sha256": "eba2ad6cd9f87d8aeb553c16ad2ed6133ee0b53f8d8231f81dc5779677a259be",
+      "results": [
+        {
+          "target": "Running tests/function_contracts.rs",
+          "result": "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.18s"
+        },
+        {
+          "target": "Running tests/native_acceptance.rs",
+          "result": "test result: ok. 1 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        },
+        {
+          "target": "Running tests/reference_meanings.rs",
+          "result": "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.89s"
+        },
+        {
+          "target": "Running tests/selected_function_contracts.rs",
+          "result": "test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.37s"
+        }
+      ]
+    },
+    {
+      "name": "msrv-wide",
+      "toolchain": "1.85.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-msrv-wide.log",
+      "log_sha256": "1357ecc5ac7eb798dd49911968e08985fd556935894f26c3176bd28b0c3261b1",
+      "results": [
+        {
+          "target": "Running unittests src/lib.rs",
+          "result": "test result: ok. 171 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 68.26s"
+        },
+        {
+          "target": "Running tests/exclusive_access.rs",
+          "result": "test result: ok. 41 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.87s"
+        },
+        {
+          "target": "Running tests/frontend_ownership_differential.rs",
+          "result": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 496.67s"
+        },
+        {
+          "target": "Running tests/meaning_evidence.rs",
+          "result": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s"
+        },
+        {
+          "target": "Running tests/selected_source_cli.rs",
+          "result": "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.57s"
+        }
+      ]
+    },
+    {
+      "name": "clippy",
+      "toolchain": "1.99.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-clippy.log",
+      "log_sha256": "e86d28041c5d4eb306bbb1753799d5479d895d80b3a62a58a614c8561403b689",
+      "results": []
+    },
+    {
+      "name": "clippy-msrv",
+      "toolchain": "1.85.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-clippy-msrv.log",
+      "log_sha256": "66d4b4903e2a85aa79130666b0fd6e67d824900ff1dd7a971753bdfd535984a3",
+      "results": []
+    },
+    {
+      "name": "native-ignored",
+      "toolchain": "1.99.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-native-ignored.log",
+      "log_sha256": "d0f95431195da91e6a8a181318e95f0b22d7b422ad9b1657b9d883fc600d51bc",
+      "results": [
+        {
+          "target": "Running tests/native_acceptance.rs",
+          "result": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.25s"
+        }
+      ]
+    },
+    {
+      "name": "native-ignored-msrv",
+      "toolchain": "1.85.0",
+      "returncode": 0,
+      "log": "/private/tmp/qleisli-instrument-selected-native-ignored-msrv.log",
+      "log_sha256": "eb0700665e27c92b33ff5e5610f2802467820a9b96814951ebde55ae2ab1905b",
+      "results": [
+        {
+          "target": "Running tests/native_acceptance.rs",
+          "result": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.19s"
+        }
+      ]
+    }
+  ],
+  "shared_checks": [
+    {
+      "group": "source-integrity",
+      "status": "passed",
+      "commands": 5,
+      "report": "/private/tmp/qleisli-instrument-selected-source-integrity-final/results.json",
+      "sha256": "779ef98a05dbe91e15186491d28b498bdb28dbb5baf4b57add44872d4db6bf6c"
+    },
+    {
+      "group": "source-contracts",
+      "status": "passed",
+      "commands": 9,
+      "report": "/private/tmp/qleisli-instrument-selected-source-contracts/results.json",
+      "sha256": "020b324dff052518e7452693e5a625224602e6dfb7bbff0e7604cdd4d93fba06"
+    }
+  ],
+  "fixed_799": {
+    "status": "passed",
+    "baseline_sha256": "3b5f3bf8d5d7311114b302bfe78e3eb0ec76ef4700af6b8fe4cf339bf6d1c699",
+    "binary_sha256": {
+      "kernel": "98b8a224a35ab83e7017fc34534f1f32e91ff59bc1db34029710dec7932951dc",
+      "runner": "d020a14f65f016f7cfa7e9892f98c1f791a7da4395710e6432cb845be46a4410"
+    },
+    "summary": {
+      "pairs": 799,
+      "accepted": 263,
+      "rejected": 536,
+      "proposal_bound_rejections": 1,
+      "failures": 0
+    }
+  },
+  "ownership": {
+    "cases_per_toolchain": 4000,
+    "expected_accepts": 1000,
+    "expected_rejects": 3000,
+    "seed": "0x514c4549534c4932",
+    "public_calls_per_toolchain": {
+      "check_project": 4000,
+      "ParsedProgram_parse": 4000
+    },
+    "seconds": {
+      "1.99.0": 494.44,
+      "1.85.0": 496.67
+    },
+    "timing_scope": "The two toolchains ran concurrently with other local checks; these elapsed times are not a controlled speed comparison with the historical 427.62-second single-toolchain observation. The case generator, seed/order, expectations and both per-case public calls are unchanged. Native child-call counts were not instrumented; no acceptance cache was added."
+  },
+  "other_checks": {
+    "production_coverage_regressions": 14,
+    "constitutional_continuity": {
+      "base": "db526c9b2f863e120ddaa87f06573271c7d57288",
+      "verify_lean": true,
+      "status": "passed"
+    },
+    "docs": "2380 local links, 60 Markdown anchors, 227 Lean root modules",
+    "mdbook": {
+      "version": "0.5.4",
+      "html_files": 30,
+      "local_links": 1424,
+      "anchors": 624,
+      "status": "passed"
+    },
+    "authoring": "80 records, 123 snapshots, 1692 observations; no recorded commands executed",
+    "fixed_fourier": "All 80 exact F4/F8 coefficients on both adapters match the direct positive Fourier equation."
+  },
+  "resource_observations": {
+    "fixture_files": 17786,
+    "fixture_bytes": 124568591,
+    "target_directories": "Reused stable approximately 12 GiB and MSRV approximately 10 GiB. Free space approximately 17 GiB before and after. No new maximum cases or bulk fixtures."
+  },
+  "limitations": [
+    "Three library tests remain ignored by their existing policy: two native QPE tests and the decoder-view test; hosted CI invokes their dedicated checks. All three ignored native_acceptance integration tests were explicitly run successfully on both toolchains.",
+    "The initial sandboxed library run failed its ps child-liveness inspection; both unrestricted library runs passed all 171 enabled tests.",
+    "The local stable linker reports a rust-objcopy missing libLLVM.dylib warning; tests and all-target Clippy pass. This does not repair the toolchain installation.",
+    "All broader QS/PR/RS/EXACT obligations and source/decoder/native/runtime/target proof gaps retain their status. No new guarantee, general arrow, generic QFT implementation or release is admitted.",
+    "Full same-commit hosted CI, packaging and release checks are not claimed by this local record."
+  ]
+}

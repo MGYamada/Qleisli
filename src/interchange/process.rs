@@ -176,7 +176,7 @@ pub(super) fn invoke<T>(
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
-    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
 
     #[test]
     fn inherited_pipes_do_not_leave_descendants_or_transport_threads() {
@@ -196,18 +196,14 @@ mod tests {
             }
         }
         let _cleanup = Cleanup(root.clone());
-        let executable = root.join("checker");
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v029/process-tree.sh");
         let pidfile = root.join("pid");
-        for tail in ["exit 0", "wait"] {
-            std::fs::write(
-                &executable,
-                format!(
-                    "#!/bin/sh\nsleep 30 &\necho $! > '{}'\n{tail}\n",
-                    pidfile.display()
-                ),
-            )
-            .unwrap();
-            std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
+        // Test code is immutable even while other library tests fork. A link
+        // supplies the private directory and case without executable writes.
+        for case in ["exit", "wait"] {
+            let executable = root.join(case);
+            symlink(&fixture, &executable).unwrap();
             let start = Instant::now();
             let error = invoke(
                 &executable,
@@ -242,7 +238,8 @@ mod tests {
             // Unix transport uses no reader/writer threads; inherited handles
             // therefore cannot retain detached transport threads after return.
         }
-        std::fs::write(&executable, "#!/bin/sh\ncat >/dev/null\nprintf 'ok\\n'\n").unwrap();
+        let executable = root.join("ok");
+        symlink(&fixture, &executable).unwrap();
         assert_eq!(
             invoke(
                 &executable,

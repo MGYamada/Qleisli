@@ -1,0 +1,14 @@
+{
+  "workflow_runs": [
+    {
+      "id": 37303925654,
+      "name": "Specification and implementation checks",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 187,
+      "jobs_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37303925654/jobs",
+      "logs_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37303925654/logs",
+      "workflow_id": 367733658
+    }
+  ]
+}

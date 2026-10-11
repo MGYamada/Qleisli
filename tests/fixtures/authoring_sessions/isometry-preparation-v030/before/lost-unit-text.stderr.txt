@@ -1,0 +1,1 @@
+main:96..105: ownership: function leaves live quantum arguments unconsumed

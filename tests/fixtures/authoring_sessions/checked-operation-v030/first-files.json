@@ -1,0 +1,256 @@
+{
+  "format": "qleisli.checked-operation-first-sources",
+  "version": 1,
+  "issue": 82,
+  "baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "frozen_utc": "2026-10-06T04:19:16.587091+00:00",
+  "project_version": "0.3.0-alpha",
+  "files": {
+    "providers-reference-control-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "providers-reference-control-desired/main.qli": "0d9605e632a4d5433bda61f0cdb021e165d965a6eae8aee2b5560b5fa8c6f5ec",
+    "providers-reference-control-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "providers-reference-control-legacy/main.qli": "7f201a11ae9fb0a9f467d799be9149b2a542ec8b171695660175e584e60aaa6e",
+    "wrong-phase-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-phase-desired/main.qli": "d8cbce7105d5040d8052ac547d6c582089be0da40be10e98392461a25aa3e71a",
+    "wrong-phase-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-phase-legacy/main.qli": "54fb03a515baed9c96da4ce42a1204e048328ff0ec02aa69ba371edbb53ae47d",
+    "wrong-tree-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-tree-desired/main.qli": "adfdba1d7399cbd833cd0565782c9a7245ec1bdcd8982adcd91b8298c60b58be",
+    "wrong-tree-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-tree-legacy/main.qli": "a85e539c6c4b035f53d5a351d954b46de8269d1ced48941a2c891714eb815fa3",
+    "runtime-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "runtime-provider-capture-desired/main.qli": "8c4f2163719e95d5e7a2ea6b7634a6f7af593e67f3dd2caea83d49227cbedfa5",
+    "runtime-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "runtime-provider-capture-legacy/main.qli": "2535e6ffdbbfedead7da6d2dbab8f2d080a5a9293fbc52d217794c03541d61c2",
+    "quantum-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-provider-capture-desired/main.qli": "4f0db1cd6166529e9ce9e6bcd37acd986c3c5c6ee67e3ecc3327cd50064aba1a",
+    "quantum-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-provider-capture-legacy/main.qli": "6237d95aeb5eb161ff422157358cbf4f4d2eb11bc4a1eba472a94bf18be79c35",
+    "formal-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "formal-provider-capture-desired/main.qli": "3b8ea77f59b93639fa2714f0dc96987141b779dd8494ac5207f762c03b5f2a6e",
+    "formal-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "formal-provider-capture-legacy/main.qli": "b957114478e52ff7bfab8226bb0691227b1e2ed2b72fef3b9f7540e97cdca349",
+    "spent-owner-reuse-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "spent-owner-reuse-desired/main.qli": "3f5201e068c8f1cdf0ba0bd600c258159d58e818e14dd4c7b8343e69fdc8154a",
+    "spent-owner-reuse-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "spent-owner-reuse-legacy/main.qli": "6de17bd2461d64d6e7725392a9da74da2c664322b78aafece9ca9707e73529c8",
+    "nested-constructors-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-constructors-desired/main.qli": "bfa650927537acb6cae28978f39f7958e9f0d66210dfdfe3d79441c6fd6ae57c",
+    "nested-constructors-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-constructors-legacy/main.qli": "92e776ea3a0c64ab00aeac64ce45bf50cb81affb97e466cd500fe516e997747c"
+  },
+  "cases": [
+    {
+      "id": "providers-reference-control-desired",
+      "pair": "providers-reference-control",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 3,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy finite check/run/emission should pass. Both declaration providers are exactly Z, not merely projectively equal. The three-source-qubit T-phase Bell/reference plus coherent-control test must return 000 after independent inverse interference. A public selected probe should reach the existing Bind projection restriction, never private-entry visibility.",
+      "oracle": {
+        "distribution": {
+          "000": 1.0
+        },
+        "exact_provider_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            -1
+          ]
+        ],
+        "second_provider_equation": "T^4 = diag(1,-1) = Z exactly",
+        "input_reference_equation": "Before candidate action: |+>_c tensor (|00> + omega|11>)_r,q / sqrt(2), omega = exp(i*pi/4).",
+        "interference_equation": "Candidate Z_q and controlled Z_c,q, followed by independently specified controlled Z_c,q and Z_q, undo exactly on every c,q basis label; CNOT_r,q, Tdag_r and H_r,H_c return |000> in c,r,q order."
+      },
+      "public_selected_entry": true
+    },
+    {
+      "id": "providers-reference-control-legacy",
+      "pair": "providers-reference-control",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 3,
+      "expectation": "Legacy finite check/run/emission should pass. Both declaration providers are exactly Z, not merely projectively equal. The three-source-qubit T-phase Bell/reference plus coherent-control test must return 000 after independent inverse interference. A public selected probe should reach the existing Bind projection restriction, never private-entry visibility.",
+      "oracle": {
+        "distribution": {
+          "000": 1.0
+        },
+        "exact_provider_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            -1
+          ]
+        ],
+        "second_provider_equation": "T^4 = diag(1,-1) = Z exactly",
+        "input_reference_equation": "Before candidate action: |+>_c tensor (|00> + omega|11>)_r,q / sqrt(2), omega = exp(i*pi/4).",
+        "interference_equation": "Candidate Z_q and controlled Z_c,q, followed by independently specified controlled Z_c,q and Z_q, undo exactly on every c,q basis label; CNOT_r,q, Tdag_r and H_r,H_c return |000> in c,r,q order."
+      },
+      "public_selected_entry": true
+    },
+    {
+      "id": "wrong-phase-desired",
+      "pair": "wrong-phase",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy must reject exact Meaning equality: XZX = -Z. Computational-basis or unconditioned one-qubit probabilities cannot authorize projective equality. Desired name rejects earlier at parsing, which does not check this semantic condition.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "wrong-phase-legacy",
+      "pair": "wrong-phase",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Legacy must reject exact Meaning equality: XZX = -Z. Computational-basis or unconditioned one-qubit probabilities cannot authorize projective equality. Desired name rejects earlier at parsing, which does not check this semantic condition.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "wrong-tree-desired",
+      "pair": "wrong-tree",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 3,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy must reject the exact nested versus flat three-Bit tree despite identical width/cardinality. The unused public probe is still checked; empty main is not an execution claim about the probe.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "wrong-tree-legacy",
+      "pair": "wrong-tree",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 3,
+      "expectation": "Legacy must reject the exact nested versus flat three-Bit tree despite identical width/cardinality. The unused public probe is still checked; empty main is not an execution claim about the probe.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "runtime-provider-capture-desired",
+      "pair": "runtime-provider-capture",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy must reject a runtime ordinary parameter shadowing the global declaration as a static provider. It must not capture it or silently fall back to the global direct_z.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "runtime-provider-capture-legacy",
+      "pair": "runtime-provider-capture",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Legacy must reject a runtime ordinary parameter shadowing the global declaration as a static provider. It must not capture it or silently fall back to the global direct_z.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "quantum-provider-capture-desired",
+      "pair": "quantum-provider-capture",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 2,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy must reject a live quantum owner in the provider identifier position. The first actually reached refusal is retained; a later unused-owner condition must not be falsely claimed as tested.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "quantum-provider-capture-legacy",
+      "pair": "quantum-provider-capture",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 2,
+      "expectation": "Legacy must reject a live quantum owner in the provider identifier position. The first actually reached refusal is retained; a later unused-owner condition must not be falsely claimed as tested.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "formal-provider-capture-desired",
+      "pair": "formal-provider-capture",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy finite materialization must retain the closed-declaration guard for Bind(V,Meaning). A common pending MeaningEquality obligation is not a discharged proof or permission to rebind a formal operation as a closed declaration.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "formal-provider-capture-legacy",
+      "pair": "formal-provider-capture",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Legacy finite materialization must retain the closed-declaration guard for Bind(V,Meaning). A common pending MeaningEquality obligation is not a discharged proof or permission to rebind a formal operation as a closed declaration.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "spent-owner-reuse-desired",
+      "pair": "spent-owner-reuse",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy must reject reuse of q after checked operation application consumes that owner. Static operation evidence does not make runtime owners duplicable. The new spelling cannot validate this before its parser migration.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "spent-owner-reuse-legacy",
+      "pair": "spent-owner-reuse",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 1,
+      "expectation": "Legacy must reject reuse of q after checked operation application consumes that owner. Static operation evidence does not make runtime owners duplicable. The new spelling cannot validate this before its parser migration.",
+      "oracle": null,
+      "public_selected_entry": false
+    },
+    {
+      "id": "nested-constructors-desired",
+      "pair": "nested-constructors",
+      "spelling": "desired",
+      "maximum_declared_or_prepared_source_qubits": 2,
+      "expectation": "Before the new parser exists, checked_op must parse-refuse; this early failure establishes none of the downstream expectations. Legacy finite check/run/emission should pass with exact identity action. Only the binding constructor changes: inverse/then/repeat/controlled remain their existing constructors and capability rules.",
+      "oracle": {
+        "distribution": {
+          "00": 1.0
+        },
+        "exact_equation": "controlled(inverse(Z then Z^3)) = controlled(I) = I exactly; Tdag and H unprepare the target, H unprepares control."
+      },
+      "public_selected_entry": false
+    },
+    {
+      "id": "nested-constructors-legacy",
+      "pair": "nested-constructors",
+      "spelling": "legacy",
+      "maximum_declared_or_prepared_source_qubits": 2,
+      "expectation": "Legacy finite check/run/emission should pass with exact identity action. Only the binding constructor changes: inverse/then/repeat/controlled remain their existing constructors and capability rules.",
+      "oracle": {
+        "distribution": {
+          "00": 1.0
+        },
+        "exact_equation": "controlled(inverse(Z then Z^3)) = controlled(I) = I exactly; Tdag and H unprepare the target, H unprepares control."
+      },
+      "public_selected_entry": false
+    }
+  ],
+  "exact_counterexample": {
+    "Z": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        -1
+      ]
+    ],
+    "XZX": [
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "relation": "XZX = -Z, not Z; projective equality is insufficient for exact meaning or coherent control."
+  },
+  "scope": "Eight informed desired/legacy pairs; intended exact equations are predictions, not execution or general preservation/proof claims."
+}

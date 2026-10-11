@@ -47,10 +47,10 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-unitary fn choose(b: CBit, q: Q<Bit>) -> Q<Bit> {
+unitary fn choose(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { x(q) } else { q }
 }
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let spectator = h(init0());
     let b = measure_z(x(init0()));
     let q = choose(b, init0());
@@ -71,7 +71,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let b = measure_z(h(init0()));
     let (c, q) = if b {
         (measure_z(x(init0())), x(init0()))
@@ -116,7 +116,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Ownership,
         ),
         (
-            "iso fn bad(q: Q<Bit>) -> CBit { measure_z(q) } observe fn main() -> Unit { () }",
+            "isometry fn bad(q: Q<Bit>) -> Bit { measure_z(q) } observe fn main() -> Unit { () }",
             ErrorCode::Effect,
         ),
         (
@@ -124,7 +124,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Effect,
         ),
         (
-            "observe fn main() -> CBit { let q = init0(); let q = do b <- q; pure 0; measure_z(q) }",
+            "observe fn main() -> Bit { let q = init0(); let q = basis q as b { 0 }; measure_z(q) }",
             ErrorCode::Ownership,
         ),
         (
@@ -136,23 +136,23 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Ownership,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { measure_z(with_computed(init0(), p) { |a| h(a) }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| h(a) }) }",
             ErrorCode::Unsupported,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { measure_z(with_computed(init0(), p) { |a| let b = measure_z(a); init0() }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| let b = measure_z(a); init0() }) }",
             ErrorCode::Effect,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { let q = init0(); measure_z(with_computed(q, p) { |a| let q = h(q); a }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { let q = init0(); measure_z(with_computed(q, p) { |a| let q = h(q); a }) }",
             ErrorCode::Ownership,
         ),
         (
-            "basis fn bad(x: Bit) -> Bit { missing } observe fn main() -> Unit { () }",
+            "classical fn bad(x: Bit) -> Bit { missing } observe fn main() -> Unit { () }",
             ErrorCode::UnknownName,
         ),
         (
-            "iso fn f(q: Q<Bit>) -> Q<Bit> { g(q) } iso fn g(q: Q<Bit>) -> Q<Bit> { f(q) } observe fn main() -> Unit { () }",
+            "isometry fn f(q: Q<Bit>) -> Q<Bit> { g(q) } isometry fn g(q: Q<Bit>) -> Q<Bit> { f(q) } observe fn main() -> Unit { () }",
             ErrorCode::RecursiveCall,
         ),
         (
@@ -160,7 +160,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::InvalidEntry,
         ),
         (
-            "observe fn main() -> CBit { measure_z(init0(), init0()) }",
+            "observe fn main() -> Bit { measure_z(init0(), init0()) }",
             ErrorCode::Arity,
         ),
     ];
@@ -175,7 +175,7 @@ fn invalid_source_is_rejected_before_execution() {
 
 #[test]
 fn missing_import_reports_the_call_site_even_in_unused_functions() {
-    let source = "// 日本語\nobserve fn hidden() -> CBit { measure_z(init0()) }\nobserve fn main() -> Unit { () }";
+    let source = "// 日本語\nobserve fn hidden() -> Bit { measure_z(init0()) }\nobserve fn main() -> Unit { () }";
     let root = SourceRoot::new(source);
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::UnknownName);
@@ -190,7 +190,7 @@ fn quantum_rebinding_inside_a_branch_cannot_escape_its_scope() {
 use std::quantum::init0;
 use std::quantum::h;
 use std::observe::measure_z;
-observe fn main() -> CBit {
+observe fn main() -> Bit {
     let b = measure_z(init0());
     let q = init0();
     if b { let q = h(q); () } else { () };
@@ -217,8 +217,8 @@ use std::quantum::z;
 use std::quantum::join;
 use std::quantum::split;
 use std::observe::measure_z;
-basis fn predicate(a: Bit, b: Bit) -> Bit { xor2(and2(a, b), 0) }
-observe fn main() -> (CBit, CBit) {
+classical fn predicate((a,b): (Bit,Bit)) -> Bit { xor2(and2(a, b), 0) }
+observe fn main() -> (Bit, Bit) {
     let q = join(h(init0()), x(init0()));
     let q = with_computed(q, predicate) { |a| z(a) };
     let (a, b) = split(q);
@@ -239,7 +239,7 @@ use std::quantum::toffoli;
 use std::observe::reset;
 use std::observe::discard;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let ((a, b), q) = toffoli(x(init0()), x(init0()), init0());
     let a = reset(a);
     discard(b);
@@ -258,7 +258,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let c = measure_z(h(init0()));
     let a = init0();
     let b = x(init0());
@@ -316,11 +316,11 @@ fn growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack() {
         ),
         format!(
             "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
-            "let q = do x <- q; pure (x, x);".repeat(18)
+            "let q = basis q as x { (x, x) };".repeat(18)
         ),
         format!(
             "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
-            "let q = do x <- q; pure ((), x);".repeat(8192)
+            "let q = basis q as x { ((), x) };".repeat(8192)
         ),
     ];
     // Stack overflow aborts the process rather than unwinding. Use the same
@@ -332,7 +332,14 @@ fn growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack() {
                 let root = SourceRoot::new(&source);
                 let error = check_project(&root.0).unwrap_err();
                 assert_eq!(error.code, ErrorCode::Limit, "{error}");
-                assert!(error.message.contains("internal value or type"), "{error}");
+                assert!(
+                    error.message.contains("internal value or type")
+                        || error.message == "inferred tuple exceeds 4096 cells"
+                        || error.message == "source type exceeds 4096 cells or depth 64"
+                        || error.message == "type exceeds depth 64"
+                        || error.message == "basis tuple exceeds 4096 cells",
+                    "{error}"
+                );
             }
         })
         .unwrap()
@@ -346,34 +353,41 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
     for _ in 0..12 {
         ty = format!("({ty}, {ty})");
     }
-    let params = (0..70)
-        .map(|i| format!("a{i}: Unit"))
-        .collect::<Vec<_>>()
-        .join(", ");
     for source in [
         format!("unitary fn f(v: {ty}) -> Unit {{ () }}"),
         format!(
-            "basis fn p({params}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
+            "classical fn p(value: {ty}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
         ),
     ] {
         let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit, "{error}");
-        assert!(error.message.contains("internal value or type"), "{error}");
+        assert_eq!(error.message, "source type exceeds 4096 cells or depth 64");
     }
 }
 
 #[test]
-fn bounded_classical_copies_and_unit_lifts_remain_valid() {
-    let source = format!(
-        "use std::observe::discard;
+fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
+    let source = |doublings, wrappers| {
+        format!(
+            "use std::observe::discard;
          observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}
          observe fn main() -> Unit {{ let v = (); {} {} () }}",
-        "let q = do x <- q; pure (x, x);".repeat(10),
-        "let v = (v, v);".repeat(10),
-        "let v = ((), v);".repeat(40),
+            "let q = basis q as x { (x, x) };".repeat(doublings),
+            "let v = (v, v);".repeat(doublings),
+            "let v = ((), v);".repeat(wrappers),
+        )
+    };
+    // Keep the original input as an explicit engineering migration: common
+    // source checking charges its real copied trees before finite lowering.
+    let root = SourceRoot::new(&source(10, 40));
+    let error = check_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Limit);
+    assert_eq!(
+        error.message,
+        "common source judgment exceeds its 1000000 work capacity"
     );
-    let root = SourceRoot::new(&source);
+    let root = SourceRoot::new(&source(6, 8));
     let result = run(&root.0);
     assert_eq!(result, BTreeMap::from([(vec![], 1.0)]));
 }
@@ -381,7 +395,7 @@ fn bounded_classical_copies_and_unit_lifts_remain_valid() {
 #[test]
 fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
     let classical_prefix = format!(
-        "observe fn f(b: CBit) -> Unit {{ let v = (); {}",
+        "observe fn f(b: Bit) -> Unit {{ let v = (); {}",
         "let v = (v, v);".repeat(9),
     );
     let cases = [
@@ -393,9 +407,9 @@ fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
         // The large register is in the caller's frame, outside noop's Env.
         format!(
             "use std::observe::discard;
-             unitary fn noop(b: CBit) -> Unit {{ if b {{ () }} else {{ () }} }}
-             observe fn f(b: CBit, q: Q<Unit>) -> Unit {{ {} {} discard(q) }}",
-            "let q = do x <- q; pure (x, x);".repeat(9),
+             unitary fn noop(b: Bit) -> Unit {{ if b {{ () }} else {{ () }} }}
+             observe fn f(b: Bit, q: Q<Unit>) -> Unit {{ {} {} discard(q) }}",
+            "let q = basis q as x { (x, x) };".repeat(9),
             "noop(b);".repeat(600),
         ),
     ];
@@ -403,7 +417,11 @@ fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
         let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit, "{error}");
-        assert!(error.message.contains("work limit"), "{error}");
+        assert!(
+            error.message.contains("work limit")
+                || error.message == "common source judgment exceeds its 1000000 work capacity",
+            "{error}"
+        );
     }
 }
 
@@ -438,7 +456,7 @@ fn imported_argument_errors_point_to_the_call_and_actual_argument() {
 #[test]
 fn invalid_callee_body_still_reports_its_own_source() {
     let root = SourceRoot::new("use helper::bad; observe fn main() -> Unit { bad() }");
-    let helper = "pub unitary fn bad() -> CBit { () }";
+    let helper = "pub unitary fn bad() -> Bit { () }";
     fs::write(root.0.join("helper.qli"), helper).unwrap();
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch, "{error}");
@@ -454,6 +472,7 @@ fn invalid_callee_body_still_reports_its_own_source() {
 fn finite_v0_type_shapes_and_zero_wire_ownership() {
     for source in [
         "unitary fn id(q: Q<Unit>) -> Q<Unit> { q }",
+        "unitary fn id(b: Bit) -> Bit { b }",
         "use std::quantum::split; use std::quantum::join;
          unitary fn regroup(q: Q<(Unit,Bit)>) -> Q<(Unit,Bit)> {
              let (u, b) = split(q); join(u, b)
@@ -479,7 +498,7 @@ fn finite_v0_type_shapes_and_zero_wire_ownership() {
             ErrorCode::TypeMismatch,
         ),
         (
-            "unitary fn bad(b: Bit) -> Bit { b }",
+            "unitary fn bad(b: Bit) -> Q<Bit> { b }",
             ErrorCode::TypeMismatch,
         ),
     ] {
@@ -494,19 +513,29 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
     // fixed classical input, not a bijection of the classical inputs/outputs.
     check_project(
         &SourceRoot::new(
-            "unitary fn forget(b: CBit) -> Unit { () }
+            "unitary fn forget(b: Bit) -> Unit { () }
              unitary fn id(q: Q<Bit>) -> Q<Bit> { q }
-             unitary fn caller(b: CBit, q: Q<Bit>) -> Q<Bit> { forget(b); id(q) }",
+             unitary fn caller(b: Bit, q: Q<Bit>) -> Q<Bit> { forget(b); id(q) }",
         )
         .0,
     )
     .unwrap();
-    for (callee_kind, caller_kind) in [("iso", "unitary"), ("observe", "iso")] {
+    for (callee_kind, caller_kind) in [("isometry", "unitary"), ("observe", "isometry")] {
         let source = format!(
             "{callee_kind} fn id(q: Q<Bit>) -> Q<Bit> {{ q }}
              {caller_kind} fn caller(q: Q<Bit>) -> Q<Bit> {{ id(q) }}"
         );
-        let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        // A broader assertion on an identity cannot inflate its principal
+        // body effect or force a narrower caller to reject.
+        check_project(&SourceRoot::new(&source).0).unwrap();
+    }
+    for source in [
+        "use std::quantum::init0; isometry fn prepare()->Q<Bit>{init0()}
+         unitary fn caller()->Q<Bit>{prepare()}",
+        "use std::observe::measure_z; observe fn measure(q:Q<Bit>)->Bit{measure_z(q)}
+         isometry fn caller(q:Q<Bit>)->Bit{measure(q)}",
+    ] {
+        let error = check_project(&SourceRoot::new(source).0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Effect, "{error}");
     }
 }
@@ -515,7 +544,7 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
 fn finite_v0_mixed_values_move_as_a_whole() {
     check_project(
         &SourceRoot::new(
-            "unitary fn copy_classical(v: (CBit,Q<Bit>)) -> ((CBit,CBit),Q<Bit>) {
+            "unitary fn copy_classical(v: (Bit,Q<Bit>)) -> ((Bit,Bit),Q<Bit>) {
                  let (b,q) = v; ((b,b),q)
              }",
         )
@@ -523,7 +552,7 @@ fn finite_v0_mixed_values_move_as_a_whole() {
     )
     .unwrap();
     let root = SourceRoot::new(
-        "unitary fn bad(v: (CBit,Q<Bit>)) -> ((CBit,Q<Bit>),(CBit,Q<Bit>)) {
+        "unitary fn bad(v: (Bit,Q<Bit>)) -> ((Bit,Q<Bit>),(Bit,Q<Bit>)) {
              let moved = v; (moved,v)
          }",
     );
@@ -537,19 +566,19 @@ fn finite_v0_mixed_values_move_as_a_whole() {
 fn finite_v0_basis_lifts_are_injective_and_closed() {
     check_project(
         &SourceRoot::new(
-            "iso fn prepare(q: Q<Unit>) -> Q<Bit> { do x <- q; pure 0 }
-             unitary fn swap_label(q: Q<Bit>) -> Q<Bit> { do x <- q; pure not x }",
+            "isometry fn prepare(q: Q<Unit>) -> Q<Bit> { basis q as x { 0 } }
+             unitary fn swap_label(q: Q<Bit>) -> Q<Bit> { basis q as x { not x } }",
         )
         .0,
     )
     .unwrap();
     for (source, code) in [
         (
-            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do x <- q; pure 0 }",
+            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { basis q as x { 0 } }",
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn bad(b: CBit, q: Q<Bit>) -> Q<Bit> { do x <- q; pure b }",
+            "unitary fn bad(b: Bit, q: Q<Bit>) -> Q<Bit> { basis q as x { b } }",
             ErrorCode::UnknownName,
         ),
     ] {
@@ -561,7 +590,7 @@ fn finite_v0_basis_lifts_are_injective_and_closed() {
 #[test]
 fn finite_v0_computed_blocks_require_the_structural_certificate() {
     let prefix = "use std::quantum::h; use std::quantum::z; use std::quantum::t;
-                  basis fn p(x: Bit) -> Bit { x }
+                  classical fn p(x: Bit) -> Bit { x }
                   unitary fn phase(a: Q<Bit>) -> Q<Bit> { t(z(a)) }";
     for body in ["a", "phase(a)"] {
         let source = format!(
@@ -573,7 +602,7 @@ fn finite_v0_computed_blocks_require_the_structural_certificate() {
     }
     // H H and Z^2 are identities, but v0 certificates are structural. A static
     // transform emits ApplyUnitary, which this source certificate excludes.
-    for body in ["h(h(a))", "adjoint(t,a)", "repeat_static(2,z,a)"] {
+    for body in ["h(h(a))", "adjoint(t)(a)", "power(z,2)(a)"] {
         let source = format!(
             "{prefix} unitary fn oracle(q: Q<Bit>) -> Q<Bit> {{
                  with_computed(q,p) {{ |a| {body} }}
@@ -587,10 +616,10 @@ fn finite_v0_computed_blocks_require_the_structural_certificate() {
 #[test]
 fn finite_v0_local_names_shadow_static_callees() {
     for source in [
-        "basis fn f(x: Bit) -> Bit { x }
-         basis fn bad(f: Bit) -> Bit { f(f) }",
+        "classical fn f(x: Bit) -> Bit { x }
+         classical fn bad(f: Bit) -> Bit { f(f) }",
         "use std::quantum::h;
-         unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; adjoint(h,q) }",
+         unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; adjoint(h)(q) }",
     ] {
         let error = check_project(&SourceRoot::new(source).0).unwrap_err();
         assert_eq!(error.code, ErrorCode::TypeMismatch, "{source}\n{error}");
@@ -607,13 +636,13 @@ use std::quantum::h;
 use std::quantum::x;
 use std::quantum::cnot;
 use std::observe::measure_z;
-unitary fn choose(b: CBit, q: Q<Bit>) -> Q<Bit> {
+unitary fn choose(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { if b { h(h(q)) } else { x(x(q)) } } else { q }
 }
-unitary fn pack(v: (CBit,Q<Bit>), q: Q<Bit>) -> ((CBit,Q<Bit>),Q<Bit>) {
+unitary fn pack(v: (Bit,Q<Bit>), q: Q<Bit>) -> ((Bit,Q<Bit>),Q<Bit>) {
     (v,q)
 }
-observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
     let ((saved,a),r) = pack((b,a),choose(b,r));
@@ -637,7 +666,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
-observe fn main() -> (CBit,(CBit,CBit)) {
+observe fn main() -> (Bit,(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
     let (a,r) = (a,if b { h(h(r)) } else { r });
@@ -659,7 +688,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
     let b = measure_z(h(init0()));
     let a = init0();
     let r = x(init0());
@@ -686,11 +715,11 @@ use std::quantum::h;
 use std::quantum::split;
 use std::observe::measure_z;
 use std::observe::discard;
-unitary fn choose(b: CBit, u: Q<Unit>) -> Q<Unit> {
+unitary fn choose(b: Bit, u: Q<Unit>) -> Q<Unit> {
     if b { u } else { u }
 }
-observe fn main() -> (CBit,CBit) {
-    let pair = do b <- init0(); pure ((),b);
+observe fn main() -> (Bit,Bit) {
+    let pair = basis init0() as b { ((),b) };
     let (u,q) = split(pair);
     let b = measure_z(h(init0()));
     let u = choose(b,u);
@@ -732,7 +761,7 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 use std::observe::reset;
-observe fn main() -> (CBit,(CBit,CBit)) {
+observe fn main() -> (Bit,(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
     let r = if b { reset(r) } else { r };
@@ -755,7 +784,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (CBit,CBit) {
+observe fn main() -> (Bit,Bit) {
     let b = measure_z(h(init0()));
     let c = if b {
         if b { measure_z(x(init0())) } else { measure_z(init0()) }
@@ -775,19 +804,19 @@ observe fn main() -> (CBit,CBit) {
 fn resource_rules_reject_lost_or_differently_consumed_bindings() {
     for source in [
         // Same wire width does not make different outer consumption sets equal.
-        "unitary fn bad(c:CBit,a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){
+        "unitary fn bad(c:Bit,a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){
              let r=if c {a} else {b}; (r,a)
          }",
         // Rebinding the same spelling and slot still creates local ownership.
         "use std::quantum::h;
-         unitary fn bad(c:CBit,q:Q<Bit>)->Q<Bit>{
+         unitary fn bad(c:Bit,q:Q<Bit>)->Q<Bit>{
              if c { let q=h(q); () } else { () }; q
          }",
-        "unitary fn bad(c:CBit,u:Q<Unit>)->Unit{
+        "unitary fn bad(c:Bit,u:Q<Unit>)->Unit{
              let _=if c {u} else {u}; ()
          }",
-        "unitary fn bad(v:(CBit,Q<Unit>))->CBit{let (b,_)=v; b}",
-        "unitary fn bad(v:(CBit,Q<Bit>))->((CBit,Q<Bit>),(CBit,Q<Bit>)){
+        "unitary fn bad(v:(Bit,Q<Unit>))->Bit{let (b,_)=v; b}",
+        "unitary fn bad(v:(Bit,Q<Bit>))->((Bit,Q<Bit>),(Bit,Q<Bit>)){
              let moved=v; (moved,v)
          }",
         // A callee must account for every quantum parameter independently.

@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.bounded-hosted-ci-evidence-map",
+  "version": 1,
+  "scope": "Additive partial CI observation; retained files only, not a complete log/archive or production closure.",
+  "self_excluded": "files.json",
+  "files": {
+    "README.md": {
+      "bytes": 5014,
+      "sha256": "c393afe5e1e6182ff253fe50b6dce03925f5c9f9ed0b4fdb0a96e70533cc42e7",
+      "mode": "0644"
+    },
+    "access-failures.json": {
+      "bytes": 6912,
+      "sha256": "ddd48fc853858c37c1e66b08f7617fa06b89650bd66c946789f483dc6024e31c",
+      "mode": "0644"
+    },
+    "audit.json": {
+      "bytes": 4042,
+      "sha256": "a1effd842a2bc962aace8e43b0502fc3a15602757fd6fe50d2ea7df6c18871c0",
+      "mode": "0644"
+    },
+    "changes-checkout-selection.log.gz": {
+      "bytes": 4027,
+      "sha256": "76b4c7102ddc7075a3a2ca274e82ecbe030ef0ba67692b045f4a16a9ff31adc1",
+      "mode": "0644"
+    },
+    "changes-summary-tail.log.gz": {
+      "bytes": 1990,
+      "sha256": "4eddfcb2841373b5b3171d442533e0b5651464f37fc2e4a1055cead186ed6b63",
+      "mode": "0644"
+    },
+    "check-runs.json": {
+      "bytes": 31472,
+      "sha256": "68a7921b575bcd8aa490acb83fe07475b1d5aba2e9000f77dedfdb543f8db396",
+      "mode": "0644"
+    },
+    "jobs.json": {
+      "bytes": 34708,
+      "sha256": "0b7ac6e53fc8b79fa0c05b3db48ba8c9a90d64bf02ee9ae2bb3a64c3a1fe858c",
+      "mode": "0644"
+    },
+    "log-excerpts.json": {
+      "bytes": 1264,
+      "sha256": "bd963d1f8bd31e082e7829fbe91bd444a1b44efc2ba0005cb80417dfe8760d69",
+      "mode": "0644"
+    },
+    "merge-commit.json": {
+      "bytes": 2608,
+      "sha256": "26ad268235ee110ac110e6044ba1a21afda8ce17761b6cd3ee48ad0c55cdbe39",
+      "mode": "0644"
+    },
+    "provenance.json": {
+      "bytes": 4872,
+      "sha256": "d7b002b374bfffbc00fec8f1f079ae70b1373a736df27d21c63c6faeb6fcc77d",
+      "mode": "0644"
+    },
+    "run.json": {
+      "bytes": 12391,
+      "sha256": "fb0874b165fb53c9fe66cc58383e6e9f6ebde693f70e926d29dd6850b1c0c2b3",
+      "mode": "0644"
+    },
+    "tested-workflow.yml": {
+      "bytes": 40360,
+      "sha256": "a2b64c61efce2acf37eb5baa6f20c16c0461accc2c6ad9e49e1ae181a186c25c",
+      "mode": "0644"
+    }
+  }
+}

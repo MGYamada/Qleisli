@@ -1,0 +1,122 @@
+[
+  {
+    "case": "private-forward-sibling",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/private-forward-sibling",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:46..84: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "public-sibling-provider",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/public-sibling-provider",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:77..117: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "same-name-separate-modules",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/same-name-separate-modules",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 3 local modules\nsized.parse: a:49..87: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "import-terminal-bindings",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/import-terminal-bindings",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 3 local modules\nsized.parse: main:72..122: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "unused-bad-function",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/unused-bad-function",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:38..73: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"unsupported\", message: \"empty tuple type syntax is outside the finite profile; use Unit\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/unused-bad-function/main.qli\", span: Span { start: 67, end: 69 }, line: 2, column: 30 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "mutual-siblings",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/mutual-siblings",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:41..77: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/mutual-siblings/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "duplicate-siblings",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/duplicate-siblings",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /private/tmp/qleisli-multidecl-study-fae0/duplicate-siblings/main.qli:49..50: duplicate declaration `f`\nsized.parse: main:38..71: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"duplicate declaration `f`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/duplicate-siblings/main.qli\", span: Span { start: 49, end: 50 }, line: 2, column: 12 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "private-imported-sibling",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/private-imported-sibling",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /private/tmp/qleisli-multidecl-study-fae0/private-imported-sibling/main.qli:9..15: `dep::helper` is not public\nsized.parse: dep:51..89: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"`dep::helper` is not public\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/private-imported-sibling/main.qli\", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "import-rename-still-unsupported",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/import-rename-still-unsupported",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /private/tmp/qleisli-multidecl-study-fae0/import-rename-still-unsupported/main.qli:14..16: parse error: expected `;`, found identifier\nsized.parse: main:14..16: parse: expected `;`, found identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `;`, found identifier\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/import-rename-still-unsupported/main.qli\", span: Span { start: 14, end: 16 }, line: 1, column: 15 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "import-collides-sibling",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/private/tmp/qleisli-multidecl-study-fae0/import-collides-sibling",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /private/tmp/qleisli-multidecl-study-fae0/import-collides-sibling/main.qli:9..13: name `gate` collides with another declaration or import\nsized.parse: main:58..94: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-multidecl-study-fae0/import-collides-sibling/main.qli\", span: Span { start: 9, end: 13 }, line: 1, column: 10 }) }\n",
+    "stderr": ""
+  }
+]

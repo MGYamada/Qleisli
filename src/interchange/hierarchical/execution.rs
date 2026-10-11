@@ -1,6 +1,6 @@
 //! Bounded floating-point interpretation of retained, freshly checked actual IR.
 //! This adapter does not issue evidence or use requested meanings as a program.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 use super::super::json;
 use super::{

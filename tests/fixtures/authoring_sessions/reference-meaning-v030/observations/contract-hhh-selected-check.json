@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-11T00:07:43.286820+00:00",
+  "seconds": 0.006273915991187096,
+  "cli_sha256_before": "b953029ab8c721adbdae2a45b3da444783c46aa8a0545fbad421177a60278407",
+  "cli_sha256_after": "b953029ab8c721adbdae2a45b3da444783c46aa8a0545fbad421177a60278407",
+  "kernel_sha256_before": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+  "kernel_sha256_after": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: unsupported runtime expression",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli",
+          "start": 223,
+          "end": 275
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

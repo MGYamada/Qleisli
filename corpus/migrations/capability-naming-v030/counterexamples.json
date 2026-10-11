@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "kind": "explicit-counterexample-source-migration",
+  "issue": 45,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-08T13:33:00.247247+00:00",
+  "context": "Rename capability predicates and constructed adjoint/control descriptions under Issue #45. Preserve every predecessor, algorithm token, manifest, phase, axis, owner and retained semantic fault. Naming changes only; no isometry expansion, native acceptance change, guarantee admission or generic QFT implementation.",
+  "projects": [
+    "semantic_faults/erased_rotation_scalar",
+    "semantic_faults/negative_rx_missing_scalar",
+    "semantic_faults/mixed_rotation_order_reversed",
+    "semantic_faults/half_rotation_order_reversed",
+    "semantic_faults/negative_zz_missing_scalar",
+    "semantic_faults/edge_layer_reversed_order",
+    "semantic_faults/rotation_negative_x_positive_y_fault",
+    "semantic_faults/qaoa_negative_mixer2_fault",
+    "semantic_faults/qaoa_path_layer3_fault",
+    "semantic_faults/negative_rotations_reversed",
+    "semantic_faults/path_cost_lost_second_phase",
+    "semantic_faults/negative_edge_cost_sign",
+    "negative/measurement_adjoint"
+  ],
+  "files": {
+    "semantic_faults/erased_rotation_scalar/kernel.qli": {
+      "before": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+      "after": "1e66717b6a5ee785de5e0e613d4d82e9ea7c11d152c5b0fb0d53cbec0af96a5c"
+    },
+    "semantic_faults/erased_rotation_scalar/main.qli": {
+      "before": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "after": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf"
+    },
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": {
+      "before": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+      "after": "46dca261d29f38299a20c202ce1def5d0ac46fb8bcf4f96ae73ebe751e707c63"
+    },
+    "semantic_faults/negative_rx_missing_scalar/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "semantic_faults/mixed_rotation_order_reversed/kernel.qli": {
+      "before": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+      "after": "3b6493d4946561310b75506b6f993c08aa2774adf4028ab2ec64474d55460f04"
+    },
+    "semantic_faults/mixed_rotation_order_reversed/main.qli": {
+      "before": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "after": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45"
+    },
+    "semantic_faults/half_rotation_order_reversed/kernel.qli": {
+      "before": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+      "after": "b07afb5a3df55688cf654f583a964dba7930c9bd7952ecf3c30b66446224900e"
+    },
+    "semantic_faults/half_rotation_order_reversed/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "semantic_faults/negative_zz_missing_scalar/kernel.qli": {
+      "before": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+      "after": "e8d95abb345dacd4b2b755c96d44262e9d60ecba82eb22def6642215dabbb6eb"
+    },
+    "semantic_faults/negative_zz_missing_scalar/main.qli": {
+      "before": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "after": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897"
+    },
+    "semantic_faults/edge_layer_reversed_order/kernel.qli": {
+      "before": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+      "after": "1a08563fa2408db76f65b49224fabf7d736fde86244b7e059afd4e21a15daf96"
+    },
+    "semantic_faults/edge_layer_reversed_order/main.qli": {
+      "before": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "after": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551"
+    },
+    "semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": {
+      "before": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+      "after": "c501630bbfa8599b9362529a458985bcc6ddff805899facb84dd487069f4359f"
+    },
+    "semantic_faults/rotation_negative_x_positive_y_fault/main.qli": {
+      "before": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "after": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191"
+    },
+    "semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": {
+      "before": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+      "after": "1995cf7819eae9576acabe25dde187c5831c6dd5b2fb0573541b804c1dec73a1"
+    },
+    "semantic_faults/qaoa_negative_mixer2_fault/main.qli": {
+      "before": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "after": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad"
+    },
+    "semantic_faults/qaoa_path_layer3_fault/kernel.qli": {
+      "before": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+      "after": "879e9cca89ae77fd96e926c49e206caef3f63f71a1f57442a25827f907278bc3"
+    },
+    "semantic_faults/qaoa_path_layer3_fault/main.qli": {
+      "before": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "after": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7"
+    },
+    "semantic_faults/negative_rotations_reversed/kernel.qli": {
+      "before": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+      "after": "acff4f57e6c09f8ba387803ce9070682767f69c4f2f63306eb78fa41885ff57b"
+    },
+    "semantic_faults/negative_rotations_reversed/main.qli": {
+      "before": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "after": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63"
+    },
+    "semantic_faults/path_cost_lost_second_phase/kernel.qli": {
+      "before": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+      "after": "143069b8d408e7fef9395e744dd168be4cca76899a4dbc4a47e0d362766c2740"
+    },
+    "semantic_faults/path_cost_lost_second_phase/main.qli": {
+      "before": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "after": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3"
+    },
+    "semantic_faults/negative_edge_cost_sign/kernel.qli": {
+      "before": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+      "after": "fff837c8f1257f567f9601057e5acd1b633293228f76c53384ee0d82ae4de86f"
+    },
+    "semantic_faults/negative_edge_cost_sign/main.qli": {
+      "before": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "after": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef"
+    },
+    "negative/measurement_adjoint/main.qli": {
+      "before": "52ff441097d94ed0e41d925b6e009af6cf0d405775a04f67d4491d19b09bf7df",
+      "after": "e9127d7520f343bbf0c09c8c698f06e812ee4a5fe48f106ebd2fe08bf2a1f34c"
+    }
+  },
+  "observations": [
+    "counterexample-checks.json"
+  ],
+  "source_selection": "snapshot",
+  "baselines": {
+    "semantic_faults/manifest.json": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+    "negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "transformation": "capability-operation-naming"
+}

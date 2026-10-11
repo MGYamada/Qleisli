@@ -1,0 +1,41 @@
+{
+  "baseline_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "harness_sha256": "da9681495a390d01ceef99228f1a931db2c5ada6051716190314ebf5df0e404a",
+  "source_tree_checked": "/Users/masa/git/Qleisli",
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-scanner/independent-review",
+      "exit_code": 0,
+      "stdout": "rustc-version.stdout.txt",
+      "stderr": "rustc-version.stderr.txt"
+    },
+    {
+      "argv": [
+        "rustc",
+        "--edition=2024",
+        "-O",
+        "/private/tmp/qleisli-shared-scanner-recorded-review/harness.rs",
+        "-o",
+        "/private/tmp/qleisli-shared-scanner-recorded-review/scanner-review"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-scanner/independent-review",
+      "exit_code": 0,
+      "stdout": "compile.stdout.txt",
+      "stderr": "compile.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-shared-scanner-recorded-review/scanner-review"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-scanner/independent-review",
+      "exit_code": 0,
+      "stdout": "compare.stdout.txt",
+      "stderr": "compare.stderr.txt"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "kind": "informed pre-code nested forward provider experiment",
+  "base_commit": "dbe3c1e719b598ea66ff617dd3b6d2b166b221f6",
+  "source_sha256": "e781ed3eff2dbfd4780b5cf6d14641b3d9634058cc44211316e7db179e533907",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::client",
+    "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "before.stdout.txt",
+  "stderr": "before.stderr.txt",
+  "scope": "one system qubit; prior source/spec access; no independent model or blind benchmark"
+}

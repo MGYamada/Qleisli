@@ -1,0 +1,4 @@
+[qrate]
+schema = 2
+name = "general-arrow-study"
+edition = "2026"

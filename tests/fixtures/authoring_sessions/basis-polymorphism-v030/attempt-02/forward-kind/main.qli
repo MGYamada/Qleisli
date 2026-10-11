@@ -1,0 +1,3 @@
+pub unitary fn f[static U:Op<A>,static A:Basis](q:Q<A>)->Q<A>
+requires Apply(U) {U(q)}
+

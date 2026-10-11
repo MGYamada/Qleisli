@@ -1,0 +1,714 @@
+﻿2026-10-05T04:42:58.7452830Z Current runner version: '2.337.0'
+2026-10-05T04:42:58.7524875Z ##[group]Runner Image Provisioner
+2026-10-05T04:42:58.7526221Z Hosted Compute Agent
+2026-10-05T04:42:58.7527504Z Version: 20260901.588
+2026-10-05T04:42:58.7528804Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-05T04:42:58.7530028Z Build Date: 2026-09-01T19:56:44Z
+2026-10-05T04:42:58.7531126Z Worker ID: {965bd0d8-01f2-4da6-8a88-6c528f671bad}
+2026-10-05T04:42:58.7532499Z Azure Region: eastus
+2026-10-05T04:42:58.7533409Z ##[endgroup]
+2026-10-05T04:42:58.7535965Z ##[group]Operating System
+2026-10-05T04:42:58.7537249Z Ubuntu
+2026-10-05T04:42:58.7538197Z 24.04.5
+2026-10-05T04:42:58.7539130Z LTS
+2026-10-05T04:42:58.7540017Z ##[endgroup]
+2026-10-05T04:42:58.7540956Z ##[group]Runner Image
+2026-10-05T04:42:58.7541988Z Image: ubuntu-24.04
+2026-10-05T04:42:58.7542900Z Version: 20260927.320.1
+2026-10-05T04:42:58.7545081Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-05T04:42:58.7548219Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+2026-10-05T04:42:58.7549919Z ##[endgroup]
+2026-10-05T04:42:58.7551820Z ##[group]GITHUB_TOKEN Permissions
+2026-10-05T04:42:58.7554794Z Contents: read
+2026-10-05T04:42:58.7556005Z Metadata: read
+2026-10-05T04:42:58.7557234Z ##[endgroup]
+2026-10-05T04:42:58.7560862Z Secret source: Actions
+2026-10-05T04:42:58.7562360Z Cache mode: write
+2026-10-05T04:42:58.7563588Z Prepare workflow directory
+2026-10-05T04:42:58.8059697Z Prepare all required actions
+2026-10-05T04:42:58.8134820Z Getting action download info
+2026-10-05T04:42:59.0264898Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-05T04:42:59.1248296Z Download action repository 'leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596' (SHA:50fcf42d2e460296f1a34b402e990d1b24f8b596)
+2026-10-05T04:42:59.2289438Z Download action repository 'actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-10-05T04:42:59.3233602Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-05T04:42:59.5381393Z Getting action download info
+2026-10-05T04:42:59.6107065Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-05T04:42:59.8320244Z Complete job name: check-rust-msrv
+2026-10-05T04:42:59.9300013Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-05T04:42:59.9301457Z with:
+2026-10-05T04:42:59.9301936Z   repository: MGYamada/Qleisli
+2026-10-05T04:42:59.9305620Z   token: ***
+2026-10-05T04:42:59.9306056Z   ssh-strict: true
+2026-10-05T04:42:59.9306483Z   ssh-user: git
+2026-10-05T04:42:59.9307112Z   persist-credentials: true
+2026-10-05T04:42:59.9307607Z   clean: true
+2026-10-05T04:42:59.9308051Z   sparse-checkout-cone-mode: true
+2026-10-05T04:42:59.9308574Z   fetch-depth: 1
+2026-10-05T04:42:59.9309022Z   fetch-tags: false
+2026-10-05T04:42:59.9309457Z   show-progress: true
+2026-10-05T04:42:59.9309899Z   lfs: false
+2026-10-05T04:42:59.9310303Z   submodules: false
+2026-10-05T04:42:59.9310737Z   set-safe-directory: true
+2026-10-05T04:42:59.9311231Z   allow-unsafe-pr-checkout: false
+2026-10-05T04:42:59.9312144Z ##[endgroup]
+2026-10-05T04:43:00.0387761Z Syncing repository: MGYamada/Qleisli
+2026-10-05T04:43:00.0390127Z ##[group]Getting Git version info
+2026-10-05T04:43:00.0391120Z Working directory is '/home/runner/work/Qleisli/Qleisli'
+2026-10-05T04:43:00.0392922Z [command]/usr/bin/git version
+2026-10-05T04:43:00.0508166Z git version 2.55.0
+2026-10-05T04:43:00.0539129Z ##[endgroup]
+2026-10-05T04:43:00.0556334Z Temporarily overriding HOME='/home/runner/work/_temp/a79be351-7498-4dac-877a-6b8d01ea4da8' before making global git config changes
+2026-10-05T04:43:00.0559094Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-05T04:43:00.0562315Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Qleisli/Qleisli
+2026-10-05T04:43:00.0693586Z Deleting the contents of '/home/runner/work/Qleisli/Qleisli'
+2026-10-05T04:43:00.0699747Z ##[group]Initializing the repository
+2026-10-05T04:43:00.0705110Z [command]/usr/bin/git init /home/runner/work/Qleisli/Qleisli
+2026-10-05T04:43:00.0842522Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-05T04:43:00.0844286Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-05T04:43:00.0845817Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-05T04:43:00.0847361Z hint: call:
+2026-10-05T04:43:00.0848164Z hint:
+2026-10-05T04:43:00.0849084Z hint: 	git config --global init.defaultBranch <name>
+2026-10-05T04:43:00.0850230Z hint:
+2026-10-05T04:43:00.0851339Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-05T04:43:00.0853081Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-05T04:43:00.0854466Z hint:
+2026-10-05T04:43:00.0855221Z hint: 	git branch -m <name>
+2026-10-05T04:43:00.0856034Z hint:
+2026-10-05T04:43:00.0857459Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-05T04:43:00.0859648Z Initialized empty Git repository in /home/runner/work/Qleisli/Qleisli/.git/
+2026-10-05T04:43:00.0865337Z [command]/usr/bin/git remote add origin https://github.com/MGYamada/Qleisli
+2026-10-05T04:43:00.0929226Z ##[endgroup]
+2026-10-05T04:43:00.0930990Z ##[group]Disabling automatic garbage collection
+2026-10-05T04:43:00.0932996Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-05T04:43:00.0979627Z ##[endgroup]
+2026-10-05T04:43:00.0981101Z ##[group]Setting up auth
+2026-10-05T04:43:00.0987553Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-05T04:43:00.1028854Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-05T04:43:00.1463088Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-05T04:43:00.1500798Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-05T04:43:00.1739767Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-05T04:43:00.1779455Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-05T04:43:00.2015931Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-05T04:43:00.2062007Z ##[endgroup]
+2026-10-05T04:43:00.2063462Z ##[group]Fetching the repository
+2026-10-05T04:43:00.2074289Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +51f77cd2c3c97f75982e86adf32d197e8385eefd:refs/remotes/pull/307/merge
+2026-10-05T04:43:01.7145985Z From https://github.com/MGYamada/Qleisli
+2026-10-05T04:43:01.7147826Z  * [new ref]         51f77cd2c3c97f75982e86adf32d197e8385eefd -> pull/307/merge
+2026-10-05T04:43:01.7151536Z ##[endgroup]
+2026-10-05T04:43:01.7154673Z ##[group]Determining the checkout info
+2026-10-05T04:43:01.7155669Z ##[endgroup]
+2026-10-05T04:43:01.7161161Z [command]/usr/bin/git sparse-checkout disable
+2026-10-05T04:43:01.7220363Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-05T04:43:01.7263311Z ##[group]Checking out the ref
+2026-10-05T04:43:01.7266817Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/307/merge
+2026-10-05T04:43:02.4033758Z Note: switching to 'refs/remotes/pull/307/merge'.
+2026-10-05T04:43:02.4034497Z 
+2026-10-05T04:43:02.4034791Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-05T04:43:02.4035718Z changes and commit them, and you can discard any commits you make in this
+2026-10-05T04:43:02.4036305Z state without impacting any branches by switching back to a branch.
+2026-10-05T04:43:02.4036638Z 
+2026-10-05T04:43:02.4037098Z If you want to create a new branch to retain commits you create, you may
+2026-10-05T04:43:02.4037651Z do so (now or later) by using -c with the switch command. Example:
+2026-10-05T04:43:02.4037943Z 
+2026-10-05T04:43:02.4038106Z   git switch -c <new-branch-name>
+2026-10-05T04:43:02.4038343Z 
+2026-10-05T04:43:02.4038497Z Or undo this operation with:
+2026-10-05T04:43:02.4038693Z 
+2026-10-05T04:43:02.4038828Z   git switch -
+2026-10-05T04:43:02.4039015Z 
+2026-10-05T04:43:02.4039276Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-05T04:43:02.4039618Z 
+2026-10-05T04:43:02.4040010Z HEAD is now at 51f77cd Merge faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-05T04:43:02.4072257Z ##[endgroup]
+2026-10-05T04:43:02.4124918Z [command]/usr/bin/git log -1 --format=%H
+2026-10-05T04:43:02.4154574Z 51f77cd2c3c97f75982e86adf32d197e8385eefd
+2026-10-05T04:43:02.4684161Z ##[group]Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596
+2026-10-05T04:43:02.4684690Z with:
+2026-10-05T04:43:02.4684975Z   lake-package-directory: lean-kernel
+2026-10-05T04:43:02.4685302Z   auto-config: false
+2026-10-05T04:43:02.4685581Z   use-github-cache: false
+2026-10-05T04:43:02.4685850Z   build: true
+2026-10-05T04:43:02.4686099Z   use-mathlib-cache: false
+2026-10-05T04:43:02.4686394Z   test: default
+2026-10-05T04:43:02.4686630Z   lint: default
+2026-10-05T04:43:02.4687076Z   mk_all-check: false
+2026-10-05T04:43:02.4687372Z   check-reservoir-eligibility: false
+2026-10-05T04:43:02.4687686Z   leanchecker: false
+2026-10-05T04:43:02.4687943Z   lean4checker: false
+2026-10-05T04:43:02.4688204Z   nanoda: false
+2026-10-05T04:43:02.4688458Z   nanoda-allow-sorry: true
+2026-10-05T04:43:02.4688736Z   axiom-audit: false
+2026-10-05T04:43:02.4689108Z   axiom-audit-allow: propext,Classical.choice,Quot.sound
+2026-10-05T04:43:02.4689552Z   reinstall-transient-toolchain: false
+2026-10-05T04:43:02.4689874Z ##[endgroup]
+2026-10-05T04:43:02.4759946Z ##[start-action display=install elan;id=__leanprover_lean-action.__run]
+2026-10-05T04:43:02.4845634Z ##[group]Run : Install Elan
+2026-10-05T04:43:02.4846068Z [36;1m: Install Elan[0m
+2026-10-05T04:43:02.4846422Z [36;1m${GITHUB_ACTION_PATH}/scripts/install_elan.sh[0m
+2026-10-05T04:43:02.5171343Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-05T04:43:02.5172010Z ##[endgroup]
+2026-10-05T04:43:02.5319383Z ##[group]Elan Installation Output
+2026-10-05T04:43:02.5778148Z info: downloading installer
+2026-10-05T04:43:03.0532749Z info: downloading https://releases.lean-lang.org/lean4/v4.30.0/lean-4.30.0-linux.tar.zst
+2026-10-05T04:43:05.9555027Z info: installing /home/runner/.elan/toolchains/leanprover--lean4---v4.30.0
+2026-10-05T04:43:12.2159779Z Lean (version 4.30.0, x86_64-unknown-linux-gnu, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)
+2026-10-05T04:43:12.2577953Z Lake version 5.0.0-src+d024af0 (Lean version 4.30.0)
+2026-10-05T04:43:12.2613921Z ##[endgroup]
+2026-10-05T04:43:12.2615677Z 
+2026-10-05T04:43:12.2643965Z ##[end-action id=__leanprover_lean-action.__run;outcome=success;conclusion=success;duration_ms=9788]
+2026-10-05T04:43:12.2655905Z ##[start-action display=configure `lean-action`;id=__leanprover_lean-action.config]
+2026-10-05T04:43:12.3081513Z ##[group]Run : Configure Lean Action
+2026-10-05T04:43:12.3081937Z [36;1m: Configure Lean Action[0m
+2026-10-05T04:43:12.3082319Z [36;1m${GITHUB_ACTION_PATH}/scripts/config.sh[0m
+2026-10-05T04:43:12.3151615Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-05T04:43:12.3152004Z env:
+2026-10-05T04:43:12.3152222Z   AUTO_CONFIG: false
+2026-10-05T04:43:12.3152488Z   BUILD: true
+2026-10-05T04:43:12.3152718Z   TEST: default
+2026-10-05T04:43:12.3152931Z   LINT: default
+2026-10-05T04:43:12.3153390Z ##[endgroup]
+2026-10-05T04:43:12.3261759Z ##[group]Configure lean-action
+2026-10-05T04:43:12.3286691Z build: true -> will run lake build
+2026-10-05T04:43:12.3316259Z ##[end-action id=__leanprover_lean-action.config;outcome=success;conclusion=success;duration_ms=65]
+2026-10-05T04:43:12.3321809Z ##[start-action display=reinstall transient toolchain;id=__leanprover_lean-action.__run_2]
+2026-10-05T04:43:12.3342091Z ##[end-action id=__leanprover_lean-action.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:43:12.3345584Z ##[start-action display=ensure all files are imported;id=__leanprover_lean-action.mk_all]
+2026-10-05T04:43:12.3350630Z ##[end-action id=__leanprover_lean-action.mk_all;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:43:12.3352814Z ##[start-action display=Run actions/cache/restore@v5;id=__leanprover_lean-action.__actions_cache]
+2026-10-05T04:43:12.3357292Z ##[end-action id=__leanprover_lean-action.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:43:12.3359730Z ##[start-action display=detect mathlib;id=__leanprover_lean-action.detect-mathlib]
+2026-10-05T04:43:12.3363870Z ##[end-action id=__leanprover_lean-action.detect-mathlib;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:43:12.3365944Z ##[start-action display=get mathlib cache;id=__leanprover_lean-action.__run_3]
+2026-10-05T04:43:12.3388208Z ##[end-action id=__leanprover_lean-action.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:43:12.3415859Z ##[start-action display=build MGYamada/Qleisli;id=__leanprover_lean-action.build]
+2026-10-05T04:43:12.3497707Z ##[group]Run : Lake Build
+2026-10-05T04:43:12.3497994Z [36;1m: Lake Build[0m
+2026-10-05T04:43:12.3498265Z [36;1m${GITHUB_ACTION_PATH}/scripts/lake_build.sh[0m
+2026-10-05T04:43:12.3564027Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-05T04:43:12.3564411Z env:
+2026-10-05T04:43:12.3564621Z   BUILD_ARGS: 
+2026-10-05T04:43:12.3564859Z ##[endgroup]
+2026-10-05T04:43:12.3677284Z ##[group]Lake Build Output
+2026-10-05T04:43:13.2135080Z ✔ [2/215] Built QleisliKernel.Hierarchical.Limits (681ms)
+2026-10-05T04:43:13.5138113Z ✔ [3/215] Built QleisliKernel.Semantics.PhaseWord (1.0s)
+2026-10-05T04:43:14.0168832Z ✔ [4/215] Built QleisliKernel.Semantics.Exact (1.5s)
+2026-10-05T04:43:14.0198029Z ✔ [5/215] Built QleisliKernel.Semantics.Readout (823ms)
+2026-10-05T04:43:14.2169239Z ✔ [6/215] Built QleisliKernel.Semantics.Preparation (693ms)
+2026-10-05T04:43:14.3168725Z ✔ [7/215] Built Protocol.Product (373ms)
+2026-10-05T04:43:14.3169871Z ✔ [8/215] Built QleisliKernel.Hierarchical.Limits:c.o (96ms)
+2026-10-05T04:43:14.6168808Z ✔ [9/215] Built QleisliKernel.Semantics.Readout:c.o (288ms)
+2026-10-05T04:43:14.8159050Z ✔ [10/215] Built QleisliKernel.Semantics.PhaseWord:c.o (489ms)
+2026-10-05T04:43:14.9164359Z ✔ [11/215] Built QleisliKernel.Layout (2.4s)
+2026-10-05T04:43:14.9218761Z ✔ [12/215] Built QleisliKernel.Semantics.Preparation:c.o (140ms)
+2026-10-05T04:43:15.0188797Z ✔ [13/215] Built Protocol.Product:c.o (166ms)
+2026-10-05T04:43:15.3178448Z ✔ [14/215] Built QleisliKernel.Semantics.Exact:c.o (681ms)
+2026-10-05T04:43:15.8208786Z ✔ [15/215] Built QleisliKernel.PhaseWord (912ms)
+2026-10-05T04:43:16.2244579Z ✔ [16/215] Built QleisliKernel.Hierarchical.Graph (2.2s)
+2026-10-05T04:43:16.7218781Z ✔ [17/215] Built QleisliKernel.PhaseWord:c.o (501ms)
+2026-10-05T04:43:17.3204237Z ✔ [18/215] Built QleisliKernel.Layout:c.o (1.4s)
+2026-10-05T04:43:17.4220894Z ✔ [19/215] Built QleisliKernel.Exact (2.3s)
+2026-10-05T04:43:17.6288396Z ✔ [20/215] Built QleisliKernel.Hierarchical.Graph:c.o (969ms)
+2026-10-05T04:43:18.7344378Z ✔ [21/215] Built QleisliKernel.PhasePolynomial (1.3s)
+2026-10-05T04:43:18.9318584Z ✔ [22/215] Built QleisliKernel.Composition (1.3s)
+2026-10-05T04:43:19.0338718Z ✔ [23/215] Built QleisliKernel.Semantics.Finite (3.7s)
+2026-10-05T04:43:19.5372969Z ✔ [24/215] Built QleisliKernel.LayoutDag (2.3s)
+2026-10-05T04:43:19.5388021Z ✔ [25/215] Built QleisliKernel.PhasePolynomial:c.o (476ms)
+2026-10-05T04:43:19.7393247Z ✔ [26/215] Built QleisliKernel.Composition:c.o (237ms)
+2026-10-05T04:43:20.8448572Z ✔ [27/215] Built QleisliKernel.Exact:c.o (1.9s)
+2026-10-05T04:43:21.3448638Z ✔ [28/215] Built QleisliKernel.ExactCapacity (1.6s)
+2026-10-05T04:43:21.7468605Z ✔ [29/215] Built QleisliKernel.Semantics.Finite:c.o (2.2s)
+2026-10-05T04:43:22.1468376Z ✔ [30/215] Built QleisliKernel.PhasePolynomial.Operations (820ms)
+2026-10-05T04:43:23.4508611Z ✔ [31/215] Built QleisliKernel.LayoutDag:c.o (1.7s)
+2026-10-05T04:43:23.5524936Z ✔ [32/215] Built QleisliKernel.Dag (1.5s)
+2026-10-05T04:43:23.9519779Z ✔ [33/215] Built QleisliKernel.ExactMatrix (3.0s)
+2026-10-05T04:43:24.5593252Z ✔ [34/215] Built QleisliKernel.Dag:c.o (653ms)
+2026-10-05T04:43:24.7557649Z ✔ [35/215] Built QleisliKernel.ExactMatrix:c.o (172ms)
+2026-10-05T04:43:25.1588497Z ✔ [36/215] Built QleisliKernel.Hierarchical.Artifact (6.5s)
+2026-10-05T04:43:25.5615740Z ✔ [37/215] Built QleisliKernel.PhaseLayout (1.9s)
+2026-10-05T04:43:26.5638550Z ✔ [38/215] Built QleisliKernel.Hierarchy (1.8s)
+2026-10-05T04:43:28.0690771Z ✔ [39/215] Built QleisliKernel.PhaseLayout:c.o (1.5s)
+2026-10-05T04:43:28.7719115Z ✔ [40/215] Built QleisliKernel.Finite (3.6s)
+2026-10-05T04:43:29.2788930Z ✔ [41/215] Built QleisliKernel.Hierarchy:c.o (1.2s)
+2026-10-05T04:43:30.0808349Z ✔ [42/215] Built QleisliKernel.Reshape (1.3s)
+2026-10-05T04:43:30.2800574Z ✔ [43/215] Built QleisliKernel.Hierarchical.Artifact:c.o (4.8s)
+2026-10-05T04:43:30.5798539Z ✔ [44/215] Built QleisliKernel.Hierarchical.Ports (1.2s)
+2026-10-05T04:43:31.1818418Z ✔ [45/215] Built QleisliKernel.Interference (1.2s)
+2026-10-05T04:43:31.6818514Z ✔ [46/215] Built QleisliKernel.Hierarchical.Ports:c.o (479ms)
+2026-10-05T04:43:31.8848308Z ✔ [47/215] Built Protocol.Core (1.3s)
+2026-10-05T04:43:32.4865196Z ✔ [48/215] Built QleisliKernel.Hierarchical.FiniteBinding (682ms)
+2026-10-05T04:43:32.8886488Z ✔ [49/215] Built QleisliKernel.Interference:c.o (326ms)
+2026-10-05T04:43:33.0938484Z ✔ [50/215] Built QleisliKernel.Semantics.Raw (9.6s)
+2026-10-05T04:43:33.1928205Z ✔ [51/215] Built QleisliKernel.Finite:c.o (2.9s)
+2026-10-05T04:43:33.3939324Z ✔ [52/215] Built QleisliKernel.Hierarchical.FiniteBinding:c.o (170ms)
+2026-10-05T04:43:33.8940379Z ✔ [53/215] Built Protocol.FiniteCodec (2.2s)
+2026-10-05T04:43:33.9944173Z ✔ [54/215] Built QleisliKernel.Hierarchical.Structural (1.2s)
+2026-10-05T04:43:34.0978572Z ✔ [55/215] Built Protocol.Core:c.o (1.1s)
+2026-10-05T04:43:34.3977363Z ✔ [56/215] Built QleisliKernel.ControlledPowers (1.1s)
+2026-10-05T04:43:34.9058958Z ✔ [57/215] Built QleisliKernel.PathSum (1.1s)
+2026-10-05T04:43:35.4048522Z ✔ [58/215] Built QleisliKernel.Hierarchical.Structural:c.o (535ms)
+2026-10-05T04:43:35.6050780Z ✔ [59/215] Built Protocol.Layout (1.5s)
+2026-10-05T04:43:36.0081231Z ✔ [60/215] Built QleisliKernel.ControlledPowers:c.o (363ms)
+2026-10-05T04:43:36.3103897Z ✔ [61/215] Built QleisliKernel.PathSum:c.o (391ms)
+2026-10-05T04:43:37.0168627Z ✔ [62/215] Built QleisliKernel.Semantics.RawTrace (1.6s)
+2026-10-05T04:43:37.5158762Z ✔ [63/215] Built Protocol.FiniteCodec:c.o (3.0s)
+2026-10-05T04:43:38.5198726Z ✔ [64/215] Built QleisliKernel.Uniform (1.1s)
+2026-10-05T04:43:38.5217947Z ✔ [65/215] Built QleisliKernel.Semantics.Raw:c.o (4.5s)
+2026-10-05T04:43:38.5237729Z ✔ [66/215] Built Protocol.Layout:c.o (1.5s)
+2026-10-05T04:43:38.7248419Z ✔ [67/215] Built QleisliKernel.Uniform:c.o (143ms)
+2026-10-05T04:43:39.2248590Z ✔ [68/215] Built QleisliKernel.Hierarchical.NodeTyping (2.8s)
+2026-10-05T04:43:39.9278959Z ✔ [69/215] Built QleisliKernel.Semantics.RawTrace:c.o (1.4s)
+2026-10-05T04:43:40.7279593Z ✔ [70/215] Built QleisliKernel.Semantics.Protected (756ms)
+2026-10-05T04:43:41.0285347Z ✔ [71/215] Built QleisliKernel.Raw.Structure (2.3s)
+2026-10-05T04:43:41.1288372Z ✔ [72/215] Built QleisliKernel.Semantics.Observation (1.9s)
+2026-10-05T04:43:41.3308977Z ✔ [73/215] Built QleisliKernel.Semantics.Protected:c.o (315ms)
+2026-10-05T04:43:42.5328574Z ✔ [74/215] Built QleisliKernel.Hierarchical.NodeTyping:c.o (1.8s)
+2026-10-05T04:43:42.7330612Z ✔ [75/215] Built QleisliKernel.Hierarchical.Preparation (1.4s)
+2026-10-05T04:43:43.7358264Z ✔ [76/215] Built QleisliKernel.Raw.Structure:c.o (2.7s)
+2026-10-05T04:43:44.2368391Z ✔ [77/215] Built QleisliKernel.Hierarchical.Readout (1.7s)
+2026-10-05T04:43:44.6378586Z ✔ [78/215] Built QleisliKernel.Hierarchical.CallLowering (1.9s)
+2026-10-05T04:43:45.4423522Z ✔ [79/215] Built QleisliKernel.Semantics.Observation:c.o (1.1s)
+2026-10-05T04:43:46.0410473Z ✔ [80/215] Built QleisliKernel.Semantics.Function (1.4s)
+2026-10-05T04:43:46.1448442Z ✔ [81/215] Built QleisliKernel.Raw.Protected (734ms)
+2026-10-05T04:43:46.7518650Z ✔ [82/215] Built QleisliKernel.Hierarchical.Preparation:c.o (572ms)
+2026-10-05T04:43:48.0558280Z ✔ [83/215] Built QleisliKernel.Hierarchical.Readout:c.o (1.3s)
+2026-10-05T04:43:48.1568490Z ✔ [84/215] Built QleisliKernel.Raw.Trace (2.1s)
+2026-10-05T04:43:48.5558656Z ✔ [85/215] Built QleisliKernel.Hierarchical.ContractTyping (4.8s)
+2026-10-05T04:43:49.3564761Z ✔ [86/215] Built QleisliKernel.Semantics.Ownership (1.1s)
+2026-10-05T04:43:49.3588032Z ✔ [87/215] Built QleisliKernel.Semantics.ClassicalScope (1.3s)
+2026-10-05T04:43:49.4571985Z ✔ [88/215] Built QleisliKernel.Raw.Protected:c.o (103ms)
+2026-10-05T04:43:49.8598361Z ✔ [89/215] Built QleisliKernel.Semantics.Function:c.o (508ms)
+2026-10-05T04:43:49.9598463Z ✔ [90/215] Built QleisliKernel.ObservationBinding (1.5s)
+2026-10-05T04:43:49.9628239Z ✔ [91/215] Built QleisliKernel.Raw.Trace:c.o (556ms)
+2026-10-05T04:43:50.3613211Z ✔ [92/215] Built QleisliKernel.Semantics.Ownership:c.o (349ms)
+2026-10-05T04:43:50.7628490Z ✔ [93/215] Built QleisliKernel.Semantics.ObservingFunction (736ms)
+2026-10-05T04:43:51.5730177Z ✔ [94/215] Built QleisliKernel.Hierarchical.ContractTyping:c.o (1.8s)
+2026-10-05T04:43:51.6718305Z ✔ [95/215] Built QleisliKernel.ObservationBinding:c.o (905ms)
+2026-10-05T04:43:52.6758326Z ✔ [96/215] Built QleisliKernel.Raw.Finite (2.3s)
+2026-10-05T04:43:52.8788674Z ✔ [97/215] Built QleisliKernel.Semantics.OwnershipLaws (1.2s)
+2026-10-05T04:43:52.8848391Z ✔ [98/215] Built QleisliKernel.Semantics.ObservingFunction:c.o (165ms)
+2026-10-05T04:43:53.6788277Z ✔ [99/215] Built QleisliKernel.Semantics.Qirf (815ms)
+2026-10-05T04:43:54.3801093Z ✔ [100/215] Built QleisliKernel.Raw.Finite:c.o (1.5s)
+2026-10-05T04:43:55.3805304Z ✔ [101/215] Built QleisliKernel.Raw.ProtectedEvaluation (996ms)
+2026-10-05T04:43:55.3847905Z ✔ [102/215] Built Protocol.Raw (1.8s)
+2026-10-05T04:43:55.4818780Z ✔ [103/215] Built QleisliKernel.Semantics.Qirf:c.o (161ms)
+2026-10-05T04:43:56.1830849Z ✔ [104/215] Built QleisliKernel.Raw.ProtectedEvaluation:c.o (814ms)
+2026-10-05T04:43:57.8902585Z ✔ [105/215] Built QleisliKernel.Raw.Ownership (6.3s)
+2026-10-05T04:43:57.9904261Z ✔ [106/215] Built Protocol.Raw:c.o (2.4s)
+2026-10-05T04:43:58.0918393Z ✔ [107/215] Built QleisliKernel.Raw.Function (1.9s)
+2026-10-05T04:43:58.4908755Z ✔ [108/215] Built QleisliKernel.Raw.Ownership:c.o (486ms)
+2026-10-05T04:43:58.6958287Z ✔ [109/215] Built QleisliKernel.Raw.Coefficient (806ms)
+2026-10-05T04:43:59.0958174Z ✔ [110/215] Built QleisliKernel.Raw.Function:c.o (972ms)
+2026-10-05T04:43:59.0959384Z ✔ [111/215] Built QleisliKernel.Raw.Coefficient:c.o (425ms)
+2026-10-05T04:43:59.2960185Z ✔ [112/215] Built QleisliKernel.Raw.Pure (809ms)
+2026-10-05T04:43:59.4963597Z ✔ [113/215] Built QleisliKernel.Raw.Pure:c.o (268ms)
+2026-10-05T04:44:00.6018353Z ✔ [114/215] Built QleisliKernel.Raw.Observation (1.3s)
+2026-10-05T04:44:01.6028507Z ✔ [115/215] Built QleisliKernel.Raw.ObservationScope (1.0s)
+2026-10-05T04:44:02.1051448Z ✔ [116/215] Built QleisliKernel.Raw.ObservationOwnership (1.5s)
+2026-10-05T04:44:02.3054696Z ✔ [117/215] Built QleisliKernel.Raw.Observation:c.o (1.7s)
+2026-10-05T04:44:02.4056521Z ✔ [118/215] Built QleisliKernel.Raw.ObservationOwnership:c.o (330ms)
+2026-10-05T04:44:02.8068898Z ✔ [119/215] Built QleisliKernel.Raw.Instrument (1.2s)
+2026-10-05T04:44:03.8108237Z ✔ [120/215] Built Protocol.Observation (980ms)
+2026-10-05T04:44:04.2092659Z ✔ [121/215] Built QleisliKernel.Raw.Instrument:c.o (1.3s)
+2026-10-05T04:44:04.6098558Z ✔ [122/215] Built QleisliKernel.Raw.BranchFunction (1.8s)
+2026-10-05T04:44:04.8110186Z ✔ [123/215] Built Protocol.Observation:c.o (1.0s)
+2026-10-05T04:44:05.3108243Z ✔ [124/215] Built Protocol.BranchFunction (726ms)
+2026-10-05T04:44:05.8118227Z ✔ [125/215] Built QleisliKernel.Raw.StreamedInstrument (1.0s)
+2026-10-05T04:44:05.9120554Z ✔ [126/215] Built QleisliKernel.Raw.BranchFunction:c.o (1.2s)
+2026-10-05T04:44:06.3161690Z ✔ [127/215] Built Protocol.BranchFunction:c.o (452ms)
+2026-10-05T04:44:06.6198640Z ✔ [128/215] Built QleisliKernel.Raw.StreamedInstrument:c.o (749ms)
+2026-10-05T04:44:07.3225781Z ✔ [129/215] Built Protocol.StreamedObservation (988ms)
+2026-10-05T04:44:07.6229990Z ✔ [130/215] Built Protocol.StreamedObservation:c.o (299ms)
+2026-10-05T04:44:11.3290382Z ✔ [131/215] Built QleisliKernel.Qirf (5.0s)
+2026-10-05T04:44:12.2327530Z ✔ [132/215] Built QleisliKernel.Qirf.Checked (942ms)
+2026-10-05T04:44:12.6338708Z ✔ [133/215] Built Protocol.Qirf (1.3s)
+2026-10-05T04:44:12.8338287Z ✔ [134/215] Built QleisliKernel.Qirf:c.o (1.5s)
+2026-10-05T04:44:12.9336347Z ✔ [135/215] Built QleisliKernel.Qirf.Checked:c.o (636ms)
+2026-10-05T04:44:13.8368949Z ✔ [136/215] Built Protocol.Qirf:c.o (1.2s)
+2026-10-05T04:44:14.5418461Z ✔ [137/215] Built QleisliKernel.Qirf.Validity (1.7s)
+2026-10-05T04:44:14.7380728Z ✔ [138/215] Built QleisliKernel.Qirf.Validity:c.o (166ms)
+2026-10-05T04:44:15.0418296Z ✔ [139/215] Built QleisliKernel.Qirf.Ownership (455ms)
+2026-10-05T04:44:15.1408449Z ✔ [140/215] Built QleisliKernel.Qirf.Ownership:c.o (92ms)
+2026-10-05T04:44:15.3410008Z ✔ [141/215] Built QleisliKernel.Qirf.Contract (763ms)
+2026-10-05T04:44:15.5436211Z ✔ [142/215] Built QleisliKernel.Qirf.Contract:c.o (193ms)
+2026-10-05T04:44:15.9428616Z ✔ [143/215] Built Protocol.Validity (942ms)
+2026-10-05T04:44:16.5442343Z ✔ [144/215] Built Protocol.Validity:c.o (576ms)
+2026-10-05T04:44:17.0442434Z ✔ [145/215] Built Protocol.NativeContract (1.1s)
+2026-10-05T04:44:17.5450292Z ✔ [146/215] Built Protocol.NativeContract:c.o (491ms)
+2026-10-05T04:44:24.9526795Z ✔ [147/215] Built QleisliKernel.Qft (46s)
+2026-10-05T04:44:25.4534640Z ✔ [148/215] Built QleisliKernel.Qft:c.o (498ms)
+2026-10-05T04:44:26.1534742Z ✔ [149/215] Built QleisliKernel.QftGraph (1.2s)
+2026-10-05T04:44:27.0547216Z ✔ [150/215] Built QleisliKernel.QftGraph:c.o (927ms)
+2026-10-05T04:44:27.2549364Z ✔ [151/215] Built QleisliKernel.Qpe (1.1s)
+2026-10-05T04:44:27.9594125Z ✔ [152/215] Built QleisliKernel.Schema (699ms)
+2026-10-05T04:44:27.9595292Z ✔ [153/215] Built QleisliKernel.Qpe:c.o (710ms)
+2026-10-05T04:44:28.2598996Z ✔ [154/215] Built QleisliKernel.Schema:c.o (338ms)
+2026-10-05T04:44:44.4815002Z ✔ [155/215] Built QleisliKernel.Hierarchical.Power (16s)
+2026-10-05T04:44:44.9832142Z ✔ [156/215] Built QleisliKernel.Hierarchical.Power:c.o (524ms)
+2026-10-05T04:44:45.4868329Z ✔ [157/215] Built QleisliKernel.Hierarchical.Rule (1.0s)
+2026-10-05T04:44:46.0860550Z ✔ [158/215] Built QleisliKernel.Hierarchical.Rule:c.o (637ms)
+2026-10-05T04:44:46.7869349Z ✔ [159/215] Built QleisliKernel.Hierarchical.Derivation (1.3s)
+2026-10-05T04:44:47.1875517Z ✔ [160/215] Built QleisliKernel.Hierarchical.Derivation:c.o (372ms)
+2026-10-05T04:44:48.0886381Z ✔ [161/215] Built QleisliKernel.Hierarchical.Finite (2.6s)
+2026-10-05T04:44:48.7918383Z ✔ [162/215] Built QleisliKernel.Hierarchical.TypedRule (771ms)
+2026-10-05T04:44:48.7919604Z ✔ [163/215] Built QleisliKernel.Hierarchical.Finite:c.o (680ms)
+2026-10-05T04:44:48.9921413Z ✔ [164/215] Built QleisliKernel.Hierarchical.TypedRule:c.o (199ms)
+2026-10-05T04:44:50.2969355Z ✔ [165/215] Built QleisliKernel.Hierarchical.Conditional (1.4s)
+2026-10-05T04:44:50.8967435Z ✔ [166/215] Built QleisliKernel.Hierarchical.Conditional:c.o (665ms)
+2026-10-05T04:44:51.5988411Z ✔ [167/215] Built QleisliKernel.Hierarchical.Gradient (2.8s)
+2026-10-05T04:44:52.2038595Z ✔ [168/215] Built QleisliKernel.Hierarchical.Root (1.9s)
+2026-10-05T04:44:52.6051318Z ✔ [169/215] Built QleisliKernel.Hierarchical.Gradient:c.o (990ms)
+2026-10-05T04:44:53.1058192Z ✔ [170/215] Built QleisliKernel.Hierarchical.Wiring (1.5s)
+2026-10-05T04:44:53.8088250Z ✔ [171/215] Built QleisliKernel.Hierarchical.Root:c.o (1.2s)
+2026-10-05T04:44:53.9098476Z ✔ [172/215] Built QleisliKernel.Hierarchical.Wiring:c.o (775ms)
+2026-10-05T04:44:54.5108394Z ✔ [173/215] Built QleisliKernel.Hierarchical.FourierControl (2.9s)
+2026-10-05T04:44:55.2138667Z ✔ [174/215] Built QleisliKernel.Hierarchical.Instrument (1.4s)
+2026-10-05T04:44:55.9188455Z ✔ [175/215] Built QleisliKernel.Hierarchical.FourierControl:c.o (686ms)
+2026-10-05T04:44:56.1184344Z ✔ [176/215] Built QleisliKernel.Hierarchical.CircuitTrace (2.3s)
+2026-10-05T04:44:56.3187518Z ✔ [177/215] Built QleisliKernel.Hierarchical.Instrument:c.o (481ms)
+2026-10-05T04:44:57.2233722Z ✔ [178/215] Built QleisliKernel.Hierarchical.CircuitTrace:c.o (1.0s)
+2026-10-05T04:44:57.4248969Z ✔ [179/215] Built QleisliKernel.Hierarchical.FourierStage (5.2s)
+2026-10-05T04:44:58.2298526Z ✔ [180/215] Built QleisliKernel.Hierarchical.FourierStage:c.o (828ms)
+2026-10-05T04:44:59.4289866Z ✔ [181/215] Built QleisliKernel.Hierarchical.Hadamard (2.0s)
+2026-10-05T04:44:59.8298826Z ✔ [182/215] Built QleisliKernel.Hierarchical.Hadamard:c.o (392ms)
+2026-10-05T04:45:00.1329592Z ✔ [183/215] Built QleisliKernel.Hierarchical.FourierBase (2.7s)
+2026-10-05T04:45:00.3310943Z ✔ [184/215] Built QleisliKernel.Hierarchical.FourierBase:c.o (189ms)
+2026-10-05T04:45:00.5313435Z ✔ [185/215] Built QleisliKernel.Hierarchical.RoutedPower (6.1s)
+2026-10-05T04:45:00.9338968Z ✔ [186/215] Built QleisliKernel.Hierarchical.FourierBody (790ms)
+2026-10-05T04:45:00.9358440Z ✔ [187/215] Built QleisliKernel.Hierarchical.RoutedPower:c.o (409ms)
+2026-10-05T04:45:01.2336737Z ✔ [188/215] Built QleisliKernel.Hierarchical.FourierBody:c.o (293ms)
+2026-10-05T04:45:02.0335641Z ✔ [189/215] Built QleisliKernel.Hierarchical.FourierRoot (1.1s)
+2026-10-05T04:45:02.5361478Z ✔ [190/215] Built QleisliKernel.Hierarchical.FourierRoot:c.o (446ms)
+2026-10-05T04:45:04.1398683Z ✔ [191/215] Built QleisliKernel.Hierarchical.QpeSchedule (2.1s)
+2026-10-05T04:45:05.0393703Z ✔ [192/215] Built QleisliKernel.Hierarchical.QpeSchedule:c.o (909ms)
+2026-10-05T04:45:06.1408000Z ✔ [193/215] Built QleisliKernel.Hierarchical.QpeRoot (2.0s)
+2026-10-05T04:45:06.4401581Z ✔ [194/215] Built QleisliKernel.Hierarchical.QpeRoot:c.o (302ms)
+2026-10-05T04:45:07.4419318Z ✔ [195/215] Built QleisliKernel.Hierarchical.QpeInstrument (1.2s)
+2026-10-05T04:45:07.8448528Z ✔ [196/215] Built QleisliKernel (491ms)
+2026-10-05T04:45:07.9431383Z ✔ [197/215] Built QleisliKernel.Hierarchical.QpeInstrument:c.o (542ms)
+2026-10-05T04:45:09.0452793Z ✔ [198/215] Built Protocol.Hierarchical (1.6s)
+2026-10-05T04:45:09.5548526Z ✔ [199/215] Built Protocol (529ms)
+2026-10-05T04:45:09.6528398Z ✔ [200/215] Built Protocol:c.o (109ms)
+2026-10-05T04:45:10.4509656Z ✔ [201/215] Built Cli.Common (862ms)
+2026-10-05T04:45:10.9505079Z ✔ [202/215] Built Cli.Common:c.o (572ms)
+2026-10-05T04:45:11.5538439Z ✔ [203/215] Built Protocol.HierarchicalFinite (2.5s)
+2026-10-05T04:45:11.6520718Z ✔ [204/215] Built Cli.Finite (1.3s)
+2026-10-05T04:45:11.7518419Z ✔ [205/215] Built Cli.Validity (776ms)
+2026-10-05T04:45:12.0538306Z ✔ [206/215] Built Protocol.HierarchicalFinite:c.o (533ms)
+2026-10-05T04:45:12.2516182Z ✔ [207/215] Built Cli.Finite:c.o (559ms)
+2026-10-05T04:45:12.2518855Z ✔ [208/215] Built Cli.Validity:c.o (213ms)
+2026-10-05T04:45:12.7536034Z ✔ [209/215] Built Cli.Hierarchical (989ms)
+2026-10-05T04:45:12.8537741Z ✔ [211/215] Built Protocol.Hierarchical:c.o (3.9s)
+2026-10-05T04:45:13.2534951Z ✔ [212/215] Built Main (503ms)
+2026-10-05T04:45:13.3536395Z ✔ [213/215] Built Main:c.o (144ms)
+2026-10-05T04:45:13.4538052Z ✔ [214/215] Built Cli.Hierarchical:c.o (682ms)
+2026-10-05T04:45:14.1571358Z ✔ [215/215] Built «qleisli-kernel»:exe (688ms)
+2026-10-05T04:45:14.1587436Z Build completed successfully (215 jobs).
+2026-10-05T04:45:14.1634654Z ##[endgroup]
+2026-10-05T04:45:14.1635105Z 
+2026-10-05T04:45:14.1645709Z ##[end-action id=__leanprover_lean-action.build;outcome=success;conclusion=success;duration_ms=121822]
+2026-10-05T04:45:14.1649706Z ##[start-action display=Run actions/cache/save@v5;id=__leanprover_lean-action.__actions_cache_2]
+2026-10-05T04:45:14.1655072Z ##[end-action id=__leanprover_lean-action.__actions_cache_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1659752Z ##[start-action display=test MGYamada/Qleisli;id=__leanprover_lean-action.test]
+2026-10-05T04:45:14.1664006Z ##[end-action id=__leanprover_lean-action.test;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1667218Z ##[start-action display=lint MGYamada/Qleisli;id=__leanprover_lean-action.lint]
+2026-10-05T04:45:14.1671559Z ##[end-action id=__leanprover_lean-action.lint;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1673366Z ##[start-action display=check reservoir eligibility;id=__leanprover_lean-action.__run_4]
+2026-10-05T04:45:14.1676655Z ##[end-action id=__leanprover_lean-action.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1680472Z ##[start-action display=check environment with leanchecker;id=__leanprover_lean-action.__run_5]
+2026-10-05T04:45:14.1685088Z ##[end-action id=__leanprover_lean-action.__run_5;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1688008Z ##[start-action display=check environment with nanoda;id=__leanprover_lean-action.nanoda]
+2026-10-05T04:45:14.1691428Z ##[end-action id=__leanprover_lean-action.nanoda;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1693886Z ##[start-action display=audit axioms with axiom-audit;id=__leanprover_lean-action.axiom-audit]
+2026-10-05T04:45:14.1697447Z ##[end-action id=__leanprover_lean-action.axiom-audit;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-05T04:45:14.1756273Z ##[group]Run (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+2026-10-05T04:45:14.1757119Z [36;1m(cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)[0m
+2026-10-05T04:45:14.1757790Z [36;1mecho "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"[0m
+2026-10-05T04:45:14.1821648Z shell: /usr/bin/bash -e {0}
+2026-10-05T04:45:14.1821909Z ##[endgroup]
+2026-10-05T04:45:17.8799537Z Audited 11578 kernel/transport declarations, 1124 pure import modules and 1137 executable import modules; axioms used: [propext,
+2026-10-05T04:45:17.8800469Z  Classical.choice,
+2026-10-05T04:45:17.8800734Z  Quot.sound]
+2026-10-05T04:45:17.9955179Z ##[group]Run actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+2026-10-05T04:45:17.9955581Z with:
+2026-10-05T04:45:17.9955851Z   path: ~/.cargo/registry/index
+~/.cargo/registry/cache
+
+2026-10-05T04:45:17.9956473Z   key: cargo-archives-v1-Linux-X64-1.85.0-8421ca58ef2668232dd5866b4917141afcb4812f744471396fdd2dbe819d7ffd
+2026-10-05T04:45:17.9957584Z   enableCrossOsArchive: false
+2026-10-05T04:45:17.9957853Z   fail-on-cache-miss: false
+2026-10-05T04:45:17.9958097Z   lookup-only: false
+2026-10-05T04:45:17.9958313Z   save-always: false
+2026-10-05T04:45:17.9958523Z env:
+2026-10-05T04:45:17.9958911Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-05T04:45:17.9959407Z ##[endgroup]
+2026-10-05T04:45:18.1101467Z (node:3699) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-05T04:45:18.1102562Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-05T04:45:18.1699680Z Cache hit for: cargo-archives-v1-Linux-X64-1.85.0-8421ca58ef2668232dd5866b4917141afcb4812f744471396fdd2dbe819d7ffd
+2026-10-05T04:45:18.1806775Z (node:3699) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-05T04:45:18.3187531Z Received 5794036 of 5794036 (100.0%), 49.8 MBs/sec
+2026-10-05T04:45:18.3191237Z Cache Size: ~6 MB (5794036 B)
+2026-10-05T04:45:18.3225269Z [command]/usr/bin/tar -xf /home/runner/work/_temp/c7a092a6-3345-4b42-85a2-374834e6ab29/cache.tzst -P -C /home/runner/work/Qleisli/Qleisli --use-compress-program unzstd
+2026-10-05T04:45:18.3499510Z Cache restored successfully
+2026-10-05T04:45:18.3584480Z Cache restored from key: cargo-archives-v1-Linux-X64-1.85.0-8421ca58ef2668232dd5866b4917141afcb4812f744471396fdd2dbe819d7ffd
+2026-10-05T04:45:18.3719061Z ##[group]Run rustup toolchain install 1.85.0 --profile minimal --component clippy
+2026-10-05T04:45:18.3720202Z [36;1mrustup toolchain install 1.85.0 --profile minimal --component clippy[0m
+2026-10-05T04:45:18.3786259Z shell: /usr/bin/bash -e {0}
+2026-10-05T04:45:18.3786550Z env:
+2026-10-05T04:45:18.3787185Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-05T04:45:18.3787666Z ##[endgroup]
+2026-10-05T04:45:18.4468061Z info: syncing channel updates for 1.85.0-x86_64-unknown-linux-gnu
+2026-10-05T04:45:18.5665653Z info: latest update on 2025-02-20 for version 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-05T04:45:18.5666578Z info: downloading 4 components
+2026-10-05T04:45:25.6223757Z 
+2026-10-05T04:45:25.6302604Z   1.85.0-x86_64-unknown-linux-gnu installed - rustc 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-05T04:45:25.6303302Z 
+2026-10-05T04:45:25.6401280Z ##[group]Run cargo +1.85.0 test --all-targets
+2026-10-05T04:45:25.6401654Z [36;1mcargo +1.85.0 test --all-targets[0m
+2026-10-05T04:45:25.6464214Z shell: /usr/bin/bash -e {0}
+2026-10-05T04:45:25.6464474Z env:
+2026-10-05T04:45:25.6464879Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-05T04:45:25.6465343Z ##[endgroup]
+2026-10-05T04:45:25.9065960Z    Compiling serde_core v1.0.229
+2026-10-05T04:45:25.9067686Z    Compiling serde v1.0.229
+2026-10-05T04:45:25.9068136Z    Compiling hashbrown v0.17.1
+2026-10-05T04:45:25.9068565Z    Compiling equivalent v1.0.2
+2026-10-05T04:45:25.9463475Z    Compiling winnow v0.7.15
+2026-10-05T04:45:26.2038110Z    Compiling rustix v1.1.3
+2026-10-05T04:45:26.5300137Z    Compiling indexmap v2.14.2
+2026-10-05T04:45:26.6197957Z    Compiling bitflags v2.13.2
+2026-10-05T04:45:26.7948627Z    Compiling linux-raw-sys v0.11.0
+2026-10-05T04:45:28.6435553Z    Compiling toml_datetime v0.6.11
+2026-10-05T04:45:28.6448612Z    Compiling serde_spanned v0.6.9
+2026-10-05T04:45:28.7555427Z    Compiling toml_edit v0.22.27
+2026-10-05T04:45:29.9517945Z    Compiling toml v0.8.23
+2026-10-05T04:45:30.3629110Z    Compiling qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-05T04:46:40.0823207Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 14s
+2026-10-05T04:46:40.0967866Z      Running unittests src/lib.rs (target/debug/deps/qleisli-98aaca803d3f648c)
+2026-10-05T04:46:40.0982447Z 
+2026-10-05T04:46:40.0985195Z running 107 tests
+2026-10-05T04:46:40.1010647Z test contract::exact::tests::canonical_dyadics_and_irrational_components_remain_distinct ... ok
+2026-10-05T04:46:40.1052058Z test contract::exact::tests::capacity_errors_never_wrap_or_approximate ... ok
+2026-10-05T04:46:40.1079005Z test contract::exact::tests::denominator_alignment_preserves_sign_at_capacity ... ok
+2026-10-05T04:46:40.1107818Z test contract::exact::tests::dimensions_entries_and_getters_are_bounded ... ok
+2026-10-05T04:46:40.1137740Z test contract::exact::tests::exact_complex_algebra_includes_cross_terms ... ok
+2026-10-05T04:46:40.1139056Z test contract::exact::tests::hadamard_squared_and_phase_sensitive_adjoint ... ok
+2026-10-05T04:46:40.1167640Z test contract::exact::tests::isometry_checks_cross_column_inner_products ... ok
+2026-10-05T04:46:40.1197731Z test contract::exact::tests::shared_budget_cannot_be_reset_by_matrix_composition ... ok
+2026-10-05T04:46:40.1227519Z test contract::exact::tests::tensor_places_first_operand_on_low_bits ... ok
+2026-10-05T04:46:40.1228713Z test contract::exact::tests::all_eighth_root_products_and_conjugates_are_exact ... ok
+2026-10-05T04:46:40.2046424Z test contract::function::snapshot_tests::aggregate_budget_charges_each_fresh_native_decision ... ok
+2026-10-05T04:46:40.2880628Z test contract::function::snapshot_tests::shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification ... ok
+2026-10-05T04:46:40.2901646Z test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+2026-10-05T04:46:40.2937916Z test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+2026-10-05T04:46:40.2949397Z test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+2026-10-05T04:46:40.3258665Z test contract::function::snapshot_tests::shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies ... ok
+2026-10-05T04:46:40.3279873Z test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+2026-10-05T04:46:40.3283089Z test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+2026-10-05T04:46:40.3284582Z test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+2026-10-05T04:46:40.3286617Z test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+2026-10-05T04:46:40.3288450Z test frontend::lexer::common_token_tests::bounded_common_tokens_count_pairs_before_owning_spellings ... ok
+2026-10-05T04:46:40.3290005Z test frontend::lexer::common_token_tests::comment_bound_and_doc_recognition_are_independent_of_tokens ... ok
+2026-10-05T04:46:40.3291631Z test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+2026-10-05T04:46:40.3293106Z test frontend::parser::tests::contextual_natural_syntax_does_not_resolve_an_unbound_name ... ok
+2026-10-05T04:46:40.3312391Z test frontend::parser::tests::contextual_naturals_do_not_unreserve_runtime_global_or_operation_names ... ok
+2026-10-05T04:46:40.3378346Z test frontend::parser::tests::contextual_naturals_are_retained_in_fold_indices_and_bounds ... ok
+2026-10-05T04:46:40.3437862Z test contract::tests::counterexample_diagnostic_preserves_the_shared_work_budget ... ok
+2026-10-05T04:46:40.3568394Z test frontend::parser::tests::contextual_naturals_pass_through_specialization_and_operation_counts ... ok
+2026-10-05T04:46:40.3607440Z test frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans ... ok
+2026-10-05T04:46:40.3611265Z test frontend::parser::tests::contextual_naturals_retain_name_span_type_dimensions_and_constraints ... ok
+2026-10-05T04:46:40.3613115Z test frontend::parser::tests::contextual_naturals_keep_all_comparisons_separate_from_type_angles ... ok
+2026-10-05T04:46:40.3638258Z test frontend::project::source_file::tests::missing_linux_source_is_not_misreported_as_missing_procfs ... ok
+2026-10-05T04:46:40.3656188Z test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+2026-10-05T04:46:40.3678237Z test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+2026-10-05T04:46:40.3680025Z test frontend::resolve::locals::tests::cloned_and_relocated_syntax_keeps_structural_ids_but_rebuilds_lookup ... ok
+2026-10-05T04:46:40.3681599Z test frontend::resolve::locals::tests::constructed_deep_syntax_and_sibling_scopes_do_not_alias_bindings ... ok
+2026-10-05T04:46:40.3683373Z test frontend::resolve::locals::tests::equal_spans_do_not_merge_initializer_and_rebinding_identities ... ok
+2026-10-05T04:46:40.3685193Z test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+2026-10-05T04:46:40.3687101Z test frontend::resolve::locals::tests::static_candidate_does_not_replace_the_runtime_shadow_identity ... ok
+2026-10-05T04:46:40.3689038Z test frontend::resolve::locals::tests::later_static_naturals_and_late_imports_keep_the_same_local_identity ... ok
+2026-10-05T04:46:40.3692385Z test frontend::resolve::tests::all_declarations_have_canonical_collection_local_identities ... ok
+2026-10-05T04:46:40.3694229Z test frontend::resolve::tests::constructed_empty_import_is_a_located_error ... ok
+2026-10-05T04:46:40.3695980Z test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+2026-10-05T04:46:40.3697904Z test frontend::resolve::tests::sealed_identity_does_not_expand_either_primitive_profile ... ok
+2026-10-05T04:46:40.3724558Z test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+2026-10-05T04:46:40.4139615Z test frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules ... ok
+2026-10-05T04:46:40.5058726Z test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+2026-10-05T04:46:40.5098107Z test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+2026-10-05T04:46:40.5398632Z test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+2026-10-05T04:46:40.5688863Z test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+2026-10-05T04:46:40.5928944Z test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+2026-10-05T04:46:40.6025046Z test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+2026-10-05T04:46:40.6043051Z test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+2026-10-05T04:46:40.6221047Z test frontend::sized::lower::preservation::tests::source_trace_charges_idle_zero_width_basis_before_frame_cloning ... ok
+2026-10-05T04:46:40.6251085Z test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+2026-10-05T04:46:40.6308493Z test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+2026-10-05T04:46:40.6330369Z test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+2026-10-05T04:46:40.7779050Z test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+2026-10-05T04:46:40.9814349Z test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order ... ok
+2026-10-05T04:46:41.0528610Z test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_preserves_entangled_caller_frame_through_an_ordinary_call ... ok
+2026-10-05T04:46:41.0578347Z test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+2026-10-05T04:46:41.1463697Z test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_unit_maps ... ok
+2026-10-05T04:46:41.1510852Z test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_product_maps ... ok
+2026-10-05T04:46:41.1536546Z test frontend::types::tests::equal_width_does_not_identify_type_or_owner_trees ... ok
+2026-10-05T04:46:41.1548970Z test frontend::types::tests::linearity_retains_zero_width_owners_inside_mixed_products ... ok
+2026-10-05T04:46:41.1550449Z test frontend::types::tests::size_obligations_keep_order_and_errors_after_a_sibling_mismatch ... ok
+2026-10-05T04:46:41.1551844Z test frontend::types::tests::size_solver_cannot_equate_different_tuple_or_quantum_shapes ... ok
+2026-10-05T04:46:41.1553069Z test host::factoring::tests::minimality_and_work_exhaustion_are_checked ... ok
+2026-10-05T04:46:41.2228406Z test interchange::codec::tests::every_frozen_raw_operation_and_action_preserves_its_fields ... ok
+2026-10-05T04:46:41.2270328Z test interchange::codec::tests::record_wire_fields_and_work_are_stable_and_unknown_fields_are_rejected ... ok
+2026-10-05T04:46:41.2284062Z test interchange::codec::tests::wire_integer_bounds_retain_field_range_and_u32_error_precedence ... ok
+2026-10-05T04:46:41.2339412Z test interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ignored, run scripts/test_verification_decoders.py with the native decoder view
+2026-10-05T04:46:41.2352502Z test interchange::hierarchical::execution::tests::capability_scan_rejects_unsupported_zero_repeat_children_and_classical_inputs ... ok
+2026-10-05T04:46:41.2354163Z test interchange::hierarchical::execution::tests::explicit_limits_dimensions_and_numeric_overflow ... ok
+2026-10-05T04:46:41.2378039Z test interchange::hierarchical::execution::tests::negative_control_retains_a_zero_qubit_leaf_scalar ... ok
+2026-10-05T04:46:41.2379504Z test interchange::hierarchical::execution::tests::pending_metadata_is_bounded_before_wide_sequence_enqueue ... ok
+2026-10-05T04:46:41.2381286Z test interchange::hierarchical::execution::tests::permutation_direction_inverse_and_zero_width ... ok
+2026-10-05T04:46:41.2382688Z test interchange::hierarchical::execution::tests::repeats_spend_actual_work_even_under_inactive_control ... ok
+2026-10-05T04:46:41.2384141Z test interchange::hierarchical::execution::tests::sampling_norm_guard_rejects_zero_nonfinite_and_excessive_drift ... ok
+2026-10-05T04:46:41.2385668Z test interchange::hierarchical::execution::tests::sampling_uses_full_branch_weights_and_never_selects_zero_branches ... ok
+2026-10-05T04:46:41.2387420Z test interchange::hierarchical::execution::tests::sequence_adjoint_retains_complex_phase_and_reference ... ok
+2026-10-05T04:46:41.2388850Z test interchange::hierarchical::execution::tests::tensor_places_left_axes_first_and_control_keeps_global_phase ... ok
+2026-10-05T04:46:41.2390482Z test interchange::hierarchical::runtime::response_diagnostics_tests::capacity_failure_identifies_the_selected_native_check_without_a_work_claim ... ok
+2026-10-05T04:46:41.2392366Z test interchange::hierarchical::runtime::response_diagnostics_tests::every_failure_mode_requires_exact_eof_after_the_final_newline ... ok
+2026-10-05T04:46:41.2394177Z test interchange::hierarchical::runtime::response_diagnostics_tests::framed_obligations_remain_mode_specific_and_reject_malformed_counts ... ok
+2026-10-05T04:46:41.2396140Z test interchange::hierarchical::runtime::response_diagnostics_tests::native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance ... ok
+2026-10-05T04:46:41.2398230Z test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns ... ok
+2026-10-05T04:46:41.2709244Z test interchange::hierarchical::runtime::response_diagnostics_tests::nonzero_runtime_exit_preserves_framing_errors_and_checker_rejections ... ok
+2026-10-05T04:46:41.2718301Z test interchange::native::runtime::tests::replies_bind_request_presence_and_reject_ambiguous_success ... ok
+2026-10-05T04:46:41.3748735Z test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_rejects_native_valid_gate_control_measurement_and_extra_mutations ... ok
+2026-10-05T04:46:41.3750833Z test interchange::tests::display_omits_only_the_absent_pointer ... ok
+2026-10-05T04:46:41.3768740Z test interchange::tests::graph_checks_cycles_dangling_unused_and_every_shared_path ... ok
+2026-10-05T04:46:41.3795728Z test interchange::tests::shared_snapshots_charge_once_and_preserve_order_and_duplicate_checks ... ok
+2026-10-05T04:46:41.3803341Z test interchange::tests::source_and_identity_limits_are_aggregate_and_sources_never_resolve ... ok
+2026-10-05T04:46:41.3971558Z test frontend::sized::raw::tests::raw_source_replay_rejects_native_valid_semantic_and_structural_mutations ... ok
+2026-10-05T04:46:41.3975807Z test interop::profile::tests::gate_columns_match_independent_exact_definitions_including_phase ... ok
+2026-10-05T04:46:41.3977156Z test sim::sampling::tests::norm_allowance_tracks_executed_work_and_remains_bounded ... ok
+2026-10-05T04:46:41.3978626Z test sim::sampling::tests::rejects_nonfinite_zero_and_excessive_norm_error ... ok
+2026-10-05T04:46:41.3999071Z test sim::tests::certified_cleanup_alarm_is_relative_and_preserves_numerical_mass ... ok
+2026-10-05T04:46:41.4013834Z test sim::tests::certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries ... ok
+2026-10-05T04:46:41.5657803Z test interchange::tests::strict_json_bounds_and_unicode_do_not_normalize_identities ... ok
+2026-10-05T04:46:42.0909226Z test sim::tests::certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup ... ok
+2026-10-05T04:46:43.2582314Z test interchange::native::runtime::tests::process_failures_never_fall_back_or_wait_beyond_the_deadline ... ok
+2026-10-05T04:46:45.3292022Z test interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads ... ok
+2026-10-05T04:46:55.3232107Z test sim::tests::physical_raw_auxiliary_execution_agrees_with_extracted_contracts ... ok
+2026-10-05T04:47:41.5658967Z test sim::tests::generated_circuits_match_exact_amplitudes_adjoint_and_control_laws has been running for over 60 seconds
+2026-10-05T04:47:42.0910971Z test sim::tests::legacy_qif_matches_independent_exact_extraction_and_retains_limits has been running for over 60 seconds
+2026-10-05T04:48:01.8951966Z test sim::tests::legacy_qif_matches_independent_exact_extraction_and_retains_limits ... ok
+2026-10-05T04:48:03.2745761Z test sim::tests::generated_circuits_match_exact_amplitudes_adjoint_and_control_laws ... ok
+2026-10-05T04:48:03.2746805Z 
+2026-10-05T04:48:03.2747544Z test result: ok. 104 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 83.18s
+2026-10-05T04:48:03.2748174Z 
+2026-10-05T04:48:03.2759917Z      Running unittests src/bin/qleisli.rs (target/debug/deps/qleisli-86c266645622a1a8)
+2026-10-05T04:48:03.2772907Z 
+2026-10-05T04:48:03.2773092Z running 4 tests
+2026-10-05T04:48:03.2779634Z test json::tests::bundled_and_local_locations_have_portable_identities ... ok
+2026-10-05T04:48:03.2780767Z test json::tests::invalid_probabilities_fail_before_a_success_document_is_written ... ok
+2026-10-05T04:48:03.2782034Z test json::tests::json_escaping_covers_controls_quotes_backslashes_and_unicode ... ok
+2026-10-05T04:48:03.3111197Z test samples::tests::aggregate_failure_does_not_return_earlier_shots ... ok
+2026-10-05T04:48:03.3111568Z 
+2026-10-05T04:48:03.3111821Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+2026-10-05T04:48:03.3112176Z 
+2026-10-05T04:48:03.3116029Z      Running tests/algorithms.rs (target/debug/deps/algorithms-d79adcb0a4ab8b48)
+2026-10-05T04:48:03.3128480Z 
+2026-10-05T04:48:03.3128622Z running 7 tests
+2026-10-05T04:48:05.0367995Z test derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks ... ok
+2026-10-05T04:48:06.3689553Z test bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors ... ok
+2026-10-05T04:48:07.6998512Z test parity_measurement_keeps_coherence_within_each_parity_sector ... ok
+2026-10-05T04:48:07.7338951Z test documented_structured_algorithms_have_their_expected_results ... ok
+2026-10-05T04:48:08.7655944Z test bernstein_vazirani_recovers_every_two_bit_secret ... ok
+2026-10-05T04:48:11.8397524Z test single_bit_flip_recovery_preserves_entanglement_with_a_reference ... ok
+2026-10-05T04:48:23.8228554Z test grover_all_targets_and_iteration_counts_match_amplitude_amplification ... ok
+2026-10-05T04:48:23.8229184Z 
+2026-10-05T04:48:23.8229614Z test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.51s
+2026-10-05T04:48:23.8230217Z 
+2026-10-05T04:48:23.8235622Z      Running tests/authoring_ergonomics.rs (target/debug/deps/authoring_ergonomics-f7a716580bb88f27)
+2026-10-05T04:48:23.8249296Z 
+2026-10-05T04:48:23.8249449Z running 7 tests
+2026-10-05T04:48:23.8259820Z test nary_patterns_types_and_basis_values_preserve_immediate_arity ... ok
+2026-10-05T04:48:23.8338604Z test corpus_dropped_owner_now_points_to_b_not_the_body ... ok
+2026-10-05T04:48:23.9380368Z test flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits ... ok
+2026-10-05T04:48:24.1489197Z test missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliaries ... ok
+2026-10-05T04:48:24.4794119Z test pattern_arity_totality_ownership_and_exact_tree_guards_remain ... ok
+2026-10-05T04:48:24.8611954Z test ordinary_parameter_patterns_execute_with_canonical_ordinary_types ... ok
+2026-10-05T04:48:27.3711121Z test patterned_basis_contracts_and_nary_clients_execute ... ok
+2026-10-05T04:48:27.3711460Z 
+2026-10-05T04:48:27.3711728Z test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.55s
+2026-10-05T04:48:27.3712094Z 
+2026-10-05T04:48:27.3720136Z      Running tests/b019_trusted_boundary.rs (target/debug/deps/b019_trusted_boundary-16d6ba3fc17441f5)
+2026-10-05T04:48:27.3731699Z 
+2026-10-05T04:48:27.3731855Z running 1 test
+2026-10-05T04:48:38.4505059Z test every_two_bit_permutation_retains_phase_under_control_axis_transport_and_adjoint ... ok
+2026-10-05T04:48:38.4505756Z 
+2026-10-05T04:48:38.4506102Z test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.08s
+2026-10-05T04:48:38.4506475Z 
+2026-10-05T04:48:38.4510644Z      Running tests/certified_source.rs (target/debug/deps/certified_source-51de1489fda6a29d)
+2026-10-05T04:48:38.4522079Z 
+2026-10-05T04:48:38.4522257Z running 14 tests
+2026-10-05T04:48:38.8668025Z test exact_basis_shape_and_declared_unitary_effect_are_required ... ok
+2026-10-05T04:48:38.9168160Z test certified_source_checks_step_width_and_recursion_limits ... ok
+2026-10-05T04:48:40.0173229Z test certified_phase_is_visible_against_a_correlated_reference ... ok
+2026-10-05T04:48:40.4678166Z test explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning ... ok
+2026-10-05T04:48:40.7056789Z test certified_functions_support_adjoint_and_coherent_control ... ok
+2026-10-05T04:48:40.9179978Z test predicate_and_logical_names_obey_outer_shadowing ... ok
+2026-10-05T04:48:41.8526053Z test outer_classical_values_are_unavailable_but_closed_classical_branches_are_static ... ok
+2026-10-05T04:48:42.7468405Z test one_logical_client_accepts_two_phase_oracle_implementations ... ok
+2026-10-05T04:48:43.1804784Z test predicate_and_returned_axis_order_participate_in_the_equation ... ok
+2026-10-05T04:48:43.2939416Z test source_body_cannot_capture_or_lose_ownership ... ok
+2026-10-05T04:48:43.3924827Z test phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits ... ok
+2026-10-05T04:48:43.5408318Z test simultaneous_data_auxiliary_flip_preserves_reference_correlations ... ok
+2026-10-05T04:48:44.3306344Z test temporary_binders_do_not_consume_shadowed_outer_owners ... ok
+2026-10-05T04:48:44.7028414Z test zero_width_data_ownership_and_scalar_phase_are_preserved ... ok
+2026-10-05T04:48:44.7028973Z 
+2026-10-05T04:48:44.7029411Z test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.25s
+2026-10-05T04:48:44.7030028Z 
+2026-10-05T04:48:44.7035386Z      Running tests/cli.rs (target/debug/deps/cli-d896b2e3f19e3a4e)
+2026-10-05T04:48:44.7047312Z 
+2026-10-05T04:48:44.7047716Z running 9 tests
+2026-10-05T04:48:44.7130140Z test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+2026-10-05T04:48:44.7252322Z test doc_reports_io_and_comment_errors_without_partial_output ... ok
+2026-10-05T04:48:44.7305770Z test doc_reports_truncated_static_arguments_without_panicking ... ok
+2026-10-05T04:48:47.3228149Z test check_and_run_accept_existing_non_utf8_source_roots ... ok
+2026-10-05T04:48:47.3292140Z test non_utf8_command_reports_usage_without_panicking ... FAILED
+2026-10-05T04:48:47.3365615Z test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+2026-10-05T04:48:47.4429632Z test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+2026-10-05T04:48:47.4752899Z test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+2026-10-05T04:48:48.9614653Z test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+2026-10-05T04:48:48.9615322Z 
+2026-10-05T04:48:48.9615804Z failures:
+2026-10-05T04:48:48.9616025Z 
+2026-10-05T04:48:48.9616342Z ---- non_utf8_command_reports_usage_without_panicking stdout ----
+2026-10-05T04:48:48.9616767Z 
+2026-10-05T04:48:48.9617399Z thread 'non_utf8_command_reports_usage_without_panicking' panicked at tests/cli.rs:158:5:
+2026-10-05T04:48:48.9618093Z assertion `left == right` failed
+2026-10-05T04:48:48.9634519Z   left: "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+2026-10-05T04:48:48.9652806Z  right: "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+2026-10-05T04:48:48.9660788Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-05T04:48:48.9661117Z 
+2026-10-05T04:48:48.9661122Z 
+2026-10-05T04:48:48.9661206Z failures:
+2026-10-05T04:48:48.9661447Z     non_utf8_command_reports_usage_without_panicking
+2026-10-05T04:48:48.9661671Z 
+2026-10-05T04:48:48.9661936Z test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.26s
+2026-10-05T04:48:48.9662295Z 
+2026-10-05T04:48:48.9662436Z error: test failed, to rerun pass `--test cli`
+2026-10-05T04:48:48.9672080Z ##[error]Process completed with exit code 101.
+2026-10-05T04:48:48.9840200Z Post job cleanup.
+2026-10-05T04:48:49.0757918Z [command]/usr/bin/git version
+2026-10-05T04:48:49.0811941Z git version 2.55.0
+2026-10-05T04:48:49.0860176Z Temporarily overriding HOME='/home/runner/work/_temp/3c64ac08-8a3b-422d-b9f1-3aaed368c734' before making global git config changes
+2026-10-05T04:48:49.0861803Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-05T04:48:49.0866485Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Qleisli/Qleisli
+2026-10-05T04:48:49.0911305Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-05T04:48:49.0949241Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-05T04:48:49.1273352Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-05T04:48:49.1304523Z http.https://github.com/.extraheader
+2026-10-05T04:48:49.1316470Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-05T04:48:49.1355072Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-05T04:48:49.1636047Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-05T04:48:49.1718511Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-05T04:48:49.2191337Z Evaluate and set job outputs
+2026-10-05T04:48:49.2197315Z Set output 'dependency-cache'
+2026-10-05T04:48:49.2199257Z Cleaning up orphan processes
+2026-10-05T04:48:49.2519868Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830, actions/checkout@11d5960a326750d5838078e36cf38b85af677262. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

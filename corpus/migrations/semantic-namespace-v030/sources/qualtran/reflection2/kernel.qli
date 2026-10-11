@@ -1,0 +1,15 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/reflections/reflection_using_prepare.py
+// Selected symbol(s): ReflectionUsingPrepare
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::z;
+use std::transform::hadamard2;
+basis fn zero((a, b): (Bit, Bit)) -> Bit { not a and not b }
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let q = hadamard2(q);
+    let q = with_computed(q, zero) { |flag| z(flag) };
+    hadamard2(q)
+}

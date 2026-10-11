@@ -1,0 +1,11 @@
+use bell::entangle;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::split;
+use std::observe::measure_z;
+
+observe fn main() -> (CBit, CBit) {
+    let pair = entangle(h(init0()));
+    let (left, right) = split(pair);
+    (measure_z(left), measure_z(right))
+}

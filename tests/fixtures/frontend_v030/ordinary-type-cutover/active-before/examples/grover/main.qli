@@ -1,0 +1,6 @@
+use search::search_one;
+use std::routines::measure_z2;
+
+observe fn main() -> (CBit, CBit) {
+    measure_z2(search_one())
+}

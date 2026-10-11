@@ -1,0 +1,227 @@
+{
+  "original_output_directory": "/private/tmp/qleisli-common-parser-replay",
+  "retained_streams": {
+    "build.stdout.txt": "replay-build.stdout.txt",
+    "build.stderr.txt": "replay-build.stderr.txt",
+    "observer-build.stdout.txt": "replay-observer-build.stdout.txt",
+    "observer-build.stderr.txt": "replay-observer-build.stderr.txt",
+    "shared.stdout.txt": "shared.after.stdout.txt",
+    "shared.stderr.txt": "shared.after.stderr.txt",
+    "contextual-type-name.stdout.txt": "contextual-type-name.after.stdout.txt",
+    "contextual-type-name.stderr.txt": "contextual-type-name.after.stderr.txt",
+    "reserved-name.stdout.txt": "reserved-name.after.stdout.txt",
+    "reserved-name.stderr.txt": "reserved-name.after.stderr.txt",
+    "misplaced-doc.stdout.txt": "misplaced-doc.after.stdout.txt",
+    "misplaced-doc.stderr.txt": "misplaced-doc.after.stderr.txt",
+    "multi-declaration.stdout.txt": "multi-declaration.after.stdout.txt",
+    "multi-declaration.stderr.txt": "multi-declaration.after.stderr.txt",
+    "static-fold.stdout.txt": "static-fold.after.stdout.txt",
+    "static-fold.stderr.txt": "static-fold.after.stderr.txt",
+    "counted-control.stdout.txt": "counted-control.after.stdout.txt",
+    "counted-control.stderr.txt": "counted-control.after.stderr.txt",
+    "empty-owner.stdout.txt": "empty-owner.after.stdout.txt",
+    "empty-owner.stderr.txt": "empty-owner.after.stderr.txt",
+    "empty-block.stdout.txt": "empty-block.after.stdout.txt",
+    "empty-block.stderr.txt": "empty-block.after.stderr.txt",
+    "runtime-controlled-name.stdout.txt": "runtime-controlled-name.after.stdout.txt",
+    "runtime-controlled-name.stderr.txt": "runtime-controlled-name.after.stderr.txt",
+    "shared-proposal.stdout.txt": "shared.after.proposal.stdout.txt",
+    "shared-proposal.stderr.txt": "shared.after.proposal.stderr.txt",
+    "contextual-type-name-proposal.stdout.txt": "contextual-type-name.after.proposal.stdout.txt",
+    "contextual-type-name-proposal.stderr.txt": "contextual-type-name.after.proposal.stderr.txt",
+    "static-fold-proposal.stdout.txt": "static-fold.after.proposal.stdout.txt",
+    "static-fold-proposal.stderr.txt": "static-fold.after.proposal.stderr.txt",
+    "empty-owner-proposal.stdout.txt": "empty-owner.after.proposal.stdout.txt",
+    "empty-owner-proposal.stderr.txt": "empty-owner.after.proposal.stderr.txt"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "--offline",
+        "--lib",
+        "--bin",
+        "qleisli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "build.stdout.txt",
+      "stderr": "build.stderr.txt"
+    },
+    {
+      "argv": [
+        "rustc",
+        "--edition=2024",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/observe.rs",
+        "--extern",
+        "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+        "-L",
+        "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+        "-o",
+        "/private/tmp/qleisli-common-parser-replay/observe"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "observer-build.stdout.txt",
+      "stderr": "observer-build.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "shared.stdout.txt",
+      "stderr": "shared.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "contextual-type-name.stdout.txt",
+      "stderr": "contextual-type-name.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/reserved-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "reserved-name.stdout.txt",
+      "stderr": "reserved-name.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/misplaced-doc.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "misplaced-doc.stdout.txt",
+      "stderr": "misplaced-doc.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/multi-declaration.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "multi-declaration.stdout.txt",
+      "stderr": "multi-declaration.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "static-fold.stdout.txt",
+      "stderr": "static-fold.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/counted-control.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "counted-control.stdout.txt",
+      "stderr": "counted-control.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "empty-owner.stdout.txt",
+      "stderr": "empty-owner.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-block.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "empty-block.stdout.txt",
+      "stderr": "empty-block.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/runtime-controlled-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "runtime-controlled-name.stdout.txt",
+      "stderr": "runtime-controlled-name.stderr.txt"
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli",
+        "--output=/private/tmp/qleisli-common-parser-replay/shared.proposal.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "shared-proposal.stdout.txt",
+      "stderr": "shared-proposal.stderr.txt"
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli",
+        "--output=/private/tmp/qleisli-common-parser-replay/contextual-type-name.proposal.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "contextual-type-name-proposal.stdout.txt",
+      "stderr": "contextual-type-name-proposal.stderr.txt"
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli",
+        "--nat=n=1",
+        "--output=/private/tmp/qleisli-common-parser-replay/static-fold.proposal.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "static-fold-proposal.stdout.txt",
+      "stderr": "static-fold-proposal.stderr.txt"
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli",
+        "--output=/private/tmp/qleisli-common-parser-replay/empty-owner.proposal.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "empty-owner-proposal.stdout.txt",
+      "stderr": "empty-owner-proposal.stderr.txt"
+    }
+  ]
+}

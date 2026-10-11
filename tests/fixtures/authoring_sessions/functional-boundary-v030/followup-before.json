@@ -1,0 +1,40 @@
+{
+  "format": "qleisli.informed-source-followup",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:47:20.039428+00:00",
+  "status": "fixed-before-followup-cli",
+  "first_capture_sha256": "54ac0968e27c506247d3398013df2dadf7b778165aa1682a6f1897fb40065697",
+  "first_cli_observations": 27,
+  "original_source_changes": false,
+  "observer_command_mistake": "check --sized project is not a supported public CLI form; twelve real usage errors retained",
+  "corrected_command_shape": [
+    "CLI",
+    "sized",
+    "check",
+    "--entry=main::main",
+    "--module=main=NEW_EXPLICIT_SOURCE_PATH",
+    "--format=json"
+  ],
+  "new_attempt_files": {
+    "attempt-02/static-description-reuse/main.qli": "091e4f464c846aebb581d4e19f5be45b8f4f42064c6ca396093e34bcbdd122d7",
+    "attempt-02/static-description-reuse/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/owner-duplication/main.qli": "eeb9c096b53ccc57ccfc5c6495d5cc9f7fa1ab0bf463c92f8ee96035eb5aed53",
+    "attempt-02/owner-duplication/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "new_predictions": {
+    "static-description-reuse": {
+      "check": "accept",
+      "run_distribution": {
+        "00": 1
+      },
+      "reason": "Two explicit closed ordinary source providers wrap X; each reusable static XX description acts on a fresh owner."
+    },
+    "owner-duplication": {
+      "check": "reject",
+      "message_fragment": "consum",
+      "reason": "Provider names now permitted; second use of the original q must fail ownership."
+    }
+  },
+  "context_sha256": "2a078ca953a4a71d36562a4f4915769c4fe8eeb495084d7176ae5b66993c57e7",
+  "scope": "Command/source authoring follow-up; not production repair or revised mathematical oracle."
+}

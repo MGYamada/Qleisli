@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"parse error: expected `basis`, `iso`, `unitary`, or `observe` after `pub`","primary":{"path":"main.qli","start":4,"end":6,"line":1,"column":5},"related":[]}],"result":null}

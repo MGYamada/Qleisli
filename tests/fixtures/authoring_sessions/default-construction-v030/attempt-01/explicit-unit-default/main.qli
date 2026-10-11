@@ -1,0 +1,13 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::unit;
+use std::quantum::finish;
+use std::quantum::phase_eighth;
+
+// Zero physical width still creates a fresh logical owner explicitly.
+unitary fn default() -> Q<Unit> { unit(()) }
+
+pub unitary fn entry() -> Q<Unit> {
+    let q = default();
+    let () = finish(phase_eighth(q));
+    default()
+}

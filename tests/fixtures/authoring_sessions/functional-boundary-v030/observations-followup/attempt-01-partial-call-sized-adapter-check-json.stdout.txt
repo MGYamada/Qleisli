@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"arity","severity":"error","message":"runtime argument arity mismatch","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/partial-call/main.qli","start":239,"end":254},"related":[]}],"result":null}

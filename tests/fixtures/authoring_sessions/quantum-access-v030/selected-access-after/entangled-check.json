@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/entangled/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-09T07:10:54.866959+00:00",
+  "cli_sha256_before": "3b54aef75bebbac7e7d5011ffa089de0f75c9170d60016262113a4dd651efe76",
+  "cli_sha256_after": "3b54aef75bebbac7e7d5011ffa089de0f75c9170d60016262113a4dd651efe76",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": ""
+}

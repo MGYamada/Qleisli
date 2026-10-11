@@ -1,0 +1,59 @@
+{
+  "case": "proof-maintenance",
+  "previous_evidence": "../evidence/result.json",
+  "previous_evidence_sha256": "73985afb3fe5e7ff8e1d921a07b207c0eb24736197b51944d483cb0f0a41867e",
+  "extractor_sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+  "baseline_sha256": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0",
+  "historical_expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "comparator_source_sha256": "7997ecf7c6d11921b9d485cf91acef74fea8b2f8395438571f33948446793e92",
+  "commands": [
+    {
+      "step": "build",
+      "argv": [
+        "lake",
+        "build",
+        "Qleisli.NativeValidity"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/lean",
+      "started_at": "2026-10-04T13:39:17.352569+00:00",
+      "elapsed_seconds": 23.205,
+      "exit_code": 0,
+      "stdout": "build.stdout.txt",
+      "stderr": "build.stderr.txt"
+    },
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../final-evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/lean",
+      "started_at": "2026-10-04T13:39:40.557404+00:00",
+      "elapsed_seconds": 5.268,
+      "exit_code": 0,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    }
+  ],
+  "formatting_source_sha256": "be03bd7bd0034b3ea7a459df3e9d308a68d3e638a48d53ad06347bc15e249283",
+  "actual_expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "expressions_equal_to_historical": true,
+  "final_status": "identity-accepted",
+  "diagnostic": "",
+  "changed_declarations": [],
+  "added_declarations": [],
+  "removed_declarations": [],
+  "files": {
+    "Extract.lean": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+    "additional-formatting.patch": "daaa9340945e83870bbe20d99c4c906a3e993400704451b16d668578d044fa8f",
+    "build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.stdout.txt": "60760eef23037d3e8ffb2dd98e42c581b66329dc8d63dd0d2d58d1b2d36b3d4b",
+    "extract.json.gz": "915be2d4f48f7e96d39f20735f665827bbfbc5ccb0d3d8705e6d6e72ffe34aa9",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+    "formatted-ownership.lean.txt": "be03bd7bd0034b3ea7a459df3e9d308a68d3e638a48d53ad06347bc15e249283"
+  }
+}

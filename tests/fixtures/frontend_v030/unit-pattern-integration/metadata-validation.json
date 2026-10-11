@@ -1,0 +1,128 @@
+{
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.43919958296464756,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_run_native_ci.py"
+      ],
+      "exit": 0,
+      "seconds": 0.6922845409717411,
+      "stdout": "failed: task-0 (0.0s)\n{\"command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"raise SystemExit(2)\"], \"executed_command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"raise SystemExit(2)\"]}\n\npassed: task-2 (0.0s)\nfailed: task-1 (0.2s)\n{\"command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"import time; time.sleep(10)\"], \"executed_command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"import time; time.sleep(10)\"]}\n\npassed: task-0 (0.1s)\npassed: nested (0.0s)\npassed: task-0 (0.0s)\npassed: task-1 (0.1s)\npassed: task-0 (0.0s)\npassed: task-1 (0.0s)\n",
+      "stderr": "...............\n----------------------------------------------------------------------\nRan 15 tests in 0.557s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit": 0,
+      "seconds": 0.37242154096020386,
+      "stdout": "VM-22: 263 constructors, 244 source snapshots, 20 boundaries; native authority selected by #276; full Soundness remains open.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit": 0,
+      "seconds": 0.11048200004734099,
+      "stdout": "{\n  \"groups\": 36,\n  \"public_boundaries\": 20,\n  \"public_source_files\": 89,\n  \"constructor_variants\": 263,\n  \"authority\": \"Lean\",\n  \"migration\": \"single-lean-acceptance-implemented\",\n  \"target_authority\": \"Lean\",\n  \"production_paths\": 21,\n  \"native_modes\": 9,\n  \"published_baseline\": \"0.2.9\",\n  \"development_version\": \"0.3.0-alpha\",\n  \"development_status\": \"unpublished\",\n  \"open_gates\": [\n    \"S05-C1\",\n    \"S05-C2\",\n    \"S05-C3\",\n    \"S05-C4\",\n    \"S05-C5\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit": 0,
+      "seconds": 0.07058299996424466,
+      "stdout": "Checked 18 authoring records, 28 snapshots and 59 observations; no recorded command executed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit": 0,
+      "seconds": 3.397398082946893,
+      "stdout": "Edition 2026: 2284 .qli and 5 .qlt files covered by 418 explicit manifests; no repository-root manifest.\nHistorical in-memory inputs: 42 exact source files and 14 unused manifests retained by hash; not valid filesystem source projects.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_constitution.py"
+      ],
+      "exit": 0,
+      "seconds": 0.21743670903379098,
+      "stdout": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader binding interpretations remain pending; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit": 0,
+      "seconds": 1.5049367089523003,
+      "stdout": "Checked 1704 local links, 12 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit": 0,
+      "seconds": 0.004981666977982968,
+      "stdout": "mdbook v0.5.4\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit": 0,
+      "seconds": 0.06909141602227464,
+      "stdout": "",
+      "stderr": " INFO Book building has started\n INFO Running the html backend\n INFO HTML book written to `/Users/masa/git/Qleisli/docs/../target/mdbook`\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit": 0,
+      "seconds": 0.19877958297729492,
+      "stdout": "rendered book: 20 HTML files, 741 local links, 266 anchors checked\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.033715708006639034,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": "Actual outputs of metadata, formatting and documentation commands; no Rust/Lean compilation here."
+}

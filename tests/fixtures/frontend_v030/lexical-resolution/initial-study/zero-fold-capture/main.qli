@@ -1,0 +1,1 @@
+pub unitary fn f(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=for static i in 0..0 carry q=q {yield r;};(q,r)}

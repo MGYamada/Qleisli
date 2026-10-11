@@ -1,0 +1,15 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+
+use std::quantum::init0;
+use std::observe::measure_z;
+
+fn duplicate_first(first: Bit, second: Bit) -> (Bit, Bit) {
+    (first, first)
+}
+
+pub fn main() -> (Bit, Bit) {
+    let first = measure_z(init0());
+    let second = measure_z(init0());
+    duplicate_first(first, second)
+}

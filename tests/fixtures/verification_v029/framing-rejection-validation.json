@@ -1,0 +1,89 @@
+{
+  "format": "qleisli.ci-maintenance-validation",
+  "version": 1,
+  "failed_head": "aac0157b65a073f1aa25418588522135fd34caef",
+  "hosted_run": 37545190749,
+  "failure_logs": {
+    "docs": {
+      "job_id": 112547477480,
+      "sha256": "36e4e0b6096f96987d8806b149251bdf061de8ed039b6698ef0c8dffcb6d8bfe",
+      "selected_actual_lines": [
+        "2026-10-06T23:12:23.1423305Z tests/fixtures/authoring_sessions/operation-application-v030/attempt-01/Qargo.toml: requires schema-version = 2",
+        "2026-10-06T23:12:23.1425380Z tests/fixtures/authoring_sessions/operation-application-v030/attempt-01/main.qli: invalid enclosing tests/fixtures/authoring_sessions/operation-application-v030/attempt-01/Qargo.toml"
+      ]
+    },
+    "msrv": {
+      "job_id": 112547477519,
+      "sha256": "2f33ccbb24778c6678a3a108046150c7a163562f7a4cc095e5d0a6cb4dcf0f70",
+      "selected_actual_lines": [
+        "2026-10-06T23:17:35.0379227Z assertion `left == right` failed: cannot start Lean native checker: Text file busy (os error 26)",
+        "2026-10-06T23:17:35.0379665Z   left: \"io\"",
+        "2026-10-06T23:17:35.0379873Z  right: \"contract\""
+      ]
+    }
+  },
+  "repair_sources": {
+    "src/interchange/hierarchical/runtime.rs": "a7885f3d227356cd81773a1ed092caee1e316d7865e88f75cb4ace4174c2e765",
+    "tests/fixtures/verification_v029/framing-rejection.sh": "5d173c8c61b7a59cd9a3fe17f9ba4438f1346870b0f9cbeee0467dd91de193e0",
+    "scripts/check_editions.py": "1fad92141f84c3d8530b8d608662f81956346b40ce6b9baa1f7457efde35662f",
+    "scripts/edition_history.json": "df6d69be76429feaff67dc1ec22c382c92126040305bc8f4ece6a868849ba6eb",
+    "scripts/test_check_editions.py": "fe31cc989479d23c6af293089a99c6ec7b5244c069e74b9ecb5a4141cea270ca"
+  },
+  "performed": [
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "current_qli": 3069,
+      "current_qlt": 5,
+      "current_manifests": 851,
+      "historical_sources": 43,
+      "historical_non_admitting_manifests": 15
+    },
+    {
+      "command": "python3 scripts/test_check_editions.py",
+      "exit_code": 0,
+      "passed": 13
+    },
+    {
+      "command": "cargo test --lib response_diagnostics_tests -j 2",
+      "toolchain": "1.98.1",
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0
+    },
+    {
+      "command": "python3 scripts/run_msrv.py test --lib response_diagnostics_tests -j 2",
+      "toolchain": "1.85.0",
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --all-targets -j 2 -- -D warnings",
+      "toolchain": "1.98.1",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/run_msrv.py clippy --all-targets -j 2 -- -D warnings",
+      "toolchain": "1.85.0",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_constitution.py --base-ref 38baae7d19535602b21270e11e97617d45205b37",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Local macOS maintenance checks. The immutable shell fixture exercises complete, extra-data and missing-final-newline failed responses in all five modes (15 invocations) through the unchanged production process transport. No retry, fallback, acceptance change, guarantee admission, Linux replay or full release certification. Original first-attempt manifest, source and refusal are byte-preserved; corrected attempt remains subject to ordinary edition coverage. Full hosted run was still active when this record was written. Full job transcripts remain external; only exact selected failure lines and transcript digests are retained here."
+}

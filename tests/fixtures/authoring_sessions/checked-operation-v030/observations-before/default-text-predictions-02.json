@@ -1,0 +1,34 @@
+{
+  "recorded_utc": "2026-10-06T04:21:27.475636+00:00",
+  "cases": [
+    [
+      "providers-reference-control-desired",
+      1,
+      "new name parse refusal"
+    ],
+    [
+      "providers-reference-control-legacy",
+      0,
+      "existing exact providers accepted"
+    ],
+    [
+      "wrong-phase-desired",
+      1,
+      "new name parse refusal, no downstream check"
+    ],
+    [
+      "wrong-phase-legacy",
+      1,
+      "exact Meaning equality refusal"
+    ]
+  ],
+  "reason": "The first authored --format=text calls were invalid usage. The CLI help permits --format=json; omission uses its existing text output. Original calls/failures stay unchanged.",
+  "frozen_record_sha256": {
+    "first-files.json": "4b61f2321d9a54c87bc45782039cbb6fed0ea530de3e331c1585a2f0aa3a238d",
+    "session.pending.json": "aac15b788ce9643b2402e304acaf463fafc4acbf6ef88efb838f5b07f980b9fe",
+    "session.json": "0945401f6381502d700d678f260b97d9cc9a6bad7fcc3f2fbc756d0a9c54f1f5",
+    "context.md": "4b6ab377b0a54819c39e465f220a85586a3d34075e3ff40443fbdf444eaf22e4",
+    "capture_before.py": "fa1573d88215d46d0f1341e64da19f3ecde98cb87cf8288547a03fc55b475493",
+    "observations-before/capture.json": "dd863291650b05ce3f0d9d138288b45cd533e90d5eb233d322b6f327309642d5"
+  }
+}

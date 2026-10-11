@@ -12,7 +12,7 @@ use std::observe::measure_z;
 use kernel::kernel;
 use std::quantum::x;
 
-observe fn main() -> ((((CBit, CBit), CBit), CBit), CBit) {
+observe fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {
     let q = kernel(join(join(join(join(x(init0()), init0()), x(init0())), init0()), x(init0())));
     let (part4, w4) = split(q);
     let (part3, w3) = split(part4);

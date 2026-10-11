@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "lean",
+    "-DautoImplicit=false",
+    "-DwarningAsError=true",
+    "../tests/fixtures/constitution_v030/routed-control-commutation/Review.lean"
+  ],
+  "cwd": "/Users/masa/git/Qleisli/lean",
+  "started_at": "2026-10-04T15:27:08.841861+00:00",
+  "elapsed_seconds": 4.057116416981444,
+  "exit_code": 0,
+  "stdout": "review.stdout.txt",
+  "stderr": "review.stderr.txt"
+}

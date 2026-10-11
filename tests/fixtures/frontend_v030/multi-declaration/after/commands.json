@@ -1,0 +1,195 @@
+[
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.08171270799357444,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/observer.rs",
+      "--extern",
+      "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.3176403749966994,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "duplicate-siblings",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/duplicate-siblings",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4663259999942966,
+    "stdout": "duplicate-siblings.stdout.txt",
+    "stderr": "duplicate-siblings.stderr.txt"
+  },
+  {
+    "label": "import-collides-sibling",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-collides-sibling",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.008542500028852373,
+    "stdout": "import-collides-sibling.stdout.txt",
+    "stderr": "import-collides-sibling.stderr.txt"
+  },
+  {
+    "label": "import-rename-still-unsupported",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-rename-still-unsupported",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005511750001460314,
+    "stdout": "import-rename-still-unsupported.stdout.txt",
+    "stderr": "import-rename-still-unsupported.stderr.txt"
+  },
+  {
+    "label": "import-terminal-bindings",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-terminal-bindings",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4625432080356404,
+    "stdout": "import-terminal-bindings.stdout.txt",
+    "stderr": "import-terminal-bindings.stderr.txt"
+  },
+  {
+    "label": "mutual-siblings",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/mutual-siblings",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0066701669711619616,
+    "stdout": "mutual-siblings.stdout.txt",
+    "stderr": "mutual-siblings.stderr.txt"
+  },
+  {
+    "label": "private-forward-sibling",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-forward-sibling",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4116497919894755,
+    "stdout": "private-forward-sibling.stdout.txt",
+    "stderr": "private-forward-sibling.stderr.txt"
+  },
+  {
+    "label": "private-imported-sibling",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-imported-sibling",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006471583037637174,
+    "stdout": "private-imported-sibling.stdout.txt",
+    "stderr": "private-imported-sibling.stderr.txt"
+  },
+  {
+    "label": "public-sibling-provider",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/public-sibling-provider",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.3878169590025209,
+    "stdout": "public-sibling-provider.stdout.txt",
+    "stderr": "public-sibling-provider.stderr.txt"
+  },
+  {
+    "label": "same-name-separate-modules",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/same-name-separate-modules",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4512925000162795,
+    "stdout": "same-name-separate-modules.stdout.txt",
+    "stderr": "same-name-separate-modules.stderr.txt"
+  },
+  {
+    "label": "unused-bad-function",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/unused-bad-function",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006457375013269484,
+    "stdout": "unused-bad-function.stdout.txt",
+    "stderr": "unused-bad-function.stderr.txt"
+  },
+  {
+    "label": "focused-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "shared_resolution"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.47974499996053055,
+    "stdout": "focused-tests.stdout.txt",
+    "stderr": "focused-tests.stderr.txt"
+  }
+]

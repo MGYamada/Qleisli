@@ -1,0 +1,66 @@
+[
+  {
+    "name": "shared",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli",
+    "source_sha256": "6243bd964fe8689cfbd619db94bda7b73e61feb1b415b36f063fecafd63ea996",
+    "exit_code": 0,
+    "output": "shared.proposal.json",
+    "sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+  },
+  {
+    "name": "contextual-type-name",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli",
+    "source_sha256": "1871ae9bc99b046fdc42a2cf009180f2e08d67b7ec690e4ab8b8cd5c3fcd13b9",
+    "exit_code": 0,
+    "output": "contextual-type-name.proposal.json",
+    "sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+  },
+  {
+    "name": "static-fold",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli",
+    "source_sha256": "a409a31d935afa7209fef23da297c559987aa98e9bf41218105efa1af6297b83",
+    "exit_code": 0,
+    "output": "static-fold.proposal.json",
+    "sha256": "6dd874961b67a4d273723183e043e75835de0a5ffded4b2c9daeeb06cc8365e3"
+  },
+  {
+    "name": "empty-owner",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli",
+    "source_sha256": "68e1a26f32b5e9353388451841a509635d67c03fc680d2d08447ada826799c5e",
+    "exit_code": 0,
+    "output": "empty-owner.proposal.json",
+    "sha256": "01e914469e7b8a02992e706476b425452962dc5f871a026ba6362e447852502a"
+  },
+  {
+    "name": "h",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/h.qli",
+    "source_sha256": "660d13a11bfaa0ca8459e1aa661e09e4d86b55391317ab4d5b06533922c9c994",
+    "exit_code": 0,
+    "output": "h.proposal.json",
+    "sha256": "0886d8473a30dcec073fa80978ad776c0b9bedcdc79c77a1a507735a414a5493"
+  },
+  {
+    "name": "pair",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/pair.qli",
+    "source_sha256": "f3801a1b788551288598a6fa40091a82b788baeba9719a869d98ce0505592a48",
+    "exit_code": 0,
+    "output": "pair.proposal.json",
+    "sha256": "3dc68a3c1456584fe390709317137d0eaac97fd36766c4e9dd7d9e2618eb6e0b"
+  },
+  {
+    "name": "register-two",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/register-two.qli",
+    "source_sha256": "984e5e27f903f38318cf2e85ae0eeb379b739ca95d44a25d827791d04bf36f35",
+    "exit_code": 0,
+    "output": "register-two.proposal.json",
+    "sha256": "ded742ce716cd684d8a29ac9ace595ea4ca87135264adbb2f4caabcf1e743f35"
+  },
+  {
+    "name": "measured-one",
+    "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/measured-one.qli",
+    "source_sha256": "7d59ec2181b0f03bb6926b80bc59454c299b1d0010277b4b64943e319419b324",
+    "exit_code": 0,
+    "output": "measured-one.proposal.json",
+    "sha256": "867094908467ec83cefc3bf2d772dd61e31c34e2aaad759b1c9029455c8e1a75"
+  }
+]

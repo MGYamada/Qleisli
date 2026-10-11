@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind/main.qli:1:5: parse: parse error: expected `fn`, `basis`, `iso`, `unitary`, `observe`, or `meaning` after `pub`

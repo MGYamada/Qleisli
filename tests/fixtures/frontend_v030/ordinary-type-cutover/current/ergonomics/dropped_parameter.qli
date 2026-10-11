@@ -1,0 +1,1 @@
+unitary fn bad(unused: Q<Bit>) -> Unit { () }

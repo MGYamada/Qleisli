@@ -1,0 +1,17 @@
+{
+  "kind": "informed bounded resolver compatibility replay",
+  "baseline_commit": "6daea68fe7efb75df0b627f2d20bd7b409f0cfd3",
+  "recorded_before_first_replay_utc": "2026-10-04T13:10:52.296131+00:00",
+  "context": "Resolver author had read existing implementation and Issues 25,27,32,41,57,65. Ten original observations are immutable in initial-study. Additional sources isolate canonical provider identity, imported calls, and existing guarded self-recursion. No source grammar/profile expansion or independent source-meaning proof is claimed.",
+  "sources": {
+    "sources/cross-module/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "sources/cross-module/dep.qli": "5801b1712f10f051a83b79dac6f47aece90c82a33a59810e434f5cf1fb182387",
+    "sources/cross-module/main.qli": "212f623568892731aaef443cdf12f269786317909c4bd36f78209f1754e20bd0",
+    "sources/providers/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "sources/providers/a.qli": "5801b1712f10f051a83b79dac6f47aece90c82a33a59810e434f5cf1fb182387",
+    "sources/providers/b.qli": "9905e9efde50b84e4af2f5c940ec405b9e51db787185c0c4a22840d34f038f93",
+    "sources/providers/main.qli": "6c48d699b5e8f71e34fdce7bfa78168a20253b83894f1551d48d591d4631968f",
+    "sources/recursive/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "sources/recursive/main.qli": "869f34449ed5118b69e2fbd91a07c7c2c884cef5908483a78149f6dca1e5b6e9"
+  }
+}

@@ -1,0 +1,1 @@
+pub unitary fn f(b: CBits<2>) -> (CBits<2>,CBits<2>) { (b,b) }

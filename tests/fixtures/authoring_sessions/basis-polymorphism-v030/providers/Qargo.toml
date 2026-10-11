@@ -1,0 +1,5 @@
+schema-version = 2
+
+[qrate]
+name = "basis_polymorphism_provider_study"
+edition = "2026"

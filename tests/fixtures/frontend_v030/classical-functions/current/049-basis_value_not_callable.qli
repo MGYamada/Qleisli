@@ -1,0 +1,2 @@
+classical fn flag(b:Bit) -> Bit { b }
+classical fn bad((flag,b): (Bit,Bit)) -> Bit { flag(b) }

@@ -3,7 +3,7 @@
 
 Finite H equations and independent provider equations remain explicit. This
 component does not perform whole-artifact checking or issue a named receipt.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

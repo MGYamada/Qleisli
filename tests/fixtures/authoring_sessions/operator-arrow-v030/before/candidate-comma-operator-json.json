@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/candidate-comma-operator/main.qli",
+    "--operation=U=main::provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004505541000980884,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected an identifier",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/candidate-comma-operator/main.qli",
+          "start": 101,
+          "end": 104
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

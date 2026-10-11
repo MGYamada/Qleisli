@@ -1,0 +1,118 @@
+{
+  "format": "qleisli.hosted-ci-cancellation-observation",
+  "version": 1,
+  "status": "partial-run-observation-not-terminal",
+  "audit_written_utc": "2026-10-05T21:58:19.396416+00:00",
+  "run_id": 37364395462,
+  "attempt": 1,
+  "published_head": "73aca78e13bc65125c4e533da48dd1318cf1cc51",
+  "tested_merge": "f7707f2aa4506ca354e93f46c702b63014f2ef44",
+  "ordered_merge_parents": [
+    "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "73aca78e13bc65125c4e533da48dd1318cf1cc51"
+  ],
+  "run_status": "in_progress",
+  "run_conclusion": null,
+  "producer_counts": {
+    "success": 5,
+    "cancelled": 2,
+    "in_progress": 1
+  },
+  "all_job_count": 9,
+  "changes_job_separately_success": true,
+  "cancelled": [
+    {
+      "id": 111949519787,
+      "name": "check-rust-msrv",
+      "created_at": "2026-10-05T19:45:56Z",
+      "started_at": "2026-10-05T19:45:56Z",
+      "completed_at": "2026-10-05T20:00:59Z",
+      "runner_id": 0,
+      "runner_name": "",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "recorded_step_count": 0,
+      "annotations_count": 4,
+      "actual_job_log": "404 BlobNotFound",
+      "cancellation_reason": "not-established: annotations unavailable through connector allowlist",
+      "observed_execution_scope": "No recorded runner or step execution; no passed, failed or explicitly skipped producer steps are established."
+    },
+    {
+      "id": 111949519998,
+      "name": "check-distribution",
+      "created_at": "2026-10-05T19:45:56Z",
+      "started_at": "2026-10-05T19:45:56Z",
+      "completed_at": "2026-10-05T20:01:01Z",
+      "runner_id": 0,
+      "runner_name": "",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "recorded_step_count": 0,
+      "annotations_count": 4,
+      "actual_job_log": "404 BlobNotFound",
+      "cancellation_reason": "not-established: annotations unavailable through connector allowlist",
+      "observed_execution_scope": "No recorded runner or step execution; no passed, failed or explicitly skipped producer steps are established."
+    }
+  ],
+  "live_rust": {
+    "id": 111949519846,
+    "name": "check-rust",
+    "status": "in_progress",
+    "active_step": {
+      "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+      "status": "in_progress",
+      "conclusion": null,
+      "number": 24,
+      "started_at": "2026-10-05T20:26:42Z",
+      "completed_at": null
+    },
+    "recorded_success_step_numbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "remaining_steps": "pending, not failed/skipped/completed"
+  },
+  "actual_source_binding": "changes checkout fetch, HEAD log and selection JSON bind tested merge; cancelled producers have no checkout evidence.",
+  "profile": "full",
+  "proof_lane": "full",
+  "additional_presentation_defect": {
+    "job": 111946020733,
+    "message": "$GITHUB_STEP_SUMMARY upload aborted, supports content up to a size of 1024k, got 1322k",
+    "line": 13533,
+    "job_conclusion": "success",
+    "selection_artifact_upload": "success; artifact ID11367259323, 70382bytes per actual log",
+    "cancellation_causality": "not-established",
+    "suggestion": "Bound human-readable summary; retain complete selection artifact."
+  },
+  "limits": [
+    "Cause is not identified as timeout, manual cancellation, concurrency supersession, runner provisioning or billing.",
+    "No explicit timeout-minutes exists in tested workflow, but absence is not proof of platform cause.",
+    "Empty steps are not explicit skipped steps; API started_at is not runner execution attestation.",
+    "Other successful jobs are API status context, not independent audits of their full logs.",
+    "No wrapper/release result is established while remaining Rust producer is live.",
+    "No build/test/CLI/native, log/fixture command execution, archive download, Git/GitHub/config mutation or rerun was performed."
+  ]
+}

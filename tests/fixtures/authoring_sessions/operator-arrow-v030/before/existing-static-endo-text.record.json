@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-static-endo/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:0..0: visibility: dependency main::entry is private\n",
+  "native_invocations": 0,
+  "seconds": 0.0053718750132247806,
+  "transcript": "main:0..0: visibility: dependency main::entry is private\n",
+  "recorded_utc": "2026-10-05T12:08:27.686209+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-static-endo-text.json",
+    "sha256": "043705ca11161aadf0aba0031e6e0fc95e89fd8bb30c7e97108d723803ca3d86"
+  }
+}

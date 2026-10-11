@@ -1,0 +1,200 @@
+diff --git a/docs/src/reference/type-model.md b/docs/src/reference/type-model.md
+index 151b12cc..f6206e42 100644
+--- a/docs/src/reference/type-model.md
++++ b/docs/src/reference/type-model.md
+@@ -222,6 +222,25 @@ ambiguous type substitutions, callable categories and provider choices. No
+ search for a convenient implementation, numerical coincidence or matching name
+ may manufacture meaning, an inverse, coherent control or semantic evidence.
+ 
++For a fixed source, dependency set and selected toolchain, preparation is
++deterministic and terminates under its published static work, storage and depth
++limits. An unresolved constraint rejects; exhaustion of a checking budget is
++not a successful inference or a proof of impossibility. Trait/capability
++resolution cannot use cyclic guessing or absence of contradiction as evidence,
++and callable resolution must establish a unique declared category before
++ordinary checking. An effect annotation cannot downgrade the body's meaning.
++
++The current conservative profile requires complete explicit closed Nat and Op
++bindings. A mismatch reports the selected entry, the binding category, and
++missing and unexpected names in lexical order. A provider's missing Nat
++binding also identifies the affected Op binding and resolved provider. Source
++call arity errors identify the resolved declaration, its ordered static
++parameter names/categories and the supplied count. These diagnostics do not
++choose missing values or providers; even an unused static parameter must be
++bound. Natural-binding errors precede operation-binding errors as before.
++The concrete catalogue of future inference/coherence conveniences remains in
++[#197](https://github.com/MGYamada/Qleisli/issues/197).
++
+ An abstract `A : Basis` is opaque. A body may move and return `Q<A>` and apply
+ explicit providers justified by its constraints. It cannot inspect the type as
+ a tuple, assume a width or prepare a state merely because `A` is finite.
+diff --git a/src/frontend/sized/check.rs b/src/frontend/sized/check.rs
+index 4fdec6dd..d5b4004b 100644
+--- a/src/frontend/sized/check.rs
++++ b/src/frontend/sized/check.rs
+@@ -461,9 +461,26 @@ impl Checker<'_> {
+         span: Span,
+         recursion: bool,
+     ) -> Result<(Vec<Ty>, Ty, Effect)> {
+-        let (_, f) = self.program.definition(id);
++        let (module, f) = self.program.definition(id);
+         if args.len() != f.parameters.len() {
+-            return Err(err("static", span, "wrong number of static arguments"));
++            let parameters = f
++                .parameters
++                .iter()
++                .map(|p| match p {
++                    Parameter::Natural(n) => format!("{}: Nat", n.name),
++                    Parameter::Operation(n, _) => format!("{}: Op", n.name),
++                })
++                .collect::<Vec<_>>()
++                .join(", ");
++            return Err(err(
++                "static",
++                span,
++                format!(
++                    "wrong number of static arguments for {module}::{}: expected [{parameters}], received {}",
++                    f.name,
++                    args.len()
++                ),
++            ));
+         }
+         let mut target = Scope {
+             naturals: BTreeMap::new(),
+@@ -1004,25 +1021,52 @@ fn primitive_signature(
+     ))
+ }
+ 
+-fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>) -> Result<Scope> {
++// Closed bindings are explicit. Diagnostics describe the failed set comparison
++// in deterministic order; they cannot supply a substitution or select a provider.
++fn check_bindings<V>(
++    actual: &BTreeMap<String, V>,
++    expected: &BTreeSet<&str>,
++    category: &str,
++    subject: &str,
++    span: Span,
++) -> Result<()> {
++    if actual.len() == expected.len() && expected.iter().all(|name| actual.contains_key(*name)) {
++        return Ok(());
++    }
++    let missing = expected
++        .iter()
++        .filter(|name| !actual.contains_key(**name))
++        .copied()
++        .collect::<Vec<_>>()
++        .join(", ");
++    let unexpected = actual
++        .keys()
++        .filter(|name| !expected.contains(name.as_str()))
++        .map(String::as_str)
++        .collect::<Vec<_>>()
++        .join(", ");
++    Err(err(
++        "static",
++        span,
++        format!(
++            "concrete {category} bindings for {subject} must exactly match the declaration; missing [{missing}]; unexpected [{unexpected}]"
++        ),
++    ))
++}
++
++fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str) -> Result<Scope> {
+     let expected: BTreeSet<_> = f
+         .parameters
+         .iter()
+         .filter_map(|p| {
+             if let Parameter::Natural(n) = p {
+-                Some(n.name.clone())
++                Some(n.name.as_str())
+             } else {
+                 None
+             }
+         })
+         .collect();
+-    if naturals.keys().cloned().collect::<BTreeSet<_>>() != expected {
+-        return Err(err(
+-            "static",
+-            f.span,
+-            "concrete natural bindings must exactly match the declaration",
+-        ));
+-    }
++    check_bindings(naturals, &expected, "natural", subject, f.span)?;
+     // Concrete entry sizes are diagnostic preparation data, not capacities of a
+     // future runtime or coefficient domain. Keep construction bounded and small.
+     let scope = Scope {
+@@ -1053,30 +1097,25 @@ pub(super) fn instantiate(
+ ) -> Result<(DefId, BTreeMap<String, DefId>)> {
+     let (entry_id, module, f) = visible_definition(program, entry, None, Span::default())?;
+     let result = (|| {
+-        let mut scope = concrete_scope(f, naturals)?;
++        let subject = format!("entry {module}::{}", f.name);
++        let mut scope = concrete_scope(f, naturals, &subject)?;
+         let mut provider_ids = BTreeMap::new();
+         let expected: BTreeSet<_> = f
+             .parameters
+             .iter()
+             .filter_map(|p| {
+                 if let Parameter::Operation(n, _) = p {
+-                    Some(n.name.clone())
++                    Some(n.name.as_str())
+                 } else {
+                     None
+                 }
+             })
+             .collect();
+-        if operations.keys().cloned().collect::<BTreeSet<_>>() != expected {
+-            return Err(err(
+-                "static",
+-                f.span,
+-                "concrete operation bindings must exactly match the declaration",
+-            ));
+-        }
++        check_bindings(operations, &expected, "operation", &subject, f.span)?;
+         for p in &f.parameters {
+             if let Parameter::Operation(name, b) = p {
+                 let binding = &operations[&name.name];
+-                let (provider_id, _, provider) =
++                let (provider_id, provider_module, provider) =
+                     visible_definition(program, &binding.definition, Some(module), f.span)?;
+                 if provider
+                     .parameters
+@@ -1090,7 +1129,11 @@ pub(super) fn instantiate(
+                     ));
+                 }
+                 provider_ids.insert(name.name.clone(), provider_id);
+-                let provider_scope = concrete_scope(provider, &binding.naturals)?;
++                let subject = format!(
++                    "operation {} provider {provider_module}::{}",
++                    name.name, provider.name
++                );
++                let provider_scope = concrete_scope(provider, &binding.naturals, &subject)?;
+                 requirements(provider, &provider_scope, f.span)?;
+                 let output = ty(&provider.result, &provider_scope, provider.span)?;
+                 if provider.effect != Effect::Unitary
+diff --git a/tests/fixtures/verification_v022/inventory.json b/tests/fixtures/verification_v022/inventory.json
+index 60cecf63..fca92f75 100644
+--- a/tests/fixtures/verification_v022/inventory.json
++++ b/tests/fixtures/verification_v022/inventory.json
+@@ -3653,7 +3653,7 @@
+     },
+     {
+       "path": "src/frontend/sized/check.rs",
+-      "sha256": "b3f0a2f6f8a813754b997acc35d18487144ac782a63c4d3f4adb994eda5c5d48",
++      "sha256": "fe04914f5cb9a1540691f45a9da2b93c56a01a559b4368a20c9c24311f2dc044",
+       "group": "sized-source",
+       "surface": {
+         "declarations": [],
+diff --git a/tests/fixtures/verification_v029/coverage.json b/tests/fixtures/verification_v029/coverage.json
+index 61e6ab8c..663143dc 100644
+--- a/tests/fixtures/verification_v029/coverage.json
++++ b/tests/fixtures/verification_v029/coverage.json
+@@ -3,7 +3,7 @@
+   "version": 2,
+   "authority": "Lean",
+   "external_schemas_enabled": false,
+-  "surface_sha256": "95b9cc03424ddc6afe311aa18f629eeb977bfc977c1c213de943709a2ec2ca8c",
++  "surface_sha256": "99d05690f0af5b11d481ec707c152da8205f9c44358c8951f3eef33e4f00f4a0",
+   "groups": [
+     {
+       "id": "raw-core",

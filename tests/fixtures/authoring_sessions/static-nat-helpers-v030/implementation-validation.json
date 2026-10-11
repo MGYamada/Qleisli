@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.static-nat-helper-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T10:09:24.506847+00:00",
+  "reviewed_base": "33f47c08ecce474443536c0fae93ce8a70c6ff21",
+  "issues": [
+    28,
+    63
+  ],
+  "scope": "Provisional first-order acyclic affine Nat helpers in the shared original-source checker and selected-source evaluator; no general static collections/builders or completed #63 claim.",
+  "source_sha256": {
+    "src/frontend/ast.rs": "bb7ea3cc28bb2b969a1c7602bde5d4e6bf8e28a8c30c6e60af22a7c90c78e40f",
+    "src/frontend/check.rs": "c85f5f62fcab1340703c6e5eaaf5028a44dde7c4e3fa73fb46518ecd3a1f2dec",
+    "src/frontend/check/body.rs": "d4ec4985555042a47ef277a25f75cd1623c16cbb651810b9068674434a754d37",
+    "src/frontend/check/body/operations.rs": "c28747b2ec343e872a03229f440070425f3dd6d8799f57e0c15f9212dcde12f5",
+    "src/frontend/check/declarations.rs": "7d08bf5f665f4f0030c0e62b30d70d985c64dd315f543ba31ab7f5f26a62437a",
+    "src/frontend/check/normalize.rs": "a4d6d12cbeaf9e40c0296f969fbc3b552054e5feb3114c9aaed18b1228218ee5",
+    "src/frontend/compile/mod.rs": "92edb1dcbf5765cc4ea9e5aa52aa24330d6e0638f1925708e41d360095cc9660",
+    "src/frontend/documentation.rs": "e2a7f219739340ac690bbbda65d0a71c613ba23bf8089ecc39186331539f5c4f",
+    "src/frontend/effects.rs": "61fa01297c302881c52f951202f304198e80e1f70c88c4bdb22398f101d57909",
+    "src/frontend/parser.rs": "1d02163d967c1e0967ca2af64a060f12a065e8340f3e18267bad8a50b90b0331",
+    "src/frontend/resolve/locals.rs": "b7d980c8b3e850e29b2336a863548d6016fbb67e71b264c410a89373e40ba434",
+    "src/frontend/sized.rs": "3ee1c8d39f2e20757b58a1f3e926e477915607bed42ff243d777982c3e2177d3",
+    "src/frontend/sized/ast.rs": "24ee709dfdfea895e658f35af947ea7dd0882b41dfe762305b0200e398cca003",
+    "src/frontend/sized/check.rs": "42ca06faf0489f2a5f5c653e027610c8c134167ac2676c520d790afe2c6de8cb",
+    "src/frontend/sized/elaborate.rs": "e9b93ea899151fba253ab63bf7cfa8baec8b45a7afca291cb1d6a89382ac0662",
+    "src/frontend/sized/parser.rs": "672ff7948f04504bfa68eb3d897b566278255356b59f94f8d14e8104e5982982",
+    "src/frontend/check/static_helpers.rs": "3f002e3e8a2d0c745b1ce98c5e95ae221ea1a56fe21bb03bb3f977628a0b522a"
+  },
+  "tests": {
+    "latest_frontend_library": {
+      "passed": 69,
+      "ignored": 2,
+      "filtered": 52
+    },
+    "latest_integration_commands_observed_before_context_handoff": {
+      "project": 13,
+      "sized_declarations": 11,
+      "static_helpers": 7,
+      "static_naturals": 5,
+      "unique_passes_in_multiple_commands_including_library": 105
+    },
+    "explicit_rust_1_85_integration_observed_this_turn": {
+      "command": "rustup run 1.85.0 /Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo test --test static_helpers --test static_naturals --test project --test sized_declarations -- --test-threads=2",
+      "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+      "RUSTDOC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustdoc",
+      "target_dir": "/private/tmp/qleisli-ci-repair-validation-target",
+      "passed": 36,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    "explicit_rust_1_85_all_targets_clippy": {
+      "command": "rustup run 1.85.0 /Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo-clippy clippy --all-targets -- -D warnings",
+      "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+      "RUSTDOC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustdoc",
+      "exit_code": 0
+    },
+    "python_policy_tests": {
+      "inventory": 17,
+      "production_coverage": 14,
+      "authoring": 7
+    }
+  },
+  "actual_cli_observations": "16 observations-after files listed in session.json; same unchanged eight original projects, explicit native kernel on each command. Three selected positives succeed; five negatives reject at semantic checking. Finite profile refusals on sized positive programs remain intentional unsupported-profile errors.",
+  "historical_observation_limit": "The preserved observations-before include missing-kernel project refusals, not solely parser failures; do not count those as semantic negative evidence. Original records are not rewritten.",
+  "independent_checks": "Complex phase products 1, -1, -i and (1-i)/sqrt(2), external-reference layout quantum basis fastest; computed sizes tested at n=0,1. Numerical tolerance is conformance evidence only, not an exact constitutional discharge.",
+  "failed_attempts": [
+    {
+      "stage": "compile",
+      "result": "New Nat constructors required exhaustive cases and dependency graph BTreeSet edges; fixed before execution."
+    },
+    {
+      "stage": "first helper test run",
+      "result": "All six then-present tests failed at parser declaration entrance: Static token omitted from module gate. Fixed parser gate."
+    },
+    {
+      "stage": "independent oracle",
+      "result": "Phase count=1 amplitude=1 actual [0.75,-0.125] versus initial expected [-0.75,0.125]. Oracle had wrong reference/quantum flattening assumption; corrected against separately documented quantum-fastest execution layout, retaining closed-form phase products."
+    },
+    {
+      "stage": "small execution capacity",
+      "result": "Computed-size n=2 exhausted max_amplitudes=64 including internal workspace. Retained bounded n=0,1 tests; no claim of n=2 execution or capacity enlargement."
+    },
+    {
+      "stage": "public diagnostic assertions",
+      "result": "Internal static-arity/binding codes map to public selected-source static/name; corrected expectations to the actual public contract."
+    },
+    {
+      "stage": "genuine MSRV Clippy",
+      "result": "items_after_test_module rejected new budget test module location. Moved module to EOF; pinned all-target Clippy then passed."
+    }
+  ],
+  "checks": {
+    "constitution_base": "38baae7d19535602b21270e11e97617d45205b37",
+    "constitution_identity_continuity": "passed; not fresh Lean replay",
+    "inventory": {
+      "sources": 263,
+      "constructors": 274,
+      "boundaries": 20
+    },
+    "production_coverage": {
+      "groups": 36,
+      "paths": 21,
+      "native_modes": 9,
+      "S05_C1_C5": "open"
+    },
+    "authoring": {
+      "records": 47,
+      "snapshots": 64,
+      "observations": 1112
+    },
+    "docs": "2173 local links passed",
+    "mdbook": "0.5.4 build passed; 29 HTML files / 1218 local links / 468 anchors passed",
+    "format": "cargo fmt --check passed"
+  },
+  "native_kernel": {
+    "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "limitations": [
+    "No local all-target Rust test rerun for this unit; focused tests and all-target Clippy are distinct checks.",
+    "No new local Lean build/audit/replay: formal definitions, protected evidence and native schema unchanged.",
+    "Hosted CI run 37443178912 belongs to remote 38baae7d, not these local helper changes; its MSRV Clippy failed and remaining Rust job was live at observation.",
+    "QS/PR/quantitative RS/EXACT broader obligations and source/runtime correspondence remain pending. No Issue closed by this packet.",
+    "Generic QFT delivery remains outside current scope."
+  ]
+}

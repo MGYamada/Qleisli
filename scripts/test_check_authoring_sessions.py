@@ -16,7 +16,7 @@ class AuthoringRecords(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
         (self.root / "attempt-01").mkdir()
-        source = b"observe fn main() -> CBit { true }\n"
+        source = b"observe fn main() -> Bit { 1 }\n"
         (self.root / "attempt-01/main.qli").write_bytes(source)
         (self.root / "context.md").write_text("An informed authoring session.")
         self.event = dict(command=["qleisli", "check", "attempt-01"], recorded_utc="2026-09-28T00:00:00Z", exit_code=0, stdout=dict(format="qleisli.result", version=1, outcome="ok"))

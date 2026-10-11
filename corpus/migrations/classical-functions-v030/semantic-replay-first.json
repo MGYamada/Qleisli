@@ -1,0 +1,270 @@
+{
+  "format": 1,
+  "status": "passed",
+  "failures": [],
+  "cases": [
+    {
+      "id": "quantum_katas/grover2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/deutsch_jozsa3",
+      "semantic_probes": 52,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/less_than2",
+      "semantic_probes": 220,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/and_phase",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/reflection2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/reflection_minus1",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/control_zero_reflection2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/vqe_excitation",
+      "semantic_probes": 108,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "pennylane_demos/phase_lock",
+      "semantic_probes": 220,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "pennylane_demos/rx_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "majority_replaced_by_parity",
+      "reference": "quantum_katas/deutsch_jozsa3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/deutsch_jozsa3 column 0: (False, True, False): 0 != 0.25"
+    },
+    {
+      "id": "erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+    },
+    {
+      "id": "rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "id": "negative_rx_missing_scalar",
+      "reference": "pennylane_demos/rx_negative_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_negative_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "reflection_minus_missing_phase",
+      "reference": "qualtran/reflection_minus1",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/reflection_minus1 entry 1,0 x: (False, True): 6.162975822039156e-33 != 0.9999999999999996"
+    },
+    {
+      "id": "controlled_reflection_missing_phase",
+      "reference": "qualtran/control_zero_reflection2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/control_zero_reflection2 entry 0,2 x: (False, False, False): 6.162975822039156e-33 != 0.9999999999999996"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "type_mismatch",
+      "exit_code": 1
+    },
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    }
+  ],
+  "compiler_sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a",
+  "oracle_script_sha256": "99dbba16d9d3d89d2eed882546dfaa1263b9ba02899c4ee2fd92bf74268c60b5",
+  "manifest_sha256": "7a2fd9b8b7313797193e1435538ab6555030e09a6d6c02f5862eaa0d666b217e",
+  "source_sha256": {
+    "migrations/classical-functions-v030/sources/quantum_katas/grover2/kernel.qli": "3d308274042d094ce76d8c62302da2ed4ba4d30d44e768988e3525369fc529dd",
+    "migrations/classical-functions-v030/sources/quantum_katas/grover2/main.qli": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+    "migrations/classical-functions-v030/sources/quantum_katas/deutsch_jozsa3/kernel.qli": "e1ea691ef195dc421dc1a964302c1f38fd55e2828974c74be35ea8623996f3d4",
+    "migrations/classical-functions-v030/sources/quantum_katas/deutsch_jozsa3/main.qli": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+    "migrations/classical-functions-v030/sources/qualtran/less_than2/kernel.qli": "0bdf4bb83a43550930d49b43a4f85e75a186c96ae552bfbb820b3610034e3126",
+    "migrations/classical-functions-v030/sources/qualtran/less_than2/main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+    "migrations/classical-functions-v030/sources/qualtran/and_phase/kernel.qli": "24dd0a71a99f0f814daa519e70eb58fe6c4f112def08c9479a8b1e6adb5a7b9c",
+    "migrations/classical-functions-v030/sources/qualtran/and_phase/main.qli": "767b429dbf6a28a63c04e878d4a35f2ef2fb26686bc1522028db8ea3cd64d7a9",
+    "migrations/classical-functions-v030/sources/qualtran/reflection2/kernel.qli": "2a8ed2e4a73c548c77b149de9a139975e7fab4b8ed9e7f8e4adfefe0c5669464",
+    "migrations/classical-functions-v030/sources/qualtran/reflection2/main.qli": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a",
+    "migrations/classical-functions-v030/sources/qualtran/reflection_minus1/kernel.qli": "5beae876e8de2e8757c81a743a898d9e924eb9e1f4b0438f9521c319e73d6437",
+    "migrations/classical-functions-v030/sources/qualtran/reflection_minus1/main.qli": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+    "migrations/classical-functions-v030/sources/qualtran/control_zero_reflection2/kernel.qli": "c15cf03a4720c76956b052b14cb7d9a4e62211fe61d61221b2e984320a95ba78",
+    "migrations/classical-functions-v030/sources/qualtran/control_zero_reflection2/main.qli": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+    "migrations/classical-functions-v030/sources/pennylane_demos/vqe_excitation/kernel.qli": "e43639bf288667f00f017396df1be2de205bbb24c5c1c59a9827289c194f72ce",
+    "migrations/classical-functions-v030/sources/pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+    "migrations/classical-functions-v030/sources/pennylane_demos/phase_lock/kernel.qli": "711b6f47a02e10f38d601577818937715ef29c7c7082946d3cda9344d0a3e069",
+    "migrations/classical-functions-v030/sources/pennylane_demos/phase_lock/main.qli": "db986d416273f36507749da6b4473dc18dd3b3adbdd42bdceb15f178c351204b",
+    "migrations/classical-functions-v030/sources/pennylane_demos/rx_quarter/kernel.qli": "53fd5dd9667fac08bd6481f56c8781daa447f0365986aac7c4ee6aa7f9d06559",
+    "migrations/classical-functions-v030/sources/pennylane_demos/rx_quarter/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/majority_replaced_by_parity/kernel.qli": "86614711f7e5382be6ad15cda98581f099f4b6e7f93190aae0e86ea73eb4ad0d",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/majority_replaced_by_parity/main.qli": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/kernel.qli": "c88ce68c96d63d2129ee3cbd812005754ad99377dcc102ba34eebcbb8bb700c8",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar/kernel.qli": "6e9ba0d10ba0b2775c0d93c46cc6e55c5af61bea6f93efadb338c3ac77f7c949",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar/kernel.qli": "6609439105c38fbdef41758e2a56cf64f03761b60185a5d654df34285c0f7975",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/kernel.qli": "951cb4730a8de869a8849a68895cb155e0abcc1c413a369e0b2b56da88f69c86",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/reflection_minus_missing_phase/kernel.qli": "d4e8e161fc1a93fd16abf7ddfeef1f1de0dc407e141cb58f64f060cb1c4ad0aa",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/reflection_minus_missing_phase/main.qli": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/controlled_reflection_missing_phase/kernel.qli": "952d2527f437962ccfc4ab3974043b3515a1d3a10c7c3764104d7c2adaaef9eb",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/controlled_reflection_missing_phase/main.qli": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+    "negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "migrations/classical-functions-v030/counterexample-sources/negative/dirty_auxiliary/main.qli": "58eb819f711ebaa0a7b2a2903c8419465f56c97da004f653ccfe63d5ba951345"
+  },
+  "source_migration_sha256": {
+    "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+    "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+    "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+    "migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb",
+    "migrations/classical-functions-v030/migration.json": "b7715a54a7d6c19183b0a05cc5e440d30811701b03e30f0f8e940779a301a0a2"
+  },
+  "counterexample_source_migration_sha256": {
+    "migrations/classical-functions-v030/counterexamples.json": "594dd565b7dff61d6a874e886e58a4765d0d340ecb3d2b055bf83057c90babac"
+  },
+  "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+  "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "current_negative_manifest_sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4",
+  "semantic_fault_source_sha256": {
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/majority_replaced_by_parity/kernel.qli": "86614711f7e5382be6ad15cda98581f099f4b6e7f93190aae0e86ea73eb4ad0d",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/majority_replaced_by_parity/main.qli": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/kernel.qli": "c88ce68c96d63d2129ee3cbd812005754ad99377dcc102ba34eebcbb8bb700c8",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar/kernel.qli": "6e9ba0d10ba0b2775c0d93c46cc6e55c5af61bea6f93efadb338c3ac77f7c949",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar/kernel.qli": "6609439105c38fbdef41758e2a56cf64f03761b60185a5d654df34285c0f7975",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/kernel.qli": "951cb4730a8de869a8849a68895cb155e0abcc1c413a369e0b2b56da88f69c86",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/reflection_minus_missing_phase/kernel.qli": "d4e8e161fc1a93fd16abf7ddfeef1f1de0dc407e141cb58f64f060cb1c4ad0aa",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/reflection_minus_missing_phase/main.qli": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/controlled_reflection_missing_phase/kernel.qli": "952d2527f437962ccfc4ab3974043b3515a1d3a10c7c3764104d7c2adaaef9eb",
+    "migrations/classical-functions-v030/counterexample-sources/semantic_faults/controlled_reflection_missing_phase/main.qli": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884"
+  },
+  "started_utc": "2026-10-06T06:39:04.237080+00:00",
+  "scope": "Existing bounded numerical contract oracles, including coherent X/Y phase interference, on ten selected finite projects, seven retained type-correct semantic faults and four original negative controls. No upstream framework or maximum sized case is executed. Configured native bytes are identified, not child-start/completion attested. This is not a universal source-preservation theorem, new QS/PR/RS/EXACT discharge or release certification.",
+  "driver_sha256": "c9bb00012f3f8e00c693c2212fa8dac18c5ea4263e1f76c522154c2f6ddb99b8",
+  "native_kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "bytes": 91666928
+  },
+  "compiler": {
+    "path": "/private/tmp/qleisli-classical-functions-after",
+    "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a",
+    "bytes": 23170928
+  },
+  "expected_ids": {
+    "cases": [
+      "quantum_katas/grover2",
+      "quantum_katas/deutsch_jozsa3",
+      "qualtran/less_than2",
+      "qualtran/and_phase",
+      "qualtran/reflection2",
+      "qualtran/reflection_minus1",
+      "qualtran/control_zero_reflection2",
+      "pennylane_demos/vqe_excitation",
+      "pennylane_demos/phase_lock",
+      "pennylane_demos/rx_quarter"
+    ],
+    "semantic_faults": [
+      "majority_replaced_by_parity",
+      "erased_rotation_scalar",
+      "rx_missing_scalar",
+      "zz_erased_scalar",
+      "negative_rx_missing_scalar",
+      "reflection_minus_missing_phase",
+      "controlled_reflection_missing_phase"
+    ],
+    "negative_cases": [
+      "duplicate_owner",
+      "measured_owner",
+      "measurement_adjoint",
+      "dirty_auxiliary"
+    ]
+  },
+  "qubit_counts": {
+    "quantum_katas/grover2": 2,
+    "quantum_katas/deutsch_jozsa3": 3,
+    "qualtran/less_than2": 5,
+    "qualtran/and_phase": 2,
+    "qualtran/reflection2": 2,
+    "qualtran/reflection_minus1": 1,
+    "qualtran/control_zero_reflection2": 2,
+    "pennylane_demos/vqe_excitation": 4,
+    "pennylane_demos/phase_lock": 5,
+    "pennylane_demos/rx_quarter": 1
+  },
+  "oracle_numeric_tolerance": 1e-11,
+  "seconds": 355.3136509999749,
+  "recorded_utc": "2026-10-06T06:44:59.552631+00:00",
+  "compiler_identity_stable": true,
+  "native_kernel_identity_stable": true
+}

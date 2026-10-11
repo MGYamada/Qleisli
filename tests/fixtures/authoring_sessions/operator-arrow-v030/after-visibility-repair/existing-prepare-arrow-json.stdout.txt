@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"name","severity":"error","message":"unresolved function finish","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-02/existing-prepare-arrow/main.qli","start":57,"end":66},"related":[]}],"result":null}

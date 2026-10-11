@@ -1,0 +1,29 @@
+{
+  "format": "qleisli.process-lifetime-regression",
+  "version": 1,
+  "issue": 343,
+  "historical_head": "94fd0925",
+  "historical_regression": {
+    "failures": 4,
+    "errors": 0
+  },
+  "host_tests": {
+    "passed": 4,
+    "seconds": 2.546
+  },
+  "installed_tests": {
+    "passed": 13,
+    "seconds": 7.523
+  },
+  "sources": {
+    "python/qleisli/__init__.py": "f5aa9c89e128175dc7e509fb4b2206b41fc81a2f415f2ee7ab6a738853085199",
+    "scripts/test_python_host.py": "9547672e3461c56e551e7cd9ecdf568293696e07c55cc66aee1681e3f58b3eb7",
+    "scripts/test_connections.py": "026615d85b7dcb6638cd8e847527fbd78478b3965e5c82b4f2ac4f06e4e637f2"
+  },
+  "logs": {
+    "/private/tmp/qleisli-review-host-cleanup-before.log": "ab3a273972d32603e6e1821ad9263de36b74b7528301c3a12d9fd5b362ce324d",
+    "/private/tmp/qleisli-review-host-cleanup-installed-final.log": "8df128e23396a6e54084a7f57a0f7aedcd94c83d61dd1539996f9465fc595d33"
+  },
+  "platform": "macOS POSIX",
+  "scope": "Ordinary invocation session including the Rust native process group. No containment claim for deliberately escaped sessions or non-POSIX descendants. Final hosted CI pending."
+}

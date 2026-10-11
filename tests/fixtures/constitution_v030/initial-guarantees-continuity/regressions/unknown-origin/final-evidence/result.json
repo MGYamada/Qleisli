@@ -1,0 +1,34 @@
+{
+  "case": "unknown-origin",
+  "previous_evidence": "../evidence/result.json",
+  "previous_evidence_sha256": "9cb4395ffab1644b91f63a24397571f6e32a288830825d87d4fdbe19732cc2a7",
+  "extractor_sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+  "baseline_sha256": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0",
+  "historical_expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "comparator_source_sha256": "7997ecf7c6d11921b9d485cf91acef74fea8b2f8395438571f33948446793e92",
+  "commands": [
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../final-evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/unknown-origin/lean",
+      "started_at": "2026-10-04T13:39:17.348956+00:00",
+      "elapsed_seconds": 19.983,
+      "exit_code": 1,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    }
+  ],
+  "final_status": "extractor-rejected-unknown-origin",
+  "diagnostic": "../final-evidence/Extract.lean:397:0: error: unrecognized declaration origin Protocol.OtherValidity for QleisliKernel.Protocol.Validity.Acceptance\n",
+  "files": {
+    "Extract.lean": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "a9950a1083dadd76621e35d78bc78dc0aeb3424130e599c266e8c4dcdad6472b"
+  }
+}

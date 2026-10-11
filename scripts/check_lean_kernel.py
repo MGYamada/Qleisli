@@ -3,7 +3,7 @@
 
 This review guard is complemented by lean-kernel/Audit.lean's compiled audit;
 it is not a sandbox for malicious Lean metaprograms or a compiler proof.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse

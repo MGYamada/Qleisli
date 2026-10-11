@@ -1,0 +1,30 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit": 0,
+    "stdout": "Checked 1716 local links, 12 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit": 0,
+    "stdout": "Checked 19 authoring records, 29 snapshots and 65 observations; no recorded command executed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

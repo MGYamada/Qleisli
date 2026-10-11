@@ -1,0 +1,6 @@
+{
+  "stdlib/src/arithmetic.qli": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+  "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+  "stdlib/src/routines.qli": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+  "stdlib/src/transforms.qli": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8"
+}

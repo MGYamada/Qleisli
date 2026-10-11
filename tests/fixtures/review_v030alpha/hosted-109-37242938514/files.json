@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.file-sha256-inventory",
+  "version": 1,
+  "files": {
+    "README.md": "a3909e1450212ad5955aae48b6f1b84ecf7902512030d33398fe692e88e888c5",
+    "distribution.excerpt.txt": "6a9ffe481cf92db6b93b5c40ad263710cd65f4479d4f9aaf3e0a7270fd87d62c",
+    "metadata.json": "ff74b205e070fde368c9d00d0158b1261c4a00012a01d4f93dc4c458b35f1bd4",
+    "msrv.excerpt.txt": "288c912227d86bd88205ec0c16a72dfb64828c470b65f39633799f5d97eef82d",
+    "native-comparisons.excerpt.txt": "4178502ba86b2ae447d950b6486556bb6ca5dd29878df394076567fad4982e99",
+    "rust.excerpt.txt": "0a01e800310a1e26068dcec4718f7ca9a3e462b775b1fab7d9da8b9cbbd8bbe2"
+  }
+}

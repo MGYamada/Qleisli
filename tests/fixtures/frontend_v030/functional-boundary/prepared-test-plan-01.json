@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.prepared-conformance-test-plan",
+  "version": 1,
+  "status": "prepared-not-executed",
+  "kind": "informed independent ordinary conformance tests",
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668",
+  "source_baseline": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "constitutional_continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "prepared_source": {
+    "path": "tests/fixtures/frontend_v030/functional-boundary/prepared-01.rs.txt",
+    "sha256": "3cc9525b519f0e19c694f2444595b87016dc13445196f18c449894d6e40f0790",
+    "bytes": 7159
+  },
+  "integration_target": "tests/functional_boundary.rs",
+  "context": {
+    "author": "Codex subagent, independent ordinary test preparation",
+    "exact_runtime_model_and_sampling": "not independently established",
+    "prior_repository_access": "Read issue/comment, public APIs, existing source/operation/ownership tests and current common/finite implementation. Sources are informed adversarial regression examples, not a blind authoring benchmark.",
+    "existing_suite_reuse": [
+      "tests/source_scope.rs",
+      "tests/source_judgments.rs",
+      "tests/source_semantics.rs",
+      "tests/operation_parameters.rs",
+      "tests/sized_source.rs"
+    ],
+    "not_new_authority": "No Guardian judgment, interpretation, guarantee admission, semantic extension, proof discharge, native acceptance bypass or source-preservation theorem."
+  },
+  "tests": [
+    {
+      "name": "ordinary_calls_are_complete_first_order_calls_in_both_source_paths",
+      "desired": "A complete pair(1,q) call checks in finite loading and common selected preparation; selected client instantiation/elaboration remains preparation only.",
+      "rejections": "pair(1) and pair(q) are whole-call arity errors. A lexical ordinary Bit named pair is not a callable and reports the callee-name type error.",
+      "predicted_codes": {
+        "partial_common": "arity",
+        "partial_finite": "arity",
+        "local_common": "type",
+        "local_finite": "type_mismatch"
+      },
+      "expected_spans": "Original half-open bytes: complete partial-call expression or the final local callee name.",
+      "maximum_physical_qubits": 1
+    },
+    {
+      "name": "nested_quantum_environments_cannot_be_reused_as_callables_or_providers",
+      "desired": "Environments (Bit,(Q<Unit>,Unit)) and (Bit,(Q<Unit>,Q<Bit>)) remain linear, including a zero-width owner. Active and spent local operator bindings cannot be ordinary callees or static operation providers.",
+      "rejections": "Callable/static-provider use reports a located name type error before concrete lowering. Duplicating env reports consumed ownership at its second occurrence.",
+      "predicted_codes": {
+        "common_local": "type",
+        "finite_local": "type_mismatch",
+        "common_duplicate": "ownership",
+        "finite_duplicate": "ownership"
+      },
+      "expected_spans": "Final operator-name occurrence or second env occurrence, in untouched source bytes.",
+      "maximum_physical_qubits": 2
+    },
+    {
+      "name": "reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner",
+      "desired": "then_op(U,U) may reuse a static formal while its application consumes/returns one quantum owner. Common source checking retains principal Unitary; only finite materialization/native acceptance is executed by this target.",
+      "independent_oracle": "Quarter=diag(1,i), Quarter^2=Z. Acting on one half of (|00>+|11>)/sqrt(2) yields (|00>-|11>)/sqrt(2). Measuring both halves in X gives outcomes 01 and 10, each with probability 1/2; all other outcomes zero.",
+      "numerical_comparison": "Distribution keys and total mass compared to the independently specified probabilities at 1e-12; this is a numerical conformance observation, not an exact proof discharge.",
+      "negative_control": "Two applications U(q),U(q) over the original q reject at the second q with ownership code in both source paths.",
+      "maximum_physical_qubits": 2
+    }
+  ],
+  "negative_gate_control": "Uses public check_project_with_kernel(root, SourcePolicy::default(), Kernel::new(absent_test_owned_path)); no process-global environment mutation, runtime override, fake acceptance or unsafe Rust. Common/source rejection must precede attempts to use the absent native checker. No native invocation-count claim is made.",
+  "limits": [
+    "Prepared sources and intended diagnostics have not yet been compiled or executed.",
+    "Selected parse/instantiation/elaboration are untrusted preparation, not native accepted handles.",
+    "Existing effect/recursion/capability controls are reused by integration owner instead of copied here.",
+    "No new maximum/capacity generation, general closure/ADT/function-value syntax, broad static builder, new primitive, new accepted profile or generic QFT implementation."
+  ],
+  "validation": {
+    "performed": [
+      "Read actual ordinary decision and public APIs",
+      "rustfmt --edition 2024 tests/functional_boundary.rs"
+    ],
+    "not_performed": [
+      "Cargo build/test",
+      "CLI commands",
+      "Lean build/audit/replay"
+    ]
+  },
+  "first_failure_policy": "Preserve the original test file and actual first failure before repair. Correct mistaken API predictions with explicit review; do not weaken the ownership/call/evidence law to make tests pass."
+}

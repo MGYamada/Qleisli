@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "scope": "independent mathematical foundation; no production native gate or source theorem",
+  "recorded_utc": "2026-10-11T02:43:01.684556+00:00",
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "Qleisli.Semantics.Instrument"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "Build completed successfully (1213 jobs).\n",
+      "stderr": "",
+      "seconds": 5.179303541081026
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proof-w9swiimk/Audit.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "'Qleisli.Experiments.InstrumentEquality.channel_eq_of_choi_eq' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.InstrumentEquality.instrument_eq_of_choi_eq' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": "",
+      "seconds": 2.503295708098449
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": "",
+      "seconds": 1.193970833090134
+    }
+  ],
+  "toolchain": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+  "source_sha256": {
+    "experimental/instrument-meaning/ReferenceEquality.lean": "c5ca5e72e3dcd4f60446d567117d61897bb00563b52887fc9dec0bed9f5362c2",
+    "lean/Qleisli/Semantics/Instrument.lean": "b630db6f70ae39ea15dab3f32c0fc31c895902007410533024a2fd64124ad1ff",
+    "lean/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
+    "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936"
+  },
+  "prior_failed_draft_checks": [
+    "First density_entry draft included Finset.sum_comm in simp, causing looping simp/max recursion depth; removed the commutative rewrite from simp without raising limits.",
+    "Second draft used nonexistent star_ite and unused simp arguments; it was rejected.",
+    "Third draft left the star of an if expression unresolved; adding apply_ite and an explicit sum_comm rewrite completed the proof."
+  ],
+  "limits": [
+    "No project axiom, sorry, unsafe or partial definition introduced.",
+    "No acceptance checker, source adapter or evidence producer is imported by the reference definition.",
+    "Production original-body reconstruction/refinement, signature binding and both concrete adapters remain unimplemented.",
+    "No constitutional guarantee admission or QS/PR/RS discharge."
+  ],
+  "minimal_import": "Only Qleisli.Semantics.Instrument; no Mathlib.Tactic umbrella import."
+}

@@ -1,0 +1,92 @@
+{
+  "mode": "latest",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.023588042007759213,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.011746375006623566,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "body_effects",
+        "--test",
+        "sized_source",
+        "--test",
+        "compile",
+        "--test",
+        "parser",
+        "--test",
+        "diagnostics",
+        "--test",
+        "documentation",
+        "--test",
+        "repair_diagnostics",
+        "--test",
+        "static_operations",
+        "--test",
+        "function_contracts",
+        "--test",
+        "certified_source",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "source_judgments"
+      ],
+      "exit_code": 0,
+      "seconds": 59.858565250004176,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::"
+      ],
+      "exit_code": 0,
+      "seconds": 6.97608145797858,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 7.035093249985948,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded current consumers. Existing ignores retained. No new maximum-size quantum case, fresh Lean replay or release certificate."
+}

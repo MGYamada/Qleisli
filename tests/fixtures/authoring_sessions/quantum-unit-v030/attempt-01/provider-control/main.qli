@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn identity(q: Q<Unit>) -> Q<Unit> { q }
+pub unitary fn f[static U: Op<Unit>](c: Q<Bit>,q: Q<Unit>) -> (Q<Bit>,Q<Unit>) requires Controlled(U) { controlled(U)(c,q) }
+
+observe fn main() -> Unit { () }

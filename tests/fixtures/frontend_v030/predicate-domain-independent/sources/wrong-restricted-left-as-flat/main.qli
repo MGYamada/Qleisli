@@ -1,0 +1,14 @@
+use std::quantum::init0;use std::quantum::h;use std::quantum::t;
+use std::quantum::join;use std::quantum::split;
+use std::observe::measure_z;use std::observe::discard;
+basis fn calculate(a:Bit,b:Bit,c:Bit)->Bit{(a and not b) xor c}
+basis fn predicate((a,b,c):(Bit,Bit,Bit))->Bit{calculate(a,b,c)}
+unitary fn mark(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{with_computed(q,predicate){|flag|t(flag)}}
+observe fn main()->(CBit,CBit,CBit){
+let q=join(join(init0(),init0()),init0());
+let q=do ((a,b),c)<-q;pure ((a,b),c);
+let q=mark(q);
+let q=do ((a,b),c)<-q;pure ((a,b),c);
+let(ab,c)=split(q);let(a,b)=split(ab);
+(measure_z(a),measure_z(b),measure_z(c))
+}

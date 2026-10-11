@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"a local or spent runtime value cannot be a static operation","primary":{"path":"main.qli","start":706,"end":714,"line":16,"column":24},"related":[]}],"result":null}

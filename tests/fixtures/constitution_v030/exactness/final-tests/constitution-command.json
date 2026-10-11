@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "python3",
+    "scripts/test_check_constitution.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "capture": "Combined text returned by exec_command/write_stdin, preserved in tool chunk order. stdout and stderr were not separately redirected; no separate stream identity is claimed.",
+  "exit_code": 0,
+  "reported_test_count": 63,
+  "reported_unittest_seconds": 127.915,
+  "source_identity_reference": "../live-replay/before.json",
+  "identity_scope": "The adjacent live replay captured both test and checker source identities while this suite was running and confirmed those inputs unchanged through its own replay; no separate suite-start source snapshot or exact wall-clock duration is claimed."
+}

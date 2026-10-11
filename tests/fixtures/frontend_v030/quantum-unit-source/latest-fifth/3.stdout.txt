@@ -1,0 +1,57 @@
+
+running 7 tests
+test eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use ... ok
+test bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order ... ok
+test pending_first_argument_keeps_entangled_owner_during_later_argument_measurement ... ok
+test ignored_measurement_and_unit_return_keep_observation_before_later_logic ... ok
+test repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids ... ok
+test representable_phases_match_independent_exact_targets_and_interference ... ok
+test unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+
+running 14 tests
+test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+test existing_execution_profile_limits_remain_explicit ... ok
+test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+test sized_unit_patterns_consume_only_actual_unit_values ... ok
+test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... ok
+test finite_measurement_and_feedforward_keep_their_correlated_action ... ok
+test finite_boolean_actions_match_an_independent_truth_result ... ok
+test source_bearing_native_evidence_retains_the_actual_canonical_source ... ok
+test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.50s
+
+
+running 9 tests
+test scalar_work_precedes_readout_and_cannot_be_retimed_past_observation ... FAILED
+test unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit ... ok
+test retained_fourteen_sources_reach_type_and_owner_judgments ... ok
+test source_types_keep_zero_axis_quantum_owners_distinct_from_ordinary_unit ... ok
+test native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_requests ... ok
+test unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices ... ok
+test fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasure ... ok
+test native_valid_zero_width_basis_substitutions_fail_the_fixed_typed_request ... ok
+test prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_oracle ... ok
+
+failures:
+
+---- scalar_work_precedes_readout_and_cannot_be_retimed_past_observation stdout ----
+
+thread 'scalar_work_precedes_readout_and_cannot_be_retimed_past_observation' (13257775) panicked at tests/quantum_unit_source.rs:493:34:
+called `Result::unwrap()` on an `Err` value: Error { code: "unsupported", module: Some("main"), span: Span { start: 135, end: 247 }, message: "selected sized lowering profile requires an observe root returning exactly one Bits value" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scalar_work_precedes_readout_and_cannot_be_retimed_past_observation
+
+test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s
+

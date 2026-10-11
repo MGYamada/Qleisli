@@ -1,0 +1,60 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--ir-profile=raw",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/pack-10/main.qli",
+    "--lean-kernel=/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T22:25:58.650987+00:00",
+  "case": "pack-10",
+  "mode": "raw-check",
+  "phase": "repaired-source-before-implementation",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "sha256": "6f743e9f57279231e1bfbab315658b6c2e2b7a88e23105acc55684638d63c7b3"
+    },
+    "kernel": {
+      "path": "/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "sha256": "6f743e9f57279231e1bfbab315658b6c2e2b7a88e23105acc55684638d63c7b3"
+    },
+    "kernel": {
+      "path": "/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "finite source lowering requires ordinary Unit/Bit products or exact packaged quantum bases; ordinary Bits values need explicit target support",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/pack-10/main.qli",
+          "start": 121,
+          "end": 208
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "scope": "Actual source-repair observation. Native success is not source correspondence or a new guarantee."
+}

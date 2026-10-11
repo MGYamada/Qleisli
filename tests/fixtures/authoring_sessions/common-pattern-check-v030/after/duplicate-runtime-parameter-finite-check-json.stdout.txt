@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"duplicate parameter name","primary":{"path":"main.qli","start":99,"end":100,"line":2,"column":25},"related":[]}],"result":null}

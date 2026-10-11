@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-06/indexed/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T00:27:56.000153+00:00",
+  "cli_sha256_before": "5c4f3f709490f8651d5b6099c11809a5c07adda74f6186fbb3b24562cdfc210a",
+  "cli_sha256_after": "5c4f3f709490f8651d5b6099c11809a5c07adda74f6186fbb3b24562cdfc210a",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: indexed quantum access lowering is not yet implemented",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-06/indexed/main.qli",
+          "start": 69,
+          "end": 78
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

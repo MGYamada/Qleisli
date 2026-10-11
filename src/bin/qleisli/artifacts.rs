@@ -1,6 +1,5 @@
 //! Filesystem adapter only. The library importer never resolves source labels.
 use super::options::Options;
-use qleisli::frontend::compile::compile_project_with_kernel;
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::interchange;
 use std::fs::{self, File, OpenOptions};
@@ -91,7 +90,10 @@ pub(super) enum Success {
     Emitted(String),
     Verified(bool),
 }
-pub(super) fn execute(options: &Options) -> Result<Success, Failure> {
+pub(super) fn execute(
+    options: &Options,
+    input: &super::source_commands::Input,
+) -> Result<Success, Failure> {
     let kernel = options
         .lean_kernel
         .as_ref()
@@ -103,14 +105,11 @@ pub(super) fn execute(options: &Options) -> Result<Success, Failure> {
         let label = output
             .to_str()
             .ok_or_else(|| io_error("output path is not valid UTF-8"))?;
-        let program = match &options.selected_root {
-            Some(selected) => selected.compile_with_kernel(options.policy, &kernel)?,
-            None => compile_project_with_kernel(&options.path, options.policy, &kernel)?,
-        };
+        let program = input.compile(&kernel)?;
         write_new(output, program.artifact())?;
         Ok(Success::Emitted(label.into()))
     } else {
-        let bytes = read(&options.path)?;
+        let bytes = read(input.path())?;
         let request = options.against.as_deref().map(read).transpose()?;
         let requested = kernel
             .check(&bytes, request.as_deref())?

@@ -1,0 +1,4 @@
+use std::quantum::phase;
+unitary fn a_phase(q:Q<Bit>)->Q<Bit>{phase[1,2](q)}
+unitary fn m_swap(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(r,q)}
+pub unitary fn z_entry(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=a_phase(q);m_swap(q,r)}

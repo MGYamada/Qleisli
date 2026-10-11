@@ -1,0 +1,43 @@
+{
+  "baseline_commit": "3e3128c6153df40eb8c6f8fbffeb6bce35a6085a",
+  "kind": "informed_fixed_header_migration",
+  "roots": [
+    "iterative_phase_estimation",
+    "operation_algorithms",
+    "operation_contracts",
+    "protocols"
+  ],
+  "files": [
+    {
+      "path": "examples/iterative_phase_estimation/iterative.qli",
+      "before": "d26a4202923edc3901c67986cf12f0676abf27870659ad1c4adb7fa5494ddbbf",
+      "after": "6f61a0bea0882aeb800f221586e0911de90582666006abbc5e3a8d5b97980159"
+    },
+    {
+      "path": "examples/operation_algorithms/estimation.qli",
+      "before": "4489c14c5911fb258a83c846e19561bbaf0c8f0e13ec4d84b03710af8f935b93",
+      "after": "f05b8cc510a3b7f42f6e63b6ab9f96f05a1026940585f600726d18831a62f1eb"
+    },
+    {
+      "path": "examples/operation_algorithms/interference.qli",
+      "before": "e1dc2ea3a9c451d18f7317ed7e9a007f96e551b02bf60a493f3be7addc11b123",
+      "after": "445a51d7e0696e928b6f6975a15c6f68c7301f9eb38e4979d0e888dac3af9f15"
+    },
+    {
+      "path": "examples/operation_algorithms/amplification.qli",
+      "before": "37afc386f26d13f7ba79359afaadce32d5dc480b2770c7ee543c82f65788248f",
+      "after": "6fa250b78c041237cd0b60a32ad70505d6b4566fc9009b07db7b2bbb3bcf81b5"
+    },
+    {
+      "path": "examples/operation_contracts/main.qli",
+      "before": "93125e1ed0bc0187a1cbb06a63016c7532ae83d6ebc269fabf1dcb4a1478a1df",
+      "after": "74b3b5f5a1b6c1fb03012093c5058bf5bbe038ae687878c3899ffefc2d0ef225"
+    },
+    {
+      "path": "examples/protocols/checks.qli",
+      "before": "a4b3d477444679ed0eead858d09179d09e2aa03a73e3728dfdd0a9599b1023fd",
+      "after": "153076fcc26fb492a9fb7aa23d4aa1fe7b98dfedafd93f073e0c3433e67d5be4"
+    }
+  ],
+  "scope": "Only compile-time parameter-header marker spelling. Complete desired projects saved before observation and active edits. First sources preserved by exact Git commit/path/hash, no historical snapshot rewrite."
+}

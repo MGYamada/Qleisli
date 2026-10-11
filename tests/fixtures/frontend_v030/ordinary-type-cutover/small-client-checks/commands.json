@@ -1,0 +1,84 @@
+[
+  {
+    "argv": [
+      "python3",
+      "scripts/test_cli_json.py",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "JsonCliTests.test_check_run_and_distribution_order",
+      "JsonCliTests.test_error_categories_and_nested_project_relative_paths",
+      "JsonCliTests.test_seeded_samples_use_fresh_preparation_and_preserve_correlation",
+      "JsonCliTests.test_numeric_spelling_is_consistent_across_cli_adapters",
+      "JsonCliTests.test_portable_ir_is_independently_decoded_and_reverified"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "environment": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_BIN": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    },
+    "exit_code": 0,
+    "seconds": 2.7341286249575205,
+    "stdout": "1.stdout.txt",
+    "stderr": "1.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_qli_differential.py",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "--cases",
+      "6",
+      "--report",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/small-client-checks/differential.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "environment": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_BIN": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    },
+    "exit_code": 0,
+    "seconds": 8.314501415996347,
+    "stdout": "2.stdout.txt",
+    "stderr": "2.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_compact_sized_graph.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "environment": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_BIN": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    },
+    "exit_code": 0,
+    "seconds": 0.09766745899105445,
+    "stdout": "3.stdout.txt",
+    "stderr": "3.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_check_authoring_sessions.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "environment": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_BIN": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    },
+    "exit_code": 0,
+    "seconds": 0.09183024999219924,
+    "stdout": "4.stdout.txt",
+    "stderr": "4.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/check_python_instrument.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "stdout": "python-instrument.stdout.json",
+    "stderr": "python-instrument.stderr.txt",
+    "note": "No Cargo call; final exact return-type-only obsolete spelling probe."
+  }
+]

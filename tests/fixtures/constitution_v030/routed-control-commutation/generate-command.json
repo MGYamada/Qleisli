@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-routed-control-generate",
+    "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/routed-control-commutation",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at": "2026-10-04T14:57:30.290410+00:00",
+  "elapsed_seconds": 0.12336608301848173,
+  "exit_code": 0,
+  "stdout": "generate.stdout.txt",
+  "stderr": "generate.stderr.txt"
+}

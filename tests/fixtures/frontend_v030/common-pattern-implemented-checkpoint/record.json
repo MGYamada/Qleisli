@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.actual-issue-checkpoint",
+  "version": 1,
+  "local_implementation_commit": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "published_head_at_update": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+  "issues": [
+    {
+      "issue": 32,
+      "before_body_sha256": "0a9e3dfe8ae2581611bef3d8aa4fa9f88f246af10e7fcf4ebb4f558d0c1917e6",
+      "after_body_sha256": "0411f6d1791d5c0576c5b790ec3783d2d1575013863f16ac7963b20787f41de0",
+      "after_updated_at": "2026-10-05T17:04:48Z",
+      "exact_expected_body_readback": true,
+      "criteria_unchanged": true,
+      "criteria": 10,
+      "state": "open",
+      "milestone_unchanged": true
+    },
+    {
+      "issue": 317,
+      "before_body_sha256": "40a9e4537553692d931ac7a1b3840a4595bd92f7881f22a28a63bc0f097c31d1",
+      "after_body_sha256": "b295c9228091a4c6a8a6189a4b7a4d821c0450be5f5e726d663eeaae0f095141",
+      "after_updated_at": "2026-10-05T17:04:51Z",
+      "exact_expected_body_readback": true,
+      "criteria_unchanged": true,
+      "criteria": 24,
+      "state": "open",
+      "milestone_unchanged": true
+    },
+    {
+      "issue": 142,
+      "before_body_sha256": "dbe58e601123938c801d65ce1f0d2a09fe80d4224b58580cae84b30f55c9f483",
+      "after_body_sha256": "f4da288064386934d09272b10b1899c08bb0314a691b383da72721f26cd6ddaf",
+      "after_updated_at": "2026-10-05T17:04:54Z",
+      "exact_expected_body_readback": true,
+      "criteria_unchanged": true,
+      "criteria": 10,
+      "state": "open",
+      "milestone_unchanged": true
+    }
+  ],
+  "scope": "Ordinary component checkpoint only; no closure, criterion change, guarantee admission or release readiness."
+}

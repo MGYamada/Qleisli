@@ -1,0 +1,219 @@
+{
+  "format": "qleisli.type-synthesis-review.v1",
+  "issue": 27,
+  "date": "2026-10-06",
+  "reviewer": "/root",
+  "review_kind": "integration review by the development agent; not an independent author or human Guardian ruling",
+  "baseline_commit": "499a4e532280841489c02b8a6468e296ddbac538",
+  "criteria": [
+    {
+      "number": 1,
+      "requirement": "T versus Q<T> is the primary boundary",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/types.rs",
+        "tests/ordinary_types.rs"
+      ],
+      "finding": "One shared exact ordinary tree and explicit Q constructor.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 2,
+      "requirement": "No CBit, CBits or general C modality",
+      "evidence": [
+        "src/frontend/types.rs",
+        "tests/ordinary_types.rs"
+      ],
+      "finding": "Retired spellings reject; transport classical-role tags do not define source types.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 3,
+      "requirement": "Gamma/Delta separate ordinary/static values and linear owners",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/check.rs",
+        "src/frontend/check/body.rs",
+        "tests/source_judgments.rs"
+      ],
+      "finding": "Reference now gives the conceptual judgment; bindings share storage but exact linear types and move identities enforce distinct reuse rules, including products and zero-width owners.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 4,
+      "requirement": "Ownership and effects are orthogonal",
+      "evidence": [
+        "src/frontend/effects.rs",
+        "tests/body_effects.rs"
+      ],
+      "finding": "Principal effects are inferred compositionally from bodies/callees; annotations cannot upgrade false claims or inflate pure calls.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 5,
+      "requirement": "q constructs, Q types and unmarked syntax have distinct roles",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "tests/ordinary_types.rs",
+        "tests/source_judgments.rs"
+      ],
+      "finding": "Reference explicitly distinguishes coherent control/quantum folds from Q ownership in ordinary syntax. Future match/qmatch forms are not claimed implemented.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 6,
+      "requirement": "Unit follows the generic boundary without phase erasure",
+      "evidence": [
+        "tests/quantum_unit_source.rs",
+        "tests/quantum_unit_maps.rs",
+        "tests/quantum_tuple_unitors.rs",
+        "tests/unit_patterns.rs"
+      ],
+      "finding": "Fresh native checks against independent scalar/unitor requests retain exact phase and external references; numerical comparisons supplement exact requests.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 7,
+      "requirement": "Static descriptions remain distinct from live owners",
+      "evidence": [
+        "src/frontend/check.rs",
+        "src/frontend/check/body.rs",
+        "tests/source_judgments.rs",
+        "tests/basis_polymorphism.rs"
+      ],
+      "finding": "Static Nat/Basis/Op categories cannot be read as runtime owners/values; opaque Basis and explicit operation access remain distinct.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 8,
+      "requirement": "Equality, coherence and physical maps are distinct",
+      "evidence": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/types.rs",
+        "tests/frontend_types.rs",
+        "tests/basis_polymorphism.rs"
+      ],
+      "finding": "Tags, tuple trees and sizes retain identity; explicit structural maps are not definitional equality or implicit physical conversions.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 9,
+      "requirement": "No implicit rule chooses distinct quantum meanings",
+      "evidence": [
+        "tests/inference_law.rs",
+        "tests/body_effects.rs"
+      ],
+      "finding": "Explicit providers retain different reference actions; expected types/names/annotations do not manufacture access, effects or coercions.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 10,
+      "requirement": "No implicit read, discard, duplicate or physical permutation",
+      "evidence": [
+        "src/frontend/check/body.rs",
+        "src/frontend/check/body/special.rs",
+        "tests/ordinary_types.rs",
+        "tests/source_judgments.rs",
+        "tests/quantum_tuple_unitors.rs"
+      ],
+      "finding": "Exact Q atomicity, closed coherent-label scope, moves and explicit ordered maps are checked on complete original source before projection.",
+      "status": "evidence_present"
+    },
+    {
+      "number": 11,
+      "requirement": "Concrete conveniences are deferred to #197",
+      "evidence": [
+        "docs/src/reference/type-model.md"
+      ],
+      "finding": "The published contract retains explicit equality/coherence and inference boundaries; no #197 feature or acceptance criterion is imported into this completion review.",
+      "status": "evidence_present"
+    }
+  ],
+  "observed_local_tests": {
+    "commands": [
+      {
+        "session": 23896,
+        "targets": [
+          "quantum_unit_source",
+          "quantum_unit_maps",
+          "quantum_tuple_unitors",
+          "unit_patterns"
+        ],
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "exit_code": 0
+      },
+      {
+        "session": 71240,
+        "targets": [
+          "source_judgments",
+          "body_effects",
+          "frontend_types",
+          "inference_law",
+          "ordinary_types",
+          "basis_polymorphism"
+        ],
+        "passed": 54,
+        "failed": 0,
+        "ignored": 0,
+        "exit_code": 0
+      }
+    ],
+    "toolchain": "cargo default as configured in rust-toolchain.toml",
+    "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "command_environment": {
+      "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+    },
+    "raw_transcripts": "Tool outputs in this chat; this file records observed summaries, not reconstructed raw output."
+  },
+  "source_sha256": {
+    "docs/src/reference/type-model.md": "07a7bb2fb55b76e2274b377051cb1555ef78dd51383dfcc11359ddcc577eeed3",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "src/frontend/check.rs": "c85f5f62fcab1340703c6e5eaaf5028a44dde7c4e3fa73fb46518ecd3a1f2dec",
+    "src/frontend/check/body.rs": "a78a248323f3fd72e55ee83eeb2d547e6adbb4ecf5bef86cd93871108eb82777",
+    "src/frontend/check/body/special.rs": "60ff2e3935ec9a5943e560a40ead2b31d9c3d544fd6487351e9e852670da8195",
+    "src/frontend/effects.rs": "61fa01297c302881c52f951202f304198e80e1f70c88c4bdb22398f101d57909",
+    "tests/ordinary_types.rs": "df68d2a9bb763c660b08484d9680c35f7fd73577558bf451988633601160fc9c",
+    "tests/source_judgments.rs": "a8284448bada4e95fe810f77d9c404a49ff83b5e6404a794f14714724bb053d4",
+    "tests/body_effects.rs": "3b906375921767dde842d5955c86563a2c7608c98ecd0b2f6a93ce5cd9c2d30d",
+    "tests/inference_law.rs": "eb0ba203ed4390ecd71b35e568b8c4c0acb5debaf65b377dd7114d45df521935",
+    "tests/frontend_types.rs": "fb5d5604afd483e4beff0ef2973943d69586a814d15e92128b64880cb020de33",
+    "tests/basis_polymorphism.rs": "f6c41c7124cdb6cbf22cb805598a278ffc633ff677f9c90cc4e8cb6509255a41",
+    "tests/quantum_unit_source.rs": "92f7e75994e33338268e4d95e93fd95b56d9ff6f51a4f0f8bed83c2351b7076a",
+    "tests/quantum_unit_maps.rs": "97a7174bae2452369bd268670d53e9c5bc42568ef77a9888a06e6576bd5c4783",
+    "tests/quantum_tuple_unitors.rs": "287a3a99990eea2f6b39884cdac176c99cf47318a57d956cd79573d26dc8d495",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45"
+  },
+  "limits": [
+    "No new acceptance code, native schema, Lean definition, primitive meaning or protected guarantee was changed.",
+    "This review does not close #43, #44, #32 or #196. Existing finite/Raw and selected profile differences remain obligations in their Issues.",
+    "No fresh local Lean build/audit/replay, full source-preservation theorem, QS/PR/RS/EXACT discharge, human interpretation or release approval is claimed.",
+    "#27 remains open pending the integrated documentation checks and hosted checkpoint; no completion is counted by this file."
+  ],
+  "documentation_checks": {
+    "source_links": "python3 scripts/check_docs.py: exit 0, 2186 local links, 30 Markdown anchors, 206 Lean modules",
+    "mdbook": "mdBook 0.5.4 build: exit 0",
+    "rendered_links": "python3 scripts/check_book.py: exit 0, 29 HTML files, 1224 local links, 471 anchors",
+    "fixture_budget": "exit 0, 17800 files and 133420852 bytes; ceilings unchanged",
+    "constitutional_continuity": "exit 0 against 38baae7d19535602b21270e11e97617d45205b37; identity/continuity, not a fresh proof replay",
+    "whitespace": "git diff --check: exit 0"
+  },
+  "hosted_ci": {
+    "run": 37463471568,
+    "head": "ae0b2804177aa31f56a3ac21735240d41f1863e5",
+    "observed_status": "in_progress",
+    "completed_producers": [
+      "check-docs",
+      "check-lean",
+      "check-interop"
+    ],
+    "limits": "Predecessor checkpoint only; this new Reference text has not been pushed or checked by hosted CI. Do not cancel the confirmed-live predecessor solely to publish this documentation checkpoint."
+  }
+}

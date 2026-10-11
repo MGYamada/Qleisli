@@ -3,7 +3,7 @@
 
 Atoms retain independent semantic obligations. A successful trace does not
 certify Hadamard, provider powers, inverse Fourier or a named QPE instrument.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy

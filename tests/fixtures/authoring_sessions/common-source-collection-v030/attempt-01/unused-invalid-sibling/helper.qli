@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::h;
+use std::quantum::phase_eighth;
+fn local(q: Q<Bit>) -> Q<Bit> { h(q) }
+pub fn helper(q: Q<Bit>) -> Q<Bit> { phase_eighth(local(q)) }
+fn invalid(q: Q<Bit>) -> Q<Bit> { let spent = q; q }

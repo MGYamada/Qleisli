@@ -1,0 +1,29 @@
+use evolution::evolve;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::transforms::qft2;
+use std::transforms::qft3;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn square(q: Q<Bit>) -> Q<Bit> { repeat_static(2, evolve, q) }
+unitary fn fourth(q: Q<Bit>) -> Q<Bit> { repeat_static(4, evolve, q) }
+
+// Results are returned in increasing bit weight, followed by the target.
+pub observe fn phase2(q: Q<Bit>) -> ((CBit, CBit), Q<Bit>) {
+    let (a, q) = qif(h(init0()), q) { 0 => identity, 1 => evolve };
+    let (b, q) = qif(h(init0()), q) { 0 => identity, 1 => square };
+    let (a, b) = split(adjoint(qft2, join(a, b)));
+    ((measure_z(a), measure_z(b)), q)
+}
+
+pub observe fn phase3(q: Q<Bit>) -> (((CBit, CBit), CBit), Q<Bit>) {
+    let (a, q) = qif(h(init0()), q) { 0 => identity, 1 => evolve };
+    let (b, q) = qif(h(init0()), q) { 0 => identity, 1 => square };
+    let (c, q) = qif(h(init0()), q) { 0 => identity, 1 => fourth };
+    let (ab, c) = split(adjoint(qft3, join(join(a, b), c)));
+    let (a, b) = split(ab);
+    (((measure_z(a), measure_z(b)), measure_z(c)), q)
+}

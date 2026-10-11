@@ -1,0 +1,130 @@
+
+running 8 tests
+test non_utf8_command_reports_usage_without_panicking ... ok
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.31s
+
+
+running 8 tests
+test json_type_failure_is_located_in_the_original_source ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_command_identity_is_independent_of_leading_options ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.55s
+
+
+running 3 tests
+test invalid_flags_and_failed_sampling_never_emit_shots ... ok
+test cli_new_default_has_an_explicit_legacy_escape ... ok
+test seeded_samples_have_atomic_human_and_json_outputs ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+
+
+running 7 tests
+test eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use ... ok
+test ignored_measurement_and_unit_return_keep_observation_before_later_logic ... ok
+test bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order ... ok
+test pending_first_argument_keeps_entangled_owner_during_later_argument_measurement ... ok
+test repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids ... ok
+test representable_phases_match_independent_exact_targets_and_interference ... ok
+test unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+
+running 8 tests
+test raw_capability_boundary_explicitly_rejects_unimplemented_bits_targets ... ok
+test unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked ... ok
+test open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments ... ok
+test static_zero_one_two_folds_and_selection_produce_runtime_bits ... ok
+test false_and_measurement_is_eager_and_cannot_hide_observation_effects ... ok
+test repeated_shared_calls_keep_each_invocations_classical_values ... ok
+test ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening ... ok
+test all_four_truth_rows_match_independent_constants_in_both_profiles ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.84s
+
+
+running 11 tests
+test reserved_word_cannot_name_a_local_module ... ok
+test nonpublic_import_reports_calling_file_and_utf8_byte_span ... ok
+test converging_import_paths_do_not_report_a_cycle ... ok
+test std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules ... ok
+test bell_module_and_bundled_imports_resolve ... ok
+test unknown_sealed_name_is_not_reinterpreted_as_user_code ... ok
+test algorithm_routines_are_bundled_source_with_private_helpers ... ok
+test import_cycles_and_name_collisions_are_rejected ... ok
+test missing_module_and_name_are_distinct_errors ... ok
+test deep_import_cycle_reports_the_back_edge_and_cycle_path ... ok
+test long_acyclic_import_chain_loads_on_a_small_stack ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+
+running 8 tests
+test common_ast_keeps_argument_count_exact_patterns_and_original_spans ... ok
+test sized_wildcards_cannot_erase_nested_or_zero_width_owners_even_in_zero_folds ... ok
+test exact_shape_owner_and_unused_declaration_failures_remain_located ... ok
+test sized_inputs_retain_whole_parameter_trees_and_independent_swap_action ... ok
+test sized_nonlinear_wildcards_are_shared_by_parameters_let_and_zero_fold ... ok
+test static_substitutions_and_provider_bindings_keep_declaration_and_source_identity ... ok
+test discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase ... ok
+test finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.02s
+
+
+running 8 tests
+test selected_basis_and_request_conflicts_reject_before_native_or_request_reads ... ok
+test selected_open_signature_checks_and_proposals_do_not_claim_closed_execution ... ok
+test selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes ... FAILED
+test selected_auto_keeps_hierarchy_fine_phase_and_exact_quantum_unit_axes ... FAILED
+test selected_static_fold_and_fresh_sampling_use_the_requested_instance ... ok
+test selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native ... FAILED
+test selected_mixed_sources_keep_independent_distributions_and_scope ... ok
+test selected_caller_h_request_rejects_x_once_without_a_raw_retry ... ok
+
+failures:
+
+---- selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes stdout ----
+
+thread 'selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes' (12828076) panicked at tests/selected_source_cli.rs:40:5:
+assertion `left == right` failed: Output { status: ExitStatus(unix_wait_status(256)), stdout: "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"contract: requested meaning has different child arity; sized instrument profile, named-qpe contract\",\"primary\":null,\"related\":[]}],\"result\":null}\n", stderr: "" }
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- selected_auto_keeps_hierarchy_fine_phase_and_exact_quantum_unit_axes stdout ----
+
+thread 'selected_auto_keeps_hierarchy_fine_phase_and_exact_quantum_unit_axes' (12828069) panicked at tests/selected_source_cli.rs:40:5:
+assertion `left == right` failed: Output { status: ExitStatus(unix_wait_status(256)), stdout: "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"sized preparation profile: operation/quantum basis must be Bit or Bits<n>\",\"primary\":{\"module\":\"main\",\"path\":\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-46433-0/main.qli\",\"start\":22,\"end\":26},\"related\":[]}],\"result\":null}\n", stderr: "" }
+  left: false
+ right: true
+
+---- selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native stdout ----
+
+thread 'selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native' (12828074) panicked at tests/selected_source_cli.rs:270:9:
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"format","severity":"error","message":"format: unknown runtime response; sized instrument profile, producer-consistency contract","primary":null,"related":[]}],"result":null}
+
+
+
+failures:
+    selected_auto_keeps_hierarchy_fine_phase_and_exact_quantum_unit_axes
+    selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native
+    selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes
+
+test result: FAILED. 5 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+

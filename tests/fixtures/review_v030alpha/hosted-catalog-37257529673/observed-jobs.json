@@ -1,0 +1,1144 @@
+{
+  "jobs": [
+    {
+      "id": 111597707340,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test fail-closed routing and required-check aggregation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Select validation from the exact commit and both sides of its diff",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Retain selection inputs and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 111597738994,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install the tested Rust toolchain for native host comparisons",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Fetch Rust dependencies before offline native host comparisons",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Reject kernel/backend source escape hatches and unaudited imports",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Audit axioms, unsafe/partial declarations and runtime replacements",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Replay retained proof reductions and refactoring equivalence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Replay the compiled project definitions through Lean's kernel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Reject backend unsafe, implemented_by, extern and partial counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Run all retained native comparisons with bounded parallelism",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Build and audit a clean relocated Linux native bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Exercise optional QIR/Python paths against the same audited bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Archive the freshly replayed Linux checker for distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Retain Linux native distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Retain complete coverage, per-command timings and independent logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39
+        }
+      ]
+    },
+    {
+      "id": 111597739013,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install validators and the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run cargo +1.98.1 build --example interop --bin qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Independently parse OpenQASM and verify QIR with LLVM",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Installed Python API and independently authored QIR input",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": 111597739043,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test registry policy and bind the exact shipped source inventory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Compile changed mathematical proofs and audit their declarations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Bind shipped schema types to rebuilt declarations and audited executable sources",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Replay every registered guarantee verifier against the built and audited environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        }
+      ]
+    },
+    {
+      "id": 111597739047,
+      "name": "check-rust-msrv",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install the minimum supported Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run cargo +1.85.0 test --all-targets",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 7
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "status": "pending",
+          "conclusion": null,
+          "number": 8
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "status": "pending",
+          "conclusion": null,
+          "number": 9
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "status": "pending",
+          "conclusion": null,
+          "number": 10
+        },
+        {
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 11
+        },
+        {
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 12
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 13
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 14
+        },
+        {
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 15
+        },
+        {
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "status": "pending",
+          "conclusion": null,
+          "number": 16
+        },
+        {
+          "name": "Run cargo +1.85.0 clippy --all-targets -- -D warnings",
+          "status": "pending",
+          "conclusion": null,
+          "number": 17
+        },
+        {
+          "name": "Run cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "status": "pending",
+          "conclusion": null,
+          "number": 18
+        },
+        {
+          "name": "Run cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "status": "pending",
+          "conclusion": null,
+          "number": 19
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "pending",
+          "conclusion": null,
+          "number": 20
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "pending",
+          "conclusion": null,
+          "number": 21
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 41
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "pending",
+          "conclusion": null,
+          "number": 42
+        }
+      ]
+    },
+    {
+      "id": 111597739053,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Install the pinned official mdBook binary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build the book with the selected mdBook version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Retain the rendered book for review",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Check edition 2026 coverage of every Qleisli source and QLT draft",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run python3 scripts/test_check_docs.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run python3 scripts/test_current_source_fixtures.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Check constitutional identity and the historical candidate packet",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Check recorded scoped QS admission and current evidence identities",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Run python3 scripts/test_maintain_release.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Run python3 scripts/test_native_harness.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Run python3 scripts/test_check_production_coverage.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Run python3 scripts/check_production_coverage.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Run python3 scripts/test_check_lean_kernel.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Run python3 scripts/test_check_schema_registry.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Run python3 scripts/check_schema_registry.py --source-only",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Run python3 scripts/check_docs.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Verification inventory coverage and independent oracle calibration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Run python3 scripts/test_check_authoring_sessions.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Run python3 scripts/check_authoring_sessions.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Run python3 scripts/test_check_input_corpus.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Run python3 scripts/check_input_corpus.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        },
+        {
+          "name": "Run python3 scripts/test_check_distribution.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24
+        },
+        {
+          "name": "Run python3 scripts/test_check_imaginary_v1_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25
+        },
+        {
+          "name": "Run python3 scripts/check_imaginary_v1_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26
+        },
+        {
+          "name": "Run python3 scripts/test_check_semantic_contract_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27
+        },
+        {
+          "name": "Run python3 scripts/check_semantic_contract_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28
+        },
+        {
+          "name": "Check whitespace throughout the committed tree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 30
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 31
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 62
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 63
+        }
+      ]
+    },
+    {
+      "id": 111597739061,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Fetch package dependencies before offline distribution checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Verify clean package and complete source archive",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Retain candidate hashes, archives and command logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": 111597739062,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Sized Rust and Python source dialect comparisons on small inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Sized primitive omissions must fail compilation",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10
+        },
+        {
+          "name": "Build public API documentation without warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Execute public API documentation examples",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15
+        },
+        {
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16
+        },
+        {
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19
+        },
+        {
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20
+        },
+        {
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21
+        },
+        {
+          "name": "Seeded source differential checks with an independent complex oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22
+        },
+        {
+          "name": "Frozen VM-22 finite/source comparison inputs",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23
+        },
+        {
+          "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 26
+        },
+        {
+          "name": "Run cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 28
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 29
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 30
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 59
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 60
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 61
+        }
+      ]
+    },
+    {
+      "id": 111597739076,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37257529673,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install MSRV and Intel macOS compilation target",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Exercise descriptor-relative source loading on macOS",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check source budgets, project loading and edition manifests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Build with Rust's existing Intel macOS minimum",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Install the pinned native kernel toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Build and audit a clean relocated macOS native bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Archive the freshly replayed macOS checker for distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Retain macOS native distribution and validation records",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31
+        }
+      ]
+    }
+  ]
+}

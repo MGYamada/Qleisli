@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.6194375000195578,
+  "recorded_utc": "2026-10-05T17:12:00.459179+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "duplicate-static-natural-finite-check-text.native.jsonl",
+  "stdout_raw": "duplicate-static-natural-finite-check-text.stdout.txt",
+  "stderr_raw": "duplicate-static-natural-finite-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "aa7bc4865563e218040a8f30ce209949049b6b3dbcaa55ed67b6bae6ba35ff74",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural/main.qli:4:29: unsupported: finite profile does not support static Nat parameters\n"
+}

@@ -10,7 +10,7 @@ use std::quantum::split;
 use std::observe::measure_z;
 use kernel::kernel;
 
-observe fn main() -> (CBit, CBit, CBit) {
+observe fn main() -> (Bit, Bit, Bit) {
     let q = join(join(init0(), x(init0())), x(init0()));
     let q = kernel(q);
     let (prefix2, w2) = split(q);

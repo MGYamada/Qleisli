@@ -1,0 +1,15 @@
+use std::quantum::{init0, h};
+use std::observe::{measure_z, discard};
+observe fn main() -> Bit {
+    let c = measure_z(h(init0()));
+    if c {
+        let d = measure_z(h(init0()));
+        if d {
+            let a = init0();
+            let b = init0();
+            discard(a);
+            discard(b);
+            1
+        } else { 1 }
+    } else { 1 }
+}

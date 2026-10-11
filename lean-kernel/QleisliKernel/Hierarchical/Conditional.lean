@@ -3,7 +3,7 @@ import QleisliKernel.Hierarchical.TypedRule
 import QleisliKernel.Hierarchical.Derivation
 
 /-! Whole-artifact derivation conditional on every bound finite obligation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No finite predicate, success flag or request list is executable input. A pending
 result is not evidence until the same requests are independently discharged. -/
 

@@ -1,0 +1,23 @@
+2026-10-05T02:30:27.6540821Z      Running tests/frontend_types.rs (target/debug/deps/frontend_types-bdfb9ade6936865d)
+2026-10-05T02:30:27.6550659Z 
+2026-10-05T02:30:27.6550736Z running 3 tests
+2026-10-05T02:30:27.6559271Z test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... FAILED
+2026-10-05T02:30:27.6559777Z test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+2026-10-05T02:30:27.6563593Z test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+2026-10-05T02:30:27.6563800Z 
+2026-10-05T02:30:27.6563852Z failures:
+2026-10-05T02:30:27.6563916Z 
+2026-10-05T02:30:27.6564076Z ---- ordinary_types_share_the_sized_signature_classifier_without_general_basis_support stdout ----
+2026-10-05T02:30:27.6564295Z 
+2026-10-05T02:30:27.6564521Z thread 'ordinary_types_share_the_sized_signature_classifier_without_general_basis_support' (104784) panicked at tests/frontend_types.rs:78:6:
+2026-10-05T02:30:27.6569118Z called `Result::unwrap_err()` on an `Ok` value: ParsedProgram { sources: {"main": "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }"}, syntax: {"main": Module { uses: [], decls: [Decl { public: true, kind: Unitary, name: Ident { text: "f", span: Span { start: 15, end: 16 } }, static_params: [], requires: [], params: [Param { pattern: Pattern { kind: Name(Ident { text: "q", span: Span { start: 17, end: 18 } }), span: Span { start: 17, end: 18 } }, ty: Type { kind: Q(Type { kind: Unit, span: Span { start: 22, end: 26 } }), span: Span { start: 20, end: 27 } }, span: Span { start: 17, end: 27 } }], return_type: Type { kind: Q(Type { kind: Unit, span: Span { start: 34, end: 38 } }), span: Span { start: 32, end: 39 } }, body: Quantum(Block { implicit_result: false, statements: [], result: Expr { kind: Name(Ident { text: "q", span: Span { start: 42, end: 43 } }), span: Span { start: 42, end: 43 } }, span: Span { start: 40, end: 45 } }), span: Span { start: 0, end: 45 } }], span: Span { start: 0, end: 45 } }}, modules: {"main": Module { functions: [Function { lexical: Some(Table { definition: DefId(0), binders: [BinderInfo { key: BinderKey { name: "q", id: BinderId { definition: DefId(0), ordinal: 0 } }, shadowed: None, span: Span { start: 17, end: 18 }, kind: Runtime, scope: ScopeId { definition: DefId(0), ordinal: 0 } }], uses: [UseInfo { name: "q", span: Span { start: 42, end: 43 }, scope: ScopeId { definition: DefId(0), ordinal: 1 }, target: Local(BinderId { definition: DefId(0), ordinal: 0 }), global: None, static_parameter: None }], scopes: [None, Some(ScopeId { definition: DefId(0), ordinal: 0 })] }), name: "f", effect: Unitary, parameters: [], arguments: [(Name(BindingName { name: "q", key: Some(BinderKey { name: "q", id: BinderId { definition: DefId(0), ordinal: 0 } }), shadowed: None }, Span { start: 17, end: 18 }), Type { kind: Q(Type { kind: Unit }) }, Span { start: 17, end: 18 })], result: Type { kind: Q(Type { kind: Unit }) }, requires: [], body: Block { statements: [], result: Expr { kind: Name(Reference { name: "q", site: Some(UseSiteId { definition: DefId(0), ordinal: 0 }), local: Some(BinderKey { name: "q", id: BinderId { definition: DefId(0), ordinal: 0 } }) }), span: Span { start: 42, end: 43 } }, span: Span { start: 40, end: 45 } }, span: Span { start: 0, end: 45 } }] }}, resolution: Resolution { modules: [ModuleNames { name: "main", declarations: {"f": DefId(0)} }], names: {"main": ModuleId(0)}, declarations: [Declaration { module: ModuleId(0), name: ("main", "f"), ast_index: 0, public: true, kind: Unitary }], scopes: {ModuleId(0): Scope { imports: {}, edges: [] }} } }
+2026-10-05T02:30:27.6573631Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-05T02:30:27.6573874Z 
+2026-10-05T02:30:27.6573881Z 
+2026-10-05T02:30:27.6573949Z failures:
+2026-10-05T02:30:27.6574223Z     ordinary_types_share_the_sized_signature_classifier_without_general_basis_support
+2026-10-05T02:30:27.6574492Z 
+2026-10-05T02:30:27.6574701Z test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-05T02:30:27.6574972Z 
+2026-10-05T02:30:27.6575112Z error: test failed, to rerun pass `--test frontend_types`
+2026-10-05T02:30:27.6595306Z ##[error]Process completed with exit code 101.

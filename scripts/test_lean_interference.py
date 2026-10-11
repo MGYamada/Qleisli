@@ -3,7 +3,7 @@
 
 Build a temporary test executable importing the actual kernel definitions.
 There is no new public checker protocol and numerical results issue no evidence.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse
@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from current_source_fixtures import current_source_fixture, source_hashes
 import random
 import subprocess
 import tempfile
@@ -139,9 +140,12 @@ def source_check(binary, log):
         baseline = json.loads((FIXTURE / record).read_text())
         source = FIXTURE / directory / "main.qli"
         assert hashlib.sha256(source.read_bytes()).hexdigest() == baseline["source_sha256"]
-        command = [str(binary), "run", str(source.parent), "--format=json"]
+        project = current_source_fixture(source.parent)
+        command = [str(binary), "run", str(project), "--format=json"]
         run = subprocess.run(command, capture_output=True, text=True, timeout=15)
-        log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr))
+        log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr,
+                        historical_source_sha256=baseline["source_sha256"],
+                        executed_source_sha256=source_hashes(project)))
         assert run.returncode == 0, run.stderr
         distribution = json.loads(run.stdout)["result"]["distribution"]
         assert {tuple(row["bits"]) for row in distribution} == {

@@ -5,7 +5,7 @@ import Qleisli.Semantics.RawInstrument
 
 /-! Every actual observing evaluator step refines the independent original
 instrument judgment, including all hidden histories and simultaneous phis.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Instrument.Denotation
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.Observation QleisliKernel.Raw.Instrument QleisliKernel.Finite

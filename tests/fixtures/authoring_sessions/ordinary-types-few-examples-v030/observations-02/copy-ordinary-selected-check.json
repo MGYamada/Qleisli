@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/private/tmp/qleisli-classical-functions-after",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/attempt-02/copy-ordinary/main.qli",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-06T06:45:34.492328+00:00",
+  "case": "copy-ordinary",
+  "mode": "selected",
+  "verb": "check",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "Actual bounded observation; no child-start attestation, general LLM benchmark or source-preservation proof.",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-02/copy-ordinary-selected-check.stdout.txt",
+      "sha256": "3952457dc0657ad8a33c306fed3b13d7ecf86755b315c5f9e60a5b56bfc180fe"
+    },
+    "stderr": {
+      "path": "observations-02/copy-ordinary-selected-check.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  }
+}

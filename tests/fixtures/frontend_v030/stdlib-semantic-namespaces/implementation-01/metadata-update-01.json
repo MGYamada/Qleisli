@@ -1,0 +1,65 @@
+{
+  "format": "qleisli.namespace-reviewed-metadata-update",
+  "version": 1,
+  "source_updates": [
+    {
+      "path": "src/frontend/source.rs",
+      "before_sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+      "after_sha256": "caa1c9a6f61876f2942c0ad711b4c57064407acdb271998a0991a5fd8b04273b",
+      "surface": "unchanged private registry public scanner surface"
+    },
+    {
+      "removed": {
+        "path": "stdlib/src/arithmetic.qli",
+        "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+        "group": "source",
+        "surface": null
+      }
+    },
+    {
+      "removed": {
+        "path": "stdlib/src/routines.qli",
+        "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+        "group": "source",
+        "surface": null
+      }
+    },
+    {
+      "removed": {
+        "path": "stdlib/src/transforms.qli",
+        "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+        "group": "source",
+        "surface": null
+      }
+    },
+    {
+      "added": {
+        "path": "stdlib/src/measurement.qli",
+        "sha256": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
+        "group": "source",
+        "surface": null
+      }
+    },
+    {
+      "added": {
+        "path": "stdlib/src/reflection.qli",
+        "sha256": "99ea6514ac57b990894291101a580e39256c5e5471f8bf14de8d0856876a1382",
+        "group": "source",
+        "surface": null
+      }
+    },
+    {
+      "added": {
+        "path": "stdlib/src/transform.qli",
+        "sha256": "3b097e71dc74b51c0e1e09b66b33aa319fed599c14a1b96769e5076c2a8aff40",
+        "group": "source",
+        "surface": null
+      }
+    }
+  ],
+  "before_source_count": 261,
+  "after_source_count": 261,
+  "before_surface_sha256": "9d83cf8b85efbe88c6bb5db0599e07bab81320894c0bd4ad0d0326eba003f831",
+  "after_surface_sha256": "eeea8a160d7a59fbdf897436a2d59e8988dcec014157bafeb6ad02e7617e99dd",
+  "review": "Independent library review 01 identifies exact moved bodies, source rules and retired exports. No enum, capacity, acceptance path, evidence/proof status or guarantee changed."
+}

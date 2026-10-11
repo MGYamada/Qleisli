@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.isometry-inventory-version-metadata-change",
+  "version": 1,
+  "changed_source_hash": {
+    "path": "src/interchange/hierarchical/runtime.rs",
+    "old_sha256": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
+    "new_sha256": "0ee4c7afb8363d9e38699c1783345e0e78adbed3f172d891a31c46f1d46ebfda",
+    "surface_unchanged": true
+  },
+  "inventory_old_sha256": "d70c7a1d3be42231af082aaa96baeffde77c367b128d9e5444564b3f922d1d6b",
+  "inventory_new_sha256": "4d7737606664ea12e8285faa16ec6a5ca01714f024769381b98f42e07e787373",
+  "inventory_only_one_hash_changed": true,
+  "preserved": "All public signatures, source rows/count, constructors, capacities, groups, boundary entry points/statuses, native modes, path classifications, proof/cutover gates, guarantee and publication scope unchanged.",
+  "coverage_surface": {
+    "old_sha256": "f53d84437a10bd19318fe4edb1152eca0432b2dcb0a6a9afef3cdd137322f882",
+    "new_sha256": "915be1fab21236c1c459a99de85123e6f0f9a44216848baa844f0d8572856b28"
+  },
+  "coverage_old_sha256": "ce0308085da1510cbbae6c3336625a67e964d7f4708b55b0762610ab147b9098",
+  "coverage_new_sha256": "479313a17e6754e5ace7b74bf3873a7bcfa8c9a243e5c2c8e2736a167f77a56d",
+  "coverage_only_surface_digest_changed": true
+}

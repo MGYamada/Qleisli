@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-identity/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:0..0: visibility: dependency main::entry is private\n",
+  "native_invocations": 0,
+  "seconds": 0.006052915996406227,
+  "transcript": "main:0..0: visibility: dependency main::entry is private\n"
+}

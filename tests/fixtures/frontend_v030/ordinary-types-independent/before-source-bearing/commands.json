@@ -1,0 +1,82 @@
+[
+  {
+    "label": "version",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:50:37.680221+00:00",
+    "seconds": 0.1688147080130875,
+    "exit_code": 0,
+    "stdout": "version.stdout.txt",
+    "stderr": "version.stderr.txt"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:50:37.849162+00:00",
+    "seconds": 0.2670474170008674,
+    "exit_code": 0,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/Observe.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:50:38.116394+00:00",
+    "seconds": 0.4895389589946717,
+    "exit_code": 0,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "canonical-retained-source",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-source-bearing/canonical-retained-source",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:50:39.026025+00:00",
+    "seconds": 0.29628741601482034,
+    "exit_code": 0,
+    "stdout": "canonical-retained-source.stdout.txt",
+    "stderr": "canonical-retained-source.stderr.txt"
+  },
+  {
+    "label": "legacy-retained-source",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-source-bearing/legacy-retained-source",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:50:39.322696+00:00",
+    "seconds": 1.163289625023026,
+    "exit_code": 0,
+    "stdout": "legacy-retained-source.stdout.txt",
+    "stderr": "legacy-retained-source.stderr.txt"
+  }
+]

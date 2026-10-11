@@ -5,7 +5,7 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Flatten
 
 /-! Complete output geometry and Kraus completeness of accepted instruments.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 All geometry is derived from the actual readout checks, including arbitrary
 measurement order, retained registers and zero-width quantum owners. -/
 

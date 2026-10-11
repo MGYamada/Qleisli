@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.ordinary-types-independent-source-bearing-cases",
+  "version": 1,
+  "reason": "Explicit before/after source-bearing finite contract fixture; compare actual retained snapshots separately from unchanged semantic fields.",
+  "cases": [
+    {
+      "name": "canonical-retained-source",
+      "entry": "main::main",
+      "naturals": {},
+      "source_sha256": "0a2ce8435c0443e6ca315f79e0f8f7aa0d81334a24657c59771a1a7109a35f17",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "legacy-retained-source",
+      "entry": "main::main",
+      "naturals": {},
+      "source_sha256": "1c54d373ece17402de4160cb7852c7e91901092f626b3a028b4be28749897474",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  ]
+}

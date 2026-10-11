@@ -1,0 +1,56 @@
+{
+  "issue": 33,
+  "baseline_commit": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+  "sources": [
+    {
+      "path": "src/frontend/ast.rs",
+      "before_sha256": "3b7dc9a0da1b4431169a5919ec9f6e480df3dbb3c020d495835d6a8e55e0c3aa",
+      "current_sha256": "9b06ac6247e962403f1ec146efced95fcc2a2cc7e336a137a2e27e72d6de0d5a",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "before_sha256": "d9e86b4a7ae46908b09c44fd7d3035beae0157fa366ecbde1efcd05965bbac8a",
+      "current_sha256": "fd317838670c0c31751c7519136cf8fbd4be6e93cb2580775cae02f5fe3844ce",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "before_sha256": "696cc9aa937a8cdfeed9952f9dcd7b1ff44f2d7364f6efcf7134a0a50d6afa7a",
+      "current_sha256": "8c905f2bd1d3e029579e322a0f302bc6694eca88b017721d3e5f91265bf4902c",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "6bbc511849f1ecb8b4cc73fc76763d5b29a07d1dc8221b3cbaf51cb226f2f7f2",
+      "current_sha256": "fdb5780ba9630318b07abce108d2390f540953c49d75067694c59913379b034a",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "before_sha256": "d03d058dee3688017ab6d191cac0bf98ab3317d1a5745b367a0d8becb9086fa3",
+      "current_sha256": "cbb693f73fe3ddcc1c1487c2f2d85bbaa0e75f213b7fd5b1e132113ebb198f20",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/specialize/raw.rs",
+      "before_sha256": "4d2632ddd2f001aee17a39bf02c01e2974ec283ee0cfee7745973bc209fd76c0",
+      "current_sha256": "489178ba7524b1c4b133425b1eb5c0ccfd92755940571c44a6888d97cffb6eca",
+      "surface_and_capacity": "unchanged"
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation.rs",
+      "before_sha256": "23e64c112dcf43e000487b0b61fd4b119ed41b49781a1b9d795df558db43e555",
+      "current_sha256": "1d97656ccf864c7d40495627b80d2812f87f80e978498039e13b27e9c0fd4546",
+      "surface_and_capacity": "unchanged"
+    }
+  ],
+  "comparison_sources": [],
+  "coverage": {
+    "before_sha256": "f170cc1714f2b2b0c1ccb3758f8b26c72c390182432e0bb0e66f0402b437a1e9",
+    "current_sha256": "2d57987b42b5ec291374457f08a65c6c1d83d07a9afb30eac28a034025ba16cc",
+    "boundaries_public_interfaces_capacities_proof_gates": "unchanged"
+  },
+  "scope": "Retire three source spellings and preserve direct literal named repetition under existing #33 contract. No new native acceptance rule, general static primitive provider, guarantee admission or generic QFT work.",
+  "runtime_group_regression": "runtime-group-probe/observations.json"
+}

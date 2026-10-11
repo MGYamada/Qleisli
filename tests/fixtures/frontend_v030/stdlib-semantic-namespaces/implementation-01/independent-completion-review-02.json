@@ -1,0 +1,161 @@
+{
+  "format": "qleisli.independent-stdlib-completion-review-supplement",
+  "version": 1,
+  "issue": 317,
+  "recorded_utc": "2026-10-06T03:37:26.119705+00:00",
+  "clock_source": "Host Python datetime.now(timezone.utc) at recording time, not an execution timestamp.",
+  "reviewer": {
+    "task": "/root/namespace_contract_audit",
+    "role": "Independent read-only review of root-owned negative derivative and other agents active-consumer repairs. Did not author these repaired scripts/tests or execute their validation.",
+    "authorship_limit": "Earlier normative stdlib documentation authorship remains disclosed by review01; this supplement does not retroactively make that work independent.",
+    "authority_limit": "No human Guardian act, proof discharge, Issue close or scope change."
+  },
+  "prior_review": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-completion-review-01.json",
+    "sha256": "1ff4d88a36e8a701578b68a9f3fdfeb6345d49737527e96021dc41896fe62c80",
+    "preserved_unchanged": true,
+    "correction": "Review01 prematurely stated that no blocking implementation omission remained. It did not inspect all active corpus execution consumers: native_roundtrip and test_native_verification still executed the original six retired-namespace roots; input_corpus and benchmark selection also required migration. It also accepted an in-place diagnostic expectation change to the frozen negative manifest. Those omissions were real and discovered by the integrator after review01.",
+    "superseded_conclusion": "Review01 is scoped historical evidence, not the final atomic-migration completion finding. Its valid individual contract/test observations remain their original source states; this supplement qualifies its overly broad completion conclusion."
+  },
+  "scope": {
+    "head": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+    "integration_commit": null,
+    "criteria_count": 21,
+    "affected_criterion": 17,
+    "qft_exclusion": "Generic QFT implementation/public integration, fixed/generic equivalence and QFT-specific proof completion remain excluded from all v0.3.0/current goal; existing fixed support remains unchanged.",
+    "constitutional_limit": "Existing broader QS/PR/RS/EXACT obligations stay pending and both admitted scoped QLV1 guarantees retain their exact premises/status."
+  },
+  "reviewed_changes": [
+    {
+      "component": "Frozen negative diagnostics",
+      "files": [
+        "corpus/negative/manifest.json",
+        "corpus/negative/current-manifest.json",
+        "corpus/manifest.json",
+        "scripts/check_input_corpus.py",
+        "scripts/test_check_input_corpus.py"
+      ],
+      "finding": "The original manifest is byte-identical to HEAD and its pinned43869bbf identity. The separate explicitly selected derivative changes only measurement_adjoint code/message and adds baseline_sha256; all four ordered case/project identities and all four rejected source bytes are preserved.",
+      "guards": "current_negatives checks a separate local contained path, exact current and baseline hashes, schema/ordered identities and full case coverage. check_manifest validates selection; input_binding binds both manifests. Six new regression definitions cover missing selection, altered bytes, omitted/replaced source, stale baseline and escaping path.",
+      "acceptance_limit": "Expected diagnostic maintenance only. The unchanged source remains rejected under the documented common type rule; no checker/effect or mathematical expectation weakening."
+    },
+    {
+      "component": "Rust active consumers",
+      "files": [
+        "tests/common/mod.rs",
+        "tests/native_roundtrip.rs",
+        "tests/input_corpus.rs"
+      ],
+      "finding": "A shared batched helper validates the registered logical corpus and selects current_project snapshots, rejecting unknown or duplicate logical/selected paths. Native discovery retains101logical projects=14examples+87corpus, chooses exactly six semantic-namespace snapshots and excludes their original roots and all other historical migrations. input_corpus retains all87logical cases. IR/cache/Meaning/simulation checks are unchanged."
+    },
+    {
+      "component": "Python native consumer",
+      "files": [
+        "scripts/test_native_verification.py"
+      ],
+      "finding": "The same <=4-qubit logical corpus list uses check_manifest/current_project to select the actual current sources. All native/adversarial/environment-versus-explicit comparison logic remains unchanged."
+    },
+    {
+      "component": "Benchmark source selection",
+      "files": [
+        "scripts/benchmark_verification.py"
+      ],
+      "finding": "The existing eight benchmark cases select current snapshots where applicable. Hash capture uses the selected source/manifest files, selector and ordered migration records; timing/native output logic is unchanged. Only static selection/source-key validation was performed by the repair agent, not a benchmark run."
+    }
+  ],
+  "actual_validation_read": {
+    "pure_negative_selectors": {
+      "record": "negative-selector-regressions-03.json",
+      "passed_tests": 68,
+      "capture_limit": "Actual combined exec tool output retained in the record; no separate raw stdout/stderr file is invented."
+    },
+    "negative_cli": {
+      "record": "negative-selection-validation-04.json",
+      "cases": 4,
+      "all_remain_rejected": true,
+      "result": "All four final explicitly selected expectations match actual exit1 diagnostics; missing-kernel driver failure is separately retained."
+    },
+    "rust_consumers": {
+      "record": "corpus-consumers-selection-after-01.json",
+      "native_roundtrip_passed": 5,
+      "input_corpus_passed": 2,
+      "failed": 0,
+      "result": "Actual existing target run passed; discovery/cache/Meaning tests and all87corpus smoke clients remain exercised. Retained before02 failed on original grover2 missing routines; before01/setup wrapper failures did not run tests."
+    },
+    "python_native": {
+      "record": "native-source-selector-repair-01/after-native/native-validation.json",
+      "process_observations": 267,
+      "small_corpus_clients": 84,
+      "deliberate_nonzero_observations": 56,
+      "result": "Overall script exit0/statuspassed; process observations include intentional native/version/IR rejection checks, not267individual acceptance successes. Each of six migrated clients has two exit0 environment/explicit observations with byte-identical stdout. The original script failed after112observations at the original grover2 root; raw history is preserved.",
+      "inputs_unchanged": true
+    },
+    "benchmark": {
+      "record": "native-source-selector-repair-01/benchmark-selection-validation.json",
+      "result": "Six snapshot selections/eight existing case locations and selected hash keys validated statically; no timing or performance result."
+    },
+    "final_static_rust": {
+      "record": "corpus-consumers-selection-final-01.json",
+      "result": "Warnings-denied all-target Clippy passes on Rust1.85.0 and1.98.1; formatting passes. Every command retains the recorded329-file source identity. This is static all-target coverage, not an all-target runtime/full-CI run."
+    }
+  },
+  "mathematical_oracle_identity": {
+    "method": "Read-only AST comparison against HEAD, ignoring source locations; no function execution",
+    "unchanged_definitions": {
+      "reference_column": true,
+      "interference": true,
+      "probabilities": true,
+      "driver": true,
+      "protocol_probes": true,
+      "host_observables": true
+    },
+    "limit": "Earlier340semantic probes keep their exact prior script/binary/comment state; this supplement does not report a whole oracle rerun."
+  },
+  "remaining_actionable_findings": [],
+  "candidate_completion_assessment": "The reviewed active-consumer omissions and frozen-baseline violation are repaired with concrete selection guards and actual bounded evidence. No remaining actionable defect found in this supplement scope. The21criteria mapping remains a candidate until atomic integration is recorded; review01 alone must not justify completion.",
+  "integration_follow_up": "Integrator records the final atomic commit and current metadata/policy binding. Full CI, package/freshinstall and Lean replay remain separate facts, not supplied by this review.",
+  "reviewed_files_sha256": {
+    "tests/common/mod.rs": "c8ea19ebb4c8f4cfee3ecf7f2e48c25e68df950e4c8d56410f3a4af596d08128",
+    "tests/native_roundtrip.rs": "b96ec713a698e4992f6610c0999746438682493ebe5f50326e171238ad7bf8f9",
+    "tests/input_corpus.rs": "390fe41cd914df128a389b1247a540ab93a02723b1abf243e7497392be2c06be",
+    "scripts/test_native_verification.py": "073d317b307cad850e1ad0976bbdaff63f985659311e4cbfec831ceca925b376",
+    "scripts/benchmark_verification.py": "660916454fe17d56877e6be01cdb6f713df2df408ee9ab7a96cae2acea0fe9ac",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "scripts/test_check_input_corpus.py": "2ef64fde562fb9c30f7309cecb81e7c90257d9b3adba5cf779dfc5faedde8768",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+    "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "corpus/negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "unchanged_negative_source_sha256": {
+    "corpus/negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "corpus/negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "corpus/negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "corpus/negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+  },
+  "reviewed_records_sha256": {
+    "negative-derivative-03.json": "df6428f67cc061623eb997fd3b6d80a3ea411bfd928def8a7eff51629691ff64",
+    "negative-selector-regressions-03.json": "da095b7409145f22194c857cff6505b4ef539ff10f5e51c0e8fdc24c428d6f09",
+    "negative-selection-driver-failure-03.json": "9f697680a837924ebdf13b57b96adbe1c8c0db1d631acf38b618676e272ec1f6",
+    "negative-selection-validation-04.json": "ccdd2e3ae45e7f6a529f55acea6c7097baefccf6e3d254f5f6391f89fa8a949f",
+    "native-roundtrip-selection-before-02.json": "245edf81842ef8067c8d19c5308d7afca0c84c73794a5fcb116774bb2b694a27",
+    "corpus-consumers-selection-after-01.json": "cf10b37e9ffdd38e4df62915112fcc33a0900be7b11ac16bfd8f4b15759b086b",
+    "native-source-selector-repair-01/before-command.json": "1c687303c520a007081ec7b6367c1977c0241bfe27291ec1b756a7def5a0fd4e",
+    "native-source-selector-repair-01/after-command.json": "463eea0769b49f8132791aaf8d62fc7b8937dcbf654d8c05eaa40022dd66f128",
+    "native-source-selector-repair-01/summary.json": "0aa56008021a2b27c5e14af2ba56ff46df72cf04701123899863f6dd83c84af6",
+    "native-source-selector-repair-01/benchmark-selection-validation.json": "9f381f85b0186249a7e4744d9c422a20425e9b18ccd0a43f2326d011488759bd",
+    "native-source-selector-repair-01/after-native/native-validation.json": "414d553d4a58023d775e59b9ae43562a512111ae7f2e2b93729380df7b5c2034",
+    "corpus-consumers-selection-final-01.json": "8dd932872bdcca03053d83fc914b4ce6c2766e1b4bca0d0fa685c03988d3688e"
+  },
+  "identity_limit": "Exact reviewed files and recorded observations, not a complete runtime closure or release certification.",
+  "performed": [
+    "Read exact frozen consumer/negative diffs and supporting records",
+    "Compare original manifest and all four rejected source bytes to HEAD",
+    "Read and count raw recorded native observations and Rust test summaries",
+    "Statically compare six independent mathematical/probe functions"
+  ],
+  "not_performed": [
+    "No broad suites, builds, native execution, benchmark or Lean replay by this reviewer",
+    "No mutation of product, historical review/inputs/records or proof status"
+  ],
+  "license": "Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0."
+}

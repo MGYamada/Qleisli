@@ -1,0 +1,10 @@
+//! Classical bits select gates; they do not coherently control a qubit.
+use std::quantum::x;
+use std::quantum::z;
+
+/// Apply Z^phase_bit X^parity_bit to the quantum input (X executes first).
+/// The bits are copyable; q is consumed and its updated owner is returned.
+pub unitary fn pauli(phase_bit: CBit, parity_bit: CBit, q: Q<Bit>) -> Q<Bit> {
+    let q = if parity_bit { x(q) } else { q };
+    if phase_bit { z(q) } else { q }
+}

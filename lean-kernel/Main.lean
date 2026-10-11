@@ -5,7 +5,7 @@ import Protocol.Product
 
 /-! Unproved transport adapter for the existing experimental profiles.
 Inputs remain untrusted until checked by the independently specified pure kernel.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 private def nativeMode (mode : String) : Option (IO UInt32) :=
   match mode with
@@ -30,7 +30,14 @@ def main (args : List String) : IO UInt32 :=
         IO.println "qleisli.qirf-native 1\nerror\nversion"
         pure 1
     | none => QleisliKernel.Cli.run mode version
-  | [mode] => (nativeMode mode).getD QleisliKernel.Cli.usage
+  -- Native modes always require the explicitly paired product version, so
+  -- version agreement is enforced here rather than by caller convention.
+  | [mode] =>
+    match nativeMode mode with
+    | some _ => do
+      IO.println "qleisli.qirf-native 1\nerror\nversion"
+      pure 1
+    | none => QleisliKernel.Cli.usage
   | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
   | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement
   | ["--layout", artifact, requirement] => QleisliKernel.Cli.runLayout artifact requirement

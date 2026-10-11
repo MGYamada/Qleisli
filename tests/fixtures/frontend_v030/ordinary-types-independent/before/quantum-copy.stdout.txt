@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "ownership", message: "quantum ownership `q` has already been consumed", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-copy/main.qli", span: Span { start: 52, end: 53 }, line: 1, column: 53 }) }
+sized.generic: Error { code: "ownership", module: Some("main"), span: Span { start: 52, end: 53 }, message: "unbound or consumed value q" }

@@ -1,0 +1,59 @@
+{
+  "format": "qleisli.roundtrip-supplement-checks",
+  "version": 1,
+  "status": "passed-on-isolated-0605d71-plus-test-additions",
+  "issue": 288,
+  "evidence": {
+    "path": "tests/fixtures/review_v030alpha/roundtrip-coverage/isolated-complete/results.json",
+    "sha256": "d153d8984b9de0c46041d98b66151d0e7d0d1a8248aa376ebeca2aabc19621c9"
+  },
+  "isolated_source": {
+    "path": "tests/fixtures/review_v030alpha/roundtrip-coverage/isolated-source-complete.json",
+    "sha256": "cd1e0c8804e9a4af29072b5425e8c63bedea2e6d4de476b1d12c58b6bbb4f1a6"
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --test native_roundtrip -- --nocapture --test-threads=1",
+      "cwd": "isolated source snapshot",
+      "exit_code": 0,
+      "result": "4 passed, 0 failed; 60.20 seconds; stdout/stderr retained in isolated-complete/"
+    },
+    {
+      "command": "direct QLV1 --qirf-native 0.3.0-alpha replay of every supplemental artifact",
+      "exit_code": 0,
+      "result": "11/11 accepted, with individual responses and work counts retained"
+    },
+    {
+      "command": "cargo clippy --locked --test native_roundtrip -- -D warnings",
+      "cwd": "isolated source snapshot",
+      "exit_code": 0,
+      "result": "passed; no warnings; 4.15 seconds"
+    },
+    {
+      "command": "rustfmt --edition 2024 --check tests/native_roundtrip.rs",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- tests/native_roundtrip.rs tests/fixtures/review_v030alpha/roundtrip-coverage",
+      "exit_code": 0
+    },
+    {
+      "command": "parse recorder with Python ast.parse",
+      "exit_code": 0
+    },
+    {
+      "command": "verify every isolated output hash and both added source hashes against live owned files",
+      "exit_code": 0
+    },
+    {
+      "command": "verify all 1128 final source/input hashes, final output hashes and current added-source hashes",
+      "exit_code": 0
+    }
+  ],
+  "not_performed": [
+    "Fresh current-tree integration after the concurrent frontend AST migration; root will run it after the migration builds.",
+    "Full hosted CI, maximum-size checks, release or publication.",
+    "No new semantic proof or guarantee admission is claimed."
+  ],
+  "independent_review": "Platform confirmed the accepted-path coverage and all original recorded hashes; its source-inventory finding was repaired by enumerating examples/corpus/stdlib .qli and Qargo.toml both before and after execution."
+}

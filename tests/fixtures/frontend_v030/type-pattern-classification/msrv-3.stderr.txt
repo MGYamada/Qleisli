@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized] target(s) in 0.05s
+     Running tests/tuple_shapes.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/tuple_shapes-8b99ce1c95aca294)

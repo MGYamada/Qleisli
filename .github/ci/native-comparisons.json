@@ -288,6 +288,12 @@
         [
           "python3",
           "scripts/test_hierarchical_preparation.py"
+        ],
+        [
+          "python3",
+          "scripts/test_instrument_transport.py",
+          "--record",
+          "{record}"
         ]
       ]
     },
@@ -631,8 +637,12 @@
     },
     {
       "id": "sized-corpus",
-      "name": "Sized Xor and GHZ source corpus with independent native and semantic checks",
+      "name": "Sized local resolution, Xor and GHZ corpus with independent native and semantic checks",
       "commands": [
+        [
+          "python3",
+          "scripts/test_sized_local_resolution.py"
+        ],
         [
           "python3",
           "scripts/test_sized_corpus.py",
@@ -784,6 +794,92 @@
           "native_acceptance",
           "--",
           "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "native_roundtrip",
+          "--",
+          "--nocapture"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "predicate_domain"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "ordinary_types"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "unit_patterns"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "quantum_unit_source"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "quantum_unit_maps"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "quantum_tuple_unitors"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "runtime_parameter_patterns"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "ordinary_booleans"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "mixed_booleans"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "selected_source_cli"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "raw_source_replay"
         ],
         [
           "cargo",

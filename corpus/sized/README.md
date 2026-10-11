@@ -1,11 +1,11 @@
 # Shared sized corpus sources
 
 These are executable **development experiments** using the
-[Rust sized source API](../../src/frontend/sized.rs), existing hierarchical IR
+[Rust source compilation API](../../src/frontend/compile/mod.rs), existing hierarchical IR
 and fresh native/finite reconstruction. The
 [Python concrete producer](../../scripts/compile_sized_corpus.py) also serves
 as a differential oracle. They reuse pinned inputs and are separate from the
-42 finite corpus cases. The additive `qleisli sized` commands select a native
+42 finite corpus cases. The ordinary `qleisli check/run/sample` commands with explicit entry/module bindings select a native
 kernel explicitly. See the
 source contract.
 

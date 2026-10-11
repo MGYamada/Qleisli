@@ -1,0 +1,13 @@
+{
+  "scope": "Original source, context and four actual baseline observations retained before selected-source CLI implementation.",
+  "files": {
+    "attempt-01/unit-parameter/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/unit-parameter/main.qli": "3a4fa70a4d41b8f6307c9ff9c71949e35b2b7306c6c86357c84e47da9b7ace60",
+    "context.md": "9cade3122a0075af3186ea47425e205641f3d20580c45cc4d23fa93e5f8a3719",
+    "observations/legacy-check.json": "202787bad60660929be4197d00ce4e33f3488539e737748db27ba15a921d4310",
+    "observations/legacy-run.json": "030e33894b12ff4f5b4c2198fc7b306ca0c16198003c868e7eece6786247e4d7",
+    "observations/selected-check.json": "f0d1ab05065ed6273d9cdd3a6fc49b30b14981bdf2470f1a3b207ec6cedb312d",
+    "observations/selected-run.json": "2de351c02b5dc14c14f70028768ce63a4b6cf79efd093b48a10781771c045081",
+    "session.json": "3350124bc2bcac01a1ecd219357427544095ca76c0d99c51ae75243f9007697e"
+  }
+}

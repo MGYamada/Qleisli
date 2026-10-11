@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.constitution-check-tool-observation",
+  "version": 1,
+  "command": [
+    "python3",
+    "-B",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "actual_stdout_transcribed_from_tool": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader obligations and one exactness supplement retain pending proof/enforcement duties; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n",
+  "actual_stderr": "",
+  "recording_utc": "2026-10-06T04:46:06.155508+00:00",
+  "timestamp_note": "Transcription time only; command observation had no absolute timestamp. Both checks preceded source creation.",
+  "role": "Preserved first actual tool observation, initially treated as continuity base; this is a current source comparison, not independently trusted constitutional continuity.",
+  "scope": "Source/evidence identity, not fresh Lean replay or new human act."
+}

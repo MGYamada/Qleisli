@@ -1,0 +1,92 @@
+
+running 7 tests
+test nary_patterns_types_and_basis_values_preserve_immediate_arity ... ok
+test corpus_dropped_owner_now_points_to_b_not_the_body ... ok
+test flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits ... ok
+test missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliaries ... ok
+test pattern_arity_totality_ownership_and_exact_tree_guards_remain ... ok
+test ordinary_parameter_patterns_execute_with_canonical_ordinary_types ... ok
+test patterned_basis_contracts_and_nary_clients_execute ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+
+
+running 3 tests
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 20 tests
+test common_token_stream_includes_sized_punctuation_without_trivia_joining ... ok
+test common_natural_and_count_syntax_keeps_precedence_and_source_spans ... ok
+test accepts_comments_and_reports_utf8_byte_offsets ... ok
+test basis_requires_rejects_before_documentation_attachment ... ok
+test classical_boolean_operators_have_precedence_and_left_associativity ... ok
+test basis_operators_have_documented_precedence_and_left_associativity ... ok
+test canonical_bit_literals_share_spelling_with_basis_bits ... ok
+test coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans ... ok
+test invisible_separators_and_bad_bit_literals_have_precise_errors ... ok
+test malformed_syntax_has_precise_error_spans ... ok
+test parses_bell_modules_and_keeps_owned_resource_syntax_distinct ... ok
+test nested_operator_chains_share_the_ast_depth_limit ... ok
+test parses_phase_oracle_and_measurement_feedback ... ok
+test reserved_std_module_keywords_allow_further_identifier_components ... ok
+test static_operation_errors_point_to_the_unconsumed_token_or_eof ... ok
+test unicode_format_characters_are_comment_text_but_not_source_tokens ... ok
+test all_static_constructor_token_prefixes_parse_without_panicking ... ok
+test classical_operator_chains_and_basis_patterns_obey_depth_limits ... ok
+test deep_syntax_is_rejected_without_exhausting_the_stack ... ok
+test example_and_stdlib_token_prefixes_parse_without_panicking ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+
+
+running 8 tests
+test common_ast_keeps_argument_count_exact_patterns_and_original_spans ... ok
+test static_substitutions_and_provider_bindings_keep_declaration_and_source_identity ... FAILED
+test sized_wildcards_cannot_erase_nested_or_zero_width_owners_even_in_zero_folds ... ok
+test exact_shape_owner_and_unused_declaration_failures_remain_located ... FAILED
+test sized_inputs_retain_whole_parameter_trees_and_independent_swap_action ... ok
+test sized_nonlinear_wildcards_are_shared_by_parameters_let_and_zero_fold ... ok
+test discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase ... FAILED
+test finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity ... FAILED
+
+failures:
+
+---- static_substitutions_and_provider_bindings_keep_declaration_and_source_identity stdout ----
+
+thread 'static_substitutions_and_provider_bindings_keep_declaration_and_source_identity' (12597708) panicked at tests/runtime_parameter_patterns.rs:34:88:
+called `Result::unwrap()` on an `Err` value: Error { code: "parse", module: Some("main"), span: Span { start: 91, end: 92 }, message: "expected `static`, found identifier" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- exact_shape_owner_and_unused_declaration_failures_remain_located stdout ----
+
+thread 'exact_shape_owner_and_unused_declaration_failures_remain_located' (12597703) panicked at tests/runtime_parameter_patterns.rs:43:5:
+assertion `left == right` failed: /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-18653-10/main.qli:2:14: Project: parse error: expected `static`, found identifier
+  left: Project
+ right: Ownership
+
+---- discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase stdout ----
+
+thread 'discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase' (12597702) panicked at tests/runtime_parameter_patterns.rs:43:5:
+assertion `left == right` failed: /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-18653-16/main.qli:6:1: InvalidEntry: main must be observe fn main() with a classical result
+  left: InvalidEntry
+ right: Effect
+
+---- finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity stdout ----
+
+thread 'finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity' (12597704) panicked at tests/runtime_parameter_patterns.rs:125:47:
+called `Result::unwrap()` on an `Err` value: CompileError { code: InvalidEntry, path: "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-18653-22/main.qli", span: Span { start: 74, end: 112 }, line: 2, column: 1, message: "main must be observe fn main() with a classical result" }
+
+
+failures:
+    discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase
+    exact_shape_owner_and_unused_declaration_failures_remain_located
+    finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity
+    static_substitutions_and_provider_bindings_keep_declaration_and_source_identity
+
+test result: FAILED. 4 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.94s
+

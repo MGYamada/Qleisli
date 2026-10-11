@@ -1,0 +1,23 @@
+{
+  "id": "08.docs",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_docs.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:21.334110+00:00",
+  "elapsed_seconds": 2.1540657079895027,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "08.docs.stdout.txt",
+    "sha256": "44d8fd3e0b652d1b1f39545b0b133a677b40121fa0e0abc17ef14f0a7305e19c",
+    "bytes": 109
+  },
+  "stderr": {
+    "path": "08.docs.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

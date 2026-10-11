@@ -1,0 +1,25 @@
+{
+  "workflow_run": 37264563243,
+  "branch_head": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "hosted_checkout_merge": "51f77cd2c3c97f75982e86adf32d197e8385eefd",
+  "artifact_id": 11325818095,
+  "artifact_zip_sha256": "c5c288d6a0ca54f96f3b79c51ca8b3cd3be65e5ddb1daa5d02fd3303e1d6546b",
+  "jobs": [
+    {
+      "job": "check-rust",
+      "id": 111618974336,
+      "log": "hosted-rust.log"
+    },
+    {
+      "job": "check-rust-msrv",
+      "id": 111618974331,
+      "log": "hosted-msrv.log"
+    },
+    {
+      "job": "check-distribution",
+      "id": 111618974354,
+      "log": "hosted-distribution.log"
+    }
+  ],
+  "interpretation": "All three producers stop at the same historic usage golden assertion; the separate JSON usage golden was exposed by subsequent local all-target validation. No hosted successful repair is asserted."
+}

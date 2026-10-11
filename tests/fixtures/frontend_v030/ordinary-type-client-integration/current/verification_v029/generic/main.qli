@@ -1,0 +1,9 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::init0;
+use std::quantum::t;
+use std::observe::measure_z;
+
+unitary fn apply[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) { U(q) }
+unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { t(q) }
+unitary fn unused_phase(q: Q<Bit>) -> Q<Bit> { apply[wrapped_gate](apply[wrapped_gate](q)) }
+observe fn main() -> Bit { measure_z(init0()) }

@@ -1,0 +1,2 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-public/a.qli:7..8: name `f` collides with another declaration or import
+sized.parse: ok

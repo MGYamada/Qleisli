@@ -40,7 +40,7 @@ use std::quantum::x;
 use std::quantum::z;
 use std::quantum::cnot;
 use std::observe::measure_z;
-observe fn main() -> CBit {
+observe fn main() -> Bit {
     let (a,r) = cnot(h(init0()),init0());
     let hidden = measure_z(a);
     let r = if hidden { x(z(r)) } else { r };
@@ -95,7 +95,7 @@ observe fn main() -> OUTPUT_TYPE {
     ]);
     let retained = compile(
         &source
-            .replace("OUTPUT_TYPE", "(CBit,(CBit,CBit))")
+            .replace("OUTPUT_TYPE", "(Bit,(Bit,Bit))")
             .replace("OUTPUT", "(choice,(outcome,measure_z(r)))"),
     );
     assert!(retained.program().operations.iter().any(|op| matches!(
@@ -110,7 +110,7 @@ observe fn main() -> OUTPUT_TYPE {
 
     let hidden = compile(
         &source
-            .replace("OUTPUT_TYPE", "CBit")
+            .replace("OUTPUT_TYPE", "Bit")
             .replace("OUTPUT", "measure_z(r)"),
     );
     // Independently derived marginal: average the biased Z read and the
@@ -137,9 +137,9 @@ use std::quantum::cnot;
 use std::quantum::split;
 use std::observe::measure_z;
 use std::observe::reset;
-observe fn main() -> (CBit,(CBit,CBit)) {{
+observe fn main() -> (Bit,(Bit,Bit)) {{
     let (a,r) = cnot(h(init0()),init0());
-    let (a,b) = split(do x <- t(a); pure (x,x));
+    let (a,b) = split(basis t(a) as x {{ (x,x) }});
     {}
     (measure_z(h(a)),(measure_z(h(b)),measure_z(h(r))))
 }}
@@ -195,7 +195,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (CBit,CBit) {{
+observe fn main() -> (Bit,Bit) {{
     let choice = measure_z({});
     let q = init0();
     let outcome = if choice {{ measure_z({}) }} else {{ measure_z({}) }};

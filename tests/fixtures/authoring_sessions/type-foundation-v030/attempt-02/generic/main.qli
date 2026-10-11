@@ -1,0 +1,25 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Desired syntax under review; this snapshot does not establish a public API.
+unitary fn apply[static A: Basis, static U: Op<A>](q: Q<A>) -> Q<A> {
+    U(q)
+}
+
+unitary fn bit_identity(q: Q<Bit>) -> Q<Bit> {
+    q
+}
+
+unitary fn pair_identity(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    q
+}
+
+unitary fn use_bit(q: Q<Bit>) -> Q<Bit> {
+    apply[Bit, bit_identity](q)
+}
+
+unitary fn use_pair(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    apply[(Bit, Bit), pair_identity](q)
+}
+
+unitary fn main() -> Unit {
+    ()
+}

@@ -1,0 +1,455 @@
+{
+  "format": "qleisli.coherent-basis-integration-validation",
+  "version": 1,
+  "issue": 81,
+  "recorded_utc": "2026-10-06T04:17:41.100162+00:00",
+  "checkout_head_before_integration": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "status": "bounded-unit-validation-complete",
+  "records": {
+    "rust-latest-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.json",
+      "sha256": "5b18be0c3d09debf17682e0e2ed0071f34c5bbe7ead1fb903c46c83c7c653a6c",
+      "exit_code": 101,
+      "seconds": 239.8485128749744
+    },
+    "rust-latest-repair-02": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.json",
+      "sha256": "69f005c8810ed299c26ceb86959d4484a7fb8da281b7d5e5558eb5dca260f287",
+      "exit_code": 0,
+      "seconds": 35.850986167031806
+    },
+    "rust-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.json",
+      "sha256": "5a0130b7ce2f134ab9ec65ff4ee95463e08f4a5e4366f34642643a96d9ac1e37",
+      "exit_code": 0,
+      "seconds": 104.80227537499741
+    },
+    "sized-source-latest-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.json",
+      "sha256": "d632adcb4dcde435317e7e7c0062b250fbe4943011abf9b3622225c5bdbf16bb",
+      "exit_code": 0,
+      "seconds": 3.265535083017312
+    },
+    "sized-source-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.json",
+      "sha256": "4798906a8d5c99dba2e958c6569c41391e6479b67c5513ef8463f6f09395f2a8",
+      "exit_code": 0,
+      "seconds": 2.9812980419956148
+    },
+    "bit-flip-reference-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.json",
+      "sha256": "b864c09d55b04d050e096b9d910b2e5194085a04abedc2ba95cf3b55c63b684b",
+      "exit_code": 0,
+      "seconds": 4.768855957954656
+    },
+    "semantic-contract-example-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.json",
+      "sha256": "0a792ae1a82bb1be445ce6a61e671adfe0b75f95cd3c192e21cd6b52ea24caaf",
+      "exit_code": 0,
+      "seconds": 1.2518433340010233
+    },
+    "clippy-latest-final-02": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-final-02.json",
+      "sha256": "55ae6688e40af7f5051f1314a0830d744691e5a8433e5767db133b3f1d04a096",
+      "exit_code": 0,
+      "seconds": 1.0662080839974806
+    },
+    "clippy-msrv-final-02": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-final-02.json",
+      "sha256": "caa89a525627132fb43c069a4cdfcccad371958fe81e9c9d2772bb2b26ae59f4",
+      "exit_code": 0,
+      "seconds": 1.0655575839919038
+    },
+    "format-latest-final-02": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-final-02.json",
+      "sha256": "694e3a2ab71d91edb0b7ac5b2cc38db2477025518f3ff9a4c9c1344b95cb3edf",
+      "exit_code": 0,
+      "seconds": 0.7528663330012932
+    },
+    "selector-regressions-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/selector-regressions-01.json",
+      "sha256": "2606dd285cf2e63506fff905650a9fa5332d65f7b5fd30f771c99ca3335447cb",
+      "exit_code": 0,
+      "seconds": 0.8994533750228584
+    },
+    "constitution-continuity-01": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/constitution-continuity-01.json",
+      "sha256": "6cda3ed64679ead38173cef1a148cc75eca497dec7604c6a3896fe9d792e9e97",
+      "exit_code": 0,
+      "seconds": 2.303688707994297
+    },
+    "documentation-policy-final-03": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-03.json",
+      "sha256": "8f9d19561f692c8d7335c2bcb0493e00448dc7b33fd9d8a0a09340d528caef33",
+      "exit_code": 0,
+      "seconds": 5.225637249997817
+    },
+    "mdbook-contract-final-04": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/mdbook-contract-final-04.json",
+      "sha256": "e69f071795bdfb9fe5bdad70a8db77753845b7194b9456277a0feeb0384e72a2",
+      "exit_code": 0,
+      "seconds": 0.44976837502326816
+    },
+    "book-links-contract-final-04": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.json",
+      "sha256": "7488c2dbaffd3a5891a112c1e166bd9c803e6cf8dacdd92b2a060dc1b888fb70",
+      "exit_code": 0,
+      "seconds": 0.19369845796609297
+    }
+  },
+  "additional_evidence": [
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.json",
+      "sha256": "f5d2f5cf633b01fb70561a12126c857aa53c01272870f18950467ca452761499"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/parser-ast-comparison-01.json",
+      "sha256": "02912738166fea2cadb643c0979d26297400e6ba29e2aaf5b08fdad6a89e07f6"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-validation-01.json",
+      "sha256": "3390b60bb4c8f1610cf9f0de19e25a3796979db9710899fe3220edfd50c5c173"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-validation-02.json",
+      "sha256": "96bcfb6b0f42c938b82e5bcfde69501308dba59ed6f929e81c9d063feb6ba9fb"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-reference-review-03.json",
+      "sha256": "1702a5befcf912a1f12a0bbf5d6c64400db52902a692d0c6c077a124e78f8b19"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-independent-parser-migration-review-01.json",
+      "sha256": "ba1a48e881d9fbbf45474b32d8f3dd9f12eceac4831231054c9c25b63cdddec1"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/test-diagnostic-repairs-01.json",
+      "sha256": "f414319b35e2b4ea4fe1ba50439d19852fb211277f3412bc8a78ad0784a5f416"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/verification-inventory-review-02.json",
+      "sha256": "f44a47dc82bb417d5bd1e6f7b4c9fa7c5c02c34e0e2fd3a532727381da0f3f21"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-hosted-review-02.json",
+      "sha256": "20dcdbb5cf324eb561d2685fbe64ce66f1b7aa1d6188b329155f29c3bbb17220"
+    }
+  ],
+  "current_source_bindings": {
+    "CHANGELOG.md": "2b977b12f7edc6f6163f36ec2cb3633763045f6aeb50b46bea5827416239072a",
+    "corpus/manifest.json": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+    "docs/src/SUMMARY.md": "7b8b1bf718ab5fb65c8df78240b30b98979767f17a22cee54c0cb54a9c1c0158",
+    "docs/src/reference/source-text.md": "754ec6a4a74c194b3b517631b627d7e8d9bee52613442c9f04089d11f4691e74",
+    "docs/src/reference/type-model.md": "3f81cb813878414f7433e6c2899e869dd42530e3b57d3ff83c282d1521a25ef5",
+    "examples/bell/bell.qli": "6d51d7f1ea4823255d73e560c9ea27d8880f6cdabf6c82811a2f9d303dd41476",
+    "examples/bit_flip_code/code.qli": "ce187a38d9e0edb0d1f7aa7b4ef2ac0be528cb24103518629d40b3b70edc6a5c",
+    "examples/semantic_contracts/main.qli": "bb2f4e0f44a0c5fba19683afc1c684a0aabc6ac52ca59bb02b0fbb26a6ba04ae",
+    "scripts/current_source_fixtures.py": "c7f753204c9dc8ffa45425c5ad716d3afe8a38a844de2c23dd65c98bde72f760",
+    "scripts/test_current_source_fixtures.py": "ba8977fbbdfbb1f2e4669c253507eaf8bc6f764155f08d96eeba43e99f7551fd",
+    "src/frontend/parser.rs": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+    "tests/body_effects.rs": "3d37c7bc8a75dd52eaccc155dbf3356be4176cc9b35c8e6816f94f5b276aac0f",
+    "tests/certified_source.rs": "3e8f63b5943649f3624a99f36ff95e8a82cee72d17897c127fc4d8578e2dfc0b",
+    "tests/common/mod.rs": "e077e152199e54c577a529d9413c8850484928a4c9806103ccc3694848cbe9b0",
+    "tests/compile.rs": "d207264e562d73eceb01ab04d1ea5aafe8aa77b0510d30e75dcb11a73b62e033",
+    "tests/fixtures/quick_reference/README.md": "066e74c6215cd36c57a1e7aa70529cd38082efc2859f71d4a8e4ce0d93b15595",
+    "tests/fixtures/verification_v022/inventory.json": "12c1f49a8d97635f22ae0452efbe573bf7f26ee583838cb580d0371a8075468e",
+    "tests/frontend_types.rs": "fb5d5604afd483e4beff0ef2973943d69586a814d15e92128b64880cb020de33",
+    "tests/function_contracts.rs": "82c960d18668ecffbdd4747c8547da00397bfaa9c1dc494fa5d364759a561f50",
+    "tests/operation_parameters.rs": "b9256ab7c9b525765a2c6f20e59eaac1a1b97715fcf76218e2cb35c8a2916537",
+    "tests/parser.rs": "de0d807b9b4efa4aade2b734f967505a03e856130e8e0d43c267dc7361cf5e8b",
+    "tests/predicate_domain.rs": "c76efe8834d6a69b67c07bda306a095f05bb113d25dbb243bcedd71b3f721852",
+    "tests/project.rs": "feaf97234894719126d16666ce3f8cd6ec5060035f08b6f4831574fae17a1ff0",
+    "tests/quantum_unit_maps.rs": "e1772ed10410b5a08b638c4896ac0ed1f696aa3e58823d57298043f8a0e66c4e",
+    "tests/quantum_unit_source.rs": "92f7e75994e33338268e4d95e93fd95b56d9ff6f51a4f0f8bed83c2351b7076a",
+    "tests/repair_diagnostics.rs": "d2fff41217e9c05ab776d1bae7ce3ce040765432412d1a369a61890bf90826af",
+    "tests/review_v027.rs": "85889ffdeed918a480e4ab8914a396a8c88a4884e002666d5406deafd0bf6c1c",
+    "tests/sized_source.rs": "c8cd0cf868d10c3435d0565114d561a3fb38a06f441416ec28744f26306634b5",
+    "tests/source_ir_correspondence.rs": "db33c9a8bc4966bf8dd0131a8132a03ad4d2f8044cc28a4c6d86c20a32ad88cd",
+    "tests/source_judgments.rs": "196063a34cc58b3f1f5ba59dd60817b49dc6ebf0657e2b0ca7db9d0af4bcd6a2",
+    "tests/source_scope.rs": "eb27371bd4a6b97c85752ee79d6b653385971c4518654fea35618940f147c726",
+    "tests/source_semantics.rs": "dd56d9f5af665b6cf7fd5be5f7f9ce7d67d555d65997687b17cb21eaec6d739d",
+    "tests/source_soundness.rs": "6e5e3d21061559ef3f9b153390b6c929f53b22fa712caef6afa041ab3317a3eb",
+    "tests/specification_boundaries.rs": "7f7e8774c93ccf8e1acf504c2a692f51d4cd27ac05fa7c12239dafe86b6fa84e",
+    "tests/static_operations.rs": "e3ab31ae464d09eba44ec6d2486feabdf34b74951d2d96dc15cdafe546381d36",
+    "tests/static_semantics.rs": "e66b2cfdb273d8f16d89316036be585496492e2e4ec90aa3aa3fc31ba6187b08",
+    "tests/tuple_shapes.rs": "ea3262dbd43643586ae8303291ea07a05f0268b13f049abd3482023f6c9a09e2",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45",
+    "docs/src/reference/coherent-basis.md": "4cad938dda84d0c4f6afa7b610d649645fd9b320e697b60eb13d84462a301ded",
+    "tests/fixtures/frontend_v030/coherent-basis/source-map.json": "b5ad765ca5e4517851c13742eec9a8ada4d9766a1090eff42851495719eda2f3",
+    "tests/fixtures/frontend_v030/coherent-basis/scope-decision.json": "68cfd091ba2c70a1f907f6c30ce2398fb145f94654a75adc5968f70d0b255d13",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/session.json": "3d352b86e34e7f4364cd9031f4359e9bb65d6891560b7bfbd6fa00a481d9751f"
+  },
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_binary_binding": "All captured src/**/*.rs build inputs still match. Build and binary identities are local observations, not compiler/runtime proofs.",
+  "rust": {
+    "latest": {
+      "unique_passed_across_stages": 301,
+      "first_sweep": "239 passed and one stale tuple-tree diagnostic assertion failed; tuple suite repaired and rerun in full. Later sized-source stale text assertion repaired and its full suite rerun.",
+      "successful_followups": {
+        "tuple_unit_corpus": 29,
+        "sized_source": 38,
+        "bit_flip_reference": 2
+      },
+      "deduplication": "The first sweep's seven passed tuple tests reappear in the eight-test repair suite and count once.",
+      "complete_single_sweep_claimed": false
+    },
+    "msrv_1_85": {
+      "passed": 170,
+      "initial_targets": 132,
+      "sized_source": 38
+    },
+    "existing_ignored": "Three native-only sized-source tests on each Rust version remain ignored; not newly skipped by this migration.",
+    "explicit_stress_exclusions": "Existing 8192/3000 source-generator stress cases: three filters on latest and one on MSRV. No new maximum-system case generated or executed.",
+    "cargo_clippy": "Both supported Rust versions: all-targets with -D warnings passed after the final assertion repair."
+  },
+  "source_study": {
+    "before": {
+      "path": "tests/fixtures/authoring_sessions/coherent-basis-v030/observations-before/capture.json",
+      "sha256": "e882c0b99beffa3e83fdb344cad8d1a0da9ca982714951469cd230f16309ef40"
+    },
+    "after": {
+      "path": "tests/fixtures/authoring_sessions/coherent-basis-v030/observations-after/capture.json",
+      "sha256": "dadbec7479ca94025cb8e1c1b714da007a4ee95c7b8ef519fff761390a3c371d"
+    },
+    "initial_analysis": {
+      "path": "tests/fixtures/authoring_sessions/coherent-basis-v030/analysis-after-01.json",
+      "sha256": "4b381f638281b14588129be8755c346433cd43071a9516c220e8d3030c84b8b5"
+    },
+    "supplement": {
+      "path": "tests/fixtures/authoring_sessions/coherent-basis-v030/analysis-after-02.json",
+      "sha256": "c74e2422f30d1a1a61c4d1f3f05b4b36fdc52c02e8901b5106adc6814ef6db97"
+    },
+    "actual_after_commands": 57,
+    "initial_assertions": {
+      "passed": 64,
+      "failed": 1
+    },
+    "supplementary_assertions": {
+      "passed": 7,
+      "failed": 0
+    },
+    "first_failure": "Independent authored numerical oracle omitted structural join; subsequent ordered-axis concatenation added without source repair or rewriting the first result.",
+    "preservation": "Three supported desired controls reproduce the original QIRF bytes and distributions. Five finite semantic refusals persist. Independent small complex action checks preserve +1 maps, ordered permutation and reference/phase interference.",
+    "selected_correction": "Original private main entry commands encountered visibility; four appended public entries reach current CoherentLift projection refusal. No OLD public-entry observation is invented."
+  },
+  "migration": {
+    "explicit_file_derivatives": 48,
+    "normalized_full_ast_matches": 48,
+    "normalization": "Only source spans erased; all other AST structure compared.",
+    "corpus_old_current_commands": 12,
+    "corpus_snapshots": 2,
+    "corpus_observation": {
+      "path": "corpus/migrations/coherent-basis-v030/observations-after/capture.json",
+      "sha256": "d79ba1d6f661c4cb82daee4a4eb7ba62c51bd67dde448c5c2fca29bb8383ea3d"
+    },
+    "original_integrity": {
+      "path": "corpus/migrations/coherent-basis-v030/final-integrity.json",
+      "sha256": "b3d15a671e3bff36bbce1188f622689a798ec9503fac107a81882560fbacdb3c"
+    },
+    "independent_oracles": [
+      {
+        "case": "pennylane_demos-vqe_excitation",
+        "expected_probes": 528,
+        "observation": {
+          "path": "corpus/migrations/coherent-basis-v030/independent-oracle/pennylane_demos-vqe_excitation/observation.json",
+          "sha256": "bdd75f71f2cf38ee9f13c5e3da69a9fc369c9968b0fe9027f4b2df627de04488"
+        },
+        "report_binding": {
+          "path": "corpus/migrations/coherent-basis-v030/independent-oracle/pennylane_demos-vqe_excitation/report.json",
+          "sha256": "4dc7a6a5268e1303dda771d0d89c3574dabefa7eb7180e12ab451d9aac5906de"
+        },
+        "exit_code": 0,
+        "report_content": {
+          "format": 1,
+          "status": "passed",
+          "failures": [],
+          "cases": [
+            {
+              "id": "pennylane_demos/vqe_excitation",
+              "semantic_probes": 528,
+              "shipped_main": "passed",
+              "host_observables": {
+                "Z0": 1
+              }
+            }
+          ],
+          "semantic_faults": [],
+          "negative_cases": [
+            {
+              "id": "dirty_auxiliary",
+              "code": "unsupported",
+              "exit_code": 1
+            },
+            {
+              "id": "duplicate_owner",
+              "code": "ownership",
+              "exit_code": 1
+            },
+            {
+              "id": "measured_owner",
+              "code": "ownership",
+              "exit_code": 1
+            },
+            {
+              "id": "measurement_adjoint",
+              "code": "type_mismatch",
+              "exit_code": 1
+            }
+          ],
+          "created_utc": "2026-10-06T03:59:30.879464+00:00",
+          "exhaustive_unitary_entries": true,
+          "upstream_frameworks_executed": false,
+          "tolerance": 1e-11,
+          "manifest_sha256": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+          "compiler_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+          "oracle_script_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+          "source_sha256": {
+            "migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation/kernel.qli": "90e3ba606a272a76bdca01fc692ad7a13a3c6cfe3d12ecd49884d13f644adadd",
+            "migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+            "negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+            "negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+            "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+            "negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+          },
+          "source_migration_sha256": {
+            "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+            "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+            "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+            "migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb"
+          },
+          "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+          "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+          "current_negative_manifest_sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4",
+          "semantic_fault_source_sha256": {},
+          "expected_ids": {
+            "cases": [
+              "pennylane_demos/vqe_excitation"
+            ],
+            "semantic_faults": [],
+            "negative_cases": [
+              "duplicate_owner",
+              "measured_owner",
+              "measurement_adjoint",
+              "dirty_auxiliary"
+            ]
+          },
+          "project_version": "0.3.0-alpha"
+        }
+      },
+      {
+        "case": "qualtran-less_than2",
+        "expected_probes": 2080,
+        "observation": {
+          "path": "corpus/migrations/coherent-basis-v030/independent-oracle/qualtran-less_than2/observation.json",
+          "sha256": "c3026802f14cb11488e33341dc49a3b8d5a830a48210616cc48992d126e7ef02"
+        },
+        "report_binding": {
+          "path": "corpus/migrations/coherent-basis-v030/independent-oracle/qualtran-less_than2/report.json",
+          "sha256": "023ad644b3de27bcc6e019c54284c7ea61d59077bf10e2b7799421153bbb0298"
+        },
+        "exit_code": 0,
+        "report_content": {
+          "format": 1,
+          "status": "passed",
+          "failures": [],
+          "cases": [
+            {
+              "id": "qualtran/less_than2",
+              "semantic_probes": 2080,
+              "shipped_main": "passed",
+              "host_observables": {}
+            }
+          ],
+          "semantic_faults": [],
+          "negative_cases": [
+            {
+              "id": "dirty_auxiliary",
+              "code": "unsupported",
+              "exit_code": 1
+            },
+            {
+              "id": "duplicate_owner",
+              "code": "ownership",
+              "exit_code": 1
+            },
+            {
+              "id": "measured_owner",
+              "code": "ownership",
+              "exit_code": 1
+            },
+            {
+              "id": "measurement_adjoint",
+              "code": "type_mismatch",
+              "exit_code": 1
+            }
+          ],
+          "created_utc": "2026-10-06T03:59:30.875077+00:00",
+          "exhaustive_unitary_entries": true,
+          "upstream_frameworks_executed": false,
+          "tolerance": 1e-11,
+          "manifest_sha256": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+          "compiler_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+          "oracle_script_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+          "source_sha256": {
+            "migrations/coherent-basis-v030/sources/qualtran/less_than2/kernel.qli": "7100a4cddf4ded1c1de2ab3ae729e836e533a3231f3b69ec612f9a86807cd5e9",
+            "migrations/coherent-basis-v030/sources/qualtran/less_than2/main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+            "negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+            "negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+            "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+            "negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+          },
+          "source_migration_sha256": {
+            "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+            "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+            "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+            "migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb"
+          },
+          "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+          "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+          "current_negative_manifest_sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4",
+          "semantic_fault_source_sha256": {},
+          "expected_ids": {
+            "cases": [
+              "qualtran/less_than2"
+            ],
+            "semantic_faults": [],
+            "negative_cases": [
+              "duplicate_owner",
+              "measured_owner",
+              "measurement_adjoint",
+              "dirty_auxiliary"
+            ]
+          },
+          "project_version": "0.3.0-alpha"
+        }
+      }
+    ]
+  },
+  "documentation": {
+    "mdbook": "0.5.4",
+    "generated_html_files": 25,
+    "local_links": 1012,
+    "anchors": 377,
+    "scope": "Final explicit no-Monad/do criterion14 sentence compiled and generated links checked; earlier raw TeX/rendering and copied-README failures preserved."
+  },
+  "human_scope": {
+    "path": "tests/fixtures/frontend_v030/coherent-basis/scope-decision.json",
+    "sha256": "68cfd091ba2c70a1f907f6c30ce2398fb145f94654a75adc5968f70d0b255d13"
+  },
+  "previous_hosted_ci": {
+    "run": 37410058344,
+    "branch_head": "73355382a3db94893982e5954e9400fffcd7f48e",
+    "actual_pr_merge_test_commit": "7e768e6ccdbb98077818664f985886bb5a86a374",
+    "rust_latest_and_msrv": "Both failed the stale sized_source canonical-type text expectation; current candidate repairs it and passes full38-test suite on each Rust version.",
+    "distribution": "Extracted source-production offline all-targets test exited101. Its internal logs/14.stderr was unavailable; underlying cause remains unverified. No same-candidate distribution/full-CI success claimed."
+  },
+  "scope_limits": [
+    "External qargo/qlippy diagnostics explicitly excluded by the maintainer; not validated.",
+    "Selected concrete CoherentLift and existing finite quantum-Unit limitations remain.",
+    "No native checker/schema/AST semantics, Lean proofs, protected guarantees, dependency versions or edition changed.",
+    "No fresh local Lean build/audit/replay, full CI completion, fresh installation, release approval, tag or publication.",
+    "Bounded tests, AST equality and accepted IR are not general source/runtime preservation, full QS/PR/quantitative RS or new guarantee admission.",
+    "A separately preserved #82 study, if present in the working directory, is not part of this unit."
+  ]
+}

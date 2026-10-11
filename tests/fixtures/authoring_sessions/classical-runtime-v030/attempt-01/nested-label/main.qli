@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::observe::measure_z;
+
+classical fn pick(((), (b, ())): (Unit, (Bit, Unit))) -> Bit { b }
+pub observe fn main() -> Bit { pick(((), (measure_z(init0()), ()))) }

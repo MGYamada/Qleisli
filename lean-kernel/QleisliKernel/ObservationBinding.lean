@@ -2,7 +2,7 @@ import QleisliKernel.Semantics.Observation
 
 /-! Bounded equality of complete original observing bodies. Recursive derived
 equality is avoided so all compiled helpers remain ordinary total definitions.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.ObservationBinding
 open Semantics.Observation
 

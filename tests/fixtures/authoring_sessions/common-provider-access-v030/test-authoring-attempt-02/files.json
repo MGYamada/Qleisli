@@ -1,0 +1,38 @@
+{
+  "format": "qleisli.additive-test-repair-map",
+  "version": 1,
+  "files": {
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/README.md": {
+      "bytes": 1541,
+      "sha256": "c6fe3b74eb72f23c80142319d188c49c14756bb56d695e99681741f22e995231",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/actual-provider.stderr-excerpt.txt": {
+      "bytes": 1004,
+      "sha256": "172b45b2d87283115b605dbd10c52900faf13d0ddad19494558a23b0499d042d",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/actual-provider.stdout-excerpt.txt": {
+      "bytes": 666,
+      "sha256": "aea6b9a697bdaa6282ed57605612cf9ef301905b22f94269dac1a08e3a99b531",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/original-test.rs.txt": {
+      "bytes": 4266,
+      "sha256": "c192e148a05e9c13fc10a738818fe0b29c7298c3825764627a5782c776568fde",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/repair.json": {
+      "bytes": 4013,
+      "sha256": "0187fb9e7fa91b5da6158158f2d9fb3c61b470671c101db06e33e1fa4a6c346a",
+      "mode": "0o644"
+    },
+    "tests/common_source_provider_access.rs": {
+      "bytes": 4801,
+      "sha256": "8f7ee5d4ce9a29fbadd88e4632874a11c40a6b4eb69f3f468976fa9a3538ea49",
+      "mode": "0o644"
+    }
+  },
+  "self_excluded": "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/files.json",
+  "scope": "Small additive original-test preservation, actual-failure excerpts/provenance and revised active test; incomplete production closure."
+}

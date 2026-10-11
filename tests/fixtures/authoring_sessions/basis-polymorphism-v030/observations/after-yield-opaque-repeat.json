@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::repeat",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+    "--format=json",
+    "--nat=k=2",
+    "--operation=U=main::identity_bit"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T05:50:27.701427+00:00",
+  "timestamp_note": "Clock observation after command completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `Op`, found identifier",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+          "start": 142,
+          "end": 147
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.0036525410250760615
+}

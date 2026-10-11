@@ -1,0 +1,2 @@
+finite.load: /private/tmp/qleisli-resolution-study-6daea68/duplicate-declarations/a.qli:49..50: duplicate declaration `f`
+sized.parse: a:38..71: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available

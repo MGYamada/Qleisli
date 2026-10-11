@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-02/wrong-endo-provider/main.qli",
+    "--operation=U=main::provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004775916982907802,
+  "recorded_utc": "2026-10-05T12:08:28.906296+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "name",
+        "severity": "error",
+        "message": "unresolved function split",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-02/wrong-endo-provider/main.qli",
+          "start": 51,
+          "end": 59
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

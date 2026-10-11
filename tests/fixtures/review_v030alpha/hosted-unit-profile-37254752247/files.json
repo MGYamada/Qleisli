@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "scope": "Exact hosted excerpts and artifact provenance for e01e98a Unit-profile assertion; all final jobs recorded, not a successful full run. Excludes this manifest.",
+  "files": {
+    "README.md": "af301fb2a0aef6edbf83df1f489d77e41479a2fe5165754f6e85cb8b5bca759e",
+    "completed-jobs.json": "aff37598586e5a7b67e118d29a572ca9bd4d64611fa7f745199d3453ccc2a356",
+    "distribution-14.stderr.excerpt.txt": "82bf608395ddb6da1f49841391cb7f75293babe2475a5c3178730a9a02404ef2",
+    "distribution-14.stdout.excerpt.txt": "0ee160086d13f6b49f48162773d4bbf5f5051c46951377d4a1895857cb74768e",
+    "distribution-artifact-api.json": "0b0e99af8fafc81d308b139b6723c34bbcb88fe3528bd26e94bb35a3b3265239",
+    "distribution-files.json": "2a605b8b69605d90a3dcee9073252a4228368270a2d4129a8f702fde53329804",
+    "distribution-inspection.json": "26857e8865ca3f931c432a42280c85180a16bab4236d556641dbd3253e3a7af9",
+    "distribution-job-steps.json": "7d955b3b6f799052dfb003b934996c11f84d2b469131b081c171bce78c1b9d47",
+    "distribution-record.excerpt.json": "c34f82dd824fa48178c4e151dd0b9355d1e6f5cd2ec5ff024db7860783c1de5a",
+    "frontend_types.before.rs.txt": "79b3b5c5670823cf323aebabbadb406583118f013872f08e8ccaf2ffc424d38b",
+    "metadata.json": "56130620dec3ffffcefed79c6c1eb3f7a27356a653dca639d5e2a8bc1197dfc0",
+    "msrv.excerpt.txt": "435895b512f121709f40ab3ecfd5b1f70662c85e1c21d44f2a99f9391296dc2d",
+    "repair.patch": "c14d10296408b3fb51c60428788a0c1195f858efcb870127a83674cbe91b4028",
+    "rust.excerpt.txt": "96c9e06d98d7c6d010b8dcc8ae136e9e59239088dde9f5958f853eb643cff40f"
+  }
+}

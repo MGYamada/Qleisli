@@ -1,0 +1,7 @@
+{
+  "README.md": "b709574ff5fd75da39f50c9724f78c45cb544666cdc5b2e193721feed76844fa",
+  "preservation.rs.before.txt": "ad6adcc7e5ba059bb265dcc6944cf487f787eae0fc53550437823f980bf6e0d9",
+  "record.json": "497085c875704c927d23290c0f5ee08b8f45078f5408f06f8460adbdf6d129d1",
+  "repair.patch": "e635ce63ac2bae5c05e6a72db11d271d1504ade45c95c4d6ecbd092cc9abae92",
+  "types.rs.before.txt": "e8a935a30705ceb7813c7952eb31167d220dcba0677412411cf64cac8b2f6ac6"
+}

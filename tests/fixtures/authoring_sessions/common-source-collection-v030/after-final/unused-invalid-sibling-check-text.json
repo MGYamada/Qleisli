@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unused-invalid-sibling/main.qli",
+    "--module=helper=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unused-invalid-sibling/helper.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "stderr": "helper:278..279: ownership: unbound or consumed value q\n",
+  "native_invocations": 0,
+  "seconds": 0.005121499998494983,
+  "recorded_utc": "2026-10-05T16:21:36.914705+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "transcript": "helper:278..279: ownership: unbound or consumed value q\n"
+}

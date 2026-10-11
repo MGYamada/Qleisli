@@ -1,0 +1,4 @@
+use std::quantum::z;
+basis fn f(u:Unit)->Unit{()}
+basis fn probe()->Unit{f()}
+observe fn main()->CBit{false}

@@ -1,0 +1,34 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "basis_polymorphism",
+    "--test",
+    "inference_law",
+    "--test",
+    "quantum_unit_source",
+    "--test",
+    "quantum_tuple_unitors",
+    "--test",
+    "cli",
+    "--test",
+    "cli_json",
+    "--test",
+    "discovery_paths",
+    "--test",
+    "selected_source_cli",
+    "--test",
+    "sized_cli"
+  ],
+  "exit_code": 101,
+  "seconds": 2.4415753330104053,
+  "sources_unchanged": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+  "test_result_lines": [
+    "test result: FAILED. 7 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+  ]
+}

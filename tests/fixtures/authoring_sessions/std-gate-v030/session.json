@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Provisional ordinary std::gate source integration for distinct physical SWAP and structural axis permutation",
+  "author": "Codex assistant; informed maintenance; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "fab0ae9500e53ffba8308d8bcd8d176a43beeb86",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze two desired std clients before implementing the provisional library module.",
+      "sha256": {
+        "axis-permutation.qli": "51e945881fb0913184c32c87b15aa95911e61de333382b5ef684016fec1abdf2",
+        "physical-swap.qli": "f7b26019893e60e4528c35ee9c1dfbc63fafae27823d9b5bee81eddbfbc632b3"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/axis-permutation.json",
+        "before/physical-swap.json",
+        "after/axis-permutation.json",
+        "after/physical-swap.json"
+      ]
+    }
+  ]
+}

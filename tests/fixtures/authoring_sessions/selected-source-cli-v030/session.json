@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "task": "Selected-source CLI execution with explicit IR profile and preserved invocation scope",
+  "baseline_commit": "a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; deployed model and sampling unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve an explicit Unit runtime parameter before selected-source CLI changes; zero physical width is not an implicit argument.",
+      "sha256": {
+        "unit-parameter/main.qli": "3a4fa70a4d41b8f6307c9ff9c71949e35b2b7306c6c86357c84e47da9b7ace60"
+      },
+      "observations": [
+        "observations/selected-check.json",
+        "observations/selected-run.json",
+        "observations/legacy-check.json",
+        "observations/legacy-run.json"
+      ]
+    }
+  ]
+}

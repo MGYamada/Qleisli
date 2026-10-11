@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-unitor-arrow/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004767749982420355,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "name",
+        "severity": "error",
+        "message": "unresolved function split",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-unitor-arrow/main.qli",
+          "start": 44,
+          "end": 52
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "recorded_utc": "2026-10-05T12:08:27.686865+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-unitor-arrow-json.json",
+    "sha256": "39778d1f41302d4009f289d984780601abec455d777ea389355e8ac45994639d"
+  }
+}

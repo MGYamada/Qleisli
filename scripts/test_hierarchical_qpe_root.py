@@ -3,7 +3,7 @@
 
 Frozen provider graphs below are mutation fixtures, not independent QPE proof.
 The theorem's independent provider/finite-reader premises remain explicit.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

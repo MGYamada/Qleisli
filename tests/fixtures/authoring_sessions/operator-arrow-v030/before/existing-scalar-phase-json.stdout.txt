@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"visibility","severity":"error","message":"dependency main::entry is private","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-scalar-phase/main.qli","start":0,"end":0},"related":[]}],"result":null}

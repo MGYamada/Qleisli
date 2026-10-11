@@ -1,0 +1,29 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error[E0599]: no method named `code` found for struct `interchange::Error` in the current scope
+   --> src/interchange/hierarchical/runtime.rs:190:30
+    |
+190 |             assert_eq!(error.code(), "version");
+    |                              ^^^^-- help: remove the arguments
+    |                              |
+    |                              field, not a method
+    |
+   ::: src/interchange/mod.rs:28:1
+    |
+ 28 | pub struct Error {
+    | ---------------- method `code` not found for this struct
+
+error[E0599]: no method named `code` found for struct `interchange::Error` in the current scope
+   --> src/interchange/hierarchical/runtime.rs:204:66
+    |
+204 |                     response_indices(frame, mode).err().unwrap().code(),
+    |                                                                  ^^^^-- help: remove the arguments
+    |                                                                  |
+    |                                                                  field, not a method
+    |
+   ::: src/interchange/mod.rs:28:1
+    |
+ 28 | pub struct Error {
+    | ---------------- method `code` not found for this struct
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `qleisli` (lib test) due to 2 previous errors

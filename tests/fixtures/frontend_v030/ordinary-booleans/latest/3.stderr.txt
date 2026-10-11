@@ -1,0 +1,5 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 5.64s
+     Running tests/frontend_types.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/frontend_types-f5b7d97e61407465)
+     Running tests/ordinary_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/ordinary_booleans-a8f60bea464ae928)
+error: test failed, to rerun pass `--test ordinary_booleans`

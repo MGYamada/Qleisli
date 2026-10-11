@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.coherent-basis-corpus-selection",
+  "version": 1,
+  "created_utc": "2026-10-06T03:56:09.560842+00:00",
+  "before_manifest_sha256": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+  "after_manifest_sha256": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+  "migration_sha256": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb",
+  "checks_sha256": "ebd4e3575853a4f785944512f416bcf1c68f8b1d2f76f7b053bf1e99578f7227",
+  "after_capture_sha256": "d79ba1d6f661c4cb82daee4a4eb7ba62c51bd67dde448c5c2fca29bb8383ea3d",
+  "strict_manifest_validation": "passed: read-only hashes, complete snapshots, observations and latest selector identities",
+  "current_projects": {
+    "qualtran/less_than2": "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/sources/qualtran/less_than2",
+    "pennylane_demos/vqe_excitation": "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation"
+  },
+  "scope": "No corpus algorithm execution, build, new maximum case, proof or release certification by this selection step."
+}

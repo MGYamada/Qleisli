@@ -1,0 +1,2 @@
+pub unitary fn entry(q:Q<Bit>)->Q<Bit>{hidden(q)}
+unitary fn hidden(q:Q<Bit>)->Q<Bit>{q}

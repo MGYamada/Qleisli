@@ -2,7 +2,7 @@ import Qleisli.Schema
 import Lean
 
 /-! Build-time export of the closed component registry, never artifact input.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The expression tree retains every binder, universe and implicit argument.
 This audit tool is outside the executable acceptance library. -/
 

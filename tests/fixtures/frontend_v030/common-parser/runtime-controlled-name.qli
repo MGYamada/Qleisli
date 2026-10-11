@@ -1,0 +1,2 @@
+unitary fn controlled(q: Q<Bit>) -> Q<Bit> { q }
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { controlled(q) }

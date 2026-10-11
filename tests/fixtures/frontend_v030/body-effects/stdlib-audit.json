@@ -1,0 +1,101 @@
+{
+  "scope": "Complete four current stdlib modules. Ten ordinary runtime functions have principal facts; three distinct total basis functions retain basis syntax. All source bodies, mathematical specifications and primitive catalogs are preserved. These facts are not arbitrary exact Meaning or constitutionally discharged source-preservation guarantees.",
+  "modules": [
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "before_sha256": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+      "after_sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "ordinary_functions": [
+        {
+          "name": "increment2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "add2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "mul2_mod15",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        }
+      ],
+      "basis_definitions": []
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "before_sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "after_sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "ordinary_functions": [],
+      "basis_definitions": [
+        "xor2",
+        "and2"
+      ]
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "before_sha256": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+      "after_sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "ordinary_functions": [
+        {
+          "name": "hadamard2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "reflect_uniform2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "measure_x",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Observe",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "measure_z2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Observe",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "parity_zz",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Observe",
+          "body_and_mathematical_comments_unchanged": true
+        }
+      ],
+      "basis_definitions": [
+        "nonzero2"
+      ]
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "before_sha256": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+      "after_sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "ordinary_functions": [
+        {
+          "name": "qft2",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        },
+        {
+          "name": "qft3",
+          "classification": "redundant runtime prefix removed; checked principal fact",
+          "expected_principal": "Unitary",
+          "body_and_mathematical_comments_unchanged": true
+        }
+      ],
+      "basis_definitions": []
+    }
+  ]
+}

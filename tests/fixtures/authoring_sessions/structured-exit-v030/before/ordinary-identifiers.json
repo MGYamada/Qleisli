@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/structured-exit-v030/attempt-01/ordinary-identifiers",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-08T19:31:58.004534+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "Qargo.toml requires schema-version = 2",
+        "primary": {
+          "path": "Qargo.toml",
+          "start": 0,
+          "end": 91,
+          "line": 1,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

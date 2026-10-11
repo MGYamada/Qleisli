@@ -1,0 +1,59 @@
+"""Bounded validation; fixed commands, isolated logs, no data-driven execution.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[3]
+MODE = sys.argv[1]
+assert MODE in {"latest", "msrv"}
+OUT = HERE / ("validation-current-" + MODE)
+OUT.mkdir()
+env = dict(os.environ, CARGO_TARGET_DIR="/private/tmp/qleisli-bounded-validation-target",
+           CARGO_INCREMENTAL="0", CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0",
+           CARGO_BUILD_JOBS="2", QLEISLI_KERNEL=str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel"))
+if MODE == "msrv":
+    env["PATH"] = "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:" + env["PATH"]
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def sources():
+    paths = sorted((ROOT / "src").rglob("*.rs")) + sorted((ROOT / "tests").glob("*.rs"))
+    paths += sorted((ROOT / "stdlib/src").glob("*.qli"))
+    paths += [ROOT / "Cargo.toml", ROOT / "Cargo.lock"]
+    return {str(p.relative_to(ROOT)): digest(p) for p in paths}
+
+before = sources()
+(OUT / "source-files.json").write_text(json.dumps(before, indent=2) + "\n")
+(OUT / "executed-driver.py.txt").write_bytes(Path(__file__).read_bytes())
+(OUT / "native.json").write_text(json.dumps({"path": env["QLEISLI_KERNEL"], "sha256": digest(Path(env["QLEISLI_KERNEL"]))}, indent=2) + "\n")
+targets = ["body_effects", "sized_source", "basis_polymorphism", "compile", "diagnostics",
+           "cli_json", "documentation", "parser", "project", "algorithms", "order_finding",
+           "static_operations", "static_semantics", "source_semantics", "function_contracts",
+           "selected_source_cli", "sized_review_dialects", "sized_review_diagnostics",
+           "certified_source", "operation_parameters", "source_judgments"]
+commands = [["rustc", "--version"], ["cargo", "--version"],
+            ["cargo", "test", "--offline"] + [a for t in targets for a in ["--test", t]],
+            ["cargo", "test", "--offline", "--lib", "frontend::"],
+            ["cargo", "clippy", "--offline", "--all-targets", "--", "-D", "warnings"]]
+rows = []
+for i, command in enumerate(commands):
+    started = time.monotonic()
+    with (OUT / f"{i}.stdout.txt").open("wb") as stdout, (OUT / f"{i}.stderr.txt").open("wb") as stderr:
+        result = subprocess.run(command, cwd=ROOT, env=env, stdout=stdout, stderr=stderr, timeout=600)
+    row = {"argv": command, "exit_code": result.returncode, "seconds": time.monotonic() - started,
+           "stdout": f"{i}.stdout.txt", "stderr": f"{i}.stderr.txt"}
+    rows.append(row)
+    stable = sources() == before
+    (OUT / "result.json").write_text(json.dumps({"mode": MODE, "commands": rows,
+        "sources_stable": stable, "scope": "Bounded existing and new source tests; ignored cases stay ignored. No new maximum-size quantum case, full Lean replay, source-preservation theorem or release claim."}, indent=2) + "\n")
+    print(json.dumps(row), flush=True)
+    if result.returncode or not stable:
+        raise SystemExit(result.returncode or 1)

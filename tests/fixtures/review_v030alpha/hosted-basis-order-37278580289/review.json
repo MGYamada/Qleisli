@@ -1,0 +1,27 @@
+{
+  "source_files_checked": 99,
+  "changed_runtime_inputs": [
+    "tests/sized_source.rs"
+  ],
+  "change": "Only the dependent-kind fixture declaration and its positional static argument order; unchanged runtime type/access/size assertions.",
+  "rust_source_files_changed": false,
+  "native_source_or_proof_files_changed": false,
+  "latest": {
+    "passed": 48,
+    "ignored": 3,
+    "toolchain": "1.98.1"
+  },
+  "msrv": {
+    "passed": 48,
+    "ignored": 3,
+    "toolchain": "1.85.0"
+  },
+  "fresh_local_lean_replay": false,
+  "full_local_all_target_runtime": false,
+  "production_inventory": "unchanged; checked",
+  "production_coverage": "unchanged; checked",
+  "protected_guarantees": "Two scoped ordinary QLV1 ownership/classical-scope guarantees unchanged",
+  "broad_QS_PR_RS_EXACT": "pending",
+  "scope": 110,
+  "verified_complete": 13
+}

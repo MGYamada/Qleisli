@@ -1,0 +1,13 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 6.42s
+     Running tests/cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli-a35d1ad4e3887f25)
+     Running tests/cli_json.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli_json-d52b52a3986694fc)
+     Running tests/cli_sampling.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli_sampling-ca9fdacb542f1d37)
+     Running tests/mixed_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/mixed_booleans-2f0e57b70bd1a9f1)
+     Running tests/ordinary_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/ordinary_booleans-0e2605162a824ddf)
+     Running tests/project.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/project-f3f79d12f69ace60)
+     Running tests/runtime_parameter_patterns.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/runtime_parameter_patterns-c252ad0921c8f976)
+     Running tests/selected_source_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/selected_source_cli-c44e25708606cca8)
+     Running tests/sized_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_cli-7b8ad7df42f673d9)
+     Running tests/sized_review_diagnostics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_review_diagnostics-a4831f2b11a33b36)
+     Running tests/sized_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_source-757a219cd8492aaa)

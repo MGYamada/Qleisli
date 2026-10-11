@@ -1,0 +1,116 @@
+{
+  "run": 37404989108,
+  "head": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+  "merge": "f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f",
+  "jobs": [
+    {
+      "id": 112080443955,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080576927,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112080576949,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080576952,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080577015,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080577023,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080577140,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 112080577195,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112080577442,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768323,
+      "name": "lean",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768345,
+      "name": "interop",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768351,
+      "name": "rust-msrv",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768376,
+      "name": "distribution",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768401,
+      "name": "lean-kernel",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768405,
+      "name": "macos-source",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768442,
+      "name": "rust",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088768479,
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 112088769424,
+      "name": "release-readiness",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "qualification": "All required aggregators fail on check-rust dependency failure; release-readiness skipped. Successful producers do not establish a successful aggregate or current namespace commit."
+}

@@ -1,0 +1,22 @@
+
+running 3 tests
+test ecosystem_help_is_the_single_canonical_chapter ... ok
+test standalone_help_discovers_native_tools_without_project_or_checker ... ok
+test unavailable_tools_and_invalid_help_keep_usage_failures_and_discovery ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s
+
+
+running 9 tests
+test selected_basis_and_request_conflicts_reject_before_native_or_request_reads ... ok
+test selected_module_checking_and_binding_errors_cannot_start_native ... ok
+test selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native ... ok
+test selected_open_signature_checks_and_proposals_do_not_claim_closed_execution ... ok
+test selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes ... ok
+test selected_static_fold_and_fresh_sampling_use_the_requested_instance ... ok
+test selected_caller_h_request_rejects_x_once_without_a_raw_retry ... ok
+test selected_mixed_sources_keep_independent_distributions_and_scope ... ok
+test selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+

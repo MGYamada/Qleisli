@@ -1,0 +1,20 @@
+{
+  "changed_inputs": [],
+  "exit_code": 0,
+  "files": {
+    "after.json": "d157e4393b5348e3eb3327b2a6b2c01fd4f9289a9338078f7f22ef2fa164524c",
+    "before.json": "d157e4393b5348e3eb3327b2a6b2c01fd4f9289a9338078f7f22ef2fa164524c",
+    "command.json": "86ae9a67f4a2f3280c2a067e2ed60a346e54ecf5999d5865d475369588e3c473",
+    "record.py": "13f1d063cba284c0d91c1b64156c65097162c12438c7968db3098a60bb0fa075",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "e18368e9cf1d770f0e081979efef0d9a19e757927369e35bfc2f04ce63b87761"
+  },
+  "finished_at_utc": "2026-10-04T22:49:12.800780+00:00",
+  "format": "qleisli.constitution-live-replay",
+  "inputs_unchanged_during_run": true,
+  "scope": "Recorded adoption/ledger and the two existing scoped guarantee verifiers, including identity transport. No additional QS/PR/RS discharge, human authentication or release approval.",
+  "seconds": 36.86502958298661,
+  "started_at_utc": "2026-10-04T22:48:35.934599+00:00",
+  "status": "passed",
+  "version": 1
+}

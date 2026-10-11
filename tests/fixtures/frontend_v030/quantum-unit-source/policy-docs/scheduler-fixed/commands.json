@@ -1,0 +1,29 @@
+{
+  "attempt": "scheduler-fixed",
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "selected_input_scope": "Selected documentation, checker/scheduler, all authoring session manifests and original quantum-unit study files; not a full repository snapshot.",
+  "mdbook": {
+    "path": "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+    "sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e"
+  },
+  "recorder_sha256": "dd4ea9a8236a029d33cab173afc97b99831307dcc1b8edd16aa59759cac4d950",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/test_run_native_ci.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:08:52.711890+00:00",
+      "elapsed_seconds": 0.6863257499644533,
+      "exit_code": 1,
+      "stdout": "1.stdout.txt",
+      "stdout_sha256": "ae47abf634725f0182745ec80f6ac0bcf6d109042d55fbc0c1ac3f4d7079e0de",
+      "stderr": "1.stderr.txt",
+      "stderr_sha256": "a213077d9bac357df7aeeec8b0076e1febdb4826f0b769d63ef6e15fb3312858"
+    }
+  ]
+}

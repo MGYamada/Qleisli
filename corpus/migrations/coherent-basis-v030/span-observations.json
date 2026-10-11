@@ -1,0 +1,71 @@
+{
+  "format": "qleisli.coherent-basis-old-parser-spans",
+  "version": 1,
+  "helper": "/private/tmp/qleisli-coherent-spans",
+  "sha256": "299b4e61ecf324c85e7c7428e5257d3b65aeaa0d734e5131bff4d49b8df1754a",
+  "results": [
+    {
+      "project": "qualtran/less_than2",
+      "argv": [
+        "/private/tmp/qleisli-coherent-spans",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than2/kernel.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "683 751 686 710 714 715 726 751\n",
+      "stderr": "",
+      "helper_sha256": "299b4e61ecf324c85e7c7428e5257d3b65aeaa0d734e5131bff4d49b8df1754a",
+      "spans": {
+        "expression": [
+          683,
+          751
+        ],
+        "binder": [
+          686,
+          710
+        ],
+        "input": [
+          714,
+          715
+        ],
+        "basis_body": [
+          726,
+          751
+        ]
+      },
+      "preserved": "Existing binder, input and basis-body bytes, all surrounding comments/declarations and main source remain exact."
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "argv": [
+        "/private/tmp/qleisli-coherent-spans",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation/kernel.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "1014 1076 1017 1033 1037 1038 1049 1076\n",
+      "stderr": "",
+      "helper_sha256": "299b4e61ecf324c85e7c7428e5257d3b65aeaa0d734e5131bff4d49b8df1754a",
+      "spans": {
+        "expression": [
+          1014,
+          1076
+        ],
+        "binder": [
+          1017,
+          1033
+        ],
+        "input": [
+          1037,
+          1038
+        ],
+        "basis_body": [
+          1049,
+          1076
+        ]
+      },
+      "preserved": "Existing binder, input and basis-body bytes, all surrounding comments/declarations and main source remain exact."
+    }
+  ],
+  "scope": "Read-only old-parser offsets; helper bytes are identified, not independently attested as a fresh build."
+}

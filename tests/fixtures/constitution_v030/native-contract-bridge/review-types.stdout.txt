@@ -1,0 +1,397 @@
+QleisliKernel.Protocol.NativeContract.check_acceptance : ∀ (bytes : ByteArray) (answer : Bool) (work left : Nat),
+  Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.NativeContract.check bytes) work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} answer) left) →
+    Nonempty.{1} (QleisliKernel.Protocol.NativeContract.Acceptance bytes answer work left)
+@Qleisli.NativeContract.acceptance_root_meaning : ∀ {bytes : ByteArray} {answer : Bool} {work left : Nat}
+  (binding : QleisliKernel.Protocol.NativeContract.Acceptance bytes answer work left),
+  ∃ root a b,
+    And
+      (Eq.{1}
+        (ExceptT.run.{0, 0}
+          (QleisliKernel.Qirf.Validity.checkRoot (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+            (QleisliKernel.Protocol.NativeContract.Acceptance.order binding))
+          a)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} root) b))
+      (Qleisli.Qirf.Validity.RootMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+        (QleisliKernel.Protocol.NativeContract.Acceptance.order binding) root)
+Qleisli.NativeContract.check_root_meaning : ∀ (bytes : ByteArray) (answer : Bool) (work left : Nat),
+  Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.NativeContract.check bytes) work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} answer) left) →
+    ∃ binding root a b,
+      And
+        (Eq.{1}
+          (ExceptT.run.{0, 0}
+            (QleisliKernel.Qirf.Validity.checkRoot (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+              (QleisliKernel.Protocol.NativeContract.Acceptance.order binding))
+            a)
+          (Prod.mk.{0, 0} (Except.ok.{0, 0} root) b))
+        (Qleisli.Qirf.Validity.RootMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+          (QleisliKernel.Protocol.NativeContract.Acceptance.order binding) root)
+@Qleisli.NativeContract.leaf_meaning : ∀ {artifact : QleisliKernel.Qirf.Artifact} {order : Array.{0} Nat}
+  {value : Lean.Json} {work left : Nat}
+  (binding : QleisliKernel.Protocol.NativeContract.LeafAcceptance artifact order value work left),
+  And
+    (Eq.{1} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.actual binding)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix binding))
+    (Qleisli.NativeContract.LeafMeaning artifact order
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.root binding)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature binding)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.input binding)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.output binding)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix binding))
+@Qleisli.NativeContract.leaf_reference_laws : ∀ {R : Type} [inst : Fintype.{0} R] [inst_1 : DecidableEq.{1} R]
+  {artifact : QleisliKernel.Qirf.Artifact} {order : Array.{0} Nat} {value : Lean.Json} {work left : Nat}
+  (binding : QleisliKernel.Protocol.NativeContract.LeafAcceptance artifact order value work left),
+  have joint :=
+    Matrix.kronecker.{0, 0, 0, 0, 0}
+      (Qleisli.Finite.square (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix binding)) 1;
+  And (Eq.{1} (HMul.hMul.{0, 0, 0} (Matrix.conjTranspose.{0, 0, 0} joint) joint) 1)
+    (Eq.{1} (HMul.hMul.{0, 0, 0} joint (Matrix.conjTranspose.{0, 0, 0} joint)) 1)
+Qleisli.NativeContract.check_sound : ∀ (bytes : ByteArray) (answer : Bool) (work left : Nat),
+  Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.NativeContract.check bytes) work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} answer) left) →
+    ∃ binding,
+      And
+        (∃ root a b,
+          And
+            (Eq.{1}
+              (ExceptT.run.{0, 0}
+                (QleisliKernel.Qirf.Validity.checkRoot
+                  (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+                  (QleisliKernel.Protocol.NativeContract.Acceptance.order binding))
+                a)
+              (Prod.mk.{0, 0} (Except.ok.{0, 0} root) b))
+            (Qleisli.Qirf.Validity.RootMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+              (QleisliKernel.Protocol.NativeContract.Acceptance.order binding) root))
+        (match QleisliKernel.Protocol.NativeContract.Acceptance.request binding with
+        | QleisliKernel.Protocol.NativeContract.RequestAcceptance.encoded binding => True
+        | QleisliKernel.Protocol.NativeContract.RequestAcceptance.leaf request =>
+          And
+            (Eq.{1} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.actual request)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix request))
+            (Qleisli.NativeContract.LeafMeaning (QleisliKernel.Protocol.NativeContract.Acceptance.artifact binding)
+              (QleisliKernel.Protocol.NativeContract.Acceptance.order binding)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.root request)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature request)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.input request)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.output request)
+              (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix request)))
+structure QleisliKernel.Protocol.NativeContract.Acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat) : Type
+number of parameters: 4
+fields:
+  QleisliKernel.Protocol.NativeContract.Acceptance.body : ByteArray
+  QleisliKernel.Protocol.NativeContract.Acceptance.requestBytes : ByteArray
+  QleisliKernel.Protocol.NativeContract.Acceptance.text : String
+  QleisliKernel.Protocol.NativeContract.Acceptance.value : Lean.Json
+  QleisliKernel.Protocol.NativeContract.Acceptance.artifact : QleisliKernel.Qirf.Artifact
+  QleisliKernel.Protocol.NativeContract.Acceptance.order : Array.{0} Nat
+  QleisliKernel.Protocol.NativeContract.Acceptance.afterArtifact : Nat
+  QleisliKernel.Protocol.NativeContract.Acceptance.packetBound : Eq.{1} (QleisliKernel.Protocol.Validity.packet bytes)
+      (Except.ok.{0, 0}
+        (Prod.mk.{0, 0} (QleisliKernel.Protocol.NativeContract.Acceptance.body self)
+          (some.{0} (QleisliKernel.Protocol.NativeContract.Acceptance.requestBytes self))))
+  QleisliKernel.Protocol.NativeContract.Acceptance.utf8Bound : Eq.{1}
+      (String.fromUTF8? (QleisliKernel.Protocol.NativeContract.Acceptance.requestBytes self))
+      (some.{0} (QleisliKernel.Protocol.NativeContract.Acceptance.text self))
+  QleisliKernel.Protocol.NativeContract.Acceptance.requestBound : Eq.{1}
+      (QleisliKernel.Protocol.FiniteCodec.parseWithDepth (QleisliKernel.Protocol.NativeContract.Acceptance.text self)
+        128)
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.Acceptance.value self))
+  QleisliKernel.Protocol.NativeContract.Acceptance.formatBound : Eq.{1}
+      (bind.{0, 0} (Lean.Json.getObjVal? (QleisliKernel.Protocol.NativeContract.Acceptance.value self) "format")
+        Lean.Json.getStr?)
+      (Except.ok.{0, 0} "qleisli.native-contract")
+  QleisliKernel.Protocol.NativeContract.Acceptance.versionBound : Eq.{1}
+      (bind.{0, 0} (Lean.Json.getObjVal? (QleisliKernel.Protocol.NativeContract.Acceptance.value self) "version")
+        Lean.Json.getNat?)
+      (Except.ok.{0, 0} 1)
+  QleisliKernel.Protocol.NativeContract.Acceptance.artifactBound : Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Protocol.Qirf.read (QleisliKernel.Protocol.NativeContract.Acceptance.body self)) work)
+      (Prod.mk.{0, 0}
+        (Except.ok.{0, 0}
+          (Prod.mk.{0, 0} (QleisliKernel.Protocol.NativeContract.Acceptance.artifact self)
+            (QleisliKernel.Protocol.NativeContract.Acceptance.order self)))
+        (QleisliKernel.Protocol.NativeContract.Acceptance.afterArtifact self))
+  QleisliKernel.Protocol.NativeContract.Acceptance.request : QleisliKernel.Protocol.NativeContract.RequestAcceptance
+      (QleisliKernel.Protocol.NativeContract.Acceptance.artifact self)
+      (QleisliKernel.Protocol.NativeContract.Acceptance.order self)
+      (QleisliKernel.Protocol.NativeContract.Acceptance.value self)
+      (QleisliKernel.Protocol.NativeContract.Acceptance.afterArtifact self) left
+  QleisliKernel.Protocol.NativeContract.Acceptance.answered : Eq.{1} answer true
+constructor:
+  QleisliKernel.Protocol.NativeContract.Acceptance.mk {bytes : ByteArray} {answer : Bool} {work left : Nat}
+    (body requestBytes : ByteArray) (text : String) (value : Lean.Json) (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array.{0} Nat) (afterArtifact : Nat)
+    (packetBound :
+      Eq.{1} (QleisliKernel.Protocol.Validity.packet bytes)
+        (Except.ok.{0, 0} (Prod.mk.{0, 0} body (some.{0} requestBytes))))
+    (utf8Bound : Eq.{1} (String.fromUTF8? requestBytes) (some.{0} text))
+    (requestBound : Eq.{1} (QleisliKernel.Protocol.FiniteCodec.parseWithDepth text 128) (Except.ok.{0, 0} value))
+    (formatBound :
+      Eq.{1} (bind.{0, 0} (Lean.Json.getObjVal? value "format") Lean.Json.getStr?)
+        (Except.ok.{0, 0} "qleisli.native-contract"))
+    (versionBound : Eq.{1} (bind.{0, 0} (Lean.Json.getObjVal? value "version") Lean.Json.getNat?) (Except.ok.{0, 0} 1))
+    (artifactBound :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.Qirf.read body) work)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} (Prod.mk.{0, 0} artifact order)) afterArtifact))
+    (request : QleisliKernel.Protocol.NativeContract.RequestAcceptance artifact order value afterArtifact left)
+    (answered : Eq.{1} answer true) : QleisliKernel.Protocol.NativeContract.Acceptance bytes answer work left
+structure QleisliKernel.Protocol.NativeContract.EncodedAcceptance (artifact : QleisliKernel.Qirf.Artifact)
+  (order : Array.{0} Nat) (value : Lean.Json) (work left : Nat) : Type
+number of parameters: 5
+fields:
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.contractJson : Lean.Json
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required : QleisliKernel.Semantics.Finite.Contract
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.afterContract : Nat
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.kindBound : Eq.{1}
+      (bind.{0, 0} (Lean.Json.getObjVal? value "kind") Lean.Json.getStr?) (Except.ok.{0, 0} "encoded")
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.contractBound : Eq.{1} (Lean.Json.getObjVal? value "contract")
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.contractJson self))
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.contractDecoded : Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Protocol.FiniteCodec.readContract
+          (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.contractJson self))
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required self))
+        (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.afterContract self))
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.accepted : Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Qirf.checkContract artifact order
+          (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.required self))
+        (QleisliKernel.Protocol.NativeContract.EncodedAcceptance.afterContract self))
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} Unit.unit) left)
+constructor:
+  QleisliKernel.Protocol.NativeContract.EncodedAcceptance.mk {artifact : QleisliKernel.Qirf.Artifact}
+    {order : Array.{0} Nat} {value : Lean.Json} {work left : Nat} (contractJson : Lean.Json)
+    (required : QleisliKernel.Semantics.Finite.Contract) (afterContract : Nat)
+    (kindBound :
+      Eq.{1} (bind.{0, 0} (Lean.Json.getObjVal? value "kind") Lean.Json.getStr?) (Except.ok.{0, 0} "encoded"))
+    (contractBound : Eq.{1} (Lean.Json.getObjVal? value "contract") (Except.ok.{0, 0} contractJson))
+    (contractDecoded :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.FiniteCodec.readContract contractJson) work)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} required) afterContract))
+    (accepted :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Qirf.checkContract artifact order required) afterContract)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} Unit.unit) left)) :
+    QleisliKernel.Protocol.NativeContract.EncodedAcceptance artifact order value work left
+structure QleisliKernel.Protocol.NativeContract.LeafAcceptance (artifact : QleisliKernel.Qirf.Artifact)
+  (order : Array.{0} Nat) (value : Lean.Json) (work left : Nat) : Type
+number of parameters: 5
+fields:
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.signatureJson : Lean.Json
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.inputJson : Lean.Json
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.outputJson : Lean.Json
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrixJson : Lean.Json
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature : QleisliKernel.Semantics.Finite.Basis
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.input : QleisliKernel.Semantics.Raw.Port
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.output : QleisliKernel.Semantics.Raw.Port
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix : QleisliKernel.Semantics.Exact.Matrix
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.root : QleisliKernel.Qirf.Validity.Root
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.actual : QleisliKernel.Semantics.Exact.Matrix
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterMatrix : Nat
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterRoot : Nat
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.kindBound : Eq.{1}
+      (bind.{0, 0} (Lean.Json.getObjVal? value "kind") Lean.Json.getStr?) (Except.ok.{0, 0} "leaf")
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.signatureBound : Eq.{1} (Lean.Json.getObjVal? value "signature")
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signatureJson self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.signatureDecoded : Eq.{1}
+      (QleisliKernel.Protocol.Qirf.basis 129 (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signatureJson self))
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.inputBound : Eq.{1} (Lean.Json.getObjVal? value "input")
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.inputJson self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.inputDecoded : QleisliKernel.Protocol.NativeContract.PortBinding
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.inputJson self)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.input self)
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.outputBound : Eq.{1} (Lean.Json.getObjVal? value "output")
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.outputJson self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.outputDecoded : QleisliKernel.Protocol.NativeContract.PortBinding
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.outputJson self)
+      (QleisliKernel.Protocol.NativeContract.LeafAcceptance.output self)
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrixBound : Eq.{1} (Lean.Json.getObjVal? value "matrix")
+      (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrixJson self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrixDecoded : Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Protocol.FiniteCodec.readMatrixValue
+          (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrixJson self))
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix self))
+        (QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterMatrix self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.rootAccepted : Eq.{1}
+      (ExceptT.run.{0, 0} (QleisliKernel.Qirf.Validity.checkRoot artifact order)
+        (QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterMatrix self))
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.root self))
+        (QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterRoot self))
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.accepted : Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Qirf.check artifact order (QleisliKernel.Protocol.NativeContract.LeafAcceptance.signature self)
+          (QleisliKernel.Protocol.NativeContract.LeafAcceptance.input self)
+          (QleisliKernel.Protocol.NativeContract.LeafAcceptance.output self)
+          (QleisliKernel.Protocol.NativeContract.LeafAcceptance.matrix self))
+        (QleisliKernel.Protocol.NativeContract.LeafAcceptance.afterRoot self))
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} (QleisliKernel.Protocol.NativeContract.LeafAcceptance.actual self)) left)
+constructor:
+  QleisliKernel.Protocol.NativeContract.LeafAcceptance.mk {artifact : QleisliKernel.Qirf.Artifact}
+    {order : Array.{0} Nat} {value : Lean.Json} {work left : Nat}
+    (signatureJson inputJson outputJson matrixJson : Lean.Json) (signature : QleisliKernel.Semantics.Finite.Basis)
+    (input output : QleisliKernel.Semantics.Raw.Port) (matrix : QleisliKernel.Semantics.Exact.Matrix)
+    (root : QleisliKernel.Qirf.Validity.Root) (actual : QleisliKernel.Semantics.Exact.Matrix)
+    (afterMatrix afterRoot : Nat)
+    (kindBound : Eq.{1} (bind.{0, 0} (Lean.Json.getObjVal? value "kind") Lean.Json.getStr?) (Except.ok.{0, 0} "leaf"))
+    (signatureBound : Eq.{1} (Lean.Json.getObjVal? value "signature") (Except.ok.{0, 0} signatureJson))
+    (signatureDecoded : Eq.{1} (QleisliKernel.Protocol.Qirf.basis 129 signatureJson) (Except.ok.{0, 0} signature))
+    (inputBound : Eq.{1} (Lean.Json.getObjVal? value "input") (Except.ok.{0, 0} inputJson))
+    (inputDecoded : QleisliKernel.Protocol.NativeContract.PortBinding inputJson input)
+    (outputBound : Eq.{1} (Lean.Json.getObjVal? value "output") (Except.ok.{0, 0} outputJson))
+    (outputDecoded : QleisliKernel.Protocol.NativeContract.PortBinding outputJson output)
+    (matrixBound : Eq.{1} (Lean.Json.getObjVal? value "matrix") (Except.ok.{0, 0} matrixJson))
+    (matrixDecoded :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Protocol.FiniteCodec.readMatrixValue matrixJson) work)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} matrix) afterMatrix))
+    (rootAccepted :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Qirf.Validity.checkRoot artifact order) afterMatrix)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} root) afterRoot))
+    (accepted :
+      Eq.{1} (ExceptT.run.{0, 0} (QleisliKernel.Qirf.check artifact order signature input output matrix) afterRoot)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} actual) left)) :
+    QleisliKernel.Protocol.NativeContract.LeafAcceptance artifact order value work left
+def QleisliKernel.Protocol.NativeContract.PortBinding : Lean.Json → QleisliKernel.Semantics.Raw.Port → Prop :=
+fun value result =>
+  ∃ shape token wires bits wireValues,
+    And (Eq.{1} (Lean.Json.getObjVal? value "shape") (Except.ok.{0, 0} shape))
+      (And (Eq.{1} (Lean.Json.getObjVal? value "token") (Except.ok.{0, 0} token))
+        (And (Eq.{1} (Lean.Json.getNat? token) (Except.ok.{0, 0} (QleisliKernel.Semantics.Raw.Port.token result)))
+          (And (Eq.{1} (Lean.Json.getObjVal? value "wires") (Except.ok.{0, 0} wires))
+            (And (Eq.{1} (Lean.Json.getArr? wires) (Except.ok.{0, 0} wireValues))
+              (And
+                (Eq.{1} (List.mapM.{0, 0, 0} Lean.Json.getNat? (Array.toList.{0} wireValues))
+                  (Except.ok.{0, 0} (QleisliKernel.Semantics.Raw.Port.wires result)))
+                (And (Eq.{1} (Lean.Json.getObjVal? shape "bits") (Except.ok.{0, 0} bits))
+                  (Eq.{1} (Lean.Json.getNat? bits)
+                    (Except.ok.{0, 0} (QleisliKernel.Semantics.Raw.Port.bits result)))))))))
+structure Qleisli.NativeContract.LeafMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array.{0} Nat)
+  (root : QleisliKernel.Qirf.Validity.Root) (signature : QleisliKernel.Semantics.Finite.Basis)
+  (input output : QleisliKernel.Semantics.Raw.Port) (matrix : QleisliKernel.Semantics.Exact.Matrix) : Prop
+number of parameters: 7
+fields:
+  Qleisli.NativeContract.LeafMeaning.rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root
+  Qleisli.NativeContract.LeafMeaning.interface : Eq.{1} (QleisliKernel.Qirf.Artifact.rootInterface artifact)
+      (some.{0} (Prod.mk.{0, 0} signature signature))
+  Qleisli.NativeContract.LeafMeaning.inputs : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.inputs (QleisliKernel.Qirf.Validity.Root.program root))
+      (List.cons.{0} input List.nil.{0})
+  Qleisli.NativeContract.LeafMeaning.outputs : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.outputs (QleisliKernel.Qirf.Validity.Root.program root))
+      (List.cons.{0} (QleisliKernel.Semantics.Raw.Port.token output) List.nil.{0})
+  Qleisli.NativeContract.LeafMeaning.classicalInputs : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.classicalInputs (QleisliKernel.Qirf.Validity.Root.program root))
+      List.nil.{0}
+  Qleisli.NativeContract.LeafMeaning.classicalOutputs : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.classicalOutputs (QleisliKernel.Qirf.Validity.Root.program root))
+      List.nil.{0}
+  Qleisli.NativeContract.LeafMeaning.effect : Eq.{1}
+      (QleisliKernel.Semantics.Observation.Program.effect (QleisliKernel.Qirf.Validity.Root.program root))
+      QleisliKernel.Semantics.Raw.Effect.unitary
+  Qleisli.NativeContract.LeafMeaning.instrument : ∃ slots,
+      And
+        (Qleisli.Qirf.GraphDenotation artifact
+          (Array.replicate.{0} (Array.size.{0} (QleisliKernel.Qirf.Artifact.entries artifact)) none.{0})
+          (Array.toList.{0} order) slots)
+        (And (Eq.{1} (Array.all.{0} slots Option.isSome.{0}) true)
+          (And
+            (Qleisli.Semantics.ObservingFunction.BodyMeaning
+              (List.map.{0, 0} QleisliKernel.Semantics.ObservingFunction.Receipt.dependency
+                (QleisliKernel.Qirf.before slots))
+              (QleisliKernel.Qirf.Validity.Root.program root) matrix)
+            (∃ checked a b,
+              And
+                (Eq.{1}
+                  (ExceptT.run.{0, 0}
+                    (QleisliKernel.Raw.Observation.verify
+                      (List.map.{0, 0} QleisliKernel.Semantics.ObservingFunction.Receipt.dependency
+                        (QleisliKernel.Qirf.before slots))
+                      (QleisliKernel.Qirf.Validity.Root.program root))
+                    a)
+                  (Prod.mk.{0, 0} (Except.ok.{0, 0} checked) b))
+                (Eq.{1}
+                  (QleisliKernel.Raw.State.live
+                    (QleisliKernel.Raw.Observation.State.quantum (QleisliKernel.Raw.Observation.Checked.state checked)))
+                  (List.cons.{0} output List.nil.{0})))))
+  Qleisli.NativeContract.LeafMeaning.leftInverse : Eq.{1}
+      (HMul.hMul.{0, 0, 0} (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square matrix))
+        (Qleisli.Finite.square matrix))
+      1
+  Qleisli.NativeContract.LeafMeaning.rightInverse : Eq.{1}
+      (HMul.hMul.{0, 0, 0} (Qleisli.Finite.square matrix)
+        (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square matrix)))
+      1
+constructor:
+  Qleisli.NativeContract.LeafMeaning.mk {artifact : QleisliKernel.Qirf.Artifact} {order : Array.{0} Nat}
+    {root : QleisliKernel.Qirf.Validity.Root} {signature : QleisliKernel.Semantics.Finite.Basis}
+    {input output : QleisliKernel.Semantics.Raw.Port} {matrix : QleisliKernel.Semantics.Exact.Matrix}
+    (rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root)
+    (interface :
+      Eq.{1} (QleisliKernel.Qirf.Artifact.rootInterface artifact) (some.{0} (Prod.mk.{0, 0} signature signature)))
+    (inputs :
+      Eq.{1} (QleisliKernel.Semantics.Observation.Program.inputs (QleisliKernel.Qirf.Validity.Root.program root))
+        (List.cons.{0} input List.nil.{0}))
+    (outputs :
+      Eq.{1} (QleisliKernel.Semantics.Observation.Program.outputs (QleisliKernel.Qirf.Validity.Root.program root))
+        (List.cons.{0} (QleisliKernel.Semantics.Raw.Port.token output) List.nil.{0}))
+    (classicalInputs :
+      Eq.{1}
+        (QleisliKernel.Semantics.Observation.Program.classicalInputs (QleisliKernel.Qirf.Validity.Root.program root))
+        List.nil.{0})
+    (classicalOutputs :
+      Eq.{1}
+        (QleisliKernel.Semantics.Observation.Program.classicalOutputs (QleisliKernel.Qirf.Validity.Root.program root))
+        List.nil.{0})
+    (effect :
+      Eq.{1} (QleisliKernel.Semantics.Observation.Program.effect (QleisliKernel.Qirf.Validity.Root.program root))
+        QleisliKernel.Semantics.Raw.Effect.unitary)
+    (instrument :
+      ∃ slots,
+        And
+          (Qleisli.Qirf.GraphDenotation artifact
+            (Array.replicate.{0} (Array.size.{0} (QleisliKernel.Qirf.Artifact.entries artifact)) none.{0})
+            (Array.toList.{0} order) slots)
+          (And (Eq.{1} (Array.all.{0} slots Option.isSome.{0}) true)
+            (And
+              (Qleisli.Semantics.ObservingFunction.BodyMeaning
+                (List.map.{0, 0} QleisliKernel.Semantics.ObservingFunction.Receipt.dependency
+                  (QleisliKernel.Qirf.before slots))
+                (QleisliKernel.Qirf.Validity.Root.program root) matrix)
+              (∃ checked a b,
+                And
+                  (Eq.{1}
+                    (ExceptT.run.{0, 0}
+                      (QleisliKernel.Raw.Observation.verify
+                        (List.map.{0, 0} QleisliKernel.Semantics.ObservingFunction.Receipt.dependency
+                          (QleisliKernel.Qirf.before slots))
+                        (QleisliKernel.Qirf.Validity.Root.program root))
+                      a)
+                    (Prod.mk.{0, 0} (Except.ok.{0, 0} checked) b))
+                  (Eq.{1}
+                    (QleisliKernel.Raw.State.live
+                      (QleisliKernel.Raw.Observation.State.quantum
+                        (QleisliKernel.Raw.Observation.Checked.state checked)))
+                    (List.cons.{0} output List.nil.{0}))))))
+    (leftInverse :
+      Eq.{1}
+        (HMul.hMul.{0, 0, 0} (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square matrix))
+          (Qleisli.Finite.square matrix))
+        1)
+    (rightInverse :
+      Eq.{1}
+        (HMul.hMul.{0, 0, 0} (Qleisli.Finite.square matrix)
+          (Matrix.conjTranspose.{0, 0, 0} (Qleisli.Finite.square matrix)))
+        1) :
+    Qleisli.NativeContract.LeafMeaning artifact order root signature input output matrix
+'QleisliKernel.Protocol.NativeContract.check_acceptance' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.NativeContract.acceptance_root_meaning' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.check_root_meaning' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.leaf_meaning' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.leaf_reference_laws' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeContract.check_sound' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]

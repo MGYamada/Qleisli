@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "algorithms",
+    "bit_flip",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 4.768855957954656,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.stdout.txt",
+      "sha256": "05c84b25c55d227dcb98b8810d707a3bccfcea6752710bc229db99b0063a53e4"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.stderr.txt",
+      "sha256": "211184f52d22bc55c92df57876f73ed2091389cd6811a6237fc374bff3790190"
+    }
+  }
+}

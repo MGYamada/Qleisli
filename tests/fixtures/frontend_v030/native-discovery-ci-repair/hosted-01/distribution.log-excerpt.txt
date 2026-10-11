@@ -1,0 +1,10 @@
+Selected original decoded log lines 126-129; this is an excerpt, not a full log.
+2026-10-06T04:42:30.5838466Z HEAD is now at 12e78df Merge 5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:42:30.5868394Z ##[endgroup]
+2026-10-06T04:42:30.5919792Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:42:30.5947968Z 12e78df720405ae46fdb7c2ce7674d3e67708305
+
+Selected original decoded log lines 497-499; this is an excerpt, not a full log.
+2026-10-06T05:05:12.2483123Z command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-6jnzdej4/logs/14.stderr
+2026-10-06T05:05:12.2493883Z Distribution validation failed; report: /home/runner/work/_temp/qleisli-distribution.json
+2026-10-06T05:05:12.2608799Z ##[error]Process completed with exit code 1.

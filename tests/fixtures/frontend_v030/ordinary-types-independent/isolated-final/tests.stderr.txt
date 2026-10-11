@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/private/tmp/qleisli-ordinary-types-after-20261005)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.95s
+     Running tests/ordinary_types.rs (target/debug/deps/ordinary_types-86200ffd164ef91c)

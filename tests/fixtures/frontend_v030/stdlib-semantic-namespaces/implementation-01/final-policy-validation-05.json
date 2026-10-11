@@ -1,0 +1,121 @@
+{
+  "format": "qleisli.namespace-final-policy-validation",
+  "version": 1,
+  "records": [
+    {
+      "label": "format",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.748,
+      "stdout": "format-final-05.stdout.txt",
+      "stderr": "format-final-05.stderr.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "docs",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.559,
+      "stdout": "docs-final-05.stdout.txt",
+      "stderr": "docs-final-05.stderr.txt",
+      "stdout_sha256": "120b136159649f9050fdf4f22a905c0749c38dd7c50933ad747bad9a38ef54d3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "authoring",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.411,
+      "stdout": "authoring-final-05.stdout.txt",
+      "stderr": "authoring-final-05.stderr.txt",
+      "stdout_sha256": "57f90eaa56a57d26db5762c5cdea7cc7f1f07b77f52425fde1f486454b90ab29",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "editions",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 4.96,
+      "stdout": "editions-final-05.stdout.txt",
+      "stderr": "editions-final-05.stderr.txt",
+      "stdout_sha256": "e87ff6fae178b62a0495d29e8bc355d02cb51a7af31c7c06411cf5627a14deca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "corpus-metadata",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.374,
+      "stdout": "corpus-metadata-final-05.stdout.txt",
+      "stderr": "corpus-metadata-final-05.stderr.txt",
+      "stdout_sha256": "cfbe0271cffb327fd9755e367e4a8ce516de78e619692ebaf7a7369167ae80d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "inventory",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.457,
+      "stdout": "inventory-final-05.stdout.txt",
+      "stderr": "inventory-final-05.stderr.txt",
+      "stdout_sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "coverage",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.137,
+      "stdout": "coverage-final-05.stdout.txt",
+      "stderr": "coverage-final-05.stderr.txt",
+      "stdout_sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "constitution",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "seconds": 1.265,
+      "stdout": "constitution-final-05.stdout.txt",
+      "stderr": "constitution-final-05.stderr.txt",
+      "stdout_sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Final lightweight source/metadata/constitutional identity checks after restoring frozen baseline and correcting all active corpus consumers. The earlier final04 inventory failure remains. Not a new Lean replay, broad test rerun or release gate."
+}

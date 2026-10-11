@@ -1,0 +1,22 @@
+//! Two implementations of one phase-fixed meaning share an unchanged client.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::t;
+use std::observe::measure_z;
+
+basis fn z_phase(b: Bit) -> (Bit,(Bit,Bit)) { (0,(0,b)) }
+meaning ZMeaning: Bit = phase_by(z_phase);
+
+unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
+unitary fn decomposed(q: Q<Bit>) -> Q<Bit> { repeat_static(4,t,q) }
+
+/// The caller supplies evidence for the same exact Z operator.
+unitary fn client[static U: Op<Bit,ZMeaning>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { U(q) }
+
+observe fn main() -> (Bit,Bit) {
+    let a = client[bind_op(direct,ZMeaning)](h(init0()));
+    let b = client[bind_op(decomposed,ZMeaning)](h(init0()));
+    (measure_z(h(a)),measure_z(h(b)))
+}

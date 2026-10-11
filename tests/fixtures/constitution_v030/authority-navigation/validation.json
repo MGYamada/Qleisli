@@ -1,0 +1,62 @@
+{
+  "kind": "Companion documentation navigation only; #134 criterion clarification remains a proposal for human decision",
+  "base_commit": "5e7ed3fb3506f4cdc5178e400d9890285a5e9bbc",
+  "source_sha256": {
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "GOVERNANCE.md": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+    "governance/ratification-2026.json": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+    "docs/src/reference/authority.md": "c3c2872931f778bfa076cddea390cbcb688ba26ccf1f4c6852e6876ac192e292",
+    "docs/src/design/ratification.md": "a449da1693ea516c151749c871701fa7f5d91e72b5850d2322afab8c5c886eca"
+  },
+  "sources_unchanged": true,
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_constitution.py"
+      ],
+      "exit": 0,
+      "stdout": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader binding interpretations remain pending; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit": 0,
+      "stdout": "Checked 1724 local links, 12 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": " INFO Book building has started\n INFO Running the html backend\n WARN unclosed HTML tag `<bit>` found in `reference/type-model.md` while exiting Paragraph\nHTML tags must be closed before exiting a markdown element.\n INFO HTML book written to `/Users/masa/git/Qleisli/docs/../target/mdbook`\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit": 0,
+      "stdout": "rendered book: 20 HTML files, 743 local links, 267 anchors checked\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": "Exact Constitution/GOVERNANCE/event preserved; no new interpretation, proof, issue completion or release approval. No Rust/Lean code changed or tests rerun."
+}

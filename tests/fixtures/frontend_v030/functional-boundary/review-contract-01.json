@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.functional-boundary-review-contract",
+  "version": 1,
+  "issue": 80,
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668",
+  "source_baseline_commit": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "context": "Informed current-boundary audit after original specification and implementation inspection. New prose, small independent conformance tests and public-source studies are under preparation; these identities are an observed current scope, not a proof or authenticated adoption.",
+  "independent_laws": [
+    "X composed with X is exact +identity, including when a reference is entangled with the input; probability equality alone is insufficient.",
+    "Copying/forwarding a static description does not duplicate a live input owner; each application consumes and returns its argument.",
+    "An ordinary product containing Q<Unit> or Q<Bit> retains recursive linear ownership, including zero physical width.",
+    "A complete call and an omitted-argument call differ by arity; omission cannot create a reusable quantum callable.",
+    "Classical Bit conditions, quantum structural maps and explicit observing primitives have distinct ownership/effect contracts."
+  ],
+  "observed_source_inputs": {
+    "src/frontend/ast.rs": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "src/frontend/check/body.rs": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+    "src/frontend/check/body/operations.rs": "6d6faa315e9b7839be68df81b68371918ccd721b8d3053fd3f2f3e12215809c4",
+    "src/frontend/check/body/special.rs": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+    "src/frontend/compile/operations.rs": "540d50f809150256cac8f709ee8e6102907c2dcf615700171626308ee73bd830",
+    "tests/body_effects.rs": "3d37c7bc8a75dd52eaccc155dbf3356be4176cc9b35c8e6816f94f5b276aac0f",
+    "tests/operation_parameters.rs": "911092c265694786c7571c7c86dfd13831c5ee1b9634f17cd5eb2b7580d19a03",
+    "tests/quantum_unit_maps.rs": "e1772ed10410b5a08b638c4896ac0ed1f696aa3e58823d57298043f8a0e66c4e",
+    "tests/sized_source.rs": "c8cd0cf868d10c3435d0565114d561a3fb38a06f441416ec28744f26306634b5",
+    "tests/checked_operations.rs": "f819ba144a9bbfcd3df05f79c1ce3457fdffe32a6c74c37b31d7c24e38529e18"
+  },
+  "validation_plan": {
+    "new": "Small independently prepared functional_boundary target and <=2qubit frozen public-source study, with first failures retained.",
+    "existing": [
+      "body_effects",
+      "operation_parameters",
+      "quantum_unit_maps",
+      "sized_source::unreachable_branch_and_empty_fold_still_check_names_access_and_ownership",
+      "sized_source::every_import_resolves_and_mutual_cycles_are_rejected",
+      "sized_source::shadowing_moves_tuple_shape_and_effects"
+    ],
+    "metadata": "Constitutional continuity at trusted base, exact VM22/VM29/source identities, editions, authoring, docs and fixed mdBook0.5.4 HTML/print links."
+  },
+  "limitations": "Not feature/Issue completion, a source-preservation theorem, fresh Lean build/audit/replay, new guarantee, general closure/ADT/trait/builder implementation or release evidence. External qargo/qlippy diagnostics are omitted by explicit human authorization; actual Qleisli diagnostics remain. QFT and new maximum-size cases are excluded."
+}

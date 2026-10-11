@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-boolean-v030/attempt-01/eager-and-observation",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-04T20:37:28.328205+00:00",
+  "elapsed_seconds": 0.4112417500000447,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": "",
+  "source_sha256": "ab2271d973b26496e5ff1e7b4eee8c8c7dfa7b921c4b765f4f76d95bb0d1e9d5",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "aa1d49498f9bc7b7e75509680c8cde6d516d074c9aa889dc8b043cdb7216f4fd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "mode": "finite",
+  "scope": "Diagnostic/native check at the stages actually reached.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  }
+}

@@ -1,0 +1,1 @@
+unitary fn bad(q:Q<((Bit,Bit),(Bit,Bit))>) -> Q<(Bit,Bit,Bit,Bit)> { q }

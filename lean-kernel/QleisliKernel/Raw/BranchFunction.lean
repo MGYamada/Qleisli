@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.ObservingFunction
 
 /-! Fresh full-body function graphs with closed classical branches. All arms
 are checked before closed selection; phase and every binding byte matter.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.BranchFunction
 open Semantics.Exact Semantics.Finite Semantics.Observation Semantics.ObservingFunction Finite
 

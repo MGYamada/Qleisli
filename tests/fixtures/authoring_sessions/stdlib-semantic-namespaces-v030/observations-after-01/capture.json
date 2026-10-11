@@ -1,0 +1,93 @@
+{
+  "format": "qleisli.namespace-after-cli-observations",
+  "version": 1,
+  "binary": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "424f8c5cf4dbbccccfa18f35a4535de881e448811d5b3c1f5021acc4976e0684"
+  },
+  "native": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "recorded_utc": "2026-10-06T02:55:04.240725+00:00",
+  "results": [
+    {
+      "project": "transform",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.911,
+      "stdout": "transform.stdout.txt",
+      "stderr": "transform.stderr.txt",
+      "sources": {
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform/main.qli": "2b306872b1b6714e304da8f2bdf56495bae0d8b90e433af567da49a381abed69"
+      }
+    },
+    {
+      "project": "reflection",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/reflection",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.346,
+      "stdout": "reflection.stdout.txt",
+      "stderr": "reflection.stderr.txt",
+      "sources": {
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/reflection/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/reflection/main.qli": "46fce5368695a73590927c044980febfcf629e5c43a7a776f1567a7071d579a0"
+      }
+    },
+    {
+      "project": "measurement",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/measurement",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.321,
+      "stdout": "measurement.stdout.txt",
+      "stderr": "measurement.stderr.txt",
+      "sources": {
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/measurement/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/measurement/main.qli": "cbe12a7789dcb3bb53eb391ddd7baa5ef82210abca72513678d398979b5eb81e"
+      }
+    },
+    {
+      "project": "demo-local-arithmetic",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/demo-local-arithmetic",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.382,
+      "stdout": "demo-local-arithmetic.stdout.txt",
+      "stderr": "demo-local-arithmetic.stderr.txt",
+      "sources": {
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/demo-local-arithmetic/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/demo-local-arithmetic/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+        "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/demo-local-arithmetic/main.qli": "3d0bea1653cffffdc89e20d08efaebdb10c21f9152b2160c62fa07df0677cae2"
+      }
+    }
+  ],
+  "scope": "Actual source CLI/native checks only; no semantic oracle, source preservation proof or guarantee admission."
+}

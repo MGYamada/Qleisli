@@ -1,0 +1,12 @@
+{
+  "all_commands_passed": true,
+  "command_count": 4,
+  "selected_input_scope": "Root Markdown, mdBook chapter/configuration files, documentation checkers, the two named catalog sources and the prior frozen policy-doc manifest; not the complete repository.",
+  "selected_inputs_count": 35,
+  "selected_inputs_changed": [],
+  "commands_sha256": "ebbc42e466d5bad8709cb00aa6ff231c4c16db2173299d2e1edc4833f3c1e588",
+  "inputs_before_sha256": "847cdf7585792e99cfffd9ec8aa1052d738746bcc3c3da5312c248a126018de9",
+  "inputs_after_sha256": "847cdf7585792e99cfffd9ec8aa1052d738746bcc3c3da5312c248a126018de9",
+  "authoring_or_scheduler_tests_repeated": false,
+  "rust_or_lean_build": false
+}

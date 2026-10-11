@@ -3,7 +3,7 @@ import Qleisli.Interference
 import Mathlib.Data.ZMod.Basic
 
 /-! Fourier phase interpretation of the actual symbolic QFT certificate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Qft
 open QleisliKernel QleisliKernel.Interference QleisliKernel.PathSum

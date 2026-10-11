@@ -1,0 +1,1 @@
+use dep::hidden;pub unitary fn entry(q:Q<Bit>)->Q<Bit>{q}

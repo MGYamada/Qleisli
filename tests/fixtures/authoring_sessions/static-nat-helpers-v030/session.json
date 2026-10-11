@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#28/#63 bounded acyclic static Nat helpers and exact indexed phase schedule",
+  "baseline_commit": "7a5b2c9774569a729b3981252566ffd654c32773",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed specification/code access, exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight complete desired sources preserved before helper implementation; original parser refusals are not semantic negative-test evidence.",
+      "sha256": {
+        "computed-size/main.qli": "51248bf5dd4447a39525de7deb70782f9350a9143104120065399afc2c40f3bc",
+        "phase-schedule/main.qli": "1cba76bd24ce1ae5a77ab7393ebc2d177b65380d74118b0f1c2d0380d0f64f0d",
+        "helper-chain/main.qli": "171fe6a8f7358589e64fd67507b1d7d5db1d19aa4a861f3667ac8428a08af460",
+        "runtime-call/main.qli": "b51945909088f3efd5948ead6afebdf118f57abdf49ea51ab83f9af7151528b7",
+        "runtime-capture/main.qli": "7c16aae52942af2f9749036aaea9f287d79480ef6bd0e6ab96e27cc63506a3f7",
+        "cycle/main.qli": "0cb5f8d75863860cb1757e80630e194a6ba5b5658cc6ba58999fa3854aa4e661",
+        "unused-invalid/main.qli": "7f7f416002839b2911d9b6f22dcaf05763110170c525596c7a2ef77b0667204e",
+        "wrong-arity/main.qli": "ce8878b4a0055f96034a1779ca7f55942a9ad064a0f5baae13e89f2885c1b9b4"
+      },
+      "observations": [
+        "observations-before/computed-size-finite.json",
+        "observations-before/computed-size-selected.json",
+        "observations-before/phase-schedule-finite.json",
+        "observations-before/phase-schedule-selected.json",
+        "observations-before/helper-chain-finite.json",
+        "observations-before/helper-chain-selected.json",
+        "observations-before/runtime-call-finite.json",
+        "observations-before/runtime-call-selected.json",
+        "observations-before/runtime-capture-finite.json",
+        "observations-before/runtime-capture-selected.json",
+        "observations-before/cycle-finite.json",
+        "observations-before/cycle-selected.json",
+        "observations-before/unused-invalid-finite.json",
+        "observations-before/unused-invalid-selected.json",
+        "observations-before/wrong-arity-finite.json",
+        "observations-before/wrong-arity-selected.json",
+        "observations-after/computed-size-finite.json",
+        "observations-after/computed-size-selected.json",
+        "observations-after/phase-schedule-finite.json",
+        "observations-after/phase-schedule-selected.json",
+        "observations-after/helper-chain-finite.json",
+        "observations-after/helper-chain-selected.json",
+        "observations-after/runtime-call-finite.json",
+        "observations-after/runtime-call-selected.json",
+        "observations-after/runtime-capture-finite.json",
+        "observations-after/runtime-capture-selected.json",
+        "observations-after/cycle-finite.json",
+        "observations-after/cycle-selected.json",
+        "observations-after/unused-invalid-finite.json",
+        "observations-after/unused-invalid-selected.json",
+        "observations-after/wrong-arity-finite.json",
+        "observations-after/wrong-arity-selected.json"
+      ]
+    }
+  ],
+  "scope": "First-source observations; no source theorem, new native semantics, guarantee or generic QFT delivery."
+}

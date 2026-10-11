@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "stdout": "before.stdout.txt",
+  "stderr": "before.stderr.txt",
+  "observed_utc": "2026-10-05T16:58:42.298666+00:00"
+}

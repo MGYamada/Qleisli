@@ -1,0 +1,717 @@
+{
+  "base_commit": "e01e98a42a00c04892617205307f2db76b5c404e",
+  "driver_sha256": "ae20a47d2c70abc1df61d42afda161a5b24ba6364b530ea48599435702624961",
+  "input_count": 144,
+  "inputs_stable": true,
+  "binary_sha256": "59ccb6a0fa2669fb11090c3daf5d38a6c39a74caa2c632d0a26a84aec05a236d",
+  "binary_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "observations": [
+    {
+      "project": "controlled-four",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/controlled-four/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.48755337501643226,
+      "stdout": "controlled-four-selected.stdout.txt",
+      "stderr": "controlled-four-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "controlled-four",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/controlled-four"
+      ],
+      "exit": 1,
+      "seconds": 0.005668083962518722,
+      "stdout": "controlled-four-finite.stdout.txt",
+      "stderr": "controlled-four-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "duplicate-revived-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/duplicate-revived-owner/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0041145000141114,
+      "stdout": "duplicate-revived-owner-selected.stdout.txt",
+      "stderr": "duplicate-revived-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "duplicate-revived-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/duplicate-revived-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.004688332963269204,
+      "stdout": "duplicate-revived-owner-finite.stdout.txt",
+      "stderr": "duplicate-revived-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "effect-violation",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/effect-violation/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0038094999617896974,
+      "stdout": "effect-violation-selected.stdout.txt",
+      "stderr": "effect-violation-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "effect-violation",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/effect-violation"
+      ],
+      "exit": 1,
+      "seconds": 0.004667666973546147,
+      "stdout": "effect-violation-finite.stdout.txt",
+      "stderr": "effect-violation-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "eliminate",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.04562795802485198,
+      "stdout": "eliminate-selected.stdout.txt",
+      "stderr": "eliminate-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "eliminate",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate"
+      ],
+      "exit": 1,
+      "seconds": 0.004675082978792489,
+      "stdout": "eliminate-finite.stdout.txt",
+      "stderr": "eliminate-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-ordinary-control",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/existing-ordinary-control/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.043596417002845556,
+      "stdout": "existing-ordinary-control-selected.stdout.txt",
+      "stderr": "existing-ordinary-control-selected.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-ordinary-control",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/existing-ordinary-control"
+      ],
+      "exit": 0,
+      "seconds": 0.43904974998440593,
+      "stdout": "existing-ordinary-control-finite.stdout.txt",
+      "stderr": "existing-ordinary-control-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-scalar-control",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/existing-scalar-control/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.0578452079789713,
+      "stdout": "existing-scalar-control-selected.stdout.txt",
+      "stderr": "existing-scalar-control-selected.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-scalar-control",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/existing-scalar-control"
+      ],
+      "exit": 0,
+      "seconds": 0.5009557500015944,
+      "stdout": "existing-scalar-control-finite.stdout.txt",
+      "stderr": "existing-scalar-control-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "introduce",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/introduce/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.08920183300506324,
+      "stdout": "introduce-selected.stdout.txt",
+      "stderr": "introduce-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "introduce",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/introduce"
+      ],
+      "exit": 1,
+      "seconds": 0.005361791991163045,
+      "stdout": "introduce-finite.stdout.txt",
+      "stderr": "introduce-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "left-separate-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/left-separate-owner/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05139725003391504,
+      "stdout": "left-separate-owner-selected.stdout.txt",
+      "stderr": "left-separate-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "left-separate-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/left-separate-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.005569375003688037,
+      "stdout": "left-separate-owner-finite.stdout.txt",
+      "stderr": "left-separate-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "lost-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/lost-owner/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.003896749985869974,
+      "stdout": "lost-owner-selected.stdout.txt",
+      "stderr": "lost-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "lost-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/lost-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.004978207987733185,
+      "stdout": "lost-owner-finite.stdout.txt",
+      "stderr": "lost-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "observing-argument",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/observing-argument/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004168791987467557,
+      "stdout": "observing-argument-selected.stdout.txt",
+      "stderr": "observing-argument-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "observing-argument",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/observing-argument"
+      ],
+      "exit": 1,
+      "seconds": 0.004861542023718357,
+      "stdout": "observing-argument-finite.stdout.txt",
+      "stderr": "observing-argument-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "ordinary-roundtrip",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/ordinary-roundtrip/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.04996625002240762,
+      "stdout": "ordinary-roundtrip-selected.stdout.txt",
+      "stderr": "ordinary-roundtrip-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "ordinary-roundtrip",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/ordinary-roundtrip"
+      ],
+      "exit": 1,
+      "seconds": 0.005248792003840208,
+      "stdout": "ordinary-roundtrip-finite.stdout.txt",
+      "stderr": "ordinary-roundtrip-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "packaged-tree-boundary",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/packaged-tree-boundary/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004089499998372048,
+      "stdout": "packaged-tree-boundary-selected.stdout.txt",
+      "stderr": "packaged-tree-boundary-selected.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "packaged-tree-boundary",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/packaged-tree-boundary"
+      ],
+      "exit": 0,
+      "seconds": 0.45158466597786173,
+      "stdout": "packaged-tree-boundary-finite.stdout.txt",
+      "stderr": "packaged-tree-boundary-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "quantum-roundtrip",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/quantum-roundtrip/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05381266598124057,
+      "stdout": "quantum-roundtrip-selected.stdout.txt",
+      "stderr": "quantum-roundtrip-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "quantum-roundtrip",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/quantum-roundtrip"
+      ],
+      "exit": 1,
+      "seconds": 0.005456041020806879,
+      "stdout": "quantum-roundtrip-finite.stdout.txt",
+      "stderr": "quantum-roundtrip-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "right-separate-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/right-separate-owner/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05753654200816527,
+      "stdout": "right-separate-owner-selected.stdout.txt",
+      "stderr": "right-separate-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "right-separate-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/right-separate-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.005308000021614134,
+      "stdout": "right-separate-owner-finite.stdout.txt",
+      "stderr": "right-separate-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "scalar-argument",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/scalar-argument/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05639687500661239,
+      "stdout": "scalar-argument-selected.stdout.txt",
+      "stderr": "scalar-argument-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "scalar-argument",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/scalar-argument"
+      ],
+      "exit": 1,
+      "seconds": 0.00496870803181082,
+      "stdout": "scalar-argument-finite.stdout.txt",
+      "stderr": "scalar-argument-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "unused-invalid-body",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/unused-invalid-body/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004405957995913923,
+      "stdout": "unused-invalid-body-selected.stdout.txt",
+      "stderr": "unused-invalid-body-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "unused-invalid-body",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/unused-invalid-body"
+      ],
+      "exit": 1,
+      "seconds": 0.004665374988690019,
+      "stdout": "unused-invalid-body-finite.stdout.txt",
+      "stderr": "unused-invalid-body-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wildcard-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wildcard-owner/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0035747080110013485,
+      "stdout": "wildcard-owner-selected.stdout.txt",
+      "stderr": "wildcard-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wildcard-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wildcard-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.004487125028390437,
+      "stdout": "wildcard-owner-finite.stdout.txt",
+      "stderr": "wildcard-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wrong-ordinary-types",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-ordinary-types/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0035149999894201756,
+      "stdout": "wrong-ordinary-types-selected.stdout.txt",
+      "stderr": "wrong-ordinary-types-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wrong-ordinary-types",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-ordinary-types"
+      ],
+      "exit": 1,
+      "seconds": 0.00455970800248906,
+      "stdout": "wrong-ordinary-types-finite.stdout.txt",
+      "stderr": "wrong-ordinary-types-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wrong-quantum-types",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-quantum-types/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0036374999908730388,
+      "stdout": "wrong-quantum-types-selected.stdout.txt",
+      "stderr": "wrong-quantum-types-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wrong-quantum-types",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-quantum-types"
+      ],
+      "exit": 1,
+      "seconds": 0.004486874968279153,
+      "stdout": "wrong-quantum-types-finite.stdout.txt",
+      "stderr": "wrong-quantum-types-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wrong-runtime-arity",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-runtime-arity/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.003571166016627103,
+      "stdout": "wrong-runtime-arity-selected.stdout.txt",
+      "stderr": "wrong-runtime-arity-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wrong-runtime-arity",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-runtime-arity"
+      ],
+      "exit": 1,
+      "seconds": 0.004905458015855402,
+      "stdout": "wrong-runtime-arity-finite.stdout.txt",
+      "stderr": "wrong-runtime-arity-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wrong-static-arity",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-static-arity/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.003628582984674722,
+      "stdout": "wrong-static-arity-selected.stdout.txt",
+      "stderr": "wrong-static-arity-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wrong-static-arity",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-static-arity"
+      ],
+      "exit": 1,
+      "seconds": 0.004517291963566095,
+      "stdout": "wrong-static-arity-finite.stdout.txt",
+      "stderr": "wrong-static-arity-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "zero-fold-invalid-body",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/zero-fold-invalid-body/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0036680829944089055,
+      "stdout": "zero-fold-invalid-body-selected.stdout.txt",
+      "stderr": "zero-fold-invalid-body-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "zero-fold-invalid-body",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/zero-fold-invalid-body"
+      ],
+      "exit": 1,
+      "seconds": 0.004512999963480979,
+      "stdout": "zero-fold-invalid-body-finite.stdout.txt",
+      "stderr": "zero-fold-invalid-body-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    }
+  ],
+  "scope": "Actual build and unchanged first-source checks; open functions are not executed, masked diagnostics are not downstream rule checks; no new Lean build/replay."
+}

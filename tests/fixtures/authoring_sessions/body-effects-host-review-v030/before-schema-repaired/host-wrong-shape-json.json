@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+    "--operation=U=main::provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "concrete provider must be a single-input quantum unitary",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+          "start": 31,
+          "end": 103
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.0036288329865783453,
+  "recorded_utc": "2026-10-05T10:02:47.973463+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

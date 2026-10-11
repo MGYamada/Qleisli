@@ -1,0 +1,13 @@
+{
+  "format": "qleisli.actual-tool-terminal-observation",
+  "version": 1,
+  "session_id": 28584,
+  "start_chunk_id": "a06c43",
+  "terminal_chunk_id": "8cddc2",
+  "exit_code": 0,
+  "first_clock_observation_after_terminal_utc": "2026-10-05T18:49:00Z",
+  "argv": ["python3", "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/observe-after.py", "--inputs-sha256", "87c408960956464f8cbbd6c48a626da3642ecc37aabf58fcdd8ea4022a0fbac5"],
+  "cwd": "/Users/masa/git/Qleisli",
+  "result_path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/summary.json",
+  "scope": "Root transcribes the actual exec-tool terminal result. The clock is a subsequent observation, not an independently authenticated exit timestamp. Per-command raw observations are separate. No native-start attestation, preservation theorem, proof discharge or release approval."
+}

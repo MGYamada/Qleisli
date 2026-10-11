@@ -1,0 +1,8 @@
+{
+  "kind": "Actual untrusted interface probe; not an independent semantic oracle",
+  "probe_record": "qpe-interface-probe.json",
+  "temporary_artifact_sha256": "6b101edfd1aa3b245b3d6ab1fab6ca2a88d491c2a1898257f95b906e830d5e9f",
+  "temporary_artifact_bytes": 87155,
+  "purpose": "Observe closed QPE request interface port identities and arities; expected meaning and coefficients remain hand-authored in the corrected test. No generated meaning is used as the assertion oracle.",
+  "retention": "The generated 85 KiB temporary proposal is not copied into the fixture; original failed test source and stdout remain in latest-repair and selected-source-cli-first.rs.txt."
+}

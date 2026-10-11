@@ -1,0 +1,1 @@
+use std::quantum::init0; use std::observe::measure_z; pub fn f[static n:Nat](q:Q<Bit>)->Q<Bit> requires n<=1 {if static n==0 {let a=init0();let b=measure_z(a);q} else {f[n-1](q)}}

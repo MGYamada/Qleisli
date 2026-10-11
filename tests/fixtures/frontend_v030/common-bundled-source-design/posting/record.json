@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.ordinary-before-code-contract-posting",
+  "version": 1,
+  "observed_after_posting_utc": "2026-10-05 16:12:25 UTC",
+  "local_head": "5aee1b3cfde51e347cbff83c76526d22cf249d33",
+  "published_head": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+  "candidate": {
+    "path": "contract-v2.md",
+    "sha256": "7f58f7c3f0d24ecef405e8cf501525aeadd67503d93b4b078212dc2d135f765d"
+  },
+  "exact_readback": {
+    "issue_32": true,
+    "issue_317": true
+  },
+  "scope": "Ordinary implementation contract under existing adopted interpretations, before production source changes; no Guardian act, binding interpretation, guarantee admission, proof discharge or completed Issue. Historical candidates and all selected criteria remain unchanged.",
+  "source_state": "The local QFT record-only commit changes no production implementation; full hosted run for published head remains in progress.",
+  "snapshot_note": "API snapshots record actual before/after bodies. Clock is subsequent observation, not an authenticated posting timestamp.",
+  "recording_repair": "Initial snapshot writer saved issue-32-before.json then stopped on a missing session-store key for its after snapshot. No GitHub action failed or repeated; subsequent recording used the actual existing snapshots under their correct keys."
+}

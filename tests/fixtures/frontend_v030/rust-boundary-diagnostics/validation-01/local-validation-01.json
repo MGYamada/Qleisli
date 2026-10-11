@@ -1,0 +1,186 @@
+{
+  "format": "qleisli.rust-boundary-local-validation",
+  "version": 1,
+  "status": "passed-declared-local-checks",
+  "public_source_baseline": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "trusted_constitution_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "files": [
+    {
+      "path": "src/frontend/check/body.rs",
+      "sha256": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab"
+    },
+    {
+      "path": "tests/source_scope.rs",
+      "sha256": "963ac205da9a619c0d58eaa82a81111e0890412ab00f2a2d44d8238431bd640c"
+    },
+    {
+      "path": "tests/rust_boundary_diagnostics.rs",
+      "sha256": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd"
+    },
+    {
+      "path": "docs/src/reference/rust-boundary.md",
+      "sha256": "80752a6b7bf86cfef80d0ac79db01d5f3140c4b9882a40bd22e34003e77263d4"
+    },
+    {
+      "path": "docs/src/SUMMARY.md",
+      "sha256": "992476609c6dfb329d98da8518a13c78553a5be14a42b3393ff37a06ecb8c241"
+    },
+    {
+      "path": "tests/fixtures/verification_v022/inventory.json",
+      "sha256": "2020ebfcba640c504587108a7710e350c4547b89736d32e0304ea53dcc519c56"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080"
+    },
+    {
+      "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  ],
+  "commands": [
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/authoring-01.json",
+      "sha256": "a0275a79dabb02e7503731176d76d2a765665a4323e89081c01b4318ff81c3a1"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-01.json",
+      "sha256": "9b332a45a1c0e075f37bc5ae7f545b31345b1853bb9510ff5e2fb6da2ed01538"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-corrected-02.json",
+      "sha256": "96aa3c79579ce8bc72cb6aa95036cab9a311a9434f5f5af8f40b0c4698bb39a0"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-01.json",
+      "sha256": "4f2fc8b534b523c8458fed69b8fc963e576055994058c82f6f790955c4f0f4f2"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-corrected-02.json",
+      "sha256": "0288a6a6edce08293186678e42b6a6399dcee21a7574523225c362ddb46a9341"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/cli-build-01.json",
+      "sha256": "e04401b9c764e085f0e1e70613102d7b9ed82d2d241df8a55357c4bcf01cb3ee"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/continuity-01.json",
+      "sha256": "a694526bbcd0729473fb850e488ad373a2662e0dbcfd99012ff3e56800996d29"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/docs-seal-01.json",
+      "sha256": "c3ce14f6fe638ea682c343aa30a571f09dcbb54b7fff3b1fc3783a0a705128bc"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/editions-01.json",
+      "sha256": "81d1d8eb3399a5be2c0dbad002b635a196f81dd2aba441d912870ea75233080b"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/fmt-01.json",
+      "sha256": "131b7a421f1798359e09d8e726008203a49a8c7ad6194fc01c469250f25bf485"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/inventory-01.json",
+      "sha256": "6cc0fdea2c99301e927d68fbb10ed314990de82fe1424af827f85316e6666b50"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-clippy-01.json",
+      "sha256": "996e4e3935c186344e32297a67a7502ea6cbf7454130de9e0a3d8eeb62f46281"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-diagnostics-01.json",
+      "sha256": "a4d215b69bfe9c37c493e873c75e21079c68aea30f4dad4a7f9c8e392460c2d7"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-clippy-01.json",
+      "sha256": "81d2bb41db95dfe121abf86bac183d6b44f39c1adeb0b1893e873748f14a55f9"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-diagnostics-01.json",
+      "sha256": "c2d5ddba491a307da82087301f945e439ca29184c7e7c7c6fd57484e4a783647"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/production-01.json",
+      "sha256": "8b8bea6e7408a7deeb3fe8c9077cdefa7d88387656d54ef397b33cd941f36b8d"
+    }
+  ],
+  "independent_advisory_review": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/independent-review-01.json",
+    "sha256": "457a33858d24e5db671cfbbffc5030e77b5956f440ae6d5b7a97a645a1889421"
+  },
+  "first_test_source": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/prepared-01.rs.txt",
+    "sha256": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd"
+  },
+  "original_test_plan": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/prepared-test-plan-01.json",
+    "sha256": "8963ad8ea4b36697b2b69830cf9e669e2d794991d02244777943ee30d7f4231d"
+  },
+  "review_correction": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/reference-review-correction-01.json",
+    "sha256": "0a5b1eb4af5d242812cc90b8532b1bbe0b4e2f4c859c5306f21b98cd93110721"
+  },
+  "reviewed_inventory_refresh": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/inventory-refresh-01.json",
+    "sha256": "3c55ee70fe367c597af2c2d5d11a11dc91c4ad0ee06982b087c40d89779cb6a0"
+  },
+  "capture_timing_correction": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/observed-after-02.json",
+    "sha256": "3c0270e90cfa922451268c4b6c2d0c9433f1af03e32379d3adb02785512de75d"
+  },
+  "operator_invocation_errors": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/invocation-observations-01.json",
+    "sha256": "3cc1b1c23aa92110d3a0640650d2f1a13e77f21076bf635b983b59debeedd3dc"
+  },
+  "study": {
+    "session": {
+      "path": "tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/session.json",
+      "sha256": "1e852baffd1d95de1d68c03f68205e9adbade5ab53edb3550446f356c924da16"
+    },
+    "comparison": {
+      "path": "tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/comparison-after.json",
+      "sha256": "b4718ba306150a8171bf71b4cfe6504996d8c04b6a90cf9c20e8146363641052"
+    },
+    "projects": 9,
+    "before_calls": 21,
+    "after_calls": 21,
+    "source_repairs": 0,
+    "designated_changed_reject_sites": 5,
+    "identical_raw_paired_observations": 11,
+    "unchanged_three_run_distributions": true,
+    "original_prediction_errors_retained": true
+  },
+  "coverage": {
+    "tests_each_toolchain": 23,
+    "new_tests_included_in_23": 4,
+    "new_negative_projects": 13,
+    "new_positive_projects": 8,
+    "all_target_clippy_each_toolchain": true,
+    "corrected_book_html_files": 28,
+    "corrected_book_local_links": 1154,
+    "corrected_book_anchors": 432,
+    "source_docs_links": 2108,
+    "verification_constructors": 269,
+    "verification_sources": 261,
+    "verification_boundaries": 20,
+    "authoring_records": 41,
+    "authoring_snapshots": 56,
+    "authoring_observations": 953
+  },
+  "limits": [
+    "Declared source/executable identities are not a complete build closure or binary attestation.",
+    "No universal source-acceptance equivalence or source/runtime preservation proof.",
+    "No fresh local Lean build, audit or proof replay.",
+    "No full local all-target runtime suite; Clippy compiles all targets.",
+    "Public full CI run 37417326872 checks f508 baseline while this unit is local.",
+    "No full hosted CI, package, install, native bundle or exact-commit release success claimed for this unit.",
+    "#67/#68 and pending child acceptance criteria are unchanged and remain open.",
+    "No new Guardian interpretation, guarantee, primitive or broader QS/PR/RS/EXACT discharge.",
+    "External qlippy omitted by explicit maintainer permission; actual source diagnostics and Cargo Clippy checked.",
+    "Generic QFT implementation/proofs and maximum-size generation remain excluded."
+  ]
+}

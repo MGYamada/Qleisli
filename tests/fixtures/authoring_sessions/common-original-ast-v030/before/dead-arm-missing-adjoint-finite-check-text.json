@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T19:24:44.130719+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.005599291995167732,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "dead-arm-missing-adjoint-finite-check-text.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "dead-arm-missing-adjoint-finite-check-text.stdout.bin",
+  "stderr_raw": "dead-arm-missing-adjoint-finite-check-text.stderr.bin",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "a8ee4cbb7bc012d3b02097aa32d25ea03deb3d6261102ec672900e74b89f80bf",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint/main.qli:2:18: unsupported: finite profile does not support static Nat parameters\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately."
+}

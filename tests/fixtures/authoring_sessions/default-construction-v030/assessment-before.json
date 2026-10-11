@@ -1,0 +1,105 @@
+{
+  "format": "qleisli.informed-default-boundary-assessment",
+  "version": 1,
+  "recorded_utc": "2026-10-06T05:29:03.554863+00:00",
+  "phase": "before",
+  "predictions_sha256": "cd30973789809f3ee7160cc84908fd5c7254b1605f2a6cf49f46d9ad708bc64c",
+  "capture_sha256": "68b75c60f8033fbe8a49f8315b7b0de3e78d5b72ed63af2163db511c333cf2d0",
+  "actual_commands": 15,
+  "source_repairs": 0,
+  "cases": {
+    "ordinary-default": {
+      "check_exit": 0,
+      "predicted_check_exit": 0,
+      "prediction_matched": true,
+      "actual_run_result": {
+        "distribution": [
+          {
+            "bits": [
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    "explicit-isometry-default": {
+      "check_exit": 0,
+      "predicted_check_exit": 0,
+      "prediction_matched": true,
+      "actual_run_result": {
+        "distribution": [
+          {
+            "bits": [
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    "false-unitary-caller": {
+      "check_exit": 1,
+      "predicted_check_exit": 1,
+      "prediction_matched": true,
+      "actual_code": "effect",
+      "actual_span": {
+        "start": 284,
+        "end": 293
+      },
+      "actual_message": "body effect `Iso` exceeds asserted `Unitary` effect of `pretend_unitary`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+      "prediction_code_and_span_matched": true
+    },
+    "unused-generic-default": {
+      "check_exit": 1,
+      "predicted_check_exit": 1,
+      "prediction_matched": true,
+      "actual_code": "unknown_name",
+      "actual_span": {
+        "start": 197,
+        "end": 204
+      },
+      "actual_message": "unresolved function default; there is no built-in Rust Default operation. Ordinary Bit/Unit can be constructed explicitly; quantum preparation is explicit and cannot be inferred from Default.",
+      "prediction_code_and_span_matched": true
+    },
+    "explicit-unit-default": {
+      "check_exit": 0,
+      "predicted_check_exit": 0,
+      "prediction_matched": true,
+      "actual_run_result": {
+        "quantum_bits": 0,
+        "amplitudes": [
+          [
+            0.7071067811865476,
+            0.7071067811865476
+          ]
+        ],
+        "verification": {
+          "scope": "producer-consistency",
+          "request_origin": "producer",
+          "source_meaning_verified": false
+        },
+        "execution_authority": "checked-produced-ir",
+        "entry": "main::entry",
+        "ir_profile": "hierarchy",
+        "source_check_scope": "all-supplied-module-declarations",
+        "native_check_scope": "selected-specialization"
+      }
+    },
+    "nested-unit-wildcard": {
+      "check_exit": 1,
+      "predicted_check_exit": 1,
+      "prediction_matched": true,
+      "actual_code": "ownership",
+      "actual_span": {
+        "start": 275,
+        "end": 276
+      },
+      "actual_message": "wildcard would discard quantum ownership; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.",
+      "prediction_code_and_span_matched": true
+    }
+  },
+  "prediction_mistakes": [],
+  "rendering_observation": "Selected successful default checks emit a legacy JSON status object without the --format=json result envelope. Their raw default-renderer transcript is preserved; the text label denotes the command mode, not a claim that the successful body was plain prose.",
+  "scope": "This compares actual public observations with prior predictions; runtime scalar approximation is supplemental, and producer-consistency/source_meaning_verified:false is not upgraded into independent source semantic evidence."
+}

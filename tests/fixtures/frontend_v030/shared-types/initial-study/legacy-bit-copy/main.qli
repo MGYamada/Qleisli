@@ -1,0 +1,2 @@
+unitary fn copy(x: CBit) -> (CBit,CBit) { (x,x) }
+observe fn main() -> (CBit,CBit) { copy(true) }

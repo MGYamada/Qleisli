@@ -1,0 +1,82 @@
+{
+  "base_commit": "56eb0725b77670be38d11ce450c1d525b90a5636",
+  "driver_sha256": "323482723265810236476d9d3b167073478e98431207ff5ccb7971dc6b3441e6",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.07481424999423325,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.041155834042001516,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.07575570797780529,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "frontend_types",
+        "--test",
+        "tuple_shapes",
+        "--test",
+        "parser",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "source_scope",
+        "--test",
+        "source_judgments",
+        "--test",
+        "authoring_ergonomics"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 12.985077292018104,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    }
+  ],
+  "source_manifest_sha256": "703b274218ae7fad87c4500ed99dc0ead8f8d7eea18b0712736a7a3aeada6d91",
+  "source_count": 224,
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+  "cargo_target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "free_bytes_before": 27197440000,
+  "free_bytes_after": 26992640000,
+  "scope": "Ten focused integration targets, parameter-pattern library regressions, focused Clippy and CLI build; not all-target/release validation"
+}

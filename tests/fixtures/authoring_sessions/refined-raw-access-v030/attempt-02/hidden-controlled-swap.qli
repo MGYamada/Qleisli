@@ -1,0 +1,8 @@
+use std::quantum::{split,join};
+classical fn swap_bits((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}
+meaning S:(Bit,Bit)=permutation_by(swap_bits);
+fn swap(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(b,a)}
+fn inner[const U:Op<(Bit,Bit),S>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){U(q)}
+fn wrapped(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{inner[swap](q)}
+fn invoke[const U:Op<(Bit,(Bit,Bit))>](q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))> requires Applicable(U){U(q)}
+pub fn main(q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>{invoke[controlled(wrapped)](q)}

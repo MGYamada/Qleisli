@@ -1,0 +1,47 @@
+{
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.012321457965299487
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "sized_source",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.628490665985737
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "frontend::sized::qpe::tests::native_named",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.9196053330088034
+    }
+  ],
+  "source_count": 366,
+  "source_manifest_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "driver_sha256": "d88c3252fa316ecb3c915697961875c1ba1f09eaea7d77e72b3057dde7a6e919",
+  "scope": "Five existing small native Fourier/QPE/gate regressions; no maximum-profile cases, Lean build/audit or full release validation"
+}

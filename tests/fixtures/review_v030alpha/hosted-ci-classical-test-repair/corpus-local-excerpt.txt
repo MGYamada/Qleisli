@@ -1,0 +1,14 @@
+---- all_reviewed_corpus_projects_compile_verify_and_execute stdout ----
+
+thread 'all_reviewed_corpus_projects_compile_verify_and_execute' (18117503) panicked at tests/input_corpus.rs:29:5:
+assertion `left == right` failed: current corpus snapshots not selected
+  left: 14
+ right: 8
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    all_reviewed_corpus_projects_compile_verify_and_execute
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.28s
+

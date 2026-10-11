@@ -1,0 +1,9 @@
+{
+  "source": "pub unitary fn step[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }",
+  "source_sha256": "dca377e7b04741d04a3ec481eaa8be9d147cc539db4a2bf0220c646f4b2d18d0",
+  "parser_sha256": "ec5dc155f222ab56b8d625e940ff60eafbdcd3dfe87038fab4ee1eefceaee89f",
+  "result": {
+    "status": "rejected",
+    "diagnostic": "expected 'static', found 'const' at token 5"
+  }
+}

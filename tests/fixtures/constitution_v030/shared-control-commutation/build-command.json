@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "lake",
+    "build"
+  ],
+  "cwd": "lean",
+  "started_at": "2026-10-04T13:48:26.694304+00:00",
+  "elapsed_seconds": 15.641,
+  "exit_code": 0,
+  "stdout": "build.stdout.txt",
+  "stderr": "build.stderr.txt"
+}

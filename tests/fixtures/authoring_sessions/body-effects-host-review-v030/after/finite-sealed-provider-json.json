@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.005157667037565261,
+  "recorded_utc": "2026-10-05T10:12:36.481113+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`",
+        "primary": {
+          "path": "main.qli",
+          "start": 123,
+          "end": 124,
+          "line": 3,
+          "column": 34
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

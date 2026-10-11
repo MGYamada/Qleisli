@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::x;
+classical fn flip(b:Bit)->Bit {not b}
+meaning Flip:Bit=permutation_by(flip);
+pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}
+pub unitary fn client[static n:Nat,static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U),n<=3 {qfor static i in 0..n carry a=q {yield U(a)}}
+observe fn main()->Unit{()}

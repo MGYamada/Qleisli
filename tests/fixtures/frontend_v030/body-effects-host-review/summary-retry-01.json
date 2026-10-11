@@ -1,0 +1,196 @@
+{
+  "validation-latest": {
+    "status": "passed",
+    "executed_commands": 5,
+    "expected_commands": 5,
+    "results": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--test",
+          "body_effects",
+          "--test",
+          "sized_source",
+          "--test",
+          "compile",
+          "--test",
+          "parser",
+          "--test",
+          "diagnostics",
+          "--test",
+          "documentation",
+          "--test",
+          "repair_diagnostics",
+          "--test",
+          "static_operations",
+          "--test",
+          "function_contracts",
+          "--test",
+          "certified_source",
+          "--test",
+          "operation_parameters",
+          "--test",
+          "selected_source_cli",
+          "--test",
+          "source_judgments"
+        ],
+        "exit_code": 0,
+        "reported_groups": 13,
+        "passed": 198,
+        "failed": 0,
+        "ignored": 3
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--lib",
+          "frontend::"
+        ],
+        "exit_code": 0,
+        "reported_groups": 1,
+        "passed": 57,
+        "failed": 0,
+        "ignored": 2
+      }
+    ],
+    "sources_stable": true,
+    "termination": null
+  },
+  "validation-latest-all": {
+    "status": "failed",
+    "executed_commands": 3,
+    "expected_commands": 3,
+    "results": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--all-targets"
+        ],
+        "exit_code": 101,
+        "reported_groups": 1,
+        "passed": 106,
+        "failed": 1,
+        "ignored": 3
+      }
+    ],
+    "sources_stable": true,
+    "termination": null
+  },
+  "validation-latest-all-escalated": {
+    "status": "incomplete-harness-timeout",
+    "executed_commands": 2,
+    "expected_commands": 3,
+    "results": [],
+    "sources_stable": true,
+    "termination": {
+      "status": "incomplete-harness-timeout",
+      "driver_exit_code": 1,
+      "configured_seconds": 600,
+      "attempted_command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "original_tool_output_note": "Unified exec reported subprocess.TimeoutExpired after 600 seconds. Retained Rust stdout/stderr are actual partial test output, not full-suite success.",
+      "residual_process_check": "Subsequent escalated ps inspection found zero processes matching the dedicated validation target debug directory."
+    }
+  },
+  "validation-latest-all-escalated-retry-01": {
+    "status": "passed",
+    "executed_commands": 3,
+    "expected_commands": 3,
+    "results": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--all-targets"
+        ],
+        "exit_code": 0,
+        "reported_groups": 90,
+        "passed": 788,
+        "failed": 0,
+        "ignored": 52
+      }
+    ],
+    "sources_stable": true,
+    "termination": null
+  },
+  "validation-latest-first": {
+    "status": "failed",
+    "executed_commands": 3,
+    "expected_commands": 5,
+    "results": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--test",
+          "body_effects",
+          "--test",
+          "sized_source",
+          "--test",
+          "compile",
+          "--test",
+          "parser",
+          "--test",
+          "diagnostics",
+          "--test",
+          "documentation",
+          "--test",
+          "repair_diagnostics",
+          "--test",
+          "static_operations",
+          "--test",
+          "function_contracts",
+          "--test",
+          "certified_source",
+          "--test",
+          "operation_parameters",
+          "--test",
+          "selected_source_cli",
+          "--test",
+          "source_judgments"
+        ],
+        "exit_code": 101,
+        "reported_groups": 9,
+        "passed": 130,
+        "failed": 3,
+        "ignored": 0
+      }
+    ],
+    "sources_stable": true,
+    "termination": null
+  },
+  "validation-msrv-all-escalated": {
+    "status": "passed",
+    "executed_commands": 4,
+    "expected_commands": 4,
+    "results": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--all-targets"
+        ],
+        "exit_code": 0,
+        "reported_groups": 90,
+        "passed": 788,
+        "failed": 0,
+        "ignored": 52
+      }
+    ],
+    "sources_stable": true,
+    "termination": null
+  }
+}

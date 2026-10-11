@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "date": "2026-10-06",
+  "observer": "/root",
+  "scope": "Two actual latest-Rust command observations with reused bounded target; not a single successful all-target run or a complete build closure.",
+  "production_and_repaired_test_commit": "b98071629e8b2dcfdbd0f6e4a956f5ed36cdce05",
+  "first": {
+    "command": "cargo test --locked --all-targets --no-fail-fast -j 2 -- --test-threads=2",
+    "exit_code": 101,
+    "groups": 98,
+    "passing_groups": 95,
+    "passes_in_successful_groups": 727,
+    "passes_in_all_groups": 852,
+    "failed_tests": 4,
+    "ignored": 52,
+    "log_sha256": "b7673bf05b9f8d1dd611ab2d27c611f87b906869f3ccec84f40a04d45dd609a1",
+    "log_bytes": 101996,
+    "source_timing": "Started before focused test repairs. Test files changed while the command continued through its already-built targets; not an atomic exact-final-source observation.",
+    "failures": "Retired parser positive, stale classical-effect expectation, stale corpus leaf count, sandbox ps denial."
+  },
+  "repaired": {
+    "command": "cargo test --locked --no-fail-fast -j 2 --lib --test body_effects --test input_corpus -- --test-threads=2",
+    "execution": "Approved outside-sandbox run because the existing process cleanup test needs ps",
+    "exit_code": 0,
+    "groups": 3,
+    "passed": 129,
+    "ignored": 3,
+    "per_group_passes": [
+      114,
+      13,
+      2
+    ],
+    "log_sha256": "ca29ce3fa162e12dafbc29a67c628351eea3d317a6e774cf2e5c535c7d762c57",
+    "log_bytes": 15050
+  },
+  "combined": {
+    "unique_targets_with_successful_observations": 98,
+    "unique_passing_tests": 856,
+    "existing_ignored": 52,
+    "claim": "All default latest-Rust targets have successful observations across the two commands; this does not relabel the first command as successful."
+  },
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "pending": "Current-commit hosted CI, packages/fresh installation/relocated bundles, broader guarantees and release gates remain separate; no fresh local Lean replay, Issue closure, merge or publication."
+}

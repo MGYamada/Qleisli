@@ -1,0 +1,180 @@
+{
+  "format": "qleisli.current-source-fixtures",
+  "version": 1,
+  "scope": "Explicit current execution inputs after canonical ordinary-type cutover; historical originals and their independent oracle records remain unchanged.",
+  "projects": [
+    {
+      "historical_path": "tests/fixtures/verification_v029/project",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/verification_v029/project",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "historical_sha256": "e68c7ffbb65fb8ad47ab0f5c89a06a4e464eb80567d692aeccd0883c0a94ded6",
+          "current_sha256": "c80238568815313f8daa38a2ad8fd434a4e672cd076c512bd81e870d490f20e5"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/verification_v029/generic",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/verification_v029/generic",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "historical_sha256": "fb7062cf1f393edf8922fcec6dbac32cb9b6d2bd828a987353d1e10b71afe6c8",
+          "current_sha256": "fbef9957f33277fdc9939e953d398070b525e39ac45bce735aedc490d5c313df"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_phase_layout/interference_client",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_phase_layout/interference_client",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "486bfe023acc602951912730b048f397e7949bf5d7bc7638a9624d304fa22ec9",
+          "current_sha256": "30cad23bf72d1ea16a3cc6186d0f99854742359b48557960152691b5e4be3244"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_interference/first_source",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/first_source",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "f60a400bc99b787a90136ea528a6fa2f868d8f0430877ee8532ff386678a5691",
+          "current_sha256": "c31c74d02dde626bae16cb7185da042ff6d49e4aefde8d2014b65829107c8e4c"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_interference/reference_client",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/reference_client",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "cb39433c1aa11c6b1591e1bbcafd9c0c6d2b1171bb0621d38bac513e799170df",
+          "current_sha256": "8e064d9d6e419ae1e478e7835f6350f70a1fca94182e2fcaf2fa1797243526aa"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_interference/wrong_order",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/wrong_order",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "805f3f70e33ad6bb3d2804db43507b71959e15ff6dd7acd2f77ed2f018b2d80c",
+          "current_sha256": "680c4de93eb2389d2a02bfa9afb8a77b90976f897e39d16af317598280c13da0"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qft/first_source",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/first_source",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "071cb0b6ba93ba379bd5e879765b4cab537a1265a1681de5e85059ef74620fd0",
+          "current_sha256": "62230e8c379002734b4dc044533ecbb8beafe9a9b2d5df259a0839254bb37255"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qft/wrong_reversal",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/wrong_reversal",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "29a50ff3209a33c9d9ebd323450211c07e6aefbe128477b95e5a7bf5b8c90c64",
+          "current_sha256": "f001b2b08140c699b5c4caed88316166ef185b3705825642ebdae34a87243909"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qpe_instrument/first_source",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/first_source",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "historical_sha256": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+          "current_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d"
+        },
+        {
+          "path": "gates.qli",
+          "historical_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "historical_sha256": "a66905f0c5f9d6887080ec183a6b119c8d349bb51a6c4b887fc8d681fe29f01e",
+          "current_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qpe_instrument/dephased",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/dephased",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "historical_sha256": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+          "current_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d"
+        },
+        {
+          "path": "gates.qli",
+          "historical_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "historical_sha256": "5ab5aaf3859d4e9080b65796815bb24fb8705fff46fca00a510f0a8864744b9a",
+          "current_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qpe_instrument/coherent_phase/plus_x",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/coherent_phase/plus_x",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "2fb6c8f7d36c1d65336921c898d76b9fb521059cd4d0e9e695b4670a0af0fbfa",
+          "current_sha256": "f65b6825a8b3b385165a329ab10bbb1c941e2eecf5ac47eee566eb7c1d5f8d67"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/lean_qpe_instrument/coherent_phase/minus_x",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/coherent_phase/minus_x",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "85a5b72d6eca556eaff5990431f06fa6579f98a47df97ee6d82d40c84817e890",
+          "current_sha256": "085259a6a3a9af7b8291dcb320fdf42658a982f9bd1065e207ab98a4e2bf6162"
+        }
+      ]
+    },
+    {
+      "historical_path": "tests/fixtures/interop/terminal",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
+      "files": [
+        {
+          "path": "main.qli",
+          "historical_sha256": "d6c1e69c7cecf6ed09bae6997ed145c3160afa1b1f54271fc0da41cc0be1ce02",
+          "current_sha256": "fad21efbc4ef3c85b8f02c02f0f52c960d5342facd3e232a91ebc0fdf51c490b"
+        }
+      ]
+    }
+  ]
+}

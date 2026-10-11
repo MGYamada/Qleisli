@@ -1,0 +1,15 @@
+{
+  "format": "qleisli.namespace-built-cli-quickstart",
+  "version": 1,
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/check_installation.py",
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli"
+  ],
+  "exit_code": 0,
+  "seconds": 2.376,
+  "stdout": "quickstart-01.stdout.txt",
+  "stderr": "quickstart-01.stderr.txt",
+  "scope": "Existing built CLI quickstart, embedded transform and owner rejection outside checkout with empty helper PATH. No fresh cargo installation, package, bundle, release or publication."
+}

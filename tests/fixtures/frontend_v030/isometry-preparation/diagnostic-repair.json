@@ -1,0 +1,31 @@
+{
+  "format": "qleisli.stale-diagnostic-expectation-repair",
+  "version": 1,
+  "recorded_utc": "2026-10-05T15:19:56.048051+00:00",
+  "retained_test": "tests/fixtures/frontend_v030/isometry-preparation/sized-review-diagnostics.before.rs.txt",
+  "old_sha256": "49d0b547d6ed9eb4d4c7fc0b354b322eba06da463254c871d30d787d41c04888",
+  "current_test": "tests/sized_review_diagnostics.rs",
+  "current_sha256": "c082f86368b192b484f039107a45bdb54634cda070061f3e287944ff3cd3fbd0",
+  "failure_record": "full-latest-permitted/commands.json",
+  "partial_result": {
+    "passed": 667,
+    "failed": 1,
+    "default_ignored": 42,
+    "reported_groups": 69,
+    "exit_code": 101,
+    "seconds": 873.7185021670302
+  },
+  "cause": "The original Iso preparation source is now eligible under the before-code Issue43 contract, so the absent checker produces a real io rejection rather than unsupported. All later default targets and docs were unreached.",
+  "repair": "Keep the original source as an explicit eligible-but-missing-checker rejection; use a valid Iso signature with a nonempty ordinary Bit result for the unsupported-before-native case. Retain the classical-input negative. Require no checked output and no native-start error for the unsupported cases.",
+  "production_source_changed": false,
+  "source_input_changes_since_failed_full": [
+    "tests/sized_review_diagnostics.rs"
+  ],
+  "focused_passes_each_toolchain": 102,
+  "toolchains": [
+    "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "cargo 1.85.0 (d73d2caf9 2024-12-31)"
+  ],
+  "current_source_input_sha256": "4c11e9d13c8721209d5cec34cc0b1bb46546eae44a8caaf4292cabfaf52e0e43",
+  "scope": "Test expectation repair, not a skipped test, full successful single all-target run, new native rule, proof discharge or release approval."
+}

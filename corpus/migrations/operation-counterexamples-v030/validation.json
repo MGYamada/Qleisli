@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "status": "passed",
+  "source_checks": 30,
+  "semantic_faults_detected": 14,
+  "source_negative_category": "preserved",
+  "semantic_cli_calls": 58,
+  "compiler_sha256": "2a2dd77b16005a8ab72477b3934fa1c730081fb47b1a2da5ed306c70c100fff2",
+  "native_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "oracle_sha256": "37241a2622883463c23b78432415e03e5dc5eb682291da7b660ddbf75dd038e3",
+  "preparation_sha256": "49da14416611228308d6ad8d4bea7f4fe484313cad5ee45ed0c97ff98d7278d2",
+  "limits": "Prepared snapshots only; no active source selection or validator implementation yet. Existing small independent complex oracle, floating-point tolerance and recorded source-negative contract are unchanged. No trusted acceptance change, generic QFT, full source preservation, guarantee admission or release readiness."
+}

@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::probe",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:20:10.616530+00:00",
+  "elapsed_seconds": 0.004880915977992117,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "providers-reference-control-desired",
+  "action": "public-selected-check-json",
+  "output_format": "json",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "0d9605e632a4d5433bda61f0cdb021e165d965a6eae8aee2b5560b5fa8c6f5ec",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-before/providers-reference-control-desired-public-selected-check-json.stdout.txt",
+    "sha256": "cf2a92d67766cd1a083d1639e58aebc0e71118e54f7a35f022b6171c7b6fc816"
+  },
+  "raw_stderr": {
+    "path": "observations-before/providers-reference-control-desired-public-selected-check-json.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "attestation_limit": "Explicit selected executable bytes; no compiled-HEAD claim, independent native child-start/exit count, source preservation or Lean replay.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `]`, found `(`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired/main.qli",
+          "start": 690,
+          "end": 691
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

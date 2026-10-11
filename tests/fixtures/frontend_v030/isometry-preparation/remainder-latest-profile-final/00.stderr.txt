@@ -1,0 +1,27 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error[E0599]: no method named `check_lowering_profile` found for unit type `()` in the current scope
+   --> tests/sized_review_dialects.rs:128:17
+    |
+128 |     preparation.check_lowering_profile().unwrap();
+    |                 ^^^^^^^^^^^^^^^^^^^^^^ method not found in `()`
+
+error[E0599]: no method named `definitions` found for unit type `()` in the current scope
+   --> tests/sized_review_dialects.rs:130:21
+    |
+130 |         preparation.definitions()[preparation.root()].effect(),
+    |                     ^^^^^^^^^^^ method not found in `()`
+
+error[E0599]: no method named `root` found for unit type `()` in the current scope
+   --> tests/sized_review_dialects.rs:130:47
+    |
+130 |         preparation.definitions()[preparation.root()].effect(),
+    |                                               ^^^^ method not found in `()`
+
+error[E0599]: no method named `lower` found for unit type `()` in the current scope
+   --> tests/sized_review_dialects.rs:133:25
+    |
+133 |     assert!(preparation.lower().unwrap().is_instrument());
+    |                         ^^^^^ method not found in `()`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `qleisli` (test "sized_review_dialects") due to 4 previous errors

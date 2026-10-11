@@ -1,0 +1,28 @@
+// Upstream authors (repository usernames): mariaschuld. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_kernel_based_training/demo.py
+// Selected symbol(s): kernel
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::s;
+use std::quantum::phase_eighth;
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::join;
+use std::quantum::split;
+
+unitary fn rx_quarter(q: Q<Bit>) -> Q<Bit> {
+    h(adjoint(phase_eighth, s(h(q))))
+}
+unitary fn left_features(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(repeat_static(2, rx_quarter, a), rx_quarter(b))
+}
+unitary fn right_features(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(rx_quarter(a), b)
+}
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    adjoint(right_features, left_features(q))
+}

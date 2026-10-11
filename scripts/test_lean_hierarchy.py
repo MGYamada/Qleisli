@@ -2,7 +2,7 @@
 """Independent native tests for the bounded Lean phase-DAG composition slice.
 
 Only the checker is under test; the test oracle expands SMALL generated words.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import cmath

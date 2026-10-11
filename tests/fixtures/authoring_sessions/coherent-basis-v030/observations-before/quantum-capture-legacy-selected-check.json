@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-legacy/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:45:19.698184+00:00",
+  "elapsed_seconds": 0.005779292027000338,
+  "case": "quantum-capture-legacy",
+  "action": "selected-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "b1c5bff96b6bb4b4716039459f8f8a6e8b73ef196fbdf0573e51da408ea4743a",
+  "raw_stdout": {
+    "path": "observations-before/quantum-capture-legacy-selected-check.stdout.txt",
+    "sha256": "922eb8dbada376126c68e1675450729e796e34076b41a8be433278e275308150"
+  },
+  "raw_stderr": {
+    "path": "observations-before/quantum-capture-legacy-selected-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "name",
+        "severity": "error",
+        "message": "unbound basis value",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-legacy/main.qli",
+          "start": 229,
+          "end": 230
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

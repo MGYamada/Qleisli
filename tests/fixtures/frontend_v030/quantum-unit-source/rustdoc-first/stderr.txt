@@ -1,0 +1,15 @@
+ Documenting qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error: unclosed HTML tag `Bit`
+  --> src/frontend/sized/raw.rs:21:44
+   |
+21 | /// The current adapter supports Unit/Bit/Q<Bit>/products, specialized ordinary
+   |                                            ^^^^^
+   |
+   = note: `-D rustdoc::invalid-html-tags` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(rustdoc::invalid_html_tags)]`
+help: try marking as source code
+   |
+21 | /// The current adapter supports Unit/Bit/`Q<Bit>`/products, specialized ordinary
+   |                                           +      +
+
+error: could not document `qleisli`

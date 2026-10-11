@@ -1,0 +1,149 @@
+{
+  "binary_sha256": "b14852fcca6c0799b806c237e754478d1d10e3503377e01ce998d4b3c877a535",
+  "observations": [
+    {
+      "case": "unicode-crlf",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/unicode-crlf.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-unicode-crlf.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "after-unicode-crlf.stdout.txt",
+      "stderr": "after-unicode-crlf.stderr.txt",
+      "proposal_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+    },
+    {
+      "case": "bare-cr",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/bare-cr.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-bare-cr.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-bare-cr.stdout.txt",
+      "stderr": "after-bare-cr.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "vertical-tab",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/vertical-tab.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-vertical-tab.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-vertical-tab.stdout.txt",
+      "stderr": "after-vertical-tab.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "form-feed",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/form-feed.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-form-feed.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-form-feed.stdout.txt",
+      "stderr": "after-form-feed.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "bidi-comment",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/bidi-comment.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-bidi-comment.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-bidi-comment.stdout.txt",
+      "stderr": "after-bidi-comment.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "nbsp-comment",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/nbsp-comment.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-nbsp-comment.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-nbsp-comment.stdout.txt",
+      "stderr": "after-nbsp-comment.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "nested-64",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/nested-64.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-nested-64.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "after-nested-64.stdout.txt",
+      "stderr": "after-nested-64.stderr.txt",
+      "proposal_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+    },
+    {
+      "case": "nested-65",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/nested-65.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-nested-65.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-nested-65.stdout.txt",
+      "stderr": "after-nested-65.stderr.txt",
+      "proposal_sha256": null
+    },
+    {
+      "case": "unclosed",
+      "argv": [
+        "target/debug/qleisli",
+        "sized",
+        "emit-proposal",
+        "--entry=main::f",
+        "--module=main=tests/fixtures/frontend_v030/shared-scanner/unclosed.qli",
+        "--output=/private/tmp/qleisli-shared-scanner-after-unclosed.json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "after-unclosed.stdout.txt",
+      "stderr": "after-unclosed.stderr.txt",
+      "proposal_sha256": null
+    }
+  ]
+}

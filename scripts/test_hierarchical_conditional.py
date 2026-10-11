@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual conditional DAG checks and independent finite-obligation inventory.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Pending composition is not semantic acceptance of opaque finite payloads.
 """
 import argparse

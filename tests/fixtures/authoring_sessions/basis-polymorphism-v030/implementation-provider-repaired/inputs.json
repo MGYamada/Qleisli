@@ -1,0 +1,9 @@
+{
+  "cli_sha256": "125d25df8527939ac95a066241ce873b9b6722fc04cd32838dc3d0debe7dc908",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "wrapper_sha256": "a22c4377e042c0c2b45c816db997ef0462170fdf7831c2e2487effecc4da0e40",
+  "provider_files": {
+    "providers/Qargo.toml": "a765b099ed0b44a914ae116e7c18bddf4bafb1a68da9a0434c0a223af9c31606",
+    "providers/main.qli": "ee89cbe74b1fba5fe67f3b1f0a4bce4d96b7126e66558ea2082473b8abce7864"
+  }
+}

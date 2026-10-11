@@ -5,7 +5,7 @@ use std::process::Command;
 #[test]
 fn seeded_samples_have_atomic_human_and_json_outputs() {
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::observe::measure_z; observe fn main() -> CBit { measure_z(init0()) }",
+        "use std::quantum::init0; use std::observe::measure_z; observe fn main() -> Bit { measure_z(init0()) }",
     );
     for json in [false, true] {
         let mut c = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -32,7 +32,7 @@ fn seeded_samples_have_atomic_human_and_json_outputs() {
 
 #[test]
 fn invalid_flags_and_failed_sampling_never_emit_shots() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for args in [
         vec!["--shots=0", "--seed=0"],
         vec!["--shots=01", "--seed=0"],
@@ -74,7 +74,7 @@ fn invalid_flags_and_failed_sampling_never_emit_shots() {
 #[test]
 fn cli_new_default_has_an_explicit_legacy_escape() {
     let root = SourceRoot::new(&format!(
-        "observe fn main() -> CBit {{ false }}\n//{}",
+        "observe fn main() -> Bit {{ 0 }}\n//{}",
         "x".repeat(1 << 20)
     ));
     for legacy in [false, true] {

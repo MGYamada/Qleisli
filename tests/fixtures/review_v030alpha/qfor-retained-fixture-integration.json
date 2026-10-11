@@ -1,0 +1,116 @@
+{
+  "format": "qleisli.qfor-retained-fixture-integration.v1",
+  "source_base": "ed99fbd723f0745991d700686017f7bbb149cd7f",
+  "first_integrated_run": {
+    "command": "cargo test --all-targets --no-fail-fast",
+    "exit_code": 101,
+    "completed_groups": 101,
+    "passed": 874,
+    "failed": 5,
+    "ignored": 52,
+    "failed_targets": [
+      "quantum_unit_source",
+      "runtime_parameter_patterns",
+      "sized_cli",
+      "sized_review_dialects",
+      "source_judgments"
+    ],
+    "limits": "Began at source_base. Registered fixture-routing repairs were added while later tests ran; this is a failed diagnostic run, not an exact-current-commit full pass."
+  },
+  "cause": "Retained quantum for-static fixtures and direct historical corpus reads reached the retired-form type error before their intended ownership or static-name diagnostics.",
+  "repair": "Register three keyword-only qfor derivatives without changing original sources. Route runtime-pattern, Q<Unit>, static-name, sized CLI and Rust/Python corpus readers through the existing strict current_source_file migration chain. Retain exact error codes, narrow spans, messages, absent-kernel rejection, independent oracles and original inputs.",
+  "new_derivatives": [
+    {
+      "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard/main.qli",
+      "before_sha256": "b66a3e45b89eedf01b33cb7556cf3e8f6c6f0297ad845027b86ade578ae32f2e",
+      "current_sha256": "95090fba67e10c64575fed41dec1ae2ef4af31ced3ce4063abad427986c39a43"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/zero-fold-invalid/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/zero-fold-invalid/main.qli",
+      "before_sha256": "70c80623e2765516c16ea2570df1c38dc55ec0e6c53492132c705b3638021a65",
+      "current_sha256": "a9f762e462932ec35eaea38eddda41960587aabbd70c372a8ffedfd6b360d5fc"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/fold-index/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/fold-index/main.qli",
+      "before_sha256": "ef0e68fa98815b3c1030b8a5e167e0ce626114dffeacf363a69ea7171ef1d936",
+      "current_sha256": "951aba17924c0c1cd4ac2944dd343a908eff0e443981c0defc7659515d4bbd0f"
+    }
+  ],
+  "focused_validation": {
+    "latest_rust": {
+      "passed": 36,
+      "failed": 0,
+      "ignored": 7,
+      "targets": 5
+    },
+    "msrv_rust": {
+      "toolchain": "Explicit 1.85.0 cargo/rustc/rustdoc",
+      "passed": 36,
+      "failed": 0,
+      "ignored": 7,
+      "targets": 5
+    },
+    "python_dialects": {
+      "passed": 4,
+      "seconds": 1.13,
+      "scope": "All four non-native ignored CI comparisons, including bounded seeded mutations and 19 small corpus preparations"
+    },
+    "migration_selectors": {
+      "passed": 47,
+      "seconds": 0.84,
+      "registered_qfor_files": 16
+    },
+    "latest_clippy": "All targets passed with -D warnings",
+    "msrv_clippy": "Five repaired targets passed with explicit 1.85.0 Clippy and -D warnings",
+    "format_and_whitespace": "cargo fmt --check and git diff --check passed",
+    "constitutional_continuity": "check_constitution.py --base-ref 38baae7d19535602b21270e11e97617d45205b37 passed; identity continuity only, not fresh Lean replay"
+  },
+  "source_sha256": {
+    "tests/runtime_parameter_patterns.rs": "744d7fb2b6409b72d2bdffa4388d565129db05840b849c3c80ced565f78e795b",
+    "tests/sized_cli.rs": "e53df043bef99fdece9467e85746fabbc6f9d544518bee1913e49f8f5dbf10e5",
+    "tests/sized_review_dialects.rs": "34043ddbafa2542fcf173cf7e301ba6326c9460c1e17da6fec3d55db00450213",
+    "tests/source_judgments.rs": "a8284448bada4e95fe810f77d9c404a49ff83b5e6404a794f14714724bb053d4",
+    "tests/fixtures/frontend_v030/qfor/source-map.json": "f250ddb6e482dfaae904a149dfff4a46b8be90dcca0c02aab84e83fb495fac1e",
+    "scripts/test_current_source_fixtures.py": "695af5b799ba3052719eafbd2c951adbb842ca9fbfe68eec49842a6e336b0b51"
+  },
+  "logs": {
+    "failed_all_targets": {
+      "path": "/private/tmp/qleisli-local-all-targets-ed99fbd7.log",
+      "sha256": "5c3e0bd12b5f33086919d7c49aa13eb03b34012be19c6c7b14e1f5567a2483c0"
+    },
+    "latest_repaired_four_targets": {
+      "path": "/private/tmp/qleisli-qfor-final-targets.log",
+      "sha256": "148fad57fd5962995094ee8d7a42456c298461670c646843770d1c3469433055"
+    },
+    "msrv_repaired_four_targets": {
+      "path": "/private/tmp/qleisli-qfor-final-targets-msrv.log",
+      "sha256": "eedcb6aa9dc8f442fe43633679ae28e7744bcd3fde9a1b8f3e1d4b12cbef5712"
+    },
+    "latest_source_judgments": {
+      "path": "/private/tmp/qleisli-source-judgments-qfor-repair.log",
+      "sha256": "bf825f2f40b15cf85db0d89f006dc8ad5640744fd034296b851eb053151e8e2c"
+    },
+    "msrv_source_judgments": {
+      "path": "/private/tmp/qleisli-source-judgments-qfor-repair-msrv.log",
+      "sha256": "186f0485e79aee6aa104e478033a95a40ca4a771662fd80fc16ea1bf7e758e6f"
+    },
+    "python_dialects": {
+      "path": "/private/tmp/qleisli-qfor-python-dialects.log",
+      "sha256": "3f0304347818dc54a1030272c23ca304edbe198f84c1d958a5939d73f7ff16b9"
+    },
+    "latest_all_targets_clippy": {
+      "path": "/private/tmp/qleisli-qfor-clippy.log",
+      "sha256": "5b64d8790fe9b213d4a9cb7fc82247bc8a318fb9aaf962d6cafc27e5f05c6aab"
+    },
+    "msrv_five_targets_clippy": {
+      "path": "/private/tmp/qleisli-qfor-clippy-msrv.log",
+      "sha256": "53fca9dab6234af4cebd09c54bd65d9a1ff0d32cf12dd7ee193b60c66e3e7c8a"
+    }
+  },
+  "log_retention": "Local external logs; compact checked outcomes and hashes are retained in this record.",
+  "scope": "Test migration only. No production Rust/Lean semantics, acceptance rules, capacities, dependencies, edition, interpretations or guarantees change. Generic QFT remains outside scope; fixed historical Fourier clients receive only the existing grammar migration.",
+  "pending": "Repaired exact-commit integrated retry and resumed hosted CI remain pending. Existing ignored/native/manual lanes, source/runtime preservation and broader QS/PR/RS/EXACT proof obligations are not discharged by these focused checks."
+}

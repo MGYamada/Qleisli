@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:45:12.591386+00:00",
+  "elapsed_seconds": 0.006721457990352064,
+  "case": "entangle-desired",
+  "action": "finite-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "30f66e367d7b45e0a68a92b1b8e7f37f5f6ae575a17e5294955d77d7c5d26fb8",
+  "raw_stdout": {
+    "path": "observations-before/entangle-desired-finite-check.stdout.txt",
+    "sha256": "c2b6dbcab4a5be5a68986bbd01202839f8e5e2f7c4002eae2b7bb8a3b2322731"
+  },
+  "raw_stderr": {
+    "path": "observations-before/entangle-desired-finite-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `(`, found `basis`",
+        "primary": {
+          "path": "main.qli",
+          "start": 313,
+          "end": 318,
+          "line": 9,
+          "column": 50
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

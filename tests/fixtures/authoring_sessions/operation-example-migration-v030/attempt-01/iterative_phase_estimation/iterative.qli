@@ -1,0 +1,28 @@
+//! Three-bit iterative QPE using fresh logical meters and classical feedback.
+//! Return low-weight phase bits first and preserve the conditional target.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+
+unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }
+unitary fn quarter_phase(q: Q<Bit>) -> Q<Bit> { power(eighth_phase,2)(q) }
+
+/// Consume each meter before preparing the next; target inputs need not be eigenstates.
+/// For output y = low + 2*middle + 4*high, the target branch is K_y rho K_y†,
+/// where K_y = (1/8) sum_{r=0}^7 exp(-2*pi*i*r*y/8) U^r.
+pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> ((Bit,Bit,Bit),Q<Bit>)
+requires Controlled(U) {
+    let (meter,q) = controlled(power(U,4))(h(init0()),q);
+    let low = measure_z(h(meter));
+
+    let (meter,q) = controlled(power(U,2))(h(init0()),q);
+    let meter = if low { inverse(quarter_phase)(meter) } else { meter };
+    let middle = measure_z(h(meter));
+
+    let (meter,q) = controlled(U)(h(init0()),q);
+    let meter = if low { inverse(t)(meter) } else { meter };
+    let meter = if middle { inverse(quarter_phase)(meter) } else { meter };
+    let high = measure_z(h(meter));
+    ((low,middle,high),q)
+}

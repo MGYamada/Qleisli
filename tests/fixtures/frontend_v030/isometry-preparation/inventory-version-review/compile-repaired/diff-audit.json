@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.isometry-inventory-version-diff-audit",
+  "version": 1,
+  "metadata_scope_exact": true,
+  "only_inventory_change": "src/interchange/hierarchical/runtime.rs sha256",
+  "only_coverage_change": "surface_sha256",
+  "prior_review_metadata_identity_matches": true,
+  "source_count_unchanged": 251,
+  "signatures_constructors_capacities_routes_proof_and_guarantee_scope_unchanged": true,
+  "proof_status": "S05-C1-C5 open; no constitutional guarantee discharged by this inventory",
+  "open_gates": [
+    "S05-C1",
+    "S05-C2",
+    "S05-C3",
+    "S05-C4",
+    "S05-C5"
+  ],
+  "performed": "Exact JSON comparison against the reconstructed prior reviewed metadata, whose full byte digests match immutable prior review records. No commands from records were executed."
+}

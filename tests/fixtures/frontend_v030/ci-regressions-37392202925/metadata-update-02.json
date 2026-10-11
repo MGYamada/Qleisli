@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.ci-regression-metadata-update",
+  "version": 1,
+  "sources": [
+    {
+      "path": "src/frontend/check/body.rs",
+      "old_sha256": "2dcd73e92e3dbd00b86d04bdfc99f1aec4915b30d04f86bf3905fad90949bf57",
+      "new_sha256": "35a55058006bc9f9e7750f6f5d12041e6860ff609e77a12123df4c49c71ba3c3",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "old_sha256": "d4c7acfe85e0f0eab22bee9497d8331df1ce43e94ddca71a49476eba31fb396d",
+      "new_sha256": "7776b428be08ef7546319a5c58c7073f3bcc11f33f20cdc592655e947ce88800",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "old_sha256": "17b25a718940954ce743ef92c662879197a22c43e55e20a6f119fbe5a47d9943",
+      "new_sha256": "707bd546aeedf9e9f10ae5f4a691f36a075adea63586b706a7d0f66528c90559",
+      "public_surface_unchanged": true
+    }
+  ],
+  "coverage": {
+    "old_surface_sha256": "5990905d4ee4c1ccfaad9d894871c19956acd188f31d0a4ef2163e3e857db536",
+    "new_surface_sha256": "3b054678d7fe3021ae7e3c474b2aaeacce9b66c15dcc627104917dcf4cfe2375",
+    "routes_and_proof_statuses_unchanged": true
+  },
+  "reason": "Reviewed diagnostic-only messages and actual binder location. Source checking/acceptance, storage limits, effects and proof status remain unchanged."
+}

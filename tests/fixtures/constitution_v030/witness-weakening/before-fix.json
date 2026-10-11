@@ -1,0 +1,93 @@
+{
+  "format": "qleisli.witness-binding-counterexample",
+  "version": 1,
+  "status": "compiled-enforcer-counterexample-before-fix",
+  "edition": "2026",
+  "defect": "Initial v3 evidence enforcement accepted a weakened Acceptance.packetBound while the actual historical review output remained unchanged. This is not a counterexample to either admitted Lean theorem or structural property.",
+  "baseline_checker_sha256": "79db4a2301d1d80def6b29d984ddf99710663534ca4c80552a15debd0a314e45",
+  "original_native_source_sha256": "a93b958c7696a618f157c2a71f3188d0f9d0491f66d73d8409aff4aec0ff518b",
+  "changed_native_source_sha256": "6c662211b9d8f267f7eef7963630690cd4ac87ded29e1ecd4475079713cbf9ce",
+  "historical_proposal_sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+  "identity_result": {
+    "mode": "source-identity-only",
+    "scoped_guarantees": 2,
+    "admitted_by_this_check": 0,
+    "source_revision": "f40730fb447495867898a94978ae7bc789799318089e4e38ed2a259ae09642b8"
+  },
+  "commands": [
+    {
+      "label": "protocol",
+      "argv": [
+        "lean",
+        "-R",
+        "/private/tmp/qleisli-review-admission-witness/fixture/lean-kernel",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-review-admission-witness/oleans/Protocol/Validity.olean",
+        "/private/tmp/qleisli-review-admission-witness/fixture/lean-kernel/Protocol/Validity.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "protocol.stdout.txt",
+      "stderr": "protocol.stderr.txt"
+    },
+    {
+      "label": "native",
+      "argv": [
+        "lean",
+        "-R",
+        "/private/tmp/qleisli-review-admission-witness/fixture/lean",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-review-admission-witness/oleans/Qleisli/NativeValidity.olean",
+        "/private/tmp/qleisli-review-admission-witness/fixture/lean/Qleisli/NativeValidity.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "native.stdout.txt",
+      "stderr": "native.stderr.txt"
+    },
+    {
+      "label": "review",
+      "argv": [
+        "lean",
+        "-R",
+        "/private/tmp/qleisli-review-admission-witness/fixture",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-review-admission-witness/fixture/tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "review.stdout.txt",
+      "stderr": "review.stderr.txt"
+    }
+  ],
+  "unchanged_review_output": {
+    "bytes": 4692,
+    "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+    "equals_historical_review": true
+  },
+  "scope": [
+    "Only two actual Lean definitions/proofs changed: Acceptance.packetBound and the corresponding witness-constructor argument.",
+    "The predicate definitions and all project axioms were unchanged. Both modified Protocol.Validity and unmodified NativeValidity compiled with warnings as errors.",
+    "Fresh mutable identity records in this isolated fixture were synthesized for the enforcement test, not represented as real whole-project build/audit evidence.",
+    "The recorded Review.lean was executed against the newly compiled temporary modules; its stdout exactly matched the historical approved review and stderr was empty.",
+    "No historical adopted or reviewed repository file was overwritten."
+  ],
+  "files": {
+    "README.md": "0aa5b98e0594526c9efec46b194ce6c3086b7296be8b94dbf327a74bfef908ba",
+    "check_constitution-before.txt": "56e95c3bd8906b396963412d85b2752c58d0812c9eb7f7c213e1e040747c3b5a",
+    "check_initial_guarantees-before.txt": "79db4a2301d1d80def6b29d984ddf99710663534ca4c80552a15debd0a314e45",
+    "mutation.patch": "df5b5ed75f069095f67fc0438f72e7e8ac765ad5b1a730ccf3b2307d48a3adcf",
+    "native.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "protocol.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "protocol.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reproducer-original.py.txt": "e73eda5a0a1be9f2a918b83c944a6a01855510b9b9891883e806e5d3019dd18a",
+    "review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+    "test_check_initial_guarantees-before.txt": "638d903ade3adeafe9c172667ef3e51aa37573d8a2720e0e9317d65d9f9f60ac",
+    "weakened-validity.lean.txt": "6c662211b9d8f267f7eef7963630690cd4ac87ded29e1ecd4475079713cbf9ce"
+  },
+  "environment": "The reproducer was run using lake env python3 from lean/. It prepended temporary olean modules to LEAN_PATH and symlinked unchanged sibling compiled modules; it did not write to the repository build environment."
+}

@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.independent-test-expectations",
+  "version": 1,
+  "status": "authored-before-test-execution-and-candidate-output-inspection",
+  "first_study": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030",
+  "first_sources_manifest_sha256": "55bcfcd58ea1a2c696b65b341d5513a453d26e7b82758c5f4bea7062d09e6030",
+  "baseline_packet_manifest_sha256": "10a08e1067077956d04eac47932d968b69bed25618ff16070db3bf90dbc4f486",
+  "equations": [
+    "eta: empty -> Unit, coefficient +1",
+    "epsilon: Unit -> empty, coefficient +1",
+    "epsilon composed eta = identity on the empty quantum interface",
+    "eta composed epsilon = identity on the Unit quantum owner",
+    "epsilon composed scalar(omega) composed eta = omega",
+    "unit(finish(scalar(unit(u)))) = omega; nested two scalars = i",
+    "controlled((eta composed epsilon composed scalar(omega))^4) = diag(1,-1) on control",
+    "left and right separate-owner maps preserve every physical axis and external reference coefficient"
+  ],
+  "numeric_domain": "At most two system qubits, external reference dimension 2; arbitrary complex coefficients, no normalization or separability premise.",
+  "transport_identity": "Fixed owner labels and structural request nodes are initially authored by reading the existing lowering interface/call convention. No emitted candidate or producer request supplied the expected coefficient/operator. Any later placement repair must be recorded separately.",
+  "negative_scope": "Every declaration in grouped invalid first sources is isolated in a test. Their original import rejection is not counted as a type, arity or owner regression.",
+  "limitations": [
+    "Independent requested hierarchy equations and bounded native execution are not a source-preservation theorem.",
+    "Raw Unit introduction/elimination and packaged Q<(Unit,A)> maps remain explicitly unsupported.",
+    "An effectful helper that drops a measurement still faces the existing hierarchical readout profile limitation."
+  ],
+  "translations": {
+    "current/double-scalar-result.qli": {
+      "sha256": "ba9b616a50cbd345ff6855067ff9fd50f4cfadbb3e002b78b853c7e13c7a18ae",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    },
+    "current/maps-after-observation.qli": {
+      "sha256": "9d65d6ab9cec04f78600c69ec47e54aa5c3ffaa01d1a1bd58ab00309c13573b1",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    },
+    "current/scalar-closed.qli": {
+      "sha256": "23bade1c739a0b32eebc1380d888081ad902aea8ba7b2825dad1a6f5bbbc72f3",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    },
+    "current/scalar-result.qli": {
+      "sha256": "ebf484e22847a38d06c736a45278fe993d023a140fa82005832053d54eef7c3d",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    },
+    "current/separate-middle-owner.qli": {
+      "sha256": "cb78a09ec4ae7689879025df978a1c7a48206e2656c33960ada062223d562090",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    },
+    "current/two-fresh-owners.qli": {
+      "sha256": "83e9a4770763d9eeab827e0966d78ff8d33a9ff587ebb87c5808938f08b132a7",
+      "purpose": "Explicit independent current test source; original first study unchanged"
+    }
+  }
+}

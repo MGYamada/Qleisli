@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--entry=study::main",
+    "--module=study=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "recorded_utc": "2026-10-08T00:05:24.124535+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "study::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"study::main\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "stderr": ""
+}

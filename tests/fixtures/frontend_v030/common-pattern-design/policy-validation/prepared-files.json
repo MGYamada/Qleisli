@@ -1,0 +1,33 @@
+{
+  "status": "prepared-not-executed",
+  "files": {
+    "README.md": "29854c9986f5662725ce36edef780d251c70fd2d3a9efbee37e369fb1fecda65",
+    "driver.py": "291531c7afcef9f00b16b365c0e7412a4f5fa429138f8f15051d4343d48ee1d8"
+  },
+  "self_excluded": "prepared-files.json",
+  "syntax_review": "ast.parse only; driver/module/subprocess calls not executed",
+  "changed_source_paths_present": [
+    "src/frontend/pattern.rs",
+    "src/frontend/mod.rs",
+    "src/frontend/compile/lower/mod.rs",
+    "src/frontend/sized/ast.rs",
+    "src/frontend/sized/check.rs"
+  ],
+  "policy_script_paths_present": [
+    "check_book.py",
+    "test_check_book.py",
+    "check_authoring_sessions.py",
+    "test_check_authoring_sessions.py",
+    "check_editions.py",
+    "test_check_editions.py",
+    "check_docs.py",
+    "test_check_docs.py",
+    "check_constitution.py",
+    "check_lean_kernel.py",
+    "check_verification_inventory.py",
+    "test_check_verification_inventory.py",
+    "check_production_coverage.py",
+    "test_check_production_coverage.py"
+  ],
+  "runtime_input_map_note": "Final before/after hashes are intentionally captured only by root execution after final source/metadata/Reference freeze."
+}

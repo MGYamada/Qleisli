@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/main.qli",
+    "--module=a_malformed=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/a_malformed.qli",
+    "--module=z_basis=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/z_basis.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "stderr": "a_malformed:114..114: parse: expected `}`, found end of file\n",
+  "native_invocations": 0,
+  "seconds": 0.00489245803328231,
+  "recorded_utc": "2026-10-05T16:13:02.696331+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "transcript": "a_malformed:114..114: parse: expected `}`, found end of file\n"
+}

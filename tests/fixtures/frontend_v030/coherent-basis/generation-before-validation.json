@@ -1,0 +1,27 @@
+{
+  "format": "qleisli.coherent-basis-fixture-generation",
+  "version": 1,
+  "before_commit": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "method": "Span extraction by the frozen previous parser; source slices preserve input, exact pattern and basis AST text. Scaffolding comments require manual handling. Generated sources are untrusted and remain subject to new parser/checker/native validation.",
+  "tool_source_sha256": "087d9af7311c15c7f0c800c874a2fdd2f2ff395c08409f7c37f3a5323caf8722",
+  "linked_old_rlib_sha256": "365f86d075a338e77d9138fea1ec927aee19e25fe1c65e2221c9cc3af034a4d3",
+  "files": 42,
+  "lifts": 76,
+  "preserved_earlier_parse_failures": [
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-meaning/main.qli",
+      "exit": 2,
+      "spans": [],
+      "error": "409 412 expected an identifier"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-meaning/main.qli",
+      "exit": 2,
+      "spans": [],
+      "error": "415 418 expected an identifier"
+    }
+  ],
+  "source_map_sha256": "f8ff4bbd233a817bfb2070832d9c8b7ef5b3e140d0ebe14d3dc0f6ca6b123d3d",
+  "validation": "pending",
+  "notice": "Copyright2026 Masahiko G. Yamada. SPDX-License-Identifier:Apache-2.0."
+}

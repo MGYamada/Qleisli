@@ -1,0 +1,465 @@
+{
+  "first_observations": 44,
+  "stable_repeated_observations": 44,
+  "first_identity_result": "failed: shared binary replaced by concurrent root Cargo regression run",
+  "repeat_identity_result": "stable before/after every invocation",
+  "different_stdout_or_exit": [],
+  "stable_outcomes": [
+    {
+      "case": "left-remove",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "left-remove",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "left-insert",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "left-insert",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ]
+    },
+    {
+      "case": "right-remove",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "right-remove",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "right-insert",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "right-insert",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ]
+    },
+    {
+      "case": "roundtrips",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "roundtrips",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ]
+    },
+    {
+      "case": "zero-unit-pair",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "zero-unit-pair",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ]
+    },
+    {
+      "case": "nested-product",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "nested-product",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "tuple-provider",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "tuple-provider",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "removed-unit-phase",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "removed-unit-phase",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "controlled-four",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "controlled-four",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ]
+    },
+    {
+      "case": "ordered-axes",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "ordered-axes",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "same-width-wrong-tree",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "same-width-wrong-tree",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "result does not match the function return type: expected `Q<(Bit,(Unit,Bit))>`, found `Q<((Bit,Unit),Bit)>`"
+        }
+      ]
+    },
+    {
+      "case": "bits0-is-not-unit",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "bits0-is-not-unit",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "implicit-destructure",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "implicit-destructure",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "aliased-zero-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "aliased-zero-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "message": "quantum ownership `q` has already been consumed"
+        }
+      ]
+    },
+    {
+      "case": "lost-revived-owners",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "lost-revived-owners",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `finish`"
+        }
+      ]
+    },
+    {
+      "case": "wrong-arities",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "wrong-arities",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "static argument is outside the finite lowering profile"
+        }
+      ]
+    },
+    {
+      "case": "effectful-argument",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "effectful-argument",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "effect",
+          "message": "body effect `Observe` exceeds declared `Unitary` effect of `f`"
+        }
+      ]
+    },
+    {
+      "case": "unused-zero-fold",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "unused-zero-fold",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "expression is outside the finite lowering profile"
+        }
+      ]
+    },
+    {
+      "case": "finite-coherent-unitors",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "finite-coherent-unitors",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "finite-split-join",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ]
+    },
+    {
+      "case": "finite-split-join",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "existing-atom-control",
+      "route": "selected",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "existing-atom-control",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    }
+  ],
+  "source_repairs": 0,
+  "scope": "Only actual checking outcomes; masked negatives and open-function meanings are not verified."
+}

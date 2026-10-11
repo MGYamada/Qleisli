@@ -1,0 +1,444 @@
+[
+  {
+    "case": "ordinary-bit-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/ordinary-bit-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4336730829672888,
+    "stdout": "ordinary-bit-desired/observed.stdout.txt",
+    "stderr": "ordinary-bit-desired/observed.stderr.txt"
+  },
+  {
+    "case": "ordinary-bit-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/ordinary-bit-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.010502624965738505,
+    "stdout": "ordinary-bit-legacy/observed.stdout.txt",
+    "stderr": "ordinary-bit-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "ordinary-word-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/ordinary-word-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.00747416599188,
+    "stdout": "ordinary-word-desired/observed.stdout.txt",
+    "stderr": "ordinary-word-desired/observed.stderr.txt"
+  },
+  {
+    "case": "ordinary-word-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/ordinary-word-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.00679733301512897,
+    "stdout": "ordinary-word-legacy/observed.stdout.txt",
+    "stderr": "ordinary-word-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "unit-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/unit-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006569832970853895,
+    "stdout": "unit-desired/observed.stdout.txt",
+    "stderr": "unit-desired/observed.stderr.txt"
+  },
+  {
+    "case": "unit-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/unit-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006138375028967857,
+    "stdout": "unit-legacy/observed.stdout.txt",
+    "stderr": "unit-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "literal-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/literal-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.004278542008250952,
+    "stdout": "literal-desired/observed.stdout.txt",
+    "stderr": "literal-desired/observed.stderr.txt"
+  },
+  {
+    "case": "literal-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/literal-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0058032089727930725,
+    "stdout": "literal-legacy/observed.stdout.txt",
+    "stderr": "literal-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "boolean-flow-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/boolean-flow-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.00403766700765118,
+    "stdout": "boolean-flow-desired/observed.stdout.txt",
+    "stderr": "boolean-flow-desired/observed.stderr.txt"
+  },
+  {
+    "case": "boolean-flow-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/boolean-flow-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005527000001166016,
+    "stdout": "boolean-flow-legacy/observed.stdout.txt",
+    "stderr": "boolean-flow-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "measure-bit-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-bit-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005472499993629754,
+    "stdout": "measure-bit-desired/observed.stdout.txt",
+    "stderr": "measure-bit-desired/observed.stderr.txt"
+  },
+  {
+    "case": "measure-bit-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-bit-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.00572516699321568,
+    "stdout": "measure-bit-legacy/observed.stdout.txt",
+    "stderr": "measure-bit-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "measure-word-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-word-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0054515410447493196,
+    "stdout": "measure-word-desired/observed.stdout.txt",
+    "stderr": "measure-word-desired/observed.stderr.txt"
+  },
+  {
+    "case": "measure-word-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-word-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0110033749951981,
+    "stdout": "measure-word-legacy/observed.stdout.txt",
+    "stderr": "measure-word-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "copy-word-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/copy-word-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006380625010933727,
+    "stdout": "copy-word-desired/observed.stdout.txt",
+    "stderr": "copy-word-desired/observed.stderr.txt"
+  },
+  {
+    "case": "copy-word-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/copy-word-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005922582990024239,
+    "stdout": "copy-word-legacy/observed.stdout.txt",
+    "stderr": "copy-word-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "drop-bit-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/drop-bit-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005007707979530096,
+    "stdout": "drop-bit-desired/observed.stdout.txt",
+    "stderr": "drop-bit-desired/observed.stderr.txt"
+  },
+  {
+    "case": "drop-bit-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/drop-bit-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.004954292031470686,
+    "stdout": "drop-bit-legacy/observed.stdout.txt",
+    "stderr": "drop-bit-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "read-coercion-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/read-coercion-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005422667018137872,
+    "stdout": "read-coercion-desired/observed.stdout.txt",
+    "stderr": "read-coercion-desired/observed.stderr.txt"
+  },
+  {
+    "case": "read-coercion-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/read-coercion-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005167333991266787,
+    "stdout": "read-coercion-legacy/observed.stdout.txt",
+    "stderr": "read-coercion-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "prepare-coercion-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/prepare-coercion-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005143249989487231,
+    "stdout": "prepare-coercion-desired/observed.stdout.txt",
+    "stderr": "prepare-coercion-desired/observed.stderr.txt"
+  },
+  {
+    "case": "prepare-coercion-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/prepare-coercion-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005092041043099016,
+    "stdout": "prepare-coercion-legacy/observed.stdout.txt",
+    "stderr": "prepare-coercion-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "runtime-natural-desired",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/runtime-natural-desired"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0051011250470764935,
+    "stdout": "runtime-natural-desired/observed.stdout.txt",
+    "stderr": "runtime-natural-desired/observed.stderr.txt"
+  },
+  {
+    "case": "runtime-natural-legacy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/runtime-natural-legacy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.00497358402935788,
+    "stdout": "runtime-natural-legacy/observed.stdout.txt",
+    "stderr": "runtime-natural-legacy/observed.stderr.txt"
+  },
+  {
+    "case": "quantum-unit-identity",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/quantum-unit-identity"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005473291967064142,
+    "stdout": "quantum-unit-identity/observed.stdout.txt",
+    "stderr": "quantum-unit-identity/observed.stderr.txt"
+  },
+  {
+    "case": "quantum-unit-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/quantum-unit-copy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005446041002869606,
+    "stdout": "quantum-unit-copy/observed.stdout.txt",
+    "stderr": "quantum-unit-copy/observed.stderr.txt"
+  },
+  {
+    "case": "quantum-unit-drop",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/quantum-unit-drop"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005370124999899417,
+    "stdout": "quantum-unit-drop/observed.stdout.txt",
+    "stderr": "quantum-unit-drop/observed.stderr.txt"
+  },
+  {
+    "case": "quantum-bit-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/quantum-bit-copy"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005532542010769248,
+    "stdout": "quantum-bit-copy/observed.stdout.txt",
+    "stderr": "quantum-bit-copy/observed.stderr.txt"
+  },
+  {
+    "case": "quantum-width-equality",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/quantum-width-equality"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005210084025748074,
+    "stdout": "quantum-width-equality/observed.stdout.txt",
+    "stderr": "quantum-width-equality/observed.stderr.txt"
+  },
+  {
+    "case": "ordinary-width-equality",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/ordinary-width-equality"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0055054170079529285,
+    "stdout": "ordinary-width-equality/observed.stdout.txt",
+    "stderr": "ordinary-width-equality/observed.stderr.txt"
+  },
+  {
+    "case": "empty-word-vs-unit",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/empty-word-vs-unit"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.004984041966963559,
+    "stdout": "empty-word-vs-unit/observed.stdout.txt",
+    "stderr": "empty-word-vs-unit/observed.stderr.txt"
+  },
+  {
+    "case": "nested-owner",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/nested-owner"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.004102625011000782,
+    "stdout": "nested-owner/observed.stdout.txt",
+    "stderr": "nested-owner/observed.stderr.txt"
+  },
+  {
+    "case": "bit-numeral-two",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/bit-numeral-two"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.003945167001802474,
+    "stdout": "bit-numeral-two/observed.stdout.txt",
+    "stderr": "bit-numeral-two/observed.stderr.txt"
+  },
+  {
+    "case": "basis-runtime-reuse",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-classical-type-study/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/basis-runtime-reuse"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.005318958021234721,
+    "stdout": "basis-runtime-reuse/observed.stdout.txt",
+    "stderr": "basis-runtime-reuse/observed.stderr.txt"
+  }
+]

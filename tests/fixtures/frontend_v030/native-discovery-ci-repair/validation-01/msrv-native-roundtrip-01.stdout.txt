@@ -1,0 +1,10 @@
+
+running 5 tests
+test a_wrong_table_is_rejected_before_any_receipt_exists ... ok
+test compiled_project_discovery_selects_current_sources ... ok
+test positive_evidence_coverage_reaches_every_retained_path ... ok
+test qirf2_meaning_entries_execute_the_checked_table ... ok
+test compiled_programs_reencode_exactly_and_caches_match_implementations ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 54.26s
+

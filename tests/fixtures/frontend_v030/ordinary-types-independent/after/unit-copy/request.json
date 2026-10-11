@@ -1,0 +1,2 @@
+{"format":"qleisli.hierarchy-request","version":1,"profile":"qpe-dyadic8-v1","kind":"equation","effect":"unitary","interface":{"inputs":{"quantum":[],"classical":[]},"outputs":{"quantum":[],"classical":[]}},"meanings":[{"interface":{"inputs":{"quantum":[],"classical":[]},"outputs":{"quantum":[],"classical":[]}},"body":{"permutation":{"axes":[],"classical":[],"owners":[]},"tag":"rewire"}
+}],"entry":0}

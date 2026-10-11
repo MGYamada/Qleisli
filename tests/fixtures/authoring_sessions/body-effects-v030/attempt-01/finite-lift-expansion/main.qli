@@ -1,0 +1,1 @@
+pub fn f(q:Q<Unit>)->Q<Bit>{do x <- q; pure 0} observe fn main()->Unit{()}

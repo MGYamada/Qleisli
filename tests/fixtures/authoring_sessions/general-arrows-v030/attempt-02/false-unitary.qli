@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{finish,init0,h,split};
+fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+unitary fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
+pub fn main(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}

@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Reject ambiguous borrow resource syntax under #71 without reserving ordinary names",
+  "author": "Codex assistant; informed maintenance; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "6d272d2d83d6b8ea347608233963c92f69b23423",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze three complete access-vocabulary clients before changing diagnostics.",
+      "sha256": {
+        "borrow-form.qli": "b146b63f161c9d958593df6a84e3dfacb67cef462e7b2744f89fea451e027763",
+        "ordinary-name.qli": "651b904010ceeb2ca58ec829c15170723e23f0e2fb7112d1a0279c51b9143019",
+        "rust-reference.qli": "94fbedb34b810f024d73092c696112fae6fdcd368153a433b22a112352d7ba9e"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/borrow-form.json",
+        "before/ordinary-name.json",
+        "before/rust-reference.json",
+        "after/borrow-form.json",
+        "after/ordinary-name.json",
+        "after/rust-reference.json"
+      ]
+    }
+  ]
+}

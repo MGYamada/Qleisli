@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let () = for static i in 0..0 carry _ = () { yield (); }; q }

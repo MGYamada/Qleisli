@@ -1,0 +1,6 @@
+use std::quantum::{init0, x};
+use std::observe::measure_z;
+unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+unitary fn invoke[const U:Op<Bit -> Bit>](q:Q<Bit>)->Q<Bit>
+requires Applicable(U){U(q)}
+pub observe fn main()->Bit{measure_z(invoke[flip](init0()))}

@@ -1,0 +1,97 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--lib",
+      "isometry_"
+    ],
+    "exit_code": 0,
+    "seconds": 1.2748425410245545,
+    "recorded_utc": "2026-10-05T15:16:40.527228+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "isometry_source",
+      "--test",
+      "sized_review_diagnostics",
+      "--test",
+      "body_effects",
+      "--test",
+      "selected_source_cli",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors"
+    ],
+    "exit_code": 0,
+    "seconds": 11.470387707988266,
+    "recorded_utc": "2026-10-05T15:16:51.998071+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors",
+      "--",
+      "--ignored"
+    ],
+    "exit_code": 0,
+    "seconds": 3.530363874975592,
+    "recorded_utc": "2026-10-05T15:16:55.528648+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 0.7785652920138091,
+    "recorded_utc": "2026-10-05T15:16:56.307393+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5251031660009176,
+    "recorded_utc": "2026-10-05T15:16:56.832723+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt",
+    "timed_out": false
+  }
+]

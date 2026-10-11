@@ -195,11 +195,11 @@ fn unit_factors_and_product_labels_match_every_explicit_basis_image() {
             "
 unitary fn relabel(q: Q<((Bit,Unit),(Bit,(Unit,Bit)))>)
     -> Q<((Unit,Bit),((Bit,Bit),Unit))> {{
-    do ((a,_),(b,(_,c))) <- q; pure (((),c),((a xor b,b),()))
+    basis q as ((a,_),(b,(_,c))) {{ (((),c),((a xor b,b),())) }}
 }}
-observe fn main() -> ((CBit,CBit),CBit) {{
-    let a = do a <- {}; pure (a,());
-    let c = do c <- {}; pure ((),c);
+observe fn main() -> ((Bit,Bit),Bit) {{
+    let a = basis {} as a {{ (a,()) }};
+    let c = basis {} as c {{ ((),c) }};
     let q = relabel(join(a,join({},c)));
     let (uc,abu) = split(q); let (u,c) = split(uc);
     let (ab,v) = split(abu); let (a,b) = split(ab);
@@ -249,10 +249,10 @@ fn growing_lift_matches_joint_pauli_statistics_with_two_reference_wires() {
     for axes in settings(5) {
         let source = format!(
             "
-iso fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
-    do (a,b) <- q; pure ((a,b),a xor b)
+isometry fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
+    basis q as (a,b) {{ ((a,b),a xor b) }}
 }}
-observe fn main() -> (((CBit,CBit),CBit),(CBit,CBit)) {{
+observe fn main() -> (((Bit,Bit),Bit),(Bit,Bit)) {{
     let (a,r) = cnot(t(h(init0())),init0());
     let (b,s) = cnot(h(init0()),init0());
     let (ab,c) = split(grow(join(a,b))); let (a,b) = split(ab);
@@ -286,7 +286,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     // joint settings checks the corresponding unnormalized reference states.
     for axes in settings(2) {
         let source = format!(
-            "observe fn main() -> (CBit,CBit) {{ {preparation} ({},{}) }}",
+            "observe fn main() -> (Bit,Bit) {{ {preparation} ({},{}) }}",
             axes[0].read("a"),
             axes[1].read("r")
         );
@@ -307,7 +307,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     ];
     for axes in settings(2) {
         let source = format!(
-            "observe fn main() -> (CBit,CBit) {{ {preparation} let a=reset(a); ({},{}) }}",
+            "observe fn main() -> (Bit,Bit) {{ {preparation} let a=reset(a); ({},{}) }}",
             axes[0].read("a"),
             axes[1].read("r")
         );
@@ -325,7 +325,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     ];
     for axes in settings(1) {
         let source = format!(
-            "observe fn main() -> CBit {{ {preparation} discard(a); {} }}",
+            "observe fn main() -> Bit {{ {preparation} discard(a); {} }}",
             axes[0].read("r")
         );
         assert_distribution(&compile(&source), &born(&discard_histories, &axes));
@@ -333,7 +333,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
 }
 
 const COMPUTED: &str = "
-basis fn predicate(a: Bit, u: Unit, b: Bit, c: Bit) -> Bit { (a and not b) xor c }
+classical fn predicate((((a,u),b),c): (((Bit,Unit),Bit),Bit)) -> Bit { (a and not b) xor c }
 unitary fn oracle(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> {
     with_computed(q,predicate) { |ancilla| z(t(t(t(ancilla)))) }
 }
@@ -364,8 +364,8 @@ fn computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs() {
     for axes in settings(3) {
         let source = format!(
             "{COMPUTED}
-observe fn main() -> ((CBit,CBit),CBit) {{
-    let au = do a <- h(init0()); pure (a,());
+observe fn main() -> ((Bit,Bit),Bit) {{
+    let au = basis h(init0()) as a {{ (a,()) }};
     let q = oracle(join(join(au,h(init0())),h(init0())));
     let (aub,c) = split(q); let (au,b) = split(aub); let (a,u) = split(au);
     discard(u); (({},{}),{})
@@ -400,8 +400,8 @@ observe fn main() -> ((CBit,CBit),CBit) {{
             );
             let source = format!(
                 "{COMPUTED}
-observe fn main() -> (((CBit,CBit),CBit),CBit) {{
-    let au = do a <- {}; pure (a,());
+observe fn main() -> (((Bit,Bit),Bit),Bit) {{
+    let au = basis {} as a {{ (a,()) }};
     let q = join(join(au,{}),{});
     let (control,q) = qif(h(init0()),q) {{ 0=>identity, 1=>oracle }};
     let (aub,c) = split(q); let (au,b) = split(aub); let (a,u) = split(au);
@@ -416,15 +416,15 @@ observe fn main() -> (((CBit,CBit),CBit),CBit) {{
         }
     }
 
-    // Empty parameters pack to Unit; two Unit parameters pack to (Unit,Unit).
-    // Both domains have one label, but their exact trees are not interchangeable.
+    // Explicit Unit and (Unit,Unit) domains each have one label, but their
+    // exact trees are not interchangeable and neither is inferred from arity.
     for (params, basis, label, wrong_basis) in [
-        ("", "Unit", "()", "(Unit,Unit)"),
-        ("a: Unit, b: Unit", "(Unit,Unit)", "((),())", "Unit"),
+        ("_: Unit", "Unit", "()", "(Unit,Unit)"),
+        ("(_, _): (Unit,Unit)", "(Unit,Unit)", "((),())", "Unit"),
     ] {
         let definitions = format!(
             "
-basis fn one({params}) -> Bit {{ 1 }}
+classical fn one({params}) -> Bit {{ 1 }}
 unitary fn scalar(q: Q<{basis}>) -> Q<{basis}> {{
     with_computed(q,one) {{ |a| z(t(t(t(a)))) }}
 }}
@@ -434,8 +434,8 @@ unitary fn identity(q: Q<{basis}>) -> Q<{basis}> {{ q }}
         for axis in [Axis::X, Axis::Y] {
             let source = format!(
                 "{definitions}
-observe fn main() -> CBit {{
-    let (q,b)=split(do b <- init0(); pure ({label},b)); discard(b);
+observe fn main() -> Bit {{
+    let (q,b)=split(basis init0() as b {{ ({label},b) }}); discard(b);
     let q=scalar(q);
     let (control,q)=qif(h(init0()),q) {{ 0=>identity, 1=>scalar }};
     discard(q); {}
@@ -460,7 +460,7 @@ observe fn main() -> CBit {{
         }
         let rejected = SourceRoot::new(&format!(
             "{IMPORTS}
-basis fn one({params}) -> Bit {{ 1 }}
+classical fn one({params}) -> Bit {{ 1 }}
 unitary fn wrong(q: Q<{wrong_basis}>) -> Q<{wrong_basis}> {{
     with_computed(q,one) {{ |a| t(a) }}
 }}"
@@ -508,20 +508,20 @@ fn complete_branch_phi_transports_measured_results_fresh_wires_and_pending_frame
     for axes in settings(4) {
         let source = format!(
             "
-observe fn route(flag: CBit, a: Q<Bit>, b: Q<Bit>) -> ((CBit,Q<Bit>),(CBit,Q<Bit>)) {{
+observe fn route(flag: Bit, a: Q<Bit>, b: Q<Bit>) -> ((Bit,Q<Bit>),(Bit,Q<Bit>)) {{
     if flag {{ let m=measure_z(a); ((m,b),(not m,init0())) }}
     else {{ let m=measure_z(b); ((not m,init0()),(m,a)) }}
 }}
-observe fn read(u: Q<Unit>, result: ((CBit,Q<Bit>),(CBit,Q<Bit>)),
-                ra: Q<Bit>, rb: Q<Bit>, flag: CBit)
-    -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
+observe fn read(u: Q<Unit>, result: ((Bit,Q<Bit>),(Bit,Q<Bit>)),
+                ra: Q<Bit>, rb: Q<Bit>, flag: Bit)
+    -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     let ((c,left),(d,right))=result; discard(u);
     (flag,((c,d),(({},{}),({},{}))))
 }}
-observe fn main() -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
+observe fn main() -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     let (a,ra)=cnot(t(h(init0())),init0());
     let (b,rb)=cnot(t(t(h(init0()))),init0());
-    let (u,a)=split(do a <- a; pure ((),a));
+    let (u,a)=split(basis a as a {{ ((),a) }});
     let flag=measure_z(h(init0()));
     read(u,route(flag,a,b),ra,rb,flag)
 }}",
@@ -557,7 +557,7 @@ observe fn main() -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
 fn verified_ir_does_not_by_itself_establish_source_correspondence() {
     let checked = compile(
         "
-observe fn main() -> CBit { measure_z(do b <- init0(); pure not b) }
+observe fn main() -> Bit { measure_z(basis init0() as b { not b }) }
 ",
     );
     let expected = Distribution::from([(vec![true], 1.0)]);

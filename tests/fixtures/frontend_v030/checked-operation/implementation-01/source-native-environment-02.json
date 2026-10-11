@@ -1,0 +1,9 @@
+{
+  "format": "qleisli.source-native-evidence-invocation",
+  "command_record": "tests/fixtures/frontend_v030/checked-operation/implementation-01/source-native-evidence-01.json",
+  "additional_environment": {
+    "QLEISLI_BIN": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli"
+  },
+  "observed_cli_sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef",
+  "scope": "Explicit CLI selection in the actual shell call; the generic runner retained its usual target/kernel environment but omitted this inherited variable from its environment summary. This companion supplies that missing invocation context without editing the original record."
+}

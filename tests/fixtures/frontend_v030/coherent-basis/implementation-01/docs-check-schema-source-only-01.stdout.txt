@@ -1,0 +1,1 @@
+{"entries": 3, "externally_enabled": 0, "format": "qleisli.schema-registry-validation", "manifest_sha256": "c9f9323c8ac13d5d914aeb145299a91133d3581355231855002000a8a8b022e0", "mode": "source-identity-only", "source_revision": "8cd4e8c31cbb15b8a7963622d2b081a432e875c5819ff15ff506e7f5750c8cdd", "status": "passed", "version": 1}

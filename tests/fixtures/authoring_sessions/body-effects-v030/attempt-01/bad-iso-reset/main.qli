@@ -1,0 +1,1 @@
+use std::observe::reset; pub iso fn f(q:Q<Bit>)->Q<Bit>{reset(q)} observe fn main()->Unit{()}

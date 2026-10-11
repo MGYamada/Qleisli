@@ -1,0 +1,2 @@
+pub unitary fn f[const A:Basis](q:Q<A>)->(Q<A>,Q<A>){(q,q)}
+

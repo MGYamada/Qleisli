@@ -1,0 +1,3 @@
+basis fn flag(u:Unit) -> Bit { 0 }
+unitary fn identity(q:Q<Bit>) -> Q<Bit> { q }
+unitary fn bad(q:Q<Bit>) -> Q<Bit> { with_computed(q,flag,identity) { |d,a| (d,a) } }

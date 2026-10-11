@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/private/tmp/qleisli-ci-repair-fae)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.41s
+     Running tests/parser.rs (/private/tmp/qleisli-ci-repair-fae/target/debug/deps/parser-9b127f065bfaef57)
+     Running tests/sized_review_dialects.rs (/private/tmp/qleisli-ci-repair-fae/target/debug/deps/sized_review_dialects-5a4051bc5c694371)

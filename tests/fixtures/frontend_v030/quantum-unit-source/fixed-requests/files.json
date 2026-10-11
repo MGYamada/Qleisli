@@ -1,0 +1,43 @@
+{
+  "format": "qleisli.fixture-files",
+  "version": 1,
+  "paths_relative_to": "fixed-requests/",
+  "files": {
+    "README.md": {
+      "sha256": "b67296c2c130647180714431a515f494f6ded8c0a8da3c9544284b936a61e384",
+      "bytes": 3428
+    },
+    "apply.json": {
+      "sha256": "74798b40db6e3d9b88d67cf9ef99ade38fb34789fdfe49459fa5b9bc9d78e5cd",
+      "bytes": 12738
+    },
+    "before-test.rs.txt": {
+      "sha256": "d9e62a2ac7fa8871bdb7b877dc0b857ef36f4cb426b40df6a919e55cb323a347",
+      "bytes": 24065
+    },
+    "controlled_four.json": {
+      "sha256": "200728709b845b1113a806e501bc9c3af1583363514d8e8bff1153ee3725163d",
+      "bytes": 16782
+    },
+    "controlled_once.json": {
+      "sha256": "bb85ad8dc96da9cccfc4b03242733e8814a6574164a3d38720328d0e6743b617",
+      "bytes": 16088
+    },
+    "eight.json": {
+      "sha256": "22b93d37691e5111b46806106adb50e57a037887f59fe577ca76b5bc5a62e40b",
+      "bytes": 16740
+    },
+    "inverse.json": {
+      "sha256": "548c60972878a0d701b02aff3a8d4f81ac66f2c6328d44f3bc4e6ba3bf9ada43",
+      "bytes": 13416
+    },
+    "observations.json": {
+      "sha256": "8913dca099afbde602ce5b5cfd380e5bc8c2a63493d688393a13418b12fa4628",
+      "bytes": 4721
+    },
+    "provenance.json": {
+      "sha256": "ad3b4747897072585572e117647c3f5db1d09bef57ef7e8e8753edb399dde23a",
+      "bytes": 4644
+    }
+  }
+}

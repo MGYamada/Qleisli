@@ -1,0 +1,58 @@
+{
+  "mode": "msrv-all-escalated",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.7864194170106202,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.34984808397712186,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 1007.9014210000169,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 5.920408250007313,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded current consumers. Existing ignores retained. No new maximum-size quantum case, fresh Lean replay or release certificate."
+}

@@ -1,0 +1,8 @@
+common.parse: ok declarations=2
+finite.check: ok
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Bit }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Tuple([Type { kind: Bit }, Type { kind: Bit }]) }, identity: None, fields: [SourceValue { ty: Type { kind: Bit }, identity: Some(1), fields: [] }, SourceValue { ty: Type { kind: Bit }, identity: Some(0), fields: [] }] }
+sized.lower: Error { code: "unsupported", module: Some("main"), span: Span { start: 35, end: 86 }, message: "selected sized lowering profile requires quantum entry values; classical entry values are unsupported" }

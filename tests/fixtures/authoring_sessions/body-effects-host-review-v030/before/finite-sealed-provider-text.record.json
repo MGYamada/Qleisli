@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/finite-sealed-provider"
+  ],
+  "exit_code": 1,
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/finite-sealed-provider/Qargo.toml:1:1: project: Qargo.toml requires schema-version = 2\n",
+  "native_invocations": 0,
+  "seconds": 0.004400041012559086,
+  "recorded_utc": "2026-10-05T10:01:55.407538+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/finite-sealed-provider/Qargo.toml:1:1: project: Qargo.toml requires schema-version = 2\n",
+  "raw_event": {
+    "path": "before/finite-sealed-provider-text.json",
+    "sha256": "b41b40d2a2255f73b0e1ece71bdd71b029a3afbc41a9c0906886de67b8ab974b"
+  },
+  "record_note": "Schema-compatible transcription of the unchanged actual text output. Raw event and original stdout/stderr files remain retained."
+}

@@ -1,0 +1,5 @@
+use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
+observe fn main() -> Bit {
+let q = init0(); // fliplet q = x(q);
+measure_z(q)
+}

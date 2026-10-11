@@ -1,0 +1,195 @@
+{
+  "kind": "bounded closed-forward provider implementation review",
+  "base_commit": "dbe3c1e719b598ea66ff617dd3b6d2b166b221f6",
+  "pre_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6023625884",
+  "source_sha256": {
+    "src/frontend/sized/raw.rs": "67d90514906627d79cea603d93101bff0f2bc16fb5ba1154bef1592da2fc2ea9",
+    "src/frontend/sized/raw/preservation.rs": "3aa15543afed8c045a9542e6ee4d1b3a6db3cd252141ddbce3772e0881838924",
+    "tests/classical_functions.rs": "f8c8a604ce664cd6acfb5a7008024652eb49bc0c26cd7a049e274b43b64e1043",
+    "tests/selected_source_cli.rs": "5a0b7751f1c6583e4661fceaa3952e05d252fd77f3f4125b267a634956c9e680",
+    "docs/src/reference/functional-boundary.md": "014968039345b88aff4ff43d006bbc0148de2774c772d96643aa25cde8b5f03c"
+  },
+  "scope": "Existing closed Definition/Repeat operations, forward Apply and ordinary helpers; exact source trees and caller frame. Native acceptance and independent ordered source replay, not an AST preservation theorem or constitutional discharge.",
+  "review": [
+    "Dependency closure retains operation arguments even if unused or repeated zero times, within unchanged work/depth limits.",
+    "Independent replay compares actual call bindings with retained callee operations, including original Meaning identities, and checks exact endomorphism interface/effect.",
+    "Two-system-qubit independently authored Raw mutations remain native-valid but replay rejects substituted H action and application to the suspended caller owner.",
+    "One-system-qubit nested forward and repeat cases reject lying inner requests even at zero counts; exact phase survives a zero-width product factor.",
+    "Public surfaces, native modes, capacities and scoped guarantees unchanged; VM22/VM29 private source identities reviewed and refreshed."
+  ],
+  "checks": {
+    "classical-latest": {
+      "log_sha256": "3ed9d055bacc7349cbd9c777732f24f45822235a03ec1ee889e47eaeeb1c93f1",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 0.62s",
+        "test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.10s"
+      ],
+      "note": "actual recorded run"
+    },
+    "classical-msrv": {
+      "log_sha256": "a93b806e10852d6adbe76d617fa16c5ffab1aed031cadb4dabaddaba6c1e9038",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 11.08s",
+        "test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.88s"
+      ],
+      "note": "actual recorded run"
+    },
+    "raw-msrv": {
+      "log_sha256": "003a23c56de38285d6ba8c1128c2dc2ef6ec52d0e4223c84cf4dc2a90f1501d4",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 14.19s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 121 filtered out; finished in 1.21s"
+      ],
+      "note": "actual recorded run"
+    },
+    "related-latest": {
+      "log_sha256": "0e9ebd150269d5a7fbbaf529f3b8c66f6697d4f4ec3cee98502a993fc976b2f6",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 1.89s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.57s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.04s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.86s",
+        "test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.77s"
+      ],
+      "note": "related-latest contains initial selected-CLI expectation failure; selected-latest is its final repaired rerun"
+    },
+    "selected-latest": {
+      "log_sha256": "95a03114316bb2e460594ca27ae905b03ed29f5dde2b0a598dc7b7015097121b",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 0.92s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s"
+      ],
+      "note": "actual recorded run"
+    },
+    "related-msrv": {
+      "log_sha256": "bbe290e6a50a67390d5d7cf79c7f02651fabaca5192ff133a5958d34ea2323a0",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 1.56s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.92s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.74s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.58s"
+      ],
+      "note": "actual recorded run"
+    },
+    "clippy-final-latest": {
+      "log_sha256": "dd91ce629aa7449fd3598e5bf57c5d8761f50ab8db133cdb6367e3b10ae358b5",
+      "summaries": [
+        "    Finished `dev` profile [unoptimized] target(s) in 0.42s"
+      ],
+      "note": "actual recorded run"
+    },
+    "clippy-final-msrv": {
+      "log_sha256": "b4767c1b8b4750a5d9ce9cc5878b4abde4af00b76eafe66498774072373ee2f9",
+      "summaries": [
+        "    Finished `dev` profile [unoptimized] target(s) in 0.39s"
+      ],
+      "note": "actual recorded run"
+    },
+    "raw-latest": {
+      "result": "13 passed, 0 failed, exit 0; captured tool output session91575"
+    },
+    "policy_docs": {
+      "VM22": "pass; 275 constructors,265 sources,20 boundaries",
+      "VM29": "pass;22 paths,9 modes,all S05 gates remain open",
+      "unit_policy": "17 VM22 + 14 VM29 tests passed",
+      "authoring": "51 records,74 snapshots,1239 observations; reports independently registered",
+      "docs": "2198 local links,30 anchors,206 Lean roots checked",
+      "book": "mdBook0.5.4;29 HTML,1224 links,471 anchors checked",
+      "constitution": "passed against reviewed38baae7d19535602b21270e11e97617d45205b37; identity/continuity only"
+    }
+  },
+  "initial_failures_preserved": [
+    "Initial new phase test had mismatched format arguments; corrected before execution.",
+    "Classical test expected blanket provider refusal; replaced by native-checked unchanged caller identity and separate leaf Meaning rejection.",
+    "Selected CLI test expected blanket provider refusal; original fixture retained and checked with real native checker and independent deterministic output.",
+    "VM29 private source identity changed, requiring explicit review; no policy or proof gate waived."
+  ],
+  "previous_all_target_observations": {
+    "latest": {
+      "log_sha256": "731f6918c157272a3b6e13383f600f37b16fc232eb9be01b181e772a4d314984",
+      "completed_target_summaries": 68,
+      "passed": 704,
+      "failed": 1,
+      "ignored": 37,
+      "exit_code": 101,
+      "scope": "Started on base worktree before this extension; concurrent edits and later target compilation mean no exact-current-head full-run claim. Latest ended at the stale selected-CLI expectation; targeted repaired rerun passes."
+    },
+    "msrv": {
+      "log_sha256": "136d3db5d7d2c72ce7f6e454731c350c8a105eccff71a0a78a96d2e4976200b4",
+      "completed_target_summaries": 101,
+      "passed": 916,
+      "failed": 0,
+      "ignored": 52,
+      "exit_code": 0,
+      "scope": "Started on base worktree before this extension; concurrent edits and later target compilation mean no exact-current-head full-run claim. Latest ended at the stale selected-CLI expectation; targeted repaired rerun passes."
+    }
+  },
+  "pending": [
+    "No new full all-target exact-commit pass or Lean replay claimed for this component.",
+    "General inverse/control finite adapter support, other provider constructors and broader #44/#32 remain unfinished.",
+    "GitHub exact-base CI still has a failed macOS elan download step; failure is not counted as success."
+  ],
+  "progress": {
+    "completed": 22,
+    "total": 111,
+    "percent": 19.82
+  },
+  "base_ci": {
+    "conclusion": "",
+    "headSha": "dbe3c1e719b598ea66ff617dd3b6d2b166b221f6",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "changes",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "check-macos-source",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-lean",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-interop",
+        "status": "completed"
+      },
+      {
+        "conclusion": "",
+        "name": "check-distribution",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-lean-kernel",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-rust",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-rust-msrv",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-docs",
+        "status": "completed"
+      }
+    ],
+    "status": "in_progress"
+  },
+  "base_ci_failure": {
+    "job": 112452722298,
+    "reason": "HTTP500 downloading elan-aarch64-apple-darwin.tar.gz; exit1",
+    "log_sha256": "2cd73ac304e122272b04bf322ea884adc91fd237f80b728aaf3a0b1be9dd7c40"
+  }
+}

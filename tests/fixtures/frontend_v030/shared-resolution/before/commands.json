@@ -1,0 +1,432 @@
+[
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "build.stdout",
+    "stderr": "build.stderr"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/observer.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-resolution-before/observer"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "observer-build.stdout",
+    "stderr": "observer-build.stderr"
+  },
+  {
+    "label": "declaration-call-cycle",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/declaration-call-cycle",
+      "check"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "declaration-call-cycle.stdout",
+    "stderr": "declaration-call-cycle.stderr"
+  },
+  {
+    "label": "duplicate-declarations",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/duplicate-declarations"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "duplicate-declarations.stdout",
+    "stderr": "duplicate-declarations.stderr"
+  },
+  {
+    "label": "moved-local-shadows-import",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import",
+      "check"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "moved-local-shadows-import.stdout",
+    "stderr": "moved-local-shadows-import.stderr"
+  },
+  {
+    "label": "private-unused-import",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/private-unused-import"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "private-unused-import.stdout",
+    "stderr": "private-unused-import.stderr"
+  },
+  {
+    "label": "reserved-module",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/reserved-module"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "reserved-module.stdout",
+    "stderr": "reserved-module.stderr"
+  },
+  {
+    "label": "same-module-two-declarations",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/same-module-two-declarations",
+      "check"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "same-module-two-declarations.stdout",
+    "stderr": "same-module-two-declarations.stderr"
+  },
+  {
+    "label": "self-import-private",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-private"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "self-import-private.stdout",
+    "stderr": "self-import-private.stderr"
+  },
+  {
+    "label": "self-import-public",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-public"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "self-import-public.stdout",
+    "stderr": "self-import-public.stderr"
+  },
+  {
+    "label": "underscore-module",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/underscore-module"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "underscore-module.stdout",
+    "stderr": "underscore-module.stderr"
+  },
+  {
+    "label": "unused-import-cycle",
+    "argv": [
+      "/private/tmp/qleisli-resolution-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/unused-import-cycle"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "unused-import-cycle.stdout",
+    "stderr": "unused-import-cycle.stderr"
+  },
+  {
+    "label": "provider-h-proposal",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--output=/private/tmp/qleisli-resolution-before/provider-h.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-proposal.stdout",
+    "stderr": "provider-h-proposal.stderr"
+  },
+  {
+    "label": "provider-h-native-check",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-native-check.stdout",
+    "stderr": "provider-h-native-check.stderr"
+  },
+  {
+    "label": "provider-h-native-run",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-native-run.stdout",
+    "stderr": "provider-h-native-run.stderr"
+  },
+  {
+    "label": "provider-x-proposal",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--output=/private/tmp/qleisli-resolution-before/provider-x.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-proposal.stdout",
+    "stderr": "provider-x-proposal.stderr"
+  },
+  {
+    "label": "provider-x-native-check",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-native-check.stdout",
+    "stderr": "provider-x-native-check.stderr"
+  },
+  {
+    "label": "provider-x-native-run",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-native-run.stdout",
+    "stderr": "provider-x-native-run.stderr"
+  },
+  {
+    "label": "cross-module-proposal",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=dep=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/dep.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/main.qli",
+      "--output=/private/tmp/qleisli-resolution-before/cross-module.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "cross-module-proposal.stdout",
+    "stderr": "cross-module-proposal.stderr"
+  },
+  {
+    "label": "cross-module-native-check",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=dep=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/dep.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/main.qli",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "cross-module-native-check.stdout",
+    "stderr": "cross-module-native-check.stderr"
+  },
+  {
+    "label": "cross-module-native-run",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=dep=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/dep.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/cross-module/main.qli",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "cross-module-native-run.stdout",
+    "stderr": "cross-module-native-run.stderr"
+  },
+  {
+    "label": "recursive-zero-proposal",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=0",
+      "--output=/private/tmp/qleisli-resolution-before/recursive-zero.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-zero-proposal.stdout",
+    "stderr": "recursive-zero-proposal.stderr"
+  },
+  {
+    "label": "recursive-zero-native-check",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=0",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-zero-native-check.stdout",
+    "stderr": "recursive-zero-native-check.stderr"
+  },
+  {
+    "label": "recursive-zero-native-run",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=0",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-zero-native-run.stdout",
+    "stderr": "recursive-zero-native-run.stderr"
+  },
+  {
+    "label": "recursive-two-proposal",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=2",
+      "--output=/private/tmp/qleisli-resolution-before/recursive-two.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-two-proposal.stdout",
+    "stderr": "recursive-two-proposal.stderr"
+  },
+  {
+    "label": "recursive-two-native-check",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=2",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-two-native-check.stdout",
+    "stderr": "recursive-two-native-check.stderr"
+  },
+  {
+    "label": "recursive-two-native-run",
+    "argv": [
+      "/private/tmp/qleisli-resolution-baseline-6daea68/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/sources/recursive/main.qli",
+      "--nat=n=2",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/private/tmp/qleisli-resolution-baseline-6daea68",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "recursive-two-native-run.stdout",
+    "stderr": "recursive-two-native-run.stderr"
+  }
+]

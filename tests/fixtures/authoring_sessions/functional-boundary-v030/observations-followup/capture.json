@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.informed-public-source-followup-capture",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:47:44.885207+00:00",
+  "actual_observations": [
+    "observations-followup/attempt-01-complete-call-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-partial-call-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-quantum-unit-tuple-callee-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-quantum-unit-tuple-provider-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-static-description-reuse-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-owner-duplication-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-classical-condition-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-quantum-condition-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-explicit-observation-sized-adapter-check-json.json",
+    "observations-followup/attempt-01-partial-call-sized-adapter-check-text.json",
+    "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-text.json",
+    "observations-followup/attempt-02-static-description-reuse-finite-check-json.json",
+    "observations-followup/attempt-02-static-description-reuse-sized-adapter-check-json.json",
+    "observations-followup/attempt-02-static-description-reuse-finite-run-json.json",
+    "observations-followup/attempt-02-owner-duplication-finite-check-json.json",
+    "observations-followup/attempt-02-owner-duplication-sized-adapter-check-json.json"
+  ],
+  "followup_before_sha256": "2d867d75b95048d2ecabecf715f75f513e90603cb2d65a1194e60d266a9f41b5",
+  "first_inventory_sha256": "edcf5f9e25c7e391a4bf2d69c42137dc31afafca8c3d430ac4e482b7fecf59bc",
+  "observer_sha256": "a36773aedb5ba60fd1c6ff8de4834e903f0567ce2d82fe8b5453b69faea4b15a",
+  "scope": "Append-only real follow-up; first sources/results unchanged."
+}

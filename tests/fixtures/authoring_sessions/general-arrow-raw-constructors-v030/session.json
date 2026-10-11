@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Raw ordered operation constructors and original Meaning descendant checking under #83/#46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "deddc83b6fa24f57856f6f25027d9c455070401a",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve complete desired programs and deliberately wrong axis/refinement controls before Raw changes.",
+      "sha256": {
+        "sequence.qli": "f81c71fc4df3762399e10f10e5ab5071ee52fcce15923d4eab2ecd7dc65d6853",
+        "adjoint.qli": "09b664c012a4882de4e5f0382e0384a7344ca6233f087f5bb1574936b05eafbc",
+        "zero-bad-child.qli": "4f71240281a6a1c80bf15349f67672bbcecc65e1455e5f860e258aa95e559c5c",
+        "tensor.qli": "1af783591096721d5ec1f30ba09c2f7c6ee628aaa50208eda3fb55fe5ef8a46b",
+        "wrong-tensor.qli": "85d3ad3cf54ee1c047f9296e798eac8a9ca86f88e52dde41b066452e0c0103dc"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/sequence-before.json",
+        "observations/adjoint-before.json",
+        "observations/zero-bad-child-before.json",
+        "observations/tensor-before.json",
+        "observations/wrong-tensor-before.json",
+        "observations/sequence-after.json",
+        "observations/adjoint-after.json",
+        "observations/zero-bad-child-after.json",
+        "observations/sequence-raw-interval-before.json",
+        "observations/sequence-raw-interval-after.json",
+        "observations/adjoint-raw-interval-before.json",
+        "observations/adjoint-raw-interval-after.json",
+        "observations/zero-bad-child-raw-interval-before.json",
+        "observations/zero-bad-child-raw-interval-after.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Repair the observer-authored classical oracle to the supported parameter pattern/expression-only body. The two original parse failures remain untouched and do not count as tensor evidence.",
+      "sha256": {
+        "tensor.qli": "a3be4431f7d10a86999af60a1652d4655ab3e1fce99c46de2a628f770ce1f604",
+        "wrong-tensor.qli": "0163d2d8993608bbd69bee98f0d8171d5459faf160aba5ab1ce3cd36061bc7c4"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/tensor-repaired-before.json",
+        "observations/wrong-tensor-repaired-before.json",
+        "observations/tensor-after.json",
+        "observations/wrong-tensor-after.json",
+        "observations/tensor-raw-interval-before.json",
+        "observations/tensor-raw-interval-after.json",
+        "observations/wrong-tensor-raw-interval-before.json",
+        "observations/wrong-tensor-raw-interval-after.json"
+      ]
+    }
+  ]
+}

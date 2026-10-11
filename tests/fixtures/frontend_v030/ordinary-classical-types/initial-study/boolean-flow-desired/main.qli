@@ -1,0 +1,1 @@
+pub unitary fn main(a: Bit,b: Bit) -> Bit { if not a and b { 1 } else { 0 } }

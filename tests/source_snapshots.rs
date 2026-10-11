@@ -2,7 +2,7 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli::contract::{ContractError, FunctionEvidence, FunctionIdentity};
+use qleisli::contract::{BasisType, ContractError, FunctionEvidence, FunctionIdentity};
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
@@ -11,13 +11,13 @@ use std::sync::Arc;
 fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {
     let mut source = String::from(
         "use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
-         unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+         unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
          unitary fn specified(q:Q<Bit>)->Q<Bit>{x(q)}\n",
     );
     for index in 0..count {
         source.push_str(&format!("unitary fn p{index}(q:Q<Bit>)->Q<Bit>{{x(q)}}\n"));
     }
-    source.push_str("observe fn main()->CBit{let q=init0();\n");
+    source.push_str("observe fn main()->Bit{let q=init0();\n");
     for index in 0..count {
         source.push_str(&format!("let q={};\n", calls(index)));
     }
@@ -117,16 +117,16 @@ fn distinct_contract_pairs_and_static_providers_share_one_project_snapshot() {
 #[test]
 fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
     for call in [
-        "apply[bind_op(implementation,Flip)](q)",
+        "apply[checked_op(implementation,Flip)](q)",
         "apply_contract(implementation,specified,q)",
     ] {
         let root = SourceRoot::new(&format!(
             "use dep::implementation; use std::quantum::init0; use std::quantum::x;
              use std::observe::measure_z;
-             basis fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
+             classical fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
              unitary fn specified(q:Q<Bit>)->Q<Bit>{{x(q)}}
-             unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
-             observe fn main()->CBit{{let q=init0(); let q={call}; measure_z(q)}}"
+             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
+             observe fn main()->Bit{{let q=init0(); let q={call}; measure_z(q)}}"
         ));
         root.write(
             "dep.qli",
@@ -140,7 +140,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         let receipt = Arc::clone(receipts(&program.program().operations)[0]);
         let identity: FunctionIdentity = receipt.identity().clone();
         receipt
-            .check_binding(&identity, receipt.implementation(), receipt.specification())
+            .check_binding(
+                &BasisType::Bit,
+                &identity,
+                receipt.implementation(),
+                receipt.specification(),
+            )
             .unwrap();
         for mutation in 0..5 {
             let mut changed = identity.clone();
@@ -160,7 +165,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
                 }
             }
             assert_eq!(
-                receipt.check_binding(&changed, receipt.implementation(), receipt.specification()),
+                receipt.check_binding(
+                    &BasisType::Bit,
+                    &changed,
+                    receipt.implementation(),
+                    receipt.specification()
+                ),
                 Err(ContractError::EvidenceMismatch)
             );
         }
@@ -169,7 +179,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         drop(root);
         // Neither recompilation nor removal mutates the owned, frozen receipt.
         receipt
-            .check_binding(&identity, receipt.implementation(), receipt.specification())
+            .check_binding(
+                &BasisType::Bit,
+                &identity,
+                receipt.implementation(),
+                receipt.specification(),
+            )
             .unwrap();
         assert_eq!(
             run_closed(&program, SimulationLimits::default()).unwrap()[&vec![true]],

@@ -3,7 +3,7 @@
 
 Only build products are shared within a CI invocation, never test results.
 Standalone comparisons build their dependency before compiling their driver.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import hashlib
 import json

@@ -1,0 +1,40 @@
+{
+  "format": "qleisli.human-ratification",
+  "version": 1,
+  "edition": "2026",
+  "effective_date": "2026-10-04",
+  "effective_timezone": "Asia/Tokyo",
+  "adopter": {
+    "name": "Masahiko G. Yamada",
+    "capacity": "natural-human project maintainer"
+  },
+  "constitution": {
+    "path": "CONSTITUTION.md",
+    "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b"
+  },
+  "governance_adoption": {
+    "reviewed_path": "GOVERNANCE.md",
+    "snapshot_path": "tests/fixtures/constitution_v030/governance-candidate.txt",
+    "sha256": "60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721"
+  },
+  "guardian_appointment": {
+    "office": "Constitution Guardian Office",
+    "holder": "Masahiko G. Yamada",
+    "form": "sole natural-human holder"
+  },
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "question_item_id": "[\"request_user_input_async\",\"call_7QwmVZXlqDbIEw89yOQWdVKK\",0]",
+    "question": "批准パケットが完成しました。[憲法候補](/Users/masa/git/Qleisli/CONSTITUTION.md)（SHA-256: 40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b）をedition 2026の憲法として批准し、[GOVERNANCE候補](/Users/masa/git/Qleisli/GOVERNANCE.md)（SHA-256: 60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721）を採択してMasahiko G. Yamada氏を初代Guardianに任命しますか？ 効力発生日は2026年10月4日（Asia/Tokyo）です。これは、あなたの計画で指定された「完成した具体物を人間が批准する」ための確認です。",
+    "answer": "両候補を批准・採択し、初代Guardianに任命する",
+    "first_clock_observation_after_reply_utc": "2026-10-04T08:27:25Z",
+    "timestamp_note": "The observation is not the timestamp of the human message; the message supplied no timestamp."
+  },
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The direct human answer is the adopting act; the assistant only transcribes it.",
+    "authentication_limit": "This checked-in transcript is reviewable provenance, not a cryptographic signature or independent authentication of the human identity."
+  },
+  "scope": "Ratification of the identified constitutional text, adoption of the identified governance candidate, and the stated initial appointment only. No binding QS/PR/RS interpretation, discharge, release approval or publication is implied."
+}

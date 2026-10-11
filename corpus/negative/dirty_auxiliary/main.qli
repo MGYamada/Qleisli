@@ -5,7 +5,7 @@ use std::quantum::init0;
 use std::quantum::x;
 use std::observe::measure_z;
 basis fn identity(a: Bit) -> Bit { a }
-observe fn main() -> CBit {
+observe fn main() -> Bit {
     let q = with_computed(init0(),identity) { |flag| x(flag) };
     measure_z(q)
 }

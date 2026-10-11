@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Function
 
 /-! Unproved, bounded VM-25 raw-component transport. RawProgram fields retain
 QIRF spellings; this envelope is experimental, not the complete QIRF decoder.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Raw
 open Lean QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite
 
@@ -89,6 +89,12 @@ private def usage (value : Json) : Except String Use := do
 
 def operation (value : Json) : Except String Op := do
   match ← text value "tag" with
+  | "pack_unit" =>
+    fields value ["tag","output"]
+    return .packUnit (← n value "output")
+  | "unpack_unit" =>
+    fields value ["tag","input"]
+    return .unpackUnit (← n value "input")
   | "init0" =>
     fields value ["tag","output","wire"]
     return .init0 (← n value "output") (← n value "wire")

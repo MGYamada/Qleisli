@@ -1,0 +1,11 @@
+
+running 1 test
+test sized_unit_patterns_consume_only_actual_unit_values ... FAILED
+
+failures:
+
+failures:
+    sized_unit_patterns_consume_only_actual_unit_values
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+

@@ -1,0 +1,1 @@
+main:7..9: parse: unsupported whitespace; use ASCII space, tab, LF, or CRLF

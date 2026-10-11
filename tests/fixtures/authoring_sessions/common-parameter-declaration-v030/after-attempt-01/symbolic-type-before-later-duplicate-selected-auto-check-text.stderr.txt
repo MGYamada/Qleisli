@@ -1,0 +1,1 @@
+main:172..177: size: subtraction lacks a nonnegative guard

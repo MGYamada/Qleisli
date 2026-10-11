@@ -1,0 +1,274 @@
+//! Independently specified empty-readout equations and original-source mutants.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use super::*;
+use crate::contract::exact::{Exact, Matrix};
+use crate::frontend::sized::ParsedProgram;
+use crate::interchange::{finite_matrix, hierarchical};
+use std::path::Path;
+
+fn source(name: &str) -> String {
+    std::fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01")
+            .join(name)
+            .join("main.qli"),
+    )
+    .unwrap()
+}
+fn lower(text: &str) -> HierarchyProposal {
+    ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+        .unwrap()
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap()
+}
+fn kernel() -> hierarchical::Kernel {
+    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+}
+fn limits() -> hierarchical::execution::ExecutionLimits {
+    hierarchical::execution::ExecutionLimits {
+        max_amplitudes: 32,
+        max_steps: 20_000,
+    }
+}
+
+// The expected matrix is authored from the stated equation, independently of
+// source lowering, native acceptance and the producer's comparison request.
+fn equation(bits: usize, phase: u8, copy_low_bit: bool) -> Matrix {
+    let n = 1usize << bits;
+    let mut entries = vec![Exact::ZERO; n * n];
+    for column in 0..n {
+        let row = if copy_low_bit && column & 1 == 1 {
+            column ^ 2
+        } else {
+            column
+        };
+        entries[row * n + column] = Exact::phase(phase);
+    }
+    Matrix::new(n, n, entries).unwrap()
+}
+
+fn request(proposal: &HierarchyProposal, matrix: &Matrix) -> Vec<u8> {
+    // Borrow only actual transport labels/interfaces, not any claimed meaning
+    // or coefficient. The fixed expected equation above is the semantic oracle.
+    let actual = json::parse(proposal.payload()).unwrap();
+    let graph = actual.field("circuit").unwrap();
+    let index = graph
+        .field("entry")
+        .unwrap()
+        .field("implementation")
+        .unwrap()
+        .number()
+        .unwrap() as usize;
+    let interface = graph.field("definitions").unwrap().array().unwrap()[index]
+        .field("interface")
+        .unwrap()
+        .clone();
+    let meaning = Value::object([
+        ("interface", interface.clone()),
+        (
+            "body",
+            Value::object([
+                ("tag", Value::String("finite".into())),
+                (
+                    "description",
+                    Value::String(
+                        String::from_utf8(finite_matrix::encode(matrix).unwrap()).unwrap(),
+                    ),
+                ),
+            ]),
+        ),
+    ]);
+    let circuit = Value::object([
+        ("format", Value::String("qleisli.hierarchy-request".into())),
+        ("version", Value::Number(1)),
+        ("profile", Value::String("qpe-dyadic8-v1".into())),
+        ("kind", Value::String("equation".into())),
+        ("effect", Value::String("unitary".into())),
+        ("interface", interface.clone()),
+        ("meanings", Value::Array(vec![meaning])),
+        ("entry", Value::Number(0)),
+    ]);
+    let preparation = actual.field("preparation").unwrap();
+    let initial = preparation
+        .field("initializations")
+        .unwrap()
+        .array()
+        .unwrap()[0]
+        .field("interface")
+        .unwrap()
+        .field("inputs")
+        .unwrap()
+        .clone();
+    let initial_owners: BTreeSet<_> = initial
+        .field("quantum")
+        .unwrap()
+        .array()
+        .unwrap()
+        .iter()
+        .map(|p| p.field("owner").unwrap().number().unwrap())
+        .collect();
+    let fresh: Vec<_> = preparation
+        .field("outputs")
+        .unwrap()
+        .field("quantum")
+        .unwrap()
+        .array()
+        .unwrap()
+        .iter()
+        .filter(|p| !initial_owners.contains(&p.field("owner").unwrap().number().unwrap()))
+        .cloned()
+        .collect();
+    assert_eq!(
+        fresh.len(),
+        1,
+        "these independently specified cases prepare one zero bit"
+    );
+    let outputs = actual
+        .field("readout")
+        .unwrap()
+        .field("outputs")
+        .unwrap()
+        .clone();
+    let classical = outputs.field("classical").unwrap().array().unwrap();
+    assert_eq!(classical.len(), 1);
+    assert_eq!(
+        classical[0].field("basis").unwrap().array().unwrap()[0]
+            .field("width")
+            .unwrap()
+            .number()
+            .unwrap(),
+        0
+    );
+    let result = classical[0].field("value").unwrap().clone();
+    json::encode(&Value::object([
+        ("format", Value::String("qleisli.instrument-request".into())),
+        ("version", Value::Number(1)),
+        (
+            "profile",
+            Value::String("initialize-unitary-readout-v1".into()),
+        ),
+        (
+            "preparation",
+            Value::object([("inputs", initial), ("fresh", Value::Array(fresh))]),
+        ),
+        ("circuit", circuit),
+        (
+            "readout",
+            Value::object([
+                ("inputs", interface.field("outputs").unwrap().clone()),
+                ("owners", Value::Array(vec![])),
+                ("result", result),
+            ]),
+        ),
+        ("outputs", outputs),
+    ]))
+    .unwrap()
+}
+
+#[test]
+fn isometry_roots_match_independently_authored_exact_matrix_requests() {
+    for (name, bits, phase, copy) in [
+        ("closed-zero", 1, 0, false),
+        ("unit-zero", 1, 0, false),
+        ("unit-phase", 1, 1, false),
+        ("fresh-unit-phase", 1, 1, false),
+        ("caller-frame", 2, 0, true),
+        ("helper-phase", 2, 1, false),
+        ("retained-unit", 1, 0, false),
+        ("empty-classical", 1, 0, false),
+    ] {
+        let proposal = lower(&source(name));
+        assert_eq!(
+            proposal.source.definitions()[proposal.source.root()].effect(),
+            "iso"
+        );
+        let expected = request(&proposal, &equation(bits, phase, copy));
+        let checked = kernel()
+            .check_instrument_native(proposal.payload(), &expected)
+            .unwrap_or_else(|e| panic!("{name}: {e}"));
+        proposal
+            .validate_initialization_moves_native(&checked)
+            .unwrap();
+        let wrong = request(&proposal, &equation(bits, (phase + 1) % 8, copy));
+        assert!(
+            kernel()
+                .check_instrument_native(proposal.payload(), &wrong)
+                .is_err(),
+            "{name}: wrong exact phase accepted"
+        );
+    }
+}
+
+fn close(actual: &[[f64; 2]], expected: &[[f64; 2]]) {
+    assert_eq!(actual.len(), expected.len());
+    for (a, b) in actual.iter().flatten().zip(expected.iter().flatten()) {
+        assert!(
+            (a - b).abs() < 1e-12,
+            "actual {actual:?}, expected {expected:?}"
+        );
+    }
+}
+fn phase([a, b]: [f64; 2]) -> [f64; 2] {
+    let s = std::f64::consts::FRAC_1_SQRT_2;
+    [s * (a - b), s * (a + b)]
+}
+
+#[test]
+fn isometry_empty_branch_preserves_complex_phase_and_external_reference() {
+    for (name, omega) in [
+        ("unit-zero", false),
+        ("unit-phase", true),
+        ("fresh-unit-phase", true),
+        ("retained-unit", false),
+    ] {
+        let proposal = lower(&source(name));
+        let input = [[0.2, 0.3], [-0.6, 0.4]];
+        let checked = kernel()
+            .check_instrument_native(
+                proposal.payload(),
+                &request(&proposal, &equation(1, u8::from(omega), false)),
+            )
+            .unwrap();
+        let output = checked.execute_instrument(&input, 2, limits()).unwrap();
+        assert_eq!(output.measured_bits, 0);
+        assert_eq!(output.branches.len(), 1);
+        assert_eq!(output.residual_quantum_bits, 1);
+        let a = if omega { phase(input[0]) } else { input[0] };
+        let b = if omega { phase(input[1]) } else { input[1] };
+        close(&output.branches[0], &[a, [0.0; 2], b, [0.0; 2]]);
+    }
+}
+
+#[test]
+fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
+    // Reference varies slowest. These are arbitrary unnormalized coefficients,
+    // so neither independence of owners nor a sampled probability is assumed.
+    let input = [[0.2, 0.3], [-0.4, 0.1], [0.6, -0.2], [-0.1, 0.7]];
+    for (name, omega, copy) in [("helper-phase", true, false), ("caller-frame", false, true)] {
+        let proposal = lower(&source(name));
+        let checked = kernel()
+            .check_instrument_native(
+                proposal.payload(),
+                &request(&proposal, &equation(2, u8::from(omega), copy)),
+            )
+            .unwrap();
+        let output = checked.execute_instrument(&input, 2, limits()).unwrap();
+        let mut expected = vec![[0.0; 2]; 8];
+        for reference in 0..2 {
+            for bit in 0..2 {
+                let coefficient = input[reference * 2 + bit];
+                let row = if copy { bit * 3 } else { bit };
+                expected[reference * 4 + row] = if omega {
+                    phase(coefficient)
+                } else {
+                    coefficient
+                };
+            }
+        }
+        close(&output.branches[0], &expected);
+    }
+}

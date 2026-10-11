@@ -1,6 +1,6 @@
 //! Native QFT hierarchy authoring probe. Numerical oracles live in Python and
 //! are never passed to the acceptance API as evidence.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use qleisli::interchange::hierarchical::Kernel;
 
 #[test]

@@ -1,0 +1,11 @@
+--- a/src/frontend/sized/elaborate.rs
++++ b/src/frontend/sized/elaborate.rs
+@@ -1166,7 +1166,7 @@
+                             natural(n, &scope.naturals)
+                         })
+                         .collect::<Result<Vec<_>>>()?;
+-                    let values = inputs
++                    let values: Vec<SourceValue> = inputs
+                         .iter()
+                         .map(|e| self.expr(e, scope, frame, depth))
+                         .collect::<Result<_>>()?;

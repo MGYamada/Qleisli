@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.14s
+     Running tests/basis_polymorphism.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/basis_polymorphism-d3264dc25d22546b)
+     Running tests/sized_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_source-757a219cd8492aaa)

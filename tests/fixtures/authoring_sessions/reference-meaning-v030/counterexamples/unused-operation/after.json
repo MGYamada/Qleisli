@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/private/tmp/qleisli-unused-operation-contract-first",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"function semantic contract: exact equation U E_in = E_out u does not hold; input column 0, output row 0 (zero-based): actual 1, expected (1/2^1)*sqrt(2)\",\"primary\":{\"path\":\"main.qli\",\"start\":251,\"end\":287,\"line\":5,\"column\":13},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "cli_sha256_before": "dd972871a7d816b93108984a312e6af33757a710bb561008292cb5eb3fa0746b",
+  "cli_sha256_after": "dd972871a7d816b93108984a312e6af33757a710bb561008292cb5eb3fa0746b",
+  "source_sha256": "105272fd5de65e136f01f0e1c5182ae8f6e5b1efef103061069f720737544c18",
+  "recorded_utc": "2026-10-11T00:18:38.861872+00:00"
+}

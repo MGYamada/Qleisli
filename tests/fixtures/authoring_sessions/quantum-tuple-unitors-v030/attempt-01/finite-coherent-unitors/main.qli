@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn f(q:Q<(Unit,Bit)>)->Q<Bit>{do ((),x)<-q;pure x}
+unitary fn inverse(q:Q<Bit>)->Q<(Unit,Bit)>{do x<-q;pure ((),x)}
+unitary fn right(q:Q<(Bit,Unit)>)->Q<Bit>{do (x,())<-q;pure x}
+
+observe fn main()->Unit{()}

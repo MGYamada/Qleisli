@@ -5,7 +5,7 @@ import QleisliKernel.Hierarchical.Readout
 /-! Fresh named-QPE boundary composition, retaining every finite obligation.
 Complete target order, zero preparation, output reversal and classical outcome
 order are checked explicitly. No external schema or semantic seal is enabled.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Hierarchical.QpeInstrument
 open Artifact
 

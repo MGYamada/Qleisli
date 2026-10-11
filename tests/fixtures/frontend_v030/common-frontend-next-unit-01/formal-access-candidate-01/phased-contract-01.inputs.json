@@ -1,0 +1,227 @@
+{
+  "format": "qleisli.phased-formals-before-code-inputs",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:23:43.125099+00:00",
+  "status": "non-normative-frozen-before-production-changes",
+  "author": "/root/review_isometry_adapter",
+  "files": [
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 32732,
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703"
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "bytes": 699,
+      "sha256": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52569,
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1"
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "bytes": 12083,
+      "sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6"
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "bytes": 17970,
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/main.qli",
+      "bytes": 204,
+      "sha256": "83a6bcb284c22fd4dd7cd5f6223baa87147153c32c2a1bfe2132286a81a9d806"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/main.qli",
+      "bytes": 189,
+      "sha256": "8123bb2740ec219abfc5962992f82799c5f3288cf5d69ff4fdf86edbd1a5ae92"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/main.qli",
+      "bytes": 200,
+      "sha256": "463ea4bcc07e3ddcc8323c2993a35fd409d3305b9dd24f3e0df19becca5ee5cc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/main.qli",
+      "bytes": 216,
+      "sha256": "50407680955bcfdb616dc472596729e66590fe383a973f7ebb21918e055e6380"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/main.qli",
+      "bytes": 200,
+      "sha256": "a8fefad1fb6b12b36ca64f242e44465f25ee865a56cb7a87ca221e85a20694d5"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli",
+      "bytes": 196,
+      "sha256": "d3ab8356c010d97b042ce0d59d2ddb9b664c3ed0c8aecd29868fd0b9aebe7dff"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/main.qli",
+      "bytes": 166,
+      "sha256": "6c1a62d498f39be483c6d4dab793b273120b98e80712ec87c2a06f540cf63d31"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli",
+      "bytes": 216,
+      "sha256": "453b0dc9265f89d991ceeec7cf6ce0bd8c9d041d6286b8222fcfa7bea24a4ae0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-finite-check-json.json",
+      "bytes": 2386,
+      "sha256": "79670684023a39a90b04ec04b7e5d51a056499afd6d557f3051b95994f5fb319"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/basis-scan-priority-selected-auto-check-json.json",
+      "bytes": 2679,
+      "sha256": "f45be29aeb1f2aed23cd780967568ca1b0e58268c1e774bb39abe4418708ee7e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-finite-check-json.json",
+      "bytes": 2324,
+      "sha256": "427d734493dc653a28e3ddceba159fa676c0320ca61536bc684e193d06874a7c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/duplicate-access-selected-auto-check-json.json",
+      "bytes": 2636,
+      "sha256": "185059f311472048a1be01e5a16bf2eff93e22689ac1e7290a4340e097d90990"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-finite-check-json.json",
+      "bytes": 2374,
+      "sha256": "e4593148e08d1e3e6512d6a26b1a76e921c818ea869e831909101bf0b7d0ca69"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-basis-selected-auto-check-json.json",
+      "bytes": 2643,
+      "sha256": "fd17a3dde0e96e6c366439fafdad7cffbb6967085b6377b254e720fdfd3166c6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-finite-check-json.json",
+      "bytes": 2376,
+      "sha256": "d78417dad02317ad9ec71c8b936616d7739dce11ed86cb22679f3047815765c8"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/forward-natural-selected-auto-check-json.json",
+      "bytes": 2597,
+      "sha256": "0157fdba93a560a159bcaf6d089e9433c518808aea1a0264d82c82802acc8dcd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-finite-check-json.json",
+      "bytes": 2374,
+      "sha256": "55f00b2719b5f112df6c9877479f38f1c5413ad78b82d9f825e1e393ade7f144"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/natural-priority-selected-auto-check-json.json",
+      "bytes": 2667,
+      "sha256": "b8d485151e6c01e067b90f05288e2513d3d29b2a3b90c8a6f80031c5a71788a1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-finite-check-json.json",
+      "bytes": 2348,
+      "sha256": "377fd6a0044835a3fe30efe9fa18643b642e0aad67ba15ae3de881ab86a3ef64"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/static-runtime-collision-selected-auto-check-json.json",
+      "bytes": 2719,
+      "sha256": "500c5d548f5041ab78a21d1d5d227e991ab45683f700fd3c2951930a4218fd23"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/summary.json",
+      "bytes": 10082,
+      "sha256": "c5faa44191e9041148681b60d9f24de4d0fc982875f54c8d1d9076ef8c5dfcc2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-finite-check-json.json",
+      "bytes": 2383,
+      "sha256": "c697b8b3435cc1a0b1e3d9c5988e52d9192e27f07e6007a11456d037f6f12f7f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/unused-missing-access-selected-auto-check-json.json",
+      "bytes": 2649,
+      "sha256": "717949d26cdac8596c3ce737ae4648d37d4857a6980df67a7a26fd1856aa9899"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-finite-check-json.json",
+      "bytes": 2382,
+      "sha256": "23791abde323d0f67fd59a6287608ce52a0911fdada2e95a227da43198b8308a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/wrong-kind-access-selected-auto-check-json.json",
+      "bytes": 2665,
+      "sha256": "6d460291dd761ea160c0653ce16eefcc38ea8c65bc27915c9836330bdfe604cc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/commands-before.json",
+      "bytes": 24210,
+      "sha256": "3887d877f89a35aac37b6a961d40610660efb7a36f52c26febf62033d22455e9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/first-files.json",
+      "bytes": 12186,
+      "sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/identity-prepared.json",
+      "bytes": 39624,
+      "sha256": "503f2a06aa507edfd83c056afea9f84b39598a01d72cec99b88e3fe6174ae28f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/candidate.md",
+      "bytes": 9384,
+      "sha256": "da6bacfbc13fbaa4a7a80ab93afb52a9c1be7d223e1e3ad7b507ff171b0eeb02"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/inputs.json",
+      "bytes": 8372,
+      "sha256": "7eb1010c1a868382c4149db887950bf38d151bc123a9aa2673dd72ee3c63f658"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.md",
+      "bytes": 9623,
+      "sha256": "1f113b273841607d62ca9107f1919f825f7ea95a4576721b023f487e932e6d09"
+    }
+  ],
+  "scope": "Exact contract/source/selected actual observation file hashes. Raw observations were produced by root, not this author. No production change, collector/native/CLI/test/build execution, Git/GitHub action or new authority adoption by this author.",
+  "observation_read_scope": "Summary and selected actual JSON/source byte slices; not an independent all40 raw-output audit.",
+  "retained_draft_correction": "Sized access spans are actual access-keyword spans, correcting older whole-constraint prose additively.",
+  "excluded": [
+    "this map itself",
+    "unread raw native/CLI transcript files",
+    "future implementation/build/replay/review records"
+  ]
+}

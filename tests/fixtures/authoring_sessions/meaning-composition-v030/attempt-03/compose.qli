@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{h,init0,x,z,join,split};
+use std::observe::measure_z;
+classical fn flip(b:Bit)->Bit{not b}
+classical fn phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+meaning X:Bit=permutation_by(flip);
+meaning Z:Bit=phase_by(phase);
+meaning M:Bit=compose(Z,X);
+unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(z(q))}
+fn invoke[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+pub unitary fn main(q:Q<Bit>)->Q<Bit>{invoke[checked_op(implementation,M)](q)}

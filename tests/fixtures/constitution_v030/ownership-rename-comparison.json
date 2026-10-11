@@ -1,0 +1,77 @@
+{
+  "purpose": "Ownership-only declaration rename; no proof term or executable token changes after inverse identifier mapping and comment removal",
+  "inverse_identifier_mapping": {
+    "OwnershipSafe": "ResourceSafe",
+    "ownershipSafe": "resourceSafe"
+  },
+  "files": [
+    {
+      "path": "lean/Qleisli/QirfValidity.lean",
+      "before_sha256": "9813f7f221321b2515c693d4c2f76e46af9115604556f74a6822c6215d56c409",
+      "after_sha256": "e9441e818afb7395e3614fcc542b9d24e9bb050287d3c540ea65bd33d1883b8d",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "2a09d7aa181d738f3f4ad44afa00fe10dca0e16bee8670f8ade0786fc61b1133"
+    },
+    {
+      "path": "lean/Qleisli/NativeValidity.lean",
+      "before_sha256": "42bc339072dc89df5b0f6fd08b458153da5b492ba01d12fd22a27ea3405881e5",
+      "after_sha256": "f71992f9e9521def99a20bda9b44b1a94aeadc00fd3b9d27eb417a238957f664",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "3085e9fccc33e369662911eeeb966dd22fe7fa01e89ed84219042d8e3c6c288e"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "before_sha256": "68d38c8638a18a64a14ac2d17ba7f93b891d70d7578eff40218b28bda89bc4b0",
+      "after_sha256": "8a03e31224de8dc088dc752752838ba45ad192f469f764906593f4a9596e2edf",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "f526c9d266672530bf53241f8b0832a3be45ea1aa74ccd0ee7d22eea91a0e90c"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
+      "before_sha256": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
+      "after_sha256": "c49d9c96da479356a9c057f5a51b2f7718badbb277ee5f0a9e9175aa7ab00d8b",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "70706da7d52e13d84ebf1c575d9d79fcc40ff0bdaf3f2fc62fa342129ecb69ca"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean",
+      "before_sha256": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+      "after_sha256": "085248847b277fe2c2102781392f1e5d4d2857108681e8314faeccda741c4ef7",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "38aa383e08957eeaecd7d868723d626ee4efaa710b674abb7873705cf1d52834"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
+      "before_sha256": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+      "after_sha256": "6e9bd327859890aeedda0b30ca87d0306c6e45dd71412ecea7772e869ec8e9c6",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "a86254c8eb35061d5fcc72a72afd503c5de5df0cdb7d8d5238bc692eee298041"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean",
+      "before_sha256": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+      "after_sha256": "99aa4295e95e23400927e576d1ac995143b7d5431034cfdf98a431d678fda952",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "8a0e2844ce7f83fe80e95a57efd8e8f65c9602c25393caa75696d4f06ccaf663"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+      "before_sha256": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+      "after_sha256": "ad6db263fa43f9290e0d4d2b0c5a1883b367b14ca260e9717a8c2893a2f37b95",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "e56eb59d83152b26a024c5f74227761b6c9118f2b19d6370b7486184d6b29627"
+    },
+    {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "before_sha256": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+      "after_sha256": "a93b958c7696a618f157c2a71f3188d0f9d0491f66d73d8409aff4aec0ff518b",
+      "code_token_equality_after_inverse_rename": true,
+      "normalized_sha256": "babb7f9f6375f93798d4e35cdfa37abfe5caa9c02e10a5b06bae75ccb0962386"
+    },
+    {
+      "path": "lean-kernel/README.md",
+      "before_sha256": "8f660602c3213024e464220207d61aae7afa8b6df87c60a36d50c3b1dd467c38",
+      "after_sha256": "8d0828d5b9b9b7c7e3317d3c0527ff0c3b1946f38d0d20349871a65d0cd7969e"
+    }
+  ]
+}

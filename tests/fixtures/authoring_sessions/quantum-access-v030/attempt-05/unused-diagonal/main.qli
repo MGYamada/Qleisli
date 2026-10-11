@@ -1,0 +1,3 @@
+use std::quantum::z;
+unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}
+pub observe fn main()->Bit{0}

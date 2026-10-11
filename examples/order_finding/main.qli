@@ -4,7 +4,7 @@ use std::quantum::x;
 use std::quantum::join;
 use std::observe::discard;
 
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let one = join(join(x(init0()), init0()), join(init0(), init0()));
     let (phase, target) = phase3(one);
     discard(target);

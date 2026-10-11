@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:17:46.875589+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.003974791034124792,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "static-runtime-collision-selected-auto-check-text.native.jsonl",
+  "native_count_scope": "Actual forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "static-runtime-collision-selected-auto-check-text.stdout.bin",
+  "stderr_raw": "static-runtime-collision-selected-auto-check-text.stderr.bin",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c92c631acdaef4b1b5f4be541e50364ec95ff921d22ee2b67af9c7ae96418dac",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "main:146..151: access: access requirement names no operation parameter: missing\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact captured raw byte prefixes remain in separate files."
+}

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006522207986563444,
+  "recorded_utc": "2026-10-05T17:12:01.400926+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "static-runtime-collision-selected-auto-check-text.native.jsonl",
+  "stdout_raw": "static-runtime-collision-selected-auto-check-text.stdout.txt",
+  "stderr_raw": "static-runtime-collision-selected-auto-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "5d9469225648f2ed504fa8ae792dbd906ba06a0124b8be85bb9995280bb1092b",
+  "transcript": "main:164..165: name: binding U shadows a static parameter/index or discards a value\n"
+}

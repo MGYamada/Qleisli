@@ -1,0 +1,74 @@
+{
+  "status": "passed",
+  "scope": "The existing complete two-qubit operation source before and after the three-spelling migration; fresh checking and proposed bytes, not a universal source-preservation theorem.",
+  "initial_failure": "before/emit-proposal.stdout.json: output flag omitted; exit 2. First observation retained.",
+  "commands": [
+    {
+      "label": "before",
+      "command": [
+        "/private/tmp/qleisli-operator-retirement-before",
+        "check",
+        "--entry=main::main",
+        "--module=main=/private/tmp/qleisli-operator-migration-comparison/before/main.qli",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "3952457dc0657ad8a33c306fed3b13d7ecf86755b315c5f9e60a5b56bfc180fe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "0144faa73816c622555756545576a6cac0d41a3b262fa6f3ded539ca507ca4a5",
+      "binary_sha256": "2bf467c7b5541c3f3c8fecd3d8c9e4938db9f81dc249304550f21af968297c77"
+    },
+    {
+      "label": "before",
+      "command": [
+        "/private/tmp/qleisli-operator-retirement-before",
+        "emit-proposal",
+        "--entry=main::main",
+        "--module=main=/private/tmp/qleisli-operator-migration-comparison/before/main.qli",
+        "--format=json",
+        "--output=/private/tmp/qleisli-operator-migration-comparison/before/artifact.json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7a22d623b02e77e7ef510e413ce3e8f1e9e16288d94c88b07fb388bb5b683573",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "0144faa73816c622555756545576a6cac0d41a3b262fa6f3ded539ca507ca4a5",
+      "binary_sha256": "2bf467c7b5541c3f3c8fecd3d8c9e4938db9f81dc249304550f21af968297c77"
+    },
+    {
+      "label": "after",
+      "command": [
+        "/private/tmp/qleisli-operator-retirement-after-final",
+        "check",
+        "--entry=main::main",
+        "--module=main=/private/tmp/qleisli-operator-migration-comparison/after/main.qli",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "3952457dc0657ad8a33c306fed3b13d7ecf86755b315c5f9e60a5b56bfc180fe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "a830b747b872e7432f3ef15e7f41402a9b7c558384180fef7cbc116ee4f3a8b4",
+      "binary_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f"
+    },
+    {
+      "label": "after",
+      "command": [
+        "/private/tmp/qleisli-operator-retirement-after-final",
+        "emit-proposal",
+        "--entry=main::main",
+        "--module=main=/private/tmp/qleisli-operator-migration-comparison/after/main.qli",
+        "--format=json",
+        "--output=/private/tmp/qleisli-operator-migration-comparison/after/artifact.json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7a22d623b02e77e7ef510e413ce3e8f1e9e16288d94c88b07fb388bb5b683573",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "a830b747b872e7432f3ef15e7f41402a9b7c558384180fef7cbc116ee4f3a8b4",
+      "binary_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f"
+    }
+  ],
+  "proposed_bytes_equal": true,
+  "proposed_sha256": {
+    "before": "32adb61c4a2b24c77dd89f83d0761b427d7509b85b0c4a3b4f93b313d50b9bd4",
+    "after": "32adb61c4a2b24c77dd89f83d0761b427d7509b85b0c4a3b4f93b313d50b9bd4"
+  }
+}

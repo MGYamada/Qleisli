@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{init0,x};
+use std::observe::measure_z;
+unitary fn f(value: ((Unit,Q<Bit>),Q<Bit>)) -> (Q<Bit>,Q<Bit>) { let (((),q),r) = value; (r,q) }
+observe fn main() -> (Bit,Bit) { let (a,b) = f((((),init0()),x(init0()))); (measure_z(a),measure_z(b)) }

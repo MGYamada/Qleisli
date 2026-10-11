@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.negative-diagnostic-expectation-review",
+  "version": 1,
+  "before_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "after_sha256": "c0664658ebf165c04c0e37feadd813bebe1ef1e901bf9d2de75d90acb8862bec",
+  "source_unchanged": "corpus/negative/measurement_adjoint/main.qli",
+  "source_sha256": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+  "reason": "read has Q<Bit> input and Bit result; direct transform first requires its complete quantum input/result tree to agree. Adopted common checking rejects this actual structural mismatch before deriving a checked effect fact. No effect-priority rule is specified for multiple violations.",
+  "normative_references": [
+    "docs/src/reference/type-model.md:277",
+    "docs/src/reference/source-text.md:60",
+    "docs/src/reference/source-text.md:95"
+  ],
+  "independent_review": "CI failure audit agent independently checked current code and these normative rules; no checker/effect or acceptance change needed. Shape-correct hidden observers keep separate body_effects rejection coverage.",
+  "scope": "Maintained expected diagnostic update only; existing source stays rejected. The previous expectation and actual failed oracle stage remain preserved."
+}

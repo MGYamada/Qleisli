@@ -1,0 +1,3 @@
+common.parse: ParseError { message: "empty tuple type spelling was removed; use Unit (the value remains ())", span: Span { start: 20, end: 22 } }
+finite.check: Diagnostic { code: "parse", message: "parse error: empty tuple type spelling was removed; use Unit (the value remains ())", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-unit-type/main.qli", span: Span { start: 20, end: 22 }, line: 1, column: 21 }) }
+sized.generic: Error { code: "parse", module: Some("main"), span: Span { start: 20, end: 22 }, message: "empty tuple type spelling was removed; use Unit (the value remains ())" }

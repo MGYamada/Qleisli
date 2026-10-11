@@ -1,0 +1,58 @@
+[
+  {
+    "source": "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { if static n < 2 { q } else { q } }",
+    "naturals": {
+      "n": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static Q: Nat](q: Q<Bit>) -> Q<Bit> { if static Q < 2 { q } else { q } }",
+    "naturals": {
+      "Q": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static Bits: Nat](q: Q<Bit>) -> Q<Bit> { if static Bits < 2 { q } else { q } }",
+    "naturals": {
+      "Bits": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static CBits: Nat](q: Q<Bit>) -> Q<Bit> { if static CBits < 2 { q } else { q } }",
+    "naturals": {
+      "CBits": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static Op: Nat](q: Q<Bit>) -> Q<Bit> { if static Op < 2 { q } else { q } }",
+    "naturals": {
+      "Op": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static Unit: Nat](q: Q<Bit>) -> Q<Bit> { if static Unit < 2 { q } else { q } }",
+    "naturals": {
+      "Unit": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static Bit: Nat](q: Q<Bit>) -> Q<Bit> { if static Bit < 2 { q } else { q } }",
+    "naturals": {
+      "Bit": 1
+    },
+    "python_result": "ACCEPT"
+  },
+  {
+    "source": "pub unitary fn f[static CBit: Nat](q: Q<Bit>) -> Q<Bit> { if static CBit < 2 { q } else { q } }",
+    "naturals": {
+      "CBit": 1
+    },
+    "python_result": "ACCEPT"
+  }
+]

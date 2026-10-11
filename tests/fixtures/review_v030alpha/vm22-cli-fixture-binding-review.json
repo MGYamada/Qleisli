@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.vm22-cli-fixture-binding-review.v1",
+  "reviewed_implementation_commit": "ac347d0d01cb97dec4f28a46563bf7d0522b357a",
+  "reviewer": "Codex integration lead; ordinary test/source review, not a Guardian ruling or formal proof",
+  "comparison_fixture": {
+    "path": "tests/sized_cli.rs",
+    "before_git_commit": "ed99fbd723f0745991d700686017f7bbb149cd7f",
+    "before_sha256": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
+    "after_sha256": "e53df043bef99fdece9467e85746fabbc6f9d544518bee1913e49f8f5dbf10e5",
+    "change": "Only modules() routes the same seven named module paths through the existing strict current_namespace_fixture/current_source_file selector. All test bodies, assertions, sizes, sampling counts, independent H-vs-X request rejection, scopes and native command choices are unchanged. The three existing QPE/Fourier grammar derivatives retain their original sources and only the reviewed migration."
+  },
+  "binding_update": "Only the comparison.pinned_files entry for this reviewed CLI fixture changes; census, constructors, acceptance boundary, schema registry and protected constitutional evidence remain unchanged. Prior bytes are available at the exact Git commit above.",
+  "local_integration": {
+    "checked_commit": "ac347d0d01cb97dec4f28a46563bf7d0522b357a",
+    "command": "cargo test --locked --all-targets --no-fail-fast",
+    "exit_code": 0,
+    "completed_groups": 101,
+    "passed": 879,
+    "failed": 0,
+    "ignored": 52,
+    "log_sha256": "64501b276bc75f6b9265bf809cc00a5da5ad889fda843e5c8a1550c28b566db8",
+    "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "scope": "Current local Rust integration. Ignored/native/manual lanes remain separate. No fresh Lean replay or hosted/full release approval."
+  },
+  "additional_native_cli": {
+    "command": "cargo test --locked --test sized_cli -- --ignored",
+    "kernel_selection": "QLEISLI_KERNEL and QLEISLI_HIERARCHY_KERNEL select the existing matching local checker",
+    "passed": 2,
+    "exit_code": 0,
+    "seconds": 1.95,
+    "log_sha256": "724de4a53ddd52602128ed1af4bf6abac53c8adbc2f72f4f1ba2a2f86a6fa2d8",
+    "scope": "One-bit QPE check/run/eight fresh shots and independent H request versus native-valid X candidate across check/run. This is not a fresh native build/audit/replay."
+  },
+  "quick_corpus": {
+    "checked_commit": "ac347d0d01cb97dec4f28a46563bf7d0522b357a",
+    "exit_code": 0,
+    "cases": 87,
+    "semantic_probes": 40,
+    "semantic_faults": 4,
+    "rejection_cases": 4,
+    "seconds": 33.77,
+    "report_sha256": "deb479be8555db63617f0a23850d260d393bf63b67aa3a375a72a22f25567c6f",
+    "limits": "Quick representative coverage; omitted faults remain disclosed. This execution was not instrumented to remeasure total CLI process count."
+  },
+  "first_preflight_failure": "comparison fixture changed: tests/sized_cli.rs",
+  "ci_chronology": "The all-target Rust check passed, but inventory preflight failed. An orchestration mistake allowed push ac347d0d after that failure. Intermediate run 37458104585 received a cancel request. This reviewed binding repair must pass inventory before the corrected metadata commit is pushed; no intermediate hosted pass is claimed.",
+  "limits": "The complete local Rust check binds ac347d0d. This follow-up changes only inventory/evidence metadata and claims no new full Rust execution on its later commit. Hosted CI, release checks, broader QS/PR/RS/EXACT obligations and source/runtime proofs remain pending; generic QFT remains excluded."
+}

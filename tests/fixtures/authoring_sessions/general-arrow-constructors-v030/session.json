@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Materialize general operation composition, tensor and two-sided transforms under #83",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "c8fdf090ecacb3c3e88c8d2f30b2ede92bcee0ec",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retain desired constructor programs and exact-middle counterexample before changing projection or lowering.",
+      "sha256": {
+        "sequence.qli": "f811f0f18fd800a99241cd5e18ac4b3340115db823eaf517300792308a4e3270",
+        "tensor.qli": "230cb17a032ace90a01fccad957709f92d6bea4180014277a786e985994e9354",
+        "adjoint.qli": "f8e0743eb00b0c32bbe2d55cff462416da7a1030b255f68216b9d909955d17a0",
+        "endomorphic-sequence.qli": "ce21c15f60c6f3ce6a6be2f13845aef2622c31550322b4126b1afe36839ee3f4",
+        "wrong-middle.qli": "cc9fdcd8f924741b8b42257ebc92712866c799d4116b3ba56472310c6f2c145f"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/sequence-before.json",
+        "observations/tensor-before.json",
+        "observations/adjoint-before.json",
+        "observations/endomorphic-sequence-before.json",
+        "observations/wrong-middle-before.json",
+        "observations/sequence-constructor-native-01.json",
+        "observations/tensor-constructor-native-01.json",
+        "observations/adjoint-constructor-native-01.json",
+        "observations/endomorphic-sequence-constructor-native-01.json",
+        "observations/wrong-middle-constructor-native-01.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Additional curated counterexamples found during constructor review; not source repairs. Copied byte-for-byte after the original temporary-path BEFORE checks. Those command paths, source hashes and raw outputs remain unchanged. Intended refusals: non-endomorphic runtime adjoint in an unused declaration and nested repetition product above the existing 256 bound.",
+      "sha256": {
+        "runtime-adjoint.qli": "d8664e3324a116b4f8b967eacb74d2a3e0ec870b3dd87decf835b398b2bab2be",
+        "repeat-then.qli": "7a5bc8f848bf6601f4fad44344fb9d25fc08e5bd12d5a810f38f1c3ef393cca3",
+        "repeat-adjoint.qli": "8621440a71925bed7d9a91afea195a81d0d39528275ea240f9a28639e48ab156"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/runtime-adjoint-before.json",
+        "observations/repeat-then-before.json",
+        "observations/repeat-adjoint-before.json",
+        "observations/runtime-adjoint-after.json",
+        "observations/repeat-then-after.json",
+        "observations/repeat-adjoint-after.json"
+      ]
+    }
+  ]
+}

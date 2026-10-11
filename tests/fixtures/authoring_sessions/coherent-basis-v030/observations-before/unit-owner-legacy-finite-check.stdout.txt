@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"finite lowering profile does not support `std::quantum::unit`","primary":{"path":"main.qli","start":305,"end":313,"line":7,"column":45},"related":[]}],"result":null}

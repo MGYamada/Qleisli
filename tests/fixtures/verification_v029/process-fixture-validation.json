@@ -1,0 +1,115 @@
+{
+  "format": "qleisli.immutable-process-fixture-validation",
+  "version": 1,
+  "failed_run": 37549060739,
+  "pr_head": "efdc39b8be807aea5d95ceaeedea95f6d998219e",
+  "tested_merge": "c19ba81f581419fdd7c94d681fa98279b151fede",
+  "hosted_failure_logs": {
+    "rust": {
+      "sha256": "a58c54ac283b7ae44894d8e29249d09aa4f97be391664c265201e59d97392937",
+      "selected_actual_lines": [
+        "2026-10-06T23:59:27.4399943Z thread 'interchange::native::runtime::tests::process_failures_never_fall_back_or_wait_beyond_the_deadline' (14607) panicked at src/interchange/native/runtime.rs:157:13:",
+        "2026-10-06T23:59:27.4401545Z assertion `left == right` failed: exec sleep 4: io: cannot start Lean native checker: Text file busy (os error 26)"
+      ]
+    },
+    "docs": {
+      "sha256": "d4a6ddd307b6e0d0bdc7cfe3ba9cc9f6fd7f43016d0b2a01c77ca8fa6e4cfb8f",
+      "selected_actual_lines": [
+        "2026-10-06T23:57:33.3515341Z tests/fixtures/frontend_v030/ci-regressions-37540210797/native-failure-excerpts.txt:13: trailing whitespace.",
+        "2026-10-06T23:57:33.3517288Z tests/fixtures/frontend_v030/ci-regressions-37540210797/native-failure-excerpts.txt:27: trailing whitespace."
+      ]
+    }
+  },
+  "repair_sources": {
+    "src/interchange/native/runtime.rs": "b38489cbdc7930a027b20a394dd57533c795f27a4573c74496176b99be1461ac",
+    "src/interchange/process.rs": "8511f65cb91098ee3090e0b87bcffe59c10bf30e71340b848ad501a1ebead2ce",
+    "tests/fixtures/verification_v029/process-failure.sh": "b34a1e7c7947c78585c492335d1ce9a0d4d57d0222d735f110ff7213ada8cc8c",
+    "tests/fixtures/verification_v029/process-tree.sh": "4c5d5e08569be09a76c35c09c61d15e9bc3602bbf7ad137507e2dccf2ef14cff",
+    "tests/fixtures/frontend_v030/ci-regressions-37540210797/native-failure-excerpts.json": "9e1034b358f28b3669fe5061e835e15cbb24ab675d5e84a5f9e8c7c0e74b1d95"
+  },
+  "local_validation": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "interchange::",
+        "-j",
+        "2"
+      ],
+      "rust": "1.98.1",
+      "normal_permissions": true,
+      "exit_code": 0,
+      "passed": 27,
+      "ignored": 1
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--lib",
+        "interchange::",
+        "-j",
+        "2"
+      ],
+      "rust": "1.85.0",
+      "normal_permissions": true,
+      "exit_code": 0,
+      "passed": 27,
+      "ignored": 1
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "-j",
+        "2"
+      ],
+      "rust": "1.98.1",
+      "normal_permissions": true,
+      "exit_code": 0,
+      "passed": 134,
+      "ignored": 3,
+      "external_transcript_sha256": "03bd632a1362febdcea3fea4f494463f263c24b630efb1a3fdb6c0869154c090"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "rust": "1.98.1",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--all-targets",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "rust": "1.85.0",
+      "exit_code": 0
+    },
+    {
+      "check": "Lossless JSON excerpt restoration equals the exact previous committed text bytes",
+      "base_commit": "efdc39b8be807aea5d95ceaeedea95f6d998219e",
+      "original_bytes": 4084,
+      "passed": true
+    }
+  ],
+  "intermediate_preflight": "Working fixture budget refused the tracked text deletion before commit, as its policy requires committing reviewed deletions first. No limit was raised; committed-tree/working preflights must be run after committing this lossless representation change.",
+  "scope": "Test fixtures/lifecycle and lossless historical-log encoding only. All three library process fixtures are immutable at invocation; symlink names select private cases and PID state. The production process transport has no new retries, fallback or acceptance rules. Timing, response limits, failed-acceptance rejection and descendant cleanup assertions remain. This is local macOS verification, not a Linux replay, full current all-target/MSRV sweep, fresh Lean replay, guarantee admission or release readiness. Earlier all-target results remain separately bound to their original source commit."
+}

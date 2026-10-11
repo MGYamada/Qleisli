@@ -1,7 +1,7 @@
 import QleisliKernel.Composition
 
 /-! Shared acyclic evaluation and its algebra-independent interpretation law.
-Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
+Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
 namespace QleisliKernel.Dag
 

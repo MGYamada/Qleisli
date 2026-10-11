@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.issue-count-109-tests",
+  "version": 1,
+  "argv": [
+    "python3",
+    "scripts/test_check_release_ready.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-04T22:59:57.841594+00:00",
+  "finished_at_utc": "2026-10-04T23:01:11.616436+00:00",
+  "seconds": 73.7741651670076,
+  "exit_code": 0,
+  "status": "passed",
+  "source_sha256_before": {
+    "scripts/check_release_ready.py": "0939fe105e455d47dc59f54a94d9a61e01f1243657351773f2a428819ded9bf0",
+    "scripts/test_check_release_ready.py": "cc16e1984cb4761065878cffb8c2cf1f90093662df090c5a961efed27cc66dff"
+  },
+  "source_sha256_after": {
+    "scripts/check_release_ready.py": "0939fe105e455d47dc59f54a94d9a61e01f1243657351773f2a428819ded9bf0",
+    "scripts/test_check_release_ready.py": "cc16e1984cb4761065878cffb8c2cf1f90093662df090c5a961efed27cc66dff"
+  },
+  "source_unchanged_during_run": true,
+  "files": {
+    "before.json": "5249aeeee29d5f469e9397116d72b6f9c584fa23917ba7f23142eadabbb3a559",
+    "command.json": "131dc19544c353b5c853bac5dcb8aa4ca96acf9255055b2c42afcf0fe211a2cc",
+    "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr.txt": "cad212a8895a04726c068853564998f2fb75369a5e138ffede52987af59ce216"
+  },
+  "scope": "Actual local Python tests use explicitly synthetic hosted receipts and constitutional verifier mocks; no release authorization, new guarantee discharge, Rust build or Lean build."
+}

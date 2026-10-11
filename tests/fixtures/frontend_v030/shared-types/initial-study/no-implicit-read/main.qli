@@ -1,0 +1,2 @@
+unitary fn read(q: Q<Bit>) -> CBit { q }
+observe fn main() -> Unit { () }

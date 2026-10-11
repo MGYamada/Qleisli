@@ -2,15 +2,15 @@ use std::quantum::x;
 use std::quantum::cnot;
 use std::quantum::split;
 use std::quantum::join;
-use std::routines::parity_zz;
+use std::measurement::parity_zz;
 
-pub iso fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
-    do a <- q; pure ((a, a), a)
+pub isometry fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
+    basis q as a { ((a, a), a) }
 }
 
 // Contract: an encoded state with at most one X error, ideal operations.
 // Return every data wire and both classical syndrome bits.
-pub observe fn recover(q: Q<((Bit, Bit), Bit)>) -> (Q<((Bit, Bit), Bit)>, (CBit, CBit)) {
+pub observe fn recover(q: Q<((Bit, Bit), Bit)>) -> (Q<((Bit, Bit), Bit)>, (Bit, Bit)) {
     let (ab, c) = split(q);
     let (a, b) = split(ab);
     let ((a, b), s_ab) = parity_zz(a, b);

@@ -1,4 +1,21 @@
 # Keep frozen sources byte-identical, including upstream whitespace.
+# Retain raw Iso validation EOFs and hosted timestamped blank lines.
+tests/fixtures/frontend_v030/isometry-preparation/*/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt -text -whitespace
+tests/fixtures/frontend_v030/isometry-preparation/initial-whitespace/stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/after-body-inference/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/after-body-inference/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/**/tool-decoded-output.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/validation-*/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/validation-*/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/active-clients-before/*.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/first-legacy-test/compile.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/first-profile-test/sized_source.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/stdlib-before/*.qli.txt -text -whitespace
+# Preserve actual libtest EOFs in the completed host-provider review records.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-*/*.stdout.txt -text -whitespace
 corpus/** text eol=lf
 corpus/upstream/** -text -whitespace
 
@@ -37,3 +54,182 @@ tests/fixtures/verification_v029/cutover/logs/contract-tests.log -text -whitespa
 tests/fixtures/verification_v029/cutover/logs/handles-tests.log -text -whitespace
 tests/fixtures/verification_v029/cutover/logs/review20-final.log -text -whitespace
 tests/fixtures/verification_v029/cutover/logs/rust-tests.log -text -whitespace
+
+# Preserve reviewed patch context and deliberately noncanonical lexical inputs.
+tests/fixtures/constitution_v030/candidate.patch -text -whitespace
+tests/fixtures/constitution_v030/ownership-rename.patch -text -whitespace
+tests/fixtures/constitution_v030/witness-weakening/mutation.patch -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/*.qli -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/independent-review/results/adapter-unit.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/independent-review/results/integration.stdout.txt -text -whitespace
+# Common-parser evidence includes original CRLF bytes and libtest output.
+tests/fixtures/frontend_v030/common-parser/shared.qli -text -whitespace
+tests/fixtures/frontend_v030/common-parser/integration.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/common-parser/unit.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/realization-boundary/0.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/shared-types/finite-unit.stdout -text -whitespace
+tests/fixtures/frontend_v030/shared-types/integration.stdout -text -whitespace
+tests/fixtures/frontend_v030/shared-types/unit.stdout -text -whitespace
+tests/fixtures/frontend_v030/shared-resolution/scoped-tests-completion.log -text -whitespace
+tests/fixtures/frontend_v030/shared-resolution/unit-contract-clippy.log -text -whitespace
+# Preserve independently captured mutation patches, including blank context lines.
+tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/*/evidence/*.patch -text -whitespace
+tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/*/final-evidence/*.patch -text -whitespace
+tests/fixtures/frontend_v030/profile-diagnostics/hosted/14.stdout -text -whitespace
+tests/fixtures/review_v030alpha/static-natural-type-words/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/static-natural-type-words/root-isolated/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/static-natural-type-words/root-msrv-tests/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/sized-lexical/sized-source.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/multi-declaration/after/focused-tests.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/after/latest-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/after/msrv-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/validation/sized-declarations.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/after/latest-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/after/msrv-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/build.stderr -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/legacy_left_fold_complete_actions.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/noninjective_and_and_constant_predicates_remain_legal_in_both_forms.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/first-current/test.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain/validation/remaining-focused-tests.stdout.txt -text -whitespace
+tests/fixtures/constitution_v030/routed-control-commutation/ArtifactData.lean.txt -text -whitespace
+tests/fixtures/constitution_v030/routed-control-commutation/contract.md -text -whitespace
+# Canonical-type migration preserves raw libtest output and lexical regressions.
+tests/fixtures/frontend_v030/ordinary-type-cutover/client-tests-first/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli -text -whitespace
+tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/shared_identities/main.qli -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/isolated-final/tests.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/test-first/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-current-rejection/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-fixed/stdout.txt -text -whitespace
+# Hosted log excerpts preserve timestamped blank lines exactly.
+tests/fixtures/review_v030alpha/hosted-canonical-integration/interop-failure.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-canonical-integration/release-test-failure.txt -text -whitespace
+# Retain raw Unit-pattern validation transcripts, including libtest blank lines.
+tests/fixtures/frontend_v030/unit-pattern-integration/*/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli -text
+tests/fixtures/review_v030alpha/hosted-source-clients/validation/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/roundtrip-current-source-selection/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-distribution-37218876223/14.stdout -text -whitespace
+tests/fixtures/review_v030alpha/hosted-distribution-37218876223/failure-excerpt.txt -text -whitespace
+# Retain parameter-pattern libtest output with its original final blank line.
+tests/fixtures/frontend_v030/runtime-parameter-patterns/*/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch -text -whitespace
+tests/fixtures/review_v030alpha/hosted-lint-37221444899/failure-excerpt.txt -text -whitespace
+# Preserve exact Boolean first-run transcripts and the explicit test repair diff.
+tests/fixtures/frontend_v030/ordinary-booleans/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-booleans/test-repair.patch -text -whitespace
+tests/fixtures/frontend_v030/mixed-booleans/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/mixed-booleans/test-repair.patch -text -whitespace
+# Preserve selected-source CLI libtest transcripts, including final blank lines.
+tests/fixtures/frontend_v030/selected-source-cli/*/*stdout.txt -text -whitespace
+# Retain the exact reviewed diff, including its blank context-line prefixes.
+tests/fixtures/constitution_v030/issue-count-109/documentation-results/0.stdout.txt -text -whitespace
+# Preserve quantum-Unit validation output and explicit repair patch context.
+tests/fixtures/frontend_v030/quantum-unit-source/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/quantum-unit-source/*.patch -text -whitespace
+# Hosted failure excerpts retain their original timestamped blank lines.
+tests/fixtures/review_v030alpha/hosted-109-37242938514/*.excerpt.txt -text -whitespace
+# Frozen Unit-map contract and actual test/hosted output retain exact bytes.
+tests/fixtures/authoring_sessions/quantum-unit-maps-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/quantum-unit-maps/*/*stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-unit-profile-37254752247/*.excerpt.txt -text -whitespace
+# Retain actual existing-test transcripts for the classification acceptance review.
+tests/fixtures/frontend_v030/type-pattern-classification/*.stdout.txt -text -whitespace
+# Preserve first tuple-study records, raw transcripts and explicit repair context.
+tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-prior-tests/*.patch -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/product-mutant-repair/*.patch -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/trace-capacity-repair/*.patch -text -whitespace
+tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.patch -text -whitespace
+# Keep the original inference study, raw libtest output and reviewed diff bytes.
+tests/fixtures/authoring_sessions/inference-law-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/inference-law/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/inference-law/*.patch -text -whitespace
+tests/fixtures/frontend_v030/discovery-paths/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/discovery-paths/*.patch -text -whitespace
+# Preserve hosted/local first failures and their current-help repair transcripts.
+tests/fixtures/frontend_v030/discovery-ci-repair/*.log -text -whitespace
+tests/fixtures/frontend_v030/discovery-ci-repair/**/*stdout* -text -whitespace
+tests/fixtures/frontend_v030/discovery-ci-repair/distribution-artifact/**/*.stdout -text -whitespace
+# Keep byte-frozen Basis first sources, including their original final blank lines.
+tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-0[12]/*/main.qli -text -whitespace
+tests/fixtures/authoring_sessions/basis-polymorphism-v030/context.md -text -whitespace
+# Raw Basis validation transcripts retain libtest's original final blank lines.
+tests/fixtures/frontend_v030/basis-polymorphism/*/*stdout.txt -text -whitespace
+# Preserve the exact frozen #315 accounting packet, including original EOFs.
+tests/fixtures/constitution_v030/issue-315-scope/README.md -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/issue-315.md -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/tool-observations.txt -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/validation.json -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope-whitespace/*stdout.txt -text -whitespace
+# Retain the actual failed and repaired ordered-kind fixture test transcripts.
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/failure-excerpt.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/*/*stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/issue-44-before.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/migration.patch -text -whitespace
+# Preserve actual hosted/local CI transcripts and original patch context bytes.
+tests/fixtures/frontend_v030/ci-regressions-37392202925/*.log-excerpts*.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.patch -text -whitespace
+# Preserve raw namespace validation transcripts, including libtest EOFs.
+tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37404989108/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37404989108/*.log-excerpt.txt -text -whitespace
+# Preserve raw coherent-basis command output and hosted timestamped blank lines.
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/*.excerpt.txt -text -whitespace
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt -text -whitespace
+# Keep checked-operation libtest and command streams byte-identical.
+tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/checked-operation/implementation-01/hosted-predecessor/*.exact-excerpt.txt -text -whitespace
+# Preserve actual functional-boundary libtest streams and hosted excerpts.
+tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/functional-boundary/hosted-predecessor-01/*-log-excerpt.txt -text -whitespace
+# Preserve raw discovery-repair libtest output and hosted timestamped lines.
+tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/native-discovery-ci-repair/hosted-01/*.log-excerpt.txt -text -whitespace
+# Preserve actual diagnostic study/validation output, including libtest EOFs.
+tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-before/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-before/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stderr.txt -text -whitespace
+# Retain first/corrected Default validation and public observation bytes.
+tests/fixtures/frontend_v030/default-construction/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/default-construction/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-before/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-before/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stderr.txt -text -whitespace
+# Preserve actual hosted failure excerpts and bounded local validation streams.
+tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/*-failure-01.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stderr.txt -text -whitespace
+# Preserve hashed classical-function command streams, including libtest EOFs.
+tests/fixtures/frontend_v030/classical-functions/validation/*.stdout.txt -text -whitespace
+corpus/migrations/classical-functions-v030/python-tests-first.txt -text -whitespace
+corpus/migrations/classical-functions-v030/semantic-replay-first.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-classical-test-repair/*-excerpt.txt -text -whitespace
+
+# Preserve only inherited EOF blanks in these hash-bound const-header copies.
+# Their non-header bytes match the frozen Basis sources; other whitespace rules apply.
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/abstract-split/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/assumed-unit/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/duplicate-owner/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/forward-kind/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/missing-access/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-forward/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/unknown-basis/main.qli -text whitespace=-blank-at-eof
+
+# These two naming copies retain the same reviewed Basis-source EOF bytes.
+# Token/provenance checks retain their hashes; other whitespace rules apply.
+tests/fixtures/frontend_v030/capability-naming/current/files/client-001.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/capability-naming/current/files/client-002.qli -text whitespace=-blank-at-eof

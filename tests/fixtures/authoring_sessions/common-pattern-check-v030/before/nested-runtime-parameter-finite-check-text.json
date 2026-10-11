@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/nested-runtime-parameter",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py"
+  ],
+  "exit_code": 0,
+  "seconds": 1.2943683750345372,
+  "recorded_utc": "2026-10-05T16:33:52.056579+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 20,
+  "stdout_raw": "nested-runtime-parameter-finite-check-text.stdout.txt",
+  "stderr_raw": "nested-runtime-parameter-finite-check-text.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "transcript": "checked source and verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/nested-runtime-parameter\n"
+}

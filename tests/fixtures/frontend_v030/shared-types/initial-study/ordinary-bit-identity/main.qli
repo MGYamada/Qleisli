@@ -1,0 +1,2 @@
+unitary fn identity(x: Bit) -> Bit { x }
+observe fn main() -> Unit { () }

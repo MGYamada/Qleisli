@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.ordinary-issue-contract-update",
+  "version": 1,
+  "clock_observed_after_readbacks_utc": "2026-10-05 15:50:07 UTC",
+  "issue317": {
+    "criteria": 24,
+    "original_body_and_criteria_preserved": true,
+    "state": "open",
+    "milestone": "0.3.0",
+    "before_code_contract": "before-code-contract.md",
+    "after": "issue-317.after-contract.md"
+  },
+  "issue152": {
+    "criteria": 12,
+    "original_body_and_criteria_preserved": true,
+    "state": "open",
+    "target": "0.4.0",
+    "after": "issue-152.after-alignment.md"
+  },
+  "authority": "Ordinary implementation and prospective structural-consumer contracts under the maintainer-authorized active plan; no human constitutional adoption or guarantee admission is inferred."
+}

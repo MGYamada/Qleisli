@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Raw
 interfaces and literal action data, with no acceptance predicates, freshness
 policy, budgets, cached meanings or producer receipts. Missing operands have no
 trace. Full complex interpretation and clean-release validity are separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.RawTrace
 open Raw Finite
 
@@ -106,6 +106,11 @@ def step (state : Interface) (op : Op) : Option (Interface × List Event) := do
     let next := (targets.zip ports).foldl (fun next (target,port) => insert next target.output port.wires) next
     return (next,[.protectedComputed bits (axes state (source.wires ++ ports.flatMap (·.wires)))
       source.bits ancilla.length function uses])
+
+  | .packUnit output => pure (insert state output [],[])
+  | .unpackUnit input =>
+    let (port,next) ← take state input
+    if port.bits == 0 && port.wires.isEmpty then pure (next,[]) else none
 
 structure Prepared where
   state : Interface

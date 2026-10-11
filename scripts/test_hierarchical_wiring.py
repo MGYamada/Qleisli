@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Native actual-wiring inspection, shared budgets and independent basis action.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 A route summary is conditional on complete artifact typing, not a Fourier seal.
 """
 import argparse

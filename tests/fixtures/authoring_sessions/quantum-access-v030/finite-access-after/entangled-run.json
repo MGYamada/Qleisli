@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-02/entangled",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-09T06:08:34.454258+00:00",
+  "cli_sha256_before": "a3e981015ca12b60b3625f1a3e0f2d52c225a785579ac8eae66d05faead086eb",
+  "cli_sha256_after": "a3e981015ca12b60b3625f1a3e0f2d52c225a785579ac8eae66d05faead086eb",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5000000000000001
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5000000000000001
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

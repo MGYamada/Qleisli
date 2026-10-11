@@ -5,7 +5,7 @@ import QleisliKernel.Finite
 /-! VM-25 straight-line pure ownership/typing and actual-body extraction.
 This checker receives original operations. Its dependency argument consists of
 signatures only; semantic callers are reconstructed separately from raw bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Raw Semantics.Finite
 
@@ -143,11 +143,28 @@ structure Transition where
 
 private def one (port : Port) : Check Unit := require (port.bits == 1)
 
+/-- Introduce a fresh logical owner without allocating any physical axis. -/
+def packUnit (state : State) (output : Nat) : Check Transition := do
+  require (stateValid state)
+  let next ← insert state output []
+  require (stateValid next)
+  return ⟨next,[]⟩
+
+/-- Consume a live zero-axis owner without erasing its issuance history. -/
+def unpackUnit (state : State) (input : Nat) : Check Transition := do
+  require (stateValid state)
+  let (port,next) ← take state input
+  require (port.bits == 0 && port.wires.isEmpty)
+  require (stateValid next)
+  return ⟨next,[]⟩
+
 /-- Constructor dispatch over the original raw operation; no Rust validation or
 extracted circuit is an input. Every output insertion uses global freshness. -/
 def dispatch (dependencies : List Basis) (state : State) (op : Op) : Check Transition := do
   let bits := state.frame.length
   match op with
+  | .packUnit output => packUnit state output
+  | .unpackUnit input => unpackUnit state input
   | .init0 output wire =>
     let next ← reserve state [wire]
     let next ← insert next output [wire]

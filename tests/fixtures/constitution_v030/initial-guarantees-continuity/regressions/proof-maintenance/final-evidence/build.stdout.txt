@@ -1,0 +1,8 @@
+✔ [3453/3459] Built QleisliKernel.Semantics.Ownership (952ms)
+✔ [3454/3459] Built QleisliKernel.Raw.Ownership (1.4s)
+✔ [3455/3459] Built QleisliKernel.Raw.ObservationOwnership (574ms)
+✔ [3456/3459] Built QleisliKernel.Qirf.Ownership (411ms)
+✔ [3457/3459] Built Protocol.Validity (587ms)
+✔ [3458/3459] Built Qleisli.QirfValidity (13s)
+✔ [3459/3459] Built Qleisli.NativeValidity (2.9s)
+Build completed successfully (3459 jobs).

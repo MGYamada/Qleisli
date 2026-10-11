@@ -1,0 +1,4 @@
+{
+  "scripts/check_release_ready.py": "3e5d863a8dfd8e0681e4de26f706963a83cab59617da7196f2b0e4445293ecfe",
+  "scripts/test_check_release_ready.py": "ed4f13970391447281355cab697dbda732586bccd1e5f7d29340cc1d745bbf63"
+}

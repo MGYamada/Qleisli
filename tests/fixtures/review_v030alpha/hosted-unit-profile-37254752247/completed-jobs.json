@@ -1,0 +1,209 @@
+{
+  "run_id": 37254752247,
+  "branch_head": "e01e98a42a00c04892617205307f2db76b5c404e",
+  "source": "GitHub workflow run jobs connector, latest attempt",
+  "jobs": [
+    {
+      "id": 111589331280,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111589371954,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111589371976,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111589371997,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111589372000,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "id": 111589372004,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111589372022,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Run cargo +1.85.0 test --all-targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        }
+      ]
+    },
+    {
+      "id": 111589372062,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Verify clean package and complete source archive",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "id": 111589372069,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 111594373031,
+      "name": "lean-kernel",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373049,
+      "name": "lean",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373072,
+      "name": "rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373080,
+      "name": "interop",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373099,
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373117,
+      "name": "rust-msrv",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373126,
+      "name": "macos-source",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373187,
+      "name": "distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 111594373709,
+      "name": "release-readiness",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ]
+}

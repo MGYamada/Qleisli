@@ -1,0 +1,11 @@
+
+running 1 test
+test python_static_comparisons_keep_type_angles_separate_in_both_dialects ... FAILED
+
+failures:
+
+failures:
+    python_static_comparisons_keep_type_angles_separate_in_both_dialects
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.15s
+

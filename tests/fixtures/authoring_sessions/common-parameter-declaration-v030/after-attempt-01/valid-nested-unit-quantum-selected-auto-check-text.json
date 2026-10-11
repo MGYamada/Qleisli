@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/valid-nested-unit-quantum/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 0,
+  "seconds": 0.13052666699513793,
+  "recorded_utc": "2026-10-05T17:16:49.270227+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 1,
+  "native_argv_log": "valid-nested-unit-quantum-selected-auto-check-text.native.jsonl",
+  "stdout_raw": "valid-nested-unit-quantum-selected-auto-check-text.stdout.txt",
+  "stderr_raw": "valid-nested-unit-quantum-selected-auto-check-text.stderr.txt",
+  "stdout_sha256": "534a6bbf42800fca3d4c6d949193cea4c234f1f996b61693c7cb6b8c2b0a2f65",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

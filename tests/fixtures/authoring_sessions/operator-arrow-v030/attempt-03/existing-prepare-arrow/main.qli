@@ -1,0 +1,3 @@
+use std::quantum::finish;
+use std::quantum::init0;
+pub fn entry(q:Q<Unit>)->Q<Bit>{finish(q);init0()}

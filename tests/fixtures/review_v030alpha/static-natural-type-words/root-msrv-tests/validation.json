@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.contextual-natural-msrv-tests",
+  "version": 1,
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--manifest-path",
+    "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+    "--lib",
+    "frontend::parser"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "PATH_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+  "rustc": "1.85.0",
+  "cargo": "1.85.0",
+  "exit_code": 0,
+  "passed": 6,
+  "source_sha256": {
+    "src/frontend/parser.rs": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
+    "src/frontend/parser/tests.rs": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47"
+  },
+  "files": {
+    "stdout.txt": "57fb75575f5fe72e34da5c284a23341316ce2e933a9d98dcc89ce8eb7a96d4c8",
+    "stderr.txt": "31a39e579b901584f7f792f4d1b65815fb895d76ea220de31767d4d550ac0fc2"
+  },
+  "scope": "Isolated fae0 tree plus parser and native-recorder repairs, excluding lexical integration."
+}

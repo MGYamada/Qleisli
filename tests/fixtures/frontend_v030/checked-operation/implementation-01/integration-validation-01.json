@@ -1,0 +1,138 @@
+{
+  "format": "qleisli.checked-operation-integration-validation",
+  "version": 1,
+  "issue": 82,
+  "source_baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "commands": {
+    "cli-build-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/cli-build-01.json",
+      "sha256": "8b4ffd6b187d2141954a1fc85d20ff8048ebf8f2bd966f5a88b41ea52ee4cbcc",
+      "exit_code": 0
+    },
+    "rust-latest-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/rust-latest-01.json",
+      "sha256": "2efc277a30f2305cb8eef68c32d2dcb04ab26f74a5e0b9c059f1bb9b73e6791e",
+      "exit_code": 0
+    },
+    "rust-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/rust-msrv-01.json",
+      "sha256": "ddfeaf0318817df25b87aaaa87328b552732a99db63b1464282575b4be116450",
+      "exit_code": 0
+    },
+    "small-token-latest-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/small-token-latest-01.json",
+      "sha256": "c512efbd1c0a5370691b7b2b89ef9a42adaf1651d21574bed131d19cdf54e849",
+      "exit_code": 0
+    },
+    "small-token-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/small-token-msrv-01.json",
+      "sha256": "cb01ad92f50a2a442fed0af1ddd72ffd5034cdba1b3c75428d67f6da7d0a248f",
+      "exit_code": 0
+    },
+    "clippy-latest-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/clippy-latest-01.json",
+      "sha256": "5cc7e19be2f9256a806e728d9a5f75c26380b08869514950a5bc4fa16a7e6a7b",
+      "exit_code": 0
+    },
+    "clippy-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/clippy-msrv-01.json",
+      "sha256": "d936dab9cf2ad775e5664e8971d2bef1e83d7915cf5bc810a2e2313edcfe8f7c",
+      "exit_code": 0
+    },
+    "fmt-02": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/fmt-02.json",
+      "sha256": "deeec348b316b9cfd531d3d5dcfc36df2a2dcd39396e3c9757a9fa0fb7a00678",
+      "exit_code": 0
+    },
+    "selector-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/selector-01.json",
+      "sha256": "85a65344e73c0ed22f1d2f66a5717f372ff601464606fac757e0114353eed290",
+      "exit_code": 0
+    },
+    "continuity-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/continuity-01.json",
+      "sha256": "ad828c789c1d4f8817aabc414cb5b7410a6397ebf2bf7b2b6e06a0928a755d85",
+      "exit_code": 0
+    },
+    "inventory-final-02": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/inventory-final-02.json",
+      "sha256": "70164170d847a94d710d3fc53bc6334c10664ba9f3f0993b6fc6f42850285aa2",
+      "exit_code": 0
+    },
+    "coverage-final-04": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/coverage-final-04.json",
+      "sha256": "4530ace12db309b3ba8cef7fcff3e4872b286449ddde4e108afe8491300abc67",
+      "exit_code": 0
+    },
+    "schema-source-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/schema-source-01.json",
+      "sha256": "a1f0c18a0d420996386f7138654dd507e92010240568bd5786aac2e45c54c2a3",
+      "exit_code": 0
+    },
+    "editions-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/editions-01.json",
+      "sha256": "243b760005a56aaed8bcbe6e377c5ecd8d06d21c9e1c0ee69ddce71dcbc15bb3",
+      "exit_code": 0
+    },
+    "authoring-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/authoring-01.json",
+      "sha256": "3b22a91f4d946eb37967058c521eebeabc735dba1197d4bb6fbdc606aea1bca1",
+      "exit_code": 0
+    },
+    "source-native-evidence-01": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/source-native-evidence-01.json",
+      "sha256": "3e50def6238d63ad82af81477aadfb47f48d94de61088d94a440ff147bfbdac9",
+      "exit_code": 0
+    },
+    "book-final-02": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/book-final-02.json",
+      "sha256": "06dc8ad16e5e650b1f2e677e82f114312f0abbb63422339a23799f68e384ad58",
+      "exit_code": 0
+    },
+    "book-links-final-02": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/book-links-final-02.json",
+      "sha256": "84e70aa1bcc6dfa4fc5008000a5f8821ac1505e05131ce9fbc51f4b2276c319b",
+      "exit_code": 0
+    },
+    "docs-final-02": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/docs-final-02.json",
+      "sha256": "accfdb9a9dc61885ff222a78cdbddda43b233be8ded2bd04fb9942bd514f9d19",
+      "exit_code": 0
+    }
+  },
+  "records": {
+    "tests/fixtures/authoring_sessions/checked-operation-v030/session.json": "6fd59a273bb5d2dc8ec724a8c36458b4399bbc05cebd6b6fe44321351384bb75",
+    "tests/fixtures/authoring_sessions/checked-operation-v030/results-before.json": "fa0590a95e602f3422dc6b017505c76a93259af54d42d8228c730e6941601b42",
+    "tests/fixtures/authoring_sessions/checked-operation-v030/results-after-01.json": "98701a0db744c2fce306f4fb4318cc0494fa8e26da71234e791e1a61a60969f5",
+    "tests/fixtures/frontend_v030/checked-operation/implementation-01/independent-review-01.json": "0a95c390dda1191948e90a6d1834b388a9a3f77c4668d10460041a0feb0d34d8",
+    "tests/fixtures/frontend_v030/checked-operation/implementation-01/current-build-bindings-02.json": "9811a72cc834722c18db63a0fefcf6f6b1ad5fa278c7e51a0ea4f6d1dfe7fc11",
+    "tests/fixtures/frontend_v030/checked-operation/implementation-01/production-coverage-review-03.json": "d4105cba0875a74d654cac34c9a6383a35fecb6b1a42270f5f13a0a641ca2955",
+    "tests/fixtures/frontend_v030/checked-operation/implementation-01/test-scope-review-02.json": "24105062da3dad1f28565c13c019952d4c358e6623a1bf3b81b26f7ff0591bd7"
+  },
+  "verification": {
+    "latest_rust_passed": 95,
+    "msrv_rust_passed": 76,
+    "existing_ignored_per_focused_suite": 2,
+    "new_active_integration_tests": 9,
+    "new_small_lexer_test": 1,
+    "selector_tests": 41,
+    "actual_authoring_observations": 56,
+    "after_predictions_matched": 28,
+    "explicit_current_file_derivatives": 8,
+    "selected_corpus_projects_not_needing_migration": 87,
+    "selected_client_projects_not_needing_migration": 13,
+    "book_html_files": 26,
+    "book_local_links": 1048,
+    "book_anchors": 385,
+    "mdbook_version": "0.5.4",
+    "mdbook_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e"
+  },
+  "retained_first_failures": [
+    "coverage-01 and coverage-review-02 strict identity rejection before reviewed refresh",
+    "order-sensitive source-path assertion in the first review script, before writes",
+    "fmt-01 rejected one extra blank line in the new integration test; only that blank line was corrected",
+    "four pre-code unsupported --format=text invocations and first authoring registration-only failure retained by the study"
+  ],
+  "scope": "Vocabulary migration only. Preserve exact source-bearing receipts; old/new source identities may differ. Native acceptance, AST/semantic obligations, capability and concrete-profile limits are unchanged. Existing QLV1 guarantees and QS/PR/RS/EXACT pending duties remain. No fresh Lean build/audit/replay, general source preservation, full CI/package/fresh installation/native bundle/release claim. External qargo/qlippy diagnostics omitted under explicit maintainer authorization. No new maximum-scale case executed; QFT work remains excluded."
+}

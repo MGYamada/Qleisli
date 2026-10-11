@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.selected-issue-scope-readback",
+  "version": 1,
+  "repository": "MGYamada/Qleisli",
+  "issue": 317,
+  "state": "open",
+  "milestone": 1,
+  "updated_at": "2026-10-05T17:27:59Z",
+  "selected_count": 111,
+  "confirmed_completed": 14,
+  "completion_percent": "12.61%",
+  "criteria": [
+    "- [ ] Audit every current public item under `std::arithmetic`.",
+    "- [ ] Remove the ad-hoc fixed-instance public arithmetic routines, including `increment2`, `add2`, and `mul2_mod15`.",
+    "- [ ] Preserve useful tiny circuits only as examples/tests/fixtures/corpus material where appropriate, not canonical stdlib APIs.",
+    "- [ ] Document the semantic admission rule for future `std::arithmetic` APIs.",
+    "- [ ] Reserve `std::arithmetic` for scalable parameterized arithmetic / number-theoretic operations.",
+    "- [ ] Record `std::arithmetic::modexp<N>` as a representative intended semantic API shape.",
+    "- [ ] Reserve `std::arithmetic::primefact<N>` as the v1 semantic factorization API identity.",
+    "- [ ] State normatively that algorithm names do not replace mathematical-operation names in canonical stdlib APIs.",
+    "- [ ] State that explicit algorithm selection belongs in a parameter/policy/configuration layer.",
+    "- [ ] Rename `std::transforms` to `std::transform`.",
+    "- [ ] Document the singular semantic-namespace convention for mathematical stdlib modules.",
+    "- [ ] Audit every current public member of `std::routines`.",
+    "- [ ] Remove `std::routines` as a canonical public namespace.",
+    "- [ ] Rehome each former `std::routines` API under a namespace justified by its mathematical meaning, or make it non-public until such a classification exists.",
+    "- [ ] Do not replace `std::routines` with another semantically empty catch-all.",
+    "- [ ] Give every public top-level mathematical namespace a documented semantic admission rule.",
+    "- [ ] Update source/imports/examples/docs/corpus/fixtures/tests atomically for the namespace changes.",
+    "- [ ] Do not retain compatibility aliases for accidental pre-1.0 APIs without a demonstrated migration need.",
+    "- [ ] Keep all such stdlib functions ordinary checked `.qli` under #167.",
+    "- [ ] Align #152 so its 0.4.0 structural refactor consumes these 0.3.0 semantic namespace decisions without redefining them.",
+    "- [ ] Make `std::transform::qft<N>` the canonical semantic QFT API.",
+    "- [ ] Treat `qft2`, `qft3`, `qft4`, and analogous fixed-size forms only as optional specializations/aliases/examples of `qft<N>`.",
+    "- [ ] Verify each retained fixed-size QFT specialization is semantically equivalent to the corresponding generic instance.",
+    "- [ ] Document the general rule that parameterized mathematical families own the canonical API name; fixed-size names do not."
+  ],
+  "source": "Actual GitHub connector readback; no criterion marked complete or removed.",
+  "release_regression": {
+    "argv": [
+      "python3",
+      "scripts/test_check_release_ready.py"
+    ],
+    "exit_code": 0,
+    "tests": 31,
+    "seconds_reported": 75.742,
+    "tool_session": 54840,
+    "terminal_chunk": "2d84b3",
+    "scope": "Small synthetic readiness regressions, including rejection of older 110-only indices omitting #317. Not current release readiness."
+  },
+  "limits": "An Issue inclusion is work accounting, not implementation, proof, guarantee admission or release approval."
+}

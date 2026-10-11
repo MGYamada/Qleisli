@@ -1,0 +1,88 @@
+{
+  "validation": [
+    {
+      "validation": "tests/fixtures/frontend_v030/body-effects/validation-current-latest",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+      "counts": [
+        {
+          "log": 2,
+          "passed": 253,
+          "failed": 0,
+          "ignored": 8
+        },
+        {
+          "log": 3,
+          "passed": 57,
+          "failed": 0,
+          "ignored": 2
+        }
+      ],
+      "all_commands_passed": true,
+      "source_files_stable": true
+    },
+    {
+      "validation": "tests/fixtures/frontend_v030/body-effects/validation-current-msrv",
+      "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+      "counts": [
+        {
+          "log": 2,
+          "passed": 253,
+          "failed": 0,
+          "ignored": 8
+        },
+        {
+          "log": 3,
+          "passed": 57,
+          "failed": 0,
+          "ignored": 2
+        }
+      ],
+      "all_commands_passed": false,
+      "source_files_stable": true
+    },
+    {
+      "validation": "tests/fixtures/frontend_v030/body-effects/validation-current-latest-fix",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+      "counts": [
+        {
+          "log": 2,
+          "passed": 77,
+          "failed": 0,
+          "ignored": 3
+        },
+        {
+          "log": 3,
+          "passed": 57,
+          "failed": 0,
+          "ignored": 2
+        }
+      ],
+      "all_commands_passed": true,
+      "source_files_stable": true
+    },
+    {
+      "validation": "tests/fixtures/frontend_v030/body-effects/validation-current-msrv-fix",
+      "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+      "counts": [
+        {
+          "log": 2,
+          "passed": 77,
+          "failed": 0,
+          "ignored": 3
+        },
+        {
+          "log": 3,
+          "passed": 57,
+          "failed": 0,
+          "ignored": 2
+        }
+      ],
+      "all_commands_passed": true,
+      "source_files_stable": true
+    }
+  ],
+  "notes": [
+    "First MSRV Clippy failure preserved; final current-source Clippy passes both compilers.",
+    "Full CI and release-candidate identity are separate; no complete #315 or full-plan closure is inferred from this record."
+  ]
+}

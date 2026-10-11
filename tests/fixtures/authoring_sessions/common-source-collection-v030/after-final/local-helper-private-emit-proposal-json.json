@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/local-helper-private/main.qli",
+    "--module=helper=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/local-helper-private/helper.qli",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/after-final/local-helper-private-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.013693541986867785,
+  "recorded_utc": "2026-10-05T16:21:36.762733+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "untrusted-proposal",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "none"
+    }
+  },
+  "proposal_file": "after-final/local-helper-private-emit-proposal-json.proposal.json",
+  "proposal_sha256": "25eea53f22c07a944a1043b816e7744a6d5ee8365ca0727ce50a660e2f4f1deb",
+  "proposal_bytes": 16831,
+  "proposal_authority": "Untrusted selected-source proposal; emission does not invoke native acceptance."
+}

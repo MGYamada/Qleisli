@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub fn apply_once[static U: Op<A>, static A: Basis]
+(q: Q<A>) -> Q<A> requires Apply(U) { U(q) }
+pub fn main() -> Unit { () }

@@ -1,0 +1,1 @@
+basis fn f(x:Bit)->Bit requires Applicable(U) {x}

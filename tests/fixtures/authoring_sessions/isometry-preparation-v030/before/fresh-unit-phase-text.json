@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/fresh-unit-phase/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:108..116: unsupported: finite source lowering requires supported intermediate value types\n",
+  "native_invocations": 0,
+  "seconds": 0.004229125042911619,
+  "recorded_utc": "2026-10-05T13:00:37.115149+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:108..116: unsupported: finite source lowering requires supported intermediate value types\n"
+}

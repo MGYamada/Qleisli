@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"unbound or consumed value r","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/zero-fold-invalid-body/main.qli","start":227,"end":228},"related":[]}],"result":null}

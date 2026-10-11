@@ -1,0 +1,63 @@
+{
+  "scope": "Reviewed #45 syntax/diagnostic changes; other changed inventory files only update inline test programs. Public Rust AST/signatures, 277 constructors, 269 snapshots, 20 boundaries and capacities remain unchanged. This is source identity review, not a proof or native acceptance change.",
+  "sources": [
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "before_sha256": "bbd44fb36956fbc369b975ce7dd2936bc117ec5c8596bf3da8d3e82b7be28186",
+      "current_sha256": "102ec28f1b8fb77b1dec869737581442e46b7084672713d69d64c5cc59d016a8",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "before_sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "current_sha256": "ee2cbbfe1472572e22d00a045a921abc6d630d00652a2e4e7ec2ebcf1bb94205",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "fdb5780ba9630318b07abce108d2390f540953c49d75067694c59913379b034a",
+      "current_sha256": "8c281f246e50a8b85a211133fc40d972e515c1deb2a0e1851cf5a921fee9d7bc",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "before_sha256": "cbb693f73fe3ddcc1c1487c2f2d85bbaa0e75f213b7fd5b1e132113ebb198f20",
+      "current_sha256": "f84c4d6832410ed8118874ffbb889bde9161d38a197f5551fb122dc97bbf09d2",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "before_sha256": "b1095707b82d0389be8ed51649eb6d38c0e4130f65c303439f5e0432e7dbe463",
+      "current_sha256": "2cb9b769adbacd5ee276648f38672168d2c24e5489b2de645e44457895655ec2",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/specialize/meaning.rs",
+      "before_sha256": "c01cfc67e6968e6c734f65ccf850c826af7b07ae19b5d05d7f0806318967040a",
+      "current_sha256": "de7158d27b969654349c7b3d351d632a40e52806bfbeb1679eac7fff1fb28072",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/specialize/raw.rs",
+      "before_sha256": "489178ba7524b1c4b133425b1eb5c0ccfd92755940571c44a6888d97cffb6eca",
+      "current_sha256": "c30c5f6c096d75ecaf81cf99a72e54c059b5a1e93cb098e3921a681082859e8a",
+      "public_surface_and_capacity_unchanged": true
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation.rs",
+      "before_sha256": "1d97656ccf864c7d40495627b80d2812f87f80e978498039e13b27e9c0fd4546",
+      "current_sha256": "63acc645874c42a15a997cb91d6d865a1ebf49fe3f6ef800623a2599cba3da09",
+      "public_surface_and_capacity_unchanged": true
+    }
+  ],
+  "vm29_surface_sha256_before": "e93358d6a0648407e74ac76039a8a70f015e31e0f0ed38997add6ae37aea3c0d",
+  "vm29_surface_sha256_current": "aa6095f14d94b5fa2c85202bb8d41e840acb4e6f684b0a628be03ac3ddb11acf",
+  "comparison_tests": [
+    {
+      "path": "tests/sized_cli.rs",
+      "before_sha256": "4b44d639dbd3d382af11be3bfbbd77a85bae09e3464c28136077bc35f0df77f7",
+      "current_sha256": "c1998e81b13d9de915325580802bb22814ca492b5e99ffd92eca5be098af3b80",
+      "scope": "Only the inline current capability predicate changes from Apply(U) to Applicable(U); outcomes, independent oracle and native route remain unchanged."
+    }
+  ]
+}

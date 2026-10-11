@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Gradient
 
 /-! Compute phase-free axis routing from actual shared hierarchical bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 P0 actual-body binding. This component does not replace complete artifact
 typing or issue evidence. No producer route summary or cache is an input. -/
 

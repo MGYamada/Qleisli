@@ -1,0 +1,3 @@
+unitary fn panic(q:Q<Bit>)->Q<Bit>{q}
+unitary fn return(q:Q<Bit>)->Q<Bit>{let return=panic(q);return}
+observe fn main()->Bit{1}

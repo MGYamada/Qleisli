@@ -1,0 +1,104 @@
+@Qleisli.Raw.ProtectedCommutation.phase_use_commute : ∀ {R : Type}
+  (first second : List.{0} QleisliKernel.Semantics.Raw.ProtectedControl) (p q : QleisliKernel.Semantics.Raw.Phase)
+  (ψ : Qleisli.Semantics.Protected.Physical R),
+  Eq.{1}
+    (Qleisli.Semantics.Protected.physicalUse (QleisliKernel.Semantics.Raw.Use.phase second q)
+      (Qleisli.Semantics.Protected.physicalUse (QleisliKernel.Semantics.Raw.Use.phase first p) ψ))
+    (Qleisli.Semantics.Protected.physicalUse (QleisliKernel.Semantics.Raw.Use.phase first p)
+      (Qleisli.Semantics.Protected.physicalUse (QleisliKernel.Semantics.Raw.Use.phase second q) ψ))
+@Qleisli.Raw.ProtectedCommutation.run_adjacent_phase_swap : ∀ {R : Type}
+  (before after : List.{0} QleisliKernel.Semantics.Raw.Use)
+  (first second : List.{0} QleisliKernel.Semantics.Raw.ProtectedControl) (p q : QleisliKernel.Semantics.Raw.Phase)
+  (ψ : Qleisli.Semantics.Protected.Physical R),
+  Eq.{1}
+    (Qleisli.Semantics.Protected.run
+      (HAppend.hAppend.{0, 0, 0} before
+        (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p)
+          (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q) after)))
+      ψ)
+    (Qleisli.Semantics.Protected.run
+      (HAppend.hAppend.{0, 0, 0} before
+        (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q)
+          (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p) after)))
+      ψ)
+Qleisli.Raw.ProtectedCommutation.coefficient_adjacent_phase_swap : ∀ (sourceBits : Nat) (function : List.{0} Nat)
+  (before after : List.{0} QleisliKernel.Semantics.Raw.Use)
+  (first second : List.{0} QleisliKernel.Semantics.Raw.ProtectedControl) (p q : QleisliKernel.Semantics.Raw.Phase)
+  (dimension index : Nat),
+  Eq.{1}
+    (Qleisli.Semantics.ProtectedMatrix.coefficient sourceBits function
+      (HAppend.hAppend.{0, 0, 0} before
+        (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p)
+          (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q) after)))
+      dimension index)
+    (Qleisli.Semantics.ProtectedMatrix.coefficient sourceBits function
+      (HAppend.hAppend.{0, 0, 0} before
+        (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q)
+          (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p) after)))
+      dimension index)
+Qleisli.Raw.ProtectedCommutation.checked_matrix_phase_swap : ∀ (sourceBits dataBits ancillaBits : Nat)
+  (function : List.{0} Nat) (before after : List.{0} QleisliKernel.Semantics.Raw.Use)
+  (first second : List.{0} QleisliKernel.Semantics.Raw.ProtectedControl) (p q : QleisliKernel.Semantics.Raw.Phase)
+  (original swapped : QleisliKernel.Semantics.Exact.Matrix) (work left otherWork otherLeft : Nat),
+  Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Raw.ProtectedEvaluation.matrix sourceBits dataBits ancillaBits function
+          (HAppend.hAppend.{0, 0, 0} before
+            (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p)
+              (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q) after))))
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} original) left) →
+    Eq.{1}
+        (ExceptT.run.{0, 0}
+          (QleisliKernel.Raw.ProtectedEvaluation.matrix sourceBits dataBits ancillaBits function
+            (HAppend.hAppend.{0, 0, 0} before
+              (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q)
+                (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p) after))))
+          otherWork)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} swapped) otherLeft) →
+      And
+        (Eq.{1} (QleisliKernel.Semantics.Exact.Matrix.rows original)
+          (QleisliKernel.Semantics.Exact.Matrix.rows swapped))
+        (And
+          (Eq.{1} (QleisliKernel.Semantics.Exact.Matrix.cols original)
+            (QleisliKernel.Semantics.Exact.Matrix.cols swapped))
+          (Eq.{1}
+            (List.map.{0, 0} Qleisli.Semantics.Exact.scalar (QleisliKernel.Semantics.Exact.Matrix.entries original))
+            (List.map.{0, 0} Qleisli.Semantics.Exact.scalar (QleisliKernel.Semantics.Exact.Matrix.entries swapped))))
+@Qleisli.Raw.ProtectedCommutation.checked_matrix_phase_swap_action : ∀ {R : Type}
+  (sourceBits dataBits ancillaBits : Nat) (function : List.{0} Nat)
+  (before after : List.{0} QleisliKernel.Semantics.Raw.Use)
+  (first second : List.{0} QleisliKernel.Semantics.Raw.ProtectedControl) (p q : QleisliKernel.Semantics.Raw.Phase)
+  (original swapped : QleisliKernel.Semantics.Exact.Matrix) (work left otherWork otherLeft : Nat),
+  Eq.{1}
+      (ExceptT.run.{0, 0}
+        (QleisliKernel.Raw.ProtectedEvaluation.matrix sourceBits dataBits ancillaBits function
+          (HAppend.hAppend.{0, 0, 0} before
+            (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p)
+              (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q) after))))
+        work)
+      (Prod.mk.{0, 0} (Except.ok.{0, 0} original) left) →
+    Eq.{1}
+        (ExceptT.run.{0, 0}
+          (QleisliKernel.Raw.ProtectedEvaluation.matrix sourceBits dataBits ancillaBits function
+            (HAppend.hAppend.{0, 0, 0} before
+              (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase second q)
+                (List.cons.{0} (QleisliKernel.Semantics.Raw.Use.phase first p) after))))
+          otherWork)
+        (Prod.mk.{0, 0} (Except.ok.{0, 0} swapped) otherLeft) →
+      ∀ (joint : Nat → R → Complex) (row : Nat) (reference : R),
+        Eq.{1} (Qleisli.Semantics.Exact.action original joint row reference)
+          (Qleisli.Semantics.Exact.action swapped joint row reference)
+'Qleisli.Raw.ProtectedCommutation.phase_use_commute' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.Raw.ProtectedCommutation.run_adjacent_phase_swap' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.Raw.ProtectedCommutation.coefficient_adjacent_phase_swap' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.Raw.ProtectedCommutation.checked_matrix_phase_swap' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.Raw.ProtectedCommutation.checked_matrix_phase_swap_action' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]

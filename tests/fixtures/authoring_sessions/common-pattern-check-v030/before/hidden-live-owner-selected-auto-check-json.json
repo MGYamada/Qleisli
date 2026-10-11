@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/hidden-live-owner/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.0049417499685660005,
+  "recorded_utc": "2026-10-05T16:33:57.782302+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "hidden-live-owner-selected-auto-check-json.stdout.txt",
+  "stderr_raw": "hidden-live-owner-selected-auto-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "binding q would drop a live quantum owner",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/hidden-live-owner/main.qli",
+          "start": 130,
+          "end": 131
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -4,7 +4,7 @@ import Qleisli.Semantics.Protected
 /-! Unbounded literal complex action of all straight-line pure raw events.
 This mathematical reference allocates no executable global matrix. Original
 physical computed scopes are retained, including dirty auxiliary coordinates.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.RawAction
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open Qleisli.Semantics.Exact Qleisli.Semantics.Finite

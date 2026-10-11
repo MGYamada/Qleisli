@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/test_source_kernel.py",
+    "SourceKernel.test_retained_evidence_examples_execute_with_native_handles"
+  ],
+  "exit_code": 0,
+  "seconds": 5.633801040996332,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/source-native-evidence-01.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/source-native-evidence-01.stderr.txt",
+      "sha256": "74eb8ecd2d7274d5f251496e2be3237e7780aa89f6b45bd2288ba5eddcfe3d0b"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Native canonical reshape checks against an independent recursive tree oracle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No source API or production semantic evidence is enabled by this experiment.
 """
 import argparse

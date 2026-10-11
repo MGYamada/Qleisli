@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"sealed module `std::quantum` has no public name `unit`","primary":{"path":"main.qli","start":92,"end":96,"line":2,"column":19},"related":[]}],"result":null}

@@ -1,0 +1,95 @@
+{
+  "format": "qleisli.functional-boundary-hosted-predecessor-review",
+  "version": 1,
+  "review_date": "2026-10-06",
+  "read_only_investigation": true,
+  "run": 37413163947,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37413163947",
+  "run_metadata": {
+    "event": "pull_request",
+    "conclusion": "cancelled",
+    "workflow": ".github/workflows/ci.yml",
+    "api_head_sha": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+    "actual_checkout_merge_sha": "18997543f87b254063d65e60394b26f999d261ab",
+    "checkout_merge_head": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+    "checkout_merge_base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "identity_evidence": "Both inspected jobs print the same actual git log -1 --format=%H result; the API head_sha is the pull-request head, not the checked-out merge.",
+    "mutable_pull_request_metadata_limit": "The run API's nested pull-request object now identifies head 5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726. That later current PR head is not substituted for this predecessor's tested merge."
+  },
+  "inspected_jobs": [
+    {
+      "id": 112105960692,
+      "name": "check-rust-msrv",
+      "conclusion": "failure",
+      "started_at": "2026-10-06T04:20:25Z",
+      "completed_at": "2026-10-06T04:38:06Z",
+      "failed_step": "Run cargo +1.85.0 test --all-targets",
+      "decoded_plaintext_log_bytes": 96569,
+      "decoded_plaintext_log_lines": 1053,
+      "decoded_plaintext_log_sha256": "76ca218f22a32c7596cb5cb393c0fc81449db1b24a055775d0a9ebd12d3c6dd4",
+      "excerpt": "msrv-log-excerpt.txt",
+      "observed_cause": "all_reviewed_corpus_projects_compile_verify_and_execute panics at tests/input_corpus.rs:29:5: current corpus snapshots not selected; actual left 8, expected right 6. The input_corpus target reports 1 passed, 1 failed; cargo exits 101.",
+      "matches_recorded_count_repair": true,
+      "limits": "This is the actual terminal failure exposed by the inspected predecessor job. Later targets and skipped MSRV validation steps are not treated as passed. No new MSRV execution was performed during this review."
+    },
+    {
+      "id": 112105960664,
+      "name": "check-distribution",
+      "conclusion": "failure",
+      "started_at": "2026-10-06T04:19:50Z",
+      "completed_at": "2026-10-06T04:39:26Z",
+      "failed_step": "Verify clean package and complete source archive",
+      "decoded_plaintext_log_bytes": 46066,
+      "decoded_plaintext_log_lines": 548,
+      "decoded_plaintext_log_sha256": "3c0f236ff6ae63380981046170c10d9d39d34f22d09b0d27acac21b431cb2e33",
+      "excerpt": "distribution-log-excerpt.txt",
+      "observed_cause": "The source-production cargo test --offline --all-targets subprocess exits 101. The distribution wrapper exits 1 and points to retained logs/14.stderr for details.",
+      "matches_recorded_count_repair": "not established from inspected plaintext job log",
+      "uninspected_inner_detail": {
+        "runner_path": "/home/runner/work/_temp/qleisli-distribution-artifacts-ixxu0994/logs/14.stderr",
+        "artifact_id": 11390856980,
+        "artifact_name": "distribution-18997543f87b254063d65e60394b26f999d261ab",
+        "artifact_zip_bytes_reported": 61916760,
+        "downloaded": false,
+        "inner_test_failure": "not inspected"
+      },
+      "limits": "The job log does not expose the inner test assertion. Matching checked-out source and cargo exit 101 do not establish that distribution failed for the same eight-versus-six assertion, nor exclude another inner test failure."
+    }
+  ],
+  "retrieval": {
+    "metadata_argv": [
+      ["gh", "api", "repos/MGYamada/Qleisli/actions/runs/37413163947"],
+      ["gh", "api", "repos/MGYamada/Qleisli/actions/jobs/112105960664"],
+      ["gh", "api", "repos/MGYamada/Qleisli/actions/jobs/112105960692"]
+    ],
+    "metadata_note": "The actual metadata calls selected the relevant fields using --jq; the paths above identify their REST resources.",
+    "plaintext_log_argv": [
+      ["gh", "api", "repos/MGYamada/Qleisli/actions/jobs/112105960664/logs"],
+      ["gh", "api", "repos/MGYamada/Qleisli/actions/jobs/112105960692/logs"]
+    ],
+    "plaintext_log_note": "Each individual decoded plaintext job log was read in memory and filtered through Python to display timestamped checkout/failure context. No complete-run log ZIP or artifact archive was requested or stored. Excerpts preserve only selected exact original lines, in original order; gaps are intentional.",
+    "filter_command_exit_codes": [0, 0],
+    "separate_gh_exit_status": "not separately captured because the first retrieval used a shell pipeline without pipefail; both nonempty complete decoded logs had valid checkout and terminal job records",
+    "commands_and_instructions_inside_logs": "treated as data only"
+  },
+  "repair_source_review": {
+    "current_source": "tests/input_corpus.rs",
+    "current_source_sha256": "bdef063b8cf66317732b2b85d3208ab8de7f51883271ee3adf3322c8cfb53676",
+    "current_expectation": 8,
+    "frozen_before_source": "tests/fixtures/frontend_v030/checked-operation/implementation-01/input-corpus-count-before.rs.txt",
+    "frozen_before_source_sha256": "390fe41cd914df128a389b1247a540ab93a02723b1abf243e7497392be2c06be",
+    "repair_record": "tests/fixtures/frontend_v030/checked-operation/implementation-01/input-corpus-count-repair-01.json",
+    "repair_record_sha256": "6918f73fa5e896d84ab247ead11fc58d5e49efafcae04cc5b70fb18da07174e8",
+    "scope": "Read current source and existing repair record; no source changes or test execution. Six namespace snapshots plus two explicit coherent-basis migrations account for the expected eight selected derivatives."
+  },
+  "excluded_actions": [
+    "kernel job log inspection",
+    "whole artifact or archive download",
+    "newest-run producer status polling",
+    "CI mutation or rerun",
+    "compiler or test execution",
+    "documentation source changes",
+    "Git or GitHub mutation"
+  ],
+  "authority_limits": "Hosted log/source investigation only. It grants no proof discharge, Guardian interpretation, release approval or new acceptance capability. Trusted constitutional continuity base remains faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2; 5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726 remains a source baseline."
+}

@@ -1,0 +1,82 @@
+{
+  "format": "qleisli.quantum-unit-local-validation",
+  "version": 2,
+  "status": "focused-validation-passed",
+  "base_commit": "d753962de3eedd39629c8441f2b82521ce01d70f",
+  "passed_per_toolchain": 126,
+  "new_target_tests_per_toolchain": 12,
+  "remaining_ignored_in_selected_targets": 0,
+  "raw_diagnostic_history": {
+    "latest-first": "Rust E0282: explicit Vec<SourceValue> type required before dependent primitive input inspection.",
+    "latest-second": "Same compile failure: an overbroad repair guard aborted without modifying source; no success inferred.",
+    "latest-third": "Pre-existing bit-zero profile test still expected parse rejection after Boolean implementation.",
+    "latest-fourth": "First test repair overlooked runtime if in the original Boolean source; runtime-if rejection restored while literal support stays checked.",
+    "latest-fifth": "First readout input returns Bit; current hierarchy requires one Bits result. Original inputs retained; named Bits<1> derivatives are independently mapped.",
+    "rustdoc-first": "Current local reproduction of cargo rustdoc -D warnings fails on an unquoted Q<Bit> documentation tag; fixed with code markup. Hosted inner diagnostic was not retrieved."
+  },
+  "kernel": {
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "status": "Reused existing checker with stable bytes; no new Lean build/audit/replay."
+  },
+  "scope": "Actual local Rust/native checks and independent bounded requests/oracles; not a proof of general source preservation, full CI, release readiness or issue closure. Source manifests select 366 project/test inputs rather than attesting every dependency or operating-system input.",
+  "previous_rust_runs": {
+    "latest-final": {
+      "result_sha256": "3d443d99a171b50e6228315448a955fa2161f8768d2cf5da75d9c5dc4b91b3ba",
+      "passed": 120,
+      "ignored_at_default_invocation": 7,
+      "selected_source_manifest_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+      "source_count": 366
+    },
+    "msrv-final": {
+      "result_sha256": "8b0fd9e4ae3f994365cea270ff89c064cea778a1aff78769c35dd5cadc4c51fc",
+      "passed": 120,
+      "ignored_at_default_invocation": 7,
+      "selected_source_manifest_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+      "source_count": 366
+    },
+    "latest-native": {
+      "result_sha256": "e8fe8403afe5c131a53f312526bbe528b8e494489dd429600c0b1104b1d28aee",
+      "passed": 5,
+      "ignored_at_default_invocation": 0,
+      "selected_source_manifest_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+      "source_count": 366
+    },
+    "msrv-native": {
+      "result_sha256": "afec766c6d017d815bc4fbd7544cedd1f69450a01fc63bb9c10c241931fc95e9",
+      "passed": 5,
+      "ignored_at_default_invocation": 0,
+      "selected_source_manifest_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+      "source_count": 366
+    }
+  },
+  "rust": {
+    "latest-fixed-requests": {
+      "result_sha256": "df961dcf0b91d9892e956e3c9c6b3082f5c81c714eb1713e23032066422b290a",
+      "passed": 121,
+      "ignored_at_default_invocation": 7,
+      "selected_source_manifest_sha256": "a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359",
+      "source_count": 366
+    },
+    "msrv-fixed-requests": {
+      "result_sha256": "69d7532f11e73c4ab4e63fb5d91e61f9995c08e4ceb3b72cd90e5f6558dc3776",
+      "passed": 121,
+      "ignored_at_default_invocation": 7,
+      "selected_source_manifest_sha256": "a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359",
+      "source_count": 366
+    },
+    "latest-fixed-native": {
+      "result_sha256": "a32ecdfcd9f4d9c220b99b78b0d832a6597e5a01ca24e676be9db010350eb94f",
+      "passed": 5,
+      "ignored_at_default_invocation": 0,
+      "selected_source_manifest_sha256": "a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359",
+      "source_count": 366
+    },
+    "msrv-fixed-native": {
+      "result_sha256": "9b7cdc849287893dd88a664c90eeb0484bccf922dc6a4690cf379221a29e131d",
+      "passed": 5,
+      "ignored_at_default_invocation": 0,
+      "selected_source_manifest_sha256": "a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359",
+      "source_count": 366
+    }
+  }
+}

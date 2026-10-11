@@ -1,0 +1,88 @@
+{
+  "scope": "Six existing affected finite projects at 18f5569, with explicit provenance migration. Local validation only; not full CI or whole-corpus semantic validation.",
+  "native_source_checks": 6,
+  "semantic_cases": 6,
+  "semantic_probes": 452,
+  "exhaustive": false,
+  "distinct_rejection_cases": 4,
+  "type_correct_faults_detected": 1,
+  "original_authoring_tree_unchanged": true,
+  "validation": [
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_input_corpus.py"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+      "exit_code": 0,
+      "tests": 55,
+      "seconds": 17.752,
+      "scope": "Initial migration helper and existing oracle/provenance tests; terminal result, raw stream not retained."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_input_corpus.py",
+        "MigrationTests"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+      "exit_code": 0,
+      "tests": 15,
+      "seconds": 0.08,
+      "scope": "Final helper after adding canonical alias uniqueness and its negative regression; terminal result, raw stream not retained."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_input_corpus.py"
+      ],
+      "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+      "exit_code": 0,
+      "cases": 87,
+      "sources": 3,
+      "scope": "Final metadata-only provenance verification."
+    }
+  ],
+  "failures_retained": {
+    "initial-validation": "All six runs rejected stale authoring identity before semantic probes.",
+    "semantic-replay/pennylane_demos-phase_lock.json": "220 probes and four negatives passed, but result correctly failed because root copied the stricter alias-check validator into this temporary snapshot while the run was active.",
+    "phase-runtime-omitted": "The first retry omitted QLEISLI_KERNEL; it failed before probes.",
+    "phase-native-retry": "Final retry selected the audited native runtime explicitly and held all recorded inputs unchanged."
+  },
+  "independent_review": "review_kernel inspected ordered identities, complete snapshots, source-bound observations, and duplicate/stale/missing negatives; no actionable defect reported. No semantic adequacy or fresh full-CI claim is inferred from this review.",
+  "staged_integration": {
+    "root": "/private/tmp/qleisli-corpus-migration-staged",
+    "checks": [
+      {
+        "argv": [
+          "python3",
+          "scripts/check_docs.py"
+        ],
+        "exit_code": 0,
+        "local_links": 1675,
+        "markdown_anchors": 12,
+        "lean_root_modules": 206
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        "exit_code": 0,
+        "constructors": 265,
+        "source_snapshots": 244,
+        "boundaries": 20
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_input_corpus.py"
+        ],
+        "exit_code": 0,
+        "finite_cases": 87,
+        "sources": 3
+      }
+    ],
+    "scope": "Clean index export excludes concurrent ordinary-type and release-gate work; metadata checks only."
+  }
+}

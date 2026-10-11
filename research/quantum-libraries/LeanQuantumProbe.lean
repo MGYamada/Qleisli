@@ -2,7 +2,7 @@ import Quantum.QuantumMechanics.QuantumChannel
 
 /-!
 Original Qleisli interoperability probes, Apache-2.0.
-Copyright 2026 Masahiko G. Yamada.
+Copyright 2026 Qleisli Project Contributors.
 These test mathematical interfaces only, not source/IR correspondence.
 Tensor factors remain typed; no physical bit flattening is selected here.
 -/

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.011893499991856515,
+  "recorded_utc": "2026-10-05T17:12:01.094999+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "static-runtime-collision-finite-check-text.native.jsonl",
+  "stdout_raw": "static-runtime-collision-finite-check-text.stdout.txt",
+  "stderr_raw": "static-runtime-collision-finite-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7452d25615a49f93e6e1b1d09d0b9f76438be41022eddb3f50ae71f92c8ab8eb",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/main.qli:4:41: ownership: duplicate parameter name\n"
+}

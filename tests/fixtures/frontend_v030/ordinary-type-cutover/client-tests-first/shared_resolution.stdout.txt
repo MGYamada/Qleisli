@@ -1,0 +1,8 @@
+
+running 3 tests
+test same_named_host_providers_keep_distinct_definition_and_instance_identity ... ok
+test recorded_profile_differences_and_adopted_convergence_remain_explicit ... ok
+test unused_concrete_declaration_still_requires_native_eligible_effects ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

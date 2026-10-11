@@ -1,0 +1,49 @@
+{
+  "format": "qleisli.static-nat-validation",
+  "version": 1,
+  "scope": "Lexical Nat aliases; one #28/#63 implementation unit, not Issue completion.",
+  "tests": {
+    "latest_unique": 24,
+    "latest_targets": [
+      "static_naturals (5)",
+      "ordinary_booleans (8)",
+      "sized_declarations (11)"
+    ],
+    "msrv_1_85_0": 5,
+    "small_widths": [
+      0,
+      2,
+      4
+    ],
+    "external_reference_dimension": 2,
+    "fold_parameters": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "meaning": "Identity must preserve unequal complex coefficients exactly; fold output equals parity of n. Native gates check actual proposals.",
+    "both_all_target_clippy": "passed after final capacity test, latest Rust and MSRV 1.85.0, warnings denied",
+    "book": "mdBook 0.5.4 build; 29 HTML, 1214 links, 464 anchors",
+    "constitution": "continuity against reviewed 38baae7d19535602b21270e11e97617d45205b37 passed; no new admission"
+  },
+  "retained_first_failures": [
+    "Test expected u32 instead of actual IR u8 width; compilation failed before execution.",
+    "First identity test used Raw lowering for Bits and hit existing unsupported target profile; repaired test uses native hierarchy and reference execution.",
+    "First positive selected sources had private host entry; attempt-02 only adds public entry.",
+    "First attempt-02 observer omitted required checker selection; all six kernel-error observations retained, followed by explicit-checker calls.",
+    "Docs link checker read inline generic call notation as a link; actual example moved into fenced source."
+  ],
+  "remaining": [
+    "Bounded static helpers",
+    "Exact phase-table construction",
+    "Full #28/#63 evaluation/normalization/iteration contract",
+    "General specialization/source/runtime preservation proofs",
+    "Broader QS/PR/quantitative RS/EXACT discharges",
+    "Current-unit full CI and exact-commit release gates"
+  ],
+  "sources": {
+    "tests/static_naturals.rs": "744c0f47811d5791a0c732060ed9602b071aac67f6458184be80e7b74faa699c",
+    "docs/src/reference/static-language.md": "00308902bd4ffa2e745803591a30161ed9dafbc56cd6abc1cec01bdb7fee8222"
+  }
+}

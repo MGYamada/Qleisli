@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/private/tmp/qleisli-ci-repair-fae)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.52s
+     Running unittests src/lib.rs (/private/tmp/qleisli-ci-repair-fae/target/debug/deps/qleisli-5f3236acbbcb948f)

@@ -6,7 +6,7 @@
 // Fixed-scope adaptation; see README.md and corpus/POLICY.md.
 
 use std::quantum::z;
-basis fn both(a: Bit, b: Bit) -> Bit { a and b }
+basis fn both((a, b): (Bit, Bit)) -> Bit { a and b }
 pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     with_computed(q, both) { |flag| z(flag) }
 }

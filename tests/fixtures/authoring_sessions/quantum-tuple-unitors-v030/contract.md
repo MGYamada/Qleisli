@@ -1,0 +1,20 @@
+# Contract snapshot
+
+Source: https://github.com/MGYamada/Qleisli/issues/43
+Updated at (GitHub record): 2026-10-05T02:59:31Z
+
+This is the exact next-unit section read before source observations. It records an ordinary implementation contract, not a new constitutional adoption.
+
+## Next implementation contract: packaged quantum products and explicit unitors — 2026-10-05
+
+Continue the adopted #27/#43/#84 exact-tree rules through the common selected-source hierarchy path, using existing source syntax and native structural constructors. Ordinary technical implementation remains under QS/PR/RS and EXACT; no new constitutional interpretation, semantic primitive or guarantee is proposed. Preserve a first-source study before production edits in `authoring_sessions/quantum-tuple-unitors-v030`.
+
+**Types and public maps.** Admit quantum basis trees recursively built from Unit, Bit, Bits<n> and ordered tuples, and matching closed Op<basis> providers, without introducing abstract Basis polymorphism. A packaged Q<(A,B)> is one linear owner; an ordinary (Q<A>,Q<B>) contains two. A readonly concrete source-type basis view may expose the retained exact tree; ordinary fields() must not silently unpack a Q owner. Keep Unit/Bits0, Bit/Bits1, flat/nested trees and all immediate arities distinct. No implicit destructuring, packing, reassociation or coercion is inserted.
+
+Use the existing binary source entries `std::quantum::split(q)` and `std::quantum::join(a,b)`, with no static arguments. split consumes exactly Q<(A,B)> and creates the two fresh owners (Q<A>,Q<B>); join consumes two distinct quantum owners and creates one Q<(A,B)>. Native support for more immediate fields does not widen this source binary contract. Left/right Unit removal combines split with finish; insertion combines unit with join. The maps have exact coefficient +1 and preserve ordered axes and arbitrary external references, without assuming separate owners are separable. Phase applied to the separated Unit factor must survive finish and rejoining. Keep phase_eighth's current selected atom-only contract; this unit adds no direct scalar API on packaged tuples.
+
+**Checking and lowering.** Reuse the shared source type tree and a common input-dependent split/join type rule for symbolic and concrete checking. Preserve complete source-order argument evaluation, effects, unused/zero-fold body checking and fresh owner identity. Charge the basis tree's actual nodes/depth, including zero-width nodes, and checked summed widths before allocation; retain current structural/profile limits (including eight axes per hierarchy owner and sixteen in its complete frame) rather than raising capacity. Reuse checked split_tuple/join_tuple, pack_unit/unpack_unit and exact tree interfaces. Compare complete types, ordered partition/concatenation and actual structural tags in independent source-event validation; same endpoints or a producer equation alone cannot substitute for canonical +1. Preserve surrounding frames, Fourier's Bit/Bits requirements and exact provider binding. No Lean/schema extension or fallback acceptance.
+
+**Bounded completion evidence.** Test left/right maps and round trips for Unit, Bit, Bits0/1/2 and nested products (at most two system qubits), independently authored exact structural requests and complex reference coefficients. Include nontrivial scalar on a removed Unit factor, controlled four-eighths = Z, nonidentical axis amplitudes, same-width wrong trees, implicit-destructure rejection, arity/static-arity, alias/lost/revived zero-width owners, invalid unused/zero-fold bodies and fresh-native-accepted phased impostors rejected against fixed requests and original source metadata. Preserve first diagnostics and named repairs. Existing finite split/join/coherent-lift unitors are comparison controls; finite unit/finish and selected coherent lifts remain separate unfinished parity work. Explicit Raw profile limitations must reject honestly. Passing this bounded integration does not complete general Basis support, #32/#43, full source preservation or release validation.
+
+

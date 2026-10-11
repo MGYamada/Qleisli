@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Native mutation/oracle checks for the actual typed QFT graph projection.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No external schema or artifact format is enabled by this test harness.
 """
 import native_harness

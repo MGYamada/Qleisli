@@ -1,0 +1,72 @@
+{
+  "command": [
+    "/private/tmp/qleisli-default-boundary-after",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/default-construction-v030/attempt-01/ordinary-default",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "ordinary-default",
+  "phase": "after",
+  "mode": "finite",
+  "exit_code": 0,
+  "started_utc": "2026-10-06T05:29:55.931017+00:00",
+  "recorded_utc": "2026-10-06T05:29:56.292594+00:00",
+  "seconds": 0.3615600419580005,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "f078eb4797b7d7ffad615f893e4674f3a54b6c134d78282932add490efd58d74",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-after/ordinary-default-run-json.stdout.txt",
+      "sha256": "6ee42d849603949bcd3cb263dc51e373f81c31e75e3a92315f5e7dc57ee9ab51",
+      "bytes": 149
+    },
+    "stderr": {
+      "path": "observations-after/ordinary-default-run-json.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Actual bounded public CLI observation; selected native bytes identify a path, not child-start attestation, authenticated build provenance or a source/runtime theorem.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  }
+}

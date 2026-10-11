@@ -1,0 +1,2 @@
+finite: error 22..26 expected `(`, found identifier
+sized: ok

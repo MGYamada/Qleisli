@@ -1,0 +1,34 @@
+{
+  "format": "qleisli.independent-isometry-expectations",
+  "version": 1,
+  "recorded_utc": "2026-10-05T15:03:05.822456+00:00",
+  "provenance": "The original source/spec equations were frozen in the authoring context before implementation. This later index transcribes those laws and identifies the supplemental source, tests and separately reviewed transport conventions; it is not backdated.",
+  "exact_laws": {
+    "zero": "z -> z|0>; canonical unit/finish coefficient +1",
+    "scalar": "omega = exp(i*pi/4); scalar before finish remains omega times every reference coefficient",
+    "caller_control": "|b> -> |b,b>, retained source input axis low and fresh target high",
+    "tuple_order": "Final owners/axes follow the declared ordered output tree, not allocation order",
+    "multi_initialization": "After two initializations around Unit scalar work and H on the first bit, reversed output (b,a) has omega*z/sqrt(2) at rows 0 and 2, zero at 1 and 3"
+  },
+  "exact_request_test": "src/frontend/sized/lower/preservation/isometry_tests.rs",
+  "request_independence": "Mathematical constructor sequence, exact scalar, H and X matrix leaves and control polarity are authored independently. Fixed owner/axis placements are explicit transport conventions reviewed against interfaces. No candidate body, Meaning or producer comparison supplies expected coefficients. Initial/fresh ports and exact residual quantum outputs are separately asserted.",
+  "negative_request": "Keep structure/arity and replace omega by omega squared, or X by I. Positive request must first pass.",
+  "reference_oracle": "Arbitrary unnormalized complex inputs; external reference varies slowest. No owner-separability assumption, probability-only equality or phase quotient. Numerical tolerance supplements the exact requests and is not constitutional discharge.",
+  "native_valid_source_mutant": "A separately authored phased helper is accepted for its own exact equation and executed with omega. Reattach original direct Finish source metadata to its unchanged accepted payload and require canonical structural source-event rejection. This proves only this rejection scenario, not general source preservation.",
+  "whole_matrix_limitation": "The earlier single whole-root finiteMatrix request rejected composite roots because native arity matching is structural. Failed attempt and output remain retained; arbitrary extensional equality is not implemented.",
+  "maximum_system_qubits": 2,
+  "pending": [
+    "general source preservation",
+    "native/runtime correspondence",
+    "full common-profile/Raw Unit parity",
+    "QS-2026-01",
+    "PR-2026-01",
+    "RS-2026-01",
+    "EXACT-2026-01"
+  ],
+  "supplemental_source_files": {
+    "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/context.json": "fd19fce99b6a4c2b0188597ad88a420586de2d165ddd880698108068ccc242ed",
+    "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/main.qli": "98db9359dd3413f144bea1a9319e32013df01bdb859c862229f4dbad05a256df"
+  }
+}

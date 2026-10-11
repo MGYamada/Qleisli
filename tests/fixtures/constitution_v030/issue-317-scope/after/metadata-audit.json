@@ -1,0 +1,17 @@
+{
+  "changed_paths": [
+    "scripts/check_release_ready.py",
+    "scripts/test_check_release_ready.py",
+    ".github/ci/README.md",
+    "docs/src/design/ratification.md"
+  ],
+  "expected_changed_paths": [
+    "scripts/check_release_ready.py",
+    "scripts/test_check_release_ready.py",
+    ".github/ci/README.md",
+    "docs/src/design/ratification.md"
+  ],
+  "issue_317_original_criteria_implemented": 0,
+  "no_guardian_or_proof_status_change": true,
+  "other_captured_inputs_unchanged": true
+}

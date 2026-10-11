@@ -1,0 +1,17 @@
+{
+  "note": "Source hashes after final recorded parser validation; independent evidence, not release publication or proof discharge.",
+  "sha256": {
+    "src/frontend/ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+    "src/frontend/parser.rs": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
+    "src/frontend/sized.rs": "8e4c70a9ebdbe4daa495c413177d14a519df094a2682b947ca153ea9755366b5",
+    "src/frontend/sized/ast.rs": "2fa4488b3a2bf7389b002f335021169f123dcd58d6c6b15614c037535ac3157c",
+    "src/frontend/sized/parser.rs": "5f29afc4b0b0da4c45468f3eed0dc5de0e7007f345976e31fac1cecd9dc84e98",
+    "src/frontend/compile/mod.rs": "02200d5197275124faaa14d84f15fa8ea71dac4c7f284b1a45f69dcdbe53a668",
+    "src/frontend/compile/profile.rs": "8916be769b047b70eb3ed9adf58350f6137db3f0850dbbd77b0668f93e08360f",
+    "src/frontend/compile/operations.rs": "0f3064f5c02ed615b2fd4116f73049c16416b891a728e59bbdef8fec49b071d1",
+    "src/frontend/compile/lower/mod.rs": "4d409be367c44555ac2c8fa367bd96f0f5418c013d9f1f87a7da2a574ed192f2",
+    "src/frontend/compile/lower/operations.rs": "eb4b6e1f1c71683ec8769911d91b04c7690f7b5dcfc0365166e189f071fe3c15"
+  }
+}

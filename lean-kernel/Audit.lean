@@ -7,7 +7,7 @@ import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Command
 
 /-!
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 Audit the compiled project declarations, including generated and private ones.
 This build-time program is outside the executable kernel. Lean's own compiler,

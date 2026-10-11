@@ -1,0 +1,122 @@
+
+running 13 tests
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.86s
+
+
+running 6 tests
+test isometry_cli_sampling_requires_actual_observation ... ok
+test isometry_cli_missing_native_checker_never_falls_back ... ok
+test isometry_cli_explicit_raw_retains_its_actual_support_boundary ... ok
+test isometry_cli_run_keeps_the_retained_frame_axis_and_exact_scalar_phase ... ok
+test isometry_cli_run_retains_preparation_phase_and_zero_width_owner ... ok
+test isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s
+
+
+running 11 tests
+test split_and_join_create_fresh_distinct_linear_owners_without_flattening ... ok
+test binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules ... ok
+test exact_basis_view_never_unpacks_an_owner_and_preserves_nested_zero_width_fields ... ok
+test isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject ... ok
+test same_width_substitutions_and_implicit_destructuring_remain_type_errors ... ok
+test structural_tuple_events_after_observation_retain_exact_basis_and_reference ... ok
+test ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work ... ok
+test tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_action ... ok
+test scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference ... ok
+test finite_controls_remain_checked_and_raw_tuple_limits_are_explicit ... ok
+test fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_reference ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.13s
+
+
+running 12 tests
+test effects_are_not_hidden_by_the_ordinary_unit_argument_or_result ... ok
+test ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner ... ok
+test every_isolated_owner_and_unused_zero_iteration_body_is_checked ... ok
+test selected_coherent_lifts_remain_separate_from_explicit_packaged_maps ... ok
+test isolated_wrong_types_and_arities_reject_before_argument_evaluation ... ok
+test first_positive_sources_retain_whole_signatures_and_reach_elaboration ... ok
+test four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference ... ok
+test unit_maps_after_observation_retain_actual_source_events_and_native_action ... ok
+test exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients ... ok
+test left_and_right_owner_product_maps_preserve_order_and_entangled_references ... ok
+test native_valid_wrong_scalar_and_matching_own_meaning_fail_the_unchanged_request ... ok
+test scalar_arguments_execute_once_and_finish_does_not_erase_phase ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+
+running 9 tests
+test selected_basis_and_request_conflicts_reject_before_native_or_request_reads ... ok
+test selected_module_checking_and_binding_errors_cannot_start_native ... ok
+test selected_open_signature_checks_and_proposals_do_not_claim_closed_execution ... ok
+test selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native ... ok
+test selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes ... ok
+test selected_static_fold_and_fresh_sampling_use_the_requested_instance ... ok
+test selected_mixed_sources_keep_independent_distributions_and_scope ... ok
+test selected_caller_h_request_rejects_x_once_without_a_raw_retry ... ok
+test selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+
+running 41 tests
+test common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics ... ok
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test common_lexical_tables_survive_cloning_and_distinguish_fold_activations ... ok
+test contextual_controlled_and_reserved_words_have_one_classification ... ok
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel
+test common_lexical_static_substitution_uses_callee_binders_and_caller_values ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test existing_empty_sized_spellings_remain_common_syntax ... ok
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test indexed_projection_preserves_profile_diagnostic_order_before_resolution ... ok
+test hierarchy_eligibility_retains_boolean_location_and_body_checks ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test lowering_profile_preflight_identifies_unsupported_root_signatures ... ok
+test multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel
+test shadowing_moves_tuple_shape_and_effects ... ok
+test common_syntax_does_not_grant_missing_profile_or_capability_support ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test explicit_module_loading_retains_the_same_ast_as_project_loading ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 38 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.26s
+

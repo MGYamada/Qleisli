@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/finite-sealed-provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "Qargo.toml requires schema-version = 2",
+        "primary": {
+          "path": "Qargo.toml",
+          "start": 0,
+          "end": 25,
+          "line": 1,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.003604917030315846,
+  "recorded_utc": "2026-10-05T10:01:55.412415+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

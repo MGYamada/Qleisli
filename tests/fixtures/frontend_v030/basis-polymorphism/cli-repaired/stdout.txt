@@ -1,0 +1,32 @@
+
+running 9 tests
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... FAILED
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis ... FAILED
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... ok
+
+failures:
+
+---- same_algorithm_retains_small_reference_action_and_unit_scalar_phase stdout ----
+
+thread 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase' (13909055) panicked at tests/basis_polymorphism.rs:292:56:
+explicit audited native checker
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis stdout ----
+
+thread 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis' (13909056) panicked at tests/basis_polymorphism.rs:235:53:
+explicit audited native checker
+
+
+failures:
+    same_algorithm_retains_small_reference_action_and_unit_scalar_phase
+    selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis
+
+test result: FAILED. 7 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

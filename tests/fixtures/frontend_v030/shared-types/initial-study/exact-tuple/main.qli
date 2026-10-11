@@ -1,0 +1,2 @@
+unitary fn change(x: ((CBit,CBit),CBit)) -> (CBit,(CBit,CBit)) { x }
+observe fn main() -> Unit { () }

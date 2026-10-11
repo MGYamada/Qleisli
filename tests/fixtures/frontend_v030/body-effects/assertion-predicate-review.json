@@ -1,0 +1,10 @@
+{
+  "changed_source": [
+    "src/frontend/effects.rs"
+  ],
+  "before": "!asserted.is_some_and(|bound| inferred > bound)",
+  "after": "asserted.is_none_or(|bound| inferred <= bound)",
+  "review": "Equivalent for the existing total order Unitary <= Iso <= Observe: None accepts; Some(bound) accepts iff inferred <= bound. MSRV Clippy rejected the former nonminimal boolean expression. No annotation is an inference seed.",
+  "earlier_broad_suite": "validation-current-latest and validation-current-msrv bind the preceding source map. Both broad runtime suites passed; the first MSRV Clippy failure remains recorded.",
+  "current_validation": "validation-current-latest-fix and validation-current-msrv-fix bind the final source map and directly retest assertion consumers, frontend library and all-target linting."
+}

@@ -1,0 +1,49 @@
+{
+  "status": "ordinary-policy-and-docs-checks-passed",
+  "selected_input_count": 389,
+  "source_mismatches": {},
+  "pinned_mdbook_verified": true,
+  "actual_command_count": 13,
+  "regression_test_counts": {
+    "03.book-regression": 12,
+    "05.authoring-regression": 7,
+    "07.edition-regression": 11,
+    "09.docs-regression": 36
+  },
+  "separate_metadata_checks": {
+    "status": "separate-root-results-read-and-byte-bound",
+    "root_record": "tests/fixtures/frontend_v030/common-pattern-design/metadata-review/results.json",
+    "root_record_time_utc": "2026-10-05T16:49:39.712363+00:00",
+    "reference_sha256": "41312b8982e4bb131e5a1ee2c3d60b3cc412d9e6d2f06f3845713635bfc79865",
+    "source_file_count": 253,
+    "actual_regression_counts": {
+      "inventory": 17,
+      "coverage": 14
+    },
+    "rerun_by_this_driver": false,
+    "recorded_commands_executed": false,
+    "identity_limits": "The root packet does not freeze regression-script bytes at historical execution. This reference pins the retained packet and current source/metadata; it does not manufacture complete historical fixture/script/build closure."
+  },
+  "rendered_output_bytes": 3853280,
+  "pattern_scope": "Private shared runtime pattern-binding judgment only; sized elaboration and coherent basis binder remain separate.",
+  "metadata_scope": "Root-reviewed actual source/surface refresh only; route/proof criteria and statuses are not widened.",
+  "constitutional_mode": "Current source/evidence identity with trusted-base continuity; no fresh Lean replay",
+  "not_run": [
+    "Inventory/coverage mutation suites (root already performed; retained separately)",
+    "Rust builds/tests (root runs separate validation/driver.py)",
+    "Lean build/audit/replay",
+    "constitutional mutation suite (unchanged checker)",
+    "full CI or release-readiness validation"
+  ],
+  "no_claim": [
+    "complete common checker",
+    "source preservation",
+    "new guarantee admission",
+    "proof closure",
+    "canonical generic QFT availability",
+    "Issue closure",
+    "release approval"
+  ],
+  "raw_failures_preserved": true,
+  "original_or_previous_records_modified": false
+}

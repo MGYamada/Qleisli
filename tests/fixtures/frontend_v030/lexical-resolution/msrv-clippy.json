@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "clippy",
+    "--offline",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "PATH_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+  "exit_code": 0,
+  "stdout": "msrv-clippy.stdout",
+  "stderr": "msrv-clippy.stderr"
+}

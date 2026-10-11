@@ -1,0 +1,86 @@
+{
+  "format": "qleisli.isometry-final-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-05T15:45:08.612009+00:00",
+  "ordinary_review": "Root checked terminal raw transcripts/source identities; separate child read-only review confirmed source/test repairs, split accounting and NativeContract scope.",
+  "source_input_count": 200,
+  "source_input_sha256": "e155488e8bcfa53dc7fc8256e9b7dcce29cc37cdd696c2bd403597bb58211ab4",
+  "source_map_scope": "Rust library/CLI/tests, Cargo files, selected original Iso sources and supplemental source only. The fixed driver does not bind all dynamic runtime fixtures or the complete dependency closure.",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "msrv_full": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "totals": [
+        801,
+        0,
+        52
+      ],
+      "reported_groups": 91,
+      "seconds": 1007.7934628750081
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--doc"
+      ],
+      "totals": [
+        3,
+        0,
+        0
+      ],
+      "reported_groups": 1,
+      "seconds": 1.5977134160348214
+    }
+  ],
+  "latest_default_validation": {
+    "kind": "split-successful-target-observations-after-two-test-only-repairs",
+    "passed": 801,
+    "failed_final_targets": 0,
+    "default_ignored": 52,
+    "reported_groups": 91,
+    "doctests": 3,
+    "first_failed_full_retained": true,
+    "single_successful_all_target_command": false
+  },
+  "final_lint": {
+    "commands": "final-lint/commands.json",
+    "actual_toolchains": [
+      "1.85.0",
+      "1.98.1"
+    ],
+    "all_target_warnings_denied": true,
+    "formatting": true
+  },
+  "test_only_repairs_since_failed_latest_full": [
+    "tests/sized_review_diagnostics.rs",
+    "tests/sized_review_dialects.rs"
+  ],
+  "second_repair": {
+    "original": "sized-review-dialects.before.rs.txt",
+    "first_noncompiling_repair": "sized-review-dialects.first-repair.rs.txt",
+    "failure": "remainder-latest-diagnostic-final/commands.json",
+    "compile_failure": "remainder-latest-profile-final/commands.json",
+    "success": "remainder-latest-profile-repaired/commands.json",
+    "cause": "The original Iso preparation is now eligible, so unsupported lowering expectations are obsolete. A genuinely unsupported nonempty ordinary Bit result remains negative; the original source remains positive for principal Iso and transport."
+  },
+  "additional_current_stdlib_observation": {
+    "sources": {
+      "stdlib/src/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "stdlib/src/routines.qli": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "stdlib/src/transforms.qli": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba"
+    },
+    "unchanged_against_published_commit": "eb9c36ef9c13b5b968fda6858e61ea4419430144",
+    "timing_limit": "Captured by final lint, not fabricated as a pre-run hash observation for previous full commands."
+  },
+  "terminal_policy": "terminal-policy-final/commands.json",
+  "constitutional_continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "proof_and_release_limits": "No new Lean build/audit/replay, native semantic rule, source-preservation theorem, ledger admission, broader QS/PR/RS/EXACT discharge or exact-current-commit release validation. Hosted predecessor run has distinct checked PR merge identity. No parent Issue closes from this bounded adapter."
+}

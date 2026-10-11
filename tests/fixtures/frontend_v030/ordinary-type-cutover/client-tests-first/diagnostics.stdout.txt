@@ -1,0 +1,11 @@
+
+running 6 tests
+test parser_failure_remains_project_category_with_explicit_parse_context ... ok
+test structured_parse_diagnostics_preserve_unicode_crlf_and_eof_spans ... ok
+test function_contract_mismatch_reports_an_exact_phase_counterexample ... ok
+test invalid_contract_inside_an_isolated_computed_body_keeps_its_source_span ... ok
+test structured_load_errors_distinguish_source_spans_from_missing_files ... ok
+test invalid_computed_contract_points_to_its_expression_including_nested_branches ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+

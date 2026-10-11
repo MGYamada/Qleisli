@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unsupported-basis/main.qli",
+    "--module=a_basis=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/unsupported-basis/a_basis.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "stderr": "a_basis:75..110: unsupported: sized preparation profile: requires an ordinary function\n",
+  "native_invocations": 0,
+  "seconds": 0.004797041998244822,
+  "recorded_utc": "2026-10-05T16:13:01.832433+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "transcript": "a_basis:75..110: unsupported: sized preparation profile: requires an ordinary function\n"
+}

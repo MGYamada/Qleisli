@@ -1,0 +1,104 @@
+{
+  "format": "qleisli.source-authoring-preparation",
+  "version": 1,
+  "prepared_at_utc": "2026-10-05T22:28:46.175045+00:00",
+  "session_kind": "informed implementation-aware permission regression study",
+  "status": "FIRST sources and planned source-path assertions unexecuted; actual root compile-formatting failure retained separately",
+  "first_source_attempt": "attempt-01",
+  "schema_version": 2,
+  "edition": "2026",
+  "contract": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-clarification-01.md",
+    "sha256": "04669bfc1fd1bbd92942dd27bf3b180e772bda03d094c485bf4c346e9598d720",
+    "ordinary_before_code_receipt": "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-before-code-01.json",
+    "receipt_sha256": "536807cbdfcb8dbbe14909fe22603d041fed234b6b0303b0f853ed7d0ea462a8",
+    "constitutional_act": false
+  },
+  "author": {
+    "agent": "/root/isometry_docs",
+    "role": "reviewed core; authored resolution/lexical/linear accounting support, not capability-mask core",
+    "model_metadata": "exact deployed model and sampling parameters unavailable",
+    "prior_context": "extensive prior specification, code, diagnostics and independent review context",
+    "source_authored_after_implementation": true
+  },
+  "executions_by_author": {
+    "cargo": 0,
+    "parser": 0,
+    "cli": 0,
+    "native": 0,
+    "source_tests": 0,
+    "builds": 0
+  },
+  "observed_source_checks": 0,
+  "root_compile_failure_record": "test-authoring-attempt-01/repair.json",
+  "planned_assertions": {
+    "rust_test_target": "tests/common_source_provider_access.rs",
+    "test_functions": 5,
+    "projects": 10,
+    "public_source_paths_per_project": 2,
+    "checks_total": 20,
+    "positive_source_projects": 5,
+    "negative_source_projects": 5,
+    "maximum_own_physical_qubits_per_callable": 2,
+    "selected": "ParsedProgram::parse; no instantiate/emission/native",
+    "finite": "check_project_with_kernel, valid private opaque-Basis eligibility barrier and nonexistent kernel path; no native child can execute"
+  },
+  "cases": [
+    {
+      "name": "apply-only-forward",
+      "common_source_positive_prediction": true,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "apply-only-inverse",
+      "common_source_positive_prediction": false,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "apply-only-controlled",
+      "common_source_positive_prediction": false,
+      "maximum_own_physical_qubits_per_callable": 2
+    },
+    {
+      "name": "adjoint-only-backwards-forward",
+      "common_source_positive_prediction": true,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "adjoint-only-backwards-inverse",
+      "common_source_positive_prediction": false,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "all-paths-inverse",
+      "common_source_positive_prediction": true,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "all-paths-controlled",
+      "common_source_positive_prediction": true,
+      "maximum_own_physical_qubits_per_callable": 2
+    },
+    {
+      "name": "unused-op-inverse",
+      "common_source_positive_prediction": false,
+      "maximum_own_physical_qubits_per_callable": 1
+    },
+    {
+      "name": "unused-op-controlled",
+      "common_source_positive_prediction": false,
+      "maximum_own_physical_qubits_per_callable": 2
+    },
+    {
+      "name": "closed-provider-controlled",
+      "common_source_positive_prediction": true,
+      "maximum_own_physical_qubits_per_callable": 2
+    }
+  ],
+  "limitations": [
+    "Predictions are not observations or accepted-source evidence.",
+    "Five positive finite cases must report honest opaque-Basis profile restriction; no finite specialization success is claimed.",
+    "No baseline CLI, full production closure, new native acceptance, certificate, source-family proof, Issue completion or release readiness is claimed.",
+    "The original source attempt must be preserved if first validation finds grammar or behavior failures."
+  ]
+}

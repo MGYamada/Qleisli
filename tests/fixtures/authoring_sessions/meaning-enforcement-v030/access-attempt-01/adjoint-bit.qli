@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::phase;
+classical fn forward_angle(b:Bit)->(Bit,(Bit,Bit)){(b,(0,0))}
+classical fn inverse_angle(b:Bit)->(Bit,(Bit,Bit)){(b,(b,b))}
+meaning Forward:Bit=phase_by(forward_angle);
+meaning Inverse:Bit=phase_by(inverse_angle);
+unitary fn leaf(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+unitary fn invert[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Adjoint(U){adjoint(U,q)}
+pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{invert[type(Bit),checked_op(leaf,Forward)](q)}
+unitary fn apply[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}
+pub unitary fn client(q:Q<Bit>)->Q<Bit>{apply[type(Bit),checked_op(implementation,Inverse)](q)}

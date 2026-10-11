@@ -1,0 +1,4 @@
+common.parse: ParseError { message: "unexpected character `!`", span: Span { start: 33, end: 34 } }
+finite.check: Diagnostic { code: "parse", message: "parse error: unexpected character `!`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }
+finite.compile: Diagnostic { code: "parse", message: "parse error: unexpected character `!`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }
+sized.generic: Error { code: "parse", module: Some("main"), span: Span { start: 33, end: 34 }, message: "unexpected character `!`" }

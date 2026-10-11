@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"a local value is not callable","primary":{"path":"main.qli","start":171,"end":175,"line":6,"column":5},"related":[]}],"result":null}

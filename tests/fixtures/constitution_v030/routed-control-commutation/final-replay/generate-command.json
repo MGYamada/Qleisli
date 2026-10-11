@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-routed-control-replay-20261005/generate",
+    "/private/tmp/qleisli-routed-control-replay-20261005/cases",
+    "/private/tmp/qleisli-routed-control-replay-20261005/qleisli-kernel",
+    "ab",
+    "ba",
+    "overlap-ab",
+    "overlap-ba",
+    "wrong-output-route",
+    "unit-ab",
+    "unit-ba"
+  ],
+  "cwd": "/private/tmp/qleisli-routed-control-replay-20261005",
+  "started_at": "2026-10-04T15:32:06.171726+00:00",
+  "elapsed_seconds": 1.4698370000114664,
+  "exit_code": 0,
+  "stdout": "generate.stdout.txt",
+  "stderr": "generate.stderr.txt"
+}

@@ -1,7 +1,7 @@
 //! ASCII-keyword lexer with UTF-8 byte positions.
 
 use super::ast::Span;
-use super::documentation::{DocComment, DocStyle};
+use super::documentation::DocComment;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
@@ -26,8 +26,9 @@ pub enum TokenKind {
     LBracket,
     RBracket,
     Pub,
+    Classical,
     Basis,
-    Iso,
+    Isometry,
     Unitary,
     Observe,
     Fn,
@@ -41,10 +42,20 @@ pub enum TokenKind {
     Adjoint,
     RepeatStatic,
     Qif,
+    Qfor,
     True,
     False,
     Natural(String),
     FatArrow,
+    Plus,
+    Minus,
+    Star,
+    Caret,
+    DotDot,
+    EqualEqual,
+    NotEqual,
+    LessEqual,
+    GreaterEqual,
     Not,
     Xor,
     And,
@@ -85,7 +96,7 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "Controlled" => TokenKind::ControlledAccess,
         "permutation_by" => TokenKind::PermutationBy,
         "phase_by" => TokenKind::PhaseBy,
-        "bind_op" => TokenKind::BindOp,
+        "checked_op" | "bind_op" => TokenKind::BindOp,
         "inverse_op" => TokenKind::InverseOp,
         "then_op" => TokenKind::ThenOp,
         "tensor_op" => TokenKind::TensorOp,
@@ -94,8 +105,11 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "conjugate_op" => TokenKind::ConjugateOp,
 
         "pub" => TokenKind::Pub,
+        "classical" => TokenKind::Classical,
         "basis" => TokenKind::Basis,
-        "iso" => TokenKind::Iso,
+        // Keep the old word reserved for the located migration error below.
+        // The canonical token does not rename versioned IR effect tags.
+        "isometry" | "iso" => TokenKind::Isometry,
         "unitary" => TokenKind::Unitary,
         "observe" => TokenKind::Observe,
         "fn" => TokenKind::Fn,
@@ -109,6 +123,7 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "adjoint" => TokenKind::Adjoint,
         "repeat_static" => TokenKind::RepeatStatic,
         "qif" => TokenKind::Qif,
+        "qfor" => TokenKind::Qfor,
         "true" => TokenKind::True,
         "false" => TokenKind::False,
         "not" => TokenKind::Not,
@@ -136,7 +151,7 @@ impl TokenKind {
             Self::ControlledAccess => "`Controlled`",
             Self::PermutationBy => "`permutation_by`",
             Self::PhaseBy => "`phase_by`",
-            Self::BindOp => "`bind_op`",
+            Self::BindOp => "`checked_op`",
             Self::InverseOp => "`inverse_op`",
             Self::ThenOp => "`then_op`",
             Self::TensorOp => "`tensor_op`",
@@ -146,8 +161,9 @@ impl TokenKind {
             Self::LBracket => "`[`",
             Self::RBracket => "`]`",
             Self::Pub => "`pub`",
+            Self::Classical => "`classical`",
             Self::Basis => "`basis`",
-            Self::Iso => "`iso`",
+            Self::Isometry => "`isometry`",
             Self::Unitary => "`unitary`",
             Self::Observe => "`observe`",
             Self::Fn => "`fn`",
@@ -161,9 +177,19 @@ impl TokenKind {
             Self::Adjoint => "`adjoint`",
             Self::RepeatStatic => "`repeat_static`",
             Self::Qif => "`qif`",
+            Self::Qfor => "`qfor`",
             Self::True => "`true`",
             Self::False => "`false`",
-            Self::Natural(_) => "natural number (only in repeat_static)",
+            Self::Natural(_) => "natural number",
+            Self::Plus => "`+`",
+            Self::Minus => "`-`",
+            Self::Star => "`*`",
+            Self::Caret => "`^`",
+            Self::DotDot => "`..`",
+            Self::EqualEqual => "`==`",
+            Self::NotEqual => "`!=`",
+            Self::LessEqual => "`<=`",
+            Self::GreaterEqual => "`>=`",
             Self::FatArrow => "`=>`",
             Self::Not => "`not`",
             Self::Xor => "`xor`",
@@ -218,230 +244,204 @@ impl std::fmt::Display for LexError {
 impl std::error::Error for LexError {}
 
 pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
-    scan(source, false).map(|(tokens, _)| tokens)
+    scan(source, false, None, None).map(|(tokens, _)| tokens)
 }
 
 pub(crate) fn lex_documented(source: &str) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
-    scan(source, true)
+    scan(source, true, None, None)
 }
 
-fn scan(source: &str, retain_docs: bool) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
-    let mut lexer = Lexer { source, pos: 0 };
-    let mut tokens = Vec::new();
-    let mut docs = Vec::new();
-    while let Some(ch) = lexer.peek() {
-        if ch == '\r' && !source[lexer.pos..].starts_with("\r\n") {
-            return Err(LexError {
-                message: "bare carriage return is forbidden; use LF or CRLF".into(),
-                span: Span::new(lexer.pos, lexer.pos + 1),
-            });
-        }
-        if matches!(ch, ' ' | '\t' | '\n' | '\r') {
-            lexer.bump();
-            continue;
-        }
-        if source[lexer.pos..].starts_with("//") || source[lexer.pos..].starts_with("/*") {
-            if let Some(comment) = lexer.comment(retain_docs)? {
-                docs.push(comment);
-            }
-            continue;
-        }
+pub(crate) fn lex_documented_bounded(
+    source: &str,
+    max_tokens: usize,
+    max_comment_depth: usize,
+) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
+    scan(source, true, Some(max_tokens), Some(max_comment_depth))
+}
 
-        let start = lexer.pos;
-        if let Some(message) = forbidden_character(ch) {
-            return Err(LexError {
-                message: message.to_owned(),
-                span: Span::new(start, start + ch.len_utf8()),
-            });
-        }
-        let kind = if ch.is_ascii_alphabetic() || ch == '_' {
-            lexer.bump();
-            while lexer
-                .peek()
-                .is_some_and(|c| c.is_ascii_alphanumeric() || c == '_')
-            {
-                lexer.bump();
-            }
-            let name = &source[start..lexer.pos];
-            keyword_kind(name).unwrap_or_else(|| TokenKind::Ident(name.to_owned()))
-        } else if ch.is_ascii_digit() {
-            lexer.bump();
-            while lexer.peek().is_some_and(|c| c.is_ascii_digit()) {
-                lexer.bump();
-            }
-            match &source[start..lexer.pos] {
+fn scan(
+    source: &str,
+    retain_docs: bool,
+    max_tokens: Option<usize>,
+    max_comment_depth: Option<usize>,
+) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
+    use super::scanner::{ErrorKind, Kind, Scanner};
+    let mut scanner = Scanner::new(source, max_comment_depth, retain_docs);
+    let mut tokens: Vec<Token> = Vec::new();
+    loop {
+        let mut token = scanner.next().map_err(|error| LexError {
+            message: match error.kind {
+                ErrorKind::Forbidden(message) => message.into(),
+                ErrorKind::Unexpected('?') => "`?` residual propagation is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
+                ErrorKind::Unexpected('&') => format!(
+                    "unexpected character `&`; {}",
+                    super::diagnostic::UNSUPPORTED_REFERENCE_EXPLANATION
+                ),
+                ErrorKind::Unexpected(ch) => format!("unexpected character `{ch}`"),
+                ErrorKind::UnterminatedComment => "unterminated block comment".into(),
+                ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),
+            },
+            span: error.span,
+        })?;
+        let text = &source[token.span.start..token.span.end];
+        let mut kind = match token.kind {
+            Kind::Word => keyword_kind(text).unwrap_or_else(|| TokenKind::Ident(String::new())),
+            Kind::Numeral => match text {
                 "0" => TokenKind::Zero,
                 "1" => TokenKind::One,
-                digits => TokenKind::Natural(digits.to_owned()),
-            }
-        } else {
-            lexer.bump();
-            match ch {
+                _ => TokenKind::Natural(String::new()),
+            },
+            Kind::Eof => TokenKind::Eof,
+            Kind::Punctuation(ch) => match ch {
                 '(' => TokenKind::LParen,
                 '[' => TokenKind::LBracket,
                 ']' => TokenKind::RBracket,
                 ')' => TokenKind::RParen,
                 '{' => TokenKind::LBrace,
                 '}' => TokenKind::RBrace,
+                '>' if scanner.join(&mut token, '=') => TokenKind::GreaterEqual,
                 '>' => TokenKind::RAngle,
                 ',' => TokenKind::Comma,
                 ';' => TokenKind::Semicolon,
-                '=' if lexer.peek() == Some('>') => {
-                    lexer.bump();
-                    TokenKind::FatArrow
-                }
+                '=' if scanner.join(&mut token, '>') => TokenKind::FatArrow,
+                '=' if scanner.join(&mut token, '=') => TokenKind::EqualEqual,
                 '=' => TokenKind::Equals,
+                '!' if scanner.join(&mut token, '=') => TokenKind::NotEqual,
+                '.' if scanner.join(&mut token, '.') => TokenKind::DotDot,
+                '+' => TokenKind::Plus,
+                '*' => TokenKind::Star,
+                '^' => TokenKind::Caret,
                 '|' => TokenKind::Pipe,
-                ':' if lexer.peek() == Some(':') => {
-                    lexer.bump();
-                    TokenKind::DoubleColon
-                }
+                ':' if scanner.join(&mut token, ':') => TokenKind::DoubleColon,
                 ':' => TokenKind::Colon,
-                '-' if lexer.peek() == Some('>') => {
-                    lexer.bump();
-                    TokenKind::Arrow
-                }
-                '<' if lexer.peek() == Some('-') => {
-                    lexer.bump();
-                    TokenKind::LeftArrow
-                }
+                '-' if scanner.join(&mut token, '>') => TokenKind::Arrow,
+                '-' => TokenKind::Minus,
+                '<' if scanner.join(&mut token, '=') => TokenKind::LessEqual,
+                '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
                 '<' => TokenKind::LAngle,
                 _ => {
+                    let message = if ch == '.' {
+                        "unexpected character `.`; field and method receiver syntax is unsupported; use an ordinary function call. For quantum access, write explicit `excl ...` or `ctrl ...` arguments: receiver adjustment cannot infer or forward quantum access".into()
+                    } else if ch == '!' {
+                        match tokens.last().map(|token| &token.kind) {
+                            Some(TokenKind::Ident(name))
+                                if matches!(
+                                    name.as_str(),
+                                    "panic"
+                                        | "assert"
+                                        | "assert_eq"
+                                        | "assert_ne"
+                                        | "debug_assert"
+                                        | "debug_assert_eq"
+                                        | "debug_assert_ne"
+                                        | "unreachable"
+                                        | "todo"
+                                        | "unimplemented"
+                                ) =>
+                            {
+                                format!(
+                                    "`{name}!` runtime exits are unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner"
+                                )
+                            }
+                            _ => format!("unexpected character `{ch}`"),
+                        }
+                    } else {
+                        format!("unexpected character `{ch}`")
+                    };
                     return Err(LexError {
-                        message: format!("unexpected character `{ch}`"),
-                        span: Span::new(start, lexer.pos),
+                        message,
+                        span: token.span,
                     });
                 }
-            }
+            },
         };
+        // Charge before allocating an owned word/numeral token. Trivia and EOF
+        // do not consume the entry point's token allowance.
+        if token.kind != Kind::Eof && max_tokens.is_some_and(|limit| tokens.len() >= limit) {
+            return Err(LexError {
+                message: format!("source exceeds {} tokens", max_tokens.unwrap()),
+                span: token.span,
+            });
+        }
+        // Reserve the retired spelling for a located migration error only.
+        // Capacity rejection retains precedence over spelling diagnostics.
+        if token.kind == Kind::Word && text == "bind_op" {
+            return Err(LexError {
+                message: "`bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.".into(),
+                span: token.span,
+            });
+        }
+        if token.kind == Kind::Word && text == "iso" {
+            return Err(LexError {
+                message: "`iso` was renamed to `isometry` in Qleisli 0.3.0; use `isometry fn` for an isometry effect assertion.".into(),
+                span: token.span,
+            });
+        }
+        if let TokenKind::Ident(value) | TokenKind::Natural(value) = &mut kind {
+            *value = text.to_owned();
+        }
+        let eof = kind == TokenKind::Eof;
         tokens.push(Token {
             kind,
-            span: Span::new(start, lexer.pos),
+            span: token.span,
         });
-    }
-    tokens.push(Token {
-        kind: TokenKind::Eof,
-        span: Span::new(source.len(), source.len()),
-    });
-    Ok((tokens, docs))
-}
-
-fn forbidden_character(ch: char) -> Option<&'static str> {
-    if matches!(
-        ch,
-        '\u{061c}' | '\u{200e}' | '\u{200f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
-    ) {
-        Some("bidirectional control character is forbidden")
-    } else if matches!(
-        ch,
-        '\u{000b}' | '\u{000c}' | '\u{0085}' | '\u{2028}' | '\u{2029}'
-    ) {
-        Some("unsupported line separator is forbidden")
-    } else if ch.is_whitespace() {
-        Some("unsupported whitespace; use ASCII space, tab, LF, or CRLF")
-    } else if ch.is_control() {
-        Some("control character is forbidden")
-    } else {
-        None
+        if eof {
+            return Ok((tokens, scanner.into_docs()));
+        }
     }
 }
 
-struct Lexer<'a> {
-    source: &'a str,
-    pos: usize,
-}
+#[cfg(test)]
+mod common_token_tests {
+    use super::*;
 
-impl Lexer<'_> {
-    fn comment(&mut self, retain_docs: bool) -> Result<Option<DocComment>, LexError> {
-        let start = self.pos;
-        let rest = &self.source[start..];
-        let line = rest.starts_with("//");
-        let style = if rest.starts_with("//!") || rest.starts_with("/*!") {
-            Some(DocStyle::Inner)
-        } else if (rest.starts_with("///") && !rest.starts_with("////"))
-            || (rest.starts_with("/**") && !rest.starts_with("/***") && !rest.starts_with("/**/"))
-        {
-            Some(DocStyle::Outer)
-        } else {
-            None
-        };
-        self.pos += 2;
-        let content_end;
-        let span_end;
-        if line {
-            while let Some(ch) = self.peek() {
-                if ch == '\n' {
-                    break;
-                }
-                self.comment_character(ch, style.is_some())?;
-                self.bump();
-            }
-            // CRLF is one line ending, but all source offsets stay original.
-            content_end =
-                if self.source[start..self.pos].ends_with('\r') && self.peek() == Some('\n') {
-                    self.pos - 1
-                } else {
-                    self.pos
-                };
-            span_end = content_end;
-        } else {
-            let mut depth = 1usize;
-            while depth != 0 {
-                if self.source[self.pos..].starts_with("/*") {
-                    depth += 1;
-                    self.pos += 2;
-                } else if self.source[self.pos..].starts_with("*/") {
-                    depth -= 1;
-                    self.pos += 2;
-                } else if let Some(ch) = self.peek() {
-                    self.comment_character(ch, style.is_some())?;
-                    self.bump();
-                } else {
-                    return Err(LexError {
-                        message: "unterminated block comment".into(),
-                        span: Span::new(start, self.pos),
-                    });
-                }
-            }
-            content_end = self.pos - 2;
-            span_end = self.pos;
-        }
-        Ok(if retain_docs {
-            style.map(|style| DocComment {
-                style,
-                text: self.source[start + 3..content_end].replace("\r\n", "\n"),
-                span: Span::new(start, span_end),
-            })
-        } else {
-            None
-        })
-    }
-
-    fn comment_character(&self, ch: char, _doc: bool) -> Result<(), LexError> {
-        let message = if ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
-            Some("bare carriage return is forbidden; use LF or CRLF")
-        } else if matches!(ch, ' ' | '\t' | '\n' | '\r') {
-            None
-        } else {
-            forbidden_character(ch)
-        };
-        if let Some(message) = message {
-            Err(LexError {
-                message: message.into(),
-                span: Span::new(self.pos, self.pos + ch.len_utf8()),
-            })
-        } else {
-            Ok(())
+    #[test]
+    fn capacity_precedes_retired_word_diagnostics_with_a_small_allowance() {
+        for (old, new) in [("bind_op", "checked_op"), ("iso", "isometry")] {
+            let source = format!("/* λ */ x {old}");
+            let start = source.find(old).unwrap();
+            let span = Span::new(start, start + old.len());
+            let capacity = lex_documented_bounded(&source, 1, 2).unwrap_err();
+            assert_eq!(capacity.span, span);
+            assert_eq!(capacity.message, "source exceeds 1 tokens");
+            let retirement = lex_documented_bounded(&source, 2, 2).unwrap_err();
+            assert_eq!(retirement.span, span);
+            assert!(
+                retirement
+                    .message
+                    .contains(&format!("was renamed to `{new}`"))
+            );
         }
     }
 
-    fn peek(&self) -> Option<char> {
-        self.source[self.pos..].chars().next()
+    #[test]
+    fn bounded_common_tokens_count_pairs_before_owning_spellings() {
+        let source = "/* λ */ <= == identifier // tail\r\n";
+        let (tokens, _) = lex_documented_bounded(source, 3, 2).unwrap();
+        assert_eq!(tokens.len(), 4);
+        assert_eq!(
+            tokens.last().unwrap().span,
+            Span::new(source.len(), source.len())
+        );
+        let error = lex_documented_bounded(source, 2, 2).unwrap_err();
+        assert_eq!(&source[error.span.start..error.span.end], "identifier");
+        let error = lex_documented_bounded("x <=", 1, 2).unwrap_err();
+        assert_eq!(error.span, Span::new(2, 4));
+        assert_eq!(error.message, "source exceeds 1 tokens");
+        assert_eq!(
+            lex_documented_bounded("/* only */", 0, 2).unwrap().0.len(),
+            1
+        );
     }
 
-    fn bump(&mut self) {
-        if let Some(ch) = self.peek() {
-            self.pos += ch.len_utf8();
-        }
+    #[test]
+    fn comment_bound_and_doc_recognition_are_independent_of_tokens() {
+        let source = "/** /* λ */ */ x";
+        let (tokens, docs) = lex_documented_bounded(source, 1, 2).unwrap();
+        assert_eq!(tokens.len(), 2);
+        assert_eq!(docs.len(), 1);
+        let error = lex_documented_bounded(source, 1, 1).unwrap_err();
+        assert_eq!(error.span, Span::new(0, 6));
+        assert_eq!(error.message, "comment nesting exceeds 1");
     }
 }

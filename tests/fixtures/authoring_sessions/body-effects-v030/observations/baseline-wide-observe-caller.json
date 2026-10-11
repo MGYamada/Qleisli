@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/wide-observe-caller/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "declared effect is narrower than the called operation",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/wide-observe-caller/main.qli",
+          "start": 69,
+          "end": 73
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.004715917049907148,
+  "recorded_utc": "2026-10-05T08:32:04.992236+00:00",
+  "timestamp_note": "Clock observation after completion; not authenticated provenance."
+}

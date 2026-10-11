@@ -1,0 +1,32 @@
+Selected original log lines 122-125; this is an excerpt, not a full log.
+2026-10-06T02:37:39.5375708Z HEAD is now at f2d47dd Merge bdc2d076bc57c1e7284a913cf6c078d75081189c into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T02:37:39.5388725Z ##[endgroup]
+2026-10-06T02:37:39.5442986Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T02:37:39.5476543Z f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f
+
+Selected original log lines 906-930; this is an excerpt, not a full log.
+2026-10-06T02:56:49.6088652Z      Running tests/frontend_types.rs (target/debug/deps/frontend_types-bdfb9ade6936865d)
+2026-10-06T02:56:49.6101418Z 
+2026-10-06T02:56:49.6101645Z running 3 tests
+2026-10-06T02:56:49.6151805Z test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+2026-10-06T02:56:49.6200359Z test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... FAILED
+2026-10-06T02:56:49.6347638Z test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+2026-10-06T02:56:49.6348232Z 
+2026-10-06T02:56:49.6348457Z failures:
+2026-10-06T02:56:49.6348654Z 
+2026-10-06T02:56:49.6349092Z ---- symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics stdout ----
+2026-10-06T02:56:49.6349674Z 
+2026-10-06T02:56:49.6351134Z thread 'symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics' (107936) panicked at tests/frontend_types.rs:121:9:
+2026-10-06T02:56:49.6351960Z assertion `left == right` failed
+2026-10-06T02:56:49.6352535Z   left: "type or tuple/size shape mismatch: expected `Q<Bit>`, found `Q<Bits<1>>`"
+2026-10-06T02:56:49.6353387Z  right: "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))"
+2026-10-06T02:56:49.6354241Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T02:56:49.6354682Z 
+2026-10-06T02:56:49.6354699Z 
+2026-10-06T02:56:49.6354820Z failures:
+2026-10-06T02:56:49.6355261Z     symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics
+2026-10-06T02:56:49.6355668Z 
+2026-10-06T02:56:49.6356091Z error: test failed, to rerun pass `--test frontend_types`
+2026-10-06T02:56:49.6357431Z test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+2026-10-06T02:56:49.6362079Z 
+2026-10-06T02:56:49.6382016Z ##[error]Process completed with exit code 101.

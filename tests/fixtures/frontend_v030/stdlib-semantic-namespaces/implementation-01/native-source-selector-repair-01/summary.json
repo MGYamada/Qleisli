@@ -1,0 +1,115 @@
+{
+  "format": "qleisli.native-source-selector-repair-summary",
+  "version": 1,
+  "source_hashes": {
+    "scripts/test_native_verification.py": "073d317b307cad850e1ad0976bbdaff63f985659311e4cbfec831ceca925b376",
+    "scripts/benchmark_verification.py": "660916454fe17d56877e6be01cdb6f713df2df408ee9ab7a96cae2acea0fe9ac",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d"
+  },
+  "before": {
+    "exit_code": 1,
+    "process_observations": 112,
+    "first_failure": {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"missing module `std::routines`\",\"primary\":{\"path\":\"kernel.qli\",\"start\":469,\"end\":498,\"line\":9,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    "seconds": 9.946452707983553
+  },
+  "after": {
+    "exit_code": 0,
+    "process_observations": 267,
+    "small_corpus_clients": 84,
+    "seconds": 98.99018470803276,
+    "input_changed_during_run": {},
+    "migrated_project_observations": [
+      {
+        "project": "qualtran/qft2",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/qualtran/qft2",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      },
+      {
+        "project": "qualtran/qpe2",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/qualtran/qpe2",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      },
+      {
+        "project": "qualtran/reflection2",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/qualtran/reflection2",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      },
+      {
+        "project": "quantum_katas/qpe3",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/quantum_katas/qpe3",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      },
+      {
+        "project": "quantum_katas/grover2",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/quantum_katas/grover2",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      },
+      {
+        "project": "pennylane_demos/qpe3",
+        "selected_path": "/Users/masa/git/Qleisli/corpus/migrations/semantic-namespace-v030/sources/pennylane_demos/qpe3",
+        "environment_and_explicit_runs": 2,
+        "both_passed": true,
+        "raw_stdout_equal": true
+      }
+    ]
+  },
+  "other_direct_python_consumers": [
+    {
+      "path": "scripts/test_lean_raw.py",
+      "lines": [
+        289,
+        295,
+        298
+      ],
+      "affected_by_current_namespace_migration": false,
+      "scope": "Six explicitly listed finite cases, none of the six migrated projects. No execution here."
+    },
+    {
+      "path": "scripts/test_verification_baseline.py",
+      "lines": [
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        185
+      ],
+      "affected_by_current_namespace_migration": false,
+      "scope": "Six finite source comparisons plus Bell/feedback, none of the six migrated projects. No execution here."
+    },
+    {
+      "path": "scripts/test_lean_observation.py",
+      "lines": [
+        363,
+        364,
+        365
+      ],
+      "affected_by_current_namespace_migration": false,
+      "scope": "Three finite corpus cases graph_state2/control_zero_reflection2/ising_zz_negative2, none of the six migrated projects. No execution here."
+    }
+  ],
+  "benchmark": "Only existing six snapshot selection plus existing eight benchmark source locations/source identity keys checked. No benchmark or timing execution and no cases generated.",
+  "scope": "Actual bounded native/CLI comparison repair, preserving all native acceptance and comparison rules. No Cargo/Lean build, maximum-size quantum case, generic QFT implementation, source-preservation proof, guarantee admission or release validation."
+}

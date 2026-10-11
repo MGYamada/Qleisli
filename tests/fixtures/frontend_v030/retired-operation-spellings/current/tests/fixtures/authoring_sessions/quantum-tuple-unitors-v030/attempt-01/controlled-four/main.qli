@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{split,join,unit,finish,phase_eighth};
+unitary fn scalar(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,a)=split(q);let()=finish(phase_eighth(u));join(unit(()),a)}
+pub unitary fn f(c:Q<Bit>,q:Q<(Unit,Bit)>)->(Q<Bit>,Q<(Unit,Bit)>){controlled(power(scalar,4))(c,q)}
+
+observe fn main()->Unit{()}

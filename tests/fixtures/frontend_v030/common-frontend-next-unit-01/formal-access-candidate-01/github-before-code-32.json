@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.ordinary-before-code-issue-readback",
+  "version": 1,
+  "first_clock_observation_after_readback_utc": "2026-10-05 18:24:51 UTC",
+  "issue_url": "https://github.com/MGYamada/Qleisli/issues/32",
+  "issue_number": 32,
+  "before_body_characters": 96364,
+  "after_body_characters": 98746,
+  "body_exact_readback": true,
+  "state_before": "open",
+  "state_after": "open",
+  "milestone_before": 1,
+  "milestone_after": 1,
+  "acceptance_checkboxes_before": 10,
+  "acceptance_checkboxes_after": 10,
+  "appended_fragment": "\n\n## Shared checked-formal unit — recorded before code\n\nThe concrete ordinary contract is `tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.md`, SHA-256 **1f113b273841607d62ca9107f1919f825f7ea95a4576721b023f487e932e6d09**. Select the existing indexed projection route: one private phased Formals owns original ordinal progress, preceding Nat/Basis keys, checked ordinary operation types, finite Meaning payloads and one common Apply/Adjoint/Controlled mask. Both real finite Bindings and sized Scope.operations consume those owned facts. Pair all original parameters/requirements through actual resolved declaration ordinals and lexical categories; no name/span AST recovery, second policy, reindex cache or skipped declaration.\n\nSized kinds borrow the actual maps/context and preceding sets: keep the complete Basis availability/capacity scan before Natural normalization, and retain recursive Natural lookup/arithmetic order. Reuse common Access in the private sized projection and body/callee checks. Preserve the actual access-keyword span in sized diagnostics and target-name span in finite diagnostics. The explicit seven-file scope excludes public grammar/API, dependencies, native/Lean, std, schema and edition changes.\n\nRoot first captured **40 completed checks:6 success,34 source rejections,46 pre-execv forwarded invocation attempts**, with raw outputs/statuses/spans retained under `common-formal-access-v030/`. FIRST map SHA-256 `140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454`; observed CLI `db571ad2…`, native `39effde0…`. Attempts are not independent child-start/exit attestations. Actual mixed Basis/Natural and unused-body priorities are retained without source repairs. Mechanical completion requires exact40 raw output/status/argv/count parity, meaningful existing generic/capability/Meaning/unused/branch/zero-fold tests on current and MSRV Rust, format/all-target compile/lint, independent caller review and accurate metadata/policy updates.\n\nExisting QS/PR/RS/EXACT obligations and both protected QLV1 scopes are unchanged. This factor does not finish common body checking, canonical std/QFT, source/runtime preservation or release gates and admits no interpretation/guarantee. All111 selected Issues and all24 #317 criteria remain required; confirmed completion stays14/111 (12.61%).\n",
+  "scope": "Actual GitHub body-only update and exact readback. Full issue bodies remain tool provenance, not duplicated here. This is ordinary before-code tracking, not human adoption, implementation completion, proof discharge or release approval."
+}

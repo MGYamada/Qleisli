@@ -1,0 +1,204 @@
+{
+  "kind": "Closed source adjoint/controlled materialization and independent replay review",
+  "base_commit": "bd9560e6c76e6a392d115ddcc43fb05fcf15a54f",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6023917206",
+  "source_sha256": {
+    "src/frontend/sized/raw.rs": "f54a98b172b140b3cb98f531d281cd45635ed762210aec44267b73cebe755036",
+    "src/frontend/sized/raw/circuit.rs": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
+    "src/frontend/sized/raw/preservation.rs": "18c0376bf36c9ed6808389a2afdb19e078d68ac9a54fee185561e61a99d35226",
+    "src/frontend/sized/raw/preservation/access.rs": "750e3b35b34668814c526b3fc330ec6df960491d55f7f9d3cedbec4f15152d3c",
+    "tests/classical_functions.rs": "f74201456b203be3c3b3c962236f351b6beca43711d3cbcc1e2e5e52c33e1621",
+    "docs/src/reference/functional-boundary.md": "86d88c3e9fad6b21df78274dc058e5b3c4cf3c45fc3653990683d5069a12c28f"
+  },
+  "first_sources": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/before.json",
+  "first_actual_after": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/after.json",
+  "final_actual_after": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/after-final.json",
+  "scope": "Existing exact pure Raw circuit profile: closed forward/adjoint/controlled Definition/Repeat providers, original Meaning requests and exact Unit/Bit/product source trees. At most two system qubits in new tests. No AST theorem, new native mode or constitutional guarantee.",
+  "review": [
+    "Producer flattens the actual temporary Raw trace, preserves output-coordinate permutations by explicit routing, and carries existing call/cell counters across nested transforms. Temporary providers retain exact source input/output basis and principal effect.",
+    "Independent replay walks original source definitions, bindings, source IDs and logical axes instead of calling the producer flattener. It compares actual transformed instructions and returned owner frames, including zero-width owners and suspended caller owners.",
+    "Actual adjoint reverses order and exact phases. Controlled scalar retains the control condition even with no target wires; nested controls retain axis order.",
+    "All original refined/explicit requests still go through existing all-binding collection and fresh native finite checking. Annotation alone grants no access and no native fallback is added.",
+    "Unsupported finer phases, other primitive profiles and opaque contract assertions retain explicit target refusal. A zero wrapper still preflights the original dependency body.",
+    "Public interfaces, primitive constructors, native modes and capacity constants unchanged. Two private checking-source files added to reviewed VM22/VM29 snapshots.",
+    "Lean definitions, proofs, registry, interpretations, ledger scopes and admitted guarantees unchanged. Native binary reused; no fresh local Lean build/audit/replay claimed."
+  ],
+  "checks": {
+    "guarded-related-latest": {
+      "exit_code": 0,
+      "log_sha256": "c6e9abb55da2baa4403e3fab27ab2658734fe13199677e9b90d33533b3e99442",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 7.65s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.45s",
+        "test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.39s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.34s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.57s"
+      ]
+    },
+    "guarded-related-msrv": {
+      "exit_code": 0,
+      "log_sha256": "1c68aee0cf48861dd7bc279108b802968cf687170aee24643eec2c3b95d49968",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 6.78s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s",
+        "test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.74s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.72s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.64s"
+      ]
+    },
+    "guarded-raw-latest": {
+      "exit_code": 0,
+      "log_sha256": "e0910a1698945b6b6a0581f50d30b0ee46227d631e698780d903a471bea9cda9",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 6.65s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 121 filtered out; finished in 0.88s"
+      ]
+    },
+    "guarded-raw-msrv": {
+      "exit_code": 0,
+      "log_sha256": "a6c27250407e0062bda936950662a35b8d863e476d655135acc25fc775da706a",
+      "summaries": [
+        "    Finished `test` profile [unoptimized] target(s) in 6.33s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 121 filtered out; finished in 1.07s"
+      ]
+    },
+    "guarded-clippy-latest": {
+      "exit_code": 0,
+      "log_sha256": "168cd71042bfdc61916c3574bc0a166ba005486184df96c2dd060b596786bdca",
+      "summaries": [
+        "    Finished `dev` profile [unoptimized] target(s) in 12.77s"
+      ]
+    },
+    "guarded-clippy-msrv": {
+      "exit_code": 0,
+      "log_sha256": "fb34b167bb1d94bff398dcfd7835506b12c5df8e95f91da353518c8b983508c9",
+      "summaries": [
+        "    Finished `dev` profile [unoptimized] target(s) in 13.03s"
+      ]
+    },
+    "policy_docs": {
+      "VM22": "pass: 275 constructors,267 source snapshots,20 boundaries",
+      "VM29": "pass: 22 paths,9 modes; S05 gates open",
+      "policy_tests": "17 VM22,14 VM29,7 authoring tests passed",
+      "authoring": "51 records,74 snapshots,1239 observations plus registered actual reports",
+      "docs": "2200 local links,30 anchors,206 Lean roots checked",
+      "book": "mdBook0.5.4;29 HTML,1224 local links,471 anchors checked",
+      "constitutional_continuity": "pass against independently reviewed38baae7d19535602b21270e11e97617d45205b37; identity/continuity only"
+    }
+  },
+  "initial_failures": [
+    "Stale zero-repeat test expected inverse-X capability refusal; replaced by actual native-checked zero action, keeping a finer-phase unsupported dependency negative.",
+    "Clippy range-loop warning repaired without suppression.",
+    "New routing runtime test initially used a nonexistent lower_hierarchy method; corrected to the actual lower API before test execution."
+  ],
+  "verification_limits": [
+    "No exact-current-commit full all-target/package/installation CI pass yet. Targeted Rust tests, Clippy, independent exact native equations and small reference runtime checks are distinct evidence.",
+    "General constructor/profile convergence, Bits finite Meaning representation and general source-preservation remain unfinished; #44 stays open.",
+    "QS/PR/quantitative RS/EXACT broader obligations and S05 gates remain pending. No AI adequacy/admission judgment or release is recorded."
+  ],
+  "progress": {
+    "completed": 22,
+    "total": 111,
+    "percent": 19.82
+  },
+  "base_ci": {
+    "conclusion": "failure",
+    "headSha": "dbe3c1e719b598ea66ff617dd3b6d2b166b221f6",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "changes",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "check-macos-source",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-lean",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-interop",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-distribution",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-lean-kernel",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-rust",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-rust-msrv",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-docs",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "docs",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "lean",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "distribution",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "rust-msrv",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "interop",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "lean-kernel",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "macos-source",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "rust",
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "release-readiness",
+        "status": "completed"
+      }
+    ],
+    "status": "completed"
+  },
+  "base_ci_note": "Exact dbe3 base run completed unsuccessfully: macOS elan download HTTP500. Other substantive producers succeeded, aggregate checks correctly failed, release-readiness skipped. No inheritance to this new implementation."
+}

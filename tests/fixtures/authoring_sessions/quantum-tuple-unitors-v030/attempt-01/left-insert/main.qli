@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{unit,join};
+pub unitary fn f(a:Q<Bit>)->Q<(Unit,Bit)>{join(unit(()),a)}
+
+observe fn main()->Unit{()}

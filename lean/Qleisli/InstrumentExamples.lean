@@ -4,7 +4,7 @@ import Qleisli.HierarchicalFourier
 instrument specification: CNOT into fresh zero followed by S on the old bit.
 The measured bit is correlated with the retained bit; its phase cannot be
 checked from uniform/diagonal probabilities alone.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.InstrumentExamples
 open Qleisli.Semantics.Instrument
 noncomputable def copyingPhase : Coefficient := fun output input =>

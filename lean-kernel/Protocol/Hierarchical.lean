@@ -8,7 +8,7 @@ import QleisliKernel.Hierarchical.QpeInstrument
 
 /-! Unproved transport adapter for the existing experimental profiles.
 Inputs remain untrusted until checked by the independently specified pure kernel.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Protocol.Hierarchical
 open QleisliKernel.Hierarchical.Artifact

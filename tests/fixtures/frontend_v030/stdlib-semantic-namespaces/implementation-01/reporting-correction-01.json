@@ -1,0 +1,58 @@
+{
+  "format": "qleisli.validation-reporting-correction",
+  "version": 1,
+  "reason": "Independent completion review caught incorrect prose aggregates; actual raw libtest summaries are authoritative. Original captures remain unchanged.",
+  "actual_summaries": [
+    {
+      "record": "rust-validation-01.json",
+      "sha256": "40e901b16ca409490e29150f129a5e83e436b1f9290bdea9e4d4b517c5be774e",
+      "label": "msrv-targets",
+      "exit_code": 101,
+      "summaries": 13,
+      "totals": {
+        "passed": 130,
+        "failed": 1,
+        "ignored": 0
+      }
+    },
+    {
+      "record": "rust-validation-02.json",
+      "sha256": "80ef86701e4a1b2767e236639dc2cdc402bce027df3b5a0f0e4bc83a4e6989ed",
+      "label": "latest-targets",
+      "exit_code": 0,
+      "summaries": 13,
+      "totals": {
+        "passed": 131,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "record": "rust-validation-02.json",
+      "sha256": "80ef86701e4a1b2767e236639dc2cdc402bce027df3b5a0f0e4bc83a4e6989ed",
+      "label": "msrv-review-repaired",
+      "exit_code": 0,
+      "summaries": 1,
+      "totals": {
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0
+      }
+    }
+  ],
+  "incorrect_prose": [
+    {
+      "record": "rust-validation-02.json",
+      "sha256": "80ef86701e4a1b2767e236639dc2cdc402bce027df3b5a0f0e4bc83a4e6989ed",
+      "text": "MSRV stage01 passed unaffected140 tests",
+      "correction": "MSRV stage01 passed 130 tests and failed one; the repaired review target subsequently passed all eight. There was no single clean 131-test MSRV run."
+    },
+    {
+      "record": "post-comment-validation-03.json",
+      "sha256": "d6e72241141b0f6b2aab3bc9461d1b48bcf4a162fd96a81b96e1e310fb520fb8",
+      "text": "Previous141target/340oracle results",
+      "correction": "Previous latest-target results passed 131 tests; the six separate positive corpus comparisons passed 340 probes. Their source/binary bindings retain their original state."
+    }
+  ],
+  "scope": "Reporting correction only. No raw command, source, result, exit code or prior failed status changed."
+}

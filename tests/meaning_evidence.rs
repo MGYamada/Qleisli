@@ -3,8 +3,11 @@ mod common;
 use common::accept;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
-use qleisli::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionIdentity};
-use qleisli::ir::{CircuitAction, CircuitStep, RawOp};
+use qleisli::contract::{
+    BasisType, CheckedContract, Circuit, Contract, ContractError, DEFAULT_EXACT_WORK, Encoding,
+    FunctionIdentity,
+};
+use qleisli::ir::{BitControl, CircuitAction, CircuitStep, RawOp};
 
 fn budget() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)
@@ -149,4 +152,119 @@ fn malformed_meanings_and_budget_exhaustion_cannot_issue_receipts() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
+    for width in 0..=2 {
+        let basis = BasisType::Bits(width);
+        let dimension = 1usize << width;
+        // A nontrivial scalar phase remains observable under later control,
+        // including the zero-wire owner. It cannot be discarded as identity.
+        let target = FiniteMeaning::phase(basis.clone(), vec![1; dimension]).unwrap();
+        let raw = target.target_ir().unwrap();
+        let evidence =
+            MeaningEvidence::check(raw.clone(), target.clone(), identity(), &mut budget()).unwrap();
+        evidence.check_binding(&raw, &target, &identity()).unwrap();
+        let false_target = FiniteMeaning::phase(basis, vec![0; dimension]).unwrap();
+        assert_eq!(
+            MeaningEvidence::check(raw, false_target, identity(), &mut budget()).unwrap_err(),
+            ContractError::EquationMismatch,
+        );
+    }
+    for (atomic, same_width_tree) in [
+        (BasisType::Bits(0), BasisType::Unit),
+        (BasisType::Bits(1), BasisType::Bit),
+        (
+            BasisType::Bits(2),
+            BasisType::pair(BasisType::Bit, BasisType::Bit),
+        ),
+        (
+            BasisType::pair(BasisType::Bits(1), BasisType::Unit),
+            BasisType::pair(BasisType::Unit, BasisType::Bits(1)),
+        ),
+    ] {
+        let dimension = 1usize << atomic.bits().unwrap();
+        assert_eq!(atomic.bits().unwrap(), same_width_tree.bits().unwrap());
+        let target = FiniteMeaning::phase(atomic, vec![1; dimension]).unwrap();
+        let raw = target.target_ir().unwrap();
+        let evidence =
+            MeaningEvidence::check(raw.clone(), target.clone(), identity(), &mut budget()).unwrap();
+        let substituted = FiniteMeaning::phase(same_width_tree, vec![1; dimension]).unwrap();
+        // This alternative is itself valid, but cannot substitute its basis
+        // identity for the original immutable target of an accepted receipt.
+        MeaningEvidence::check(
+            substituted.target_ir().unwrap(),
+            substituted.clone(),
+            identity(),
+            &mut budget(),
+        )
+        .unwrap();
+        assert_eq!(
+            evidence.check_binding(&raw, &substituted, &identity()),
+            Err(ContractError::EvidenceMismatch),
+        );
+    }
+}
+
+#[test]
+fn controlled_bits_zero_phase_is_an_exact_relative_phase() {
+    let scalar = FiniteMeaning::phase(BasisType::Bits(0), vec![1]).unwrap();
+    let evidence = MeaningEvidence::check(
+        scalar.target_ir().unwrap(),
+        scalar,
+        identity(),
+        &mut budget(),
+    )
+    .unwrap();
+    for when_one in [false, true] {
+        let circuit = Circuit::new(
+            BasisType::Bits(1),
+            vec![CircuitStep {
+                controls: vec![BitControl { index: 0, when_one }],
+                action: CircuitAction::Contract {
+                    indices: vec![],
+                    evidence: evidence.receipt(),
+                    adjoint: false,
+                },
+            }],
+        )
+        .unwrap();
+        // Independently specified columns: control exposes the scalar phase
+        // on exactly one basis state, even though its target owns no wires.
+        let entries = (0..2)
+            .flat_map(|row| {
+                (0..2).map(move |col| {
+                    if row != col {
+                        Exact::zero()
+                    } else if (col == 1) == when_one {
+                        Exact::phase(1)
+                    } else {
+                        Exact::one()
+                    }
+                })
+            })
+            .collect();
+        let expected = Matrix::new(2, 2, entries).unwrap();
+        let encoding = Encoding::identity(BasisType::Bits(1)).unwrap();
+        let contract = Contract::new(
+            encoding.clone(),
+            encoding.clone(),
+            expected.clone(),
+            &mut budget(),
+        )
+        .unwrap();
+        CheckedContract::check(circuit.clone(), contract, &mut budget()).unwrap();
+        let false_identity = Contract::new(
+            encoding.clone(),
+            encoding,
+            Matrix::identity(2).unwrap(),
+            &mut budget(),
+        )
+        .unwrap();
+        assert_eq!(
+            CheckedContract::check(circuit, false_identity, &mut budget()).unwrap_err(),
+            ContractError::EquationMismatch,
+        );
+    }
 }

@@ -1,0 +1,412 @@
+{
+  "format": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-11T04:42:30.598011+00:00",
+  "source_sha256": {
+    "experimental/instrument-meaning/ReferenceEquality.lean": "c5ca5e72e3dcd4f60446d567117d61897bb00563b52887fc9dec0bed9f5362c2",
+    "experimental/instrument-meaning/NativeCoefficient.lean": "9b664b5eaeebd4b5a871ff160ea5353731b330eceb3994631649f7b1985f2c12",
+    "experimental/instrument-meaning/OriginalGate.lean": "9474302ce5769383b307b1f27791c24d39f14007be7631c44be51b98627354c9",
+    "experimental/instrument-meaning/ComponentChecks.lean": "5eadc7b4a9e50eb620b0cc8ad8f7684cfd69d722b484f0df498bf964bdd74049",
+    "experimental/instrument-meaning/check_proof.py": "8fc566bb516b86b22ebc1c852e17e88130d70c768d37d7a6d7fe91038f93ec04",
+    "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean": "0037f8a95d0461eb5c42966500e652a8ac4a052c95a2528b8e4712b5b1fe962a",
+    "lean/Qleisli/Exact.lean": "59e54250a35fe43874b0e91b7468ea1901a117df2f9e2fa6bf2771486ff72b16",
+    "lean/Qleisli/Semantics/Exact.lean": "b379cab6e9b5b1cdb20e7362d04b9f8255d41e2554611ed7b02ce7937e4c282b",
+    "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+    "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+    "lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean": "5f04a81ac57a832f8a3f3b746475f1596c1ab390d95bfb511776aafe324b58f5",
+    "lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean": "2ed860b6ce2288823f9b8b00726826e343ca2d3bfefd0d63ebbeeb10c486af39",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "4b57e49765ad0cfcc021125683c052e7825dad5f5fd2fcf6851ea15903fb8849",
+    "lean/Qleisli/Semantics/Instrument.lean": "b630db6f70ae39ea15dab3f32c0fc31c895902007410533024a2fd64124ad1ff",
+    "lean/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
+    "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "Qleisli.Exact",
+        "Qleisli.RawInstrumentDenotation"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "Build completed successfully (3070 jobs).\n",
+      "stderr": "",
+      "seconds": 2.5415060000959784
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import os,subprocess,sys\nenv=dict(os.environ)\nenv['LEAN_PATH']=sys.argv[1]+os.pathsep+env.get('LEAN_PATH','')\nsys.exit(subprocess.run(sys.argv[2:],env=env).returncode)\n",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/Users/masa/git/Qleisli/experimental/instrument-meaning",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj/ReferenceEquality.olean",
+        "/Users/masa/git/Qleisli/experimental/instrument-meaning/ReferenceEquality.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 7.050966250011697
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import os,subprocess,sys\nenv=dict(os.environ)\nenv['LEAN_PATH']=sys.argv[1]+os.pathsep+env.get('LEAN_PATH','')\nsys.exit(subprocess.run(sys.argv[2:],env=env).returncode)\n",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/Users/masa/git/Qleisli/experimental/instrument-meaning",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj/NativeCoefficient.olean",
+        "/Users/masa/git/Qleisli/experimental/instrument-meaning/NativeCoefficient.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 15.505973082967103
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import os,subprocess,sys\nenv=dict(os.environ)\nenv['LEAN_PATH']=sys.argv[1]+os.pathsep+env.get('LEAN_PATH','')\nsys.exit(subprocess.run(sys.argv[2:],env=env).returncode)\n",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/Users/masa/git/Qleisli/experimental/instrument-meaning",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj/OriginalGate.olean",
+        "/Users/masa/git/Qleisli/experimental/instrument-meaning/OriginalGate.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 16.02971312496811
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import os,subprocess,sys\nenv=dict(os.environ)\nenv['LEAN_PATH']=sys.argv[1]+os.pathsep+env.get('LEAN_PATH','')\nsys.exit(subprocess.run(sys.argv[2:],env=env).returncode)\n",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-proofs-3q0oulvj/Audit.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "'Qleisli.Experiments.InstrumentCoefficient.prepare_reference' depends on axioms: [propext, Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.coefficient_meaning' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.compare_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.compare_instrument' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.reconstruct_denotes' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.reconstruct_kraus_complete' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.prepare_projected' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.check_dimensions' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.check_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+      "stderr": "",
+      "seconds": 4.493897292064503
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/Users/masa/git/Qleisli/experimental/instrument-meaning/ComponentChecks.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 1.3107129170093685
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean",
+      "exit_code": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": "",
+      "seconds": 0.6658075420418754
+    }
+  ],
+  "scope": "Actual streamed coefficient comparison and unwired original-QIRF gate refine independent complex instruments on arbitrary finite external references. Fresh reconstruction denotes the original body and has complete Kraus sum. No public wire/handle, source preservation, guarantee admission or full QS/PR/RS proof.",
+  "axiom_output": "'Qleisli.Experiments.InstrumentCoefficient.prepare_reference' depends on axioms: [propext, Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.coefficient_meaning' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.compare_meaning' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Experiments.InstrumentCoefficient.compare_instrument' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.reconstruct_denotes' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.reconstruct_kraus_complete' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.prepare_projected' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.check_dimensions' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Qleisli.Experiments.OriginalInstrumentGate.check_instrument' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+  "toolchain": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+  "prior_drafts": [
+    "Initial original-projection induction retained an unnecessary execution premise; Lean rejected the unsatisfied induction hypothesis.",
+    "Removed an unused simp argument reported by warningAsError; no linter or proof checks were disabled."
+  ],
+  "current_guarantee_evidence_refresh": {
+    "status": "passed",
+    "source_revision": "a59b69886c81111091823366250cd061325649627fea0b115f98a977744be9ec",
+    "commands": [
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 9.695776041015051,
+        "stdout_sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "leanchecker",
+          "--fresh",
+          "Main"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 62.493845708086155,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 17.17223445791751,
+        "stdout_sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 3.5735249589197338,
+        "stdout_sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 3.5042954169912264,
+        "stdout_sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 4.117151499958709,
+        "stdout_sha256": "bcd75d57d9f100a17704128a2ee2bf91ec810478dbc1f351a50941a19566e81a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "scope": "Fresh current type/axiom review, native Main replay and fixed Raw/Basis expression continuity for two existing guarantees. No new admission or source/runtime/full QS/PR/RS proof."
+  },
+  "source_integrity": {
+    "status": "passed",
+    "commands": [
+      {
+        "argv": [
+          "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        "id": "0",
+        "status": "passed",
+        "commands": [
+          {
+            "command": [
+              "python3",
+              "scripts/check_verification_inventory.py"
+            ],
+            "executed_command": [
+              "python3",
+              "scripts/check_verification_inventory.py"
+            ],
+            "status": "passed",
+            "exit_code": 0,
+            "seconds": 0.7279815840302035
+          }
+        ],
+        "seconds": 0.7287420419743285,
+        "log": "/private/tmp/qleisli-instrument-source-integrity-original-gate-final-1074/0/command.log"
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_production_coverage.py"
+        ],
+        "id": "1",
+        "status": "passed",
+        "commands": [
+          {
+            "command": [
+              "python3",
+              "scripts/check_production_coverage.py"
+            ],
+            "executed_command": [
+              "python3",
+              "scripts/check_production_coverage.py"
+            ],
+            "status": "passed",
+            "exit_code": 0,
+            "seconds": 0.6275710000190884
+          }
+        ],
+        "seconds": 0.6282273749820888,
+        "log": "/private/tmp/qleisli-instrument-source-integrity-original-gate-final-1074/1/command.log"
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_input_corpus.py"
+        ],
+        "id": "2",
+        "status": "passed",
+        "commands": [
+          {
+            "command": [
+              "python3",
+              "scripts/check_input_corpus.py"
+            ],
+            "executed_command": [
+              "python3",
+              "scripts/check_input_corpus.py"
+            ],
+            "status": "passed",
+            "exit_code": 0,
+            "seconds": 0.897329582949169
+          }
+        ],
+        "seconds": 0.8978715830016881,
+        "log": "/private/tmp/qleisli-instrument-source-integrity-original-gate-final-1074/2/command.log"
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/test_current_source_fixtures.py"
+        ],
+        "id": "3",
+        "status": "passed",
+        "commands": [
+          {
+            "command": [
+              "python3",
+              "scripts/test_current_source_fixtures.py"
+            ],
+            "executed_command": [
+              "python3",
+              "scripts/test_current_source_fixtures.py"
+            ],
+            "status": "passed",
+            "exit_code": 0,
+            "seconds": 29.905953333014622
+          }
+        ],
+        "seconds": 29.906712374999188,
+        "log": "/private/tmp/qleisli-instrument-source-integrity-original-gate-final-1074/3/command.log"
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/test_observation_sources.py"
+        ],
+        "id": "4",
+        "status": "passed",
+        "commands": [
+          {
+            "command": [
+              "python3",
+              "scripts/test_observation_sources.py"
+            ],
+            "executed_command": [
+              "python3",
+              "scripts/test_observation_sources.py"
+            ],
+            "status": "passed",
+            "exit_code": 0,
+            "seconds": 2.0424275000113994
+          }
+        ],
+        "seconds": 2.043177417013794,
+        "log": "/private/tmp/qleisli-instrument-source-integrity-original-gate-final-1074/4/command.log"
+      }
+    ],
+    "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+    "toolchain": {
+      "python": {
+        "command": [
+          "python3",
+          "--version"
+        ],
+        "exit_code": 0,
+        "version": "Python 3.14.5",
+        "stderr": ""
+      },
+      "git": {
+        "command": [
+          "git",
+          "--version"
+        ],
+        "exit_code": 0,
+        "version": "git version 2.54.0 (Apple Git-157)",
+        "stderr": ""
+      }
+    }
+  },
+  "skipped": [
+    "Rust/MSRV/4,000 ownership suites: no Rust or public source integration change in this unit",
+    "hosted Issue-completion CI, package/install and release checks: Issue #46 remains open",
+    "fresh full Mathlib Qleisli root replay: kernel root/native Main replay and fresh individual bridge compilation performed"
+  ],
+  "initial_guarantee_mutation_tests": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_check_initial_guarantees.py"
+    ],
+    "exit_code": 0,
+    "tests": 50,
+    "seconds": 87.94,
+    "source_sha256": "cc1ccd5d1289b5885699ea850e4ad7eac1f491115a866565c69887ee0793c9a7",
+    "scope": "Integrity/non-admission/continuity mutation regressions; not mathematical discharge or independent human adequacy review."
+  }
+}

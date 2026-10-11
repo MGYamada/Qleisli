@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
+     Running tests/diagnostics.rs (target/debug/deps/diagnostics-7c098e4fc53101d3)

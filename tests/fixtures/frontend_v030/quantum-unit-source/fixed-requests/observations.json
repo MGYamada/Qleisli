@@ -1,0 +1,88 @@
+{
+  "binary": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+  "binary_sha256": "d6f3c3b31a7e8744e996f4ce48eb081c29177f2e7c563b465c67c8fb5526d29f",
+  "source": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+  "source_sha256": "1714283d4f67d4024d2b3bc859283bea450a0f98675b379828504809201b29e0",
+  "records": [
+    {
+      "entry": "apply",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "emit-proposal",
+        "--entry=main::apply",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+        "--operation=U=main::scalar",
+        "--ir-profile=hierarchy",
+        "--output=/private/tmp/qleisli-unit-transformed-requests/apply.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"main::apply\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+      "stderr": ""
+    },
+    {
+      "entry": "inverse",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "emit-proposal",
+        "--entry=main::inverse",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+        "--operation=U=main::scalar",
+        "--ir-profile=hierarchy",
+        "--output=/private/tmp/qleisli-unit-transformed-requests/inverse.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"main::inverse\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+      "stderr": ""
+    },
+    {
+      "entry": "eight",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "emit-proposal",
+        "--entry=main::eight",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+        "--operation=U=main::scalar",
+        "--ir-profile=hierarchy",
+        "--output=/private/tmp/qleisli-unit-transformed-requests/eight.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"main::eight\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+      "stderr": ""
+    },
+    {
+      "entry": "controlled_once",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "emit-proposal",
+        "--entry=main::controlled_once",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+        "--operation=U=main::scalar",
+        "--ir-profile=hierarchy",
+        "--output=/private/tmp/qleisli-unit-transformed-requests/controlled_once.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"main::controlled_once\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+      "stderr": ""
+    },
+    {
+      "entry": "controlled_four",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "emit-proposal",
+        "--entry=main::controlled_four",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+        "--operation=U=main::scalar",
+        "--ir-profile=hierarchy",
+        "--output=/private/tmp/qleisli-unit-transformed-requests/controlled_four.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"main::controlled_four\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+      "stderr": ""
+    }
+  ]
+}

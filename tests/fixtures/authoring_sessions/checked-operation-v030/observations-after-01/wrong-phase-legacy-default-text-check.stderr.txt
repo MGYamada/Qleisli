@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-legacy/main.qli:17:16: parse: parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.

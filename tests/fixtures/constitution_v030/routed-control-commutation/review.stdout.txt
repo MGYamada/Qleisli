@@ -1,0 +1,363 @@
+Qleisli.RoutedControlCommutation.factors_commute : ∀ (n m r : Nat)
+  (U : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits n) Complex)
+  (V : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits m) Complex),
+  Eq.{1}
+    (HMul.hMul.{0, 0, 0} (Qleisli.RoutedControlCommutation.firstFactor n m r U)
+      (Qleisli.RoutedControlCommutation.secondFactor n m r V))
+    (HMul.hMul.{0, 0, 0} (Qleisli.RoutedControlCommutation.secondFactor n m r V)
+      (Qleisli.RoutedControlCommutation.firstFactor n m r U))
+@Qleisli.RoutedControlCommutation.permutation_sandwich : ∀ {I : Type} [inst : Fintype.{0} I]
+  [inst_1 : DecidableEq.{1} I] (route : Equiv.{1, 1} I I) (M : Matrix.{0, 0, 0} I I Complex),
+  Eq.{1}
+    (HMul.hMul.{0, 0, 0} (HMul.hMul.{0, 0, 0} (Qleisli.HierarchicalUnitary.permutation (Equiv.symm.{1, 1} route)) M)
+      (Qleisli.HierarchicalUnitary.permutation route))
+    (Matrix.submatrix.{0, 0, 0, 0, 0} M ⇑route ⇑route)
+Qleisli.RoutedControlCommutation.tensor_control_entry : ∀ (joint : QleisliKernel.Hierarchical.Artifact.Interface)
+  (n k N : Nat) (step rest : Qleisli.HierarchicalOperators.Operator)
+  (U : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits n) Complex),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint)) N →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint)) N →
+      Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth step) (HAdd.hAdd.{0, 0, 0} n 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth step) (HAdd.hAdd.{0, 0, 0} n 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} n 1) (HAdd.hAdd.{0, 0, 0} n 1) step)
+              (Qleisli.HierarchicalRoutedPower.controlled n U) →
+            Eq.{1} (Qleisli.HierarchicalOperators.matrixAt k k rest) 1 →
+              ∀ (output input : Qleisli.CoordinateOperators.Bits N) (b c : Bool)
+                (x y : Qleisli.CoordinateOperators.Bits n) (z w : Qleisli.CoordinateOperators.Bits k),
+                Eq.{1} (List.ofFn.{0} output)
+                    (List.cons.{0} b (HAppend.hAppend.{0, 0, 0} (List.ofFn.{0} x) (List.ofFn.{0} z))) →
+                  Eq.{1} (List.ofFn.{0} input)
+                      (List.cons.{0} c (HAppend.hAppend.{0, 0, 0} (List.ofFn.{0} y) (List.ofFn.{0} w))) →
+                    Eq.{1}
+                      (Qleisli.HierarchicalOperators.matrixAt N N
+                        (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.tensor
+                          (List.cons.{0} step (List.cons.{0} rest List.nil.{0})))
+                        output input)
+                      (HMul.hMul.{0, 0, 0}
+                        (ite.{1} (Eq.{1} b c) (ite.{1} (Eq.{1} c Bool.true) (U x y) (ite.{1} (Eq.{1} x y) 1 0)) 0)
+                        (ite.{1} (Eq.{1} z w) 1 0))
+Qleisli.RoutedControlCommutation.tensor_first_frame : ∀ (joint : QleisliKernel.Hierarchical.Artifact.Interface)
+  (n m r k N : Nat) (step rest : Qleisli.HierarchicalOperators.Operator)
+  (U : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits n) Complex),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint)) N →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint)) N →
+      Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth step) (HAdd.hAdd.{0, 0, 0} n 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth step) (HAdd.hAdd.{0, 0, 0} n 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} n 1) (HAdd.hAdd.{0, 0, 0} n 1) step)
+              (Qleisli.HierarchicalRoutedPower.controlled n U) →
+            Eq.{1} (Qleisli.HierarchicalOperators.matrixAt k k rest) 1 →
+              ∀ (route : Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits N) (Qleisli.CoordinateOperators.Bits N))
+                (frame :
+                  Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits N)
+                    (Prod.{0, 0} Bool
+                      (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits n)
+                        (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits r)))))
+                (tail :
+                  Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits k)
+                    (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits r))),
+                (∀ (bits : Qleisli.CoordinateOperators.Bits N),
+                    Eq.{1} (List.ofFn.{0} (route bits))
+                      (List.cons.{0} (frame bits).1
+                        (HAppend.hAppend.{0, 0, 0} (List.ofFn.{0} (frame bits).2.1)
+                          (List.ofFn.{0} ((Equiv.symm.{1, 1} tail) (frame bits).2.2))))) →
+                  Eq.{1}
+                    (Matrix.submatrix.{0, 0, 0, 0, 0}
+                      (Qleisli.HierarchicalOperators.matrixAt N N
+                        (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.tensor
+                          (List.cons.{0} step (List.cons.{0} rest List.nil.{0}))))
+                      ⇑route ⇑route)
+                    (Matrix.submatrix.{0, 0, 0, 0, 0} (Qleisli.RoutedControlCommutation.firstFactor n m r U) ⇑frame
+                      ⇑frame)
+Qleisli.RoutedControlCommutation.tensor_second_frame : ∀ (joint : QleisliKernel.Hierarchical.Artifact.Interface)
+  (n m r k N : Nat) (step rest : Qleisli.HierarchicalOperators.Operator)
+  (V : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits m) Complex),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint)) N →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint)) N →
+      Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth step) (HAdd.hAdd.{0, 0, 0} m 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth step) (HAdd.hAdd.{0, 0, 0} m 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} m 1) (HAdd.hAdd.{0, 0, 0} m 1) step)
+              (Qleisli.HierarchicalRoutedPower.controlled m V) →
+            Eq.{1} (Qleisli.HierarchicalOperators.matrixAt k k rest) 1 →
+              ∀ (route : Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits N) (Qleisli.CoordinateOperators.Bits N))
+                (frame :
+                  Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits N)
+                    (Prod.{0, 0} Bool
+                      (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits n)
+                        (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits r)))))
+                (tail :
+                  Equiv.{1, 1} (Qleisli.CoordinateOperators.Bits k)
+                    (Prod.{0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits r))),
+                (∀ (bits : Qleisli.CoordinateOperators.Bits N),
+                    Eq.{1} (List.ofFn.{0} (route bits))
+                      (List.cons.{0} (frame bits).1
+                        (HAppend.hAppend.{0, 0, 0} (List.ofFn.{0} (frame bits).2.2.1)
+                          (List.ofFn.{0}
+                            ((Equiv.symm.{1, 1} tail) (Prod.mk.{0, 0} (frame bits).2.1 (frame bits).2.2.2)))))) →
+                  Eq.{1}
+                    (Matrix.submatrix.{0, 0, 0, 0, 0}
+                      (Qleisli.HierarchicalOperators.matrixAt N N
+                        (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.tensor
+                          (List.cons.{0} step (List.cons.{0} rest List.nil.{0}))))
+                      ⇑route ⇑route)
+                    (Matrix.submatrix.{0, 0, 0, 0, 0} (Qleisli.RoutedControlCommutation.secondFactor n m r V) ⇑frame
+                      ⇑frame)
+@Qleisli.RoutedControlCommutation.permutation_mul : ∀ {I : Type} [inst : Fintype.{0} I] [inst_1 : DecidableEq.{1} I]
+  (a b : Equiv.{1, 1} I I),
+  Eq.{1} (Qleisli.HierarchicalUnitary.permutation (Equiv.trans.{1, 1, 1} a b))
+    (HMul.hMul.{0, 0, 0} (Qleisli.HierarchicalUnitary.permutation b) (Qleisli.HierarchicalUnitary.permutation a))
+@Qleisli.RoutedControlCommutation.spine_product : ∀ {I : Type} [inst : Fintype.{0} I] [inst_1 : DecidableEq.{1} I]
+  (a b : Equiv.{1, 1} I I) (A B : Matrix.{0, 0, 0} I I Complex),
+  Eq.{1}
+    (HMul.hMul.{0, 0, 0} (Qleisli.HierarchicalUnitary.permutation (Equiv.symm.{1, 1} (Equiv.trans.{1, 1, 1} a b)))
+      (HMul.hMul.{0, 0, 0} B
+        (HMul.hMul.{0, 0, 0} (Qleisli.HierarchicalUnitary.permutation b)
+          (HMul.hMul.{0, 0, 0} A (Qleisli.HierarchicalUnitary.permutation a)))))
+    (HMul.hMul.{0, 0, 0} (Matrix.submatrix.{0, 0, 0, 0, 0} B ⇑(Equiv.trans.{1, 1, 1} a b) ⇑(Equiv.trans.{1, 1, 1} a b))
+      (Matrix.submatrix.{0, 0, 0, 0, 0} A ⇑a ⇑a))
+@Qleisli.RoutedControlCommutation.wiring_matrix : ∀ {N : Nat} {axes inverse : List.{0} Nat}
+  (op : Qleisli.HierarchicalOperators.Operator),
+  Qleisli.HierarchicalWiring.At N axes op →
+    ∀ (routing : QleisliKernel.Layout.Permutation N axes inverse),
+      Eq.{1} (Qleisli.HierarchicalOperators.matrixAt N N op)
+        (Qleisli.HierarchicalUnitary.permutation (Qleisli.HierarchicalUnitary.axisEquiv routing))
+Qleisli.RoutedControlCommutation.stage_evaluates : ∀
+  (leaves : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator)
+  (artifact : QleisliKernel.Hierarchical.Artifact.Artifact) (s : Qleisli.RoutedControlCommutation.Stage) (fuel : Nat)
+  (provider rename rest : Qleisli.HierarchicalOperators.Operator),
+  Qleisli.RoutedControlCommutation.Stage.Bound s artifact →
+    Eq.{1}
+        (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+          (Qleisli.RoutedControlCommutation.Stage.provider s))
+        (Option.some.{0} provider) →
+      Eq.{1}
+          (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+            (Qleisli.RoutedControlCommutation.Stage.rename s))
+          (Option.some.{0} rename) →
+        Eq.{1}
+            (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+              (Qleisli.RoutedControlCommutation.Stage.rest s))
+            (Option.some.{0} rest) →
+          Eq.{1}
+            (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact
+              (HAdd.hAdd.{0, 0, 0} fuel 3) (Qleisli.RoutedControlCommutation.Stage.tensor s))
+            (Option.some.{0} (Qleisli.RoutedControlCommutation.Stage.operator s provider rename rest))
+Qleisli.RoutedControlCommutation.step_matrix : ∀ (s : Qleisli.RoutedControlCommutation.Stage) (n N : Nat)
+  (provider rename : Qleisli.HierarchicalOperators.Operator),
+  Qleisli.RoutedControlCommutation.Stage.Widths s n N →
+    Qleisli.HierarchicalWiring.At (HAdd.hAdd.{0, 0, 0} n 1) (List.range (HAdd.hAdd.{0, 0, 0} n 1)) rename →
+      Eq.{1}
+        (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} n 1) (HAdd.hAdd.{0, 0, 0} n 1)
+          (Qleisli.RoutedControlCommutation.Stage.stepOperator s provider rename))
+        (Qleisli.HierarchicalRoutedPower.controlled n (Qleisli.HierarchicalOperators.matrixAt n n provider))
+Qleisli.RoutedControlCommutation.spine_evaluates : ∀
+  (leaves : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator)
+  (artifact : QleisliKernel.Hierarchical.Artifact.Artifact) (s : Qleisli.RoutedControlCommutation.Spine) (fuel : Nat)
+  (U V renameA restA renameB restB enter middle leave : Qleisli.HierarchicalOperators.Operator),
+  Qleisli.RoutedControlCommutation.Spine.Bound s artifact →
+    Eq.{1}
+        (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+          (Qleisli.RoutedControlCommutation.Stage.provider (Qleisli.RoutedControlCommutation.Spine.first s)))
+        (Option.some.{0} U) →
+      Eq.{1}
+          (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+            (Qleisli.RoutedControlCommutation.Stage.provider (Qleisli.RoutedControlCommutation.Spine.second s)))
+          (Option.some.{0} V) →
+        Eq.{1}
+            (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+              (Qleisli.RoutedControlCommutation.Stage.rename (Qleisli.RoutedControlCommutation.Spine.first s)))
+            (Option.some.{0} renameA) →
+          Eq.{1}
+              (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+                (Qleisli.RoutedControlCommutation.Stage.rest (Qleisli.RoutedControlCommutation.Spine.first s)))
+              (Option.some.{0} restA) →
+            Eq.{1}
+                (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact
+                  fuel
+                  (Qleisli.RoutedControlCommutation.Stage.rename (Qleisli.RoutedControlCommutation.Spine.second s)))
+                (Option.some.{0} renameB) →
+              Eq.{1}
+                  (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact
+                    fuel
+                    (Qleisli.RoutedControlCommutation.Stage.rest (Qleisli.RoutedControlCommutation.Spine.second s)))
+                  (Option.some.{0} restB) →
+                Eq.{1}
+                    (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact
+                      fuel (Qleisli.RoutedControlCommutation.Spine.enter s))
+                    (Option.some.{0} enter) →
+                  Eq.{1}
+                      (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves
+                        artifact fuel (Qleisli.RoutedControlCommutation.Spine.middle s))
+                      (Option.some.{0} middle) →
+                    Eq.{1}
+                        (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves
+                          artifact fuel (Qleisli.RoutedControlCommutation.Spine.leave s))
+                        (Option.some.{0} leave) →
+                      Eq.{1}
+                        (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves
+                          artifact (HAdd.hAdd.{0, 0, 0} fuel 4) (Qleisli.RoutedControlCommutation.Spine.root s))
+                        (Option.some.{0}
+                          (Qleisli.RoutedControlCommutation.Spine.operator s U V renameA restA renameB restB enter
+                            middle leave))
+Qleisli.RoutedControlCommutation.spine_matrix : ∀ (s : Qleisli.RoutedControlCommutation.Spine) (N n m : Nat)
+  (U V renameA restA renameB restB enter middle leave : Qleisli.HierarchicalOperators.Operator),
+  Eq.{1}
+      (Qleisli.HierarchicalOperators.width
+        (QleisliKernel.Hierarchical.Artifact.Interface.inputs
+          (QleisliKernel.Hierarchical.Artifact.Definition.interface
+            (Qleisli.RoutedControlCommutation.Spine.rootDef s))))
+      N →
+    Eq.{1}
+        (Qleisli.HierarchicalOperators.width
+          (QleisliKernel.Hierarchical.Artifact.Interface.outputs
+            (QleisliKernel.Hierarchical.Artifact.Definition.interface
+              (Qleisli.RoutedControlCommutation.Spine.rootDef s))))
+        N →
+      Qleisli.RoutedControlCommutation.Stage.Widths (Qleisli.RoutedControlCommutation.Spine.first s) n N →
+        Qleisli.RoutedControlCommutation.Stage.Widths (Qleisli.RoutedControlCommutation.Spine.second s) m N →
+          ∀ (enterAxes middleAxes leaveAxes enterInverse middleInverse leaveInverse : List.{0} Nat),
+            Qleisli.HierarchicalWiring.At N enterAxes enter →
+              Qleisli.HierarchicalWiring.At N middleAxes middle →
+                Qleisli.HierarchicalWiring.At N leaveAxes leave →
+                  ∀ (pe : QleisliKernel.Layout.Permutation N enterAxes enterInverse)
+                    (pm : QleisliKernel.Layout.Permutation N middleAxes middleInverse)
+                    (pl : QleisliKernel.Layout.Permutation N leaveAxes leaveInverse),
+                    Eq.{1} (Qleisli.HierarchicalUnitary.axisEquiv pl)
+                        (Equiv.symm.{1, 1}
+                          (Equiv.trans.{1, 1, 1} (Qleisli.HierarchicalUnitary.axisEquiv pe)
+                            (Qleisli.HierarchicalUnitary.axisEquiv pm))) →
+                      Eq.{1}
+                        (Qleisli.HierarchicalOperators.matrixAt N N
+                          (Qleisli.RoutedControlCommutation.Spine.operator s U V renameA restA renameB restB enter
+                            middle leave))
+                        (HMul.hMul.{0, 0, 0}
+                          (Matrix.submatrix.{0, 0, 0, 0, 0}
+                            (Qleisli.HierarchicalOperators.matrixAt N N
+                              (Qleisli.RoutedControlCommutation.Stage.operator
+                                (Qleisli.RoutedControlCommutation.Spine.second s) V renameB restB))
+                            ⇑(Equiv.trans.{1, 1, 1} (Qleisli.HierarchicalUnitary.axisEquiv pe)
+                                (Qleisli.HierarchicalUnitary.axisEquiv pm))
+                            ⇑(Equiv.trans.{1, 1, 1} (Qleisli.HierarchicalUnitary.axisEquiv pe)
+                                (Qleisli.HierarchicalUnitary.axisEquiv pm)))
+                          (Matrix.submatrix.{0, 0, 0, 0, 0}
+                            (Qleisli.HierarchicalOperators.matrixAt N N
+                              (Qleisli.RoutedControlCommutation.Stage.operator
+                                (Qleisli.RoutedControlCommutation.Spine.first s) U renameA restA))
+                            ⇑(Qleisli.HierarchicalUnitary.axisEquiv pe) ⇑(Qleisli.HierarchicalUnitary.axisEquiv pe)))
+@Qleisli.RoutedControlCommutation.typed_definition : ∀
+  {leaves : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator}
+  {artifact : QleisliKernel.Hierarchical.Artifact.Artifact} {s : Qleisli.RoutedControlCommutation.Spine}
+  {N n m k l : Nat} (p : Qleisli.RoutedControlCommutation.Premises leaves artifact s N n m k l) (index : Nat)
+  (d : QleisliKernel.Hierarchical.Artifact.Definition),
+  Eq.{1} (GetElem?.getElem?.{0, 0, 0} (QleisliKernel.Hierarchical.Artifact.Artifact.definitions artifact) index)
+      (Option.some.{0} d) →
+    Eq.{1} (QleisliKernel.Hierarchical.NodeTyping.conditions artifact d) Bool.true
+@Qleisli.RoutedControlCommutation.realizes : ∀
+  {leaves : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator}
+  {artifact : QleisliKernel.Hierarchical.Artifact.Artifact} {s : Qleisli.RoutedControlCommutation.Spine}
+  {N n m k l : Nat} (p : Qleisli.RoutedControlCommutation.Premises leaves artifact s N n m k l),
+  Nonempty.{1} (Qleisli.RoutedControlCommutation.Realization leaves artifact s N n m k l p)
+@Qleisli.RoutedControlCommutation.evaluated_spine_matrix : ∀
+  {leaves : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator}
+  {artifact : QleisliKernel.Hierarchical.Artifact.Artifact} {s : Qleisli.RoutedControlCommutation.Spine}
+  {N n m k l : Nat} (p : Qleisli.RoutedControlCommutation.Premises leaves artifact s N n m k l)
+  (v : Qleisli.RoutedControlCommutation.Realization leaves artifact s N n m k l p) (fuel : Nat)
+  (actual : Qleisli.HierarchicalOperators.Operator),
+  Eq.{1}
+      (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leaves artifact fuel
+        (Qleisli.RoutedControlCommutation.Spine.root s))
+      (Option.some.{0} actual) →
+    Eq.{1} (Qleisli.HierarchicalOperators.matrixAt N N actual)
+      (HMul.hMul.{0, 0, 0}
+        (Matrix.submatrix.{0, 0, 0, 0, 0}
+          (Qleisli.HierarchicalOperators.matrixAt N N
+            (Qleisli.RoutedControlCommutation.Stage.operator (Qleisli.RoutedControlCommutation.Spine.second s)
+              (Qleisli.RoutedControlCommutation.Premises.V p) (Qleisli.RoutedControlCommutation.Realization.renameB v)
+              (Qleisli.RoutedControlCommutation.Realization.restB v)))
+          ⇑(Equiv.trans.{1, 1, 1} (Qleisli.HierarchicalUnitary.axisEquiv ⋯) (Qleisli.HierarchicalUnitary.axisEquiv ⋯))
+          ⇑(Equiv.trans.{1, 1, 1} (Qleisli.HierarchicalUnitary.axisEquiv ⋯) (Qleisli.HierarchicalUnitary.axisEquiv ⋯)))
+        (Matrix.submatrix.{0, 0, 0, 0, 0}
+          (Qleisli.HierarchicalOperators.matrixAt N N
+            (Qleisli.RoutedControlCommutation.Stage.operator (Qleisli.RoutedControlCommutation.Spine.first s)
+              (Qleisli.RoutedControlCommutation.Premises.U p) (Qleisli.RoutedControlCommutation.Realization.renameA v)
+              (Qleisli.RoutedControlCommutation.Realization.restA v)))
+          ⇑(Qleisli.HierarchicalUnitary.axisEquiv ⋯) ⇑(Qleisli.HierarchicalUnitary.axisEquiv ⋯)))
+@Qleisli.RoutedControlCommutation.actual_exchange : ∀
+  {leavesA leavesB : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator}
+  {artifactA artifactB : QleisliKernel.Hierarchical.Artifact.Artifact} {a b : Qleisli.RoutedControlCommutation.Spine}
+  {N n m ka la kb lb : Nat} (p : Qleisli.RoutedControlCommutation.Premises leavesA artifactA a N n m ka la)
+  (q : Qleisli.RoutedControlCommutation.Premises leavesB artifactB b N m n kb lb) (r : Nat)
+  (frames : Qleisli.RoutedControlCommutation.Frames p q r),
+  Eq.{1} (Qleisli.HierarchicalOperators.matrixAt n n (Qleisli.RoutedControlCommutation.Premises.U p))
+      (Qleisli.HierarchicalOperators.matrixAt n n (Qleisli.RoutedControlCommutation.Premises.V q)) →
+    Eq.{1} (Qleisli.HierarchicalOperators.matrixAt m m (Qleisli.RoutedControlCommutation.Premises.V p))
+        (Qleisli.HierarchicalOperators.matrixAt m m (Qleisli.RoutedControlCommutation.Premises.U q)) →
+      ∀ (fuelA fuelB : Nat) (actualA actualB : Qleisli.HierarchicalOperators.Operator),
+        Eq.{1}
+            (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leavesA artifactA fuelA
+              (QleisliKernel.Hierarchical.Artifact.Entry.implementation
+                (QleisliKernel.Hierarchical.Artifact.Artifact.entry artifactA)))
+            (Option.some.{0} actualA) →
+          Eq.{1}
+              (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leavesB artifactB
+                fuelB
+                (QleisliKernel.Hierarchical.Artifact.Entry.implementation
+                  (QleisliKernel.Hierarchical.Artifact.Artifact.entry artifactB)))
+              (Option.some.{0} actualB) →
+            Eq.{1} (Qleisli.HierarchicalOperators.matrixAt N N actualA)
+              (Qleisli.HierarchicalOperators.matrixAt N N actualB)
+@Qleisli.RoutedControlCommutation.actual_exchange_reference : ∀ {R : Type}
+  {leavesA leavesB : Qleisli.HierarchicalFiniteEvaluation.Leaves Qleisli.HierarchicalOperators.Operator}
+  {artifactA artifactB : QleisliKernel.Hierarchical.Artifact.Artifact} {a b : Qleisli.RoutedControlCommutation.Spine}
+  {N n m ka la kb lb : Nat} (p : Qleisli.RoutedControlCommutation.Premises leavesA artifactA a N n m ka la)
+  (q : Qleisli.RoutedControlCommutation.Premises leavesB artifactB b N m n kb lb) (r : Nat)
+  (frames : Qleisli.RoutedControlCommutation.Frames p q r),
+  Eq.{1} (Qleisli.HierarchicalOperators.matrixAt n n (Qleisli.RoutedControlCommutation.Premises.U p))
+      (Qleisli.HierarchicalOperators.matrixAt n n (Qleisli.RoutedControlCommutation.Premises.V q)) →
+    Eq.{1} (Qleisli.HierarchicalOperators.matrixAt m m (Qleisli.RoutedControlCommutation.Premises.V p))
+        (Qleisli.HierarchicalOperators.matrixAt m m (Qleisli.RoutedControlCommutation.Premises.U q)) →
+      ∀ (fuelA fuelB : Nat) (actualA actualB : Qleisli.HierarchicalOperators.Operator),
+        Eq.{1}
+            (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leavesA artifactA fuelA
+              (QleisliKernel.Hierarchical.Artifact.Entry.implementation
+                (QleisliKernel.Hierarchical.Artifact.Artifact.entry artifactA)))
+            (Option.some.{0} actualA) →
+          Eq.{1}
+              (Qleisli.HierarchicalFiniteEvaluation.physical Qleisli.HierarchicalOperators.algebra leavesB artifactB
+                fuelB
+                (QleisliKernel.Hierarchical.Artifact.Entry.implementation
+                  (QleisliKernel.Hierarchical.Artifact.Artifact.entry artifactB)))
+              (Option.some.{0} actualB) →
+            ∀ (ψ : Qleisli.CoordinateOperators.Bits N → R → Complex) (output : Qleisli.CoordinateOperators.Bits N)
+              (reference : R),
+              Eq.{1}
+                (Matrix.mulVec.{0, 0, 0} (Qleisli.HierarchicalOperators.matrixAt N N actualA)
+                  (fun input => ψ input reference) output)
+                (Matrix.mulVec.{0, 0, 0} (Qleisli.HierarchicalOperators.matrixAt N N actualB)
+                  (fun input => ψ input reference) output)
+'Qleisli.RoutedControlCommutation.factors_commute' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.permutation_sandwich' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.tensor_control_entry' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.tensor_first_frame' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.tensor_second_frame' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.permutation_mul' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.spine_product' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.wiring_matrix' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.stage_evaluates' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.step_matrix' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.spine_evaluates' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.spine_matrix' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.typed_definition' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.realizes' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.evaluated_spine_matrix' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.actual_exchange' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.RoutedControlCommutation.actual_exchange_reference' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]

@@ -1,0 +1,1 @@
+pub unitary fn main(b: CBits<0>) -> () { b }

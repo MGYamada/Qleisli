@@ -1,0 +1,22 @@
+{
+  "baseline_commit": "8b5e68c027b0f12f416ae0d40d8165cd1c0a9acb",
+  "recorded_utc": "2026-10-06T22:25:27.110065+00:00",
+  "files": {
+    "attempt-01/zero-copy/main.qli": "c07d7a2a12a5cbb3ba8a65d4b2bb1b3b5cf28bb355e6ae3e7ad0098592e9fe1d",
+    "attempt-01/zero-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/generic-one/main.qli": "375dd308dc0dc00ee15e9a9493d8d4687d0539ce2a659c91c2817d022a5b31e3",
+    "attempt-01/generic-one/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/nested-copy/main.qli": "7e33f963f91872e7e3590ca4dcca7e63197812b25912062e230cf6bc576cbd2d",
+    "attempt-01/nested-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/measured-copy/main.qli": "ba014ce28f68eb508cfff837ed9f5a59046ad3da0bcea4cae49478c283b97e8b",
+    "attempt-01/measured-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/pack-00/main.qli": "11c2f76c33a0cc1baab34198b05a92b78a41b79504c24b1921a081fe2afd0dce",
+    "attempt-01/pack-00/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/pack-01/main.qli": "f3d93183b023103ffb280dddaee550184363507957979fb936a0cec4caf1f7ae",
+    "attempt-01/pack-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/pack-10/main.qli": "37d62566890315a1d558c49acae217007199343873767b32380d90cfa3d80d42",
+    "attempt-01/pack-10/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/pack-11/main.qli": "d92f9f8751e36b3d6efc465fdf86ad01cd9b881cf6ec1da2b051533f81e4b24b",
+    "attempt-01/pack-11/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  }
+}

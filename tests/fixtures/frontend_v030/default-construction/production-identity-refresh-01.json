@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.reviewed-diagnostic-production-identity-refresh",
+  "version": 1,
+  "source_baseline": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+  "only_coverage_change": {
+    "path": "tests/fixtures/verification_v029/coverage.json",
+    "field": "surface_sha256",
+    "old": "f54a0d23228abf2f800c736bd01eca24387f3b69ccaca9b1356108ccda505f29",
+    "new": "c4b0b5c343b606516ff456625d5f5f307b121972c897edfd5fa5a850633b67a5"
+  },
+  "unchanged_non_surface_canonical_sha256": "44709fad6ef5392d59cff3967e0337605d0299a0b5de971472e31ad64c5fd1ea",
+  "rationale": "The bounded public scanner lists no functions for private body.rs, so VM29 surface_identity includes its full source hash. The two reviewed diagnostic units change only error explanations, no public API, success condition, native route, semantic constructor, work limit or protected formal closure. VM22 updates only body.rs SHA; all261 source entries/order, groups/enums/boundaries/capacities stay identical. Independent read-only review confirmed the calculation.",
+  "historical_surfaces": {
+    "before_issue68": "f54a0d23228abf2f800c736bd01eca24387f3b69ccaca9b1356108ccda505f29",
+    "sealed_issue68": "613d3befac2ab761cc81ebfbdd29bf5ac3cf172c0a2c098ade5eddea913e838a",
+    "current_issue79": "c4b0b5c343b606516ff456625d5f5f307b121972c897edfd5fa5a850633b67a5"
+  },
+  "retained_failure": "tests/fixtures/frontend_v030/default-construction/validation-01/production-01.json",
+  "prior_validation_erratum": "The saved issue68 production-01 PASS ran before the final VM22 refresh and does not validate the sealed issue68 packet. That packet has surface613d... while VM29 retainedf54.... The original PASS and current FAIL remain preserved; the new identity repair and subsequent validation are separate.",
+  "scope": "Ordinary current-source coverage identity, no mathematical discharge, native acceptance expansion, altered gap/status/authority or release approval."
+}

@@ -1,0 +1,19 @@
+{
+  "baseline_commit": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+  "sources": {
+    "examples/iterative_phase_estimation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/iterative_phase_estimation/iterative.qli": "92c06fa6233e7dad0fce260c3a6fce9727eb67e755828b1fcaa5159b82a06e43",
+    "examples/iterative_phase_estimation/main.qli": "398f30de1a0a7aea2431cccb959711ff53ec99924c0209f050eb7a863b9a6fa9",
+    "examples/operation_contracts/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/operation_contracts/main.qli": "64725e64d6885f58d9242b18972becab62fad360edb068835c5eb47ec861b5bf",
+    "examples/phase_estimation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/phase_estimation/estimation.qli": "03925f5f8b4099d9034f8c48b86cd39b6236b8a8a6e8ac370c3c33799aec8d38",
+    "examples/phase_estimation/evolution.qli": "caac3156d6da71fb71e6cb449d1ee2da045277f7e3c11d2dbffabfa86500cbcb",
+    "examples/phase_estimation/main.qli": "25e5150052217e8e72f205cfef325589ec09c53770613e28e915cfa5c93131a1",
+    "examples/order_finding/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/order_finding/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+    "examples/order_finding/estimation.qli": "8df92aa15dc81e551e22f6efcdad890821458830c879d761c773a5245df85d82",
+    "examples/order_finding/evolution.qli": "1807e9b9551788e3d6b036863908c46dc2919fb15f6ad7606a7577bc889a1a6d",
+    "examples/order_finding/main.qli": "263b79b60ef0b86a46bdd8c85b2f2413c196a51f55b9756d3b4b68f1775d64cf"
+  }
+}

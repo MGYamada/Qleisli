@@ -1,0 +1,79 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_review_diagnostics",
+      "--test",
+      "sized_review_dialects",
+      "--test",
+      "sized_source",
+      "--test",
+      "source_capacities",
+      "--test",
+      "source_ir_correspondence",
+      "--test",
+      "source_judgments",
+      "--test",
+      "source_scope",
+      "--test",
+      "source_semantics",
+      "--test",
+      "source_snapshots",
+      "--test",
+      "source_soundness",
+      "--test",
+      "specification_boundaries",
+      "--test",
+      "static_operations",
+      "--test",
+      "static_semantics",
+      "--test",
+      "trials",
+      "--test",
+      "tuple_shapes",
+      "--test",
+      "unit_patterns",
+      "--test",
+      "verification_boundary",
+      "--test",
+      "with_computed_diagnostics"
+    ],
+    "exit_code": 0,
+    "seconds": 168.94758541695774,
+    "recorded_utc": "2026-10-05T15:24:38.505821+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--examples"
+    ],
+    "exit_code": 0,
+    "seconds": 1.9526889999979176,
+    "recorded_utc": "2026-10-05T15:24:40.459082+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--doc"
+    ],
+    "exit_code": 0,
+    "seconds": 1.8204173329868354,
+    "recorded_utc": "2026-10-05T15:24:42.280160+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt",
+    "timed_out": false
+  }
+]

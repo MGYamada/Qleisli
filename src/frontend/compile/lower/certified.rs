@@ -23,8 +23,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let source_slot = self.quantum(module, span, &source, false)?;
         self.compiler
-            .charge(module, span, self.registers[&source_slot].size())?;
-        let source_reg = self.registers[&source_slot].clone();
+            .charge(module, span, self.raw.registers[&source_slot].size())?;
+        let source_reg = self.raw.registers[&source_slot].clone();
         if source_reg.wires.len() >= MAX_CONTRACT_BITS {
             return Err(self.error(
                 module,
@@ -36,12 +36,18 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(function)
+            .is_some_and(|key| env.contains_key(key))
+            || self.bound_operation(function).is_some()
+        {
             return Err(self.error(
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "with_computed requires a basis function name, not a local value",
+                "with_computed requires a classical function name, not a local value",
             ));
         }
         let Callee::User(key) = self.compiler.resolve(module, function)? else {
@@ -49,7 +55,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         };
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
@@ -57,7 +63,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             )
         })?;
         let size = predicate
@@ -65,21 +71,12 @@ impl Lowerer<'_, '_> {
             .saturating_add(predicate.table.len());
         self.compiler.charge(module, function.span, size)?;
         let predicate = self.compiler.basis[&key].clone();
-        let mut params = predicate.params.into_iter();
-        let mut domain = params.next().unwrap_or(Ty::Unit);
-        for param in params {
-            domain = Ty::pair(domain, param);
-            self.compiler
-                .check_tree(module, function.span, domain.tree_size())?;
-        }
-        if domain != source_reg.basis || predicate.result != Ty::Bit {
-            return Err(self.error(
-                module,
-                function.span,
-                ErrorCode::TypeMismatch,
-                format!("predicate must map the exact source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", source_reg.basis, predicate.result),
-            ));
-        }
+        self.compiler.check_predicate_domain(
+            module,
+            function.span,
+            &predicate,
+            &source_reg.basis,
+        )?;
         if data_binder.text == ancilla_binder.text {
             return Err(self.error(
                 module,
@@ -107,15 +104,9 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if self.abstract_check {
-            // This skeleton is used only for parametric source checking. No
-            // certificate or executable generic body is produced from it.
-            self.apply_circuit(source_slot, logical_steps);
-            return Ok(source);
-        }
         let wire = self.wire();
         let output = self.token();
-        self.operations.push(RawOp::CertifiedCompute {
+        self.raw.operations.push(RawOp::CertifiedCompute {
             source: source_reg.token,
             source_out: output,
             ancilla_wires: vec![wire],
@@ -123,7 +114,8 @@ impl Lowerer<'_, '_> {
             use_steps,
             logical_steps,
         });
-        self.registers
+        self.raw
+            .registers
             .get_mut(&source_slot)
             .expect("owned source")
             .token = output;
@@ -139,7 +131,7 @@ impl Lowerer<'_, '_> {
         body: &Block,
         env: &Env,
     ) -> Result<Vec<CircuitStep>, CompileError> {
-        let joint = Ty::Q(Box::new(Ty::pair(basis.clone(), Ty::Bit)));
+        let joint = Ty::quantum(Ty::pair(basis.clone(), Ty::bit()));
         self.compiler
             .check_tree(module, body.span, joint.tree_size())?;
         self.compiler.charge(
@@ -158,19 +150,15 @@ impl Lowerer<'_, '_> {
         )?;
         let mut inner = Lowerer {
             compiler: self.compiler,
-            registers: BTreeMap::new(),
-            operations: vec![],
+            raw: RawState::new(),
             operation_sources: BTreeMap::new(),
+            instrument_calls: Vec::new(),
             tuple_binding_origins: Vec::new(),
-            next_token: 0,
-            next_wire: 0,
-            next_classical: 0,
-            next_slot: 0,
+            access_updates: Vec::new(),
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
             bindings: self.bindings.clone(),
-            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
@@ -192,8 +180,8 @@ impl Lowerer<'_, '_> {
             .iter()
             .map(|(name, binding)| (name.clone(), binding.hidden()))
             .collect();
-        local.insert(data_binder.text.clone(), Binding::Live(*data));
-        local.insert(ancilla_binder.text.clone(), Binding::Live(*ancilla));
+        inner.bind_env(data_binder, Binding::Live(*data), &mut local);
+        inner.bind_env(ancilla_binder, Binding::Live(*ancilla), &mut local);
         let result = inner.block(module, body, &mut local)?;
         inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
         if inner.effect != Effect::Unitary {
@@ -204,7 +192,7 @@ impl Lowerer<'_, '_> {
                 "certified with_computed body must be unitary",
             ));
         }
-        let expected = Ty::pair(Ty::Q(Box::new(basis.clone())), Ty::Q(Box::new(Ty::Bit)));
+        let expected = Ty::pair(Ty::quantum(basis.clone()), Ty::quantum(Ty::bit()));
         if result.ty() != expected {
             return Err(inner.error(
                 module,
@@ -227,8 +215,8 @@ impl Lowerer<'_, '_> {
         let raw = RawProgram {
             quantum_inputs,
             classical_inputs,
-            operations: inner.operations,
-            quantum_outputs: vec![inner.registers[&slot].token],
+            operations: inner.raw.operations,
+            quantum_outputs: vec![inner.raw.registers[&slot].token],
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };

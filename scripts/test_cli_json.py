@@ -60,7 +60,7 @@ class JsonCliTests(unittest.TestCase):
 
     def test_check_run_and_distribution_order(self):
         self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
-                    "observe fn main() -> (CBit,CBit) { let a = measure_z(h(init0())); (a,not a) }")
+                    "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
         self.assertEqual(self.invoke("check", self.root, "--format=json")["result"], {"verified": True})
         rows = self.invoke("run", "--format=json", self.root)["result"]["distribution"]
         self.assertEqual([row["bits"] for row in rows], [[False, True], [True, False]])
@@ -87,7 +87,7 @@ class JsonCliTests(unittest.TestCase):
 
     def test_truncated_static_arguments_are_located_parse_failures(self):
         for source in ["unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
-                       "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,"]:
+                       "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[power("]:
             self.source(source)
             for command in ["check", "run"]:
                 with self.subTest(source=source, command=command):
@@ -102,12 +102,12 @@ class JsonCliTests(unittest.TestCase):
 
     def test_error_categories_and_nested_project_relative_paths(self):
         sources = {
-            "type_mismatch": "observe fn main() -> CBit { () }",
+            "type_mismatch": "observe fn main() -> Bit { () }",
             "unknown_name": "observe fn main() -> Unit { missing() }",
             "recursive_call": "unitary fn f() -> Unit { f() }",
             "ownership": "unitary fn f(q:Q<Bit>) -> (Q<Bit>,Q<Bit>) { (q,q) }",
             "effect": "use std::quantum::init0; unitary fn f() -> Q<Bit> { init0() }",
-            "arity": "unitary fn f() -> Unit { () } observe fn main() -> Unit { f(true) }",
+            "arity": "unitary fn f() -> Unit { () } observe fn main() -> Unit { f(1) }",
             "project": "use absent::name;",
         }
         for code, source in sources.items():
@@ -149,7 +149,7 @@ class JsonCliTests(unittest.TestCase):
 
     def test_seeded_samples_use_fresh_preparation_and_preserve_correlation(self):
         self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
-                    "observe fn main() -> (CBit,CBit) { let a = measure_z(h(init0())); (a,not a) }")
+                    "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
         args = ("sample", self.root, "--shots=64", "--seed=18446744073709551615", "--format=json")
         result = self.invoke(*args)["result"]
         self.assertEqual(result, self.invoke(*args)["result"])
@@ -166,7 +166,7 @@ class JsonCliTests(unittest.TestCase):
         for source in [
             "observe fn main() -> Unit { () }",
             "use std::quantum::{init0,h,cnot}; use std::observe::measure_z; "
-            "observe fn main() -> (CBit,CBit) { "
+            "observe fn main() -> (Bit,Bit) { "
             "let (a,b) = cnot(h(init0()),init0()); (measure_z(a),measure_z(b)) }",
         ]:
             with self.subTest(source=source):
@@ -187,7 +187,7 @@ class JsonCliTests(unittest.TestCase):
                     self.assertIn(shot["bits"], [[], [False, False], [True, True]])
 
     def test_numeric_spelling_is_consistent_across_cli_adapters(self):
-        self.source("observe fn main() -> CBit { true }")
+        self.source("observe fn main() -> Bit { 1 }")
         for seed in ["", "01", "+1", "-1", "１", "18446744073709551616"]:
             with self.subTest(seed=seed):
                 for args in [
@@ -197,21 +197,21 @@ class JsonCliTests(unittest.TestCase):
                     result = self.invoke(*args, status=2)
                     self.assertEqual(result["diagnostics"][0]["code"], "usage")
                 sized = subprocess.run(
-                    [BINARY, "sized", "sample", "--entry=main::f", "--module=main=missing.qli",
+                    [BINARY, "sample", "--entry=main::f", "--module=main=missing.qli",
                      "--kernel=missing", "--shots=1", f"--seed={seed}"], capture_output=True,
                 )
                 self.assertEqual(sized.returncode, 2, sized)
                 self.assertEqual(sized.stdout, b"")
         # Sized naturals keep their u32 bound even though seeds use u64.
         sized = subprocess.run(
-            [BINARY, "sized", "check", "--entry=main::f", "--module=main=missing.qli",
+            [BINARY, "check", "--entry=main::f", "--module=main=missing.qli",
              "--kernel=missing", "--nat=n=4294967296"], capture_output=True,
         )
         self.assertEqual(sized.returncode, 2, sized)
         self.assertEqual(sized.stdout, b"")
 
     def test_portable_ir_is_independently_decoded_and_reverified(self):
-        self.source("observe fn main() -> CBit { true }")
+        self.source("observe fn main() -> Bit { 1 }")
         artifact = self.root / "artifact.json"
         self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"], {"path": str(artifact)})
         data = json.loads(artifact.read_bytes())

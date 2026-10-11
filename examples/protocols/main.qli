@@ -8,7 +8,7 @@ use std::quantum::z;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let psi = h(x(init0()));
     let (alice, bob) = cnot(h(init0()), init0());
     let (psi, alice) = cnot(psi, alice);

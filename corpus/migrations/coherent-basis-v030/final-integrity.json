@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.coherent-basis-corpus-final-integrity",
+  "version": 1,
+  "created_utc": "2026-10-06T03:57:02.980519+00:00",
+  "original_project_trees": "exact file inventory and bytes unchanged",
+  "first_sources": "all selected first source/metadata bytes unchanged; two README archival names are explicitly mapped",
+  "first_sources_sha256": "71dbee1670094b69dff88ada3e68c161662337b9886d412ffaa69c7fca6e47e9",
+  "before_capture_sha256": "7cca05197011d994bd7fee46c9a824742e3f63ed59b4ece08e713ce98bea3292",
+  "after_capture_sha256": "d79ba1d6f661c4cb82daee4a4eb7ba62c51bd67dde448c5c2fca29bb8383ea3d",
+  "manifest_change": "only append explicit coherent-basis snapshot selection; case contracts, upstream pins, licenses, prior migrations and historical authoring metadata unchanged",
+  "new_markdown_local_links": {
+    "links": 3,
+    "anchors": 0,
+    "symbols": 0,
+    "tests": 0
+  },
+  "new_markdown_errors": [],
+  "snapshot_inventory": {
+    "pennylane_demos/vqe_excitation/kernel.qli": "90e3ba606a272a76bdca01fc692ad7a13a3c6cfe3d12ecd49884d13f644adadd",
+    "pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+    "qualtran/less_than2/kernel.qli": "7100a4cddf4ded1c1de2ab3ae729e836e533a3231f3b69ec612f9a86807cd5e9",
+    "qualtran/less_than2/main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce"
+  },
+  "scope": "Read-only bounded integrity and link checks; no additional execution, build or theorem/release claim."
+}

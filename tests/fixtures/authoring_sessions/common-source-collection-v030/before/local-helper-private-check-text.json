@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/local-helper-private/main.qli",
+    "--module=helper=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/local-helper-private/helper.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/native-log.py"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 1,
+  "seconds": 0.08024791703792289,
+  "recorded_utc": "2026-10-05T16:13:00.459219+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "transcript": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::entry\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+}

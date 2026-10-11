@@ -6,7 +6,7 @@ An executable, phase-sensitive checker for one-bit words over X and exact
 IR verifier. Its theorem concerns cyclic-phase action, not complex matrices,
 source translation, ownership, measurement, or the native compilation chain.
 
-Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. Licensed under Apache-2.0.
 -/
 
 namespace QleisliKernel

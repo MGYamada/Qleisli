@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.29534012504154816,
+  "recorded_utc": "2026-10-05T17:12:04.409690+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 1,
+  "native_argv_log": "unused-invalid-sibling-finite-check-text.native.jsonl",
+  "stdout_raw": "unused-invalid-sibling-finite-check-text.stdout.txt",
+  "stderr_raw": "unused-invalid-sibling-finite-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "997a5650f77a63660a1a58baef12755232d81b7a3843de76cc8f97d064a3189e",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/main.qli:4:30: ownership: duplicate parameter name\n"
+}

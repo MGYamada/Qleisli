@@ -1,0 +1,73 @@
+{
+  "format": "qleisli.guarantee-ledger",
+  "version": 2,
+  "edition": "2026",
+  "status": "active-pending-discharge",
+  "ratification": {
+    "path": "governance/ratification-2026.json",
+    "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+  },
+  "binding_interpretations": [
+    {
+      "id": "QS-2026-01",
+      "jurisdiction": "QS",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "1. Candidate QS-2026-01 — Meaning of accepted programs"
+    },
+    {
+      "id": "PR-2026-01",
+      "jurisdiction": "PR",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "2. Candidate PR-2026-01 — Accepted target realizations"
+    },
+    {
+      "id": "RS-2026-01",
+      "jurisdiction": "RS",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "3. Candidate RS-2026-01 — Quantitative resource accountability"
+    }
+  ],
+  "pending_obligations": [
+    {
+      "interpretation": "QS-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    },
+    {
+      "interpretation": "PR-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    },
+    {
+      "interpretation": "RS-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    }
+  ],
+  "discharged_guarantees": [],
+  "scope": "QS-2026-01, PR-2026-01 and RS-2026-01 are binding pending obligations under their exact adopted text. Existing proofs retain their scoped status but have not been admitted as constitutional discharges. No production-wide QS, PR or quantitative RS discharge is claimed."
+}

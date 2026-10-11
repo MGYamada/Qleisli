@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:17:45.084551+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.005054791981820017,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "forward-basis-finite-check-json.native.jsonl",
+  "native_count_scope": "Actual forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "forward-basis-finite-check-json.stdout.bin",
+  "stderr_raw": "forward-basis-finite-check-json.stderr.bin",
+  "stdout_sha256": "63d5b8ae09ad0d4b8e77556186480ee19bbfb039c0e6caf887546bd796994ee2",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"named Basis types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":105,\"end\":106,\"line\":2,\"column\":32},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact captured raw byte prefixes remain in separate files.",
+  "parsed_json_shape": "object",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "named Basis types are outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 105,
+          "end": 106,
+          "line": 2,
+          "column": 32
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

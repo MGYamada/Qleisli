@@ -1,0 +1,3 @@
+use std::quantum::{init0,finish,unit,phase_eighth,h,cnot,split};
+use std::observe::measure_z;
+pub iso fn entry(q:Q<Unit>)->Bit{finish(q);measure_z(init0())}

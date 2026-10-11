@@ -1,0 +1,6 @@
+use std::quantum::{h,split,finish};
+fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+fn id(q:Q<Bit>)->Q<Bit>{q}
+fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+fn bad(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{adjoint(then_op(strip,id))(q)}
+pub fn entry(q:Q<Bit>)->Q<Bit>{q}

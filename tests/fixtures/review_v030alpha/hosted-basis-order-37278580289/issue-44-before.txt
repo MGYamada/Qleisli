@@ -1,0 +1,164 @@
+## Status
+
+Design and implementation issue for **Qleisli 0.3.0**.
+
+Related:
+- #27 type-theory synthesis
+- #28 static language / sizes / termination
+- A020-02 one QPE body across target types
+- R01 / R02 / R14
+
+## Problem
+
+#28 covers size polymorphism such as:
+
+```text
+n : Nat
+Bits<n>
+```
+
+but scalable Qleisli also needs polymorphism over the **basis type itself**.
+
+A reusable algorithm should eventually be able to express concepts like:
+
+```text
+A : Basis
+U : Op<A>
+q : Q<A>
+```
+
+without duplicating one body for every concrete target type.
+
+Conceptually:
+
+```qli
+fn qpe[
+    static A: Basis,
+    static m: Nat,
+    static U: Op<A>,
+](target: Q<A>) -> ...
+```
+
+This is distinct from ordinary size generalization.
+
+## Proposed kind layer
+
+Introduce a small compile-time kind discipline, conceptually:
+
+```text
+Nat      : Kind
+Basis    : Kind
+Op<A>    : static operation kind/type
+Meaning<A> : static semantic kind/type
+```
+
+The exact source syntax is separate from this issue.
+
+## Questions to decide
+
+1. Is `Basis` a first-class static kind?
+2. May a static parameter range over arbitrary basis types?
+3. Which operations are available on an abstract `A : Basis`?
+4. Is `bits(A)` available statically?
+5. Can abstract basis types be decomposed structurally, or only passed opaquely?
+6. Can `A` appear under `Q<A>`, `Op<A>`, `Meaning<A>`, tuples, and `Bits<n>`?
+7. Is specialization monomorphization-only?
+8. Is a generic definition itself checked once, or are only instances checked?
+9. Which obligations are definition-time versus specialization-time?
+10. How is generic evidence bound to exact instantiated type trees?
+11. Can two different source types with the same bit width instantiate the same generic body?
+12. How do canonical coherence conversions interact with generic `A`?
+
+## Recommended initial restriction
+
+Prefer a small, predictable generic model:
+
+- finite static type parameters only;
+- monomorphize/specialize before execution;
+- no runtime type values;
+- no higher-kinded types initially;
+- no arbitrary dependent pattern matching on types;
+- generic bodies may use only operations justified by explicit constraints.
+
+## Evidence question
+
+The key design problem is not just syntax.
+
+For a generic definition:
+
+```text
+f[A, U](...)
+```
+
+Qleisli must decide whether proof/evidence is:
+
+- attached to the generic definition;
+- regenerated for each specialization;
+- shared through a symbolic theorem plus instance checks;
+- or some combination.
+
+That decision must align with R14 and hierarchical evidence.
+
+## Non-goals
+
+This issue does not require:
+
+- System F in full;
+- higher-kinded polymorphism;
+- runtime type reflection;
+- arbitrary dependent types;
+- impredicativity.
+
+## Acceptance criteria
+
+1. One source body works for at least two different basis types with the same algorithm structure.
+2. Same-width but structurally different basis types do not silently unify unless coherence explicitly permits it.
+3. Missing operation/type constraints reject before unsafe specialization.
+4. Specialization preserves exact type trees, axis order, phase, ownership, and dependencies.
+5. Generic checking and instance checking responsibilities are explicitly separated.
+6. Work/resource limits for specialization are specified.
+7. The design composes with #28 static naturals and #27 `Op<A,M>`.
+
+## Design intent
+
+Qleisli should distinguish clearly:
+
+```text
+n : Nat        -- size polymorphism
+A : Basis      -- basis-type polymorphism
+U : Op<A>      -- operation polymorphism
+```
+
+rather than encoding all three through unrelated special cases.
+
+## 2026-10-04 target type contract
+
+Make Basis parameters opaque, finite and static, with explicit ordered parameters whose kinds depend only on earlier parameters. Check all generic declarations and branches before closed specialization, then bind each instance to exact type trees, provider identities, premises, source/dependencies and bounded aggregate work. Do not add runtime type reflection or infer structure from width. General operation/capability details remain in the separate grouped decision candidate.
+
+The [target Language Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/type-model.md) and [foundation analysis](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/design/type-foundation.md) record this ordinary implementation decision under the approved 0.3.0 plan and adopted authority hierarchy. Edition remains 2026. This is not a new Guardian interpretation or guarantee admission.
+
+Status at the 2026-10-04 design checkpoint: target rules selected; implementation and conformance were in progress in #307. That earlier alpha syntax still contained CBit/CBits and Basis polymorphism was unimplemented. Required positive and negative tests, exact lowering/interface preservation and native acceptance evidence remain open. Documentation alone does not complete this issue.
+
+
+## Next bounded Basis implementation contract — 2026-10-05
+
+Implement the already selected opaque `A : Basis` boundary through the shared AST, exact type tree, declaration/local identities and common selected-source preparation. This is ordinary implementation under QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01; it admits no new primitive meaning or constitutional guarantee.
+
+Use explicit ordered `static A: Basis` parameters. An abstract A is an ordinary finite basis tree, never a runtime type or a quantum owner. Generic bodies may move/return `Q<A>`, copy ordinary A values where allowed, and apply explicit providers justified by their declared access. They cannot infer width, decompose A, prepare a state of A or rescue a missing generic constraint from a favorable instance. Kinds may depend only on earlier parameters. Keep complete generic declaration/body/branch checking separate from bounded closed instance checks.
+
+Provide explicit exact type bindings in the Rust preparation API and selected-source CLI (`--type=A=Bit`, `--type=A=Bits<1>`, or an exact ordinary product). Keep `--basis=N` exclusively the existing hierarchy runtime input selector. Existing Nat/Op-only Rust entry construction remains available and supplies no Basis bindings; missing/extra/wrong-category bindings reject deterministically. Providers with Basis parameters need their own explicit type bindings, distinct from their Nat bindings and from the caller's bindings.
+
+For source specialization, an opaque type parameter can be forwarded by its resolved name; concrete type arguments use an explicit static `type(T)` description, for example `f[type(Bit),2,U](q)`. This distinguishes a type literal from the already supported contextual Nat names such as Bit, without changing ordinary runtime calls or guessing an argument category. `type(T)` constructs no live value and grants no physical map. Closed host type expressions use the same bounded basis-type grammar, require EOF, reject quantum/unknown/unresolved forms and retain exact trees. No implicit coercion or omitted argument is added.
+
+Specialization identity must bind exact Unit/Bit/Bits/product tags, nesting/axis order, selected types, Nat/Op/provider substitutions and original source/dependency identities. Retain the existing checked source/elaboration/storage limits and backend eligibility; no width-only caching, erased zero-width owner, capacity increase or fallback after a failed native decision. All emitted proposals still undergo fresh existing Lean acceptance. The admitted ordinary QLV1 ownership/scope meanings and fixed native representation remain unchanged; broader source-preservation and QS/PR/RS duties remain pending.
+
+The [first-source experiment](https://github.com/MGYamada/Qleisli/tree/f9eef6ca4f758a3b6cf7a679590b60d0d39c8043/tests/fixtures/authoring_sessions/basis-polymorphism-v030) preserves nine first programs and18 actual observations. The initial concrete control omitted mandatory fold yield and genuinely failed; its separate repaired snapshot passes with one native invocation. The eight abstract programs reach parser rejection only, which supplies no evidence about their later owner/access rules. Required implementation validation includes distinct exact bases in one body, same-width tree/provider mismatch, Unit scalar phase/reference action, missing access even at zero repetitions/unused declarations, type/binding cycles and bounded specialization. Independent small-system/reference oracles and actual native artifact binding are required. No criterion is reduced; #44 remains open.
+
+
+## Bounded implementation checkpoint — 2026-10-05
+
+[a96ea1c](https://github.com/MGYamada/Qleisli/commit/a96ea1c588d65f63a646aa37c645ccc8b6d9dd10) implements the before-code opaque contract through the shared grammar, resolved type identities, generic checker, bounded specialization, explicit Rust API and selected CLI. Host/source type substitutions keep exact tags/nesting/axis order and provider-local parameters. Missing constraints remain errors in unused definitions, zero folds and both static arms. Source type arguments, including unused ones, obey the same closed Basis capacity; no checker limit increases.
+
+[Retained validation](https://github.com/MGYamada/Qleisli/tree/a96ea1c588d65f63a646aa37c645ccc8b6d9dd10/tests/fixtures/frontend_v030/basis-polymorphism) maps original criteria to implementation evidence: one repeat body at Bit and Unit with independent small reference/phase actions (1), same-width tree/provider/cache distinctions (2), actual generic type/access/ownership negatives before native use (3), retained exact source/dependency/type and fresh existing native artifacts with bounded action tests (4), all-generic versus closed-instance responsibilities (5), bounded type/work accounting including unused arguments (6), and explicit Nat composition (part of7). This is a bounded checkpoint, not complete generic preservation evidence. General Meaning/`Op<A,M>` composition and final project-profile convergence remain unfinished; all seven original criteria are retained and #44 stays open.
+
+Rust 1.98.1 passes193 bounded tests; Rust1.85.0 passes72 focused tests. Existing ignored tests stay ignored. Both all-target Clippy and format checks, current inventories/route tests, edition/authoring/docs/constitutional checks, mdBook0.5.4 and generated local HTML/print links pass. The packet retains wrong test expectations, native-environment and provider-manifest failures without replacing them. First/second authoring sources are unchanged; new command inputs explicitly bind types. Native binary39effde0 is reused, with no fresh local Lean build/audit/replay. No new maximum-size quantum run, primitive, human interpretation, guarantee admission or release is claimed. The initial CI docs producer passed its substantive checks but failed whitespace on four byte-frozen parent #315 records. [dc3c8c6](https://github.com/MGYamada/Qleisli/commit/dc3c8c633b959c9acbbffd29bbfe70f13e032491) preserves the actual failure and unchanged packet bytes, applies exact-evidence attributes and passes the entire committed-tree check. Rust/Lean behavior is unchanged. [Current CI](https://github.com/MGYamada/Qleisli/actions/runs/37278580289) remains pending.

@@ -1,0 +1,5 @@
+PASS: actual-ab; typed visits=125534; wiring visits=7823; finite work=131; seven original wiring summaries/computed inverses checked
+PASS: actual-ba; typed visits=125534; wiring visits=7823; finite work=131; seven original wiring summaries/computed inverses checked
+'Qleisli.RoutedControlCommutation.Examples.emitted_entry_exchange' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

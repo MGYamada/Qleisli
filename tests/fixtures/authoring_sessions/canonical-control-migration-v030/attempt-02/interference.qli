@@ -1,0 +1,21 @@
+//! Hadamard tests of a supplied phase-fixed operation on a supplied target.
+//! Retain the target owner: reading the meter does not discard the target.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+
+/// E[(-1)^bit] = Re Tr(rho U). The target is returned after meter observation.
+pub observe fn real_overlap[static U: Op<Bit>](q: Q<Bit>) -> (Bit,Q<Bit>)
+requires Controlled(U) {
+    let (meter,q) = controlled(U)(h(init0()),q);
+    (measure_z(h(meter)),q)
+}
+
+/// E[(-1)^bit] = Im Tr(rho U), using S† before the final Hadamard.
+pub observe fn imaginary_overlap[static U: Op<Bit>](q: Q<Bit>) -> (Bit,Q<Bit>)
+requires Controlled(U) {
+    let (meter,q) = controlled(U)(h(init0()),q);
+    let meter = inverse(t)(inverse(t)(meter));
+    (measure_z(h(meter)),q)
+}

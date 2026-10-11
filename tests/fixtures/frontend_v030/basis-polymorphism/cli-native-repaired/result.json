@@ -1,0 +1,50 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "basis_polymorphism",
+    "--test",
+    "inference_law",
+    "--test",
+    "quantum_unit_source",
+    "--test",
+    "quantum_tuple_unitors",
+    "--test",
+    "cli",
+    "--test",
+    "cli_json",
+    "--test",
+    "discovery_paths",
+    "--test",
+    "selected_source_cli",
+    "--test",
+    "sized_cli"
+  ],
+  "exit_code": 0,
+  "seconds": 11.178144917008467,
+  "sources_unchanged": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+  "test_result_lines": [
+    "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s",
+    "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s",
+    "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.58s",
+    "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+    "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+    "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s",
+    "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s",
+    "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s",
+    "test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+  ]
+}

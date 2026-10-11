@@ -1,0 +1,13 @@
+{
+  "format": "qleisli.checked-operation-coverage-review",
+  "changed_inventory_sources": [
+    "src/frontend/compile/lower/operations.rs",
+    "src/frontend/lexer.rs"
+  ],
+  "reason": "The coverage surface digest includes whole-source identity for private modules without public functions. Only the static diagnostic wording changes in compile/lower/operations.rs; all acceptance routes, named tests, native modes and public enum/function signatures are unchanged.",
+  "before_sha256": "0b2b31091720f5ce769958ccdf9e1a62292a37416e12584a699c0230608d0c73",
+  "before_surface_sha256": "63fef1b359985205508d32f3824406ecaeb5de4230a8cc27ef4d1e4b631646e0",
+  "after_surface_sha256": "f54a0d23228abf2f800c736bd01eca24387f3b69ccaca9b1356108ccda505f29",
+  "first_review_script_failure": "An order-sensitive source-path assertion failed before any write; corrected to verify the exact two-path set. Both previous coverage-01 and coverage-review-02 failures are retained unchanged.",
+  "limits": "Identity/coverage review only; no new semantic proof or constitutional guarantee."
+}

@@ -1,0 +1,10 @@
+usage: run_native_ci.py [-h] [--workers {1,2,4}] --output OUTPUT
+
+Run every retained native comparison on one freshly audited CI checkout. This
+schedules checks, not evidence reuse: no cached project outputs or reports can
+authorize a task skip. Each task keeps its own log and record directory.
+
+options:
+  -h, --help         show this help message and exit
+  --workers {1,2,4}
+  --output OUTPUT

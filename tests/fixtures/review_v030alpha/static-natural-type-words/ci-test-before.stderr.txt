@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/private/tmp/qleisli-sized-type-word-ci-fae0e6a)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.66s
+     Running tests/sized_review_dialects.rs (target/debug/deps/sized_review_dialects-5a4051bc5c694371)
+
+thread 'python_static_comparisons_keep_type_angles_separate_in_both_dialects' (11404416) panicked at tests/sized_review_dialects.rs:97:9:
+pub unitary fn f[static Q: Nat](q: Q<Bit>) -> Q<Bit> { if static Q < 2 { q } else { q } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test sized_review_dialects`

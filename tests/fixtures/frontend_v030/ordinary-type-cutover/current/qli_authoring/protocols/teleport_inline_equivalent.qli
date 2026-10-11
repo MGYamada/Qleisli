@@ -1,0 +1,10 @@
+//! The modular form of the user's inline |-> teleportation example.
+use std::quantum::init0;
+use std::quantum::h;
+use std::observe::measure_z;
+use states::minus;
+use teleportation::teleport;
+observe fn main() -> ((Bit,Bit),Bit) {
+    let (message,bob) = teleport(minus(init0()));
+    (message,measure_z(h(bob)))
+}

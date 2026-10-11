@@ -1,0 +1,215 @@
+[
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "b6f0fa0"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.013,
+    "stdout": "command-00.stdout",
+    "stderr": "command-00.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "archive",
+      "b6f0fa0720851dc1acb626b4aa32487a0e7d71a6"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.188,
+    "stdout": "not-retained-git-archive-binary",
+    "stderr": "base-archive.stderr"
+  },
+  {
+    "argv": [
+      "cp",
+      "-cR",
+      "/Users/masa/git/Qleisli/lean/.lake",
+      "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source/lean/.lake"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2",
+    "exit_code": 0,
+    "seconds": 31.955,
+    "stdout": "lean-clone-cache.stdout",
+    "stderr": "lean-clone-cache.stderr"
+  },
+  {
+    "argv": [
+      "cp",
+      "-cR",
+      "/Users/masa/git/Qleisli/lean-kernel/.lake",
+      "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source/lean-kernel/.lake"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2",
+    "exit_code": 0,
+    "seconds": 0.232,
+    "stdout": "lean-kernel-clone-cache.stdout",
+    "stderr": "lean-kernel-clone-cache.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Local Synthetic Wrapper Test",
+      "-c",
+      "user.email=local-synthetic@example.invalid",
+      "-c",
+      "commit.gpgsign=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "gc.auto=0",
+      "init",
+      "--quiet"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.025,
+    "stdout": "command-04.stdout",
+    "stderr": "command-04.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Local Synthetic Wrapper Test",
+      "-c",
+      "user.email=local-synthetic@example.invalid",
+      "-c",
+      "commit.gpgsign=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "gc.auto=0",
+      "add",
+      "--all"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 5.127,
+    "stdout": "command-05.stdout",
+    "stderr": "command-05.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Local Synthetic Wrapper Test",
+      "-c",
+      "user.email=local-synthetic@example.invalid",
+      "-c",
+      "commit.gpgsign=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "gc.auto=0",
+      "commit",
+      "--quiet",
+      "-m",
+      "Synthetic clean wrapper integration; not a release candidate"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.746,
+    "stdout": "command-06.stdout",
+    "stderr": "command-06.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.013,
+    "stdout": "command-07.stdout",
+    "stderr": "command-07.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.013,
+    "stdout": "command-08.stdout",
+    "stderr": "command-08.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.092,
+    "stdout": "command-09.stdout",
+    "stderr": "command-09.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "ls-files",
+      "-z"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.013,
+    "stdout": "command-10.stdout",
+    "stderr": "command-10.stderr"
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source/lean",
+    "exit_code": 0,
+    "seconds": 12.714,
+    "stdout": "lean-version.stdout",
+    "stderr": "lean-version.stderr"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_release_ready.py",
+      "--record-constitution",
+      "--output",
+      "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/constitution-receipt.json"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 42.828,
+    "stdout": "real-wrapper.stdout",
+    "stderr": "real-wrapper.stderr"
+  },
+  {
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/private/tmp/qleisli-real-release-wrapper-33v6v5j2/source",
+    "exit_code": 0,
+    "seconds": 0.127,
+    "stdout": "command-13.stdout",
+    "stderr": "command-13.stderr"
+  }
+]

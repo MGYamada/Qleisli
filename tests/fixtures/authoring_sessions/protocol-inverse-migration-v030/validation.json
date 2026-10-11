@@ -1,0 +1,185 @@
+{
+  "format": "qleisli.protocol-inverse-migration-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-07T05:33:08.973957+00:00",
+  "baseline_commit": "cc070079449d4d166b767b09afaa8737fa1613a5",
+  "source_sha256": {
+    "tests/qli_corpus.rs": "5426fb3ef36eacc825c5c766247e8150610ec2cd0cf88652aa87f8b0d250d0dd",
+    "examples/protocols/bell.qli": "7d3665d1f783b67cac871caba6265776042a1c5b0b5e0b6f2af0ba0e455796cf",
+    "examples/protocols/checks.qli": "a4b3d477444679ed0eead858d09179d09e2aa03a73e3728dfdd0a9599b1023fd",
+    "examples/protocols/corrections.qli": "886dcf44e53725f9c5c6cd3c0e9e5b1c0c788d68d6569114d3a9a4997356b341",
+    "examples/protocols/dense_coding.qli": "e665e49159e4f98e9d17caf68864d9d64c572209d3ca89741c589b23f1f1e169",
+    "examples/protocols/main.qli": "b356d1436a9c0373dc16cd42ae3cafdeb7e1129a89351cab3de330de1b47ba65",
+    "examples/protocols/states.qli": "92e9cb2891813d9ec431af1b966dbed3b16ca1e7f78f7b1ed4df11340ddc0228",
+    "examples/protocols/swapping.qli": "62d3508530e22b08b898b6b90597fc4070f110baeaa7e25ba21b7fd73b3eb9ed",
+    "examples/protocols/teleportation.qli": "045bd0f0b0a85078c3db02b61df2c8571c7eb38c1847104dbec6f920c5975937",
+    "examples/protocols/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "before_active_edit_oracle": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-j2",
+      "--test",
+      "qli_corpus",
+      "protocol_y_minus_has_the_full_independent_operator_phase"
+    ],
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0,
+    "filtered_out": 13,
+    "log": {
+      "external_path": "/private/tmp/qleisli-protocol-inverse-oracle-before-repaired.log",
+      "bytes": 418,
+      "sha256": "accad0f7eea092a1843802c7bfd7cbde3e3bbaf9384613d404d3ab4f3829541d"
+    }
+  },
+  "first_compile_failure": "oracle-compile-failure.json",
+  "after_active_edit": {
+    "latest": {
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j2",
+        "--test",
+        "qli_corpus"
+      ],
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-after-latest.log",
+        "bytes": 1358,
+        "sha256": "04c373eb58ef78c9bd86087ac3eb063aa01783d4876d581b9677c343db1a9ca1"
+      }
+    },
+    "msrv": {
+      "cargo": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "-j2",
+        "--test",
+        "qli_corpus"
+      ],
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-after-msrv.log",
+        "bytes": 1423,
+        "sha256": "bbbb737d86b3defc73ab62ee72fe0264c70b374ff34cbcea53b8e03fc94a3a77"
+      }
+    }
+  },
+  "focused_clippy": {
+    "latest": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--test",
+        "qli_corpus",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-clippy-latest.log",
+        "bytes": 120,
+        "sha256": "f02dbd83fb2053bc69cc5f51da089f09417289d933b1e2525d05e15f7b43cd9f"
+      }
+    },
+    "msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--test",
+        "qli_corpus",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-clippy-msrv.log",
+        "bytes": 120,
+        "sha256": "8e37abbcc7ba24724be354fc3e2ddf8a569858f6de7f075c221db67b2fdd5fdc"
+      }
+    }
+  },
+  "cli_observations": "Six original/desired/active check and run observations, recorded separately; active-comparison.json states exact comparison and unchanged entry coverage limit.",
+  "independent_oracles": [
+    "Full exact S-dagger H matrix, both input columns and complete phase; native-valid opposite-relative-phase and additional-global-phase counterexamples.",
+    "Seven preparations, Bell-entangled external reference and branch-sensitive protocol fault checks retained in the complete qli_corpus target."
+  ],
+  "limits": "The new full-matrix regression passed before and after active migration. The first oracle compile failed before semantic execution and its exact source/diagnostic are retained; repaired source uses literal probes without adding a dependency. Current production Rust and Lean are unchanged from the baseline. This changed tree has focused 14-test validation on both Rust versions, not a fresh full all-target test run or hosted CI result. No new acceptance rule, guarantee admission, general source-preservation theorem, generic QFT, release approval or Issue completion is claimed.",
+  "all_target_clippy": {
+    "latest": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-clippy-all-latest.log",
+        "bytes": 60,
+        "sha256": "40108eb5c2e432741fc7f36afdf5c793ec02b19e7b1ce5e51bdd2ba377bd26cb"
+      }
+    },
+    "msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-protocol-inverse-clippy-all-msrv.log",
+        "bytes": 60,
+        "sha256": "60752725ea6f194f20ebc7150276eef9d351f09c52a8c6e784e05f6a10ca45df"
+      }
+    }
+  },
+  "static_checks": {
+    "fmt": "passed",
+    "working_diff_whitespace": "passed",
+    "docs_links": "passed; 2205 local links",
+    "production_coverage": "passed; public acceptance unchanged",
+    "verification_inventory": "passed; 277 constructors/268 snapshots",
+    "authoring_integrity": "57 records/85 snapshots/1326 actual observations; no recorded commands replayed",
+    "constitutional_continuity": {
+      "status": "passed",
+      "trusted_base": "38baae7d19535602b21270e11e97617d45205b37",
+      "limits": "Current source/evidence identity, not fresh Lean replay."
+    },
+    "working_fixture_budget": "allowed before final report append; 17222 files/125606216 bytes including ignored; rerun before commit"
+  }
+}

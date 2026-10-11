@@ -1,0 +1,54 @@
+2026-10-06T07:31:06.2166592Z {"command": ["python3", "scripts/test_lean_observation.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-observation/record.json"], "executed_command": ["python3", "scripts/test_lean_observation.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-observation/record.json"]}
+2026-10-06T07:31:06.2194872Z Traceback (most recent call last):
+2026-10-06T07:31:06.2225226Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_observation.py", line 467, in <module>
+2026-10-06T07:31:06.2254812Z     main()
+2026-10-06T07:31:06.2275174Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_observation.py", line 417, in main
+2026-10-06T07:31:06.2276284Z     log=[];records=cases()+source_cases(log,args.record)
+2026-10-06T07:31:06.2276880Z                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:31:06.2278043Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_observation.py", line 369, in source_cases
+2026-10-06T07:31:06.2279394Z     exact.command([str(compiler),'emit-ir',str(ROOT/path),'--output='+str(output),'--format=json'],ROOT,log)
+2026-10-06T07:31:06.2282149Z            ^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:31:06.2315195Z AssertionError: {"format":"qleisli.result","version":1,"command":"emit-ir","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"parse error: `basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct","primary":{"path":"kernel.qli","start":499,"end":504,"line":12,"column":1},"related":[]}],"result":null}
+2026-10-06T07:31:06.2317680Z 
+2026-10-06T07:31:06.2317687Z 
+2026-10-06T07:32:00.3459648Z passed: lean-finite (136.8s)
+2026-10-06T07:32:07.3656185Z passed: lean-raw (140.3s)
+2026-10-06T07:32:08.1967000Z failed: lean-streamed-instrument (7.9s)
+2026-10-06T07:32:08.1986494Z {"command": ["python3", "scripts/test_lean_streamed_instrument.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/record.json"], "executed_command": ["python3", "scripts/test_lean_streamed_instrument.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/record.json"]}
+2026-10-06T07:32:08.2044828Z Traceback (most recent call last):
+2026-10-06T07:32:08.2075070Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_streamed_instrument.py", line 118, in <module>
+2026-10-06T07:32:08.2104582Z     if __name__=='__main__':main()
+2026-10-06T07:32:08.2134538Z                             ^^^^^^
+2026-10-06T07:32:08.2161325Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_streamed_instrument.py", line 74, in main
+2026-10-06T07:32:08.2194929Z     log=[];records=cases()+observation.source_cases(log,args.record)
+2026-10-06T07:32:08.2273427Z                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:32:08.2319608Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_lean_observation.py", line 369, in source_cases
+2026-10-06T07:32:08.2404792Z            ^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:32:08.2437057Z AssertionError: {"format":"qleisli.result","version":1,"command":"emit-ir","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"parse error: `basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct","primary":{"path":"kernel.qli","start":499,"end":504,"line":12,"column":1},"related":[]}],"result":null}
+2026-10-06T07:32:08.2439730Z 
+2026-10-06T07:32:08.2464668Z 
+2026-10-06T07:32:09.1405070Z passed: lean-raw-completion (139.0s)
+2026-10-06T07:32:12.1803463Z passed: lean-qft-semantic (4.0s)
+2026-10-06T07:32:12.2037562Z passed: lean-qft (4.8s)
+2026-10-06T07:32:17.6395325Z passed: lean-controlled-power (5.4s)
+2026-10-06T07:32:24.5957239Z passed: lean-qpe (12.4s)
+2026-10-06T07:35:36.2806197Z {"command": ["python3", "scripts/test_verification_baseline.py", "target/debug/qleisli", "--kernel", "lean-kernel/.lake/build/bin/qleisli-kernel"], "executed_command": ["python3", "scripts/test_verification_baseline.py", "target/debug/qleisli", "--kernel", "lean-kernel/.lake/build/bin/qleisli-kernel"]}
+2026-10-06T07:35:36.2808617Z Traceback (most recent call last):
+2026-10-06T07:35:36.2809434Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_baseline.py", line 259, in <module>
+2026-10-06T07:35:36.2810274Z     if __name__=='__main__': main()
+2026-10-06T07:35:36.2810662Z                              ^^^^^^
+2026-10-06T07:35:36.2811361Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_baseline.py", line 242, in main
+2026-10-06T07:35:36.2813437Z     report=dict(format='qleisli.verification-baseline',version=1,packet='VM-22',authority='Rust production; Lean experimental',rust_test=dict(stdout=stdout,stderr=stderr),finite=finite_comparisons(),source=source_comparisons(args.binary.resolve(),args.capture))
+2026-10-06T07:35:36.2815889Z                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:35:36.2817210Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_baseline.py", line 185, in source_comparisons
+2026-10-06T07:35:36.2819884Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_baseline.py", line 37, in invoke
+2026-10-06T07:35:36.2821502Z     if result.returncode!=expected: raise ValueError(f'process exit {result.returncode}, expected {expected}: {stderr.decode(errors="replace")} {stdout.decode(errors="replace")}')
+2026-10-06T07:35:36.2823024Z                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T07:35:36.2825963Z ValueError: process exit 1, expected 0:  {"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"parse error: `basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct","primary":{"path":"kernel.qli","start":476,"end":481,"line":11,"column":1},"related":[]}],"result":null}
+2026-10-06T07:35:36.2828257Z 
+2026-10-06T07:35:36.2828262Z 
+2026-10-06T07:36:17.5435437Z passed: hierarchical-fourier-base (52.4s)
+2026-10-06T07:36:31.3755551Z passed: hierarchical-host (95.5s)
+2026-10-06T07:36:32.8598416Z passed: hierarchical-fourier-body (56.6s)
+2026-10-06T07:37:00.9555370Z passed: hierarchical-wiring (43.4s)
+2026-10-06T07:37:05.3145070Z passed: sized-corpus (4.4s)

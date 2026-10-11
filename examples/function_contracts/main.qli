@@ -13,7 +13,7 @@ unitary fn contracted_phase(q: Q<Bit>) -> Q<Bit> {
 
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let (reference, data) = cnot(h(init0()), init0());
     let data = contracted_phase(data);
     let (reference, data) = cnot(reference, data);

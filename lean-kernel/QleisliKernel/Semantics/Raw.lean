@@ -3,13 +3,17 @@ import QleisliKernel.Semantics.Finite
 /-! Original straight-line pure RawProgram data. This module contains no checker,
 producer receipt, capacity policy or transport. Classical control and observing
 constructors are deliberately a separate VM-26 packet.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Raw
 open Finite
 
 inductive Effect where
   | unitary | iso | observe
   deriving BEq, DecidableEq, Repr
+
+/-- Canonical public effect name. Keep the historical constructor identity for
+formal representation and versioned transport compatibility. -/
+@[match_pattern] abbrev Effect.isometry : Effect := Effect.iso
 
 inductive Gate where
   | h | x | z | t
@@ -71,6 +75,8 @@ inductive Op where
       (useSteps logicalSteps : List Step)
   | computeUseUncompute (input output : Nat) (targets : List Target)
       (ancilla function : List Nat) (uses : List Use)
+  | packUnit (output : Nat)
+  | unpackUnit (input : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure Program where

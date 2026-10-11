@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/nested-control-inverse.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T22:13:58.746175+00:00",
+  "cli_sha256_before": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "cli_sha256_after": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Raw Meaning interval checking for inverse or controlled access is not yet supported",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/nested-control-inverse.qli",
+          "start": 234,
+          "end": 238
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

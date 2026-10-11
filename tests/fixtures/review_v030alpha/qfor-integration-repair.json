@@ -1,0 +1,69 @@
+{
+  "format": "qleisli.qfor-integration-repair.v1",
+  "source_base": "4f0fd832c544dece75ff893880fb7297a6bebc2f",
+  "reviewer": "Codex integration lead; ordinary source review, not an independent Guardian judgment or formal proof",
+  "parser_review": {
+    "reviewed_predecessor": "44378979db28387470ce431e91348eb5b19c9ae6",
+    "path": "src/frontend/parser.rs",
+    "before_sha256": "4767aabe6472a5b77434260cf4e16cc635782d41ba4ad8a2561b813a491aa3b5",
+    "after_sha256": "3d33be8db64c57e8a15fab135924011178a709694478648abadae9fc7747cef1",
+    "public_signatures_and_capacity_constants": "Unchanged by actual public_surface comparison",
+    "fold_body": "Exact text comparison after dedenting and removing the extracted return keyword/trailing semicolon passes; parsing order, spans, fields and 64-level limit unchanged. #[inline(never)] keeps temporaries out of recursively visited dispatch frames.",
+    "binding_update": "Only the reviewed current parser source hash is updated in VM-22; previous snapshots and results remain in Git/historical records.",
+    "inventory_failure": "frozen source changed; review inventory/fixtures: src/frontend/parser.rs"
+  },
+  "first_all_targets": {
+    "command": "cargo test --all-targets",
+    "commit": "4f0fd832c544dece75ff893880fb7297a6bebc2f",
+    "exit_code": 101,
+    "library": "119 passed, 1 failed, 3 ignored",
+    "failure": "src/interchange/process.rs:229 ps .output(): PermissionDenied / Operation not permitted",
+    "reason": "Sandbox denies ps; no implementation or test change applied; explicit unrestricted retry retains the cleanup check."
+  },
+  "unrestricted_all_targets": {
+    "exit_code": 101,
+    "library": "120 passed, 0 failed, 3 ignored",
+    "later_failure": "tests/body_effects.rs:170 expected successful original effect check, but old quantum for-static source rejects with type error: use qfor static with explicit carry and yield",
+    "body_effects": "12 passed, 1 failed",
+    "meaning": "This failed integrated command is retained; it is not a full pass."
+  },
+  "migration": {
+    "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+    "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+    "before_sha256": "cc936fe9f49ac5c7c1a4794e540d9d7af36426f68d3dbfa411018080eb3cefc2",
+    "current_sha256": "9a5482a2c7a66f5c9b14d173adbf72970e08de93993b1f410774afe870cf5011"
+  },
+  "repair": "Keep original zero-fold authoring source untouched; register one keyword-only derivative and select through current_source_file. Recheck unchanged inferred Observe and reject false Unitary assertion. Other static-arm/recursive sources are unchanged.",
+  "focused_validation": {
+    "latest_body_effects": {
+      "passed": 13,
+      "exit_code": 0,
+      "seconds": 2.47
+    },
+    "msrv_body_effects": {
+      "toolchain": "Absolute Rust 1.85.0 cargo/rustc/rustdoc",
+      "passed": 13,
+      "exit_code": 0,
+      "seconds": 2.49
+    },
+    "migration_python": {
+      "passed": 47,
+      "exit_code": 0,
+      "seconds": 0.841
+    },
+    "latest_clippy": "body_effects target passed with -D warnings",
+    "msrv_clippy": "Absolute Rust 1.85.0 cargo-clippy/rustc/rustdoc, body_effects target passed with -D warnings",
+    "inventory": "VM-22: 275 constructors / 263 source snapshots / 20 boundaries passed after reviewed parser source binding update",
+    "coverage": "36 groups / 21 production paths / 9 native modes passed; open Soundness gates retained",
+    "docs": "2,181 source links passed; formatting and Git whitespace checks passed",
+    "fixture_budget": "17,731 working files / 133,319,521 bytes passed before final record update; rerun preflight before commit"
+  },
+  "constitutional_scope": "No production semantic/native/Lean changes in this follow-up, no changed capacities, guarantees, interpretations or edition. The parser frame repair is ordinary untrusted-frontend maintenance. Broader QS/PR/RS/EXACT and source/runtime proof gaps remain pending.",
+  "limits": "Full repaired integration pending; current record is focused validation only. Generic QFT remains excluded. Heavy hosted CI was cancelled at the human request and may resume only once the local repair unit is coherent, as subsequently authorized.",
+  "sources": {
+    "tests/body_effects.rs": "3b906375921767dde842d5955c86563a2c7608c98ecd0b2f6a93ce5cd9c2d30d",
+    "tests/fixtures/frontend_v030/qfor/source-map.json": "b2909c9a7eee8ead6c87f7431f9bada099579fcbeab4232e4faf6e9d0b02889d",
+    "scripts/test_current_source_fixtures.py": "ab5bd81f611faa3f7944d90f366821c59fea07373ab14fcc39122d003e510439",
+    "tests/fixtures/verification_v022/inventory.json": "6464896df74937038ae751d82aa2b2e008bc5f26811558efb75cd136cf707b60"
+  }
+}

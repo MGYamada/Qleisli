@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.independent-test-expectations",
+  "version": 1,
+  "status": "authored before any new test execution or candidate-output inspection",
+  "first_study": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030",
+  "first_sources_manifest_sha256": "8ac863aee3b2c4b8dcd4491b128c95136684550461ee8fb20a0488b2fc88ae2f",
+  "expectations": [
+    "Both directions of left/right packaged Unit maps are exact +1 and their round trips preserve the complete ordered tree.",
+    "A scalar omega on the separated Unit factor survives finish and acts on every retained system/reference coefficient.",
+    "An Op<(Unit,Bit)> provider is exact omega I; adjoint conjugates omega, eight powers are identity, and controlled fourth power is Z on the control.",
+    "split partitions axes in immediate field order; join concatenates them. X on the first Bit maps system label j to j xor 1.",
+    "Q<tuple> remains one owner; fields() cannot unpack it. quantum_basis() exposes only its exact readonly basis tree.",
+    "Unit/Bits0, Bit/Bits1 and flat/nested products remain distinct despite equal width. Binary source split/join never infer packing or accept nary inputs."
+  ],
+  "oracle_scope": "Exact structural requests author +1 constructors and fixed omega leaves, supplemented by actual arbitrary complex reference-dimension-two execution. At most two system qubits. This is not a general source proof.",
+  "transport_scope": "Request labels and frame/call placement may be derived from the documented lowering code. No emitted candidate or producer comparison request determines coefficients, source types or requested mathematical action. Any later placement repair retains the initial draft.",
+  "private_mutant_tests": "Frontend owns native-valid wrong-phase source-metadata impostors. Integration tests own fixed external requests and numeric/reference oracles; no replacement of private proposal bytes is claimed.",
+  "files": {
+    "independent-sources/argument-once.qli": "105fd40294d08dea606670ca2e749bc28dfdf27e4bba93e2303696af9b6585f8",
+    "independent-sources/left-bit.qli": "5c060f3c59de7d1119e24e15c5debed6d4c6e55d4fd9f7d390364f124c1d5e8e",
+    "independent-sources/left-bits0.qli": "ce97ec20d50cc5950d95577d09f317d2e48a386ac687599fa254949655ebcf49",
+    "independent-sources/left-bits1.qli": "793b7864fe8f3ff862c2792663c3db58163d0faf8abccebf0d8baea063dd769c",
+    "independent-sources/left-bits2.qli": "f1e78148d7f325210ac431bddf3feef171d3e276e0386c89e67e9c1a1dae6077",
+    "independent-sources/left-nested-left.qli": "f2b8992eaff52f93f01e70b5c10078097e0a45ca222341a99422cb309ebd6396",
+    "independent-sources/left-nested-right.qli": "8152c2637cfc3a263b7e5db6f9e0697469ecb8a523a63ba7627d0f282ac96439",
+    "independent-sources/left-unit.qli": "15c4f7b3234316438d78e9a7744271ecbefb80d3edde1863af2a1b56eacd8275",
+    "independent-sources/maps-after-observation.qli": "40e8590f2eebbcfa7f57d549fbb42f4a9162088cdf430a4f6413865ffe7d29fb",
+    "independent-sources/operations.qli": "7ba338cc3ca782f3d3964ae9c89a127e7d5b9e8bf07c64cfab351337506fe11c",
+    "independent-sources/right-bit.qli": "81e5665cfba52492d29fb33caa716a6422b4581ced99576593e3ed20233171ee",
+    "independent-sources/right-bits0.qli": "d0f6d552d0606abcd8563a956409992814a41fcd4cd67a2a9d4662507964ef9c",
+    "independent-sources/right-bits1.qli": "57b00e3c6ac055f8c9547176cc905b6099e8924f4352d47bb42e320dfd682e28",
+    "independent-sources/right-bits2.qli": "d1d3363cf5a1f6e6fcdd6790327d3fadf521464eb1e21c42ff5b8dd9c4fbc79b",
+    "independent-sources/right-nested-left.qli": "64497cd2d91eaa5560a37d613b5d5e54f75242af37c163ac8fd17daae3dc7dd1",
+    "independent-sources/right-nested-right.qli": "3b8e40609d2f983a824aaa94b6a00ee11ecef76bb6c0a2299082492fd3886e81",
+    "independent-sources/right-unit.qli": "610c1f1fc2e72ce1376e8b9d43799c7e325c9e2aa6dbaa32dce97e15954429f0"
+  }
+}

@@ -1,0 +1,532 @@
+{
+  "format": "qleisli.pre-constitution-baseline",
+  "version": 1,
+  "date": "2026-10-04",
+  "timezone": "Asia/Tokyo",
+  "head": "84a4ae6e8fa7e43f85bc09c6513417c610b2f89b",
+  "published_baseline": "v0.2.9",
+  "development_version": "0.3.0-alpha",
+  "working_tree": "uncommitted; not a release or ratification",
+  "source_archive": {
+    "filename": "qleisli-pre-constitution-source.tar.gz",
+    "sha256": "c237ad0f7461580a45d1ba502bb82ad5673e0c819ed5b998a65f4220bf84d19d",
+    "scope": "Non-ignored source and evidence before the ratification packet; retained locally in /private/tmp."
+  },
+  "changes": [
+    {
+      "status": " M",
+      "path": ".github/workflows/ci.yml",
+      "sha256": "e7a73f9c679fc60cd8d623e7a94a8db0ae272305feaaeccb1097398f4808615b"
+    },
+    {
+      "status": " M",
+      "path": "AGENTS.md",
+      "sha256": "6f9ecda06b8b7d7333530dbe046166a50ad01956817ba6a5d9332e5c8c02d0bc"
+    },
+    {
+      "status": " M",
+      "path": "CHANGELOG.md",
+      "sha256": "0a805035b535b043bb2284c7caa3ad18fd4c8fa4d1e47d88374f01657a59a09b"
+    },
+    {
+      "status": " M",
+      "path": "CLAUDE.md",
+      "sha256": "6f9ecda06b8b7d7333530dbe046166a50ad01956817ba6a5d9332e5c8c02d0bc"
+    },
+    {
+      "status": " M",
+      "path": "CONTRIBUTING.md",
+      "sha256": "17c6960302cc5a4916f678e912c4551d59cfc5794aba6440173adcef1dc882ab"
+    },
+    {
+      "status": " M",
+      "path": "Cargo.lock",
+      "sha256": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080"
+    },
+    {
+      "status": " M",
+      "path": "Cargo.toml",
+      "sha256": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7"
+    },
+    {
+      "status": " M",
+      "path": "README.crates.md",
+      "sha256": "6c491bf10f8f230b782d5ebef9c3ca620ac5ec8cb206193b8eef0dfa19b7221d"
+    },
+    {
+      "status": " M",
+      "path": "README.md",
+      "sha256": "ee34938b41bed67e7692b6a3431de3cf27cc8a7ee8827d3a3c6a3883aafce450"
+    },
+    {
+      "status": " M",
+      "path": "ROADMAP.md",
+      "sha256": "b6320504ac8a1419ff9cc8e74602db7559a40bf6cb65bccadaf6fa6c0e2c6b45"
+    },
+    {
+      "status": " D",
+      "path": "docs-old/ai-era-goal.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/algorithm-structure-goal.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/coefficient-domains.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/current-status.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/design-philosophy.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/documentation-map.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/finite-contracts.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/formal-core.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/interoperability-roadmap.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/lean-kernel-migration.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/next-minor-spec.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/project-status.json",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/quantum-language-requirements.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/release-milestones.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/releases/v0.2.8.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/releases/v0.2.9.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/resource-semantics.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/rule-inventory.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/size-expressions.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/stdlib-contract-examples/add2.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/stdlib-contract-examples/and-phase.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/stdlib-contract-examples/qft2.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/stdlib-contract-template.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/stdlib-roadmap.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/type-system.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/v0.2.2-plan.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs-old/v0x-roadmap.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs/imaginary-v1/README.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs/imaginary-v1/requirements.md",
+      "sha256": null
+    },
+    {
+      "status": " D",
+      "path": "docs/lean-backend-plan-v0.3.md",
+      "sha256": null
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/Main.lean",
+      "sha256": "e5651f64a0a0be0e606e6f4bf84f17c281225a8cc616c350b743879b5d421017"
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/Protocol/FiniteCodec.lean",
+      "sha256": "af86cb8ccebe716eb24d5a542c1ce54377aa05fdb8cd91eb4d89fdd85f993b7b"
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/Protocol/Product.lean",
+      "sha256": "cdc2605574ecab61ab79e47e611532d93495d1369c652b4c47fb501cf73f6ab7"
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "sha256": "68d38c8638a18a64a14ac2d17ba7f93b891d70d7578eff40218b28bda89bc4b0"
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/Tests.lean",
+      "sha256": "d9546eb839d0193793b73611dad11c4e60508f2ef89381dd5100005069cf3310"
+    },
+    {
+      "status": " M",
+      "path": "lean-kernel/lakefile.toml",
+      "sha256": "2539d39ed92fab4f58bf3e2d1ac0e8e0e99af194a8750ede5ef8832ebfb0cb68"
+    },
+    {
+      "status": " M",
+      "path": "lean/lakefile.toml",
+      "sha256": "70c000687aa6ec019d69db771f6f74e9eba06d82ba6f0ca23806e20c6d97327f"
+    },
+    {
+      "status": " M",
+      "path": "lean/schema-registry.json",
+      "sha256": "4e7176c32369f2ee9307b803ab4e481f716cba08f58d05e6ffc3371dd0ed3a37"
+    },
+    {
+      "status": " M",
+      "path": "python/README.md",
+      "sha256": "88edbb8232bd93989ce74ee377250f57492a2d846c18515e3853b2c7572b4e19"
+    },
+    {
+      "status": " M",
+      "path": "python/pyproject.toml",
+      "sha256": "6fc820975d21b617b20b07ef67f4168af16069622d63c64b4f7360d233b4cd36"
+    },
+    {
+      "status": " M",
+      "path": "python/qleisli/__init__.py",
+      "sha256": "570e58e3949783f64481a4d2097e3133be3f1deb3c199297062c4c0c39f254d0"
+    },
+    {
+      "status": " M",
+      "path": "research/semantic-kernel/Cargo.toml",
+      "sha256": "279f2e288de181b57c3e54a49af771ae6d48fd641feedf0686f36d241c1d7a6a"
+    },
+    {
+      "status": " M",
+      "path": "scripts/archive_lean_kernel.py",
+      "sha256": "97054fbb8696bc9df799a825cc46434b07bbe7d69c713327179d3344497062c3"
+    },
+    {
+      "status": " M",
+      "path": "scripts/check_docs.py",
+      "sha256": "874b243a5d416e37a01a1a7a8ccf0f51f647f6d5c039e7ad3d859c88b27f8fdd"
+    },
+    {
+      "status": " M",
+      "path": "scripts/check_installation.py",
+      "sha256": "9559c516cce1c1c19e2b1d837b47edee4c50e2add593f1baaac77775ad5d02b9"
+    },
+    {
+      "status": " M",
+      "path": "scripts/ci_profiles.py",
+      "sha256": "b8d93985e380788d2ae046080962fdd1248818fcb597b875be87e00fbad169ef"
+    },
+    {
+      "status": " M",
+      "path": "scripts/compile_sized_corpus.py",
+      "sha256": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4"
+    },
+    {
+      "status": " M",
+      "path": "scripts/maintain_release.py",
+      "sha256": "c05b7775773dbe6cfc0ec59de734d08a8aece4707caf9f1e996d911330676641"
+    },
+    {
+      "status": " M",
+      "path": "scripts/package_lean_kernel.py",
+      "sha256": "9462293b93c24110f340e7bd35307c7e2797d49f71c941548ac31c97ec3d4f71"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_archive_lean_kernel.py",
+      "sha256": "202e6087d0fca8f0a7cf61dd3043c6276bba34b9ced2f5ba0429f06784c91962"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_check_distribution.py",
+      "sha256": "fc982044999e28d30163e0a67d5a8c1f78dd3251c955ffd6f4ac03470fe7c6dc"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_check_docs.py",
+      "sha256": "b578f0849d1ea5c42d80d0ef1e009b85c8ee0bacc9e02370a3262965e7b6ea13"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_ci_profiles.py",
+      "sha256": "01cc6bfb2489240067a67a29284d79a402272e3eb4cfd5b4b5863547cbed555d"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_compact_sized_graph.py",
+      "sha256": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_hierarchical_finite_binding.py",
+      "sha256": "98adb3ee36634e4d849d4812e6e6b60ebc3da53bf2be38bac92d427cd714baf0"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_hierarchical_fourier_host.py",
+      "sha256": "2daa076daf0f4524c572ee0e2c89bc2fa5ebbce48bbdb58e21ec7e49c8f3863f"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_hierarchical_host.py",
+      "sha256": "85e971421ee0c1391c577f8513b21cfa1d1475eed6ec841a8eea5db606ff034e"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_hierarchical_readout.py",
+      "sha256": "9ed1e73c607c5960ca5c6901c1b2f94fb6b50225fadbe9e89c9a6f00c55948dd"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_hierarchical_request.py",
+      "sha256": "ecf6c1c2e1f1982c55dca366cf9ebb60dcbe2aeb9768c32fa76037614276db18"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_instrument_host.py",
+      "sha256": "dd092f990088732ab43cfbab33154f8eba66e353039fe1efef65503985eace64"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_interop_native.py",
+      "sha256": "83717719a77fb5b9de2ba6a7d38f7ff2ae7c9081422beccb23807a9ed6032c8b"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_kernel_compatibility.py",
+      "sha256": "e1e65f1f73e5e28d773b91f67f4e3bf3408d673a9ce0605fa86d903f2fef8996"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_maintain_release.py",
+      "sha256": "9e60c8cc0d56d1218d7ef04c5f558ffa8b91c2a87d6502abe77b731f0457ae1d"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_native_verification.py",
+      "sha256": "91c065f3089a80e24e1771593c0a5478c98424d55d832c57e354d3e1898acfcf"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_qpe_instrument_host.py",
+      "sha256": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6"
+    },
+    {
+      "status": " M",
+      "path": "scripts/test_source_kernel.py",
+      "sha256": "0fa3a6646ddb514f6fd1ce6e213c33e81cde2b1bdb31522134de00c6a69b99f9"
+    },
+    {
+      "status": " M",
+      "path": "src/bin/qleisli/json.rs",
+      "sha256": "e05bec3229c78eb6aa02c98aa73afb037870f06eb9b8e6edf2a3418e18a0519a"
+    },
+    {
+      "status": " M",
+      "path": "src/contract/function.rs",
+      "sha256": "a7605360780d0a280bba8c7de355fdb2d037b3df77e83b378d4a55c43335f5f0"
+    },
+    {
+      "status": " M",
+      "path": "src/interchange/native.rs",
+      "sha256": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560"
+    },
+    {
+      "status": " M",
+      "path": "src/lib.rs",
+      "sha256": "6a22e150ee2d9a850d863e182fd5faf6d760212ea15bb24429e9e4bcdd54bcd6"
+    },
+    {
+      "status": " M",
+      "path": "stdlib/Qargo.toml",
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689"
+    },
+    {
+      "status": " M",
+      "path": "tests/cli_json.rs",
+      "sha256": "65d6eaa721e583b237733efe8822ca36019541c62a696a15f6ed52fb93438ba1"
+    },
+    {
+      "status": " M",
+      "path": "tests/fixtures/verification_v022/inventory.json",
+      "sha256": "1845bff6afac0d9639e144afc9cd8ea559e2ddc4a8c63f1efdad983531854b68"
+    },
+    {
+      "status": " M",
+      "path": "tests/fixtures/verification_v029/coverage.json",
+      "sha256": "008e38e461484db408af0d14e13bec4bc50137c7958a2995af2ad41d6dea115b"
+    },
+    {
+      "status": " M",
+      "path": "tests/function_evidence.rs",
+      "sha256": "6f87ea0223c774e9310cebf3c3249dd300f842e76de7dd355ded5ac0066f3657"
+    },
+    {
+      "status": " M",
+      "path": "tests/native_raw.rs",
+      "sha256": "b181c1618d5ee2f472c2b545f1eb3f2d7e5cd45bb0b1595a0c85d0a0bd7629af"
+    },
+    {
+      "status": "??",
+      "path": "docs/book.toml",
+      "sha256": "98174ac331694353452ed91a2a94d29bf241966dfab0115335023aab66c3067c"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/.DS_Store",
+      "sha256": "1144a8f63ded68ccf65283e717827633602d5805f5e18f3527a4374d74039f5c"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/SUMMARY.md",
+      "sha256": "490367c05fc8f87d06fbb4cd2afa3acb9bfa28b0db36b4cbc35e6f1daaf0786a"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/building.md",
+      "sha256": "1d8cfe683803afdfa4400f2235fc6ddbfe2834371a55244a3e973147ba507460"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/imaginary-v1/.DS_Store",
+      "sha256": "5f5c6690394967d7bfa3b2f17c8a19a19c5d5b1235a48e9034e4a3d75c68aaf9"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/imaginary-v1/index.md",
+      "sha256": "6c1d07f8ca1e97c6b11977cef060c24f4a31b92319b8e5d9c2f315cd1dc25f9a"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/imaginary-v1/requirements.md",
+      "sha256": "0d2673ab69da3bc38e3a313d70d30ed4a1b84db55aed6019cef8ba43563fc237"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/introduction.md",
+      "sha256": "110ae810dcb29a911b618e5d82a7213cb6392cdeea3aa9742053cd578004aab5"
+    },
+    {
+      "status": "??",
+      "path": "docs/src/lean-backend-plan-v0.3.md",
+      "sha256": "22da2e4bfa4b65f7f1ae9296b4b0ee5b3ecb8f75bb72f56e3aacdcd65c3d4af4"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/README.md",
+      "sha256": "f6469fc2073b06619b621827a9fa272e86b53cb5857999b606929fcca779e34f"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/binding-checks.json",
+      "sha256": "2795f5b03989788fc796c0f46369d05caa10e2e6f78f00301ee38e82e76a3f90"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/classical-6000.qirf.gz",
+      "sha256": "85516f907a94bbe457265a30283fd5fea4fb9486494e1d687eeac574bf1ba6e7"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/history-differential.json.gz",
+      "sha256": "4a24c6d8071edb78a395fdf6ae04124482daefd40f609b23a74685ed5743d628"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/kernel-equivalence.json.gz",
+      "sha256": "a66cb27ede82397fe624576d0d9b35982aee2ecef8314d4835fc90d8c43e16f8"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/original-deep-clone.rs",
+      "sha256": "5437bacf37caa363eecd00261dcacbd22fc532a77ec003b140be7db1e39fb3fe"
+    },
+    {
+      "status": "??",
+      "path": "tests/fixtures/review_v030alpha/validation.json",
+      "sha256": "3534c0c4543a90815ca2863fb81f691178a9bbd442804bf10532a86c313f8de2"
+    },
+    {
+      "status": "??",
+      "path": "tests/native_roundtrip.rs",
+      "sha256": "c2769644866c7a5783b63ab40872766b43a7da713504b3d2568452e78587cfda"
+    }
+  ]
+}

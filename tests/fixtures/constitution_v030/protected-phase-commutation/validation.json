@@ -1,0 +1,46 @@
+{
+  "format": "qleisli.protected-phase-commutation-proof-evidence",
+  "version": 1,
+  "status": "checked-proof-unit-not-guarantee-admission",
+  "issue": 303,
+  "baseline_commit": "2eff16e0cea96f6988f72def038a43dbe37d3013",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "production_files": {
+    "lean/Qleisli/RawProtectedCommutation.lean": "6005d23fc77a7900f144797d413f7fd823a72e1379567efb1fd31b88143d5dbb",
+    "lean/Qleisli.lean": "5ed3d0884a20cb319f459b6e94b10253b11e2efcc8ff697213b36f4a1f29039f"
+  },
+  "files": {
+    "tests/fixtures/constitution_v030/protected-phase-commutation/Examples.lean": "3595c286f3249b1c4feebca29c9241338e347c8fc970d8954f0d725b6b588e3c",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/README.md": "7bb03dacd279bd155fae370b37084495168fb51cf75663adbae78add5a38e85a",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/Review.lean": "ad722ff9cb197e72037f5ddfcd3d66d91a445d4a3875b7f5d4c7ebc17d552232",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/build-command.json": "2e41c2ce84031f6761caa5014b45e64f1a238131ee00e0833360dd47938e3f8c",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/build.stdout.txt": "ea27caf2b997332ef8790cfdadc20a8b97af8a4cc0803e51a9d171c6a9a5ffa8",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/examples-command.json": "b2fe49b0ca2e82fec15726e403a8a44d302df4d09fe8133a3e09304cf280d9eb",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/examples.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/examples.stdout.txt": "44e26d98d7200ea4ad032228a2d13704dcdb632c739819b74a636d198234e206",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/review-command.json": "0c99c98f64a6a3731c5d157ecb322b0b0c655f050b3d5d1b181cc0a915a71abf",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/review-types.stdout.txt": "a57b5d579a7c62eb85dd5056444ff51ae95d7ce1d4948d9f37f17b9d5fb5dcea",
+    "tests/fixtures/constitution_v030/protected-phase-commutation/source-comparison.json": "1b7954df5a03cc065cc2fd4648d892646a4ee4c6f1475e75b500202678550505"
+  },
+  "checks": {
+    "changed_module_build_exit_code": 0,
+    "closed_types_and_axioms_exit_code": 0,
+    "small_examples_exit_code": 0,
+    "public_theorems": 5,
+    "additional_counterexample_and_reference_theorems": 2,
+    "small_phase_pair_examples": 4,
+    "additional_noncommuting_order_examples": 2,
+    "maximum_example_physical_qubits": 2,
+    "executable_assertions_passed": 10,
+    "additional_by_decide_examples": 1,
+    "existing_lean_sources_byte_identical": 206,
+    "project_axioms": [],
+    "observed_axiom_dependencies": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "scope": "Two adjacent literal Raw.Use.phase operations in existing protected semantics, retaining every prefix/suffix, exact phase and arbitrary reference; actual protected matrix bridge requires both evaluations to succeed with independent work. No preservation of success, failure or work; no access/borrow contract, optimizer permission, byte-I/O or compiled runtime theorem, constitutional guarantee admission, general #303 completion or PR/RS discharge. Full package build/audit/fresh replay is separate registry workflow."
+}

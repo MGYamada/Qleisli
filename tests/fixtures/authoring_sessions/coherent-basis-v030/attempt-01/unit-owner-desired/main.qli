@@ -1,0 +1,7 @@
+//! Informed before-code #81 source, not a benchmark or proof.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+use std::quantum::unit;
+use std::quantum::finish;
+pub unitary fn identity(q: Q<Unit>) -> Q<Unit> { basis q as () { () } }
+observe fn main() -> Unit { finish(identity(unit(()))) }

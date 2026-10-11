@@ -1,0 +1,120 @@
+{
+  "format": "qleisli.active-operation-corpus-integration",
+  "version": 1,
+  "recorded_utc": "2026-10-07T05:53:00.085637+00:00",
+  "baseline_commit": "f69ba535a5901a3987a0c5b4a390457981ed983b",
+  "source_selection": "migrations/operation-application-v030/migration.json appended after actual snapshot validation; current_project independently confirms every intended project is selected.",
+  "input_sha256": {
+    "corpus/manifest.json": "d36e6866ffefee4ecdc46a6cdaa5bb5c92371a9e4c2b8cda21447fd5030955da",
+    "tests/input_corpus.rs": "ec0acd12ce96b583d2805b0468328ac80463b78602b9be32d3cdb2de19d85195",
+    "corpus/migrations/operation-application-v030/migration.json": "4de13d10337afcc219c2faab7a2de12bbcc906c70190962a47ac120e8cb8b520",
+    "corpus/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "rust": {
+    "latest": {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j2",
+        "--test",
+        "input_corpus"
+      ],
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "coverage": "All 87 selected positive projects compile, native-verify and execute; four retained source-negative cases reject. 33 explicit snapshot projects, including all 25 in this migration.",
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-rust-latest-repaired.log",
+        "bytes": 410,
+        "sha256": "7ccad1ba959846d881c620f723f4de8c9de1a84c07fd36c02d40c986c50aaf13"
+      }
+    },
+    "msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "-j2",
+        "--test",
+        "input_corpus"
+      ],
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "coverage": "All 87 selected positive projects compile, native-verify and execute; four retained source-negative cases reject. 33 explicit snapshot projects, including all 25 in this migration.",
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-rust-msrv-repaired.log",
+        "bytes": 415,
+        "sha256": "0df7b162514547c49558e4a1465a844a9d2ebd3ca0572aac6794c668830fd9b1"
+      }
+    }
+  },
+  "provenance_tests": {
+    "command": [
+      "python3",
+      "scripts/test_check_input_corpus.py"
+    ],
+    "exit_code": 0,
+    "tests": 77,
+    "log": {
+      "external_path": "/private/tmp/qleisli-operation-corpus-provenance-tests-repaired.log",
+      "bytes": 8208,
+      "sha256": "8fc46129d688635a68556ccf84c06d68dfd0cc50cb989bdff9a8889218d19b48"
+    }
+  },
+  "clippy": {
+    "latest": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-clippy-latest.log",
+        "bytes": 120,
+        "sha256": "1e32467fecc481ddf1f98ab917ab49d0b026632078e0c8fefa5697bdf4ce68d3"
+      }
+    },
+    "msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--locked",
+        "-j2",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-clippy-msrv.log",
+        "bytes": 120,
+        "sha256": "0a542ae5b0f8a60529eee56cb0b879bf163f4f88eff7a1666e61aadde91d63ac"
+      }
+    }
+  },
+  "static_checks": {
+    "fmt": "passed",
+    "diff_whitespace": "passed",
+    "docs": "passed",
+    "corpus_provenance": "passed: 87 cases, three sources, no frozen original changed",
+    "production_coverage": "passed; production acceptance unchanged",
+    "verification_inventory": "passed; 277 constructors/268 snapshots",
+    "working_fixture_budget": "allowed; this corpus stage is outside tests/fixtures and no fixture cap was raised"
+  },
+  "first_selection_failure": "selection-repair.json",
+  "snapshot_semantics": "validation.json",
+  "limits": "No production Rust/Lean change, dependency update, fresh full Rust all-target test, fresh Lean build/audit/replay, general source-preservation theorem, guarantee admission, release approval or Issue completion. This unit completes bounded active-positive-corpus migration only. Semantic faults, old constructor spellings and further #33 migration work remain."
+}

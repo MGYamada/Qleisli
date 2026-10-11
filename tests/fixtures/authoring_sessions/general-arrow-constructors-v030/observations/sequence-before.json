@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: unsupported static operation constructor",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
+          "start": 337,
+          "end": 357
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "binary_sha256": "5d351986f37c73204edc6692550d61ce5e1e108da9eb534aa2cc1ef068866aeb",
+  "kernel_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731",
+  "recorded_utc": "2026-10-10T12:13:53.431744+00:00",
+  "timestamp_note": "Filesystem modification-time observation for the retained pre-change record, not an independently authenticated execution timestamp.",
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"sized preparation profile: unsupported static operation constructor\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli\",\"start\":337,\"end\":357},\"related\":[]}],\"result\":null}\n"
+}

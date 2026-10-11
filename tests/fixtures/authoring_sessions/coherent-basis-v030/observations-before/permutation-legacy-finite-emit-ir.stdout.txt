@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"emit-ir","outcome":"ok","diagnostics":[],"result":{"path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/observations-before/artifacts/permutation-legacy.qirf"}}

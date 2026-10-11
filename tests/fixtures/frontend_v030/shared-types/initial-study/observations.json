@@ -1,0 +1,378 @@
+[
+  {
+    "case": "ordinary-bit-zero",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/ordinary-bit-zero/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: error 27..28 expected `(`, found `0`\nsized: error parse 27..28 expected `(`, found `0`\n",
+    "stderr": ""
+  },
+  {
+    "case": "ordinary-bit-zero",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/ordinary-bit-zero",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `(`, found `0`\",\"primary\":{\"path\":\"main.qli\",\"start\":27,\"end\":28,\"line\":1,\"column\":28},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "ordinary-bit-identity",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/ordinary-bit-identity/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 41..73 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "ordinary-bit-identity",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/ordinary-bit-identity",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"Bit is a basis type; ordinary functions use CBit or Q<basis type>\",\"primary\":{\"path\":\"main.qli\",\"start\":23,\"end\":26,\"line\":1,\"column\":24},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "legacy-bit-copy",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/legacy-bit-copy/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 50..97 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "legacy-bit-copy",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/legacy-bit-copy",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "case": "observed-bit",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/observed-bit/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error unsupported 75..78 sized preparation profile: unsupported runtime type\n",
+    "stderr": ""
+  },
+  {
+    "case": "observed-bit",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/observed-bit",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"Bit is a basis type; ordinary functions use CBit or Q<basis type>\",\"primary\":{\"path\":\"main.qli\",\"start\":75,\"end\":78,\"line\":1,\"column\":76},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-identity",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-identity/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 45..77 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-identity",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-identity",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-duplicate",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-duplicate/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 64..96 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-duplicate",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-duplicate",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` has already been consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":59,\"end\":60,\"line\":1,\"column\":60},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-drop",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-drop/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 43..75 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-unit-drop",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/quantum-unit-drop",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` was not returned or explicitly consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":16,\"end\":17,\"line\":1,\"column\":17},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-nested-q",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/quantum-nested-q/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: error 21..22 expected `(`, found `Q`\nsized: error parse 21..22 expected `(`, found `Q`\n",
+    "stderr": ""
+  },
+  {
+    "case": "quantum-nested-q",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/quantum-nested-q",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `(`, found `Q`\",\"primary\":{\"path\":\"main.qli\",\"start\":21,\"end\":22,\"line\":1,\"column\":22},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "exact-tuple",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/exact-tuple/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 69..101 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "exact-tuple",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/exact-tuple",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `(CBit,(CBit,CBit))`, found `((CBit,CBit),CBit)`\",\"primary\":{\"path\":\"main.qli\",\"start\":65,\"end\":66,\"line\":1,\"column\":66},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "no-implicit-read",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/no-implicit-read/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 41..73 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "no-implicit-read",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/no-implicit-read",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Q<Bit>`\",\"primary\":{\"path\":\"main.qli\",\"start\":37,\"end\":38,\"line\":1,\"column\":38},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "no-implicit-prepare",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/no-implicit-prepare/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 41..73 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "no-implicit-prepare",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/no-implicit-prepare",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `Q<Bit>`, found `CBit`\",\"primary\":{\"path\":\"main.qli\",\"start\":37,\"end\":38,\"line\":1,\"column\":38},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-unit",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-unit/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error unsupported 23..27 sized preparation profile: unsupported runtime type\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-quantum-unit",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-quantum-unit/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error unsupported 25..29 sized preparation profile: operation/quantum basis must be Bit or Bits<n>\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-bits-one",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-bits-one/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error type 47..48 type or tuple/size shape mismatch: expected Bit, found Bits(Linear { constant: 1, terms: {} })\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-zero-identity",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-zero-identity/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-zero-drop",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-zero-drop/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error ownership 41..47 function leaves live quantum arguments unconsumed\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-zero-as-unit",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-zero-as-unit/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error type 43..44 type or tuple/size shape mismatch: expected Tuple([]), found CBits(Linear { constant: 0, terms: {} })\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-target-data",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-target-data/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error unsupported 23..30 sized preparation profile: unsupported runtime type\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-symbolic-equality",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-symbolic-equality/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "sized-runtime-in-size",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/sized-runtime-in-size/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=1\nsized: error static 39..40 unknown natural name n\n",
+    "stderr": ""
+  },
+  {
+    "case": "basis-generic",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/basis-generic/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: error 30..35 expected `Op`, found identifier\nsized: error parse 30..35 expected `Op`, found identifier\n",
+    "stderr": ""
+  },
+  {
+    "case": "basis-zero",
+    "argv": [
+      "/private/tmp/qleisli-next-type-unit/observe",
+      "/private/tmp/qleisli-next-type-unit/basis-zero/main.qli"
+    ],
+    "exit_code": 0,
+    "stdout": "finite: ok declarations=2\nsized: error unsupported 29..61 sized preparation profile: permits one function per module until declaration-identity cycle checking is available\n",
+    "stderr": ""
+  },
+  {
+    "case": "basis-zero",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-next-type-unit/basis-zero",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "format": "qleisli.checked-provider-hierarchy-review",
+  "version": 1,
+  "issues": [
+    44,
+    32
+  ],
+  "base_commit": "b19c9c1772d2dce397a5909a9fda684710ccfad7",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6022065432",
+  "status": "locally checked component; automatic original Meaning admission remains unfinished",
+  "source_sha256": {
+    "src/frontend/sized/raw.rs": "b2b7db71ac3834d8a4b6ab1fbd8c1d05465b46a1bf2fe832ca79b724b49544cb",
+    "src/frontend/sized/lower.rs": "b2c5a4203ebb3f27fa61b16107d2c7da4a438c78694ec407fdd0bcce2d1d6e17",
+    "src/frontend/sized/elaborate.rs": "5db53b90b21977eb8983155f4b409b643fc0d1c0ff024d1c25bad33ef18fbcdc",
+    "src/frontend/sized/fourier.rs": "815d9e7fbdb792e3467d6d9974e2a0384956842449663c8cb15eab96cd54dcfd",
+    "scripts/check_production_coverage.py": "415277da89ecdc5b6cb6b28f5a91f6002e5938762bb690d09f3abfcbb356a3e3",
+    "docs/src/reference/type-model.md": "22bfde8599f6266700731f9842fdd03d5bfa4faa8a659dd4a196adf26d3d15c9"
+  },
+  "behavior": {
+    "actual_artifact": "SourceMeaningCheck::lower_hierarchy embeds the same immutable checked QIRF bytes and required matrix into the emitted hierarchy finite node, selected by complete original SourceOperation key including repeats.",
+    "frame": "Exact Unit/Bit typed input/output ports retain zero-width owners and ordered axes; explicit rename restores the canonical caller frame.",
+    "authority": "Returned hierarchy remains an untrusted proposal. Existing fresh native hierarchy checking independently checks its actual finite body against its actual matrix description. No Lean checker, protocol or primitive change.",
+    "identity_limit": "This bridge supplies a checked operator for one original binding; it does not automatically gather or check all original Meaning annotations, establish AST preservation or forbid a semantically equivalent independently checked artifact."
+  },
+  "validation": {
+    "positive": "Bit X and Unit scalar -1, each repeated 0/1/2 times through nested original bindings. Inspect actual emitted program bytes, fresh native hierarchy check, and independent joint complex amplitudes with an external reference. At most one system qubit.",
+    "negative": "Replace only the emitted X^2 finite body with a native-valid single X sharing its full input/output frame; retain original matrix description and comparison request. Fresh native hierarchy checking rejects with contract.",
+    "latest_rust": "47 integration tests (classical_functions 21, basis_polymorphism 10, quantum_unit_source 16) plus 4 private Raw tests passed, zero failed/ignored.",
+    "actual_msrv": "Same 51 tests passed with actual Rust/Cargo 1.85.0 through scripts/run_msrv.py.",
+    "clippy": "Latest and actual MSRV all-target Clippy passed with -D warnings.",
+    "checker_tests": "31 tests passed: 14 production coverage and 17 verification inventory.",
+    "inventory": "275 constructors, 265 snapshots, 20 boundaries; production coverage 22 paths and 9 existing native modes.",
+    "docs": "2186 local links, 30 Markdown anchors, 206 Lean roots; mdBook 0.5.4 build and rendered 29 HTML files/1224 links/471 anchors passed.",
+    "constitution": "Identity/continuity passed against trusted 38baae7d19535602b21270e11e97617d45205b37; not a fresh Lean replay.",
+    "format": "cargo fmt --all -- --check and git diff --check passed."
+  },
+  "development_observations": [
+    "Initial all-target compilation found a test-only Lower initializer missing the new empty native_operations field; repaired without modifying its Fourier behavior or restoring generic QFT scope.",
+    "Initial latest and MSRV Clippy refused clone on Copy PortKind; removed clone, both subsequent checks passed without lint suppression.",
+    "Initial unittest module invocation lacked scripts on import path; rerun with PYTHONPATH=scripts passed all 31 tests."
+  ],
+  "constitutional_impact": {
+    "QS": "Exact actual finite body/request binding improved; broader source, runtime and analytic hierarchy obligations remain pending.",
+    "PR": "No realization/export correspondence discharge.",
+    "RS": "Existing graph and Raw work/call/storage limits remain; no quantitative program resource certification.",
+    "continuity": "Constitution, adopted interpretations and two scoped QLV1 guarantee meanings/evidence unchanged. No new human judgment inferred."
+  },
+  "not_performed": [
+    "Fresh Lean build/audit/replay",
+    "Full Rust all-target tests for this new component",
+    "Package/install/release readiness or publication",
+    "New maximum-size inputs"
+  ],
+  "hosted_ci": {
+    "preceding_run": 37502280428,
+    "commit": "5bd267f76a9084acc7cd2d67b059fb161267ab3a",
+    "status": "completed success; all normal lanes successful, release-readiness skipped",
+    "new_component": "Not covered by preceding run; separate exact-commit CI required."
+  },
+  "completion": "22/111 (19.82%); #44 open; #63 deferred for 0.3.0-alpha and incomplete"
+}

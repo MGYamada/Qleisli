@@ -1,0 +1,166 @@
+{
+  "results": [
+    {
+      "case": "bad-iso-reset",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "effect"
+      ]
+    },
+    {
+      "case": "bad-unitary-observation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "effect"
+      ]
+    },
+    {
+      "case": "dead-static-observation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "duplicate-owner",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "finite-lift-expansion",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "finite-lift-permutation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "generic-access",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "generic-missing-access",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "mutual-cycle",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "ordinary-copy",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "plain-observation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "plain-preparation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "plain-unitary",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "primitive-like-local-name",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "recursive-observation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "scalar-unit",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "unit-introduction",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "case": "wide-iso-caller",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "effect"
+      ]
+    },
+    {
+      "case": "wide-observe-caller",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "effect"
+      ]
+    },
+    {
+      "case": "zero-fold-observation",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    }
+  ],
+  "sources_and_executables_stable": true,
+  "scope": "Actual first observations before effect implementation; no numerical/source-preservation proof or Issue completion."
+}

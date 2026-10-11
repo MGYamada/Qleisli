@@ -1,0 +1,135 @@
+{
+  "format": "qleisli.bits-meaning-checkpoint",
+  "version": 1,
+  "base_commit": "2039a99c4045b74e20205a364dd74ca951a8a798",
+  "edition": "2026",
+  "source_files": {
+    ".github/ci/README.md": "2c35f720b76a36611d57c535a47afab3f8a9118810faf5b924559622217302fd",
+    "CHANGELOG.md": "8a321d89e3a9bdffa5964ed47ad1a1be4c016c1a342232dfd6bb26bc7797c54e",
+    "docs/src/reference/functional-boundary.md": "9361e84dd433adfb37578407fba5f7581328a197450a2e615ea7486a8f07fb7d",
+    "docs/src/reference/type-model.md": "382ea24082e45688d0442058cfa3cf46d79cd59dcc0c78f95134c11275eaeaac",
+    "governance/README.md": "387674ed2baf3ec2235e160b762babb618714110ed40884221dd7cae6b8f2a97",
+    "governance/guarantees.json": "76c5846cbd98d1af3701905c575850218e462f346bed922004b818719b64597e",
+    "governance/guarantees/current-evidence.json": "2ee550768eba1e472ca67d34e9081c1d8e0d2bc89539caf9b89e66d83f48cf7c",
+    "lean-kernel/Protocol/FiniteCodec.lean": "851cadc5483c7ffcf1fd0d6b11a446c81973f8cafd5bb9c3ae034d9ca2cbe948",
+    "lean-kernel/Protocol/HierarchicalFinite.lean": "2c90dcd7995cc5de283869335210437f67267edfa73a8c6e9b798bda2e22304c",
+    "lean-kernel/Protocol/Qirf.lean": "6d033e538ba1d13d54c75757e47fbb17251b54f6037b327f6476c13fe66781cb",
+    "lean-kernel/QleisliKernel/Finite.lean": "2c755606db3aaaa3b095de5ed06f03da521424580c49fb13fbc96f7d00aa6a46",
+    "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "b81e78106d1d577d639be6413f4949ea029875eedf830ddc715474d54e83f4c2",
+    "lean-kernel/QleisliKernel/Qirf/Checked.lean": "89abbda386aa39a5de443c4217930a00699e0e0398c6d0ded05c858562f811f4",
+    "lean-kernel/QleisliKernel/Semantics/Finite.lean": "e137932af966e439221cbc6660817eb8a888c8f6a654bbb366fb28dbc6c0b787",
+    "lean/Qleisli.lean": "d912420905f023f031f01f36f5c78e4ac784fd039a5a8bc9a6269246485a34bd",
+    "lean/Qleisli/FiniteBasisTransport.lean": "15759fd1b7ba69728b663b42523fb6d5b941deb36b2ccc79f47aad49386cf845",
+    "lean/Qleisli/RawDenotation.lean": "8782fc467fc2568077a02fad0abac60d248f66482b61c3ccb82f9fcef6e0896b",
+    "lean/schema-registry.json": "3f53e5d65f97c76fbc2c00905a135daa4df3ad646ea8adf21703c8652f56e9ca",
+    "scripts/check_guarantee_continuity.py": "a8b58a8b4857e65c9344cf183b4252116062d1964af7ea19bac4e30fe7d88957",
+    "scripts/check_initial_guarantees.py": "1246104fea1a4d0a2e9dbdfc082535db39386c759e010d72fb5d23fc20ce1ed0",
+    "scripts/test_check_initial_guarantees.py": "2c7ba93ebbe3ac91f6d4ca9c5dcc8a538448358037a97d9169b8a5453f4563a7",
+    "scripts/test_check_production_coverage.py": "b0649b3aad45919d756d2452c618d407b751c09d606a8029c9ad29a704e54d5e",
+    "src/contract/mod.rs": "ebff335ba64c8a26235fbca33b59f57985a1644e1e6e3bd09bfff84a9abe4511",
+    "src/frontend/sized/lower.rs": "9897ff8e8f622bc1a32a8e9f2f3102b4923e896cbc96f43c96f9b7155f6e247d",
+    "src/frontend/sized/meaning.rs": "c9013f3da61767c55c09c7a2b1ad71700356ee61e53bd38f15034c6a4b49722d",
+    "src/frontend/sized/raw.rs": "111bfa9ccf6e3f1c026a0931f68aaa08d79b291834dea50a79ec10a3df60dc3d",
+    "src/frontend/sized/raw/preservation.rs": "a6e717f070be07286fab480b7b8972a2ae61e68cdbebe3813b93e7f2e67eecc8",
+    "src/interchange/codec/evidence.rs": "393969b0dc65bca4086d2e1c6a80f373fd5441925d53b673ad46db106d50c502",
+    "src/interchange/hierarchical.rs": "33a1188281473762397bcad563b41ae37939e40f9c35580cdbe6ae30e6772b2c",
+    "src/interchange/mod.rs": "781303e7ee553e28993f1fcecd421cc9f1cf05635926c0334f83dd04ac215773",
+    "src/interchange/native/contracts.rs": "54a8b0a7591c95babd7b5d2c8671eb1f312f88812fb9d2e0362e1857b2548d12",
+    "tests/bits_cli.rs": "17fadd1e691f9fda137db23a6db17fa8615adecc230adb2b7e500b51041d29f0",
+    "tests/classical_functions.rs": "4b9c7efb9c0d5e0c3caad7be57d07af1879c1ccfca921d5adee68328bd9a11c6",
+    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/README.md": "5400d5445087d9efb9ca4edbadc37b72bf2b301ef1de58f4d3c2e1e0b434168b",
+    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/after.json": "68b61a42a9e1fb95324996f330c2f357ea8d288c2234118a8d42753d71019124",
+    "tests/fixtures/constitution_v030/current-guarantee-registry.json": "762ea69bb9ce76495548adb6cdea703d09bd420c64d11d5a0c9d30410cc02ebe",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean": "fa907a0e7f43c2d507cae261eac81c8c97705e10e96a22decfb8d4a742bed95f",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/basis-transport.stdout.txt": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.gz": "c339ee8aee74a8d708d24686e7b5975bc0adf26e3a901f2e779c0ef030d083f5",
+    "tests/fixtures/verification_v022/inventory.json": "3ed372551170650d71cf3705c592a7371ec3657f3eb1883f55487fc0eee6452f",
+    "tests/fixtures/verification_v029/coverage.json": "479a4f325f036a1289138e2bad7de407b307e649a55fcb521336a6582f72bcef",
+    "tests/interchange.rs": "bf5ec2bced7bb40904ffd9c2995b91bfbf2047f8b3c0f94d50db2429c6cf6aad",
+    "tests/meaning_evidence.rs": "df6b0f26b7ee748f87124fcb4ac982292427356e4a32f3cc998b347ce5f9c567",
+    "tests/ordinary_booleans.rs": "ab62cceb613d9682df0b5208ae3b26e45f6b6b4a60f3481120acbb6c8dba7e79",
+    "tests/quantum_unit_source.rs": "c8369347300f06dc16cb5e13a35a3ba3af5aaee7f83d84a6c96ad905f8c2e1b0"
+  },
+  "archive": {
+    "path": "tests/fixtures/review_v030alpha/bits-meaning-checkpoint.tar.gz",
+    "sha256": "03d862bcdba1bb0c8ceb841fe3a3676198293012c3f8711d17586cd96372a705",
+    "members": {
+      "classical-bits-bug/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "classical-bits-bug/empty.qli": "1db9028baf3c9fc07488510b3c604e4cf41e39ab571ea9e88ad9c4496b4dc0a0",
+      "classical-bits-bug/observed-with-manifest.json": "ddd8e443b3c1e39ff0d134b96ff35fb39b4ab673569d2fd4d84f9662c2dac4db",
+      "classical-bits-bug/observed.json": "da720b2e6d211fded63f762f0422d85e47d1b88f2fd98d5adedbf69ad7a09b66",
+      "classical-bits-bug/one.qli": "6df907da4bbd744dce44b0f8ca22b2450c8603e10a742dd5f0150adf77959ba9",
+      "classical-bits-bug/zero.qli": "6156027ced4d8f5cc925be5a1021815ac5823b6b6e4e805748d8b14391e8f36e",
+      "lean/fresh-proof-record.json": "df1b320297d0d91d2fa25b3d65e5733d5cac6616e8e81acc346738ffbe2a0f13",
+      "lean/qleisli-bits-fresh-binding.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-binding.stdout": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+      "lean/qleisli-bits-fresh-extraction.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-extraction.stdout": "ebfbdbfcea9cf40d611434e461cc106eb54868482a1463cf4596168bebcd2b0c",
+      "lean/qleisli-bits-fresh-main.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-main.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-review.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-review.stdout": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+      "lean/qleisli-bits-fresh-transport.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean/qleisli-bits-fresh-transport.stdout": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+      "native/native-validation.json": "d420a73f04fdff9ef8ecb2e07101024b615700cc2dc5c42d06b10dd572d6a39d",
+      "rust/all-targets-latest.log": "ec323b8acb91c32d8e7c32e5ab3f8a57e3f649791c7eec5fb18d66fe67193e26",
+      "rust/all-targets-msrv.log": "10e693f13a189446f9c9cb10245581d09aa91897c7c0e7f5b67d73bb4e369fc3",
+      "rust/remaining-latest.log": "96f8472a8d9a860fd47a5bcfbbf1e1859d8130cc7c5c35f0eee14481d5233d34",
+      "rust/remaining-msrv.log": "c21e7633f36dcce8addc5be20e35a0918527ce4bafbbb32ded9418f8befe65ef"
+    }
+  },
+  "validation": {
+    "rust": {
+      "latest": "1.98.1",
+      "msrv": "1.85.0",
+      "initial_all_targets": "both failed one obsolete ordinary quantum-Bits refusal; partial successful prefixes retained. These runs predate checked-add repair and final test changes.",
+      "corrected_focus": {
+        "targets": [
+          "bits_cli",
+          "interchange",
+          "meaning_evidence",
+          "ordinary_booleans"
+        ],
+        "passed_per_version": 23,
+        "failed": 0
+      },
+      "remaining": {
+        "targets": 50,
+        "passed_per_version": 409,
+        "failed": 0,
+        "ignored": 23
+      },
+      "final_library": {
+        "passed_per_version": 132,
+        "failed": 0,
+        "ignored": 3
+      },
+      "clippy_all_targets": "both passed; later source change only clarified API documentation",
+      "format": "passed"
+    },
+    "python": {
+      "initial_guarantee_tests": 44,
+      "production_coverage_tests": 14,
+      "inventory_tests": 17,
+      "constitution_tests": 63,
+      "all_passed": true,
+      "limit": "Adversarial process tests use mocked Lean responses; actual build/audit/fresh replay are separately recorded."
+    },
+    "native": {
+      "process_checks": 267,
+      "small_corpus_clients": 84,
+      "status": "passed"
+    },
+    "documentation": {
+      "mdbook_version": "0.5.4",
+      "html_files": 29,
+      "local_links": 1226,
+      "anchors": 473,
+      "status": "passed"
+    },
+    "formal_source_revision": "6fd757533fcc7ffcafa61126e3a789e83d3cac68fd644eaba7a8a29284dc130f",
+    "actual_build_audit_and_fresh_replay": "see current-guarantee-registry.json and archived fresh-proof-record; standard axiom basis retained"
+  },
+  "scope": "Atomic quantum Bits interfaces and exact finite Meaning transport; retained older admitted scopes, not a new guarantee. Ordinary classical Bits remains bug #342. No source/compiler/runtime theorem, QS/PR/quantitative RS discharge, exact-commit full CI, release certification or publication is claimed. The generic QFT obligation remains outside this goal.",
+  "history": "Original sources, failures, immutable baseline/admission/extractor and comparison fixtures retained. The archive records observations, not commands to execute."
+}

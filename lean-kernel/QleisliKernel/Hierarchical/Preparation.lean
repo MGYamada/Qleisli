@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.Preparation
 
 /-! Actual initialization-node binding for the fresh-zero boundary.
 This component does not validate a later unitary circuit or full instrument.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Hierarchical.Preparation
 open Artifact

@@ -2,7 +2,7 @@ import Qleisli.HierarchicalSemantics
 import Qleisli.HierarchicalPower
 
 /-! Finite complex interpretation of supported hierarchical bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This mathematical interpretation is not executed by the checker. Its sums and
 iterations are not an implementation of verification or its resource budget. -/
 

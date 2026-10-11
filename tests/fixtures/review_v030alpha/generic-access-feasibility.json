@@ -1,0 +1,112 @@
+{
+  "kind": "Pre-implementation exact native feasibility of generic source access targets",
+  "base_commit": "b4965696069ffe2c2ed2927b64ad5514b5a30f7a",
+  "contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6023917206",
+  "sources": {
+    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
+    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba",
+    "tests/classical_functions.rs": "628a2a9395d8e14dd87ded55c80544db8f2780516d4a425faaabf63dfc318020"
+  },
+  "first_observations": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/before.json",
+  "claims": [
+    "Both original desired generic source programs currently refuse at finite adapter eligibility.",
+    "Removing Adjoint/Controlled requirements gives an actual missing-access error, independent of the later finite-adapter refusal.",
+    "Independent one-system-qubit Raw IR plus exact matrices verifies inverse T and conditional omega on a zero-width target using the unchanged native checker.",
+    "Each wrong action is native-valid as a program, but the independent original matrix request rejects it. No float tolerance participates in this acceptance."
+  ],
+  "checks": {
+    "native-latest": {
+      "exit_code": 0,
+      "log_sha256": "1357732651473e7fba6f0a03677306dda018fa936aa35b8ae6ac4b77927004fa",
+      "summary": [
+        "    Finished `test` profile [unoptimized] target(s) in 1.09s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.43s"
+      ]
+    },
+    "native-msrv": {
+      "exit_code": 0,
+      "log_sha256": "249e1c68af7c5a3513ce2a320740b378bbe7a9b44ae94a8501df5b9e82c7af38",
+      "summary": [
+        "    Finished `test` profile [unoptimized] target(s) in 1.47s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.28s"
+      ]
+    },
+    "clippy-latest": {
+      "exit_code": 0,
+      "log_sha256": "7ddb0af7c16c2f50c51786c55bdd2b67ba2ad1cb767f83f71460c1fc0f17579a",
+      "summary": [
+        "    Finished `dev` profile [unoptimized] target(s) in 0.36s"
+      ]
+    },
+    "clippy-msrv": {
+      "exit_code": 0,
+      "log_sha256": "353a02d272b2f5837acff5d04d8dd58b968480a934f5940de5504b1cfa963f65",
+      "summary": [
+        "    Finished `dev` profile [unoptimized] target(s) in 0.41s"
+      ]
+    }
+  },
+  "limits": [
+    "These feasibility tests do not implement the source adapter or validate its transformed source trace.",
+    "No new production rule, Lean proof, native protocol, fundamental discharge, interpretation or guarantee admission.",
+    "Source inverse ordering, structural routing, retained caller frame and actual final-artifact binding remain implementation/validation work."
+  ],
+  "progress": {
+    "completed": 22,
+    "total": 111,
+    "percent": 19.82
+  },
+  "base_ci_observation": {
+    "conclusion": "",
+    "headSha": "dbe3c1e719b598ea66ff617dd3b6d2b166b221f6",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "changes",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "check-macos-source",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-lean",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-interop",
+        "status": "completed"
+      },
+      {
+        "conclusion": "",
+        "name": "check-distribution",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-lean-kernel",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-rust",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "",
+        "name": "check-rust-msrv",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": "success",
+        "name": "check-docs",
+        "status": "completed"
+      }
+    ],
+    "status": "in_progress"
+  },
+  "CI_note": "Existing base CI remains in progress with macOS elan download HTTP500 failure. No success claimed, no cancellation or rerun requested during this component."
+}

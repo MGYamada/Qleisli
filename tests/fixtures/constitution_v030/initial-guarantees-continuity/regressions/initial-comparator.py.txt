@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""Exact current-artifact identity transport for the two admitted QLV1 scopes.
+
+Source-only validation checks saved identities; it does not claim to execute
+Lean. The live path runs a fixed extractor against the already-built/audited
+current environment. Historical proof bodies are not compared; the closed types
+still refer directly to the actual current checker and original-byte witness.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+"""
+
+import gzip
+import hashlib
+import io
+from pathlib import Path
+import subprocess
+
+from check_constitution import require_fields
+from check_ratification_packet import PacketError, checked_file, exact_keys, json_object, read_file
+
+FIXTURE = "tests/fixtures/constitution_v030/initial-guarantees-continuity"
+BASELINE_PATH = f"{FIXTURE}/baseline.json"
+BASELINE_SHA256 = "3033ebfdcd6d57f1b73bd0ed63c3acb4f33af56f6f057c12fef6db1ea8eeac2c"
+EXTRACTOR_PATH = f"{FIXTURE}/Extract.lean"
+EXTRACTOR_SHA256 = "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a"
+REVIEWED_PATH = f"{FIXTURE}/reviewed-expressions.json.gz"
+CURRENT_PATH = f"{FIXTURE}/current-expressions.json.gz"
+STDERR_PATH = f"{FIXTURE}/empty.stderr.txt"
+ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{EXTRACTOR_PATH}"]
+MAX_SNAPSHOT_BYTES = 16 * 1024 * 1024
+
+
+def require(condition, message):
+    if not condition:
+        raise PacketError(message)
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def decompressed(data):
+    try:
+        with gzip.GzipFile(fileobj=io.BytesIO(data)) as stream:
+            result = stream.read(MAX_SNAPSHOT_BYTES + 1)
+    except (OSError, EOFError) as error:
+        raise PacketError("invalid compressed continuity expressions") from error
+    require(len(result) <= MAX_SNAPSHOT_BYTES, "continuity expressions exceed the reviewed capacity")
+    return result
+
+
+def baseline(root, archive):
+    result = json_object(checked_file(root, BASELINE_PATH, BASELINE_SHA256), "continuity baseline")
+    require(result["historical_source_revision_sha256"] == archive["revision"]["sha256"],
+            "continuity baseline does not bind the admitted historical source archive")
+    require_fields(result["extractor"], dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256), "fixed continuity extractor")
+    checked_file(root, EXTRACTOR_PATH, EXTRACTOR_SHA256)
+    require(result["expressions"]["path"] == REVIEWED_PATH, "unexpected historical expression snapshot")
+    data = decompressed(checked_file(root, REVIEWED_PATH, result["expressions"]["sha256"]))
+    require(digest(data) == result["expressions"]["uncompressed_sha256"], "corrupt historical expression snapshot")
+    for name, sha in result["generation_evidence"].items():
+        checked_file(root, name, sha)
+    for name, sha in result["external_dependency_manifests"].items():
+        require(archive["revision"]["files"][name] == sha, "wrong historical external dependency manifest")
+        require(digest(read_file(root, name)) == sha,
+                "external dependency manifest changed; this identity transport requires the admitted Lean/Std dependency basis")
+    return result
+
+
+def validate(root, binding, revision, archive):
+    """Validate recorded continuity evidence only; do not invoke Lean here."""
+    exact_keys(binding, {"format", "version", "baseline", "extractor", "source_revision_sha256", "command", "stdout", "stderr"},
+               "current continuity evidence")
+    require_fields({key: binding[key] for key in ("format", "version", "baseline", "extractor")},
+                   dict(format="qleisli.current-artifact-identity-transport", version=1,
+                        baseline=dict(path=BASELINE_PATH, sha256=BASELINE_SHA256),
+                        extractor=dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256)), "current continuity evidence")
+    require(binding["source_revision_sha256"] == revision["sha256"],
+            "stale continuity extraction: current source revision differs")
+    expected = baseline(root, archive)
+    require_fields(binding["stdout"], dict(path=CURRENT_PATH, compression="gzip", sha256=expected["expressions"]["sha256"],
+                                          uncompressed_sha256=expected["expressions"]["uncompressed_sha256"]),
+                   "current continuity expression identity")
+    checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"])
+    require_fields(binding["stderr"], dict(path=STDERR_PATH, sha256=digest(b"")), "continuity stderr")
+    checked_file(root, STDERR_PATH, digest(b""))
+    require_fields(binding["command"], dict(argv=ARGV, cwd="lean", exit_code=0), "fixed continuity extraction command")
+    return expected
+
+
+def compare_extraction(output, expected):
+    require(len(output) <= MAX_SNAPSHOT_BYTES, "current continuity extraction exceeds the reviewed capacity")
+    require(digest(output) == expected["expressions"]["uncompressed_sha256"],
+            "current elaborated meaning, witness, or checker theorem type differs from the admitted identity baseline; "
+            "representation-changing semantic transport is not implemented")
+
+
+def replay(root, binding, revision, archive):
+    """Execute only the fixed extractor, after normal package build and audit."""
+    expected = validate(root, binding, revision, archive)
+    try:
+        result = subprocess.run(ARGV, cwd=Path(root) / "lean", capture_output=True, check=False)
+    except OSError as error:
+        raise PacketError("cannot run continuity extraction in the already-built Lean environment") from error
+    require(result.returncode == 0,
+            "Lean continuity extraction failed: " + (result.stdout + result.stderr).decode(errors="replace")[:2000])
+    require(result.stderr == b"", "unexpected Lean continuity extraction diagnostics")
+    compare_extraction(result.stdout, expected)

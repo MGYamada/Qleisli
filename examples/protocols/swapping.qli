@@ -5,7 +5,7 @@ use corrections::pauli;
 
 /// Return the inner measurement message and both corrected outer owners.
 /// The ideal outer state is Bell for each of the four equiprobable messages.
-pub observe fn connect() -> ((CBit, CBit), (Q<Bit>, Q<Bit>)) {
+pub observe fn connect() -> ((Bit, Bit), (Q<Bit>, Q<Bit>)) {
     let (left, middle_left) = prepare();
     let (middle_right, right) = prepare();
     let (phase_bit, parity_bit) = measure(middle_left, middle_right);

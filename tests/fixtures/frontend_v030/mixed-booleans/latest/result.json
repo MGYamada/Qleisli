@@ -1,0 +1,123 @@
+{
+  "base_commit": "af26fad37060c8008682c7e0d124897c12d13f89",
+  "driver_sha256": "e3e9e1de6d6471d4c8ebf19976bfa75e462aca73c3c87682837dc5b5479549c6",
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.13262729195412248,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.04081962496275082,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.07772058300906792,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "mixed_booleans",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "tuple_shapes",
+        "--test",
+        "source_semantics",
+        "--test",
+        "source_scope",
+        "--test",
+        "certified_source",
+        "--test",
+        "function_contracts",
+        "--test",
+        "with_computed_diagnostics"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 33.95896154094953,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "raw_source_replay"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 5.205562542018015,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 4.916824791987892,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.6763404580415227,
+      "stdout": "6.stdout.txt",
+      "stderr": "6.stderr.txt"
+    }
+  ],
+  "source_manifest_sha256": "5ea09289c92af27cb5e5c0cc1118d90221eb288cf0abf5277eded2871dd1d133",
+  "source_count": 280,
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+  "target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "free_bytes_before": 25804800000,
+  "free_bytes_after": 25559040000,
+  "scope": "Ten focused integration targets, ordinary/mixed native-valid replay regressions, all-target Clippy and formatting; not all-target runtime or release validation"
+}

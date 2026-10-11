@@ -1,0 +1,80 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.05092241702368483,
+    "completed_utc": "2026-10-05T16:19:41.681975+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "fmt",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.6357371250051074,
+    "completed_utc": "2026-10-05T16:19:42.370550+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "test",
+      "--test",
+      "project",
+      "--test",
+      "source_capacities",
+      "--test",
+      "source_snapshots",
+      "--test",
+      "shared_resolution",
+      "--test",
+      "sized_source",
+      "--test",
+      "body_effects",
+      "--test",
+      "source_collection",
+      "--test",
+      "selected_source_cli"
+    ],
+    "exit_code": 0,
+    "seconds": 16.70420054200804,
+    "completed_utc": "2026-10-05T16:19:59.126012+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "clippy",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 5.765273374971002,
+    "completed_utc": "2026-10-05T16:20:04.955554+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "build",
+      "--bin",
+      "qleisli"
+    ],
+    "exit_code": 0,
+    "seconds": 0.1606521669891663,
+    "completed_utc": "2026-10-05T16:20:05.178981+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt"
+  }
+]

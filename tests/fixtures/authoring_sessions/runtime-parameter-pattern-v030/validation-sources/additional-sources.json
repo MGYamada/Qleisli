@@ -1,0 +1,8 @@
+{
+  "scope": "Three separately retained root-review regressions, saved before the first new Rust test execution.",
+  "sha256": {
+    "static-operation-collision.qli": "e7fbae4258c22f3614001c70166a28cce91c25fecf8890fc864308c135d4aa2b",
+    "non-nullary-entry.qli": "be9a29e11986afe10b8975d05d64a71309b3e60a4c6b10c7f6f535211e73c4e6",
+    "argument-owner-order.qli": "f3a433589078034ea5637369c320107b7573e6e9d353aeff5fa067e19cedba05"
+  }
+}

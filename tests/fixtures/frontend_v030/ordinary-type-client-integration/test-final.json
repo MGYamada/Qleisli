@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "python3",
+    "scripts/test_current_source_fixtures.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "tests": 6,
+  "script_sha256": "9c3dff9c8dfedbbbe0580d04897e8202eee03c6062430c6197edcf61e4ef49f9",
+  "stdout": "results/fixture-identity-tests-final.stdout.txt",
+  "stderr": "results/fixture-identity-tests-final.stderr.txt"
+}

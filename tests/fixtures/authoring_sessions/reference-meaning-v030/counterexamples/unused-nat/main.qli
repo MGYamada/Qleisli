@@ -1,0 +1,7 @@
+use std::quantum::{init0,h}; use std::observe::measure_z;
+        unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+        unitary fn specified(q: Q<Bit>) -> Q<Bit> { h(q) }
+        unitary fn unused[const N: Nat](q: Q<Bit>) -> Q<Bit> {
+            apply_contract(identity,specified,q)
+        }
+        pub observe fn main() -> Bit { measure_z(init0()) }

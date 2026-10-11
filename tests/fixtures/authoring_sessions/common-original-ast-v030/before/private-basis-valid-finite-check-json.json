@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-valid",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T19:24:46.847290+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.7731606250163168,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 20,
+  "native_argv_log": "private-basis-valid-finite-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "private-basis-valid-finite-check-json.stdout.bin",
+  "stderr_raw": "private-basis-valid-finite-check-json.stderr.bin",
+  "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  }
+}

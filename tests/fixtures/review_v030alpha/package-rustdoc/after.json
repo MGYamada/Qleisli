@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "rustdoc",
+    "--offline",
+    "--locked",
+    "--lib",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 0,
+  "source": "src/frontend/types.rs",
+  "source_sha256": "a64ee4ce2737e91bd26e9efb74745d1da67fbb4d6322d36728fc652ba0f1ac57",
+  "scope": "Rustdoc warning reproduction only; no completed distribution or release validation is claimed."
+}

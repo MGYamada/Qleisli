@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T03:06:09.871267+00:00",
+  "timestamp_note": "Clock observation immediately before this command, not an authoring timestamp.",
+  "elapsed_seconds": 0.7373512500198558,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": "",
+  "source_sha256": "ddfc8d428823d56b7ebbe4ef7de52cea96f8db9dbec59e7ca5344cec38d78162",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "f9b3d297bf751e79510b51d949f8129c2f0cab1113d62526a7c579a9d382b34c",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  }
+}

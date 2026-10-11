@@ -1,4 +1,4 @@
-//! Parser for the provisional finite `.qli` grammar in the fixed grammar.
+//! One source parser for the provisional finite and sized constructs.
 //!
 //! Parsing does not resolve names or establish typing, effects, linear use, or
 //! quantum validity. Those checks must happen before producing trusted IR.
@@ -6,11 +6,7 @@
 use std::fmt;
 use std::mem::discriminant;
 
-use super::ast::{
-    Access, AccessConstraint, BasisExpr, BasisExprKind, Block, Decl, Expr, ExprKind, FnBody,
-    FnKind, Ident, Module, Param, Pattern, PatternKind, Span, StaticOp, StaticOpKind, StaticParam,
-    Stmt, StmtKind, Type, TypeKind, UseDecl,
-};
+use super::ast::*;
 use super::documentation::{DocumentedModule, attach};
 use super::lexer::{LexError, Token, TokenKind, lex_documented};
 
@@ -48,7 +44,44 @@ pub fn parse_module(source: &str) -> Result<Module, ParseError> {
 /// Parse the same source grammar, retaining descriptive comments separately
 /// from the existing AST. Documentation never establishes quantum validity.
 pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseError> {
-    let (tokens, comments) = lex_documented(source)?;
+    parse_documented(source, None)
+}
+
+pub(crate) fn parse_bounded_module(source: &str) -> Result<Module, ParseError> {
+    parse_documented(source, Some((10_000, 64))).map(|documented| documented.syntax)
+}
+
+/// Parse a complete host-supplied ordinary type description with the source
+/// grammar and the same token/depth limits. Trailing syntax is never ignored.
+pub(crate) fn parse_closed_basis(source: &str) -> Result<Type, ParseError> {
+    if source.len() > 65_536 {
+        return Err(ParseError {
+            message: "source exceeds 64 KiB limit".into(),
+            span: Span::new(0, source.len()),
+        });
+    }
+    let (tokens, _) = super::lexer::lex_documented_bounded(source, 10_000, 64)?;
+    let mut parser = Parser {
+        tokens,
+        pos: 0,
+        nesting: 0,
+        remaining_import_prefix_identifiers: MAX_IMPORT_PREFIX_IDENTIFIERS,
+        remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
+    };
+    let ty = parser.basis_type()?;
+    parser.expect(&TokenKind::Eof)?;
+    Ok(ty)
+}
+
+fn parse_documented(
+    source: &str,
+    limits: Option<(usize, usize)>,
+) -> Result<DocumentedModule, ParseError> {
+    let (tokens, comments) = if let Some((tokens, comments)) = limits {
+        super::lexer::lex_documented_bounded(source, tokens, comments)?
+    } else {
+        lex_documented(source)?
+    };
     let mut parser = Parser {
         tokens,
         pos: 0,
@@ -97,10 +130,13 @@ impl Parser {
             if self.at(&TokenKind::Use) {
                 uses.extend(self.use_decl()?);
             } else if self.at(&TokenKind::Pub)
+                || self.at(&TokenKind::Classical)
+                || self.at(&TokenKind::Static)
                 || self.at(&TokenKind::Basis)
-                || self.at(&TokenKind::Iso)
+                || self.at(&TokenKind::Isometry)
                 || self.at(&TokenKind::Unitary)
                 || self.at(&TokenKind::Observe)
+                || self.at(&TokenKind::Fn)
                 || self.at(&TokenKind::Meaning)
             {
                 decls.push(self.decl()?);
@@ -153,14 +189,17 @@ impl Parser {
             // Declaration keywords are admitted only in the std module position.
             let name = if path.len() == 1
                 && path[0].text == "std"
-                && matches!(self.current().kind, TokenKind::Basis | TokenKind::Observe)
-            {
+                && matches!(
+                    self.current().kind,
+                    TokenKind::Basis | TokenKind::Observe | TokenKind::Classical
+                ) {
                 let token = self.bump();
                 Ident {
-                    text: if token.kind == TokenKind::Basis {
-                        "basis"
-                    } else {
-                        "observe"
+                    text: match token.kind {
+                        TokenKind::Basis => "basis",
+                        TokenKind::Observe => "observe",
+                        TokenKind::Classical => "classical",
+                        _ => unreachable!("matched std module keyword"),
                     }
                     .into(),
                     span: token.span,
@@ -211,15 +250,43 @@ impl Parser {
             self.expect(&TokenKind::Colon)?;
             let return_type = self.basis_type()?;
             self.expect(&TokenKind::Equals)?;
-            let permutation = if self.consume(&TokenKind::PermutationBy).is_some() {
-                true
+            let body = if self.word("reference") {
+                self.bump();
+                self.expect(&TokenKind::LParen)?;
+                let function = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                FnBody::MeaningReference { function }
+            } else if self.word("compose") || self.word("tensor") {
+                let tensor = self.word("tensor");
+                self.bump();
+                self.expect(&TokenKind::LParen)?;
+                let first = self.ident()?;
+                self.expect(&TokenKind::Comma)?;
+                let second = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                if tensor {
+                    FnBody::MeaningTensor {
+                        left: first,
+                        right: second,
+                    }
+                } else {
+                    FnBody::MeaningCompose { first, second }
+                }
             } else {
-                self.expect(&TokenKind::PhaseBy)?;
-                false
+                let permutation = if self.consume(&TokenKind::PermutationBy).is_some() {
+                    true
+                } else {
+                    self.expect(&TokenKind::PhaseBy)?;
+                    false
+                };
+                self.expect(&TokenKind::LParen)?;
+                let function = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                FnBody::Meaning {
+                    permutation,
+                    function,
+                }
             };
-            self.expect(&TokenKind::LParen)?;
-            let function = self.ident()?;
-            self.expect(&TokenKind::RParen)?;
             let end = self.expect(&TokenKind::Semicolon)?.span.end;
             return Ok(Decl {
                 public,
@@ -229,49 +296,91 @@ impl Parser {
                 requires: vec![],
                 params: vec![],
                 return_type,
-                body: FnBody::Meaning {
-                    permutation,
-                    function,
-                },
+                body,
                 span: Span::new(start, end),
             });
         }
-        let kind = if self.consume(&TokenKind::Basis).is_some() {
-            FnKind::Basis
-        } else if self.consume(&TokenKind::Iso).is_some() {
-            FnKind::Iso
+        if self.at(&TokenKind::Basis) {
+            return Err(self.error("`basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct"));
+        }
+        let kind = if self.consume(&TokenKind::Static).is_some() {
+            FnKind::Static
+        } else if self.consume(&TokenKind::Classical).is_some() {
+            FnKind::Classical
+        } else if self.consume(&TokenKind::Isometry).is_some() {
+            FnKind::Isometry
         } else if self.consume(&TokenKind::Unitary).is_some() {
             FnKind::Unitary
         } else if self.consume(&TokenKind::Observe).is_some() {
             FnKind::Observe
+        } else if self.at(&TokenKind::Fn) {
+            FnKind::Inferred
         } else {
-            return Err(self.error("expected `basis`, `iso`, `unitary`, or `observe` after `pub`"));
+            return Err(self.error(
+                "expected `fn`, `classical fn`, `isometry`, `unitary`, `observe`, or `meaning` after `pub`",
+            ));
         };
         self.expect(&TokenKind::Fn)?;
         let name = self.ident()?;
         let mut static_params = Vec::new();
         if self.consume(&TokenKind::LBracket).is_some() {
-            if kind == FnKind::Basis {
-                return Err(self.error("basis functions cannot have static operation parameters"));
+            if kind == FnKind::Classical {
+                return Err(
+                    self.error("classical functions cannot have static operation parameters")
+                );
             }
             loop {
-                self.expect(&TokenKind::Static)?;
-                let name = self.ident()?;
-                self.expect(&TokenKind::Colon)?;
-                self.expect(&TokenKind::Op)?;
-                self.expect(&TokenKind::LAngle)?;
-                let basis = self.basis_type()?;
-                let meaning = if self.consume(&TokenKind::Comma).is_some() {
-                    Some(self.ident()?)
+                // Compile-time parameter markers are contextual: ordinary
+                // functions and locals named `const` remain ordinary names.
+                if self.word("const") {
+                    self.bump();
+                } else if self.at(&TokenKind::Static) {
+                    return Err(self.error(
+                        "compile-time parameter headers use `const`; replace `static` with `const`",
+                    ));
                 } else {
-                    None
+                    return Err(self.error("expected `const` before compile-time parameter"));
+                }
+                // The sized profile historically permits type words as Nat
+                // names. Keep this contextual: operation/runtime identifiers
+                // still use the ordinary reserved-word rules.
+                let natural = self.tokens.get(self.pos + 2).is_some_and(
+                    |token| matches!(&token.kind, TokenKind::Ident(name) if name == "Nat"),
+                );
+                let name = if natural {
+                    self.natural_ident()?
+                } else {
+                    self.ident()?
                 };
-                self.expect(&TokenKind::RAngle)?;
-                static_params.push(StaticParam {
-                    name,
-                    basis,
-                    meaning,
-                });
+                self.expect(&TokenKind::Colon)?;
+                let kind = if self.word("Nat") {
+                    self.bump();
+                    StaticParamKind::Natural
+                } else if self.word("Basis") {
+                    self.bump();
+                    StaticParamKind::Basis
+                } else {
+                    self.expect(&TokenKind::Op)?;
+                    self.expect(&TokenKind::LAngle)?;
+                    let basis = self.basis_type()?;
+                    let codomain = if self.consume(&TokenKind::Arrow).is_some() {
+                        Some(Box::new(self.basis_type()?))
+                    } else {
+                        None
+                    };
+                    let meaning = if self.consume(&TokenKind::Comma).is_some() {
+                        Some(self.ident()?)
+                    } else {
+                        None
+                    };
+                    self.expect(&TokenKind::RAngle)?;
+                    StaticParamKind::Operation {
+                        basis,
+                        codomain,
+                        meaning,
+                    }
+                };
+                static_params.push(StaticParam { name, kind });
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
@@ -282,59 +391,95 @@ impl Parser {
         let mut params = Vec::new();
         if !self.at(&TokenKind::RParen) {
             loop {
-                let pattern = if kind == FnKind::Basis {
-                    self.pattern()?
-                } else {
-                    let name = self.ident()?;
-                    Pattern {
-                        span: name.span,
-                        kind: PatternKind::Name(name),
-                    }
-                };
+                let pattern = self.pattern()?;
                 self.expect(&TokenKind::Colon)?;
-                let ty = if kind == FnKind::Basis {
+                let ty = if kind == FnKind::Classical {
                     self.basis_type()?
                 } else {
                     self.ty()?
                 };
                 let span = Span::new(pattern.span.start, ty.span.end);
                 params.push(Param { pattern, ty, span });
-                if self.consume(&TokenKind::Comma).is_none() {
+                if self.consume(&TokenKind::Comma).is_none() || self.at(&TokenKind::RParen) {
                     break;
                 }
             }
         }
         self.expect(&TokenKind::RParen)?;
         self.expect(&TokenKind::Arrow)?;
-        let return_type = if kind == FnKind::Basis {
+        let return_type = if kind == FnKind::Static {
+            let name = self.ident()?;
+            if name.text != "Nat" {
+                return Err(self.error("a bounded static helper must return Nat"));
+            }
+            Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
+            }
+        } else if kind == FnKind::Classical {
             self.basis_type()?
         } else {
             self.ty()?
         };
         let mut requires = Vec::new();
-        if self.consume(&TokenKind::Requires).is_some() {
-            if static_params.is_empty() {
-                return Err(self.error("requires needs static parameters"));
+        if let Some(requires_token) = self.consume(&TokenKind::Requires) {
+            if kind == FnKind::Classical {
+                return Err(ParseError {
+                    message: "classical functions cannot have requires clauses".into(),
+                    span: requires_token.span,
+                });
             }
             loop {
-                let access = if self.consume(&TokenKind::ApplyAccess).is_some() {
-                    Access::Apply
-                } else if self.consume(&TokenKind::AdjointAccess).is_some() {
-                    Access::Adjoint
+                if matches!(
+                    self.current().kind,
+                    TokenKind::ApplyAccess | TokenKind::AdjointAccess | TokenKind::ControlledAccess
+                ) {
+                    let (old, current) = match self.current().kind {
+                        TokenKind::ApplyAccess => ("Apply", "Applicable"),
+                        TokenKind::AdjointAccess => ("Adjoint", "Adjointable"),
+                        _ => ("Controlled", "Controllable"),
+                    };
+                    return Err(self.error(&format!("`{old}(U)` is retired; use `{current}(U)`")));
+                }
+                if (self.word("Applicable")
+                    || self.word("Adjointable")
+                    || self.word("Controllable"))
+                    && self
+                        .tokens
+                        .get(self.pos + 1)
+                        .is_some_and(|token| token.kind == TokenKind::LParen)
+                {
+                    let access_span = self.current().span;
+                    let access = if self.word("Applicable") {
+                        Access::Apply
+                    } else if self.word("Adjointable") {
+                        Access::Adjoint
+                    } else {
+                        Access::Controlled
+                    };
+                    self.bump();
+                    self.expect(&TokenKind::LParen)?;
+                    let name = self.ident()?;
+                    self.expect(&TokenKind::RParen)?;
+                    requires.push(Requirement::Access(AccessConstraint {
+                        access,
+                        name,
+                        span: access_span,
+                    }));
                 } else {
-                    self.expect(&TokenKind::ControlledAccess)?;
-                    Access::Controlled
-                };
-                self.expect(&TokenKind::LParen)?;
-                let name = self.ident()?;
-                self.expect(&TokenKind::RParen)?;
-                requires.push(AccessConstraint { access, name });
+                    requires.push(Requirement::Predicate(self.predicate()?));
+                }
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
             }
         }
-        let (body, end) = if kind == FnKind::Basis {
+        let (body, end) = if kind == FnKind::Static {
+            self.expect(&TokenKind::LBrace)?;
+            let value = self.natural()?;
+            let end = self.expect(&TokenKind::RBrace)?.span.end;
+            (FnBody::Natural(value), end)
+        } else if kind == FnKind::Classical {
             let (basis, block_span) = self.basis_block()?;
             (FnBody::Basis(basis), block_span.end)
         } else {
@@ -365,24 +510,119 @@ impl Parser {
         self.nested(Self::static_op_inner)
     }
 
+    fn repetition_count(&mut self) -> Result<Count, ParseError> {
+        let natural = self.natural()?;
+        if self.consume(&TokenKind::Caret).is_some() {
+            if !matches!(natural.kind, NatKind::Number(2)) {
+                return Err(ParseError {
+                    message: "only 2^e repetition counts are supported".into(),
+                    span: natural.span,
+                });
+            }
+            Ok(Count::Power(self.natural_atom()?))
+        } else {
+            Ok(Count::Natural(natural))
+        }
+    }
+
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
-        if matches!(self.current().kind, TokenKind::Ident(_)) {
-            let name = self.ident()?;
+        if self.at(&TokenKind::RepeatOp)
+            || self.at(&TokenKind::InverseOp)
+            || self.at(&TokenKind::ControlledOp)
+        {
+            return Err(self.retired_operation_syntax());
+        }
+        if self.at(&TokenKind::Adjoint)
+            || (self.word("controlled")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|token| token.kind == TokenKind::LParen))
+        {
+            let adjoint = self.at(&TokenKind::Adjoint);
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let child = Box::new(self.static_op()?);
+            let end = self.expect(&TokenKind::RParen)?.span;
             return Ok(StaticOp {
-                span: name.span,
-                kind: StaticOpKind::Name(name),
+                kind: if adjoint {
+                    StaticOpKind::Inverse(child)
+                } else {
+                    StaticOpKind::Controlled(child)
+                },
+                span: start.cover(end),
+            });
+        }
+        if self.word("power")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| t.kind == TokenKind::LParen)
+        {
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::Comma)?;
+            let count = self.repetition_count()?;
+            let end = self.expect(&TokenKind::RParen)?.span;
+            return Ok(StaticOp {
+                kind: StaticOpKind::Repeat(count, Box::new(operation)),
+                span: start.cover(end),
+            });
+        }
+        // Type descriptions are contextual static arguments. An ordinary call
+        // named `type` remains an ordinary call; no expression becomes a type.
+        if self.word("type")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| t.kind == TokenKind::LParen)
+        {
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let ty = self.basis_type()?;
+            let end = self.expect(&TokenKind::RParen)?.span;
+            return Ok(StaticOp {
+                kind: StaticOpKind::Type(ty),
+                span: start.cover(end),
+            });
+        }
+        if Self::natural_name(&self.current().kind).is_some()
+            || matches!(
+                self.current().kind,
+                TokenKind::Zero | TokenKind::One | TokenKind::Natural(_) | TokenKind::LParen
+            )
+        {
+            let natural = self.natural()?;
+            let kind = if self.consume(&TokenKind::LBracket).is_some() {
+                let NatKind::Name(text) = natural.kind else {
+                    return Err(self.error("only a function can have static arguments"));
+                };
+                let name = Ident {
+                    text,
+                    span: natural.span,
+                };
+                StaticOpKind::Specialize {
+                    name,
+                    arguments: self.static_arguments()?,
+                }
+            } else if let NatKind::Name(text) = natural.kind {
+                StaticOpKind::Name(Ident {
+                    text,
+                    span: natural.span,
+                })
+            } else {
+                StaticOpKind::Natural(natural)
+            };
+            return Ok(StaticOp {
+                span: start.cover(self.tokens[self.pos - 1].span),
+                kind,
             });
         }
         if !matches!(
             self.current().kind,
-            TokenKind::BindOp
-                | TokenKind::RepeatOp
-                | TokenKind::InverseOp
-                | TokenKind::ControlledOp
-                | TokenKind::ThenOp
-                | TokenKind::TensorOp
-                | TokenKind::ConjugateOp
+            TokenKind::BindOp | TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp
         ) {
             return Err(self.error("expected a static operation description"));
         }
@@ -397,23 +637,6 @@ impl Parser {
                     meaning: self.ident()?,
                 }
             }
-            TokenKind::RepeatOp => {
-                let count = match &self.current().kind {
-                    TokenKind::Zero => 0,
-                    TokenKind::One => 1,
-                    TokenKind::Natural(n) if !n.starts_with('0') => n
-                        .parse::<u16>()
-                        .ok()
-                        .filter(|n| *n <= 4096)
-                        .ok_or_else(|| self.error("static repetition exceeds 4096"))?,
-                    _ => return Err(self.error("expected canonical static natural number")),
-                };
-                self.bump();
-                self.expect(&TokenKind::Comma)?;
-                StaticOpKind::Repeat(count, Box::new(self.static_op()?))
-            }
-            TokenKind::InverseOp => StaticOpKind::Inverse(Box::new(self.static_op()?)),
-            TokenKind::ControlledOp => StaticOpKind::Controlled(Box::new(self.static_op()?)),
             TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp => {
                 let a = Box::new(self.static_op()?);
                 self.expect(&TokenKind::Comma)?;
@@ -433,7 +656,231 @@ impl Parser {
         })
     }
 
+    fn word(&self, word: &str) -> bool {
+        matches!(&self.current().kind, TokenKind::Ident(name) if name == word)
+    }
+
+    fn expect_word(&mut self, word: &str) -> Result<Ident, ParseError> {
+        if self.word(word) {
+            self.ident()
+        } else {
+            Err(self.error(&format!("expected `{word}`")))
+        }
+    }
+
+    fn static_arguments(&mut self) -> Result<Vec<StaticOp>, ParseError> {
+        let mut arguments = Vec::new();
+        if self.at(&TokenKind::RBracket) {
+            self.bump();
+            return Ok(arguments);
+        }
+        loop {
+            arguments.push(self.static_op()?);
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        self.expect(&TokenKind::RBracket)?;
+        Ok(arguments)
+    }
+
+    fn natural_node(kind: NatKind, span: Span) -> Result<Natural, ParseError> {
+        let depth = match &kind {
+            NatKind::Call { arguments, .. } => {
+                1 + arguments.iter().map(|n| n.depth).max().unwrap_or(0)
+            }
+            NatKind::Number(_) | NatKind::Name(_) => 1,
+            NatKind::Add(a, b) | NatKind::Sub(a, b) | NatKind::Mul(a, b) => {
+                1 + a.depth.max(b.depth)
+            }
+        };
+        if depth > 128 {
+            return Err(ParseError {
+                message: "natural expression depth exceeds 128 limit".into(),
+                span,
+            });
+        }
+        Ok(Natural { kind, span, depth })
+    }
+
+    fn natural(&mut self) -> Result<Natural, ParseError> {
+        let mut left = self.natural_factor()?;
+        while self.at(&TokenKind::Plus) || self.at(&TokenKind::Minus) {
+            let sub = self.bump().kind == TokenKind::Minus;
+            let right = self.natural_factor()?;
+            let span = left.span.cover(right.span);
+            left = Self::natural_node(
+                if sub {
+                    NatKind::Sub(Box::new(left), Box::new(right))
+                } else {
+                    NatKind::Add(Box::new(left), Box::new(right))
+                },
+                span,
+            )?;
+        }
+        Ok(left)
+    }
+
+    fn natural_factor(&mut self) -> Result<Natural, ParseError> {
+        let mut left = self.natural_atom()?;
+        while self.consume(&TokenKind::Star).is_some() {
+            let right = self.natural_atom()?;
+            let span = left.span.cover(right.span);
+            left = Self::natural_node(NatKind::Mul(Box::new(left), Box::new(right)), span)?;
+        }
+        Ok(left)
+    }
+
+    fn natural_atom(&mut self) -> Result<Natural, ParseError> {
+        self.nested(|parser| {
+            let token = parser.current().clone();
+            if parser.consume(&TokenKind::LParen).is_some() {
+                let mut natural = parser.natural()?;
+                let close = parser.expect(&TokenKind::RParen)?;
+                natural.span = token.span.cover(close.span);
+                Ok(natural)
+            } else {
+                let kind = match &token.kind {
+                    TokenKind::Zero => NatKind::Number(0),
+                    TokenKind::One => NatKind::Number(1),
+                    TokenKind::Natural(digits) => {
+                        if digits.starts_with('0') {
+                            return Err(parser.error("natural literal has a leading zero"));
+                        }
+                        NatKind::Number(
+                            digits
+                                .parse()
+                                .map_err(|_| parser.error("natural literal exceeds i128 limit"))?,
+                        )
+                    }
+                    kind => match Self::natural_name(kind) {
+                        Some(name) => NatKind::Name(name.to_owned()),
+                        None => return Err(parser.error("expected a static natural expression")),
+                    },
+                };
+                parser.bump();
+                if let NatKind::Name(ref name) = kind {
+                    // f[n] without () remains an operation specialization.
+                    let call = if parser.at(&TokenKind::LBracket) {
+                        let mut nesting = 0usize;
+                        let mut close = None;
+                        for (i, t) in parser.tokens.iter().enumerate().skip(parser.pos) {
+                            match t.kind {
+                                TokenKind::LBracket => nesting += 1,
+                                TokenKind::RBracket => {
+                                    nesting -= 1;
+                                    if nesting == 0 {
+                                        close = Some(i);
+                                        break;
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        close.is_some_and(|i| {
+                            parser
+                                .tokens
+                                .get(i + 1)
+                                .is_some_and(|t| t.kind == TokenKind::LParen)
+                        })
+                    } else {
+                        parser.at(&TokenKind::LParen)
+                    };
+                    if call {
+                        let callee = Ident {
+                            text: name.clone(),
+                            span: token.span,
+                        };
+                        let mut arguments = Vec::new();
+                        if parser.consume(&TokenKind::LBracket).is_some() {
+                            if !parser.at(&TokenKind::RBracket) {
+                                loop {
+                                    arguments.push(parser.natural()?);
+                                    if parser.consume(&TokenKind::Comma).is_none() {
+                                        break;
+                                    }
+                                }
+                            }
+                            parser.expect(&TokenKind::RBracket)?;
+                        }
+                        parser.expect(&TokenKind::LParen)?;
+                        let end = parser.expect(&TokenKind::RParen)?.span;
+                        return Self::natural_node(
+                            NatKind::Call { callee, arguments },
+                            token.span.cover(end),
+                        );
+                    }
+                }
+                Self::natural_node(kind, token.span)
+            }
+        })
+    }
+
+    fn predicate(&mut self) -> Result<Predicate, ParseError> {
+        let left = self.natural()?;
+        let comparison = match self.current().kind {
+            TokenKind::EqualEqual => Compare::Eq,
+            TokenKind::NotEqual => Compare::Ne,
+            TokenKind::LAngle => Compare::Lt,
+            TokenKind::LessEqual => Compare::Le,
+            TokenKind::RAngle => Compare::Gt,
+            TokenKind::GreaterEqual => Compare::Ge,
+            _ => return Err(self.error("expected static comparison")),
+        };
+        self.bump();
+        Ok(Predicate {
+            left,
+            comparison,
+            right: self.natural()?,
+        })
+    }
+
+    // Two-stage operation syntax is contextual. Single-stage ordinary calls
+    // and declarations with these names retain normal name resolution.
+    fn transformed_application(&self, name: &str) -> bool {
+        if !(self.word(name) || name == "adjoint" && self.at(&TokenKind::Adjoint))
+            || self
+                .tokens
+                .get(self.pos + 1)
+                .is_none_or(|t| t.kind != TokenKind::LParen)
+        {
+            return false;
+        }
+        let mut depth = 0usize;
+        for (index, token) in self.tokens.iter().enumerate().skip(self.pos + 1) {
+            match token.kind {
+                TokenKind::LParen => depth += 1,
+                TokenKind::RParen => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return self
+                            .tokens
+                            .get(index + 1)
+                            .is_some_and(|t| t.kind == TokenKind::LParen);
+                    }
+                }
+                TokenKind::Eof => break,
+                _ => {}
+            }
+        }
+        false
+    }
+
     fn ty_inner(&mut self) -> Result<Type, ParseError> {
+        if self.word("CBits") || self.current().kind == TokenKind::CBit {
+            return Err(self.error("CBit/CBits types were removed; use Bit/Bits<n>"));
+        }
+        if self.word("Bits") {
+            let token = self.bump();
+            self.expect(&TokenKind::LAngle)?;
+            let size = self.natural()?;
+            let end = self.expect(&TokenKind::RAngle)?;
+            return Ok(Type {
+                kind: TypeKind::Bits(size),
+                span: token.span.cover(end.span),
+            });
+        }
+
         if let Some(token) = self.consume(&TokenKind::Unit) {
             return Ok(Type {
                 kind: TypeKind::Unit,
@@ -443,12 +890,6 @@ impl Parser {
         if let Some(token) = self.consume(&TokenKind::Bit) {
             return Ok(Type {
                 kind: TypeKind::Bit,
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::CBit) {
-            return Ok(Type {
-                kind: TypeKind::CBit,
                 span: token.span,
             });
         }
@@ -461,6 +902,13 @@ impl Parser {
                 span: open.span.cover(close.span),
             });
         }
+        if matches!(self.current().kind, TokenKind::Ident(_)) {
+            let name = self.ident()?;
+            return Ok(Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
+            });
+        }
         self.tuple_type(false)
     }
 
@@ -471,6 +919,20 @@ impl Parser {
     }
 
     fn basis_type_inner(&mut self) -> Result<Type, ParseError> {
+        if self.word("CBits") || self.current().kind == TokenKind::CBit {
+            return Err(self.error("CBit/CBits types were removed; use Bit/Bits<n>"));
+        }
+        if self.word("Bits") {
+            let token = self.bump();
+            self.expect(&TokenKind::LAngle)?;
+            let size = self.natural()?;
+            let end = self.expect(&TokenKind::RAngle)?;
+            return Ok(Type {
+                kind: TypeKind::Bits(size),
+                span: token.span.cover(end.span),
+            });
+        }
+
         if let Some(token) = self.consume(&TokenKind::Unit) {
             return Ok(Type {
                 kind: TypeKind::Unit,
@@ -483,11 +945,25 @@ impl Parser {
                 span: token.span,
             });
         }
+        if matches!(self.current().kind, TokenKind::Ident(_)) {
+            let name = self.ident()?;
+            return Ok(Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
+            });
+        }
         self.tuple_type(true)
     }
 
     fn tuple_type(&mut self, basis_only: bool) -> Result<Type, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
+        if let Some(close) = self.consume(&TokenKind::RParen) {
+            return Err(ParseError {
+                span: open.span.cover(close.span),
+                message: "empty tuple type spelling was removed; use Unit (the value remains ())"
+                    .into(),
+            });
+        }
         let mut fields = vec![if basis_only {
             self.basis_type()?
         } else {
@@ -549,32 +1025,114 @@ impl Parser {
     }
 
     fn block(&mut self) -> Result<Block, ParseError> {
+        self.block_mode(false)
+    }
+
+    fn block_mode(&mut self, fold: bool) -> Result<Block, ParseError> {
         let open = self.expect(&TokenKind::LBrace)?;
-        self.block_contents(open.span.start)
+        self.nested(|parser| parser.block_contents_inner(open.span.start, fold))
     }
 
     fn block_contents(&mut self, start: usize) -> Result<Block, ParseError> {
-        self.nested(|parser| parser.block_contents_inner(start))
+        self.nested(|parser| parser.block_contents_inner(start, false))
     }
 
-    fn block_contents_inner(&mut self, start: usize) -> Result<Block, ParseError> {
+    fn block_contents_inner(&mut self, start: usize, fold: bool) -> Result<Block, ParseError> {
         let mut statements = Vec::new();
         loop {
             if self.at(&TokenKind::RBrace) {
-                return Err(self.error("expected a final expression before `}`"));
+                if fold {
+                    return Err(self.error("static fold requires yield"));
+                }
+                let close = self.bump();
+                return Ok(Block {
+                    implicit_result: true,
+                    statements,
+                    result: Box::new(Expr {
+                        kind: ExprKind::Unit,
+                        span: close.span,
+                    }),
+                    span: Span::new(start, close.span.end),
+                });
+            }
+            if let Some(static_token) = self.consume(&TokenKind::Static) {
+                self.expect(&TokenKind::Let)?;
+                let name = self.ident()?;
+                self.expect(&TokenKind::Equals)?;
+                let value = self.natural()?;
+                let end = self.expect(&TokenKind::Semicolon)?.span.end;
+                statements.push(Stmt {
+                    kind: StmtKind::StaticLet { name, value },
+                    span: Span::new(static_token.span.start, end),
+                });
+                continue;
             }
             if let Some(let_token) = self.consume(&TokenKind::Let) {
+                // Keep `let mut = ...` as an ordinary contextual name. The
+                // marker is retained for typed rejection, not accepted mutation.
+                let mutable = (self.word("mut")
+                    && matches!(
+                        self.tokens.get(self.pos + 1).map(|t| &t.kind),
+                        Some(TokenKind::Ident(_))
+                    ))
+                .then(|| self.bump().span);
                 let pattern = self.pattern()?;
                 self.expect(&TokenKind::Equals)?;
                 let value = self.expr()?;
                 let end = self.expect(&TokenKind::Semicolon)?.span.end;
                 statements.push(Stmt {
-                    kind: StmtKind::Let { pattern, value },
+                    kind: match mutable {
+                        Some(marker) => StmtKind::MutableLet {
+                            marker,
+                            pattern,
+                            value,
+                        },
+                        None => StmtKind::Let { pattern, value },
+                    },
                     span: Span::new(let_token.span.start, end),
                 });
                 continue;
             }
-            let expr = self.expr()?;
+            let yielded = fold && self.word("yield");
+            if yielded {
+                self.bump();
+            }
+            let empty_yield = yielded && self.at(&TokenKind::RBrace);
+            let expr = if empty_yield {
+                Expr {
+                    kind: ExprKind::Unit,
+                    span: self.current().span,
+                }
+            } else {
+                self.expr()?
+            };
+            if !yielded && self.consume(&TokenKind::Equals).is_some() {
+                let ExprKind::Name(target) = expr.kind else {
+                    return Err(ParseError {
+                        message:
+                            "place assignment is unsupported; use explicit consuming let rebinding"
+                                .into(),
+                        span: expr.span,
+                    });
+                };
+                let value = self.expr()?;
+                let end = self.expect(&TokenKind::Semicolon)?.span.end;
+                statements.push(Stmt {
+                    span: Span::new(target.span.start, end),
+                    kind: StmtKind::Assign { target, value },
+                });
+                continue;
+            }
+            if yielded {
+                self.consume(&TokenKind::Semicolon);
+                let close = self.expect(&TokenKind::RBrace)?;
+                return Ok(Block {
+                    implicit_result: empty_yield,
+                    statements,
+                    result: Box::new(expr),
+                    span: Span::new(start, close.span.end),
+                });
+            }
             if let Some(semicolon) = self.consume(&TokenKind::Semicolon) {
                 statements.push(Stmt {
                     span: expr.span.cover(semicolon.span),
@@ -582,8 +1140,15 @@ impl Parser {
                 });
                 continue;
             }
+            if fold {
+                return Err(ParseError {
+                    message: "static fold requires yield".into(),
+                    span: expr.span,
+                });
+            }
             let close = self.expect(&TokenKind::RBrace)?;
             return Ok(Block {
+                implicit_result: false,
                 statements,
                 result: Box::new(expr),
                 span: Span::new(start, close.span.end),
@@ -615,6 +1180,12 @@ impl Parser {
             });
         }
         let open = self.expect(&TokenKind::LParen)?;
+        if let Some(close) = self.consume(&TokenKind::RParen) {
+            return Ok(Pattern {
+                kind: PatternKind::Tuple(vec![]),
+                span: open.span.cover(close.span),
+            });
+        }
         let mut fields = vec![self.pattern()?];
         self.expect(&TokenKind::Comma)?;
         loop {
@@ -733,8 +1304,22 @@ impl Parser {
             }
             maximum = maximum.max(depth);
             match &node.kind {
+                ExprKind::UnsupportedClosure(closure) => {
+                    pending.push((&closure.body.result, depth + 1));
+                    pending.extend(closure.body.statements.iter().filter_map(|statement| {
+                        let value = match &statement.kind {
+                            StmtKind::StaticLet { .. } => return None,
+                            StmtKind::Let { value, .. }
+                            | StmtKind::MutableLet { value, .. }
+                            | StmtKind::Assign { value, .. }
+                            | StmtKind::Expr(value) => value,
+                        };
+                        Some((value, depth + 1))
+                    }));
+                }
                 ExprKind::Not(inner)
                 | ExprKind::ApplyContract { input: inner, .. }
+                | ExprKind::ApplyStatic { input: inner, .. }
                 | ExprKind::Adjoint { input: inner, .. }
                 | ExprKind::RepeatStatic { input: inner, .. }
                 | ExprKind::CoherentLift { input: inner, .. } => {
@@ -750,8 +1335,11 @@ impl Parser {
                     target: b,
                     ..
                 } => pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]),
-                ExprKind::Call { args, .. } => {
+                ExprKind::Call { args, .. } | ExprKind::Controlled { args, .. } => {
                     pending.extend(args.iter().map(|arg| (arg, depth + 1)));
+                }
+                ExprKind::AccessCall { args, .. } => {
+                    pending.extend(args.iter().map(|arg| (&arg.value, depth + 1)));
                 }
                 ExprKind::If {
                     condition,
@@ -761,74 +1349,135 @@ impl Parser {
                     pending.push((condition, depth + 1));
                     for block in [then_branch, else_branch] {
                         pending.push((&block.result, depth + 1));
-                        pending.extend(block.statements.iter().map(|statement| {
+                        pending.extend(block.statements.iter().filter_map(|statement| {
                             let value = match &statement.kind {
-                                StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                                StmtKind::StaticLet { .. } => return None,
+                                StmtKind::Let { value, .. }
+                                | StmtKind::MutableLet { value, .. }
+                                | StmtKind::Assign { value, .. }
+                                | StmtKind::Expr(value) => value,
                             };
-                            (value, depth + 1)
+                            Some((value, depth + 1))
                         }));
                     }
                 }
-                ExprKind::WithComputed { source, body, .. }
+                ExprKind::StaticIf {
+                    then_branch,
+                    else_branch,
+                    ..
+                } => {
+                    for block in [then_branch, else_branch] {
+                        pending.push((&block.result, depth + 1));
+                        pending.extend(block.statements.iter().filter_map(|s| {
+                            Some((
+                                match &s.kind {
+                                    StmtKind::StaticLet { .. } => return None,
+                                    StmtKind::Let { value, .. }
+                                    | StmtKind::MutableLet { value, .. }
+                                    | StmtKind::Assign { value, .. }
+                                    | StmtKind::Expr(value) => value,
+                                },
+                                depth + 1,
+                            ))
+                        }));
+                    }
+                }
+                ExprKind::StaticFold {
+                    initial: source,
+                    body,
+                    ..
+                }
+                | ExprKind::WithComputed { source, body, .. }
                 | ExprKind::CertifiedComputed { source, body, .. } => {
                     pending.push((source, depth + 1));
                     pending.push((&body.result, depth + 1));
-                    pending.extend(body.statements.iter().map(|statement| {
+                    pending.extend(body.statements.iter().filter_map(|statement| {
                         let value = match &statement.kind {
-                            StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                            StmtKind::StaticLet { .. } => return None,
+                            StmtKind::Let { value, .. }
+                            | StmtKind::MutableLet { value, .. }
+                            | StmtKind::Assign { value, .. }
+                            | StmtKind::Expr(value) => value,
                         };
-                        (value, depth + 1)
+                        Some((value, depth + 1))
                     }));
                 }
-                ExprKind::Name(_) | ExprKind::CBit(_) | ExprKind::Unit => {}
+                ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit => {}
             }
         }
         Ok(maximum)
     }
 
     fn expr_primary(&mut self) -> Result<Expr, ParseError> {
+        // Diagnose the unsupported resource form without reserving the name:
+        // ordinary borrow(q) calls and bindings still use normal resolution.
+        if self.word("borrow")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| matches!(t.kind, TokenKind::Ident(_)))
+        {
+            return Err(self.error(
+                "Qleisli has no builtin `borrow` resource form; for quantum access, use explicit `excl` or `ctrl` arguments. Clean/dirty are independent workspace restoration contracts, not access modes; their general source forms remain unsupported",
+            ));
+        }
+        if self.at(&TokenKind::Pipe)
+            || (self.word("move")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|t| t.kind == TokenKind::Pipe))
+        {
+            return self.unsupported_closure();
+        }
+        let quantum_fold = self.at(&TokenKind::Qfor);
+        if quantum_fold
+            || (self.word("for")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|t| t.kind == TokenKind::Static))
+        {
+            return self.static_fold(quantum_fold);
+        }
+        if self.transformed_application("power") {
+            return self.power_application();
+        }
+        if self.transformed_application("inverse") {
+            return Err(self.error("`inverse(U)(q)` is retired; use `adjoint(U)(q)`"));
+        }
+        if self.transformed_application("adjoint") {
+            let start = self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::RParen)?;
+            self.expect(&TokenKind::LParen)?;
+            let input = Box::new(self.expr()?);
+            let end = self.expect(&TokenKind::RParen)?;
+            return Ok(Expr {
+                kind: ExprKind::Adjoint { operation, input },
+                span: start.span.cover(end.span),
+            });
+        }
+        if self.transformed_application("controlled") {
+            let start = self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::RParen)?;
+            self.expect(&TokenKind::LParen)?;
+            let args = self.expr_args()?;
+            let end = self.expect(&TokenKind::RParen)?;
+            return Ok(Expr {
+                kind: ExprKind::Controlled { operation, args },
+                span: start.span.cover(end.span),
+            });
+        }
+
         if let Some(start) = self.consume(&TokenKind::ApplyContract) {
             return self.apply_contract(start.span);
         }
         if self.at(&TokenKind::Adjoint) || self.at(&TokenKind::RepeatStatic) {
-            let start = self.bump();
-            self.expect(&TokenKind::LParen)?;
-            let count = if start.kind == TokenKind::RepeatStatic {
-                let count = match &self.current().kind {
-                    TokenKind::Zero => 0,
-                    TokenKind::One => 1,
-                    TokenKind::Natural(digits) if !digits.starts_with('0') => digits
-                        .parse::<u16>()
-                        .ok()
-                        .filter(|n| *n <= 4096)
-                        .ok_or_else(|| {
-                            self.error("static repetition exceeds the 4096-count limit")
-                        })?,
-                    _ => return Err(self.error("expected canonical static natural number")),
-                };
-                self.bump();
-                self.expect(&TokenKind::Comma)?;
-                Some(count)
-            } else {
-                None
-            };
-            let function = self.ident()?;
-            self.expect(&TokenKind::Comma)?;
-            let input = Box::new(self.expr()?);
-            let end = self.expect(&TokenKind::RParen)?;
-            let kind = if let Some(count) = count {
-                ExprKind::RepeatStatic {
-                    count,
-                    function,
-                    input,
-                }
-            } else {
-                ExprKind::Adjoint { function, input }
-            };
-            return Ok(Expr {
-                kind,
-                span: start.span.cover(end.span),
-            });
+            return Err(self.retired_operation_syntax());
         }
         if let Some(start) = self.consume(&TokenKind::Qif) {
             return self.quantum_if(start);
@@ -836,13 +1485,117 @@ impl Parser {
         if let Some(if_token) = self.consume(&TokenKind::If) {
             return self.classical_if(if_token);
         }
-        if let Some(do_token) = self.consume(&TokenKind::Do) {
-            return self.coherent_lift(do_token);
+        if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
+            return Err(self.retired_coherent_syntax());
+        }
+        if let Some(basis_token) = self.consume(&TokenKind::Basis) {
+            return self.coherent_lift(basis_token);
         }
         if let Some(with_token) = self.consume(&TokenKind::WithComputed) {
             return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    fn unsupported_closure(&mut self) -> Result<Expr, ParseError> {
+        let start = self.current().span;
+        if self.word("move") {
+            self.bump();
+        }
+        self.expect(&TokenKind::Pipe)?;
+        let mut parameters = Vec::new();
+        if !self.at(&TokenKind::Pipe) {
+            loop {
+                parameters.push(self.pattern()?);
+                if self.consume(&TokenKind::Colon).is_some() {
+                    // Bounded syntax only: rejected closures acquire no type
+                    // facts from their own parameter or return annotations.
+                    self.ty()?;
+                }
+                self.tuple_arity(parameters.len())?;
+                if self.consume(&TokenKind::Comma).is_none() || self.at(&TokenKind::Pipe) {
+                    break;
+                }
+            }
+        }
+        self.expect(&TokenKind::Pipe)?;
+        if self.consume(&TokenKind::Arrow).is_some() {
+            self.ty()?;
+            if !self.at(&TokenKind::LBrace) {
+                return Err(self.error("a closure return annotation requires a block"));
+            }
+        }
+        let body = if self.at(&TokenKind::LBrace) {
+            self.block()?
+        } else {
+            let result = self.expr()?;
+            Block {
+                span: result.span,
+                implicit_result: false,
+                statements: vec![],
+                result: Box::new(result),
+            }
+        };
+        Ok(Expr {
+            span: start.cover(body.span),
+            kind: ExprKind::UnsupportedClosure(Box::new(UnsupportedClosure { parameters, body })),
+        })
+    }
+
+    fn retired_operation_syntax(&self) -> ParseError {
+        let message = match self.current().kind {
+            TokenKind::Adjoint => "`adjoint(U, q)` is retired; use `adjoint(U)(q)`",
+            TokenKind::InverseOp => "`inverse_op(U)` is retired; use `adjoint(U)`",
+            TokenKind::ControlledOp => "`controlled_op(U)` is retired; use `controlled(U)`",
+            TokenKind::RepeatOp => "`repeat_op(k, U)` is retired; use `power(U, k)`",
+            TokenKind::RepeatStatic => "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
+            _ => unreachable!("only retired operation tokens call this diagnostic"),
+        };
+        self.error(message)
+    }
+
+    // Keep operation-construction temporaries out of every recursive dispatch
+    // frame, including ordinary parentheses that never use this syntax.
+    #[inline(never)]
+    fn power_application(&mut self) -> Result<Expr, ParseError> {
+        let operation = self.static_op()?;
+        self.expect(&TokenKind::LParen)?;
+        let input = Box::new(self.expr()?);
+        let end = self.expect(&TokenKind::RParen)?;
+        let span = operation.span.cover(end.span);
+        Ok(Expr {
+            kind: ExprKind::ApplyStatic { operation, input },
+            span,
+        })
+    }
+
+    // Keep fold temporaries out of every recursive expression dispatch frame.
+    #[inline(never)]
+    fn static_fold(&mut self, quantum_fold: bool) -> Result<Expr, ParseError> {
+        let open = self.bump();
+        self.expect(&TokenKind::Static)?;
+        let index = self.natural_ident()?;
+        self.expect_word("in")?;
+        let start = self.natural()?;
+        self.expect(&TokenKind::DotDot)?;
+        let end = self.natural()?;
+        self.expect_word("carry")?;
+        let carry = self.pattern()?;
+        self.expect(&TokenKind::Equals)?;
+        let initial = Box::new(self.expr()?);
+        let body = self.block_mode(true)?;
+        Ok(Expr {
+            span: open.span.cover(body.span),
+            kind: ExprKind::StaticFold {
+                quantum: quantum_fold,
+                index,
+                start,
+                end,
+                carry,
+                initial,
+                body,
+            },
+        })
     }
 
     fn quantum_if(&mut self, start: Token) -> Result<Expr, ParseError> {
@@ -872,6 +1625,20 @@ impl Parser {
     }
 
     fn classical_if(&mut self, if_token: Token) -> Result<Expr, ParseError> {
+        if self.consume(&TokenKind::Static).is_some() {
+            let predicate = self.predicate()?;
+            let then_branch = self.block()?;
+            self.expect(&TokenKind::Else)?;
+            let else_branch = self.block()?;
+            return Ok(Expr {
+                span: Span::new(if_token.span.start, else_branch.span.end),
+                kind: ExprKind::StaticIf {
+                    predicate,
+                    then_branch,
+                    else_branch,
+                },
+            });
+        }
         let condition = self.expr()?;
         let then_branch = self.block()?;
         self.expect(&TokenKind::Else)?;
@@ -887,14 +1654,12 @@ impl Parser {
         })
     }
 
-    fn coherent_lift(&mut self, do_token: Token) -> Result<Expr, ParseError> {
-        let binder = self.pattern()?;
-        self.expect(&TokenKind::LeftArrow)?;
+    fn coherent_lift(&mut self, basis_token: Token) -> Result<Expr, ParseError> {
         let input = self.expr()?;
-        self.expect(&TokenKind::Semicolon)?;
-        self.expect(&TokenKind::Pure)?;
-        let basis = self.basis_expr()?;
-        let span = Span::new(do_token.span.start, basis.span.end);
+        self.expect_word("as")?;
+        let binder = self.pattern()?;
+        let (basis, body_span) = self.basis_block()?;
+        let span = basis_token.span.cover(body_span);
         Ok(Expr {
             kind: ExprKind::CoherentLift {
                 binder,
@@ -903,6 +1668,12 @@ impl Parser {
             },
             span,
         })
+    }
+
+    fn retired_coherent_syntax(&self) -> ParseError {
+        self.error(
+            "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+        )
     }
 
     fn with_computed(&mut self, with_token: Token) -> Result<Expr, ParseError> {
@@ -966,17 +1737,26 @@ impl Parser {
         })
     }
 
+    /// One literal classification for ordinary and basis Bit expressions.
+    /// Explicit natural positions use their own bounded Nat parser.
+    fn bit_literal(&mut self) -> Result<Option<(bool, Span)>, ParseError> {
+        let value = match self.current().kind {
+            TokenKind::Zero => false,
+            TokenKind::One => true,
+            TokenKind::True | TokenKind::False => {
+                return Err(self.error("true/false literals were removed; use 1/0 for Bit"));
+            }
+            TokenKind::Natural(_) => return Err(self.error("Bit literals must be 0 or 1")),
+            _ => return Ok(None),
+        };
+        Ok(Some((value, self.bump().span)))
+    }
+
     fn expr_atom(&mut self) -> Result<Expr, ParseError> {
-        if let Some(token) = self.consume(&TokenKind::True) {
+        if let Some((value, span)) = self.bit_literal()? {
             return Ok(Expr {
-                kind: ExprKind::CBit(true),
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::False) {
-            return Ok(Expr {
-                kind: ExprKind::CBit(false),
-                span: token.span,
+                kind: ExprKind::Bit(value),
+                span,
             });
         }
         if let TokenKind::Ident(_) = self.current().kind {
@@ -1014,20 +1794,101 @@ impl Parser {
 
     fn named_expr(&mut self) -> Result<Expr, ParseError> {
         let ident = self.ident()?;
+        // Explain already-invalid early-return syntax without reserving the
+        // ordinary identifier or turning an ordinary return(q) call into exit.
+        if ident.text == "return"
+            && matches!(
+                self.current().kind,
+                TokenKind::Ident(_)
+                    | TokenKind::Zero
+                    | TokenKind::One
+                    | TokenKind::True
+                    | TokenKind::False
+                    | TokenKind::Natural(_)
+                    | TokenKind::If
+                    | TokenKind::Qif
+                    | TokenKind::Qfor
+                    | TokenKind::Basis
+                    | TokenKind::WithComputed
+                    | TokenKind::Not
+            )
+        {
+            return Err(ParseError {
+                message: "early `return` is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
+                span: ident.span,
+            });
+        }
         let mut static_args = Vec::new();
+        let mut end = ident.span;
         if self.consume(&TokenKind::LBracket).is_some() {
-            loop {
-                static_args.push(self.static_op()?);
-                if self.consume(&TokenKind::Comma).is_none() {
-                    break;
-                }
-            }
-            self.expect(&TokenKind::RBracket)?;
-            if !self.at(&TokenKind::LParen) {
+            static_args = self.static_arguments()?;
+            end = self.tokens[self.pos - 1].span;
+            if !static_args.is_empty() && !self.at(&TokenKind::LParen) {
                 return Err(self.error("static arguments require a call"));
             }
         }
         if self.consume(&TokenKind::LParen).is_some() {
+            if matches!(&self.current().kind, TokenKind::Ident(name) if name == "excl" || name == "ctrl")
+                && matches!(
+                    self.tokens.get(self.pos + 1).map(|token| &token.kind),
+                    Some(TokenKind::Ident(_))
+                )
+            {
+                let mut args = Vec::new();
+                loop {
+                    let marker = self.ident()?;
+                    let access = match marker.text.as_str() {
+                        "excl" => QuantumAccess::Excl,
+                        "ctrl" => QuantumAccess::Ctrl,
+                        _ => {
+                            return Err(
+                                self.error("each quantum access argument requires excl or ctrl")
+                            );
+                        }
+                    };
+                    let name = self.ident()?;
+                    let selection = if self.consume(&TokenKind::LBracket).is_some() {
+                        let start = self.natural()?;
+                        let selection = if self.consume(&TokenKind::DotDot).is_some() {
+                            AxisSelection::Range {
+                                start,
+                                end: self.natural()?,
+                            }
+                        } else {
+                            AxisSelection::Index(start)
+                        };
+                        self.expect(&TokenKind::RBracket)?;
+                        Some(selection)
+                    } else {
+                        None
+                    };
+                    let span = marker.span.cover(self.tokens[self.pos - 1].span);
+                    args.push(AccessArgument {
+                        access,
+                        selection,
+                        value: Expr {
+                            kind: ExprKind::Name(name),
+                            span,
+                        },
+                    });
+                    if args.len() > 64 {
+                        return Err(self.error("quantum access call exceeds 64 arguments"));
+                    }
+                    if self.consume(&TokenKind::Comma).is_none() {
+                        break;
+                    }
+                }
+                let close = self.expect(&TokenKind::RParen)?;
+                let span = ident.span.cover(close.span);
+                return Ok(Expr {
+                    kind: ExprKind::AccessCall {
+                        callee: ident,
+                        static_args,
+                        args,
+                    },
+                    span,
+                });
+            }
             let args = self.expr_args()?;
             let close = self.expect(&TokenKind::RParen)?;
             let span = ident.span.cover(close.span);
@@ -1041,7 +1902,7 @@ impl Parser {
             });
         }
         Ok(Expr {
-            span: ident.span,
+            span: ident.span.cover(end),
             kind: ExprKind::Name(ident),
         })
     }
@@ -1150,6 +2011,9 @@ impl Parser {
     }
 
     fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
+        if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
+            return Err(self.retired_coherent_syntax());
+        }
         if matches!(self.current().kind, TokenKind::Natural(_)) {
             return Err(self.error("Bit literal must be 0 or 1"));
         }
@@ -1179,16 +2043,10 @@ impl Parser {
                 kind: BasisExprKind::Name(ident),
             });
         }
-        if let Some(token) = self.consume(&TokenKind::Zero) {
+        if let Some((value, span)) = self.bit_literal()? {
             return Ok(BasisExpr {
-                kind: BasisExprKind::Bit(false),
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::One) {
-            return Ok(BasisExpr {
-                kind: BasisExprKind::Bit(true),
-                span: token.span,
+                kind: BasisExprKind::Bit(value),
+                span,
             });
         }
         let open = self.expect(&TokenKind::LParen)?;
@@ -1219,6 +2077,31 @@ impl Parser {
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);
         Ok(left)
+    }
+
+    // Type words retain their lexer classification and meaning in type/runtime
+    // syntax. Only a static-natural grammar position treats them as names.
+    fn natural_name(kind: &TokenKind) -> Option<&str> {
+        match kind {
+            TokenKind::Ident(name) => Some(name),
+            TokenKind::Q => Some("Q"),
+            TokenKind::Op => Some("Op"),
+            TokenKind::Unit => Some("Unit"),
+            TokenKind::Bit => Some("Bit"),
+            TokenKind::CBit => Some("CBit"),
+            _ => None,
+        }
+    }
+
+    fn natural_ident(&mut self) -> Result<Ident, ParseError> {
+        match Self::natural_name(&self.current().kind) {
+            Some(name) if name != "_" => {
+                let text = name.to_owned();
+                let span = self.bump().span;
+                Ok(Ident { text, span })
+            }
+            _ => Err(self.error("expected an identifier")),
+        }
     }
 
     fn ident(&mut self) -> Result<Ident, ParseError> {
@@ -1270,3 +2153,6 @@ impl Parser {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

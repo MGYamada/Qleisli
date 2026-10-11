@@ -3,7 +3,7 @@ import Qleisli.Semantics.RawInstrument
 
 /-! Independent coefficient instrument semantics for arbitrary finite frames.
 No global matrix, executable checker, budget or receipt is part of this model.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.ObservingAction
 open QleisliKernel.Semantics.Observation QleisliKernel.Semantics.Finite
 

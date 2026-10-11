@@ -2,7 +2,7 @@ import QleisliKernel.Raw.Protected
 import Qleisli.Semantics.Protected
 
 /-! Non-dense exact clean release from actual executable protected dispatch.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw
 open QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite
 open QleisliKernel.Raw Qleisli.Semantics.Protected

@@ -10,7 +10,7 @@ use std::quantum::h;
 use std::quantum::t;
 use std::observe::measure_z;
 use kernel::teleport;
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let (message, bob) = teleport(t(h(init0())));
     (message, measure_z(h(bob)))
 }

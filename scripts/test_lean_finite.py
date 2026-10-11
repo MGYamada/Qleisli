@@ -2,7 +2,7 @@
 """VM-24 native finite reconstruction, original bytes and independent meanings.
 
 Neither executable receives the other's result. Rust remains production authority.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

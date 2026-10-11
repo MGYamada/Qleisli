@@ -1,0 +1,30 @@
+fn check(s:&str,check_sized:bool){
+ let a=format!("{:?}",frontend::old::lex_documented(s));
+ let b=format!("{:?}",frontend::new::lex_documented(s));
+ assert_eq!(a,b,"finite source {s:?}");
+ if check_sized {
+ let a=format!("{:?}",frontend::sized_old::tokens(s));
+ let b=format!("{:?}",frontend::sized_new::tokens(s));
+ assert_eq!(a,b,"sized source {s:?}");
+ }
+}
+fn main(){
+ let alphabet=["a","_","0","1",":","-",">","<","=",".","!","/","*","|"," ","\n"];
+ let mut checked=0usize;
+ for a in alphabet {for b in alphabet {for c in alphabet {for d in alphabet {
+  check(&format!("{a}{b}{c}{d}"),true);checked+=1;
+ }}}}
+ let fragments=["pub","fn","Q","Bit","Bits","000","01","2","_a","::","->","==>","<->","!=","..","[]","{}",",",";",":","^","+","*","|"," ","\t","\r\n","// λ\r\n","/*日本語*/","/**x*/","/*!x*/","///x\n","//!x\n","/**/","/***/","/* /*λ*/ */","/*","*/","λ","\u{200b}","\u{feff}"];
+ let mut seed=0x0123456789abcdefu64;
+ for _ in 0..100_000 {
+   let mut s=String::new();
+   for _ in 0..12 {seed^=seed<<13;seed^=seed>>7;seed^=seed<<17;s.push_str(fragments[seed as usize%fragments.len()]);}
+   check(&s,true); checked+=1;
+ }
+ for bad in ['\r','\u{b}','\u{c}','\0','\u{202e}','\u{2028}','\u{0085}','\u{00a0}'] {
+  for (a,b) in [("",""),("//","\n"),("/*","*/"),("/*!","*/"),("/** ","*/")] {
+    check(&format!("//日本語\r\n{a}{bad}x{b} fn"),false);checked+=1;
+  }
+ }
+ println!("PASS: {checked} finite old/new comparisons; 165536 sized old/new comparisons on inputs without the intentionally tightened character policy");
+}

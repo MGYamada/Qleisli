@@ -1,0 +1,287 @@
+{
+  "started_utc": "2026-10-08T13:34:19.599896+00:00",
+  "old_compiler_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f",
+  "new_compiler_sha256": "2e376d128f1a5eb534e9feb318a0cfd949b2b35010e022595f7dfa58a1d20180",
+  "scope": "Dirty working-tree migration comparison; not exact-commit CI, a semantic proof or a guarantee admission.",
+  "results": [
+    {
+      "project": "quantum_katas/qpe3",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "ebbc81a8d4bcdd45f50b24ba936556f5fc98345ed3e68e839a75adea3a3fdaed",
+      "new_artifact_sha256": "ebbc81a8d4bcdd45f50b24ba936556f5fc98345ed3e68e839a75adea3a3fdaed",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "qualtran/qpe2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "f29911174fcde33b55d13b2a3f0109a682fc519604e73b095ae5313cde4aafad",
+      "new_artifact_sha256": "f29911174fcde33b55d13b2a3f0109a682fc519604e73b095ae5313cde4aafad",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qubit_rotation",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "f98e744e5d8aaf3d88c2d58053dfac5d0ccb020cbb6541c89c95c07cfa7e4687",
+      "new_artifact_sha256": "f98e744e5d8aaf3d88c2d58053dfac5d0ccb020cbb6541c89c95c07cfa7e4687",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_vertex_cover",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "99f1633a3d92bfe8e8c2b1c110a1357b79f1268ca185508cc8b300156d243435",
+      "new_artifact_sha256": "99f1633a3d92bfe8e8c2b1c110a1357b79f1268ca185508cc8b300156d243435",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_maxcut",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "009fd2ddae60c70fee005614b5b7e6149284030a963e4e151dfe46f41edbd008",
+      "new_artifact_sha256": "009fd2ddae60c70fee005614b5b7e6149284030a963e4e151dfe46f41edbd008",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qpe3",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "c5bffc4a322f72e3d254b8255797b4f58075c358f9fbde9f491bdf39adaf8cb2",
+      "new_artifact_sha256": "c5bffc4a322f72e3d254b8255797b4f58075c358f9fbde9f491bdf39adaf8cb2",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/kernel_overlap2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "3936ccfe75bfef3ca122624db573f86d56bbdac0c84fab0f6e3b2f485d38fe8a",
+      "new_artifact_sha256": "3936ccfe75bfef3ca122624db573f86d56bbdac0c84fab0f6e3b2f485d38fe8a",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/ising_zz_quarter2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "538e99145020031d19fb4fb0238ed40b2a63d36e69f61370b3d10782fbab9842",
+      "new_artifact_sha256": "538e99145020031d19fb4fb0238ed40b2a63d36e69f61370b3d10782fbab9842",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rx_negative_quarter",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "90a733d3b5bdafa502d5206c6cb62e5a8ff3e3b516f5cb624f0cf5f1c073dfc1",
+      "new_artifact_sha256": "90a733d3b5bdafa502d5206c6cb62e5a8ff3e3b516f5cb624f0cf5f1c073dfc1",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rotation_mixed_sign",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "0d80ae0338e11ea1b80a659717ca4f9498185c40c2abb7aa9b736ebf83c24983",
+      "new_artifact_sha256": "0d80ae0338e11ea1b80a659717ca4f9498185c40c2abb7aa9b736ebf83c24983",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_mixer2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "350c5735111597f19cd2d49784d54f93d162735dce8861d814cea11d56419d2e",
+      "new_artifact_sha256": "350c5735111597f19cd2d49784d54f93d162735dce8861d814cea11d56419d2e",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rotation_half_y",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "29d77fcc2606d7b05ad89e57eb2035cc53af1b8faadd3e2c3e701d8213042100",
+      "new_artifact_sha256": "29d77fcc2606d7b05ad89e57eb2035cc53af1b8faadd3e2c3e701d8213042100",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/ising_zz_negative2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+      "new_artifact_sha256": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rotation_half_x",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "5426b9ddcf50afc9cb518873dd47349553e68ab4feef757d946e932f612c6f30",
+      "new_artifact_sha256": "5426b9ddcf50afc9cb518873dd47349553e68ab4feef757d946e932f612c6f30",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/ising_zz_half2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "dbab7964926a2c73a51fbd5f83b9a7074b7435de88f5d11d95c80bc8bbe03c6a",
+      "new_artifact_sha256": "dbab7964926a2c73a51fbd5f83b9a7074b7435de88f5d11d95c80bc8bbe03c6a",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_edge_layer2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "8f7fcb8892f32420d78be892d727f4d1857f4d5d4509fc8d0785be0ba4014b78",
+      "new_artifact_sha256": "8f7fcb8892f32420d78be892d727f4d1857f4d5d4509fc8d0785be0ba4014b78",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rotation_negative_x_positive_y",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "b027d4076f2ea5f7f1abbe615a4f3cda4f3917c0fcf0459760271c4397cd121c",
+      "new_artifact_sha256": "b027d4076f2ea5f7f1abbe615a4f3cda4f3917c0fcf0459760271c4397cd121c",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_negative_mixer2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "f22d9d9e2fe374adc65bcd2d3cdc065cc8c3600c9dfd183328a5cbec79e67a35",
+      "new_artifact_sha256": "f22d9d9e2fe374adc65bcd2d3cdc065cc8c3600c9dfd183328a5cbec79e67a35",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_path_layer3",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "e4695323ada9e2e739b784f5db218830b9b30f777d9cfcf77716fd8eb8b01a92",
+      "new_artifact_sha256": "e4695323ada9e2e739b784f5db218830b9b30f777d9cfcf77716fd8eb8b01a92",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/rotation_both_negative",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "8574d72de2b0083ca957531d8bc95ebabee4641662cf407b8148141f8c2a67db",
+      "new_artifact_sha256": "8574d72de2b0083ca957531d8bc95ebabee4641662cf407b8148141f8c2a67db",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_path_cost3",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "73861bd9bc5453e1c90472b088fc82003fd4553f428a66d0641514dba1e60a84",
+      "new_artifact_sha256": "73861bd9bc5453e1c90472b088fc82003fd4553f428a66d0641514dba1e60a84",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "pennylane_demos/qaoa_negative_edge_layer2",
+      "selection": "migration",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "b1bc8077fc5b492a4ea422cae657111666dcfea2f5faafd1d590aeaca7dc4afe",
+      "new_artifact_sha256": "b1bc8077fc5b492a4ea422cae657111666dcfea2f5faafd1d590aeaca7dc4afe",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "1af7b824ed01324ed7f53e739cb1ce56203cdd9a69bbe436d53445cab72e63fc",
+      "new_artifact_sha256": "1af7b824ed01324ed7f53e739cb1ce56203cdd9a69bbe436d53445cab72e63fc",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "b565b9b3e286f25328afcd81b7fa93192a8ccc2e20c537bc4288225567c368cd",
+      "new_artifact_sha256": "b565b9b3e286f25328afcd81b7fa93192a8ccc2e20c537bc4288225567c368cd",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "34f7f8601c4ebb533a109abe50585a4d5f6c0cc10aa2677c4c316f2b9caddb86",
+      "new_artifact_sha256": "34f7f8601c4ebb533a109abe50585a4d5f6c0cc10aa2677c4c316f2b9caddb86",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "19212274b22b78c2b5aae2eeed6a2b16d5b031ac19759cac257e4a2db8ab21e0",
+      "new_artifact_sha256": "19212274b22b78c2b5aae2eeed6a2b16d5b031ac19759cac257e4a2db8ab21e0",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "64a2b410bd16390244c591c03a78e21053a6d9bc8e9bd0912137127dc792e940",
+      "new_artifact_sha256": "64a2b410bd16390244c591c03a78e21053a6d9bc8e9bd0912137127dc792e940",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "bff303d92e7994fe686ad7dcbbd876488207b03aef7feb74dfccd72eaca48e12",
+      "new_artifact_sha256": "bff303d92e7994fe686ad7dcbbd876488207b03aef7feb74dfccd72eaca48e12",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "a2b71115dd84b50021822f68ac56635260f20720f94b2f08003dda36ea9442f7",
+      "new_artifact_sha256": "a2b71115dd84b50021822f68ac56635260f20720f94b2f08003dda36ea9442f7",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "03d4814ccfa61f51c8f8205dc789006bf1efc3ba36b88ebddb2c5ab49b8e40c5",
+      "new_artifact_sha256": "03d4814ccfa61f51c8f8205dc789006bf1efc3ba36b88ebddb2c5ab49b8e40c5",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "bc455bd036802f047d9327e6791a44e4070752cd5e412928e870a6dfc564ba85",
+      "new_artifact_sha256": "bc455bd036802f047d9327e6791a44e4070752cd5e412928e870a6dfc564ba85",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "205e50b9a81ffa1cbbf5b5e4e2fa8f5350a0e3b38b421d76716980d83610e661",
+      "new_artifact_sha256": "205e50b9a81ffa1cbbf5b5e4e2fa8f5350a0e3b38b421d76716980d83610e661",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "e2fac5842753837afe54f588586f5ace040b02a3dfb292d80b8e41f4b5514252",
+      "new_artifact_sha256": "e2fac5842753837afe54f588586f5ace040b02a3dfb292d80b8e41f4b5514252",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "selection": "counterexamples",
+      "new_check_exit_code": 0,
+      "old_artifact_sha256": "8f7fcb8892f32420d78be892d727f4d1857f4d5d4509fc8d0785be0ba4014b78",
+      "new_artifact_sha256": "8f7fcb8892f32420d78be892d727f4d1857f4d5d4509fc8d0785be0ba4014b78",
+      "identical_original_artifact": true
+    },
+    {
+      "project": "negative/measurement_adjoint",
+      "selection": "counterexamples",
+      "new_check_exit_code": 1
+    }
+  ],
+  "cli_calls": 103,
+  "completed_utc": "2026-10-08T13:35:26.051222+00:00"
+}

@@ -1,0 +1,213 @@
+{
+  "format": "qleisli.functional-boundary-integration-validation",
+  "version": 1,
+  "issue": 80,
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668",
+  "source_baseline_commit": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "commands": {
+    "authoring-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/authoring-01.json",
+      "sha256": "f57fbeccecb518788bd97f7ea3ce7a77109f13157eec8206ef6e3532d4088e8e",
+      "exit_code": 0
+    },
+    "book-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-01.json",
+      "sha256": "ffa0d5510366a674296b3aba65715c3b2c504fd2324b0e476b5ac7d9f7c31a74",
+      "exit_code": 0
+    },
+    "book-final-02": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-final-02.json",
+      "sha256": "b26461db7b84c734924f1e61171be677da0acfbdaf49a24c618218a5242bedcd",
+      "exit_code": 0
+    },
+    "book-links-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-01.json",
+      "sha256": "454871016ee5c8b4e491510cb364171a50750a7b84246318a4df1e6dc86b28ce",
+      "exit_code": 0
+    },
+    "book-links-final-02": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-final-02.json",
+      "sha256": "549ffb7edf91896ad32d0a70a140cd4f7c707ec54264ddb427c1098579e2b081",
+      "exit_code": 0
+    },
+    "clippy-latest-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-latest-01.json",
+      "sha256": "f20b55c904e32f73fa1f073e9f6e1c591e529865375bdd051c03bfb9029fca14",
+      "exit_code": 0
+    },
+    "clippy-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-msrv-01.json",
+      "sha256": "36ff37ea80d9ceb484bd108f0e21f1dfbaa6aa4b89a498de65ff6386e585b41f",
+      "exit_code": 0
+    },
+    "continuity-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/continuity-01.json",
+      "sha256": "43b8dedb9c0d0da2529d3c1eb6bb009218b5766dd6eaea974e9f634412a6b0e8",
+      "exit_code": 0
+    },
+    "coverage-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/coverage-01.json",
+      "sha256": "9bead5d7fb08b1dde0d1f93dd5c0c78840bb5c253630938700da289d11eec3b3",
+      "exit_code": 0
+    },
+    "docs-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.json",
+      "sha256": "e964c1936f4c27c9a963093bcf68e093c2a23df0e7cbd26a9e3abd5761b839c9",
+      "exit_code": 0
+    },
+    "editions-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-01.json",
+      "sha256": "2bc7674af6e21682a7b426c12cf5a8bb51950fe7cf40c23c8fee4f18d04dd4b9",
+      "exit_code": 0
+    },
+    "editions-02": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-02.json",
+      "sha256": "daec3945b24714c99b999afec40f11a482dac15fb5544dde1de793f8ac0ef465",
+      "exit_code": 0
+    },
+    "fmt-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/fmt-01.json",
+      "sha256": "0ab5dda0ba27093917965cd04067406c49c7b020647e218e99883caede9e6fb2",
+      "exit_code": 0
+    },
+    "inventory-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/inventory-01.json",
+      "sha256": "d61596f23268800f87ad304d484fb673367d885a7af0e549c73e2adaa53a190e",
+      "exit_code": 0
+    },
+    "rust-latest-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-latest-01.json",
+      "sha256": "0d28fb87349eefc931412ff12bec28674732bb5cafd9f05813ba13fdd96ea694",
+      "exit_code": 0
+    },
+    "rust-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.json",
+      "sha256": "252fbdc8d27ccc6be70fb849756bb84f2d5fb55907f9bac66ea189eeee119cca",
+      "exit_code": 0
+    },
+    "sized-latest-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-01.json",
+      "sha256": "58a6d14faa6b27145c12d350017fcf3c1b8674ddcdac9b23e718c71b1e2f2e90",
+      "exit_code": 0
+    },
+    "sized-latest-02": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-02.json",
+      "sha256": "b85a14bae50fa285281bfe830bc9f982ab54d044ff16daaa181f9e659909d251",
+      "exit_code": 0
+    },
+    "sized-latest-03": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-03.json",
+      "sha256": "c6cde53493c94c2895a613d1af197fdbf899281d3a9b19654ac92282895e7683",
+      "exit_code": 0
+    },
+    "sized-latest-04": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-04.json",
+      "sha256": "a3bce725b5bc4da121919245a3d3ecc0acdbe26f9a1d7012d9ea28436fb1aa4b",
+      "exit_code": 0
+    },
+    "sized-msrv-01": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-01.json",
+      "sha256": "12b56a6f0f1654c0fb276eab2a4c5be5ef66eac56e8d821be9b867eae38945f2",
+      "exit_code": 0
+    },
+    "sized-msrv-02": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-02.json",
+      "sha256": "b97a8e1f70fedcf87a361c499779946a11caf6640d351f6ff5253b14de24686f",
+      "exit_code": 0
+    },
+    "sized-msrv-03": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.json",
+      "sha256": "a0b45a75931004a7cd1ec242ed406ee9753db3fac5860e86c40d826e7fcd6b14",
+      "exit_code": 0
+    },
+    "sized-msrv-04": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-04.json",
+      "sha256": "26d09cf0f726dc5856245244f313861048e9f86d258a3acbeab1d479f2c0e43f",
+      "exit_code": 0
+    }
+  },
+  "records": [
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/criterion-map-01.json",
+      "sha256": "471735cc937a41bb1f82adc68f7a92e0ce9d9fbc2865173a408cd5d59665e2df"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/reference-review-01.json",
+      "sha256": "65269a46da2a41e473abaae871ac587802b024ea2e1e04adeccfc913c5b4c6d0"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/reference-review-repair-01.json",
+      "sha256": "f4cbd774d4e2882c3132f6865a1d0a1ae5f3c37aeb9cee40acd862e55da312a7"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/prepared-test-plan-01.json",
+      "sha256": "9fe575991216718e68a06dd56193378f2325d59578e9cb61fd868157e4af48d9"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/prepared-active-02.json",
+      "sha256": "e6351389d6ac5bf1252498b29e829ec195f7bab3839daa86b55830b119a86939"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/observed-inputs-01.json",
+      "sha256": "0b48389509c4ec6cf188924b0a171adc5510dc842c19886a6cd269c3154bcd49"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/observed-inputs-02.json",
+      "sha256": "5a1e87c8083c5a5d5fc1aea69f0dcac32eaf7e20126ad56a1e8c2a923c6930f8"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/hosted-predecessor-01/review-01.json",
+      "sha256": "ba5ff24ab416e7da7e5113dfb9f29f7f0c5551c402f338eafbd3212152bf2841"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/functional-boundary-v030/session.json",
+      "sha256": "b77116db8f22354bf7c8abfe057b200d5e26e45b33d315454a172002189cd924"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/functional-boundary-v030/assessment.json",
+      "sha256": "706246675e3900f29923777a3dbcc4410f85201e54b8f255037570d2bab114da"
+    }
+  ],
+  "counts": {
+    "latest": {
+      "unique_tests_passed": 47,
+      "failed": 0,
+      "ignored_within_selected_runs": 0,
+      "scope": "Four integration targets plus four named sized-source controls. This does not run other sized/QFT/native-only or capacity stress tests."
+    },
+    "msrv": {
+      "unique_tests_passed": 47,
+      "failed": 0,
+      "ignored_within_selected_runs": 0,
+      "scope": "Four integration targets plus four named sized-source controls. This does not run other sized/QFT/native-only or capacity stress tests."
+    }
+  },
+  "source_study": {
+    "initial_complete_projects": 10,
+    "append_only_wrapper_repairs": 2,
+    "actual_cli_commands": 44,
+    "successful_commands": 9,
+    "nonzero_commands": 35,
+    "observer_usage_errors_retained": 12,
+    "earlier_primitive_provider_refusals": "Two first finite and two corrected-adapter refusals; they did not reach the intended ownership/reuse controls.",
+    "selected_concrete_limits": "Two runtime-if controls and repaired then_op projection retain existing unsupported refusals.",
+    "matched_small_runs": [
+      "complete call1",
+      "ordinary Bit branch1",
+      "explicit observation0",
+      "repaired XX reuse00"
+    ],
+    "phase_scope": "Actual finite exact X squared=+identity receipt and separate Bell X-readout control are in the new Rust target, not inferred from source-study histograms."
+  },
+  "book": {
+    "version": "0.5.4",
+    "binary_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+    "html_files": 27,
+    "local_links": 1104,
+    "anchors": 412,
+    "print_checked": true
+  },
+  "integration_state": "Local boundary contract/conformance validated; commit/push and Issue completion remain separate recorded actions. Full hosted CI currently belongs to source baseline5bcc, not this later working tree.",
+  "scope": "No production input change across114 sealed #82 build inputs. Three new small conformance tests plus unified Reference/evidence; original14boundary criteria unchanged. No new feature-child completion, Lean build/audit/replay, universal source preservation, quantitativeRS theorem, interpretation/guarantee admission, full same-commit CI/package/install/bundle or release claim. Both scoped QLV1 guarantees and broaderQS/PR/RS/EXACT pending duties remain. External qargo/qlippy diagnostics omitted by explicit human authorization; actual Qleisli diagnostics and Cargo Clippy checked. QFT/new maximum cases excluded."
+}

@@ -1,0 +1,44 @@
+{
+  "format": "qleisli.native-contract-wrapper-proof-evidence",
+  "version": 1,
+  "status": "checked-proof-unit-not-guarantee-admission",
+  "baseline_commit": "44e23e4d0a6302eff17f3b39c42b735fcee7583d",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "production_files": {
+    "lean/Qleisli/NativeContractWrapper.lean": "f34ae8f366332ca48b6376a9f1f46d1beae52aac316ce79b1d496647aa75ecbb",
+    "lean/Qleisli/NativeContract.lean": "132bc5b71db33ad8b11f20344808d966e7f7a281fc140654cbea772c57a3f3cc",
+    "lean-kernel/QleisliKernel/Qirf/Contract.lean": "22d62557d3b0eb0a196cee06c5a83950fd5bdf73c272395381ccbe285d310728"
+  },
+  "files": {
+    "tests/fixtures/constitution_v030/native-contract-wrapper/Examples.lean": "6ffe287da575db90b69a688fdc06b27fc7b22f92474cc6018adc22fd1bf092b7",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/README.md": "468ccee578620f1344d9c92a16a798c8810a2632b41a7923ae9a68b2dc3ab734",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean": "10f8580f5318c1b6c29497bf9f9ff2fe8c24210bc40dc65cee2000e935303b8a",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/attempts/concrete-kernel-reduction.lean.txt": "bac2ed85400a0e26ae1cecae9d75f6320be8ceab7dc4a5ba54f0450c16a198bd",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/attempts/diagnostic.txt": "0915c861d4679cb0ae1ec200532d981669ec25f2c55e558840989b1a0a1d8109",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/build-command.json": "439eba88cf65b033dc9a6d3f0e6eacdd51d7a25200e86aced37dddb46beecf11",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/build.stdout.txt": "0b7ee3b14d89c2e0212551ceceee2f4c6cced9e0afb85f5e45c9e2d939b60877",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/examples-command.json": "7e54d90ad2a8e9523988791457617ce3cdcf523367c76bc3f6c8b3b84b2bb130",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/examples.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/examples.stdout.txt": "2144c251eb39275041aa1f1833e9a950aa6d5c3f724853d6f8064c160f41a0ab",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/review-command.json": "113f1efc10a1a2bd9845e3009d2d6a84a572c91b3e2a57bf5c9d6a0502a593d0",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/review-types.stdout.txt": "12d51d5154cb23d9efadbea44dec5f33c18629dbfc6dc322ae5fe11711681aca",
+    "tests/fixtures/constitution_v030/native-contract-wrapper/source-comparison.json": "1123ddbaf01ddd51fe233775994f5b4524d2bde8fdc5bc8b3517f42d0cef085b"
+  },
+  "checks": {
+    "changed_module_build_exit_code": 0,
+    "closed_types_and_axioms_exit_code": 0,
+    "small_examples_exit_code": 0,
+    "small_operators": 3,
+    "maximum_example_qubits": 2,
+    "executable_assertions_passed": 9,
+    "additional_by_decide_examples": 5,
+    "project_axioms": [],
+    "observed_axiom_dependencies": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "scope": "Actual Lean checker success to original-root encoded semantics; source identity is not compiled runtime attestation or human guarantee admission. Full package build/audit/fresh replay is coordinated by the parent registry workflow."
+}

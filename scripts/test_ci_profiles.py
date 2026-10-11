@@ -1,7 +1,9 @@
 """Adversarial routing and required-check regressions, with real Git diffs."""
 
 import copy
+import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, plan, proof_lane, registry_binding_only
+from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, main, plan, proof_lane, registry_binding_only
 
 
 class CIProfiles(unittest.TestCase):
@@ -79,6 +81,39 @@ class CIProfiles(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_needs(skipped, "a" * 40)
 
+    def test_summary_is_bounded_without_truncating_selection_evidence(self):
+        long_diff = ["corpus/" + "nested/" * 8 + f"source-{i}.qli" for i in range(20000)]
+        self.assertGreater(len(json.dumps(long_diff).encode()), 1024 * 1024)
+        for paths, profile, lane, reason in [
+            (long_diff, "full", "full", "protected executable/policy input: scripts/ci_profiles.py"),
+            (["CHANGELOG.md"], "docs", "tests", "only explicitly listed descriptive documents/result records"),
+            ([], "full", "full", "missing comparison base; full validation required"),
+        ]:
+            with self.subTest(profile=profile, paths=len(paths)), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                event, report, summary, outputs = [root / name for name in ("event", "report", "summary", "outputs")]
+                event.write_text("{}", encoding="utf-8")
+                result = dict(format=1, head="a" * 40, base=None, profile=profile,
+                              proof_lane=lane, reason=reason, paths=paths)
+                stdout = io.StringIO()
+                with patch.dict(os.environ, {
+                    "GITHUB_EVENT_PATH": str(event), "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_SHA": result["head"], "GITHUB_REF": "refs/pull/1/merge",
+                    "GITHUB_STEP_SUMMARY": str(summary), "GITHUB_OUTPUT": str(outputs),
+                }), patch("ci_profiles.plan", return_value=result), \
+                     patch.object(sys, "argv", ["ci_profiles.py", "--report", str(report)]), \
+                     patch.object(sys, "stdout", stdout):
+                    self.assertEqual(main(), 0)
+                self.assertEqual(json.loads(report.read_text()), result)
+                self.assertEqual(json.loads(stdout.getvalue()), result)
+                self.assertEqual(outputs.read_text(), f"profile={profile}\nproof_lane={lane}\nhead={result['head']}\nbase=\n")
+                rendered = summary.read_text()
+                self.assertLess(len(rendered.encode()), 16 * 1024)
+                displayed = json.loads(rendered.split("```json\n")[1].split("\n```")[0])
+                self.assertEqual(displayed, {**{k: v for k, v in result.items() if k != "paths"},
+                                             "changed_path_count": len(paths)})
+                self.assertIn("ci-selection artifact", rendered)
+
     def test_test_default_proof_maintenance_and_full_risk_lanes(self):
         for paths, expected in [
             (["src/verify.rs"], "tests"), (["tests/new.rs"], "tests"),
@@ -88,11 +123,19 @@ class CIProfiles(unittest.TestCase):
             (["lean/Qleisli/RawPure.lean"], "model"),
             (["docs/type-system.md"], "full"),
             (["TRUSTBOUNDARY.md"], "full"),
+            (["CONSTITUTION.md"], "full"),
+            (["GOVERNANCE.md"], "full"),
+            (["governance/guarantees.json"], "full"),
+            (["tests/fixtures/constitution_v030/packet.json"], "full"),
+            (["docs/src/reference/authority.md"], "full"),
+            (["docs/src/design/initial-interpretations.md"], "full"),
             (["lean/lean-toolchain"], "full"), ([".github/workflows/ci.yml"], "full"),
             (["TRUSTBOUNDARY.md"], "full"),
             (["AGENTS.md", "CLAUDE.md"], "tests"),
             (["scripts/check_schema_registry.py"], "full"),
             (["scripts/package_lean_kernel.py"], "full"),
+            (["lean/Audit.lean"], "full"),
+            (["lean-kernel/Audit.lean"], "full"),
             (["new/unknown.rs"], "full"), (["../src/new.rs"], "full"),
             (["docs/new-unknown.md"], "full"), ([], "full"),
             (["lean/schema-registry.json"], "full"),
@@ -117,6 +160,9 @@ class CIProfiles(unittest.TestCase):
             self.assertTrue(registry_binding_only(ROOT, "a" * 40, "b" * 40))
         self.assertEqual(proof_lane(["lean-kernel/QleisliKernel/Finite.lean", "lean/schema-registry.json"], self.policy, True), "tests")
         self.assertEqual(proof_lane(["lean/Qleisli/RawPure.lean", "lean/schema-registry.json"], self.policy, True), "model")
+        for audit in ["lean/Audit.lean", "lean-kernel/Audit.lean"]:
+            with self.subTest(audit=audit):
+                self.assertEqual(proof_lane([audit, "lean/schema-registry.json"], self.policy, True), "full")
         for change in [
             lambda m: m["checker"].update(type=["constant", "Bool", []]),
             lambda m: m["entries"][0].update(external_enabled=True),
@@ -131,6 +177,38 @@ class CIProfiles(unittest.TestCase):
             self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
         with patch("ci_profiles.git", side_effect=subprocess.CalledProcessError(1, "git")):
             self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
+
+    def test_manual_pr_completion_keeps_cumulative_policy_risk_and_exact_head(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".github/ci").mkdir(parents=True)
+            (root / ".github/ci/profiles.json").write_text(json.dumps(self.policy))
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root, stderr=subprocess.DEVNULL).decode().strip()
+            git("init", "--quiet")
+            git("config", "user.email", "ci-fixture@example.invalid")
+            git("config", "user.name", "CI fixture")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "base")
+            base = git("rev-parse", "HEAD")
+            (root / ".github/policy").write_text("policy change\n")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "policy")
+            (root / "CHANGELOG.md").write_text("last commit is descriptive\n")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "docs")
+            head = git("rev-parse", "HEAD")
+            event = {"repository": {"full_name": "MGYamada/Qleisli"}, "inputs": {
+                "completion_issues": "29,69", "completion_pr": "307", "validation": "tests"}}
+            metadata = {"number": 307, "base": {"sha": base, "repo": event["repository"]}, "head": {"sha": head}}
+            with patch("check_pr_size.completion_pr", return_value=metadata):
+                result = plan(root, "workflow_dispatch", event, head, "refs/heads/work")
+                self.assertEqual((result["profile"], result["proof_lane"]), ("full", "full"))
+                self.assertEqual(result["base"], base)
+                self.assertEqual(result["completion_pr"], 307)
+                self.assertEqual(result["paths"], [".github/policy", "CHANGELOG.md"])
+            with patch("check_pr_size.completion_pr", return_value={**metadata, "head": {"sha": base}}), self.assertRaises(ValueError):
+                plan(root, "workflow_dispatch", event, head, "refs/heads/work")
 
     def test_actual_git_diffs_deleted_renamed_inputs_missing_bases_and_releases(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -154,14 +232,24 @@ class CIProfiles(unittest.TestCase):
             event = {"pull_request": {"base": {"sha": base}}}
             self.assertEqual(plan(root, "pull_request", event, head, "refs/pull/1/merge")["profile"], "docs")
             self.assertEqual(plan(root, "push", {"before": base}, head, "refs/heads/main")["profile"], "docs")
-            self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/heads/main")["proof_lane"], "tests")
+            completion = {"inputs": {"validation": "tests", "completion_issues": "29,69", "release_base": base}}
+            selected = plan(root, "workflow_dispatch", completion, head, "refs/heads/main")
+            self.assertEqual(selected["proof_lane"], "tests")
+            self.assertEqual(selected["completion_issues"], [29, 69])
+            for issues in ["", "0", "-1", "29,29", "#29", "29, 69", "29;echo bad", "9" * 1025,
+                           "2147483648"]:
+                with self.subTest(issues=issues), self.assertRaises(ValueError):
+                    plan(root, "workflow_dispatch", {"inputs": {"completion_issues": issues}}, head, "refs/heads/main")
+            with self.assertRaises(ValueError):
+                plan(root, "workflow_dispatch", completion, head, "refs/heads/work")
+            release = plan(root, "workflow_dispatch", {"inputs": {"release_readiness": "true"}}, head, "refs/heads/work")
+            self.assertEqual(release["proof_lane"], "full")
             self.assertEqual(plan(root, "push", {"before": base}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
             self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
             self.assertEqual(plan(root, "pull_request", {"pull_request": {"base": {"sha": base}, "head": {"ref": "codex/release-v027"}}}, head, "refs/pull/1/merge")["proof_lane"], "full")
             with self.assertRaises(ValueError):
                 plan(root, "workflow_dispatch", {"inputs": {"validation": "unknown"}}, head, "refs/heads/main")
             for name, payload, ref in [
-                ("workflow_dispatch", event, "refs/heads/main"),
                 ("push", {"before": base}, "refs/tags/v0.2.6"),
                 ("push", {"before": base, "forced": True}, "refs/heads/main"),
                 ("push", {"before": "0" * 40}, "refs/heads/main"),

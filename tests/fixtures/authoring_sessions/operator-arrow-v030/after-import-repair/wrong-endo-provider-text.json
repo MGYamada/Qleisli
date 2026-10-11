@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/wrong-endo-provider/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:124..217: type: type or tuple/size shape mismatch: expected Q(Bit), found Q(Tuple([Unit, Bit]))\n",
+  "native_invocations": 0,
+  "seconds": 0.005315957998391241,
+  "recorded_utc": "2026-10-05T12:10:35.351429+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:124..217: type: type or tuple/size shape mismatch: expected Q(Bit), found Q(Tuple([Unit, Bit]))\n"
+}

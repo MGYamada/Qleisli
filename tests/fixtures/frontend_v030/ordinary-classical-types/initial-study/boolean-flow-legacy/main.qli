@@ -1,0 +1,1 @@
+pub unitary fn main(a: CBit,b: CBit) -> CBit { if not a and b { true } else { false } }

@@ -1,0 +1,2 @@
+finite: ok declarations=2
+sized: error parse 44..47 this preparation profile permits one function per module

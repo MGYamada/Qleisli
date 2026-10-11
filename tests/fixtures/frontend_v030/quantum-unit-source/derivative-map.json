@@ -1,0 +1,47 @@
+{
+  "format": "qleisli.quantum-unit-test-derivatives",
+  "version": 1,
+  "status": "test-repair-after-actual-profile-rejection",
+  "mappings": [
+    {
+      "original": {
+        "path": "tests/fixtures/frontend_v030/quantum-unit-source/current/phase-then-measure.qli",
+        "sha256": "23de60aac0f306858694d538e0f2773dd644d65d8551c793e8abca64ebf7f289"
+      },
+      "current": {
+        "path": "tests/fixtures/frontend_v030/quantum-unit-source/current/phase-then-measure-bits.qli",
+        "sha256": "9a1ef6ba511940a398106c5b57bb2a86f6dca20f7b4a23c1d4b16fdab5d38745"
+      },
+      "change": "Explicitly pack the measured ordinary Bit into the current hierarchy Bits<1> readout interface using empty_bits and prepend_bit[0]; preserve quantum work and ordering."
+    },
+    {
+      "original": {
+        "path": "tests/fixtures/frontend_v030/quantum-unit-source/current/measure-then-phase.qli",
+        "sha256": "d8ddaf653b4077b1ca846d970fcef411dcb1a7f8012347c04f61c91fa3df208a"
+      },
+      "current": {
+        "path": "tests/fixtures/frontend_v030/quantum-unit-source/current/measure-then-phase-bits.qli",
+        "sha256": "e71aaed885dba399bbc5faed9e3929e3db3bc3d34767538fc0185d0cd0a9245e"
+      },
+      "change": "Explicitly pack the measured ordinary Bit into the current hierarchy Bits<1> readout interface using empty_bits and prepend_bit[0]; preserve quantum work and ordering."
+    }
+  ],
+  "original_failure": {
+    "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-fifth/3.stdout.txt",
+    "sha256": "ad6c97c2784bc6df3d59b14099419973ef8176b60bea84de0e14f924db6eacc1",
+    "new_target_result": "8 passed, 1 failed: the first Bit-returning source failed the existing hierarchy readout profile before native execution."
+  },
+  "first_test": {
+    "path": "tests/fixtures/frontend_v030/quantum-unit-source/first-test.rs.txt",
+    "sha256": "93b2d54f9c90fafd14b3647a186ce3086b79366943ed0c0c6af0832193d060cb"
+  },
+  "current_test": {
+    "path": "tests/quantum_unit_source.rs",
+    "sha256": "d9e62a2ac7fa8871bdb7b877dc0b857ef36f4cb426b40df6a919e55cb323a347"
+  },
+  "additional_tests": [
+    "scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities",
+    "nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action"
+  ],
+  "after_execution": "Pending the root-coordinated rerun; this record asserts no new execution success."
+}

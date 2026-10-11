@@ -1,0 +1,25 @@
+
+running 6 tests
+test nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use ... FAILED
+test equal_width_tree_substitution_rejects_at_each_predicate_use ... ok
+test ordinary_call_arity_and_meaning_output_tree_keep_their_own_contracts ... ok
+test explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls ... ok
+test noninjective_and_and_constant_predicates_remain_legal_in_both_forms ... ok
+test exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions ... ok
+
+failures:
+
+---- nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use stdout ----
+
+thread 'nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use' (11631602) panicked at tests/predicate_domain.rs:214:9:
+assertion `left == right` failed: legacy-restricted-three: /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-76491-0/main.qli:6:75: Arity: with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters
+  left: Arity
+ right: TypeMismatch
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.52s
+

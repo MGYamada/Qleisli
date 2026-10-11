@@ -7,7 +7,7 @@ use std::observe::measure_z;
 
 unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }
 
-observe fn main() -> ((CBit,CBit,CBit),CBit) {
+observe fn main() -> ((Bit,Bit,Bit),Bit) {
     let (word,target) = phase3[eighth_phase](x(init0()));
     (word,measure_z(target))
 }

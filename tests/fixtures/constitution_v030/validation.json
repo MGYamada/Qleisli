@@ -1,0 +1,75 @@
+{
+  "format": "qleisli.ratification-candidate-validation",
+  "version": 1,
+  "date": "2026-10-04",
+  "timezone": "Asia/Tokyo",
+  "status": "candidate integrity verified; awaiting human ratification",
+  "checks": [
+    {
+      "command": "python3 scripts/check_ratification_packet.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_ratification_packet.py --require-ratified",
+      "exit_code": 1,
+      "expected": "human ratification event required"
+    },
+    {
+      "command": "python3 scripts/test_check_ratification_packet.py",
+      "exit_code": 0,
+      "tests": 12
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "tests": 36
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "exit_code": 0,
+      "tests": 6
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "local_links": 1559,
+      "markdown_anchors": 8,
+      "lean_root_modules": 201
+    },
+    {
+      "command": "mdbook 0.5.4 build docs",
+      "exit_code": 0
+    },
+    {
+      "check": "generated HTML local links, anchors and assets",
+      "exit_code": 0,
+      "pages": 10,
+      "references": 297
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "github": {
+    "milestone": "https://github.com/MGYamada/Qleisli/milestone/1",
+    "issues": 108,
+    "all_open": true,
+    "exact_group_membership": true,
+    "updated_issue_bodies": [
+      129,
+      137,
+      141,
+      142,
+      250,
+      255
+    ]
+  },
+  "not_performed": [
+    "human ratification or Guardian appointment",
+    "binding interpretation or guarantee discharge",
+    "post-ratification language implementation",
+    "Rust/Lean runtime or proof suites for this candidate-only packet",
+    "hosted full CI, source commit, tagging or publication"
+  ]
+}

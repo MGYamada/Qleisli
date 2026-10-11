@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/routed-control-commutation/Generate.rs",
+    "--extern",
+    "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-routed-control-generate-negative"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at": "2026-10-04T15:12:33.421047+00:00",
+  "elapsed_seconds": 0.4569443329819478,
+  "exit_code": 0,
+  "stdout": "negative-generator-build.stdout.txt",
+  "stderr": "negative-generator-build.stderr.txt"
+}

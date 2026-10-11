@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::classical::empty_bits; classical fn copy(b:Bits<0>)->(Bits<0>,Bits<0>){let alias=b; let _=b;(alias,b)} pub unitary fn main()->(Bits<0>,Bits<0>){copy(empty_bits())}

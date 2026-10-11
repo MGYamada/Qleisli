@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-06T03:57:33.148298+00:00",
+  "elapsed_seconds": 0.38240258302539587,
+  "case": "entangle-desired",
+  "action": "finite-run",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "30f66e367d7b45e0a68a92b1b8e7f37f5f6ae575a17e5294955d77d7c5d26fb8",
+  "raw_stdout": {
+    "path": "observations-after/entangle-desired-finite-run.stdout.txt",
+    "sha256": "350d7f4e62664334f3fff3c8e606c3b830b8011f134ce312675421ec528cbc04"
+  },
+  "raw_stderr": {
+    "path": "observations-after/entangle-desired-finite-run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5000000000000001
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5000000000000001
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "python3",
+    "tests/fixtures/authoring_sessions/common-pattern-check-v030/record-check/driver.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T16:38:32.521764+00:00",
+  "timestamp_note": "Subsequent record of the actual immediately preceding tool response, not an exact invocation timestamp.",
+  "driver_sha256": "c797201bfa12f831e61889ac5886f7204e9a09e6fe1b49d2ff0e91ef1afaecdd",
+  "evidence_kind": "Actual terminal tool traceback transcript; separately captured original stdout/stderr unavailable.",
+  "transcript": "Traceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/record-check/driver.py\", line 66, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/record-check/driver.py\", line 28, in main\n    frozen = check_frozen()\n  File \"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/record-check/driver.py\", line 23, in check_frozen\n    raise RuntimeError(f'preserved first record changed: {name}')\nRuntimeError: preserved first record changed: README.md\n",
+  "cause": "The new record guard compared a sha256 string with a {sha256, bytes} object. This false alarm occurred before running authoring/doc checks; all frozen actual digests remain equal.",
+  "repair": "Separate driver-v2.py reads the existing sha256 field; original driver and first manifests are preserved."
+}

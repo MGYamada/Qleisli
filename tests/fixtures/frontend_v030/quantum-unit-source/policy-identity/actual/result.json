@@ -1,0 +1,13 @@
+{
+  "all_commands_passed": true,
+  "command_count": 4,
+  "trusted_base": "d753962de3eedd39629c8441f2b82521ce01d70f",
+  "selected_input_scope": "Root Markdown, governance records, book chapters, named checker/registry/inventory/coverage files, every maintained inventory source path and the two prior policy-packet manifests; not the complete repository.",
+  "selected_inputs_count": 303,
+  "selected_inputs_changed": [],
+  "commands_sha256": "c66483aba9164346fc7506798fbedbf03cb87ded56547f40cf94584191f47dc4",
+  "inputs_before_sha256": "f2be5afe0bb02ca492b764714cf0a91af848cff4174596c19c605d1c2aea758f",
+  "inputs_after_sha256": "f2be5afe0bb02ca492b764714cf0a91af848cff4174596c19c605d1c2aea758f",
+  "fresh_lean_replay": false,
+  "rust_or_lean_build": false
+}

@@ -7,6 +7,7 @@
 
 pub mod exact;
 pub mod function;
+pub(crate) mod instrument;
 pub mod meaning;
 pub use function::{FunctionEvidence, FunctionIdentity};
 
@@ -127,6 +128,8 @@ pub(crate) fn equation_counterexample(actual: &Matrix, expected: &Matrix) -> Opt
 pub enum BasisType {
     Unit,
     Bit,
+    /// An atomic ordered bit register, distinct from same-width Unit/Bit trees.
+    Bits(u32),
     Pair(Box<BasisType>, Box<BasisType>),
     /// An arity-preserving product of at least three immediate fields.
     Tuple(Vec<BasisType>),
@@ -166,7 +169,7 @@ impl BasisType {
     pub fn bits(&self) -> Result<usize, ContractError> {
         let mut pending = vec![(self, 0)];
         let mut nodes = 0;
-        let mut bits = 0;
+        let mut bits: usize = 0;
         while let Some((ty, depth)) = pending.pop() {
             nodes += 1;
             if nodes > 128 || depth > 32 {
@@ -176,7 +179,18 @@ impl BasisType {
             }
             match ty {
                 Self::Unit => (),
-                Self::Bit => bits += 1,
+                Self::Bit => {
+                    bits = bits.checked_add(1).ok_or(ContractError::Limit(
+                        "contract bit width overflows host capacity",
+                    ))?;
+                }
+                Self::Bits(width) => {
+                    bits = bits
+                        .checked_add(*width as usize)
+                        .ok_or(ContractError::Limit(
+                            "contract bit width overflows host capacity",
+                        ))?;
+                }
                 Self::Pair(a, b) => {
                     pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
                 }

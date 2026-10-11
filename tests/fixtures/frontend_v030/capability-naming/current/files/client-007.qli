@@ -1,0 +1,1 @@
+use std::quantum::x; pub fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)}

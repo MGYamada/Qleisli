@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli:9..13: name `gate` collides with another declaration or import
+sized.parse: main:0..14: name: import shadows the local function
+finite.check: Diagnostic { code: "project", message: "name `gate` collides with another declaration or import", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli", span: Span { start: 9, end: 13 }, line: 1, column: 10 }) }

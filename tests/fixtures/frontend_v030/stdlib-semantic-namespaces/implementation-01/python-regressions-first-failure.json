@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.namespace-regression-stage",
+  "version": 1,
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/test_check_input_corpus.py"
+  ],
+  "exit_code": 1,
+  "tests": 61,
+  "failures": 2,
+  "seconds_reported": 13.378,
+  "source": "Actual prior tool output, not a saved raw log; no invented raw-output identity.",
+  "failure_names": [
+    "MigrationTests.test_execution_and_report_binding_use_selected_snapshot",
+    "MigrationTests.test_explicit_snapshot_selects_current_files_and_preserves_old_directory"
+  ],
+  "reason": "macOS /var versus /private/var temporary-directory alias: expected test paths were unresolved while current_project deliberately resolves paths. Assertions and report-relative paths now resolve aliases consistently.",
+  "scope": "This historical failed stage is retained separately; later success does not replace it."
+}

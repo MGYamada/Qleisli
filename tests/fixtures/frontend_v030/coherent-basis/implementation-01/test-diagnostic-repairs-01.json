@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.coherent-basis-test-repair",
+  "version": 1,
+  "first_local_sweep": "rust-latest-01.json",
+  "local_failure": "tuple_shapes::formerly_silent_reassociation_now_rejects expected the superseded Rust Debug format; actual code remains type_mismatch and displays exact canonical expected/found source types.",
+  "local_repair": "tests/tuple_shapes.rs changes only the two type-message expectations; source and semantic assertions remain. rust-latest-repair-02 passes the full tuple suite and previously unreached Unit-pattern suite.",
+  "hosted_failure": {
+    "run_id": 37410058344,
+    "job_id": 112096318350,
+    "head_sha": "73355382a3db94893982e5954e9400fffcd7f48e",
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37410058344",
+    "excerpt": "previous-head-ci-msrv-failure.txt",
+    "excerpt_sha256": "93416bd009063600cf06fb8f8e940fee874d6d6da193fd8fd33f102b950427d8",
+    "failed_test": "sized_source::common_syntax_does_not_grant_missing_profile_or_capability_support",
+    "observed_test_result": "37 passed; 1 failed; 3 ignored"
+  },
+  "hosted_repair": "tests/sized_source.rs changes only the stale Q(Bit)/Unit message expectation to canonical Q<Bit>/Unit. The full ordinary sized_source suite passes on both1.98.1/1.85.0 (38 each);3existing native-only cases remain ignored.",
+  "scope": "Test expectations are repaired; no compiler rule, refusal code, original source, profile restriction or native/proof requirement is weakened. Previous-head hosted failure is not validation of the current candidate."
+}

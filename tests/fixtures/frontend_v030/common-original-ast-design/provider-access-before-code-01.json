@@ -1,0 +1,41 @@
+{
+  "format": "qleisli.ordinary-before-code-addendum",
+  "version": 1,
+  "issue": 32,
+  "url": "https://github.com/MGYamada/Qleisli/issues/32",
+  "updated_at": "2026-10-05T22:20:04Z",
+  "exact_body_readback": true,
+  "original_checkboxes": [
+    "- [ ] #33 Static specialization vs runtime application syntax",
+    "- [ ] #34 Normative desugaring boundary",
+    "- [x] #35 Uniform pattern grammar",
+    "- [ ] #36 Register indexing/slicing notation for linear views",
+    "- [ ] #37 Expression-oriented quantum blocks and early return",
+    "- [x] #38 `pure` versus basis-state preparation",
+    "- [ ] #39 Exact symbolic phase/numeric literals",
+    "- [ ] #40 `static fn` and compile-time builders",
+    "- [ ] #41 Namespace and name-resolution model",
+    "- [ ] #42 Trailing commas and punctuation ergonomics"
+  ],
+  "new_checkboxes": [
+    "- [ ] #33 Static specialization vs runtime application syntax",
+    "- [ ] #34 Normative desugaring boundary",
+    "- [x] #35 Uniform pattern grammar",
+    "- [ ] #36 Register indexing/slicing notation for linear views",
+    "- [ ] #37 Expression-oriented quantum blocks and early return",
+    "- [x] #38 `pure` versus basis-state preparation",
+    "- [ ] #39 Exact symbolic phase/numeric literals",
+    "- [ ] #40 `static fn` and compile-time builders",
+    "- [ ] #41 Namespace and name-resolution model",
+    "- [ ] #42 Trailing commas and punctuation ergonomics"
+  ],
+  "local_text_sha256": "04669bfc1fd1bbd92942dd27bf3b180e772bda03d094c485bf4c346e9598d720",
+  "rejected_first_candidate_sha256": "271294045c6cf47639b2475606dfc4497c21fcb8a7e5b8e31fca7f857a1cb6a1",
+  "review": {
+    "author": "root",
+    "reviewer": "review_isometry_adapter",
+    "limit": "Reviewer authored finite integration, not this clarification; no executable test or proof/adoption."
+  },
+  "scope": "Ordinary permitted implementation clarification only; masks not yet implemented or tested; all111 criteria remain."
+}
+

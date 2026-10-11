@@ -1,0 +1,18 @@
+2026-10-06T00:06:52.0074850Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a675d87a9e0c550200e179bcd2cc375f7c45458a:refs/remotes/pull/307/merge
+2026-10-06T00:06:57.7601420Z HEAD is now at a675d87 Merge 7f6529ef93838d565552c3f501ce016ef1d1d2b4 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T00:06:57.7973030Z a675d87a9e0c550200e179bcd2cc375f7c45458a
+2026-10-06T00:10:50.6533670Z ##[group]Run cargo +1.85.0 test --locked --lib source_file::tests
+2026-10-06T00:11:55.7477910Z test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 110 filtered out; finished in 0.08s
+2026-10-06T00:11:55.7776090Z ##[group]Run cargo +1.85.0 test --locked --test source_capacities --test project --test editions --test review_v028
+2026-10-06T00:12:36.5105490Z test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.91s
+2026-10-06T00:12:38.4824990Z test long_acyclic_import_chain_loads_on_a_small_stack ... ok
+2026-10-06T00:12:38.5233800Z test deep_import_cycle_reports_the_back_edge_and_cycle_path ... FAILED
+2026-10-06T00:12:38.5336000Z 
+2026-10-06T00:12:38.5438430Z failures:
+2026-10-06T00:12:38.5743000Z 
+2026-10-06T00:12:38.5844260Z thread 'deep_import_cycle_reports_the_back_edge_and_cycle_path' panicked at tests/project.rs:192:50:
+2026-10-06T00:12:38.6590100Z error: test failed, to rerun pass `--test project`
+2026-10-06T00:12:41.6982810Z 
+2026-10-06T00:12:41.6983170Z test result: FAILED. 11 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.01s
+2026-10-06T00:12:41.6983610Z 
+2026-10-06T00:12:41.7013060Z ##[error]Process completed with exit code 101.

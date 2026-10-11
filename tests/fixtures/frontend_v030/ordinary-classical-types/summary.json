@@ -1,0 +1,26 @@
+[
+  {
+    "study": "initial-study",
+    "cases": 34,
+    "success_by_distinct_stage": {
+      "common.parse: ok": 30,
+      "finite.check: ok": 0,
+      "sized.generic: ok": 7,
+      "sized.elaborate: ok": 7,
+      "sized.lower: proposed": 2
+    },
+    "scope": "Stage counters include neither native authorization nor total-language support."
+  },
+  {
+    "study": "library-study",
+    "cases": 34,
+    "success_by_distinct_stage": {
+      "common.parse: ok": 30,
+      "finite.check: ok": 6,
+      "sized.generic: ok": 7,
+      "sized.elaborate: ok": 7,
+      "sized.lower: proposed": 2
+    },
+    "scope": "Stage counters include neither native authorization nor total-language support."
+  }
+]

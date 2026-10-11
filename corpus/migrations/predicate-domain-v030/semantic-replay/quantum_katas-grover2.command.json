@@ -1,0 +1,17 @@
+{
+  "case": "quantum_katas/grover2",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "quantum_katas/grover2",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-fixed-replay/quantum_katas-grover2.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+  "exit_code": 0,
+  "seconds": 15.109078790992498,
+  "stdout": "quantum_katas-grover2.stdout",
+  "stderr": "quantum_katas-grover2.stderr"
+}

@@ -1,0 +1,60 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-tree-legacy",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:28:38.063773+00:00",
+  "elapsed_seconds": 0.005124665971379727,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "wrong-tree-legacy",
+  "action": "finite-check-json",
+  "output_format": "json",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "a85e539c6c4b035f53d5a351d954b46de8269d1ced48941a2c891714eb815fa3",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-after-01/wrong-tree-legacy-finite-check-json.stdout.txt",
+    "sha256": "92f226233ea78d572d6d75a3396693d974bc509166a54490cda725def9582882"
+  },
+  "raw_stderr": {
+    "path": "observations-after-01/wrong-tree-legacy-finite-check-json.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "transcript": "stdout:\n{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.\",\"primary\":{\"path\":\"main.qli\",\"start\":1029,\"end\":1036,\"line\":21,\"column\":16},\"related\":[]}],\"result\":null}\n\nstderr:\n",
+  "attestation_limit": "Selected bytes, not compiled-HEAD or native-child attestation.",
+  "identity_checked_before_and_after": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+        "primary": {
+          "path": "main.qli",
+          "start": 1029,
+          "end": 1036,
+          "line": 21,
+          "column": 16
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

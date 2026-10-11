@@ -1,0 +1,126 @@
+[
+  {
+    "category": "attempt-01",
+    "name": "constants",
+    "path": "attempt-01/constants",
+    "source_sha256": "4759a8848d928d55e74d9112ed230dcec935e25f41a41044d16a58810dfc400f",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Closed result 0,1; exact Unit/product tree retained, no quantum creation."
+  },
+  {
+    "category": "attempt-01",
+    "name": "truth-operations",
+    "path": "attempt-01/truth-operations",
+    "source_sha256": "f8964f79d7745305ff83e65ef6434b378b5b8436188822fcf02d0e7b4bee4902",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Open truth table by (a,b): 00->100,01->110,10->010,11->001. The closed wrapper probes only10."
+  },
+  {
+    "category": "attempt-01",
+    "name": "copy-drop",
+    "path": "attempt-01/copy-drop",
+    "source_sha256": "36dff8355b3d5403e5188982c6d8f129d2654f0946908ada8418af94e250a844",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Ordinary copy/drop, one exact product argument; closed wrapper returns00."
+  },
+  {
+    "category": "attempt-01",
+    "name": "mixed-passthrough",
+    "path": "attempt-01/mixed-passthrough",
+    "source_sha256": "8b39ed1d6ab7800075081b9f00692c393ece461495600108bc44e256466524c6",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Open quantum state/reference is unchanged while b flips; closed wrapper returns10/11 with probability1/2 each."
+  },
+  {
+    "category": "attempt-01",
+    "name": "classical-control",
+    "path": "attempt-01/classical-control",
+    "source_sha256": "e53a0582a51a784b0fed2c6ef778b07dab550deb6d90cc63daad7f576941db41",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "For explicit ordinary b, action is I orX and b is retained. Closed probe returns11; open reference behavior needs a later API oracle."
+  },
+  {
+    "category": "attempt-01",
+    "name": "measured-feedback",
+    "path": "attempt-01/measured-feedback",
+    "source_sha256": "a8c318147ae20ca1e43dfaa06d5310d6e490a6698a6866e2ab6e7edb7c72ddc3",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Independent per-outcome map K_c=<c| tensor X^c. Closed probe returns00/11 with probability1/2 each; at most two qubits."
+  },
+  {
+    "category": "attempt-01",
+    "name": "measured-logic",
+    "path": "attempt-01/measured-logic",
+    "source_sha256": "73c7fa8a6a601eb37c6d7b58fad7a99b42267e3543fd02b54e75b2d520ed77c1",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Outcomes follow the independent truth table; closed probe returns110/001 with probability1/2 each. Output classical computation is not an invertible quantum operator."
+  },
+  {
+    "category": "attempt-01",
+    "name": "unit-observation-retention",
+    "path": "attempt-01/unit-observation-retention",
+    "source_sha256": "a98fc31a3ee396544000c1f70b6ee188d74bfe4d384934037d74661dd1f1ff6c",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Closed wrapper returns1; both measurements/owner consumptions must remain. Reference oracle later sums density matrices over the ignored measurement label."
+  },
+  {
+    "category": "attempt-01",
+    "name": "eager-and-observation",
+    "path": "attempt-01/eager-and-observation",
+    "source_sha256": "ab2271d973b26496e5ff1e7b4eee8c8c7dfa7b921c4b765f4f76d95bb0d1e9d5",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": true,
+    "independent_expectation": "Result0 does not permit removing the RHS measurement. This is eager Boolean evaluation with Observe effect, not short-circuiting."
+  },
+  {
+    "category": "attempt-01",
+    "name": "static-selection",
+    "path": "attempt-01/static-selection",
+    "source_sha256": "067e0362211c67766b9a604d0e7a7d1cfe7a57ece2c68ee79a8ef5a957accddb",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [
+      "--nat=n=1"
+    ],
+    "closed_probe": false,
+    "independent_expectation": "Explicit static branch chooses an ordinary Bit expression; n=1 probes the1 branch, no implicit Nat-to-Bit conversion."
+  },
+  {
+    "category": "counterexamples",
+    "name": "static-as-runtime",
+    "path": "counterexamples/static-as-runtime",
+    "source_sha256": "c5f0b02b84bbb165b6fe2a9912b07f9256ea97005df90aacc20f2b8f6f7f15fb",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [
+      "--nat=n=1"
+    ],
+    "closed_probe": false,
+    "independent_expectation": "Static Nat is not an ordinary runtime Bit, even when the supplied n is1."
+  },
+  {
+    "category": "counterexamples",
+    "name": "runtime-as-static",
+    "path": "counterexamples/runtime-as-static",
+    "source_sha256": "9ee126b2fe564a423c8bd5e63196b9aee01525fa034439e287aa416718c36cf0",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized_arguments": [],
+    "closed_probe": false,
+    "independent_expectation": "Runtime Bit cannot supply a static Nat. Finite Bits/Nat rejection may precede this judgment; do not conflate that with sized staging evidence."
+  }
+]

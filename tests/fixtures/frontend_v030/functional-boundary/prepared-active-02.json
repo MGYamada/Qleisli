@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.functional-boundary-prepared-source-supplement",
+  "version": 1,
+  "status": "prepared-before-first-test-execution",
+  "prepared_original": "tests/fixtures/frontend_v030/functional-boundary/prepared-01.rs.txt",
+  "prepared_active": {
+    "path": "tests/fixtures/frontend_v030/functional-boundary/prepared-active-02.rs.txt",
+    "sha256": "1ff9a7515b6adba4e3fe8ee13feb4c1226a14308653ffd04eed8fba238db7969"
+  },
+  "reason": "Before execution, replace the initial numerical Quarter-squared probe with an independently requested native exact X-squared=+identity equation. Retain the initial unexecuted preparation and its honest plan unchanged. Bell X readout is supplemental: 00 and11 each one half; only complete phase-fixed native equation evidence supports the exact claim.",
+  "limits": "Three new small integration tests; no production edits, source-preservation proof, new guarantee, general callable feature or selected-profile materialization claim. No new maximum cases orQFT work."
+}

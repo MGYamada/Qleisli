@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.bounded-implementation-validation",
+  "version": 1,
+  "issue": 33,
+  "edition": "2026",
+  "product_version": "0.3.0-alpha",
+  "implementation_base": "05316883e16fbe94b3be0d4a963642a0300269aa",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6030435255",
+  "scope": "Canonical finite controlled(U)(c,q) is an adapter over existing operation descriptions, checked Controlled access, exact circuit construction, native acceptance and two-owner join/split. It adds no semantic primitive, native rule or capacity increase.",
+  "source_sha256": {
+    "src/frontend/compile/profile.rs": "00aaad5a27936691fdb58081ca6afa75fb28323eb9fdfe368f9332015d2b858c",
+    "src/frontend/compile/lower/mod.rs": "209e34d0c1e96a69fdc6b3fab09cd660233e6ddf7bfec2659ef548758deaddc7",
+    "src/frontend/compile/lower/operations.rs": "7347ae9b311d3f245a89889456923c425fb2011a50d76d54e740eda57438e254",
+    "tests/checked_operations.rs": "43651f0830fcf1148b438face075322716f91e9a15a4fe83d6ff92cb4bc28ba7",
+    "tests/qli_corpus.rs": "5a577c90a2cdbe38acd7fc98877222b2f2b422d8b6dee6674052aa08d974086b"
+  },
+  "original_source": {
+    "path": "attempt-01/estimation.qli",
+    "sha256": "4489c14c5911fb258a83c846e19561bbaf0c8f0e13ec4d84b03710af8f935b93",
+    "change_note": "Same complete source before and after implementation. First source and actual refusal are immutable. Other project sources and manifest are copied unchanged from the recorded baseline."
+  },
+  "actual_cli_observations": [
+    "observation-before.json",
+    "observation-after-check.json",
+    "observation-after-run.json"
+  ],
+  "independent_checks": [
+    "Actual emitted controlled-X steps have low-control-axis permutation [0,3,2,1]; its square is exact identity. Ordinary single-stage controlled(q) keeps normal name resolution.",
+    "Actual emitted controlled scalar steps on (Bit,Unit) equal diag(1,omega) or diag(1,-1); the zero-width logical target is returned and explicitly consumed.",
+    "Existing small fixed-QFT2/3 QPE client returns 1001. Independent identity-reference and correlated-frame expectations remain 00000 or equal-weight 00000/10011.",
+    "Zero power evaluates control then target exactly once; first-argument branch phi successors carry the live reference before second-argument measurement. Bell readout remains 00/11 with equal weights.",
+    "Alias, arity, classical control, wrong target tree and unused generic missing-Controlled bodies reject. A checked_op with X implementation and Z Meaning still fails Contract inside controlled power zero."
+  ],
+  "logs": {
+    "latest-related-suites": {
+      "external_path": "/private/tmp/qleisli-canonical-control-final-latest.log",
+      "sha256": "5a1e9a0766bee0bbf32b67b59e8321da2e1e3b3443c4ea71408b70092968b966",
+      "passed": 70,
+      "failed": 0,
+      "ignored": 0,
+      "targets": [
+        "checked_operations",
+        "operation_parameters",
+        "qli_corpus",
+        "quantum_unit_source"
+      ]
+    },
+    "msrv-related-suites": {
+      "external_path": "/private/tmp/qleisli-canonical-control-final-msrv.log",
+      "sha256": "cb6830d0f1e9631bf03348647f41896e02e875b4e8cadfed11cba89e09c91930",
+      "passed": 70,
+      "failed": 0,
+      "ignored": 0,
+      "targets": [
+        "checked_operations",
+        "operation_parameters",
+        "qli_corpus",
+        "quantum_unit_source"
+      ]
+    },
+    "latest-final-false-meaning": {
+      "external_path": "/private/tmp/qleisli-canonical-control-false-meaning-latest.log",
+      "sha256": "ca11aa5db6a759a889811737ade066f0b539224a649517b7a459686206d89bfa",
+      "passed": 1
+    },
+    "msrv-final-false-meaning": {
+      "external_path": "/private/tmp/qleisli-canonical-control-false-meaning-msrv.log",
+      "sha256": "0cf33a82cd50a975066594ec6ce7e83c60599b2908363df43c0079d6ed6447fc",
+      "passed": 1
+    },
+    "latest-final-clippy": {
+      "external_path": "/private/tmp/qleisli-canonical-control-final-clippy-latest.log",
+      "sha256": "2b457659dbe235e022cfa27fc3fa5e7e46949cab51676c1539c04a360644806d",
+      "status": "passed; all targets with -D warnings"
+    },
+    "msrv-final-clippy": {
+      "external_path": "/private/tmp/qleisli-canonical-control-final-clippy-msrv.log",
+      "sha256": "4263118add56f1830ec935f157f81baa4e15184e5dab25d86565e1cf78492a33",
+      "status": "passed; all targets with -D warnings"
+    },
+    "coverage-policy-regressions": {
+      "external_path": "/private/tmp/qleisli-canonical-control-coverage-tests.log",
+      "sha256": "b9d92c929ed4ba456d6646df218a9d2247fedf44849cd928e68e36c90ca07a9b"
+    },
+    "initial-wrong-IR-variant": {
+      "external_path": "/private/tmp/qleisli-canonical-control-order-test.log",
+      "sha256": "a4093864cd5f09e209a6038d2124ea7b7b2d75c9c58de82a828758ba80370039"
+    },
+    "initial-wrong-owner-ID-assumption": {
+      "external_path": "/private/tmp/qleisli-canonical-control-order-test-final.log",
+      "sha256": "26af20e04db09b1f0772d00e546ef8ba41266deb4fab672779abfaa1bc91c522"
+    },
+    "initial-empty-exact-test-filter": {
+      "external_path": "/private/tmp/qleisli-canonical-control-qpe-test.log",
+      "sha256": "7e8161e92c0825ccd95153a335dde2e9e680aac2c83eed6764a50d2f6e8200e2"
+    }
+  },
+  "validation_chronology": "Both complete four-target runs passed 70 tests on Rust 1.98.1 and 1.85.0. One final false-Meaning assertion was subsequently added to the existing rejection test; that whole test was rerun and passed on both compilers, followed by final all-target Clippy. Formatting, docs, inventory, production coverage and authoring checks passed. Fourteen production-coverage policy regressions passed.",
+  "harness_corrections": [
+    "The first order test used nonexistent RawOp::Measure; it was corrected to the existing MeasureZ without changing production code.",
+    "The first order expectation assumed the untouched reference retained its original owner ID after a branch. Actual IR uses a fresh phi successor. The assertion now follows the actual simultaneous phi transition and still verifies control-first measurement.",
+    "An --exact invocation with an abbreviated test name ran zero tests. The full named QPE test and both complete four-target runs subsequently passed.",
+    "The copied historical README had directory-relative links appropriate only to its original example directory. It is retained byte-for-byte as README.before.txt; executable sources and manifest are unchanged, and no link-check exception was added.",
+    "The first rendered-book checker call used nonexistent --book-dir and exited with usage status 2. The correct --root call passed: 29 HTML files, 1228 local links and 474 anchors."
+  ],
+  "native_checker": {
+    "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+    "note": "Observed local build only; not portable attestation or a fresh Lean replay."
+  },
+  "constitutional_continuity": {
+    "trusted_base": "38baae7d19535602b21270e11e97617d45205b37",
+    "result": "passed; current identity/continuity only",
+    "status": "Existing two scoped QS guarantees remain protected; QS/PR/RS/EXACT broader duties remain pending. No new interpretation or ledger admission."
+  },
+  "book": {
+    "mdbook_version": "0.5.4",
+    "build": "passed",
+    "rendered_links": "passed with --root; 29 HTML files, 1228 links, 474 anchors"
+  },
+  "limitations": [
+    "Finite concrete operation capacity and shared work limits are unchanged. Tests cover small fixed inputs and independent exact actions; they are not general source-preservation, QS, PR or quantitative RS proofs.",
+    "No fresh Lean build/audit/replay, full all-target Rust test run, hosted CI, package or clean-install gate is claimed for this control unit. The preceding parser-only repair has separate full-suite and hosted CI evidence.",
+    "Legacy adjoint/repeat/qif spelling retirement and active-client migration remain unfinished; #33 and #250 remain open.",
+    "Generic qft<N> delivery/integration/equivalence is outside the goal. Only existing small fixed QFT regressions are exercised."
+  ]
+}

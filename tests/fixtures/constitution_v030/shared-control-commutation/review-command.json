@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "../tests/fixtures/constitution_v030/shared-control-commutation/Review.lean"
+  ],
+  "cwd": "lean",
+  "started_at": "2026-10-04T13:49:06.114794+00:00",
+  "elapsed_seconds": 4.537,
+  "exit_code": 0,
+  "stdout": "review-types.stdout.txt",
+  "stderr": "review-types.stderr.txt"
+}

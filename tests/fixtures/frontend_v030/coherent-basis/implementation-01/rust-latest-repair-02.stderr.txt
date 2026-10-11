@@ -1,0 +1,5 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 0.96s
+     Running tests/qli_corpus.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/qli_corpus-3da7b4bb1d4dc96a)
+     Running tests/tuple_shapes.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/tuple_shapes-8e5a0d4010991be0)
+     Running tests/unit_patterns.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/unit_patterns-b821bf4148b4bf36)

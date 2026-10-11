@@ -1,0 +1,15 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// The same coherent QPE body, surrounded by ordinary preparation/readout.
+use initialization::init_zero;
+use readout::measure_bits;
+use estimation::estimate;
+
+pub observe fn qpe[const n: Nat, const m: Nat, const U: Op<Bits<n>>](
+    target: Q<Bits<n>>
+) -> (Bits<m>, Q<Bits<n>>)
+requires n >= 1, m >= 1, Controllable(U) {
+    let phase = init_zero[m]();
+    let (phase,target) = estimate[n,m,U](phase,target);
+    (measure_bits[m](phase),target)
+}

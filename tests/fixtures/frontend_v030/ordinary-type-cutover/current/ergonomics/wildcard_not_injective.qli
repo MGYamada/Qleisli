@@ -1,0 +1,4 @@
+use std::quantum::init0;
+use std::quantum::join;
+basis fn project((a,_): (Bit,Bit)) -> Bit { a }
+iso fn bad() -> Q<Bit> { do pair <- join(init0(),init0()); pure project(pair) }

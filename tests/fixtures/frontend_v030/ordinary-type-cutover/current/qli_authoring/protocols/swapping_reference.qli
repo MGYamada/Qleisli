@@ -1,0 +1,7 @@
+//! Decode the distant pair after the middle measurement and feed-forward.
+use swapping::connect;
+use bell::measure;
+observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
+    let (message,(left,right)) = connect();
+    (message,measure(left,right))
+}

@@ -1,0 +1,50 @@
+#[test]
+fn protocol_y_minus_has_the_full_independent_operator_phase() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, Circuit, DEFAULT_EXACT_WORK};
+    use qleisli::ir::RawOp;
+
+    let root = project("protocols");
+    // This whole-space equation is independent of preparing a state and then
+    // undoing it with the same provider: S†H = [[s,s],[-i*s,i*s]]. It fixes
+    // both columns and the complete phase, including under external reference.
+    let s = Exact::inv_sqrt2();
+    let expected = Matrix::new(
+        2,
+        2,
+        vec![
+            s,
+            s,
+            Exact::new([0, 0, 0, -1], 1).unwrap(),
+            Exact::new([0, 0, 0, 1], 1).unwrap(),
+        ],
+    )
+    .unwrap();
+    let probes: serde_json::Value = serde_json::from_str(include_str!(
+        "fixtures/authoring_sessions/protocol-inverse-migration-v030/oracle-probes.json"
+    ))
+    .unwrap();
+    root.write("phase_fault.qli", probes["phase_fault.qli"].as_str().unwrap());
+    for probe in probes["probes"].as_array().unwrap() {
+        let provider = probe["provider"].as_str().unwrap();
+        root.write("main.qli", probe["main.qli"].as_str().unwrap());
+        let accepted = compile_project(&root.0).unwrap();
+        let applications: Vec<_> = accepted
+            .raw()
+            .operations
+            .iter()
+            .filter_map(|op| match op {
+                RawOp::ApplyUnitary { steps, .. } => Some(steps.clone()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(applications.len(), 1, "{provider}");
+        let actual = Circuit::new(BasisType::Bit, applications[0].clone())
+            .unwrap()
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        // Both fault controls are native-valid unitaries. Admission alone
+        // supplies no claim that either matches the intended y_minus meaning.
+        assert_eq!(actual == expected, provider == "y_minus", "{provider}");
+    }
+}

@@ -1,0 +1,77 @@
+[
+  {
+    "label": "verification-inventory",
+    "command": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.4509595420095138
+  },
+  {
+    "label": "production-coverage",
+    "command": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.1278323750011623
+  },
+  {
+    "label": "coverage-tests",
+    "command": [
+      "python3",
+      "scripts/test_check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.105916749977041
+  },
+  {
+    "label": "editions",
+    "command": [
+      "python3",
+      "scripts/check_editions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 3.575396374973934
+  },
+  {
+    "label": "authoring",
+    "command": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.21904908400028944
+  },
+  {
+    "label": "docs",
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.7744663750054315
+  },
+  {
+    "label": "constitution",
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "exit_code": 0,
+    "seconds": 1.1121423749718815
+  },
+  {
+    "label": "book",
+    "command": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "build",
+      "docs"
+    ],
+    "exit_code": 0,
+    "seconds": 0.3872919579735026
+  }
+]

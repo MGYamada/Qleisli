@@ -1,0 +1,2 @@
+pub unitary fn public(q:Q<Bit>)->Q<Bit>{helper(q)}
+unitary fn helper(q:Q<Bit>)->Q<Bit>{q}

@@ -1,0 +1,2 @@
+   Packaging qleisli v0.3.0-alpha (/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/source)
+    Packaged 4361 files, 81.9MiB (10.6MiB compressed)

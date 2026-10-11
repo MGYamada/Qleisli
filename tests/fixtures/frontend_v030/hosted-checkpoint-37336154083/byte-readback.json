@@ -1,0 +1,8 @@
+{
+  "complete_files": 10,
+  "chunks": 39,
+  "failures": [],
+  "format": "qleisli.connector-byte-readback",
+  "version": 1,
+  "scope": "Compared all ten complete retained payloads with connector-returned UTF-8 bytes in39 bounded chunks before lossless gzip of the six completed logs. No HTTP headers/ZIP archive-byte identity claimed."
+}

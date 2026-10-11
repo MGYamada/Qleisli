@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.hosted-ci-basis-local-validation",
+  "version": 1,
+  "status": "passed-declared-local-checks",
+  "public_failure_head": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "public_failure_run": 37417326872,
+  "files": [
+    {
+      "path": "tests/quantum_tuple_unitors.rs",
+      "sha256": "49312215136ffa27f1b5698b9967495b07af2e81c2a645f8dcdc84e8aa12a4db"
+    },
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/finite-coherent-unitors/main.qli",
+      "sha256": "c1751f06e2db0cda04decebd00c48b15698646e8b6edafdb2b56e03668410772"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors/main.qli",
+      "sha256": "ddfc8d428823d56b7ebbe4ef7de52cea96f8db9dbec59e7ca5344cec38d78162"
+    }
+  ],
+  "commands": [
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/fmt-01.json",
+      "sha256": "6cf34cad679170aa6176556091194aafe5c018c638c3bdf93a689942cdc7df04",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/latest-clippy-01.json",
+      "sha256": "d56f3257f67292f2828cb11fe34ffbedd123f68eba91b65a488d8e46a1438b90",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/latest-tests-01.json",
+      "sha256": "51deee334c9d04dff88f406de6055479dd9c635bae70b5be9f55dab0c265127f",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/msrv-clippy-01.json",
+      "sha256": "bdcb621965716da0123a7622506bd93f508baeccbaf5e9998cb05892a813ba01",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/msrv-tests-01.json",
+      "sha256": "8a133104da486b69ec66924795c1586f436c7dcb8629ca988781de8b328ad834",
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "Both toolchains passed all 11 tests with zero ignored; targeted Clippy and formatting passed.",
+    "The original historical source and actual hosted failures are preserved.",
+    "No production rule, independent oracle, native checker or formal proof changed.",
+    "No fresh Lean build/audit/replay, general preservation theorem or full hosted CI/package/distribution success claimed.",
+    "Distribution inner failure remains unverified."
+  ]
+}

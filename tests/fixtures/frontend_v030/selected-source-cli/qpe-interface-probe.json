@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "emit-proposal",
+    "--entry=measurement::qpe",
+    "--nat=n=1",
+    "--nat=m=1",
+    "--operation=U=evolution::evolve",
+    "--operation-nat=U.n=1",
+    "--operation-nat=U.j=1",
+    "--operation-nat=U.d=3",
+    "--output=/private/tmp/qleisli-selected-qpe-request-repair/baseline.json",
+    "--module=measurement=/Users/masa/git/Qleisli/corpus/sized/measured_qpe/measurement.qli",
+    "--module=initialization=/Users/masa/git/Qleisli/corpus/sized/measured_qpe/initialization.qli",
+    "--module=readout=/Users/masa/git/Qleisli/corpus/sized/measured_qpe/readout.qli",
+    "--module=estimation=/Users/masa/git/Qleisli/corpus/sized/qualtran_qpe/estimation.qli",
+    "--module=preparation=/Users/masa/git/Qleisli/corpus/sized/qualtran_qpe/preparation.qli",
+    "--module=fourier=/Users/masa/git/Qleisli/corpus/sized/qualtran_qft/fourier.qli",
+    "--module=evolution=/Users/masa/git/Qleisli/corpus/sized/qualtran_qpe/evolution.qli"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-proposal\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"untrusted-proposal\",\"entry\":\"measurement::qpe\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"none\"}}\n",
+  "stderr": ""
+}

@@ -8,4 +8,4 @@
 use std::quantum::init0;
 use std::quantum::h;
 use kernel::is_plus;
-observe fn main() -> CBit { is_plus(h(init0())) }
+observe fn main() -> Bit { is_plus(h(init0())) }

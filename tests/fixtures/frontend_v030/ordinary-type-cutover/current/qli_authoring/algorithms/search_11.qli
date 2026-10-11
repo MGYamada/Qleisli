@@ -1,0 +1,7 @@
+//! One Grover iteration selects 11 among four labels.
+use amplification::uniform;
+use amplification::amplify_once;
+use oracles::mark11;
+use oracles::Mark11;
+use std::routines::measure_z2;
+observe fn main() -> (Bit,Bit) { measure_z2(amplify_once[uniform,bind_op(mark11,Mark11)]()) }

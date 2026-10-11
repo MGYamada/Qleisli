@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/public-missing-kind"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/public-missing-kind/Qargo.toml:1:1: project: Qargo.toml requires schema-version = 2\n",
+  "native_invocations": 0,
+  "seconds": 0.007346375030465424,
+  "recorded_utc": "2026-10-05T10:01:55.447519+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

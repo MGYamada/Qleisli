@@ -1,0 +1,418 @@
+[
+  {
+    "case": "restricted-legacy-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.04255204199580476,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-flat/main.qli\", span: Span { start: 152, end: 161 }, line: 3, column: 72 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "8f033424e34a615b69048a61d48bb9607a819a4cd4f46656b1a8cf379dce6d3e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.5190244580153376,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..84: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "6e538ed6531e66d0c9a0d45565156dfebf9300fe4f2628ab91d706043ad45b71",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-mismatch-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.02713099995162338,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..84: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-flat/main.qli\", span: Span { start: 160, end: 169 }, line: 3, column: 76 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "a3a98fff5e05b0e01d58b4242dca6bdb2a2948046831bcdd2948633f8685efac",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "certified-legacy-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.04653158399742097,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-flat/main.qli\", span: Span { start: 213, end: 222 }, line: 4, column: 72 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "1c7451e066af247a0b0f1ffe064a39c0bec2bb4e97c020a00c95b6cc0240446a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-unary-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4037417090148665,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..81: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "06487c6f722c8eb66d932c0b4dc645b0e55c88dcc10e2f5fd8fcd99cc5c17fb8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4254377079778351,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "e31f3daa23e71b125a842371ad4a6a1f93dc912aaf1d03de1e39cd881d8c004a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4248708329978399,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..88: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "4e6c513aa55b3978af07004aa278718e5473cb749bfbf1c1b1499b14a88f1493",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-mismatch-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.027061083004809916,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..88: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-left/main.qli\", span: Span { start: 164, end: 173 }, line: 3, column: 76 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "cebd90e03e8d02ef4f453b7aec6b63da83ea1c0c0dc288f497ca348582546cb9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "certified-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 1.4077994169783778,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "e31f3daa23e71b125a842371ad4a6a1f93dc912aaf1d03de1e39cd881d8c004a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-unary-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4141596669796854,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..89: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "2e6c41241f0eeef2f78cd0666e78ba103231469164369fd5b0ebf2775f8849ea",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-legacy-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.02726587501820177,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-right/main.qli\", span: Span { start: 156, end: 165 }, line: 3, column: 76 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "2e545ab4b4508da1596ac716b0e731a13874cbf4446ea893effac4d913736ec3",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.42338779103010893,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..88: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "4e6c513aa55b3978af07004aa278718e5473cb749bfbf1c1b1499b14a88f1493",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unary-mismatch-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.02696229104185477,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..88: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-right/main.qli\", span: Span { start: 160, end: 169 }, line: 3, column: 72 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "e4dc4dcebbbcae579f6dee30547cc6f64135f08b4ebb302c8d8002132e9e3ac1",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "certified-legacy-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.046278915950097144,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-right/main.qli\", span: Span { start: 221, end: 230 }, line: 4, column: 76 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "4fdd79500ced37a4692236e24bbb1eca60485e5a7958e8d9bd0291baace18ae5",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-unary-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.40340029197977856,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..89: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "2e6c41241f0eeef2f78cd0666e78ba103231469164369fd5b0ebf2775f8849ea",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.006711875030305237,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..81: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-legacy-left/main.qli\", span: Span { start: 128, end: 132 }, line: 3, column: 47 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "5b9470a7ca97a621863887fe5286b3de40f3d9db99b9a45b9f236190d59516da",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-zero",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4236535000381991,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..49: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "d4a90a064afba697a417bde8b4e2e14a8c40de38733aa5b1ccec6ae41f58613d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "certified-zero",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4846028329920955,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..49: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "d4a90a064afba697a417bde8b4e2e14a8c40de38733aa5b1ccec6ae41f58613d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-zero",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.006750375032424927,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..46: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-zero/main.qli\", span: Span { start: 82, end: 86 }, line: 3, column: 36 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "8a2bc1cec0aba3a6962cd57cf756cfbcf9ca27e80af91d33f9a8bf5400b0170f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "restricted-unit",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.42372008302481845,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..55: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "de7f54f87e13a54f383e6caccd55a140894d2eedab935aced844b9dcf7f3102f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "certified-unit",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4884603329701349,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..55: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "de7f54f87e13a54f383e6caccd55a140894d2eedab935aced844b9dcf7f3102f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "meaning-unit",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4038103329949081,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..52: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "99fc0d4cf9ca1fcd9b3249003d067b84c8da8fdee0d505d6324e4df064c9f322",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "ordinary-three-arguments",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-three-arguments",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.4082189580076374,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..74: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": "",
+    "stdout_sha256": "635ded6ff51d455212772d014775f1b2f7f6c8ff4f8b97065bfdf55a97add34c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "ordinary-tuple-is-not-three-arguments",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-tuple-is-not-three-arguments",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.007067291007842869,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..74: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-tuple-is-not-three-arguments/main.qli\", span: Span { start: 122, end: 136 }, line: 3, column: 48 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "ec0fc17d7951d3d72bc89829574a22cff3383ab70f047dbd799c983c499f0e17",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "ordinary-zero-called-with-unit",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-zero-called-with-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.006682708044536412,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..43: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-zero-called-with-unit/main.qli\", span: Span { start: 73, end: 77 }, line: 3, column: 30 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "27c23efa90369e11278c73ce12099db5f12179f006ac840d975992a9fbd4c7c9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "case": "ordinary-unit-called-with-zero",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-unit-called-with-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "seconds": 0.006508083024527878,
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..49: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-unit-called-with-zero/main.qli\", span: Span { start: 73, end: 76 }, line: 3, column: 24 }) }\n",
+    "stderr": "",
+    "stdout_sha256": "7e0d20b2a54d001b2fc930c8085272d5ddb3375778d05de43235c574025c2dd8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

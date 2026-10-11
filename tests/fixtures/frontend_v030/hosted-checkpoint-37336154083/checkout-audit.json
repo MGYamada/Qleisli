@@ -1,0 +1,103 @@
+{
+  "format": "qleisli.hosted-checkout-artifact-audit",
+  "version": 1,
+  "run": 37336154083,
+  "published_head": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+  "checked_merge": "7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+  "parents_in_order": [
+    "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "9256fe9ef4ffa722066b0569ee37341cf65dea0d"
+  ],
+  "complete_successful_job_log_checkouts": [
+    {
+      "complete_log": "logs/changes-111851329117.log.txt.gz",
+      "decoded_sha256": "f16b6d54705474ff21f68f9ba7ca33cf7b149d328c33747dcbcd397ac51fbaa5",
+      "exact_sha_line": {
+        "line": 121,
+        "text": "2026-10-05T15:51:18.8297010Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 118,
+        "text": "2026-10-05T15:51:18.8195783Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    },
+    {
+      "complete_log": "logs/check-docs-111851435760.log.txt.gz",
+      "decoded_sha256": "3d2dbcc8c8e71713aa50c9194dd34bbb7d62cc65dc832d3ff018821c9c3f2d83",
+      "exact_sha_line": {
+        "line": 183,
+        "text": "2026-10-05T15:51:31.1511844Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 180,
+        "text": "2026-10-05T15:51:31.1413822Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    },
+    {
+      "complete_log": "logs/check-interop-111851435941.log.txt.gz",
+      "decoded_sha256": "f625936fd5542e29da3bfc39bf73b8fe64a45b3f847b00c0cf27f4a1d60430b7",
+      "exact_sha_line": {
+        "line": 125,
+        "text": "2026-10-05T15:51:33.2737553Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 122,
+        "text": "2026-10-05T15:51:33.2636647Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    },
+    {
+      "complete_log": "logs/check-lean-111851436073.log.txt.gz",
+      "decoded_sha256": "cd2a75a504fdf89fd7199ed61e2c705351f52235d321ee1054b686ea973c54d6",
+      "exact_sha_line": {
+        "line": 124,
+        "text": "2026-10-05T15:51:33.1361587Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 121,
+        "text": "2026-10-05T15:51:33.1251777Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    },
+    {
+      "complete_log": "logs/check-lean-kernel-111851435887.log.txt.gz",
+      "decoded_sha256": "d69ecf7e214c1bfac2c94822d13cf767a87f9952c4a7eed9795aa2e0b4bdd808",
+      "exact_sha_line": {
+        "line": 127,
+        "text": "2026-10-05T15:51:34.0342237Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 124,
+        "text": "2026-10-05T15:51:34.0243235Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    },
+    {
+      "complete_log": "logs/check-macos-source-111851435978.log.txt.gz",
+      "decoded_sha256": "cac2f9fd976a62d4c6199085041e4483c0cc6d60b892bbdd5b12058db55e58f9",
+      "exact_sha_line": {
+        "line": 166,
+        "text": "2026-10-05T15:51:46.4268200Z 7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "merge_message_line": {
+        "line": 163,
+        "text": "2026-10-05T15:51:46.3712590Z HEAD is now at 7549cec Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+      }
+    }
+  ],
+  "successful_terminal_producers": [
+    "check-docs",
+    "check-interop",
+    "check-lean",
+    "check-lean-kernel",
+    "check-macos-source"
+  ],
+  "unfinished_producers_at_snapshot": [
+    "check-distribution",
+    "check-rust",
+    "check-rust-msrv"
+  ],
+  "required_aggregate_success_established": false,
+  "release_readiness_established": false,
+  "skipped_release_receipts_preserved": true,
+  "changed_math_proof_compilation_skipped": true,
+  "all_local_artifact_assertions_passed": true,
+  "scope": "Frozen transport/data audit only; no fresh GitHub request, CI/test execution, source adequacy or constitutional discharge."
+}

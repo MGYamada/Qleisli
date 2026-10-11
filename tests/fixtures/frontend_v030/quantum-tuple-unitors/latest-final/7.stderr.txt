@@ -1,0 +1,3 @@
+ Documenting qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `dev` profile [unoptimized] target(s) in 1.30s
+   Generated /private/tmp/qleisli-bounded-validation-target/doc/qleisli/index.html

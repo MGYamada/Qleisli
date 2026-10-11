@@ -1,0 +1,22 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,h,x,z,t,tdg,cnot,join,split};
+use std::observe::measure_z;
+
+basis fn z_phase(b: Bit) -> (Bit,(Bit,Bit)) { (0,(0,b)) }
+meaning ZMeaning: Bit = phase_by(z_phase);
+unitary fn direct_z(q: Q<Bit>) -> Q<Bit> { z(q) }
+unitary fn fourth_t(q: Q<Bit>) -> Q<Bit> { repeat_static(4,t,q) }
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn apply_gate[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { U(q) }
+unitary fn apply_pair[static U: Op<(Bit,Bit)>](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
+requires Apply(U) { U(q) }
+
+pub unitary fn probe(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    apply_pair[controlled_op(inverse_op(then_op(checked_op(direct_z,ZMeaning),repeat_op(3,checked_op(fourth_t,ZMeaning)))))](q)
+}
+pub observe fn main() -> (Bit,Bit) {
+    let q = probe(join(h(init0()),t(h(init0()))));
+    let (c,q) = split(q);
+    (measure_z(h(c)),measure_z(h(tdg(q))))
+}

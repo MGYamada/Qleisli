@@ -1,0 +1,23 @@
+{
+  "id": "04.authoring",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_authoring_sessions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:20.242133+00:00",
+  "elapsed_seconds": 0.6282345419749618,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "04.authoring.stdout.txt",
+    "sha256": "3f09fd19a1e76f63bdcd035783dabd391c306b4e1a3d1c0ba7eac29219fc6b4c",
+    "bytes": 95
+  },
+  "stderr": {
+    "path": "04.authoring.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

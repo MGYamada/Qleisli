@@ -1,0 +1,16 @@
+{
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "recorded_utc": "2026-10-06T06:26:53.019503+00:00",
+  "files": {
+    "attempt-01/nested-label/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/nested-label/main.qli": "2508c13a742c4103f2f073a416cdafffa7b441329f4a2da7663e366ec79458a9",
+    "attempt-01/ordinary-and/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/ordinary-and/main.qli": "f29e5137689495936d010ced6db137625015faf161496c6dc261cd4c13c58aa8",
+    "attempt-01/quantum-argument/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/quantum-argument/main.qli": "30ffb4906c9c77ca44ddfd1b961e5c6dec7f977416ff0a0a0936b3e5b7f65ee7",
+    "attempt-01/shared-flip/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/shared-flip/main.qli": "4d630bdb5026205aa180150cb9decf6336cf2a722b659850bc9d6e304c206ecc",
+    "context.md": "d16b165fd1e2410f2c771f76ca72e6c85219d0a06fca73fe8ce4d036bae0a479"
+  },
+  "scope": "Four focused current first-source derivatives and pre-check context only."
+}

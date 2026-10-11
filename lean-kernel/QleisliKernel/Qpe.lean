@@ -3,7 +3,7 @@ import QleisliKernel.ControlledPowers
 import QleisliKernel.Uniform
 
 /-! Internal complete QPE plan binding. No external registry is enabled here.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Qpe
 

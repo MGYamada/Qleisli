@@ -1,0 +1,13 @@
+2026-10-06T05:31:57.8961499Z ---- finite_controls_remain_checked_and_raw_tuple_limits_are_explicit stdout ----
+2026-10-06T05:31:57.8962057Z 
+2026-10-06T05:31:57.8962761Z thread 'finite_controls_remain_checked_and_raw_tuple_limits_are_explicit' (80399) panicked at tests/quantum_tuple_unitors.rs:867:57:
+2026-10-06T05:31:57.8970359Z called `Result::unwrap()` on an `Err` value: CompileError { code: Project, path: "/tmp/qleisli-test-80396-1/main.qli", span: Span { start: 116, end: 118 }, line: 2, column: 43, message: "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state." }
+2026-10-06T05:31:57.8973246Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T05:31:57.8973783Z 
+2026-10-06T05:31:57.8973795Z 
+2026-10-06T05:31:57.8973928Z failures:
+2026-10-06T05:31:57.8974612Z     finite_controls_remain_checked_and_raw_tuple_limits_are_explicit
+2026-10-06T05:31:57.8975110Z 
+2026-10-06T05:31:57.8975577Z test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.35s
+2026-10-06T05:31:57.8976202Z 
+2026-10-06T05:31:57.8976497Z error: test failed, to rerun pass `--test quantum_tuple_unitors`

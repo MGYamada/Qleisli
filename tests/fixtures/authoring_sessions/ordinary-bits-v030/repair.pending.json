@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#342 ordinary Bits<N> source transport, copy/drop, ordering and eager measurement",
+  "baseline_commit": "8b5e68c027b0f12f416ae0d40d8165cd1c0a9acb",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed code/Reference access, model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight unchanged complete desired projects saved before transport implementation.",
+      "sha256": {
+        "zero-copy/main.qli": "c07d7a2a12a5cbb3ba8a65d4b2bb1b3b5cf28bb355e6ae3e7ad0098592e9fe1d",
+        "generic-one/main.qli": "375dd308dc0dc00ee15e9a9493d8d4687d0539ce2a659c91c2817d022a5b31e3",
+        "nested-copy/main.qli": "7e33f963f91872e7e3590ca4dcca7e63197812b25912062e230cf6bc576cbd2d",
+        "measured-copy/main.qli": "ba014ce28f68eb508cfff837ed9f5a59046ad3da0bcea4cae49478c283b97e8b",
+        "pack-00/main.qli": "11c2f76c33a0cc1baab34198b05a92b78a41b79504c24b1921a081fe2afd0dce",
+        "pack-01/main.qli": "f3d93183b023103ffb280dddaee550184363507957979fb936a0cec4caf1f7ae",
+        "pack-10/main.qli": "37d62566890315a1d558c49acae217007199343873767b32380d90cfa3d80d42",
+        "pack-11/main.qli": "d92f9f8751e36b3d6efc465fdf86ad01cd9b881cf6ec1da2b051533f81e4b24b"
+      },
+      "observations": [
+        "observations-before/generic-one-finite-run.json",
+        "observations-before/generic-one-raw-check.json",
+        "observations-before/measured-copy-finite-run.json",
+        "observations-before/measured-copy-raw-check.json",
+        "observations-before/nested-copy-finite-run.json",
+        "observations-before/nested-copy-raw-check.json",
+        "observations-before/pack-00-finite-run.json",
+        "observations-before/pack-00-raw-check.json",
+        "observations-before/pack-01-finite-run.json",
+        "observations-before/pack-01-raw-check.json",
+        "observations-before/pack-10-finite-run.json",
+        "observations-before/pack-10-raw-check.json",
+        "observations-before/pack-11-finite-run.json",
+        "observations-before/pack-11-raw-check.json",
+        "observations-before/zero-copy-finite-run.json",
+        "observations-before/zero-copy-raw-check.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "expectations.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "First observations exposed classical fn restrictions: pure expressions only, no Nat/operation parameters or static-argument primitive calls. Keep classical copy helpers pure and use ordinary unitary functions for packing and Nat specialization. This is a source repair, not transport implementation.",
+      "sha256": {
+        "generic-one/main.qli": "4d4cb7f5faee1bcee00b88a8fef21cd3f68b885a93d64ee6503d11d331597419",
+        "measured-copy/main.qli": "24498c10913852eb986ac4e6b85eaa34ed1f4e085ad1ebf06e7c4474547547d7",
+        "nested-copy/main.qli": "02257614b7e872a28516e1204d622b54eb01082f07348c00ab1c828fcd0a74a6",
+        "pack-00/main.qli": "9eceda4d0b0cf248c476f5f1a0d5fba9640a8a0e27ec2ff58e0cb7ee4136c79d",
+        "pack-01/main.qli": "59f9f5c3b8564bad0bc3adba72557b924e11a209c26c20df4bf2dd700a92c4e7",
+        "pack-10/main.qli": "3a84a5eeef4c070b9601a4c56bd129750b53b7201de2088b714fa85c110f9476",
+        "pack-11/main.qli": "81695d559c7edc12abcec43da3e8bdea48e94a578a822ee73197f739a2857f1a",
+        "zero-copy/main.qli": "dede7abf95196fb6266eaf17d7cd136f600748a63c5bb1a3036377882aa5d376"
+      },
+      "observations": []
+    }
+  ],
+  "manifest_sha256": {
+    "zero-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "generic-one/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "measured-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "pack-00/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "pack-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "pack-10/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "pack-11/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Bounded first-source observations only; no acceptance, source theorem, new guarantee, full CI or issue completion claim."
+}

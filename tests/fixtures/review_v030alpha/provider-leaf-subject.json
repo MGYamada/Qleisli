@@ -1,0 +1,78 @@
+{
+  "format": "qleisli.bounded-provider-leaf-review",
+  "version": 1,
+  "issues": [
+    44,
+    32
+  ],
+  "base_commit": "5bd267f76a9084acc7cd2d67b059fb161267ab3a",
+  "status": "locally-checked-component; mandatory generic binding unfinished",
+  "contract": {
+    "subject": "Actual original entry operation binding definition and its called dependencies; original caller instantiation remains retained.",
+    "authority": "Untrusted Rust preparation; existing native finite gate alone creates the checked leaf. Ordered replay is Rust evidence, not an AST-to-step theorem.",
+    "budgets": "Existing source selection and emission ceilings retained. Immutable definition graph shared by Arc; no copying/relabeling of caller metadata.",
+    "unsupported": [
+      "repeated provider leaves",
+      "providers with further operation bindings",
+      "automatic all-binding enforcement",
+      "generic Meaning-refined source execution"
+    ]
+  },
+  "source_sha256": {
+    "src/frontend/sized/elaborate.rs": "b2d70b784e4b961dafaaf99bee362394485ad8492ee2367b0886615fcd0ec5f9",
+    "src/frontend/sized/raw.rs": "8bd703531eb13d28b5d979001ec2abb3df61ebe05bf0b333d7078d4e2a73a74e",
+    "src/frontend/sized/raw/preservation.rs": "4a58aa79964364baaa65c244be5203f33c475f22256be3232915673d2789d441",
+    "tests/classical_functions.rs": "db8117de813f3d383e20fc8446757ad7d595c1cdc9c7ee0e12f0adc521fc63bf"
+  },
+  "bounded_regression": {
+    "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity",
+    "source": "tests/classical_functions.rs",
+    "cases": [
+      "unused correct Bit X with called helper",
+      "unused lying Bit identity",
+      "unused correct Unit minus phase",
+      "unused incorrect Unit three-eighth phase"
+    ],
+    "result": "All actual provider bodies pass ordinary native validity and ordered subject replay; exactly correct requested operators pass native finite equality; both lies reject as contract errors. Caller Raw operation profile remains unsupported; unknown binding rejects."
+  },
+  "checks": {
+    "latest_integration": "45 passed, 0 failed, 0 ignored: classical_functions 19, basis_polymorphism 10, quantum_unit_source 16",
+    "actual_msrv_1_85_0_integration": "same 45 passed, 0 failed, 0 ignored via scripts/run_msrv.py",
+    "latest_private_raw": "2 passed, 0 failed",
+    "latest_all_target_clippy": "passed with -D warnings",
+    "actual_msrv_all_target_clippy": "passed with -D warnings via scripts/run_msrv.py",
+    "coverage_checker_tests": "14 passed",
+    "inventory_checker_tests": "17 passed",
+    "inventory": "275 constructors, 265 snapshots, 20 boundaries",
+    "coverage": "22 production paths, 9 existing native modes",
+    "docs": "2186 local links, 30 anchors, 206 Lean roots",
+    "book": "mdBook 0.5.4 build passed; 29 HTML files, 1224 links, 471 anchors",
+    "constitution": "passed against exact trusted base 38baae7d19535602b21270e11e97617d45205b37; identity/continuity only, no fresh replay",
+    "actual_msrv_private_raw": "2 passed, 0 failed via scripts/run_msrv.py"
+  },
+  "observed_repairs": [
+    "Initial new test compilation failed E0616 by using private error.code fields; changed assertions to the public code() accessor and reran successfully.",
+    "An attempted related-suite command used nonexistent basis_specialization target; no tests ran from that command; corrected to actual basis_polymorphism target.",
+    "Production coverage initially rejected changed replay markers until the reviewed source bindings and exact snapshot were updated."
+  ],
+  "not_performed": [
+    "fresh Lean build/audit/replay (no Lean changes)",
+    "new full all-target Rust run",
+    "package/install/release verification",
+    "hosted validation of this new component"
+  ],
+  "constitutional_impact": {
+    "interpretations": [
+      "QS-2026-01",
+      "PR-2026-01",
+      "RS-2026-01",
+      "EXACT-2026-01"
+    ],
+    "QS": "Actual provider bytes, exact requested phase/type and ordered dependencies are checked through the existing finite path. Complete generic source preservation remains pending.",
+    "PR": "No target lowering/export acceptance change or realization certification.",
+    "RS": "Existing host work/storage caps preserved, not quantitative program-resource certification.",
+    "protected_guarantees": "Two scoped ordinary QLV1 ownership/classical-scope guarantees unchanged; no semantic transport or new discharge claimed."
+  },
+  "completion": "22/111 (19.82%); #44 remains open; #63 deferred only for 0.3.0-alpha",
+  "ci": "Existing run 37502280428 still in_progress at observation on base commit; no restart/cancel/push during that run."
+}

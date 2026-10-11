@@ -1,0 +1,26 @@
+{
+  "format": "qleisli.multi-declaration-preparation",
+  "version": 1,
+  "status": "original study and interface preparation followed by bounded candidate implementation observations",
+  "contract": {
+    "source": "https://github.com/MGYamada/Qleisli/issues/32",
+    "section": "Next common frontend unit: all checked declarations in a sized module",
+    "local_received_path": "/private/tmp/qleisli-next-multideclaration-contract.md",
+    "sha256": "aa722e8bba830b31515ad6c848b6d2a7254492917e7785e4f20ff7052a995535"
+  },
+  "files": {
+    "README.md": "b2c23163dc77ec5b6f718bb50641a3f8792b92c0550c4b9b23545030daf401f9",
+    "contract.md": "aa722e8bba830b31515ad6c848b6d2a7254492917e7785e4f20ff7052a995535",
+    "expectations.md": "8e3a645e5ec0d8994618e7068ac59908e0483ddcd5a7aa9725022d171b0d4bb4",
+    "interfaces.md": "226b0e52925cfde3b45d212be770b90c7204b7ed480eafddfac10e047037a49c",
+    "preservation.json": "4ab202d25f82492122347eb50097ee16eecc15784b6ad18433420056c7cfc2a5",
+    "replay.py": "7ebdd9cf0a1a160b4371bfbfd74bc3bb04c4bb31ec376054d3cd63027a131487",
+    "comparison.json": "80dcc5f4908e2d4019dd52c0d783939d5c48adc1a1cee9143c3044a33481afd0",
+    "after/validation.json": "251cdeb054c4309f0c141e21d412c3902444fe6acbab5fc76471e72406ff5990"
+  },
+  "new_execution_results": [
+    "after/validation.json",
+    "after/commands.json",
+    "after/observations.json"
+  ]
+}

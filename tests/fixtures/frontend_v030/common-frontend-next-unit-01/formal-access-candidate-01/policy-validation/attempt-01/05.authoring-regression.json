@@ -1,0 +1,23 @@
+{
+  "id": "05.authoring-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_authoring_sessions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:20.376507+00:00",
+  "elapsed_seconds": 0.1303843330242671,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "05.authoring-regression.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "05.authoring-regression.stderr.txt",
+    "sha256": "62f4decbacb2e031de4e76f2bc96caa7cf3ec498967ced4083e0885df723cc1e",
+    "bytes": 105
+  }
+}

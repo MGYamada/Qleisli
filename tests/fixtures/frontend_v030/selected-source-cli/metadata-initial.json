@@ -1,0 +1,56 @@
+{
+  "scope": "Actual first metadata checks; scheduler command-list/count expectation required updating from86to87 after adding selected CLI coverage.",
+  "checks": [
+    {
+      "i": 0,
+      "check": {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "7e4a87",
+          "wall_time_seconds": 0.313880834,
+          "exit_code": 0,
+          "original_token_count": 32,
+          "output": "VM-22: 265 constructors, 249 source snapshots, 20 boundaries; native authority selected by #276; full Soundness remains open.\n"
+        }
+      }
+    },
+    {
+      "i": 1,
+      "check": {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "a0a37d",
+          "wall_time_seconds": 0.008563875,
+          "exit_code": 0,
+          "original_token_count": 116,
+          "output": "{\n  \"groups\": 36,\n  \"public_boundaries\": 20,\n  \"public_source_files\": 94,\n  \"constructor_variants\": 265,\n  \"authority\": \"Lean\",\n  \"migration\": \"single-lean-acceptance-implemented\",\n  \"target_authority\": \"Lean\",\n  \"production_paths\": 21,\n  \"native_modes\": 9,\n  \"published_baseline\": \"0.2.9\",\n  \"development_version\": \"0.3.0-alpha\",\n  \"development_status\": \"unpublished\",\n  \"open_gates\": [\n    \"S05-C1\",\n    \"S05-C2\",\n    \"S05-C3\",\n    \"S05-C4\",\n    \"S05-C5\"\n  ]\n}\n"
+        }
+      }
+    },
+    {
+      "i": 2,
+      "check": {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "858f84",
+          "wall_time_seconds": 1.787518209,
+          "exit_code": 0,
+          "original_token_count": 28,
+          "output": "Checked 1726 local links, 13 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n"
+        }
+      }
+    },
+    {
+      "scheduler_initial": {
+        "status": "fulfilled",
+        "value": {
+          "chunk_id": "04b5d9",
+          "wall_time_seconds": 0.691397,
+          "exit_code": 1,
+          "original_token_count": 706,
+          "output": ".failed: task-0 (0.1s)\n{\"command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"raise SystemExit(2)\"], \"executed_command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"raise SystemExit(2)\"]}\n\npassed: task-2 (0.0s)\nfailed: task-1 (0.2s)\n{\"command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"import time; time.sleep(10)\"], \"executed_command\": [\"/opt/homebrew/opt/python@3.14/bin/python3.14\", \"-c\", \"import time; time.sleep(10)\"]}\n\n.....Fpassed: task-0 (0.1s)\n.passed: nested (0.0s)\n.passed: task-0 (0.0s)\npassed: task-1 (0.1s)\n.F..passed: task-1 (0.0s)\npassed: task-0 (0.0s)\n..\n======================================================================\nFAIL: test_native_handles_and_original_input_replay_are_required (__main__.NativeCI.test_native_handles_and_original_input_replay_are_required)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_run_native_ci.py\", line 76, in test_native_handles_and_original_input_replay_are_required\n    self.assertEqual(task['commands'], [\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n        ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<9 lines>...\n        ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ])\n    ^^\nAssertionError: Lists differ: [['ca[556 chars], '--test', 'selected_source_cli'], ['cargo', [215 chars]d}']] != [['ca[556 chars], '--lib', 'raw_source_replay'], ['cargo', '+1[152 chars]d}']]\n\nFirst differing element 8:\n['cargo', '+1.98.1', 'test', '--test', 'selected_source_cli']\n['cargo', '+1.98.1', 'test', '--lib', 'raw_source_replay']\n\nFirst list contains 1 additional elements.\nFirst extra element 11:\n['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}']\n\nDiff is 947 characters long. Set self.maxDiff to None to see it.\n\n======================================================================\nFAIL: test_retains_every_pre_206_command_and_environment (__main__.NativeCI.test_retains_every_pre_206_command_and_environment)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_run_native_ci.py\", line 29, in test_retains_every_pre_206_command_and_environment\n    self.assertEqual(sum(len(task[\"commands\"]) for task in tasks), 86)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 87 != 86\n\n----------------------------------------------------------------------\nRan 15 tests in 0.562s\n\nFAILED (failures=2)\n"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+use std::quantum::x;
+fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+pub fn f(q:Q<Bit>)->Q<Bit>{apply[x](q)}

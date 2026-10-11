@@ -1,0 +1,28 @@
+
+running 1 test
+test src/lib.rs - (line 17) ... FAILED
+
+failures:
+
+---- src/lib.rs - (line 17) stdout ----
+Test executable failed (exit status: 1).
+
+stderr:
+Error: InteropError { kind: InvalidIr, message: "kernel: select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL", span: None, operation: None }
+Error: "the test returned a termination value with a non-zero status code (1) which indicates a failure"
+
+
+
+failures:
+    src/lib.rs - (line 17)
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test src/sim.rs - sim::ExecutableProgram (line 24) - compile fail ... ok
+test src/interchange/native.rs - interchange::native::AcceptedProgram (line 299) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+all doctests ran in 0.56s; merged doctests compilation took 0.25s

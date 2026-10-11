@@ -1,0 +1,1 @@
+pub unitary fn main(b: Bits<2>) -> (Bits<2>,Bits<2>) { (b,b) }

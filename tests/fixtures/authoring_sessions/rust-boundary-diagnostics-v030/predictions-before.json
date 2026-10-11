@@ -1,0 +1,110 @@
+{
+  "format": "qleisli.informed-rust-boundary-predictions",
+  "version": 1,
+  "recorded_before_commands_utc": "2026-10-06T05:14:11.041720+00:00",
+  "phase": "before",
+  "cases": {
+    "classical-drop-controls": {
+      "check_exit": 0,
+      "class": "ordinary copying, ignored Bit, wildcard and user-defined drop permitted",
+      "run_result": {
+        "bits": [
+          true,
+          false
+        ],
+        "probability": 1
+      }
+    },
+    "unresolved-classical-drop": {
+      "check_exit": 1,
+      "code": "name",
+      "locate": "drop(0)",
+      "callee_only": true,
+      "class": "no built-in drop; no inference that ordinary Bit owns Q",
+      "predicted_span": {
+        "start": 103,
+        "end": 107
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "unresolved-quantum-drop": {
+      "check_exit": 1,
+      "code": "name",
+      "locate": "drop(q)",
+      "callee_only": true,
+      "class": "no built-in drop; unresolved-name priority precedes argument judgment",
+      "predicted_span": {
+        "start": 153,
+        "end": 157
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "user-quantum-drop": {
+      "check_exit": 0,
+      "class": "resolved Observe helper using explicit discard retains ordinary name resolution",
+      "run_result": {
+        "bits": [
+          false
+        ],
+        "probability": 1
+      }
+    },
+    "local-drop-category": {
+      "check_exit": 1,
+      "code": "type_mismatch",
+      "locate": "drop(q)",
+      "callee_only": true,
+      "class": "local Bit is not callable; unresolved-name teaching must not replace category priority",
+      "predicted_span": {
+        "start": 171,
+        "end": 175
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "nested-unit-wildcard": {
+      "check_exit": 1,
+      "code": "ownership",
+      "locate": "_",
+      "class": "nested zero-width owner cannot be ignored by ordinary wildcard",
+      "predicted_span": {
+        "start": 168,
+        "end": 169
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "nested-unit-scope": {
+      "check_exit": 1,
+      "code": "ownership",
+      "locate": "env",
+      "class": "nested zero-width owner cannot disappear at lexical scope end",
+      "predicted_span": {
+        "start": 135,
+        "end": 138
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "reset-result-discarded": {
+      "check_exit": 1,
+      "code": "ownership",
+      "locate": "reset(q)",
+      "class": "reset returns live Q rather than consuming into ordinary Unit",
+      "predicted_span": {
+        "start": 178,
+        "end": 186
+      },
+      "span_encoding": "half-open UTF-8 bytes; these source tokens are ASCII"
+    },
+    "reset-result-returned": {
+      "check_exit": 0,
+      "class": "returning fresh reset owner through a checked helper is valid; later measure_z explicitly consumes it",
+      "run_result": {
+        "bits": [
+          false
+        ],
+        "probability": 1
+      }
+    }
+  },
+  "after_rule": "Same sources, exits, diagnostic codes/spans/category and successful run outputs; only selected teaching messages may change. This is a prediction, not a result.",
+  "scope": "Informed public CLI diagnostic controls; not blind benchmark or proof."
+}

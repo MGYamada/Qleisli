@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `basis`, `iso`, `unitary`, or `observe` after `pub`",
+        "primary": {
+          "path": "main.qli",
+          "start": 4,
+          "end": 6,
+          "line": 1,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.0056946660042740405,
+  "recorded_utc": "2026-10-05T08:32:04.857071+00:00",
+  "timestamp_note": "Clock observation after completion; not authenticated provenance."
+}

@@ -1,0 +1,49 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-ir",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-after-01/artifacts/providers-reference-control-desired.qirf",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:28:36.627888+00:00",
+  "elapsed_seconds": 0.548919249966275,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "providers-reference-control-desired",
+  "action": "finite-emit-ir-json",
+  "output_format": "json",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "0d9605e632a4d5433bda61f0cdb021e165d965a6eae8aee2b5560b5fa8c6f5ec",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-after-01/providers-reference-control-desired-finite-emit-ir-json.stdout.txt",
+    "sha256": "da3d030ef2dc75beb466cd3754b86298437b0feee412e6fe173296610453fde5"
+  },
+  "raw_stderr": {
+    "path": "observations-after-01/providers-reference-control-desired-finite-emit-ir-json.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "transcript": "stdout:\n{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-after-01/artifacts/providers-reference-control-desired.qirf\"}}\n\nstderr:\n",
+  "attestation_limit": "Selected bytes, not compiled-HEAD or native-child attestation.",
+  "identity_checked_before_and_after": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-ir",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-after-01/artifacts/providers-reference-control-desired.qirf"
+    }
+  }
+}

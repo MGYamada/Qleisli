@@ -1,0 +1,46 @@
+{
+  "format": "qleisli.validation-files",
+  "version": 1,
+  "files": {
+    "0.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "0.stdout.txt": {
+      "sha256": "06f721a9aa0d537b6e634caf51c6ef529e67dbe321432c0895e412f5dc4116a1",
+      "bytes": 109
+    },
+    "1.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "1.stdout.txt": {
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "bytes": 14
+    },
+    "2.stderr.txt": {
+      "sha256": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+      "bytes": 138
+    },
+    "2.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "3.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "3.stdout.txt": {
+      "sha256": "6ae145b73f6bab801deb2a701bb00293c557f19e7fb6f5989fde423d71adb79c",
+      "bytes": 67
+    },
+    "README.md": {
+      "sha256": "d9b031765f137ca1ac6c50234b148c25a1cc4f378ab114a441d82c14b977e2e3",
+      "bytes": 728
+    },
+    "result.json": {
+      "sha256": "3eabb7849d650b1aaabf5febf20751299ceb6f6da53cd9b89ba811f1416bd5bf",
+      "bytes": 3718
+    }
+  }
+}

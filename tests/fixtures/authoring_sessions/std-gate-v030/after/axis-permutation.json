@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/std-gate-v030/attempt-01/axis-permutation.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-10T07:29:11.880672+00:00",
+  "cli_sha256_before": "ca204acfecd485af2c1e5ed75a37355cde861552e6d512c255a42463724df51d",
+  "cli_sha256_after": "ca204acfecd485af2c1e5ed75a37355cde861552e6d512c255a42463724df51d",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": ""
+}

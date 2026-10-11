@@ -1,0 +1,73 @@
+{
+  "format": "qleisli.coherent-basis-first-capture",
+  "version": 1,
+  "baseline_checkout": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "started_utc": "2026-10-06T03:45:12.481722+00:00",
+  "ended_utc": "2026-10-06T03:45:21.102650+00:00",
+  "cli_sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "pending_record_sha256": "2a9619876566b5788e5bd546e4b14df54a6ef0148b7f80a5ab8d85ef6cdd5504",
+  "first_sources_sha256": "e1b9a175b4221bf2eb52ebbec0f84c6d725fa21398c905e1f73cda262133f755",
+  "source_and_executable_identities_unchanged": true,
+  "observations": [
+    "observations-before/entangle-desired-finite-check.json",
+    "observations-before/entangle-desired-selected-check.json",
+    "observations-before/entangle-legacy-finite-check.json",
+    "observations-before/entangle-legacy-selected-check.json",
+    "observations-before/entangle-legacy-finite-run.json",
+    "observations-before/entangle-legacy-finite-emit-ir.json",
+    "observations-before/phase-reference-desired-finite-check.json",
+    "observations-before/phase-reference-desired-selected-check.json",
+    "observations-before/phase-reference-legacy-finite-check.json",
+    "observations-before/phase-reference-legacy-selected-check.json",
+    "observations-before/phase-reference-legacy-finite-run.json",
+    "observations-before/phase-reference-legacy-finite-emit-ir.json",
+    "observations-before/permutation-desired-finite-check.json",
+    "observations-before/permutation-desired-selected-check.json",
+    "observations-before/permutation-legacy-finite-check.json",
+    "observations-before/permutation-legacy-selected-check.json",
+    "observations-before/permutation-legacy-finite-run.json",
+    "observations-before/permutation-legacy-finite-emit-ir.json",
+    "observations-before/unit-owner-desired-finite-check.json",
+    "observations-before/unit-owner-desired-selected-check.json",
+    "observations-before/unit-owner-legacy-finite-check.json",
+    "observations-before/unit-owner-legacy-selected-check.json",
+    "observations-before/unit-owner-legacy-finite-run.json",
+    "observations-before/unit-owner-legacy-finite-emit-ir.json",
+    "observations-before/noninjective-desired-finite-check.json",
+    "observations-before/noninjective-desired-selected-check.json",
+    "observations-before/noninjective-legacy-finite-check.json",
+    "observations-before/noninjective-legacy-selected-check.json",
+    "observations-before/quantum-capture-desired-finite-check.json",
+    "observations-before/quantum-capture-desired-selected-check.json",
+    "observations-before/quantum-capture-legacy-finite-check.json",
+    "observations-before/quantum-capture-legacy-selected-check.json",
+    "observations-before/ordinary-capture-desired-finite-check.json",
+    "observations-before/ordinary-capture-desired-selected-check.json",
+    "observations-before/ordinary-capture-legacy-finite-check.json",
+    "observations-before/ordinary-capture-legacy-selected-check.json",
+    "observations-before/owner-reuse-desired-finite-check.json",
+    "observations-before/owner-reuse-desired-selected-check.json",
+    "observations-before/owner-reuse-legacy-finite-check.json",
+    "observations-before/owner-reuse-legacy-selected-check.json",
+    "observations-before/measurement-in-body-desired-finite-check.json",
+    "observations-before/measurement-in-body-desired-selected-check.json",
+    "observations-before/measurement-in-body-legacy-finite-check.json",
+    "observations-before/measurement-in-body-legacy-selected-check.json"
+  ],
+  "artifacts": {
+    "observations-before/artifacts/entangle-legacy.qirf": {
+      "sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+      "bytes": 579
+    },
+    "observations-before/artifacts/permutation-legacy.qirf": {
+      "sha256": "aa8dece56bb70aa47d0c9609859654b41f1e1c96f398f5eee25e2caa275151b7",
+      "bytes": 664
+    },
+    "observations-before/artifacts/phase-reference-legacy.qirf": {
+      "sha256": "8ab58b1e02a21e05e4ede4020180b2e2ab62d9909e1394ff91cfdfbd0f9a0e71",
+      "bytes": 1310
+    }
+  },
+  "scope": "Actual fixed pre-code commands. No source repair, rebuilt CLI, numerical oracle invocation, Lean replay, guarantee admission or completion claim."
+}

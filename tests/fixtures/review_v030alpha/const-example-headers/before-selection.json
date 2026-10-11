@@ -1,0 +1,638 @@
+{
+  "format": 1,
+  "status": "passed",
+  "created_utc": "2026-10-08T00:35:25.122350+00:00",
+  "compiler_sha256": "6af97d5cc0572e20c7b935ff1d98589365e5b5f797503c5f76b20e7788368702",
+  "native_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "preparation_sha256": "3bd5b413ee1230f4cba7794600cfa7b1743ac492dd391e6bf8cfc079d06297de",
+  "cli_calls": 16,
+  "results": [
+    {
+      "project": "iterative_phase_estimation",
+      "kind": "original",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/examples/iterative_phase_estimation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.6486170410644263
+    },
+    {
+      "project": "iterative_phase_estimation",
+      "kind": "original",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/examples/iterative_phase_estimation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                false,
+                true
+              ],
+              "probability": 2.6302144545229465e-33
+            },
+            {
+              "bits": [
+                false,
+                false,
+                true,
+                true
+              ],
+              "probability": 4.51273456496633e-34
+            },
+            {
+              "bits": [
+                false,
+                true,
+                false,
+                true
+              ],
+              "probability": 2.6302144545229465e-33
+            },
+            {
+              "bits": [
+                false,
+                true,
+                true,
+                true
+              ],
+              "probability": 4.51273456496633e-34
+            },
+            {
+              "bits": [
+                true,
+                false,
+                false,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,false,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[false,true,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,true,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.7743908329866827
+    },
+    {
+      "project": "iterative_phase_estimation",
+      "kind": "desired",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-const-clients/desired/iterative_phase_estimation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5059596670325845
+    },
+    {
+      "project": "iterative_phase_estimation",
+      "kind": "desired",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/private/tmp/qleisli-const-clients/desired/iterative_phase_estimation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                false,
+                true
+              ],
+              "probability": 2.6302144545229465e-33
+            },
+            {
+              "bits": [
+                false,
+                false,
+                true,
+                true
+              ],
+              "probability": 4.51273456496633e-34
+            },
+            {
+              "bits": [
+                false,
+                true,
+                false,
+                true
+              ],
+              "probability": 2.6302144545229465e-33
+            },
+            {
+              "bits": [
+                false,
+                true,
+                true,
+                true
+              ],
+              "probability": 4.51273456496633e-34
+            },
+            {
+              "bits": [
+                true,
+                false,
+                false,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,false,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[false,true,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,true,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.5263873329386115
+    },
+    {
+      "project": "operation_algorithms",
+      "kind": "original",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.6759205420967191
+    },
+    {
+      "project": "operation_algorithms",
+      "kind": "original",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                true,
+                false,
+                false,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.6800777909811586
+    },
+    {
+      "project": "operation_algorithms",
+      "kind": "desired",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-const-clients/desired/operation_algorithms",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.678550707991235
+    },
+    {
+      "project": "operation_algorithms",
+      "kind": "desired",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/private/tmp/qleisli-const-clients/desired/operation_algorithms",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                true,
+                false,
+                false,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.688244333025068
+    },
+    {
+      "project": "operation_contracts",
+      "kind": "original",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/examples/operation_contracts",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4716662089340389
+    },
+    {
+      "project": "operation_contracts",
+      "kind": "original",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/examples/operation_contracts",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                true,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.47347045806236565
+    },
+    {
+      "project": "operation_contracts",
+      "kind": "desired",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-const-clients/desired/operation_contracts",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4668958339607343
+    },
+    {
+      "project": "operation_contracts",
+      "kind": "desired",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/private/tmp/qleisli-const-clients/desired/operation_contracts",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                true,
+                true
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.4829768749186769
+    },
+    {
+      "project": "protocols",
+      "kind": "original",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/examples/protocols",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.6160764580126852
+    },
+    {
+      "project": "protocols",
+      "kind": "original",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/examples/protocols",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                false,
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6141103750560433
+    },
+    {
+      "project": "protocols",
+      "kind": "desired",
+      "action": "check",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-const-clients/desired/protocols",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.6230620000278577
+    },
+    {
+      "project": "protocols",
+      "kind": "desired",
+      "action": "run",
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/private/tmp/qleisli-const-clients/desired/protocols",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                false,
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            }
+          ]
+        }
+      },
+      "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6410222499398515
+    }
+  ],
+  "scope": "Bounded original/desired observations with exact distribution equality; independent algorithm/phase/reference tests remain required. No source-preservation proof or new acceptance."
+}

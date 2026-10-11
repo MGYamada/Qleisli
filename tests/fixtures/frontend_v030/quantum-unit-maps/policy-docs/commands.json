@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "e01e98a42a00c04892617205307f2db76b5c404e"
+    ],
+    "exit": 0,
+    "seconds": 1.1852724999771453
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit": 0,
+    "seconds": 0.4414028330356814
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit": 0,
+    "seconds": 0.13043949997518212
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit": 0,
+    "seconds": 0.17105687502771616
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_run_native_ci.py"
+    ],
+    "exit": 0,
+    "seconds": 0.8701463339966722
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit": 0,
+    "seconds": 1.649624457990285
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "--version"
+    ],
+    "exit": 0,
+    "seconds": 0.2505436249775812
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "build",
+      "docs"
+    ],
+    "exit": 0,
+    "seconds": 0.09219316701637581
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_book.py"
+    ],
+    "exit": 0,
+    "seconds": 0.35151341604068875
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "kind": "Independent assistant source and oracle review; no Guardian adoption or formal source-preservation proof",
+  "recorded_utc": "2026-10-04T21:23:34.558290+00:00",
+  "base_commit": "af26fad37060c8008682c7e0d124897c12d13f89",
+  "reviews": [
+    {
+      "reviewer": "review_frontend",
+      "scope": "Shared physical-state extraction; sized ownership/call/capacity and independent matcher",
+      "findings": "Before execution, corrected BasisShape constant and preserved module/call-site spans. Final review found no additional actionable defect."
+    },
+    {
+      "reviewer": "review_kernel",
+      "scope": "Independent source/Raw matcher and shared-state integration",
+      "findings": "Per-call identity/owner frames, full operation/output order and exact phase reviewed; four hand-authored/native-valid mixed tests pass."
+    },
+    {
+      "reviewer": "review_platform",
+      "scope": "Preserved first sources and independent mixed/phase tests; independent matcher test oracles",
+      "findings": "Unexecuted phase[9,3] positive draft corrected to actual existing domain rejection. Bell/pending-frame/phase oracles checked independently."
+    }
+  ],
+  "source_sha256": {
+    "src/frontend/raw_state.rs": "51fa55839f21992a4a719044910cb3010d9ca44924fa2009e102aace4cbc623b",
+    "src/frontend/sized/raw.rs": "bb981f599caf04ff1d8384ba96e9fc471fc43266bcd7e09176ec791e284b2a1a",
+    "src/frontend/sized/raw/preservation.rs": "e3e1a8d799b9c67fd27d1fb8bcff3b086fc59b48351a370c8c25ef9d4e7c54e6",
+    "tests/mixed_booleans.rs": "872c311d274f578c8c98773e817869b739089fb383421e43f573b5a541a3d924",
+    "tests/ordinary_booleans.rs": "ab121c76b4b6e21b13aa1ba531b41e8fc530004203e7975645acb46648db6462",
+    "src/frontend/compile/lower/branch.rs": "123fa3537170f92c4e81181beec07563b159cacb4aed12aeaa2245a3e5482caa",
+    "src/frontend/compile/lower/primitives.rs": "ba9791c919ca0dbe702f14c5358b0faa2f2a01a28ceb5236089d6e2ab30e1856",
+    "src/frontend/compile/lower/function_contract.rs": "0612bef4d7bfe09d3fca529fb97597784f580a841c162ab01e37d27a5e882b6a",
+    "src/frontend/compile/lower/transforms.rs": "09b5a680ee2bfba06eb1cf8d8e2e0b8d1cc96d7e00c98eda65eac32847df6681",
+    "src/frontend/compile/lower/scope.rs": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
+    "src/frontend/compile/lower/mod.rs": "cd4e8186d77d46642817dc4485bd5b3c5537a2e03541f9f2932741f1aace1414",
+    "src/frontend/compile/lower/value.rs": "5b6db4005beffeb1818ef6bbac976fcaee8526cc806a44b7cceb95433e69e3c8",
+    "src/frontend/compile/lower/operations.rs": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
+    "src/frontend/compile/lower/certified.rs": "b6550482f5306014cf2dab857e223544f4ca214fe12acf06d5cee9dd93a22a2a"
+  },
+  "history": {
+    "mixed-boolean-v030": {
+      "files": 68,
+      "manifest_sha256": "879a4eaef0b3e31f721c3a6101b8e911c96d987389d3a7412e1b8df4667db5bc",
+      "unchanged": true
+    },
+    "ordinary-boolean-v030": {
+      "files": 66,
+      "manifest_sha256": "4bcf054c74ff38a3230acded6b93107c394b51a342cecc543b04e39bc5c0ce41",
+      "unchanged": true
+    }
+  },
+  "constitution_sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+  "scope": "Two admitted limited guarantees and three broader pending obligations unchanged. No full CI, same-commit release validation or new Lean replay claim."
+}

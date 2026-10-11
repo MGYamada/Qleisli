@@ -1,4 +1,4 @@
-use std::arithmetic::mul2_mod15;
+use arithmetic::mul2_mod15;
 
 // N=15, a=2, with a defined unitary action also on the unused value 15.
 pub unitary fn evolve(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {

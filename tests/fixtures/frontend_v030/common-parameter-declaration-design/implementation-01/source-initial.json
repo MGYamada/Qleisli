@@ -1,0 +1,34 @@
+{
+  "format": "qleisli.bounded-parameter-name-first-edit",
+  "version": 1,
+  "status": "first-production-edit-before-formatting-or-compilation",
+  "initial_patch_sha256": "dea1b4682f27eee1187ede6362504c6029ab75b1e86d01ae1776228ac98f5f46",
+  "files": {
+    "src/frontend/pattern.rs": {
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+      "bytes": 4506,
+      "snapshot": "source-initial/src/frontend/pattern.rs"
+    },
+    "src/frontend/compile/mod.rs": {
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "bytes": 41710,
+      "snapshot": "source-initial/src/frontend/compile/mod.rs"
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "2f7e0062f84ebbc05c89a48e961a4a262b814e33cfe9036308f32638e0f50fea",
+      "bytes": 52515,
+      "snapshot": "source-initial/src/frontend/sized/check.rs"
+    }
+  },
+  "performed": [
+    "bounded source editing",
+    "source snapshots and scoped git diff reading"
+  ],
+  "not_performed": [
+    "Rust/Lean build",
+    "tests",
+    "Qleisli/native execution",
+    "Git mutation",
+    "new adoption"
+  ]
+}

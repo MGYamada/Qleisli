@@ -1,0 +1,7 @@
+
+running 2 tests
+test frontend::lexer::common_token_tests::comment_bound_and_doc_recognition_are_independent_of_tokens ... ok
+test frontend::lexer::common_token_tests::bounded_common_tokens_count_pairs_before_owning_spellings ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 80 filtered out; finished in 0.00s
+

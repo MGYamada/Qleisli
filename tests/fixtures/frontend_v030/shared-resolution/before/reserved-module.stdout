@@ -1,0 +1,2 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/reserved-module/if.qli:0..0: invalid module path component `if`
+sized.parse: ok

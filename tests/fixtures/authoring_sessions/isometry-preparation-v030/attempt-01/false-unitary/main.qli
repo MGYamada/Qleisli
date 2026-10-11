@@ -1,0 +1,2 @@
+use std::quantum::{init0,finish,unit,phase_eighth,h,cnot,split};
+pub unitary fn entry(q:Q<Unit>)->Q<Bit>{finish(q);init0()}

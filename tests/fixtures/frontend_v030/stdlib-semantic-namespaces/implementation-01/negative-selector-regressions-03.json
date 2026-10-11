@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.negative-selector-regressions",
+  "version": 1,
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/test_check_input_corpus.py"
+  ],
+  "exit_code": 0,
+  "test_summary": "Ran 68 tests in 17.595s; OK",
+  "capture": "Observed exec_command result, chunk028753; combined tool output, not separately saved stdout/stderr.",
+  "sources_sha256": {
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "scripts/test_check_input_corpus.py": "2ef64fde562fb9c30f7309cecb81e7c90257d9b3adba5cf779dfc5faedde8768",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+    "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "corpus/negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "scope": "Actual pure selector/oracle harness regressions; six new current-negative identity/coverage tests. Expected synthetic failure output is part of passing harness tests; no native/Lean execution."
+}

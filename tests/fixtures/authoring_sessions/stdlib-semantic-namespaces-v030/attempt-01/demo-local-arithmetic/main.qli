@@ -1,0 +1,36 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Informed desired namespace client; unexecuted before-source snapshot.
+//! A check outcome is separate from the mathematical contract and proof.
+use arithmetic::increment2;
+use arithmetic::add2;
+use arithmetic::mul2_mod15;
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+
+/// Exercise all three preserved fixed demos as local ordinary source.
+/// Consume each circuit's data before preparing the next, using at most four
+/// live data qubits. No public std arithmetic API or compatibility alias is used.
+fn main() -> ((Bit, Bit), ((Bit, Bit), (Bit, Bit)), ((Bit, Bit), (Bit, Bit))) {
+    let (low, high) = split(increment2(join(init0(), init0())));
+    let incremented = (measure_z(low), measure_z(high));
+
+    let (addend, sum) = split(add2(join(
+        join(x(init0()), init0()),
+        join(init0(), x(init0()))
+    )));
+    let (a0, a1) = split(addend);
+    let (s0, s1) = split(sum);
+    let addition = ((measure_z(a0), measure_z(a1)), (measure_z(s0), measure_z(s1)));
+
+    let (low, high) = split(mul2_mod15(join(
+        join(x(init0()), init0()),
+        join(init0(), init0())
+    )));
+    let (a, b) = split(low);
+    let (c, d) = split(high);
+    let multiplied = ((measure_z(a), measure_z(b)), (measure_z(c), measure_z(d)));
+    (incremented, addition, multiplied)
+}

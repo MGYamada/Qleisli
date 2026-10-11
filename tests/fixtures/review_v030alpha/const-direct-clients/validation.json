@@ -1,0 +1,119 @@
+{
+  "baseline_commit": "7e0d594346583ed37d2b1d5a7c2bbece1855e92d",
+  "runs": [
+    {
+      "toolchain": "latest",
+      "variant": "before",
+      "command": [
+        "python3",
+        "/private/tmp/qleisli-differential-const/before.py",
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--cases=96",
+        "--report=/private/tmp/qleisli-differential-const/latest-before.json"
+      ],
+      "exit_code": 0,
+      "seconds": 110.71655141597148
+    },
+    {
+      "toolchain": "latest",
+      "variant": "desired",
+      "command": [
+        "python3",
+        "/private/tmp/qleisli-differential-const/desired.py",
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--cases=96",
+        "--report=/private/tmp/qleisli-differential-const/latest-desired.json"
+      ],
+      "exit_code": 0,
+      "seconds": 115.12371175002772
+    },
+    {
+      "toolchain": "msrv",
+      "variant": "before",
+      "command": [
+        "python3",
+        "/private/tmp/qleisli-differential-const/before.py",
+        "/private/tmp/qleisli-bits-meaning-msrv-target/debug/qleisli",
+        "--cases=96",
+        "--report=/private/tmp/qleisli-differential-const/msrv-before.json"
+      ],
+      "exit_code": 0,
+      "seconds": 117.13150883303024
+    },
+    {
+      "toolchain": "msrv",
+      "variant": "desired",
+      "command": [
+        "python3",
+        "/private/tmp/qleisli-differential-const/desired.py",
+        "/private/tmp/qleisli-bits-meaning-msrv-target/debug/qleisli",
+        "--cases=96",
+        "--report=/private/tmp/qleisli-differential-const/msrv-desired.json"
+      ],
+      "exit_code": 0,
+      "seconds": 121.11253704200499
+    }
+  ],
+  "reports": {
+    "latest-before": {
+      "seed": 20260930021,
+      "cases": 96,
+      "max_probability_error": 4.218847493575595e-15,
+      "tolerance": 1e-11,
+      "maximum_live_qubits": 4,
+      "binary_sha256": "6af97d5cc0572e20c7b935ff1d98589365e5b5f797503c5f76b20e7788368702",
+      "harness_sha256": "3529aa129660a8e24062e7901d8904e9a5be2072b38d6ceeb0f2ce06cb497f83",
+      "ordered_sources_sha256": "242635b310b049c65addf2dbe6b6cbfb3fac79cab3e7d1e348ba439a0b4c7c4a",
+      "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof"
+    },
+    "latest-desired": {
+      "seed": 20260930021,
+      "cases": 96,
+      "max_probability_error": 4.218847493575595e-15,
+      "tolerance": 1e-11,
+      "maximum_live_qubits": 4,
+      "binary_sha256": "6af97d5cc0572e20c7b935ff1d98589365e5b5f797503c5f76b20e7788368702",
+      "harness_sha256": "f75e0a8ed0c5bbccf18cb6bc3c50b8e33fa4558c54018848ef7bbd72d1de6b10",
+      "ordered_sources_sha256": "8b4457fbe15da04416a0cc3be4dd8594bc008c43e3d6e26251d0279d733be2d5",
+      "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof"
+    },
+    "msrv-before": {
+      "seed": 20260930021,
+      "cases": 96,
+      "max_probability_error": 4.218847493575595e-15,
+      "tolerance": 1e-11,
+      "maximum_live_qubits": 4,
+      "binary_sha256": "0e971c8bf2db78c0f6c3bb281ae2176fa6db4adfdb50692b7fcd3947f5055ebe",
+      "harness_sha256": "3529aa129660a8e24062e7901d8904e9a5be2072b38d6ceeb0f2ce06cb497f83",
+      "ordered_sources_sha256": "242635b310b049c65addf2dbe6b6cbfb3fac79cab3e7d1e348ba439a0b4c7c4a",
+      "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof"
+    },
+    "msrv-desired": {
+      "seed": 20260930021,
+      "cases": 96,
+      "max_probability_error": 4.218847493575595e-15,
+      "tolerance": 1e-11,
+      "maximum_live_qubits": 4,
+      "binary_sha256": "0e971c8bf2db78c0f6c3bb281ae2176fa6db4adfdb50692b7fcd3947f5055ebe",
+      "harness_sha256": "f75e0a8ed0c5bbccf18cb6bc3c50b8e33fa4558c54018848ef7bbd72d1de6b10",
+      "ordered_sources_sha256": "8b4457fbe15da04416a0cc3be4dd8594bc008c43e3d6e26251d0279d733be2d5",
+      "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof"
+    }
+  },
+  "ordered_generated_case_comparison": "96 exact oracle equality and only header marker differs per generated source",
+  "provider_permission_tests": {
+    "before": "5 passed on each Rust toolchain",
+    "after": "5 passed on each Rust toolchain",
+    "existing_source_copies": 10,
+    "diagnostic_spans": "same source substrings and semantic/capability codes"
+  },
+  "fixture_selection": "55 passed",
+  "source_integrity": "5/5 passed",
+  "clippy": "all targets passed on latest and MSRV",
+  "fmt": "passed",
+  "limits": [
+    "Unchanged 4000-case ownership suite not rerun in this unit.",
+    "Not general source preservation or a new constitutional discharge.",
+    "Timing was recorded with concurrent local validation; not a controlled performance benchmark."
+  ]
+}

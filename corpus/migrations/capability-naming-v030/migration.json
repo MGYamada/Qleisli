@@ -1,0 +1,214 @@
+{
+  "format": 1,
+  "kind": "explicit-source-migration",
+  "issue": 45,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-08T13:32:58.182136+00:00",
+  "context": "Rename capability predicates and constructed adjoint/control descriptions under Issue #45. Preserve every predecessor, algorithm token, manifest, phase, axis, owner and retained semantic fault. Naming changes only; no isometry expansion, native acceptance change, guarantee admission or generic QFT implementation.",
+  "projects": [
+    "quantum_katas/qpe3",
+    "qualtran/qpe2",
+    "pennylane_demos/qubit_rotation",
+    "pennylane_demos/qaoa_vertex_cover",
+    "pennylane_demos/qaoa_maxcut",
+    "pennylane_demos/qpe3",
+    "pennylane_demos/kernel_overlap2",
+    "pennylane_demos/ising_zz_quarter2",
+    "pennylane_demos/rx_negative_quarter",
+    "pennylane_demos/rotation_mixed_sign",
+    "pennylane_demos/qaoa_mixer2",
+    "pennylane_demos/rotation_half_y",
+    "pennylane_demos/ising_zz_negative2",
+    "pennylane_demos/rotation_half_x",
+    "pennylane_demos/ising_zz_half2",
+    "pennylane_demos/qaoa_edge_layer2",
+    "pennylane_demos/rotation_negative_x_positive_y",
+    "pennylane_demos/qaoa_negative_mixer2",
+    "pennylane_demos/qaoa_path_layer3",
+    "pennylane_demos/rotation_both_negative",
+    "pennylane_demos/qaoa_path_cost3",
+    "pennylane_demos/qaoa_negative_edge_layer2"
+  ],
+  "files": {
+    "quantum_katas/qpe3/kernel.qli": {
+      "before": "fd58cd967e1377c0e31ea62d2d9657b419bfdc2d13e07e02ea708d2fb8539e0f",
+      "after": "20c2126d8ed149959b02c1ef62098862ff281d72ecc15d6e0c2433dd208063d4"
+    },
+    "quantum_katas/qpe3/main.qli": {
+      "before": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01",
+      "after": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01"
+    },
+    "qualtran/qpe2/kernel.qli": {
+      "before": "5a6aec2d250dec25bf684f47f10f0f13b29fbd95dd7775dbdf5a33960c056a09",
+      "after": "ea6c5fd5ba6e51b74ede158d62de1bcfba0dc8a2c765e344281dcc4453f2c4a2"
+    },
+    "qualtran/qpe2/main.qli": {
+      "before": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161",
+      "after": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161"
+    },
+    "pennylane_demos/qubit_rotation/kernel.qli": {
+      "before": "bb4573751de175f5bc99c7181cc4286ef30e55644fdafd4cb83d26af85839846",
+      "after": "001e8b24025fa2ef6bedd7b7509f050ee3b4ff6b6f69d2c96097c26b4260c2d8"
+    },
+    "pennylane_demos/qubit_rotation/main.qli": {
+      "before": "7357a5aa9e2276267e0d19b1091bfec886002df7ac32e2d2c8b9ffd382718326",
+      "after": "7357a5aa9e2276267e0d19b1091bfec886002df7ac32e2d2c8b9ffd382718326"
+    },
+    "pennylane_demos/qaoa_vertex_cover/kernel.qli": {
+      "before": "c89701049337c90a597a0f724675cc91157306fa6e4810897a31a8199137e96e",
+      "after": "e1c4ca3ead1dfeee3fa2c1f84b0844112e011326c4472b9a1483f7448391ecc8"
+    },
+    "pennylane_demos/qaoa_vertex_cover/main.qli": {
+      "before": "ba70d087ed50a1f57f2ba693d15eb9a312706767d31c81f1b868d71f9c0aa10d",
+      "after": "ba70d087ed50a1f57f2ba693d15eb9a312706767d31c81f1b868d71f9c0aa10d"
+    },
+    "pennylane_demos/qaoa_maxcut/kernel.qli": {
+      "before": "e69209ea5ad926d71f9b6503121938df2ed5de654feadb13568b7a572332655b",
+      "after": "ec2f685004566f66c1198da6536cb1741015ed5e36251699e91e99b84860ee78"
+    },
+    "pennylane_demos/qaoa_maxcut/main.qli": {
+      "before": "ffd2d561718747c39643f99e61ae7d31fa4afbfb6afcdd56f1f9f7215b2820a8",
+      "after": "ffd2d561718747c39643f99e61ae7d31fa4afbfb6afcdd56f1f9f7215b2820a8"
+    },
+    "pennylane_demos/qpe3/kernel.qli": {
+      "before": "8be344565bcf2e302e4ff859dd0772e220e81956171826b4f9cdd366a9e76ab2",
+      "after": "1cae4cca8884d6d0833bdab825dffdd4f37f717a728cff2f7ae04f3efca3f169"
+    },
+    "pennylane_demos/qpe3/main.qli": {
+      "before": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8",
+      "after": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8"
+    },
+    "pennylane_demos/kernel_overlap2/kernel.qli": {
+      "before": "0b0a526b33a8425b55fa7f35ccbff090f434474e7b68301e2d9fa520a4301013",
+      "after": "63c6d136efdef4dd992fbfaa7793ce953bcf39e11459569a927130cd352f8cbc"
+    },
+    "pennylane_demos/kernel_overlap2/main.qli": {
+      "before": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "after": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf"
+    },
+    "pennylane_demos/ising_zz_quarter2/kernel.qli": {
+      "before": "5dc2fc4cf63923a0bbe8d9a4eb7b4a7ef7d1839e0aa7522c1249d5b6de4da7d7",
+      "after": "0fda396fe4082a9381e0bea941d9eb42859b5bd4e88f85566b4df5170fd9680c"
+    },
+    "pennylane_demos/ising_zz_quarter2/main.qli": {
+      "before": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "after": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0"
+    },
+    "pennylane_demos/rx_negative_quarter/kernel.qli": {
+      "before": "97c195602313527b897c565bf3dff8dacb32cf15c65398929a90f3414a95d09d",
+      "after": "42a955d12c651697f6175912890fac80153130a23dd82e9cb81246222b45df4d"
+    },
+    "pennylane_demos/rx_negative_quarter/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "pennylane_demos/rotation_mixed_sign/kernel.qli": {
+      "before": "f6dff376a1d24f940c9e4a465bd59897228b3975b4383ca52b442055eb7f6ccd",
+      "after": "d6494d702b6061ff5550aad9beb32d3f482d107a0f1ba61c15694535295854b6"
+    },
+    "pennylane_demos/rotation_mixed_sign/main.qli": {
+      "before": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "after": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45"
+    },
+    "pennylane_demos/qaoa_mixer2/kernel.qli": {
+      "before": "ff24dfc63a15aa72fd8bd4d7c87e5ab1ddd0c0d94f50ad0df8e312dc605b61f3",
+      "after": "00960ab12c938ff033acdc3150581914fae4670f3df342525fd841e8eeac2956"
+    },
+    "pennylane_demos/qaoa_mixer2/main.qli": {
+      "before": "19a122dd93e2dd96df20d5fc23eb2745efb940949facbe77b65da0870a5b8d98",
+      "after": "19a122dd93e2dd96df20d5fc23eb2745efb940949facbe77b65da0870a5b8d98"
+    },
+    "pennylane_demos/rotation_half_y/kernel.qli": {
+      "before": "21f838d570a6dd12f8f3391e11c43a0892011ab575e2b4a182b9568f54f61ded",
+      "after": "08ebc8077ea197fcc079141fb494f48bd5fecf86a062883d719d55c8069962fe"
+    },
+    "pennylane_demos/rotation_half_y/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "pennylane_demos/ising_zz_negative2/kernel.qli": {
+      "before": "52cd32ec59e258b457331fd3feab5b2a7f35000f813fd1e87c6abaf698772b8c",
+      "after": "4c632ed96a42befb1b240925f468254aa7b040aa7610ce543ef2066251b4bd10"
+    },
+    "pennylane_demos/ising_zz_negative2/main.qli": {
+      "before": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "after": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897"
+    },
+    "pennylane_demos/rotation_half_x/kernel.qli": {
+      "before": "5fe495da63dfbd0ec107713c3d986b0b80b7b0d067e87b01f08e388502ee5894",
+      "after": "713782ac9c5f8b84bf0887bebee10989a4d88c20b8d1322911432d4672bb34a1"
+    },
+    "pennylane_demos/rotation_half_x/main.qli": {
+      "before": "d56c4488c2c780f2bcffb26857c28d70c1537d329e6a189bbb1dbb74c0fd7dc8",
+      "after": "d56c4488c2c780f2bcffb26857c28d70c1537d329e6a189bbb1dbb74c0fd7dc8"
+    },
+    "pennylane_demos/ising_zz_half2/kernel.qli": {
+      "before": "74205cf1ef52584b6dfd19f0e6fccab15713f76fcf33bba9dc6906b2b60306de",
+      "after": "f8487822a8999f00aa14cb1078c8e5996cd772b035c91153c1c300043402a226"
+    },
+    "pennylane_demos/ising_zz_half2/main.qli": {
+      "before": "53fe081a72d9d1dfeba52fb69832de6c3f145c8499a436969b705e46f1ffe298",
+      "after": "53fe081a72d9d1dfeba52fb69832de6c3f145c8499a436969b705e46f1ffe298"
+    },
+    "pennylane_demos/qaoa_edge_layer2/kernel.qli": {
+      "before": "664be45247a77c69a5a8a957723a80709ed86a2635d6b111cf63e947d7e9e942",
+      "after": "4bbc496e128344f36fb5c223196dd6fe8413cf4409c6c619b25a5e1fd2412639"
+    },
+    "pennylane_demos/qaoa_edge_layer2/main.qli": {
+      "before": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "after": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551"
+    },
+    "pennylane_demos/rotation_negative_x_positive_y/kernel.qli": {
+      "before": "21910aed94b4732634b24fdeadc877afa4b8ca3adc2c32a7a06c7d73aa07513f",
+      "after": "ebb7df23f34641d772605e5d5746aab4596e144492e6a3066960ecb37cccfade"
+    },
+    "pennylane_demos/rotation_negative_x_positive_y/main.qli": {
+      "before": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "after": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191"
+    },
+    "pennylane_demos/qaoa_negative_mixer2/kernel.qli": {
+      "before": "b988c63d5e405a95d19b4912c579d7802526906822d6d8f3e6ad8bb90010b269",
+      "after": "9450173957163ba1f3bfb422b974870ec5881d5cae141c2e2e35e94fd6bd8bb8"
+    },
+    "pennylane_demos/qaoa_negative_mixer2/main.qli": {
+      "before": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "after": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad"
+    },
+    "pennylane_demos/qaoa_path_layer3/kernel.qli": {
+      "before": "6f3029c38b8afefc10f8323a0514b5892721e230d16bcf6ff87f97343424ccce",
+      "after": "78488317e24c11f2d9f3d6ea98aba4b48ae9aff940029129f68a2c27c990b8bb"
+    },
+    "pennylane_demos/qaoa_path_layer3/main.qli": {
+      "before": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "after": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7"
+    },
+    "pennylane_demos/rotation_both_negative/kernel.qli": {
+      "before": "db0b95b3b6b3159dd4849881b1714cd0c5c104eda236bd46d99a2b1a3c127efd",
+      "after": "cddb8c5ee334e11f1a1d250b637713e226640abf894e951a747f0a90e8ee1dd0"
+    },
+    "pennylane_demos/rotation_both_negative/main.qli": {
+      "before": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "after": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63"
+    },
+    "pennylane_demos/qaoa_path_cost3/kernel.qli": {
+      "before": "64bbbc9293b350d78cc7fd625c6e56396766833b20732ace68b08df729b4ff16",
+      "after": "7f1d23b72fd6b5d352244fb3f18f3573e0837cf32be0d9ea83027177e90b34fc"
+    },
+    "pennylane_demos/qaoa_path_cost3/main.qli": {
+      "before": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "after": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3"
+    },
+    "pennylane_demos/qaoa_negative_edge_layer2/kernel.qli": {
+      "before": "03182e5e3a3edf070c6cb7c39bcd112610551ae3ac7481fbabf364724da946a2",
+      "after": "d4600237a4653d00a2366755803d39fb82a070554867e1ad20eabf811d69f694"
+    },
+    "pennylane_demos/qaoa_negative_edge_layer2/main.qli": {
+      "before": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "after": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef"
+    }
+  },
+  "observations": [
+    "checks.json"
+  ],
+  "source_selection": "snapshot"
+}

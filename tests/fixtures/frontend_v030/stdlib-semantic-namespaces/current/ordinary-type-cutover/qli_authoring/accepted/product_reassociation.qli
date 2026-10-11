@@ -1,0 +1,22 @@
+//! Current layout adapter: regroup both sides of qft3 without changing leaf order.
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::transform::qft3;
+
+unitary fn right_qft(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
+    let (a,bc) = split(q);
+    let (b,c) = split(bc);
+    let (ab,c) = split(qft3(join(join(a,b),c)));
+    let (a,b) = split(ab);
+    join(a,join(b,c))
+}
+observe fn main() -> (Bit,(Bit,Bit)) {
+    let q = join(x(init0()),join(init0(),x(init0())));
+    let q = adjoint(right_qft,right_qft(q));
+    let (a,bc) = split(q);
+    let (b,c) = split(bc);
+    (measure_z(a),(measure_z(b),measure_z(c)))
+}

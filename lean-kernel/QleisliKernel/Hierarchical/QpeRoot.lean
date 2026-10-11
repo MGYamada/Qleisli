@@ -4,7 +4,7 @@ import QleisliKernel.Hierarchical.Root
 /-! One fresh check of a coherent QPE circuit and its independent provider.
 Finite reconstruction, preparation and readout remain separate obligations.
 All passes share the unchanged structural work allowance.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Hierarchical.QpeRoot
 open Artifact
 

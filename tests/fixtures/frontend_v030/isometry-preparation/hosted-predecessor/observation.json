@@ -1,0 +1,63 @@
+{
+  "format": "qleisli.hosted-predecessor-observation",
+  "version": 1,
+  "observed_utc": "2026-10-05 15:09:12 UTC",
+  "repository": "MGYamada/Qleisli",
+  "pull_request": 307,
+  "run_id": 37303925654,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37303925654",
+  "queried_branch_head": "eb9c36ef9c13b5b968fda6858e61ea4419430144",
+  "tested_pull_request_merge": "a416dcd0a9dad6c8495f9ba36d0ccf7d3382a9ea",
+  "base_at_merge": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "run_attempt": 1,
+  "conclusion": "success",
+  "producer_lanes": [
+    {
+      "name": "check-interop",
+      "id": 111742985971,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-docs",
+      "id": 111742985974,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-lean",
+      "id": 111742986003,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-macos-source",
+      "id": 111742986036,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-rust-msrv",
+      "id": 111742986064,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-distribution",
+      "id": 111742986192,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-rust",
+      "id": 111742986208,
+      "conclusion": "success"
+    },
+    {
+      "name": "check-lean-kernel",
+      "id": 111742986225,
+      "conclusion": "success"
+    }
+  ],
+  "readiness": "skipped",
+  "scope": "The terminal hosted run tested the PR merge of the earlier published branch head. It does not validate the subsequent uncommitted Iso implementation, does not attest the current local HEAD, and does not establish release readiness. Exact tested merge identity is recovered from the retained aggregate checkout and required-check log; the commit-run connector snapshot alone omits this identity.",
+  "evidence": {
+    "run_query": "runs.json",
+    "jobs": "jobs.json",
+    "aggregate_log": "aggregate-docs.log.txt"
+  }
+}

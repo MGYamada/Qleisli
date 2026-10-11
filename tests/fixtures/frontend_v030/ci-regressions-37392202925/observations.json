@@ -1,0 +1,168 @@
+{
+  "record_kind": "actual_observed_ci_failure_excerpts",
+  "run_id": 37392202925,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925",
+  "branch_head": "7f6529ef93838d565552c3f501ce016ef1d1d2b4",
+  "executed_pr_merge": "a675d87a9e0c550200e179bcd2cc375f7c45458a",
+  "merge_base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "binding_evidence": "Fetched logs explicitly record fetch/check-out of the synthetic PR merge and the merge description naming this branch head and base.",
+  "jobs": [
+    {
+      "job_id": 112039746290,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112039746290",
+      "file": "rust-latest.log-excerpts.txt",
+      "source": "Decoded github_fetch_workflow_job_logs response, fetched by the read-only CI diagnosis agent",
+      "scope": "Selected complete raw lines only, not a full job log",
+      "decoded_log_line_count": 646,
+      "selected_original_one_based_lines": [
+        95,
+        122,
+        125,
+        472,
+        522,
+        523,
+        524,
+        525,
+        615,
+        616,
+        617,
+        618,
+        619,
+        623,
+        624,
+        625,
+        626
+      ],
+      "omitted_long_line_count": 0,
+      "selected_utf8_bytes": 1748
+    },
+    {
+      "job_id": 112039745975,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112039745975",
+      "file": "rust-msrv.log-excerpts.txt",
+      "source": "Decoded github_fetch_workflow_job_logs response, fetched by the read-only CI diagnosis agent",
+      "scope": "Selected complete raw lines only, not a full job log",
+      "decoded_log_line_count": 640,
+      "selected_original_one_based_lines": [
+        95,
+        122,
+        125,
+        466,
+        514,
+        515,
+        516,
+        517,
+        609,
+        610,
+        611,
+        612,
+        613,
+        617,
+        618,
+        619,
+        620
+      ],
+      "omitted_long_line_count": 0,
+      "selected_utf8_bytes": 1739
+    },
+    {
+      "job_id": 112039745953,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112039745953",
+      "file": "macos.log-excerpts.txt",
+      "source": "Decoded github_fetch_workflow_job_logs response, fetched by the read-only CI diagnosis agent",
+      "scope": "Selected complete raw lines only, not a full job log",
+      "decoded_log_line_count": 632,
+      "selected_original_one_based_lines": [
+        97,
+        176,
+        179,
+        522,
+        554,
+        556,
+        580,
+        594,
+        595,
+        596,
+        597,
+        600,
+        601,
+        602,
+        609,
+        610,
+        611,
+        612
+      ],
+      "omitted_long_line_count": 1,
+      "selected_utf8_bytes": 1684
+    },
+    {
+      "job_id": 112039746162,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112039746162",
+      "file": "distribution.log-excerpts.txt",
+      "source": "Decoded github_fetch_workflow_job_logs response, fetched by the read-only CI diagnosis agent",
+      "scope": "Selected complete raw lines only, not a full job log",
+      "decoded_log_line_count": 549,
+      "selected_original_one_based_lines": [
+        95,
+        122,
+        125,
+        491,
+        492,
+        493,
+        494,
+        528,
+        529,
+        530
+      ],
+      "omitted_long_line_count": 0,
+      "selected_utf8_bytes": 1401
+    }
+  ],
+  "findings": [
+    {
+      "jobs": [
+        112039746290,
+        112039745975
+      ],
+      "status": "observed",
+      "failure": "frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules",
+      "site": "src/frontend/compile/mod.rs:960",
+      "assertion": "error.message.contains(message)",
+      "counts": {
+        "passed": 109,
+        "failed": 1,
+        "ignored": 3
+      },
+      "source_review": "The earlier common PatternBinding shape_error replaced the finite empty-pattern wording with a generic tuple message. Code, path and span assertions precede the observed failed message assertion."
+    },
+    {
+      "jobs": [
+        112039745953
+      ],
+      "status": "observed",
+      "failure": "deep_import_cycle_reports_the_back_edge_and_cycle_path",
+      "site": "tests/project.rs:192",
+      "counts": {
+        "passed": 11,
+        "failed": 1,
+        "ignored": 0
+      },
+      "panic": "Result::unwrap_err() on Ok(Project)",
+      "source_review": "The existing 3,000-module fixture has import edges and identity bodies. Import-only cycles are permitted by the current Reference; the stale test expected rejection.",
+      "excerpt_limit": "The original single line containing the entire successful Project exceeds 2,000 characters and is intentionally omitted from this small excerpt packet. Its decoded content was inspected as data; the other selected original lines are retained complete."
+    },
+    {
+      "jobs": [
+        112039746162
+      ],
+      "status": "underlying_failure_unverified",
+      "observed_command_failure": "cargo test --offline --all-targets --target-dir .../source-production; exit 101",
+      "observed_distribution_exit": 1,
+      "detailed_logs_artifact_id": 11382206100,
+      "detailed_logs": "logs/14.stdout and logs/14.stderr",
+      "limit": "Job-level logs do not print the underlying test failure. The 60.6 MB ZIP was not downloaded to this workspace or inspected; no same-cause claim is made."
+    }
+  ],
+  "validation_scope": "Read-only log and source review only. No tests, builds, native runs, replay, workflow control or new QFT work performed by this agent.",
+  "generic_qft_scope": "Generic qft<N> remains outside all v0.3.0 and the current goal."
+}

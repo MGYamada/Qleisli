@@ -1,9 +1,27 @@
-//! Checked lowering of the finite source subset to independently verified IR.
+//! Source checking, explicit specialization, and lowering to independently verified IR.
+//!
+//! Project inputs and explicit module collections share the common frontend.
+//! `ParsedProgram` retains checked source preparation; instantiation and proposal
+//! generation do not by themselves confer independent native acceptance.
+//!
+//! The former `frontend::sized` namespace was removed in 0.3.0. Import its
+//! preparation and binding types from this module instead.
+//! ```compile_fail,E0432
+//! use qleisli::frontend::sized::ParsedProgram;
+//! ```
 
 mod basis;
 mod circuit;
 mod lower;
 mod operations;
+mod profile;
+
+pub use super::specialize::{
+    BasisBinding, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort, HierarchyEligibility,
+    HierarchyProposal, InitializationMove, Instantiation, OperationBinding, ParsedProgram,
+    PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition, SourceEvent,
+    SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
+};
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -11,16 +29,24 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use super::ast::*;
+use super::check::{self, Interface, SourceError, SourceLimits, StaticKind};
 use super::diagnostic::{Diagnostic, coordinates};
-use super::project::{ImportOrigin, Project, SourcePolicy};
-use crate::{AcceptedProgram, ir::Effect};
+use super::project::{Project, SourcePolicy};
+use super::resolve::{DefId, Resolution, Target};
+use crate::AcceptedProgram;
 
 const MAX_BITS: usize = 12;
 const MAX_WORK: usize = 1_000_000;
 const MAX_DEPTH: usize = 64;
 const MAX_TREE_NODES: usize = 4096;
 const MAX_TREE_DEPTH: usize = 64;
-type Key = (String, String);
+type Key = DefId;
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum MeaningCacheKey {
+    Declaration(Key),
+    Sealed(String, String),
+}
 
 /// Stable categories for consumers; `message` is explanatory text.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -67,130 +93,34 @@ impl fmt::Display for CompileError {
 
 impl std::error::Error for CompileError {}
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-enum Ty {
-    Unit,
-    Bit,
-    CBit,
-    Q(Box<Ty>),
-    Pair(Box<Ty>, Box<Ty>),
-    Tuple(Vec<Ty>),
-}
+use super::types::{Kind, Stage, TreeSize};
+// Registers are outside the finite source profile; the uninhabited size keeps
+// that restriction explicit while using the same exact type tree as sized code.
+type Ty = super::types::Type<std::convert::Infallible>;
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Preserve exact arity and nesting, including Unit. Iterative rendering
-        // also keeps error reporting independent of the Rust call-stack depth.
-        enum Part<'a> {
-            Type(&'a Ty),
-            Text(&'static str),
-        }
-        let mut pending = vec![Part::Type(self)];
-        while let Some(part) = pending.pop() {
-            match part {
-                Part::Text(text) => f.write_str(text)?,
-                Part::Type(ty) => match ty {
-                    Ty::Unit => f.write_str("Unit")?,
-                    Ty::Bit => f.write_str("Bit")?,
-                    Ty::CBit => f.write_str("CBit")?,
-                    Ty::Q(inner) => {
-                        f.write_str("Q<")?;
-                        pending.extend([Part::Text(">"), Part::Type(inner)]);
-                    }
-                    Ty::Pair(a, b) => {
-                        f.write_str("(")?;
-                        pending.extend([
-                            Part::Text(")"),
-                            Part::Type(b),
-                            Part::Text(","),
-                            Part::Type(a),
-                        ]);
-                    }
-                    Ty::Tuple(fields) => {
-                        f.write_str("(")?;
-                        pending.push(Part::Text(")"));
-                        for (index, field) in fields.iter().enumerate().rev() {
-                            pending.push(Part::Type(field));
-                            if index > 0 {
-                                pending.push(Part::Text(","));
-                            }
-                        }
-                    }
-                },
-            }
-        }
-        Ok(())
+        self.display(Stage::Basis).fmt(f)
     }
 }
-
 impl Ty {
-    fn tree_size(&self) -> TreeSize {
-        let mut size = TreeSize::default();
-        let mut pending = vec![(self, 1)];
-        while let Some((ty, depth)) = pending.pop() {
-            size.nodes += 1;
-            size.depth = size.depth.max(depth);
-            match ty {
-                Self::Q(inner) => pending.push((inner, depth + 1)),
-                Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
-                Self::Tuple(fields) => {
-                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
-                }
-                _ => {}
-            }
-        }
-        size
-    }
-
     fn basis_bits(&self) -> Option<usize> {
-        match self {
-            Self::Unit => Some(0),
-            Self::Bit => Some(1),
-            Self::Pair(a, b) => Some(a.basis_bits()? + b.basis_bits()?),
-            Self::Tuple(fields) => fields
+        match &self.kind {
+            Kind::Unit => Some(0),
+            Kind::Bit => Some(1),
+            Kind::Bits(n) => match *n {},
+            Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
-            _ => None,
+            Kind::Q(_) | Kind::Parameter(_) => None,
         }
     }
-
     fn classical(&self) -> bool {
-        match self {
-            Self::Unit | Self::CBit => true,
-            Self::Pair(a, b) => a.classical() && b.classical(),
-            Self::Tuple(fields) => fields.iter().all(Self::classical),
-            _ => false,
-        }
+        !self.linear()
     }
-
-    fn pair(a: Self, b: Self) -> Self {
-        Self::Pair(Box::new(a), Box::new(b))
+    fn runtime(&self) -> super::types::DisplayType<'_, std::convert::Infallible> {
+        self.display(Stage::Runtime)
     }
-
-    fn tuple(mut fields: Vec<Self>) -> Self {
-        if fields.len() == 2 {
-            let b = fields.pop().expect("second field");
-            Self::pair(fields.pop().expect("first field"), b)
-        } else {
-            Self::Tuple(fields)
-        }
-    }
-
-    fn fields(&self) -> Option<Vec<&Self>> {
-        match self {
-            Self::Pair(a, b) => Some(vec![a, b]),
-            Self::Tuple(fields) => Some(fields.iter().collect()),
-            _ => None,
-        }
-    }
-}
-
-/// Count representation nodes, including zero-bit Unit products. Walking is
-/// iterative so checking a newly constructed tree never needs its call depth.
-#[derive(Default)]
-struct TreeSize {
-    nodes: usize,
-    depth: usize,
 }
 
 fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
@@ -221,16 +151,23 @@ impl BasisFunction {
     }
 }
 
+use super::resolve::locals::{BinderKey, Forest, OccurrencesForest, ResolvedUse};
+
 struct Compiler<'a> {
     kernel: crate::interchange::native::Kernel,
     project: &'a Project,
+    resolution: Resolution,
+    locals: Forest<'a>,
+    interfaces: BTreeMap<Key, Interface>,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, AcceptedProgram>,
+    effects: BTreeMap<Key, super::effects::FunctionEffect>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
+    instrument_evidence: BTreeMap<(Key, Key), Arc<crate::contract::instrument::InstrumentEvidence>>,
     // One immutable, full-project snapshot. It is copied only when evidence is
     // first needed and charged before allocation. Individual receipts share it.
     function_sources: Option<Arc<Vec<(String, String)>>>,
@@ -240,7 +177,7 @@ struct Compiler<'a> {
     work: usize,
     checking: Option<Key>,
     exact_work: crate::contract::exact::Budget,
-    closed_meanings: BTreeMap<Key, crate::contract::exact::Matrix>,
+    closed_meanings: BTreeMap<MeaningCacheKey, crate::contract::exact::Matrix>,
 }
 
 impl Compiler<'_> {
@@ -268,13 +205,26 @@ impl Compiler<'_> {
     }
 
     fn charge(&mut self, module: &str, span: Span, amount: usize) -> Result<(), CompileError> {
-        if amount > MAX_WORK.saturating_sub(self.work) {
+        let mut work = self.work;
+        self.charge_at(&mut work, module, span, amount)?;
+        self.work = work;
+        Ok(())
+    }
+
+    fn charge_at(
+        &self,
+        work: &mut usize,
+        module: &str,
+        span: Span,
+        amount: usize,
+    ) -> Result<(), CompileError> {
+        if amount > MAX_WORK.saturating_sub(*work) {
             let (line, column) = coordinates(&self.project.modules[module].source, span);
             let (owner, location, context) = match &self.checking {
                 Some(key) => (
-                    key.0.as_str(),
+                    self.resolution.declaration(*key).name.0.as_str(),
                     self.declarations[key].span,
-                    format!(" while checking {}::{}", key.0, key.1),
+                    format!(" while checking {}", self.resolution.path(*key)),
                 ),
                 None => (module, span, String::new()),
             };
@@ -286,11 +236,11 @@ impl Compiler<'_> {
                     "source expansion exceeds the project-wide work limit of {MAX_WORK}{context}; \
                     {} units used, {amount} requested at {module}:{line}:{column}; \
                     each declaration is checked and each call is expanded separately",
-                    self.work
+                    *work
                 ),
             ));
         }
-        self.work += amount;
+        *work += amount;
         Ok(())
     }
 
@@ -368,355 +318,156 @@ impl Compiler<'_> {
     }
 
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
-        let key = (module.to_owned(), name.text.clone());
-        if self.declarations.contains_key(&key) {
-            return Ok(Callee::User(key));
-        }
-        if let Some(import) = self.project.modules[module].imports.get(&name.text) {
-            return Ok(if import.origin == ImportOrigin::Sealed {
-                Callee::Sealed(import.module.clone(), import.name.clone())
-            } else {
-                Callee::User((import.module.clone(), import.name.clone()))
-            });
-        }
-        Err(self.error(
-            module,
-            name.span,
-            ErrorCode::UnknownName,
-            format!(
-                "unknown function `{}`; standard operations require an explicit import",
-                name.text
-            ),
-        ))
-    }
-
-    fn ty(&mut self, module: &str, ty: &Type, basis_only: bool) -> Result<Ty, CompileError> {
-        let result = match &ty.kind {
-            TypeKind::Unit => Ty::Unit,
-            TypeKind::Bit if basis_only => Ty::Bit,
-            TypeKind::CBit if !basis_only => Ty::CBit,
-            TypeKind::Q(inner) if !basis_only => Ty::Q(Box::new(self.ty(module, inner, true)?)),
-            TypeKind::Tuple(fields) => Ty::tuple(
-                fields
-                    .iter()
-                    .map(|field| self.ty(module, field, basis_only))
-                    .collect::<Result<_, _>>()?,
-            ),
-            _ => {
-                return Err(self.error(
-                    module,
-                    ty.span,
-                    ErrorCode::TypeMismatch,
-                    "Bit is a basis type; ordinary functions use CBit or Q<basis type>",
-                ));
+        match self.locals.usage(name).target {
+            ResolvedUse::Global(Target::Declaration(id)) => Ok(Callee::User(id)),
+            ResolvedUse::Global(Target::Primitive(id)) => {
+                Ok(Callee::Sealed(id.module.into(), id.name.into()))
             }
-        };
-        self.check_tree(module, ty.span, result.tree_size())?;
-        if basis_only && result.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
-            return Err(self.error(
+            ResolvedUse::Local(_) | ResolvedUse::Unresolved => Err(self.error(
                 module,
-                ty.span,
-                ErrorCode::Limit,
-                "basis type exceeds the initial 12-bit limit",
-            ));
+                name.span,
+                ErrorCode::UnknownName,
+                format!(
+                    "unknown function `{}`; standard operations require an explicit import",
+                    name.text
+                ),
+            )),
         }
-        Ok(result)
     }
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
-        let mut names = BTreeSet::new();
-        for param in &decl.static_params {
-            if !names.insert(&param.name.text) {
-                return Err(self.error(
-                    &key.0,
-                    param.name.span,
-                    ErrorCode::Ownership,
-                    "duplicate static parameter",
-                ));
+        let interface = &self.interfaces[key];
+        let module = self.resolution.declaration(*key).name.0.clone();
+        assert_eq!(interface.module, module, "checked interface module");
+        assert_eq!(interface.kind, decl.kind, "checked declaration kind");
+        assert_eq!(
+            interface.params.len(),
+            decl.params.len(),
+            "checked parameter count"
+        );
+        assert_eq!(
+            interface.statics.len(),
+            decl.static_params.len(),
+            "checked static count"
+        );
+        let stage = if decl.kind == FnKind::Classical {
+            Stage::Basis
+        } else {
+            Stage::Runtime
+        };
+        let mut work = self.work;
+        let result: Result<(Vec<Ty>, Ty), CompileError> = (|| {
+            let mut params = Vec::new();
+            for (ordinal, parameter) in decl.params.iter().enumerate() {
+                params.push(finite_type(
+                    self,
+                    &mut work,
+                    &module,
+                    &parameter.ty,
+                    &interface.params[ordinal],
+                    stage,
+                )?);
             }
-        }
-        let mut params = Vec::new();
-        for param in &decl.params {
-            let mut pending = vec![&param.pattern];
-            while let Some(pattern) = pending.pop() {
-                match &pattern.kind {
-                    PatternKind::Name(name) => {
-                        if !names.insert(&name.text) {
-                            return Err(self.error(
-                                &key.0,
-                                name.span,
-                                ErrorCode::Ownership,
-                                "duplicate parameter name",
-                            ));
-                        }
-                    }
-                    PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
-                    PatternKind::Wildcard => {}
+            let result = finite_type(
+                self,
+                &mut work,
+                &module,
+                &decl.return_type,
+                &interface.result,
+                stage,
+            )?;
+            Ok((params, result))
+        })();
+        self.work = work;
+        let (params, result) = result?;
+        if decl.kind == FnKind::Classical {
+            for (ordinal, parameter) in decl.params.iter().enumerate() {
+                if !matches!(parameter.pattern.kind, PatternKind::Name(_)) {
+                    // Concrete labels still use the actual finite pattern/label binder.
+                    self.bind_basis_pattern(&module, &parameter.pattern, &params[ordinal], 0)?;
                 }
             }
-            let ty = self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?;
-            if decl.kind == FnKind::Basis && !matches!(param.pattern.kind, PatternKind::Name(_)) {
-                // Reuse the coherent basis-pattern binding judgment. A zero
-                // label suffices to validate shape; enumeration binds all labels.
-                self.bind_basis_pattern(&key.0, &param.pattern, &ty, 0)?;
-            }
-            params.push(ty);
         }
-        Ok((
-            params,
-            self.ty(&key.0, &decl.return_type, decl.kind == FnKind::Basis)?,
-        ))
+        Ok((params, result))
     }
+}
 
-    /// Iterative topological ordering also checks calls in unused declarations.
-    fn order(&self) -> Result<Vec<Key>, CompileError> {
-        let mut pending = BTreeMap::<Key, BTreeSet<Key>>::new();
-        let mut users = BTreeMap::<Key, Vec<Key>>::new();
-        for (key, decl) in &self.declarations {
-            let mut dependencies = BTreeSet::new();
-            let static_names: BTreeSet<_> =
-                decl.static_params.iter().map(|p| &p.name.text).collect();
-            for name in called_names(decl)
-                .into_iter()
-                .chain(decl.static_params.iter().filter_map(|p| p.meaning.as_ref()))
-            {
-                if static_names.contains(&name.text) {
-                    continue;
-                }
-                if let Callee::User(target) = self.resolve(&key.0, name)? {
-                    dependencies.insert(target);
-                }
-            }
-            for target in &dependencies {
-                users.entry(target.clone()).or_default().push(key.clone());
-            }
-            pending.insert(key.clone(), dependencies);
+/// Convert the checked symbolic interface, preserving its exact type tree.
+/// Original types supply locations only; this is finite eligibility and copying,
+/// never another source type/ownership judgment.
+fn finite_type(
+    compiler: &Compiler<'_>,
+    work: &mut usize,
+    module: &str,
+    original: &Type,
+    checked: &check::Ty,
+    stage: Stage,
+) -> Result<Ty, CompileError> {
+    let charge_node = |work: &mut usize| {
+        let size = checked.tree_size();
+        if size.nodes > MAX_TREE_NODES || size.depth > MAX_TREE_DEPTH {
+            return Err(compiler.error(module, original.span, ErrorCode::Limit, format!("internal value or type exceeds the initial {MAX_TREE_NODES}-node / {MAX_TREE_DEPTH}-level limit")));
         }
-        let mut ready: BTreeSet<_> = pending
-            .iter()
-            .filter(|(_, deps)| deps.is_empty())
-            .map(|(key, _)| key.clone())
-            .collect();
-        let mut order = Vec::new();
-        while let Some(key) = ready.pop_first() {
-            order.push(key.clone());
-            for user in users.get(&key).into_iter().flatten() {
-                let dependencies = pending.get_mut(user).expect("known caller");
-                dependencies.remove(&key);
-                if dependencies.is_empty() {
-                    ready.insert(user.clone());
-                }
-            }
-            pending.remove(&key);
+        compiler.charge_at(work, module, original.span, size.nodes)
+    };
+    let ty = match (&original.kind, &checked.kind) {
+        (TypeKind::Unit, Kind::Unit) => {
+            charge_node(work)?;
+            Ty::unit()
         }
-        if let Some((key, _)) = pending.first_key_value() {
-            return Err(self.error(
-                &key.0,
-                self.declarations[key].name.span,
-                ErrorCode::RecursiveCall,
-                "recursive function calls are not supported",
+        (TypeKind::Bit, Kind::Bit) => {
+            charge_node(work)?;
+            Ty::bit()
+        }
+        (TypeKind::Q(original), Kind::Q(checked)) => {
+            let basis = finite_type(compiler, work, module, original, checked, Stage::Basis)?;
+            charge_node(work)?;
+            Ty::quantum(basis)
+        }
+        (TypeKind::Tuple(original), Kind::Tuple(checked)) => {
+            assert_eq!(original.len(), checked.len(), "checked tuple arity");
+            let mut fields = Vec::new();
+            for (ordinal, field) in original.iter().enumerate() {
+                fields.push(finite_type(
+                    compiler,
+                    work,
+                    module,
+                    field,
+                    &checked[ordinal],
+                    stage,
+                )?);
+            }
+            charge_node(work)?;
+            Ty::tuple(fields)
+        }
+        (_, Kind::Bits(_)) => {
+            return Err(compiler.error(
+                module,
+                original.span,
+                ErrorCode::Unsupported,
+                "register types are outside the finite lowering profile",
             ));
         }
-        Ok(order)
-    }
-}
-
-fn effect(kind: FnKind) -> Effect {
-    match kind {
-        FnKind::Basis | FnKind::Meaning | FnKind::Unitary => Effect::Unitary,
-        FnKind::Iso => Effect::Iso,
-        FnKind::Observe => Effect::Observe,
-    }
-}
-
-fn called_names(decl: &Decl) -> Vec<&Ident> {
-    fn pattern_names(pattern: &Pattern) -> Vec<&Ident> {
-        let mut pending = vec![pattern];
-        let mut names = Vec::new();
-        while let Some(pattern) = pending.pop() {
-            match &pattern.kind {
-                PatternKind::Name(name) => names.push(name),
-                PatternKind::Tuple(fields) => pending.extend(fields),
-                PatternKind::Wildcard => {}
-            }
+        (_, Kind::Parameter(_)) => {
+            return Err(compiler.error(
+                module,
+                original.span,
+                ErrorCode::Unsupported,
+                "named Basis types are outside the finite lowering profile",
+            ));
         }
-        names
+        _ => unreachable!("finite source and checked interface constructors differ"),
+    };
+    if stage == Stage::Basis && ty.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
+        return Err(compiler.error(
+            module,
+            original.span,
+            ErrorCode::Limit,
+            "basis type exceeds the initial 12-bit limit",
+        ));
     }
-    enum Node<'a> {
-        Expr(&'a Expr),
-        Basis(&'a BasisExpr),
-        Block(&'a Block, Vec<&'a Ident>),
-        Bind(Vec<&'a Ident>),
-        Unbind(Vec<&'a Ident>),
-        Names(Vec<&'a Ident>),
-    }
-    if let FnBody::Meaning { function, .. } = &decl.body {
-        return vec![function];
-    }
-    let mut locals = BTreeMap::<&str, usize>::new();
-    for name in decl.params.iter().flat_map(|p| pattern_names(&p.pattern)) {
-        *locals.entry(&name.text).or_default() += 1;
-    }
-    let mut stack = vec![match &decl.body {
-        FnBody::Meaning { .. } => unreachable!(),
-        FnBody::Basis(expr) => Node::Basis(expr),
-        FnBody::Quantum(block) => Node::Block(block, vec![]),
-    }];
-    let mut names = Vec::new();
-    while let Some(node) = stack.pop() {
-        match node {
-            Node::Names(calls) => names.extend(
-                calls
-                    .into_iter()
-                    .filter(|n| !locals.contains_key(n.text.as_str())),
-            ),
-            Node::Bind(bindings) => {
-                for name in bindings {
-                    *locals.entry(&name.text).or_default() += 1;
-                }
-            }
-            Node::Unbind(bindings) => {
-                for name in bindings {
-                    let count = locals
-                        .get_mut(name.text.as_str())
-                        .expect("entered lexical binding");
-                    *count -= 1;
-                    if *count == 0 {
-                        locals.remove(name.text.as_str());
-                    }
-                }
-            }
-            Node::Block(block, extra) => {
-                let mut bindings = extra.clone();
-                for name in extra {
-                    *locals.entry(&name.text).or_default() += 1;
-                }
-                bindings.extend(block.statements.iter().flat_map(|stmt| match &stmt.kind {
-                    StmtKind::Let { pattern, .. } => pattern_names(pattern),
-                    StmtKind::Expr(_) => vec![],
-                }));
-                stack.push(Node::Unbind(bindings));
-                stack.push(Node::Expr(&block.result));
-                // Initializers precede their bindings. Spent local names keep
-                // shadowing declarations until the containing scope ends.
-                for stmt in block.statements.iter().rev() {
-                    match &stmt.kind {
-                        StmtKind::Let { pattern, value } => {
-                            stack.push(Node::Bind(pattern_names(pattern)));
-                            stack.push(Node::Expr(value));
-                        }
-                        StmtKind::Expr(expr) => stack.push(Node::Expr(expr)),
-                    }
-                }
-            }
-            Node::Expr(expr) => match &expr.kind {
-                ExprKind::ApplyContract {
-                    implementation,
-                    specification,
-                    input,
-                } => {
-                    stack.push(Node::Expr(input));
-                    stack.push(Node::Names(vec![implementation, specification]));
-                }
-                ExprKind::Adjoint { function, input }
-                | ExprKind::RepeatStatic {
-                    function, input, ..
-                } => {
-                    stack.push(Node::Expr(input));
-                    stack.push(Node::Names(vec![function]));
-                }
-                ExprKind::QuantumIf {
-                    control,
-                    target,
-                    zero,
-                    one,
-                } => {
-                    stack.extend([Node::Expr(control), Node::Expr(target)]);
-                    stack.push(Node::Names(vec![zero, one]));
-                }
-                ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
-                ExprKind::Not(input) => stack.push(Node::Expr(input)),
-                ExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Expr)),
-                ExprKind::And(a, b) | ExprKind::Xor(a, b) => {
-                    stack.push(Node::Expr(a));
-                    stack.push(Node::Expr(b));
-                }
-                ExprKind::Call {
-                    callee,
-                    static_args,
-                    args,
-                } => {
-                    let mut calls = vec![callee];
-                    for op in static_args {
-                        operations::called_static_names(op, &mut calls);
-                    }
-                    stack.extend(args.iter().map(Node::Expr));
-                    stack.push(Node::Names(calls));
-                }
-                ExprKind::If {
-                    condition,
-                    then_branch,
-                    else_branch,
-                } => {
-                    stack.extend([
-                        Node::Expr(condition),
-                        Node::Block(then_branch, vec![]),
-                        Node::Block(else_branch, vec![]),
-                    ]);
-                }
-                ExprKind::CoherentLift {
-                    input,
-                    basis,
-                    binder,
-                } => {
-                    let bindings = pattern_names(binder);
-                    stack.extend([
-                        Node::Unbind(bindings.clone()),
-                        Node::Basis(basis),
-                        Node::Bind(bindings),
-                        Node::Expr(input),
-                    ]);
-                }
-                ExprKind::WithComputed {
-                    source,
-                    function,
-                    binder,
-                    body,
-                } => {
-                    stack.extend([Node::Block(body, vec![binder]), Node::Expr(source)]);
-                    stack.push(Node::Names(vec![function]));
-                }
-                ExprKind::CertifiedComputed {
-                    source,
-                    function,
-                    logical,
-                    data_binder,
-                    ancilla_binder,
-                    body,
-                } => {
-                    stack.extend([
-                        Node::Block(body, vec![data_binder, ancilla_binder]),
-                        Node::Expr(source),
-                    ]);
-                    stack.push(Node::Names(vec![function, logical]));
-                }
-            },
-            Node::Basis(expr) => match &expr.kind {
-                BasisExprKind::Call { callee, args } => {
-                    stack.extend(args.iter().map(Node::Basis));
-                    stack.push(Node::Names(vec![callee]));
-                }
-                BasisExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Basis)),
-                BasisExprKind::Xor(a, b) | BasisExprKind::And(a, b) => {
-                    stack.extend([Node::Basis(a), Node::Basis(b)]);
-                }
-                BasisExprKind::Not(a) => stack.push(Node::Basis(a)),
-                _ => {}
-            },
-        }
-    }
-    names
+    Ok(ty)
 }
 
 /// Load and check every declaration, lower `main::main`, then independently
@@ -884,17 +635,115 @@ fn process_loaded_project_with_kernel(
     require_entry: bool,
     kernel: Option<&crate::interchange::native::Kernel>,
 ) -> Result<Option<AcceptedProgram>, CompileError> {
-    let declarations = project
-        .modules
-        .iter()
-        .flat_map(|(module, source)| {
-            source
-                .ast
-                .decls
-                .iter()
-                .map(move |decl| ((module.clone(), decl.name.text.clone()), decl))
+    process_loaded_project_details(root, project, require_entry, kernel).map(|result| result.entry)
+}
+
+struct ProjectResult {
+    entry: Option<AcceptedProgram>,
+    effects: BTreeMap<String, super::effects::FunctionEffect>,
+}
+
+/// Immutable interface facts bound to the source collection actually checked.
+/// These facts grant no execution handle, arbitrary Meaning or access evidence.
+#[derive(Clone, Debug)]
+pub struct ProjectEffects {
+    project: Project,
+    functions: BTreeMap<String, super::effects::FunctionEffect>,
+}
+
+impl ProjectEffects {
+    pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
+        self.functions.get(path).copied()
+    }
+
+    /// Render the retained checked source, including inferred effects on
+    /// ordinary functions. Basis/Meaning declarations have no quantum fact.
+    pub fn documentation(&self, module: &str) -> Option<Result<String, super::parser::ParseError>> {
+        self.project.modules.get(module).map(|source| {
+            super::documentation::render_checked_markdown(&source.source, |name| {
+                self.function_effect(&format!("{module}::{name}"))
+            })
+        })
+    }
+}
+
+/// Derive interface facts through the same whole-project source checks and
+/// native verification of concrete functions as `check_project_with_kernel`.
+/// Generic body facts remain conditional on their checked source premises.
+pub fn project_effects_with_kernel(
+    root: &Path,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<ProjectEffects, Diagnostic> {
+    let project = Project::load_detailed_with_policy(root, policy)
+        .map_err(|failure| failure.into_diagnostic())?;
+    let result = process_loaded_project_details(root, &project, false, Some(kernel))
+        .map_err(Diagnostic::from_compile)?;
+    Ok(ProjectEffects {
+        project,
+        functions: result.effects,
+    })
+}
+
+fn process_loaded_project_details(
+    root: &Path,
+    project: &Project,
+    require_entry: bool,
+    kernel: Option<&crate::interchange::native::Kernel>,
+) -> Result<ProjectResult, CompileError> {
+    // Public Project fields can be mutated by a caller. Reconstruct the entire
+    // original judgment and occurrence association on every operation.
+    let (source, occurrences) = check::program_with(
+        project
+            .modules
+            .iter()
+            .map(|(name, module)| (name.as_str(), &module.ast))
+            .collect(),
+        SourceLimits::finite(),
+        |resolution, _, _, _, _, indices, budget| {
+            let mut occurrences = OccurrencesForest::default();
+            for (id, index) in indices {
+                let declaration = resolution.declaration(*id);
+                let span =
+                    project.modules[&declaration.name.0].ast.decls[declaration.ast_index].span;
+                occurrences.insert_budgeted(
+                    index.take_occurrences(),
+                    span,
+                    &mut |span, cells| budget.charge(span, cells),
+                )?;
+            }
+            Ok(occurrences)
+        },
+    )
+    .map_err(|error| source_error(project, root, error))?;
+    let order = source.dependency_order;
+    let resolution = source.resolution;
+    let declarations: BTreeMap<_, _> = resolution
+        .declarations()
+        .map(|(id, declaration)| {
+            (
+                id,
+                &project.modules[&declaration.name.0].ast.decls[declaration.ast_index],
+            )
         })
         .collect();
+    // These are located pending concrete obligations, not proof discharges.
+    // Concrete lowering/evidence gates remain responsible when instantiated.
+    let obligations = source.obligations;
+    for (id, declaration) in &declarations {
+        if declaration.kind == FnKind::Static {
+            continue;
+        }
+        if let Err((span, message)) = profile::check(declaration, &source.interfaces[id]) {
+            return Err(source_error(
+                project,
+                root,
+                SourceError::new("unsupported", span, message)
+                    .in_module(&resolution.declaration(*id).name.0),
+            ));
+        }
+    }
+    let locals = Forest::from_occurrences(source.lexical, occurrences);
     let kernel = kernel
         .cloned()
         .map(Ok)
@@ -910,10 +759,15 @@ fn process_loaded_project_with_kernel(
     let mut compiler = Compiler {
         kernel,
         project,
+        resolution,
         declarations,
+        locals,
+        interfaces: source.interfaces,
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
+        effects: source.effects,
         function_evidence: BTreeMap::new(),
+        instrument_evidence: BTreeMap::new(),
         function_sources: None,
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
@@ -923,11 +777,20 @@ fn process_loaded_project_with_kernel(
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
         closed_meanings: BTreeMap::new(),
     };
-    let order = compiler.order()?;
-    let entry = ("main".to_owned(), "main".to_owned());
-    if let Some(decl) = compiler.declarations.get(&entry).copied() {
+    let entry = compiler.resolution.qualified("main::main").ok();
+    if let Some((entry, decl)) =
+        entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
+    {
+        if decl.kind == FnKind::Static {
+            return Err(compiler.error(
+                "main",
+                decl.span,
+                ErrorCode::InvalidEntry,
+                "a static Nat helper cannot be a runtime entry",
+            ));
+        }
         let (_, result) = compiler.signature(&entry)?;
-        if decl.kind != FnKind::Observe
+        if matches!(decl.kind, FnKind::Classical | FnKind::Meaning)
             || !decl.params.is_empty()
             || !decl.static_params.is_empty()
             || !result.classical()
@@ -936,7 +799,7 @@ fn process_loaded_project_with_kernel(
                 "main",
                 decl.span,
                 ErrorCode::InvalidEntry,
-                "main must be observe fn main() with a classical result",
+                "main must be an ordinary fn main() with a closed classical result",
             ));
         }
     } else if require_entry {
@@ -946,42 +809,117 @@ fn process_loaded_project_with_kernel(
             span: Span::default(),
             line: 1,
             column: 1,
-            message: "expected observe fn main() with a classical result".to_owned(),
+            message: "expected ordinary fn main() with a closed classical result".to_owned(),
         });
     }
-    // All basis functions precede their callers; ordinary functions may only
-    // invoke them through a coherent lift or with_computed predicate.
+    // Prepare finite descriptions for static/coherent obligations. Ordinary
+    // calls lower the original classical body; they do not execute this table.
     for key in &order {
-        compiler.checking = Some(key.clone());
-        if compiler.declarations[key].kind == FnKind::Basis {
+        compiler.checking = Some(*key);
+        if compiler.declarations[key].kind == FnKind::Classical {
             let function = compiler.compile_basis(key)?;
-            compiler.basis.insert(key.clone(), function);
-        }
-    }
-    for key in &order {
-        compiler.checking = Some(key.clone());
-        if compiler.declarations[key].kind == FnKind::Meaning {
-            compiler.compile_meaning(key)?;
+            compiler.basis.insert(*key, function);
         }
     }
     let mut main = None;
     for key in &order {
-        compiler.checking = Some(key.clone());
-        if !compiler.declarations[key].static_params.is_empty() {
-            let bindings = compiler.abstract_bindings(key)?;
-            lower::check_generic(&mut compiler, key, bindings)?;
-        } else if !matches!(
-            compiler.declarations[key].kind,
-            FnKind::Basis | FnKind::Meaning
-        ) {
+        compiler.checking = Some(*key);
+        if compiler.declarations[key].kind == FnKind::Meaning {
+            compiler.compile_meaning(key)?;
+            continue;
+        }
+        if compiler.declarations[key].static_params.is_empty()
+            && !matches!(
+                compiler.declarations[key].kind,
+                FnKind::Classical | FnKind::Meaning
+            )
+        {
             let program = lower::lower_function(&mut compiler, key)?;
-            if *key == entry {
+            if Some(*key) == entry {
                 main = Some(program.clone());
             }
-            compiler.checked.insert(key.clone(), program);
+            compiler.checked.insert(*key, program);
         }
     }
-    Ok(main)
+    // FunctionEquality names closed pairs even inside an unused generic body
+    // or a zero-count branch. Source checking is not their semantic discharge.
+    for obligation in obligations {
+        if let check::ObligationKind::FunctionEquality {
+            implementation,
+            specification,
+        } = obligation.kind
+        {
+            compiler.checking = Some(obligation.definition);
+            let module = compiler
+                .resolution
+                .declaration(obligation.definition)
+                .name
+                .0
+                .clone();
+            if compiler.effects[&implementation].inferred() == crate::ir::Effect::Observe {
+                compiler.instrument_contract_evidence(
+                    &module,
+                    obligation.span,
+                    implementation,
+                    specification,
+                )?;
+            } else {
+                compiler.function_contract_evidence(
+                    &module,
+                    obligation.span,
+                    implementation,
+                    specification,
+                )?;
+            }
+        }
+    }
+    let effects = compiler
+        .effects
+        .iter()
+        .map(|(key, fact)| (compiler.resolution.path(*key), *fact))
+        .collect();
+    compiler.charge("main", Span::default(), compiler.instrument_evidence.len())?;
+    Ok(ProjectResult {
+        entry: main.map(|program| {
+            program.retain_instruments(compiler.instrument_evidence.into_values().collect())
+        }),
+        effects,
+    })
+}
+
+fn source_error(project: &Project, root: &Path, error: SourceError) -> CompileError {
+    let code = match error.code {
+        "name" => ErrorCode::UnknownName,
+        "cycle" => ErrorCode::RecursiveCall,
+        "arity" | "static-arity" => ErrorCode::Arity,
+        "type" | "size" | "static" | "shadow" => ErrorCode::TypeMismatch,
+        "ownership" | "binding" => ErrorCode::Ownership,
+        "effect" => ErrorCode::Effect,
+        "access" => ErrorCode::Capability,
+        "contract" => ErrorCode::Contract,
+        "unsupported" => ErrorCode::Unsupported,
+        "limit" => ErrorCode::Limit,
+        _ => ErrorCode::Project,
+    };
+    let (path, line, column) = error
+        .module
+        .as_ref()
+        .and_then(|module| project.modules.get(module))
+        .map_or_else(
+            || (root.to_path_buf(), 1, 1),
+            |module| {
+                let (line, column) = coordinates(&module.source, error.span);
+                (module.path.clone(), line, column)
+            },
+        );
+    CompileError {
+        code,
+        path,
+        span: error.span,
+        line,
+        column,
+        message: error.message,
+    }
 }
 
 #[cfg(test)]
@@ -1019,10 +957,18 @@ mod snapshot_tests {
         Compiler {
             kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
             project,
+            resolution: project
+                .resolution()
+                .map_err(|failure| failure.into_diagnostic())
+                .expect("valid test project"),
             declarations: BTreeMap::new(),
+            locals: Forest::default(),
+            interfaces: BTreeMap::new(),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),
+            effects: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
+            instrument_evidence: BTreeMap::new(),
             function_sources: None,
             meanings: BTreeMap::new(),
             providers: BTreeMap::new(),
@@ -1031,6 +977,51 @@ mod snapshot_tests {
             checking: None,
             exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
             closed_meanings: BTreeMap::new(),
+        }
+    }
+
+    #[test]
+    fn constructed_ordinary_parameter_patterns_use_runtime_binding_rules() {
+        let source = "unitary fn keep(u: Unit) -> Unit { () }";
+        for kind in [PatternKind::Tuple(vec![]), PatternKind::Wildcard] {
+            let mut project = project(0);
+            let module = project.modules.get_mut("main").unwrap();
+            module.source = source.into();
+            module.ast = crate::frontend::parser::parse_module(source).unwrap();
+            let parameter = &mut module.ast.decls[0].params[0];
+            parameter.pattern.kind = kind;
+            assert!(
+                process_loaded_project(Path::new("main.qli"), &project, false)
+                    .expect("constructed ordinary Unit pattern")
+                    .is_none()
+            );
+        }
+        let source = "unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }";
+        for (kind, code, message) in [
+            (
+                PatternKind::Tuple(vec![]),
+                ErrorCode::TypeMismatch,
+                "empty pattern requires ordinary Unit",
+            ),
+            (
+                PatternKind::Wildcard,
+                ErrorCode::Ownership,
+                "wildcard would discard quantum ownership",
+            ),
+        ] {
+            let mut project = project(0);
+            let module = project.modules.get_mut("main").unwrap();
+            module.source = source.into();
+            module.ast = crate::frontend::parser::parse_module(source).unwrap();
+            let parameter = &mut module.ast.decls[0].params[0];
+            let span = parameter.pattern.span;
+            parameter.pattern.kind = kind;
+            let error = process_loaded_project(Path::new("main.qli"), &project, false)
+                .expect_err("constructed pattern cannot eliminate a quantum owner");
+            assert_eq!(error.code, code);
+            assert_eq!(error.path, PathBuf::from("main.qli"));
+            assert_eq!(error.span, span);
+            assert!(error.message.contains(message));
         }
     }
 

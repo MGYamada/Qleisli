@@ -1,0 +1,13 @@
+//! Two classical message bits transmitted through one half of a Bell pair.
+use bell::prepare;
+use bell::measure;
+use corrections::pauli;
+
+/// Encode (phase bit, parity bit), then decode by a joint Bell measurement.
+/// Return the two decoded bits in the original message order.
+/// The shared Bell resource is explicit; this is not two bits from a lone qubit.
+pub observe fn round_trip(phase_bit: CBit, parity_bit: CBit) -> (CBit, CBit) {
+    let (alice, bob) = prepare();
+    let alice = pauli(phase_bit, parity_bit, alice);
+    measure(alice, bob)
+}

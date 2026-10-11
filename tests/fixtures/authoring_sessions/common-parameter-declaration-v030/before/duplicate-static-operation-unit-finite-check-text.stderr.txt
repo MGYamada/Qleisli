@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/main.qli:4:49: ownership: duplicate static parameter

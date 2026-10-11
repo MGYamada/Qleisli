@@ -1,0 +1,37 @@
+{
+  "project": "pennylane_demos/vqe_excitation",
+  "action": "emit-ir",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-ir",
+    "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+    "--output=/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 0.3994165000040084,
+  "recorded_utc": "2026-10-06T03:53:46.655457+00:00",
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf\"}}\n",
+  "stderr": "",
+  "parsed_stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-ir",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "path": "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/pennylane_demos-vqe_excitation.qirf"
+    }
+  },
+  "raw_stdout": {
+    "path": "observations-before/pennylane_demos-vqe_excitation-emit-ir.stdout.txt",
+    "sha256": "bf0e6b8c9e253ed9e07a73b91b07a1959dd2ddf9e5d56b3c71c9a8200dd434d7"
+  },
+  "raw_stderr": {
+    "path": "observations-before/pennylane_demos-vqe_excitation-emit-ir.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true
+}

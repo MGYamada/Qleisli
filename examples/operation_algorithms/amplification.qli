@@ -2,27 +2,27 @@
 //! Success depends on the oracle/preparation and iteration count, not typing.
 use std::quantum::init0;
 use std::quantum::join;
-use std::routines::hadamard2;
+use std::transform::hadamard2;
 use oracles::zero_reflection;
 
 /// A whole-space unitary preparing the uniform state when its input is |00>.
 pub unitary fn uniform(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { hadamard2(q) }
 
-unitary fn apply[static U: Op<(Bit,Bit)>](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
-requires Apply(U) { U(q) }
+unitary fn apply[const U: Op<(Bit,Bit)>](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
+requires Applicable(U) { U(q) }
 
 /// A|00>, then G = (A R0 A†) O once. For uniform A and one marked label,
 /// this returns that label with probability one among four candidates.
-pub iso fn amplify_once[static A: Op<(Bit,Bit)>, static O: Op<(Bit,Bit)>]() -> Q<(Bit,Bit)>
-requires Apply(A), Adjoint(A), Apply(O) {
+pub isometry fn amplify_once[const A: Op<(Bit,Bit)>, const O: Op<(Bit,Bit)>]() -> Q<(Bit,Bit)>
+requires Applicable(A), Adjointable(A), Applicable(O) {
     let prepared = A(join(init0(),init0()));
     apply[then_op(O,conjugate_op(A,zero_reflection))](prepared)
 }
 
 /// The same construction with two iterations. For one marked label among four,
 /// the success probability falls back to 1/4; repetition is not monotonic.
-pub iso fn amplify_twice[static A: Op<(Bit,Bit)>, static O: Op<(Bit,Bit)>]() -> Q<(Bit,Bit)>
-requires Apply(A), Adjoint(A), Apply(O) {
+pub isometry fn amplify_twice[const A: Op<(Bit,Bit)>, const O: Op<(Bit,Bit)>]() -> Q<(Bit,Bit)>
+requires Applicable(A), Adjointable(A), Applicable(O) {
     let prepared = A(join(init0(),init0()));
-    apply[repeat_op(2,then_op(O,conjugate_op(A,zero_reflection)))](prepared)
+    apply[power(then_op(O,conjugate_op(A,zero_reflection)),2)](prepared)
 }

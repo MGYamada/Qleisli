@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/candidate-comma-operator/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:101..104: parse: expected an identifier\n",
+  "native_invocations": 0,
+  "seconds": 0.004305834008846432,
+  "transcript": "main:101..104: parse: expected an identifier\n"
+}

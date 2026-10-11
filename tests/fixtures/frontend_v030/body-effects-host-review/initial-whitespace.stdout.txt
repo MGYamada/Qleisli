@@ -1,0 +1,6 @@
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest/2.stdout.txt:266: new blank line at EOF.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest/3.stdout.txt:64: new blank line at EOF.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest-all/2.stdout.txt:129: new blank line at EOF.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest-all-escalated/2.stdout.txt:524: new blank line at EOF.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest-all-escalated-retry-01/2.stdout.txt:1292: new blank line at EOF.
+tests/fixtures/frontend_v030/body-effects-host-review/validation-latest-first/2.stdout.txt:202: new blank line at EOF.

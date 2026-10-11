@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/mixed-qif-and-generic",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T19:24:42.228775+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.5744670839630999,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "mixed-qif-and-generic-finite-check-text.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "mixed-qif-and-generic-finite-check-text.stdout.bin",
+  "stderr_raw": "mixed-qif-and-generic-finite-check-text.stderr.bin",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "bfe8c4ff40749da2563a696f5fc2c5cda6dea4f9ccd62669e6d071ed9851b9de",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/mixed-qif-and-generic/main.qli:11:26: unsupported: finite profile does not support static Nat parameters\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately."
+}

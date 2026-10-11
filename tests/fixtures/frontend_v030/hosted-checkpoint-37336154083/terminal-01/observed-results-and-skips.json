@@ -1,0 +1,1015 @@
+{
+  "format": "qleisli.hosted-terminal-observed-results",
+  "version": 1,
+  "recorded_utc": "2026-10-05T19:25:38.355457+00:00",
+  "run_id": 37336154083,
+  "run_attempt": 1,
+  "run_status": "completed",
+  "run_conclusion": "success",
+  "updated_at": "2026-10-05T18:59:12Z",
+  "jobs": [
+    {
+      "id": 111851329117,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:13Z",
+      "completed_at": "2026-10-05T15:51:24Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435760,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T15:53:05Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435782,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:31:04Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435887,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:24:22Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435909,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:31:12Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435941,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:28Z",
+      "completed_at": "2026-10-05T15:55:55Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435978,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:35Z",
+      "completed_at": "2026-10-05T16:11:21Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851435989,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T18:58:52Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111851436073,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:01:13Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054080,
+      "name": "interop",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054082,
+      "name": "distribution",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:59:05Z",
+      "completed_at": "2026-10-05T18:59:12Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054087,
+      "name": "rust",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:03Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054098,
+      "name": "rust-msrv",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:04Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054171,
+      "name": "lean-kernel",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:06Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054245,
+      "name": "macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:04Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054253,
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932054276,
+      "name": "lean",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    },
+    {
+      "id": 111932055584,
+      "name": "release-readiness",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-05T18:58:52Z",
+      "completed_at": "2026-10-05T18:58:52Z",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "run_attempt": 1
+    }
+  ],
+  "skipped_steps": {
+    "changes": [],
+    "check-docs": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 30,
+        "started_at": "2026-10-05T15:53:03Z",
+        "completed_at": "2026-10-05T15:53:03Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 31,
+        "started_at": "2026-10-05T15:53:03Z",
+        "completed_at": "2026-10-05T15:53:03Z"
+      }
+    ],
+    "check-rust-msrv": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 20,
+        "started_at": "2026-10-05T16:31:01Z",
+        "completed_at": "2026-10-05T16:31:01Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 21,
+        "started_at": "2026-10-05T16:31:01Z",
+        "completed_at": "2026-10-05T16:31:01Z"
+      }
+    ],
+    "check-lean-kernel": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 18,
+        "started_at": "2026-10-05T16:24:19Z",
+        "completed_at": "2026-10-05T16:24:19Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 19,
+        "started_at": "2026-10-05T16:24:19Z",
+        "completed_at": "2026-10-05T16:24:19Z"
+      }
+    ],
+    "check-distribution": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-05T16:31:08Z",
+        "completed_at": "2026-10-05T16:31:08Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-05T16:31:08Z",
+        "completed_at": "2026-10-05T16:31:08Z"
+      }
+    ],
+    "check-interop": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-05T15:55:52Z",
+        "completed_at": "2026-10-05T15:55:52Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-05T15:55:52Z",
+        "completed_at": "2026-10-05T15:55:52Z"
+      }
+    ],
+    "check-macos-source": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 14,
+        "started_at": "2026-10-05T16:11:16Z",
+        "completed_at": "2026-10-05T16:11:16Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 15,
+        "started_at": "2026-10-05T16:11:16Z",
+        "completed_at": "2026-10-05T16:11:16Z"
+      }
+    ],
+    "check-rust": [
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 29,
+        "started_at": "2026-10-05T18:58:50Z",
+        "completed_at": "2026-10-05T18:58:50Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 30,
+        "started_at": "2026-10-05T18:58:50Z",
+        "completed_at": "2026-10-05T18:58:50Z"
+      }
+    ],
+    "check-lean": [
+      {
+        "name": "Compile changed mathematical proofs and audit their declarations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 5,
+        "started_at": "2026-10-05T15:53:17Z",
+        "completed_at": "2026-10-05T15:53:17Z"
+      },
+      {
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-05T16:01:11Z",
+        "completed_at": "2026-10-05T16:01:11Z"
+      },
+      {
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-05T16:01:11Z",
+        "completed_at": "2026-10-05T16:01:11Z"
+      }
+    ],
+    "interop": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:04Z",
+        "completed_at": "2026-10-05T18:59:04Z"
+      }
+    ],
+    "distribution": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:09Z",
+        "completed_at": "2026-10-05T18:59:09Z"
+      }
+    ],
+    "rust": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:01Z",
+        "completed_at": "2026-10-05T18:59:01Z"
+      }
+    ],
+    "rust-msrv": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:03Z",
+        "completed_at": "2026-10-05T18:59:03Z"
+      }
+    ],
+    "lean-kernel": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:04Z",
+        "completed_at": "2026-10-05T18:59:04Z"
+      }
+    ],
+    "macos-source": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:02Z",
+        "completed_at": "2026-10-05T18:59:02Z"
+      }
+    ],
+    "docs": [],
+    "lean": [
+      {
+        "name": "Retain required-check and dependency-cache observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4,
+        "started_at": "2026-10-05T18:59:04Z",
+        "completed_at": "2026-10-05T18:59:04Z"
+      }
+    ],
+    "release-readiness": []
+  },
+  "salient_log_lines": {
+    "changes": [
+      {
+        "line": 174,
+        "text": "2026-10-05T15:51:20.2617596Z   \"head\": \"7549cecca246b9335a3e1b8f9e4a176df8827d0a\","
+      },
+      {
+        "line": 178,
+        "text": "2026-10-05T15:51:20.2619833Z   \"profile\": \"full\","
+      },
+      {
+        "line": 179,
+        "text": "2026-10-05T15:51:20.2620598Z   \"proof_lane\": \"full\","
+      },
+      {
+        "line": 180,
+        "text": "2026-10-05T15:51:20.2621250Z   \"reason\": \"nonregular/executable artifact or mode change; full validation required\","
+      }
+    ],
+    "check-docs": [
+      {
+        "line": 207,
+        "text": "2026-10-05T15:51:31.5127760Z ##[group]Run test \"$(mdbook --version)\" = \"mdbook v${MDBOOK_VERSION}\""
+      },
+      {
+        "line": 208,
+        "text": "2026-10-05T15:51:31.5128469Z \u001b[36;1mtest \"$(mdbook --version)\" = \"mdbook v${MDBOOK_VERSION}\"\u001b[0m"
+      },
+      {
+        "line": 225,
+        "text": "2026-10-05T15:51:32.1310441Z rendered book: 23 HTML files, 920 local links, 343 anchors checked"
+      }
+    ],
+    "check-lean-kernel": [
+      {
+        "line": 525,
+        "text": "2026-10-05T15:54:28.3961103Z ##[group]Run lake env leanchecker --fresh QleisliKernel"
+      },
+      {
+        "line": 526,
+        "text": "2026-10-05T15:54:28.3961555Z \u001b[36;1mlake env leanchecker --fresh QleisliKernel\u001b[0m"
+      },
+      {
+        "line": 527,
+        "text": "2026-10-05T15:54:28.3961900Z \u001b[36;1mlake env leanchecker --fresh Main\u001b[0m"
+      },
+      {
+        "line": 614,
+        "text": "2026-10-05T16:13:13.0088091Z passed: native-acceptance (244.4s)"
+      },
+      {
+        "line": 615,
+        "text": "2026-10-05T16:13:59.4659975Z passed: native-paths (297.6s)"
+      },
+      {
+        "line": 616,
+        "text": "2026-10-05T16:13:59.8812565Z ##[group]Run python3 scripts/package_lean_kernel.py --validation \"full\" --output \"$RUNNER_TEMP/qleisli-native-bundle\""
+      },
+      {
+        "line": 617,
+        "text": "2026-10-05T16:13:59.8813477Z \u001b[36;1mpython3 scripts/package_lean_kernel.py --validation \"full\" --output \"$RUNNER_TEMP/qleisli-native-bundle\"\u001b[0m"
+      },
+      {
+        "line": 624,
+        "text": "2026-10-05T16:16:04.1841011Z passed: lake build"
+      },
+      {
+        "line": 625,
+        "text": "2026-10-05T16:16:07.9207149Z passed: lake env lean -DwarningAsError=true Audit.lean"
+      },
+      {
+        "line": 626,
+        "text": "2026-10-05T16:18:14.6424901Z passed: lake env leanchecker --fresh QleisliKernel"
+      },
+      {
+        "line": 627,
+        "text": "2026-10-05T16:20:18.0024796Z passed: lake env leanchecker --fresh Main"
+      },
+      {
+        "line": 629,
+        "text": "2026-10-05T16:23:02.1366186Z VM-28: 267 process checks, 84 small corpus clients; native acceptance required"
+      }
+    ],
+    "check-distribution": [
+      {
+        "line": 492,
+        "text": "2026-10-05T16:31:05.3471716Z Distribution validation passed; report: /home/runner/work/_temp/qleisli-distribution.json"
+      }
+    ],
+    "check-macos-source": [
+      {
+        "line": 708,
+        "text": "2026-10-05T15:56:51.7341700Z ##[group]Run python3 scripts/package_lean_kernel.py --validation \"full\" --output \"$RUNNER_TEMP/qleisli-native-bundle\""
+      },
+      {
+        "line": 709,
+        "text": "2026-10-05T15:56:51.7342520Z \u001b[36;1mpython3 scripts/package_lean_kernel.py --validation \"full\" --output \"$RUNNER_TEMP/qleisli-native-bundle\"\u001b[0m"
+      },
+      {
+        "line": 718,
+        "text": "2026-10-05T15:59:34.7998310Z passed: lake build"
+      },
+      {
+        "line": 719,
+        "text": "2026-10-05T15:59:45.2045980Z passed: lake env lean -DwarningAsError=true Audit.lean"
+      },
+      {
+        "line": 720,
+        "text": "2026-10-05T16:02:28.7162060Z passed: lake env leanchecker --fresh QleisliKernel"
+      },
+      {
+        "line": 721,
+        "text": "2026-10-05T16:05:32.3021540Z passed: lake env leanchecker --fresh Main"
+      },
+      {
+        "line": 724,
+        "text": "2026-10-05T16:09:44.7668210Z VM-28: 267 process checks, 84 small corpus clients; native acceptance required"
+      }
+    ],
+    "check-rust": [
+      {
+        "line": 2037,
+        "text": "2026-10-05T16:26:45.5294398Z \u001b[36;1mpython3 scripts/test_qli_differential.py target/debug/qleisli --cases=96\u001b[0m"
+      },
+      {
+        "line": 2054,
+        "text": "2026-10-05T16:30:07.5948333Z VM-22: 12 finite comparisons, 12 source decisions, 0 native component decisions; at most three qubits."
+      },
+      {
+        "line": 2055,
+        "text": "2026-10-05T16:30:07.6060011Z ##[group]Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive"
+      },
+      {
+        "line": 2056,
+        "text": "2026-10-05T16:30:07.6060595Z \u001b[36;1mpython3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive\u001b[0m"
+      }
+    ],
+    "check-lean": [
+      {
+        "line": 141,
+        "text": "2026-10-05T15:51:34.1700978Z   build: false"
+      },
+      {
+        "line": 147,
+        "text": "2026-10-05T15:51:34.1702281Z   leanchecker: false"
+      },
+      {
+        "line": 320,
+        "text": "2026-10-05T16:00:59.6379974Z {\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"c9f9323c8ac13d5d914aeb145299a91133d3581355231855002000a8a8b022e0\", \"mode\": \"rebuilt-types-and-audits\", \"source_revision\": \"8cd4e8c31cbb15b8a7963622d2b081a432e875c5819ff15ff506e7f5750c8cdd\", \"status\": \"passed\", \"version\": 1}"
+      },
+      {
+        "line": 321,
+        "text": "2026-10-05T16:00:59.6481108Z ##[group]Run python3 scripts/check_release_ready.py --record-constitution --output \"$RUNNER_TEMP/release-constitution.json\""
+      },
+      {
+        "line": 322,
+        "text": "2026-10-05T16:00:59.6482032Z \u001b[36;1mpython3 scripts/check_release_ready.py --record-constitution --output \"$RUNNER_TEMP/release-constitution.json\"\u001b[0m"
+      }
+    ]
+  },
+  "cargo_ignored_rows": {
+    "check-rust-msrv": [
+      {
+        "line": 550,
+        "text": "2026-10-05T15:55:18.1848519Z test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly"
+      },
+      {
+        "line": 551,
+        "text": "2026-10-05T15:55:18.1876191Z test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly"
+      },
+      {
+        "line": 566,
+        "text": "2026-10-05T15:55:18.8843886Z test interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ignored, run scripts/test_verification_decoders.py with the native decoder view"
+      },
+      {
+        "line": 930,
+        "text": "2026-10-05T16:11:20.8325917Z test dependency_depth_and_expanded_execution_cost_are_bounded ... ignored, historical Rust maximum-depth/expansion stress; native transport bounds apply and maximum runs are deferred"
+      },
+      {
+        "line": 951,
+        "text": "2026-10-05T16:11:21.4918234Z test frozen_finite_leaf_executes_through_its_actual_definition_index ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 952,
+        "text": "2026-10-05T16:11:21.4920066Z test seeded_fresh_shots_match_independent_branches_and_classical_clients ... ignored, run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      },
+      {
+        "line": 953,
+        "text": "2026-10-05T16:11:21.4922338Z test small_source_clients_match_independent_complex_reference_branches ... ignored, run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      },
+      {
+        "line": 961,
+        "text": "2026-10-05T16:11:21.6084273Z test native_actual_counts_premises_and_encodings_are_checked ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 962,
+        "text": "2026-10-05T16:11:21.6105593Z test native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 963,
+        "text": "2026-10-05T16:11:21.6122642Z test native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 964,
+        "text": "2026-10-05T16:11:21.6125064Z test native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 965,
+        "text": "2026-10-05T16:11:21.6126937Z test native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 966,
+        "text": "2026-10-05T16:11:21.6128706Z test native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 967,
+        "text": "2026-10-05T16:11:21.6130625Z test native_phase_fault_remains_an_obligation_under_zero_repeat ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 968,
+        "text": "2026-10-05T16:11:21.6132457Z test native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 969,
+        "text": "2026-10-05T16:11:21.6134366Z test native_request_detects_coordinated_body_changes_and_wrong_headers ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 970,
+        "text": "2026-10-05T16:11:21.6136436Z test native_request_permits_different_sharing_in_both_directions ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 971,
+        "text": "2026-10-05T16:11:21.6138269Z test native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 974,
+        "text": "2026-10-05T16:11:21.6648137Z test vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles ... ignored, VM-22 optional comparison requires the separately built Lean runtime"
+      },
+      {
+        "line": 984,
+        "text": "2026-10-05T16:11:21.7461759Z test native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries ... ignored, requires generated small fixtures and an audited native Lean kernel"
+      },
+      {
+        "line": 985,
+        "text": "2026-10-05T16:11:21.7462850Z test qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations ... ignored, requires generated small fixtures"
+      },
+      {
+        "line": 1026,
+        "text": "2026-10-05T16:13:00.1342838Z test export_has_independent_capacity_checks ... ignored, historical maximum-size export stress; native acceptance has independent work/time limits"
+      },
+      {
+        "line": 1087,
+        "text": "2026-10-05T16:14:06.0148807Z test evidence_dags_decode_from_the_native_ticket_and_execute ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1088,
+        "text": "2026-10-05T16:14:06.0150187Z test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1089,
+        "text": "2026-10-05T16:14:06.0151242Z test native_rejection_and_independent_requests_bind_exact_bytes ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1097,
+        "text": "2026-10-05T16:14:06.0169187Z test native_report_retains_the_exact_artifact_request_and_reconstructed_program ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1098,
+        "text": "2026-10-05T16:14:06.0170926Z test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1122,
+        "text": "2026-10-05T16:14:06.7894330Z test many_branches_share_freshness_history_without_leaking_classical_scopes ... ignored, historical Rust scaling experiment; maximum-size runs are deferred"
+      },
+      {
+        "line": 1123,
+        "text": "2026-10-05T16:14:06.7896853Z test many_live_wires_do_not_require_quadratic_duplicate_checks ... ignored, historical Rust scaling experiment; maximum-size runs are deferred"
+      },
+      {
+        "line": 1282,
+        "text": "2026-10-05T16:18:17.5491477Z test inspect_authored_qft_hierarchies ... ignored, run through scripts/test_hierarchical_qft.py with an audited kernel"
+      },
+      {
+        "line": 1283,
+        "text": "2026-10-05T16:18:17.5492371Z test native_fourier_request_faults ... ignored, run through scripts/test_hierarchical_fourier_host.py with an audited kernel"
+      },
+      {
+        "line": 1284,
+        "text": "2026-10-05T16:18:17.5493374Z test reconstruct_bound_hadamard_requests ... ignored, run through scripts/test_hierarchical_fourier_base.py with native bound H requests"
+      },
+      {
+        "line": 1383,
+        "text": "2026-10-05T16:19:42.1862969Z test capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit ... ignored, historical large expansion exceeds native time/work bounds before the former Rust diagnostic"
+      },
+      {
+        "line": 1384,
+        "text": "2026-10-05T16:19:42.1865046Z test long_identity_circuits_normalize_both_flat_and_compound_steps ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      },
+      {
+        "line": 1385,
+        "text": "2026-10-05T16:19:42.1867077Z test long_source_trajectory_samples_with_the_original_cli_budget ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      },
+      {
+        "line": 1386,
+        "text": "2026-10-05T16:19:42.1868447Z test many_receipts_round_trip_shared_source_without_repeated_storage_work ... ignored, historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      },
+      {
+        "line": 1400,
+        "text": "2026-10-05T16:19:43.4712826Z test large_inline_th_repetition_matches_the_same_independent_recurrence ... ignored, #278 v0.3.1 stress: 1024 directly expanded TH pairs exceed the native timeout on Linux CI"
+      },
+      {
+        "line": 1568,
+        "text": "2026-10-05T16:20:33.9272980Z test sized_cli_native_source_check_run_and_fresh_sampling ... ignored, requires freshly built Lean kernel; CI runs explicitly"
+      },
+      {
+        "line": 1570,
+        "text": "2026-10-05T16:20:33.9346694Z test sized_cli_separates_producer_consistency_from_independent_requests ... ignored, requires freshly built Lean kernel; CI runs explicitly"
+      },
+      {
+        "line": 1581,
+        "text": "2026-10-05T16:20:33.9564045Z test check_source_fourier_contracts ... ignored, run through scripts/test_sized_qft.py with an audited native kernel"
+      },
+      {
+        "line": 1582,
+        "text": "2026-10-05T16:20:33.9565403Z test check_source_instrument_contracts ... ignored, run through scripts/test_instrument_host.py with an audited native kernel"
+      },
+      {
+        "line": 1583,
+        "text": "2026-10-05T16:20:33.9567245Z test inspect_source_produced_corpus ... ignored, run through scripts/test_sized_corpus.py with an audited native kernel"
+      },
+      {
+        "line": 1618,
+        "text": "2026-10-05T16:20:34.7707338Z test python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1619,
+        "text": "2026-10-05T16:20:34.7709184Z test python_concrete_execution_does_not_replace_generic_size_obligations ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1620,
+        "text": "2026-10-05T16:20:34.7711111Z test python_ghz_and_arithmetic_corpus_agree_with_rust_preparation ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1621,
+        "text": "2026-10-05T16:20:34.7712856Z test python_static_comparisons_keep_type_angles_separate_in_both_dialects ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1622,
+        "text": "2026-10-05T16:20:34.7715718Z test rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1643,
+        "text": "2026-10-05T16:20:35.2397548Z test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1661,
+        "text": "2026-10-05T16:20:35.2946911Z test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1663,
+        "text": "2026-10-05T16:20:35.2949853Z test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1735,
+        "text": "2026-10-05T16:24:39.6267436Z test distinct_contract_pairs_and_static_providers_share_one_project_snapshot ... ignored, historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      },
+      {
+        "line": 1736,
+        "text": "2026-10-05T16:24:39.6269933Z test full_256_specializations_survive_a_100kb_project_and_unrelated_comments ... ignored, historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      }
+    ],
+    "check-rust": [
+      {
+        "line": 556,
+        "text": "2026-10-05T15:54:48.4938033Z test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly"
+      },
+      {
+        "line": 557,
+        "text": "2026-10-05T15:54:48.5005176Z test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly"
+      },
+      {
+        "line": 572,
+        "text": "2026-10-05T15:54:49.2355042Z test interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ignored, run scripts/test_verification_decoders.py with the native decoder view"
+      },
+      {
+        "line": 936,
+        "text": "2026-10-05T16:11:01.2849223Z test dependency_depth_and_expanded_execution_cost_are_bounded ... ignored, historical Rust maximum-depth/expansion stress; native transport bounds apply and maximum runs are deferred"
+      },
+      {
+        "line": 957,
+        "text": "2026-10-05T16:11:01.9422894Z test frozen_finite_leaf_executes_through_its_actual_definition_index ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 958,
+        "text": "2026-10-05T16:11:01.9424014Z test seeded_fresh_shots_match_independent_branches_and_classical_clients ... ignored, run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      },
+      {
+        "line": 959,
+        "text": "2026-10-05T16:11:01.9425260Z test small_source_clients_match_independent_complex_reference_branches ... ignored, run scripts/test_hierarchical_execution.py with the audited Lean kernel"
+      },
+      {
+        "line": 967,
+        "text": "2026-10-05T16:11:02.0846635Z test native_actual_counts_premises_and_encodings_are_checked ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 968,
+        "text": "2026-10-05T16:11:02.0867902Z test native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 969,
+        "text": "2026-10-05T16:11:02.0869989Z test native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 970,
+        "text": "2026-10-05T16:11:02.0872051Z test native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 971,
+        "text": "2026-10-05T16:11:02.0874155Z test native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 972,
+        "text": "2026-10-05T16:11:02.0884783Z test native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 973,
+        "text": "2026-10-05T16:11:02.0886050Z test native_phase_fault_remains_an_obligation_under_zero_repeat ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 974,
+        "text": "2026-10-05T16:11:02.0887482Z test native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 975,
+        "text": "2026-10-05T16:11:02.0889118Z test native_request_detects_coordinated_body_changes_and_wrong_headers ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 976,
+        "text": "2026-10-05T16:11:02.0890760Z test native_request_permits_different_sharing_in_both_directions ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 977,
+        "text": "2026-10-05T16:11:02.0892202Z test native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ignored, requires separately built and audited native Lean runtime"
+      },
+      {
+        "line": 980,
+        "text": "2026-10-05T16:11:02.0896329Z test vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles ... ignored, VM-22 optional comparison requires the separately built Lean runtime"
+      },
+      {
+        "line": 990,
+        "text": "2026-10-05T16:11:02.1864723Z test native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries ... ignored, requires generated small fixtures and an audited native Lean kernel"
+      },
+      {
+        "line": 991,
+        "text": "2026-10-05T16:11:02.1865966Z test qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations ... ignored, requires generated small fixtures"
+      },
+      {
+        "line": 1032,
+        "text": "2026-10-05T16:12:44.5961298Z test export_has_independent_capacity_checks ... ignored, historical maximum-size export stress; native acceptance has independent work/time limits"
+      },
+      {
+        "line": 1093,
+        "text": "2026-10-05T16:13:50.9437213Z test evidence_dags_decode_from_the_native_ticket_and_execute ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1094,
+        "text": "2026-10-05T16:13:50.9438245Z test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1095,
+        "text": "2026-10-05T16:13:50.9439473Z test native_rejection_and_independent_requests_bind_exact_bytes ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1103,
+        "text": "2026-10-05T16:13:50.9449387Z test native_report_retains_the_exact_artifact_request_and_reconstructed_program ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1104,
+        "text": "2026-10-05T16:13:50.9450241Z test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ignored, requires the freshly built native Lean checker"
+      },
+      {
+        "line": 1128,
+        "text": "2026-10-05T16:13:51.7445374Z test many_branches_share_freshness_history_without_leaking_classical_scopes ... ignored, historical Rust scaling experiment; maximum-size runs are deferred"
+      },
+      {
+        "line": 1129,
+        "text": "2026-10-05T16:13:51.7459756Z test many_live_wires_do_not_require_quadratic_duplicate_checks ... ignored, historical Rust scaling experiment; maximum-size runs are deferred"
+      },
+      {
+        "line": 1288,
+        "text": "2026-10-05T16:18:06.8625195Z test inspect_authored_qft_hierarchies ... ignored, run through scripts/test_hierarchical_qft.py with an audited kernel"
+      },
+      {
+        "line": 1289,
+        "text": "2026-10-05T16:18:06.8626299Z test native_fourier_request_faults ... ignored, run through scripts/test_hierarchical_fourier_host.py with an audited kernel"
+      },
+      {
+        "line": 1291,
+        "text": "2026-10-05T16:18:06.8629973Z test reconstruct_bound_hadamard_requests ... ignored, run through scripts/test_hierarchical_fourier_base.py with native bound H requests"
+      },
+      {
+        "line": 1389,
+        "text": "2026-10-05T16:19:25.4409837Z test capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit ... ignored, historical large expansion exceeds native time/work bounds before the former Rust diagnostic"
+      },
+      {
+        "line": 1390,
+        "text": "2026-10-05T16:19:25.4411380Z test long_identity_circuits_normalize_both_flat_and_compound_steps ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      },
+      {
+        "line": 1391,
+        "text": "2026-10-05T16:19:25.4412852Z test long_source_trajectory_samples_with_the_original_cli_budget ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover"
+      },
+      {
+        "line": 1392,
+        "text": "2026-10-05T16:19:25.4414216Z test many_receipts_round_trip_shared_source_without_repeated_storage_work ... ignored, historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      },
+      {
+        "line": 1406,
+        "text": "2026-10-05T16:19:26.7406721Z test large_inline_th_repetition_matches_the_same_independent_recurrence ... ignored, #278 v0.3.1 stress: 1024 directly expanded TH pairs exceed the native timeout on Linux CI"
+      },
+      {
+        "line": 1574,
+        "text": "2026-10-05T16:20:18.8832451Z test sized_cli_native_source_check_run_and_fresh_sampling ... ignored, requires freshly built Lean kernel; CI runs explicitly"
+      },
+      {
+        "line": 1576,
+        "text": "2026-10-05T16:20:18.8885603Z test sized_cli_separates_producer_consistency_from_independent_requests ... ignored, requires freshly built Lean kernel; CI runs explicitly"
+      },
+      {
+        "line": 1587,
+        "text": "2026-10-05T16:20:18.9046630Z test check_source_fourier_contracts ... ignored, run through scripts/test_sized_qft.py with an audited native kernel"
+      },
+      {
+        "line": 1588,
+        "text": "2026-10-05T16:20:18.9047532Z test check_source_instrument_contracts ... ignored, run through scripts/test_instrument_host.py with an audited native kernel"
+      },
+      {
+        "line": 1589,
+        "text": "2026-10-05T16:20:18.9048279Z test inspect_source_produced_corpus ... ignored, run through scripts/test_sized_corpus.py with an audited native kernel"
+      },
+      {
+        "line": 1624,
+        "text": "2026-10-05T16:20:19.6002433Z test python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1625,
+        "text": "2026-10-05T16:20:19.6003232Z test python_concrete_execution_does_not_replace_generic_size_obligations ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1626,
+        "text": "2026-10-05T16:20:19.6004475Z test python_ghz_and_arithmetic_corpus_agree_with_rust_preparation ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1627,
+        "text": "2026-10-05T16:20:19.6005608Z test python_static_comparisons_keep_type_angles_separate_in_both_dialects ... ignored, requires the development Python 3.11+ oracle"
+      },
+      {
+        "line": 1628,
+        "text": "2026-10-05T16:20:19.6006706Z test rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1649,
+        "text": "2026-10-05T16:20:19.9592899Z test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1667,
+        "text": "2026-10-05T16:20:19.9834699Z test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1669,
+        "text": "2026-10-05T16:20:19.9885544Z test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel"
+      },
+      {
+        "line": 1741,
+        "text": "2026-10-05T16:24:32.8385220Z test distinct_contract_pairs_and_static_providers_share_one_project_snapshot ... ignored, historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      },
+      {
+        "line": 1742,
+        "text": "2026-10-05T16:24:32.8386306Z test full_256_specializations_survive_a_100kb_project_and_unrelated_comments ... ignored, historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274"
+      }
+    ]
+  },
+  "ignored_rows_limit": "Actual per-command ignored rows, not globally untested cases. Some are explicitly rerun in other producers; complete retained logs preserve this distinction.",
+  "proof_scope": "full/full selected. The model-only mathematical compilation step was skipped; full schema rebinding/registered guarantee replay and kernel full/relocated bundle replays succeeded. No new adequacy/admission, broader QS/PR/RS discharge or source preservation is inferred.",
+  "release_readiness_established": false,
+  "current_local_commit_validated": false,
+  "local_builds_tests_cli_native_executed": false,
+  "source_binding": {
+    "published_head": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+    "tested_merge": "7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+    "ordered_parents": [
+      "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "9256fe9ef4ffa722066b0569ee37341cf65dea0d"
+    ]
+  },
+  "transport_limit": "Decoded job text and JSON metadata only; archive artifacts and original HTTP ZIP bytes were not downloaded."
+}

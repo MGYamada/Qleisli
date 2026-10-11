@@ -1,0 +1,32 @@
+{
+  "format": "qleisli.fixture-files",
+  "version": 1,
+  "scope": "All files in this 109-Issue correction packet except this inventory itself; original historical evidence outside the packet is unchanged.",
+  "files": {
+    "README.md": "dc34de4dae7b52a7b5a9205124ef4faf27f2c443ceb1520377ae9d08e6aadce7",
+    "code-results/before.json": "5249aeeee29d5f469e9397116d72b6f9c584fa23917ba7f23142eadabbb3a559",
+    "code-results/command.json": "131dc19544c353b5c853bac5dcb8aa4ca96acf9255055b2c42afcf0fe211a2cc",
+    "code-results/result.json": "9f87f36258213d9daf76c5724e77938d1b9d406c6718ca7761d542493ea2f079",
+    "code-results/stderr.txt": "cad212a8895a04726c068853564998f2fb75369a5e138ffede52987af59ce216",
+    "code-results/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/0.stdout.txt": "6a195b9ae1b5020a551adc894b360a457e2dde0bf9358bf32f1ce6fce39c7035",
+    "documentation-results/1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/1.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/2.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/2.stdout.txt": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+    "documentation-results/3.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/3.stdout.txt": "9b5e403903a70c7cb5cd8d22c9733e1d33b5834390a28f1fa60c0ed94fffae88",
+    "documentation-results/4.stderr.txt": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+    "documentation-results/4.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/5.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documentation-results/5.stdout.txt": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572",
+    "documentation-results/after.json": "1e14cc5fc9aa819ed60b51121129216543cf9cea8f15c488feb38b67c1acadd7",
+    "documentation-results/before.json": "1e14cc5fc9aa819ed60b51121129216543cf9cea8f15c488feb38b67c1acadd7",
+    "documentation-results/commands.json": "677f09b31c78c7bbfa3a0ab5e487668c5e7fdb3162371ca7c79f1e2fe7385a74",
+    "documentation-results/record.py": "e173df4d830bc73d9bd6b6851c7ee3729bf90a57f5cbced2597429ba66fad356",
+    "documentation-results/result.json": "0b9a54aee745d34e46d4c8be845201cfeba08d47ccee0067a5e85d0ee0ba0365",
+    "prose-review.json": "3ebb279a258edffa46f5375e33ed73f63d58821f47264436604b5589bd77e23e",
+    "scope.json": "0d9f9a7699f4ae159813e8b35d5d6ab8b60b75c209bf0227a6ce34e8fddf8593"
+  }
+}

@@ -1,0 +1,4 @@
+tests/fixtures/constitution_v030/issue-315-scope/README.md:25: new blank line at EOF.
+tests/fixtures/constitution_v030/issue-315-scope/issue-315.md:255: new blank line at EOF.
+tests/fixtures/constitution_v030/issue-315-scope/tool-observations.txt:14: new blank line at EOF.
+tests/fixtures/constitution_v030/issue-315-scope/validation.json:28: new blank line at EOF.

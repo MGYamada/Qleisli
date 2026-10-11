@@ -9,14 +9,15 @@ use std::{fs, process::Command};
 
 #[test]
 fn misplaced_public_import_has_a_checked_repair() {
-    let source = "use std::routines::qft2; unitary fn run(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{qft2(q)}";
+    let source =
+        "use std::measurement::qft2; unitary fn run(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{qft2(q)}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
     assert!(
-        failure.message.contains("use std::transforms::qft2;"),
+        failure.message.contains("use std::transform::qft2;"),
         "{failure:?}"
     );
-    root.write("main.qli", &source.replace("routines", "transforms"));
+    root.write("main.qli", &source.replace("measurement", "transform"));
     check_project(&root.0).unwrap();
     root.write("main.qli", "use std::quantum::measure_z;");
     assert!(
@@ -25,7 +26,7 @@ fn misplaced_public_import_has_a_checked_repair() {
             .message
             .contains("use std::observe::measure_z;")
     );
-    root.write("main.qli", "use std::transforms::private_helper;");
+    root.write("main.qli", "use std::reflection::nonzero2;");
     assert!(
         !check_project_diagnostic(&root.0)
             .unwrap_err()
@@ -57,12 +58,20 @@ fn nested_register_pattern_names_the_actual_type_and_repairs() {
         ),
     );
     check_project(&root.0).unwrap();
+    for basis in ["Bit", "Bits<1>", "Unit", "(Bit,Bit,Bit)"] {
+        let invalid = format!("unitary fn run(q:Q<{basis}>)->Q<{basis}>{{let(a,b)=q;q}}");
+        root.write("main.qli", &invalid);
+        let failure = check_project_diagnostic(&root.0).unwrap_err();
+        assert_eq!(failure.code, "type_mismatch", "{failure:?}");
+        assert!(failure.message.contains(&format!("found `Q<{basis}>`")));
+        assert!(!failure.message.contains("call `split`"), "{failure:?}");
+    }
 }
 
 #[test]
 fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
     let source = "use std::quantum::{init0,cnot}; use std::observe::measure_z;
-        observe fn main()->(CBit,CBit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
+        observe fn main()->(Bit,Bit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
     let start = source.find("let b=cnot").unwrap() + 4;
@@ -83,6 +92,75 @@ fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
 }
 
 const QRATE: &str = "schema-version=2\n[qrate]\nname='demo'\nversion='0.1.0'\nedition='2026'\n[source]\nroot='src'\n[tests]\nroot='tests'\n[docs]\nroot='docs'\n";
+
+#[test]
+fn selected_source_identity_reaches_every_cli_consumer_and_rechecks_unused_source() {
+    let root = SourceRoot::new("observe fn main()->Bit{0}");
+    root.write("Qargo.toml", QRATE);
+    fs::create_dir(root.0.join("src")).unwrap();
+    fs::write(root.0.join("src/main.qli"), "observe fn main()->Bit{1}").unwrap();
+    for invalid in [false, true] {
+        if invalid {
+            fs::write(root.0.join("src/unused.qli"), "not a program").unwrap();
+        }
+        for action in ["check", "run", "sample", "emit-ir"] {
+            for json in [false, true] {
+                let artifact = root.0.join(format!("selected-{json}-{invalid}.qirf"));
+                let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                command.arg(action).arg(&root.0).arg("--qrate");
+                if json {
+                    command.arg("--format=json");
+                }
+                if action == "sample" {
+                    command.args(["--shots=3", "--seed=0"]);
+                }
+                if action == "emit-ir" {
+                    command.arg(format!("--output={}", artifact.display()));
+                }
+                let output = command.output().unwrap();
+                assert_eq!(output.status.code(), Some(i32::from(invalid)), "{output:?}");
+                let text = String::from_utf8(output.stdout).unwrap();
+                if invalid {
+                    let error = if json {
+                        text
+                    } else {
+                        String::from_utf8(output.stderr).unwrap()
+                    };
+                    assert!(error.contains("parse"), "{action}: {error}");
+                    assert!(error.contains("unused.qli"), "{action}: {error}");
+                    assert!(!artifact.exists());
+                } else {
+                    assert!(output.stderr.is_empty());
+                    match action {
+                        "run" if json => {
+                            assert!(text.contains("\"bits\":[true],\"probability\":1"))
+                        }
+                        "run" => assert_eq!(text, "1: 1.000000000000e0\n"),
+                        "sample" if json => assert_eq!(text.matches("\"bits\":[true]").count(), 3),
+                        "sample" => assert_eq!(text, "1\n1\n1\n"),
+                        "emit-ir" => {
+                            let checked = qleisli::interchange::native::Kernel::selected()
+                                .unwrap()
+                                .check(&fs::read(&artifact).unwrap(), None)
+                                .unwrap()
+                                .into_program();
+                            let distribution = qleisli::sim::run_closed(
+                                &checked,
+                                qleisli::sim::SimulationLimits::default(),
+                            )
+                            .unwrap();
+                            assert_eq!(
+                                distribution.into_iter().collect::<Vec<_>>(),
+                                [(vec![true], 1.0)]
+                            );
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+}
 
 #[test]
 fn declared_source_selection_excludes_build_outputs_and_preserves_legacy_loading() {
@@ -213,7 +291,7 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
 fn phase_aliases_export_as_short_exact_target_words() {
     for (name, target) in [("s", "s"), ("sdg", "sdg"), ("tdg", "tdg")] {
         let root = SourceRoot::new(&format!(
-            "use std::quantum::{{init0,h,{name}}}; use std::observe::measure_z; observe fn main()->CBit{{measure_z(h({name}(h(init0()))))}}"
+            "use std::quantum::{{init0,h,{name}}}; use std::observe::measure_z; observe fn main()->Bit{{measure_z(h({name}(h(init0()))))}}"
         ));
         let program = compile_project(&root.0).unwrap();
         let qasm = export_openqasm3(&program).unwrap();

@@ -1,0 +1,2183 @@
+{
+  "format": "qleisli.adjoint-construction-precommit-validation",
+  "version": 1,
+  "status": "checked-local-precommit",
+  "issues": [
+    45
+  ],
+  "edition": "2026",
+  "baseline_head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+  "source_sha256": "026bf44cd2935285a108b45e8d8e6291dd72319b2471192509558fd8d22ff196",
+  "ownership_generator_sha256": "39d0fa2893354223bcc47d0be9401353086779015696ea68daf963c33044dd78",
+  "checks": [
+    {
+      "group": "rust-latest",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        },
+        "rust-latest": {
+          "command": [
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+          "stderr": ""
+        },
+        "cargo-latest": {
+          "command": [
+            "cargo",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/check_lean_kernel.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_lean_kernel.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.6221301660407335
+            }
+          ]
+        },
+        {
+          "argv": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "build"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "lake",
+                "-d",
+                "lean-kernel",
+                "build"
+              ],
+              "exit_code": 0,
+              "seconds": 0.18197154195513576
+            }
+          ]
+        },
+        {
+          "argv": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "lean-kernel/Audit.lean"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "lake",
+                "-d",
+                "lean-kernel",
+                "env",
+                "lean",
+                "-DwarningAsError=true",
+                "lean-kernel/Audit.lean"
+              ],
+              "exit_code": 0,
+              "seconds": 5.77084599994123
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "fmt",
+            "--check"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "fmt",
+                "--check"
+              ],
+              "exit_code": 0,
+              "seconds": 0.7848155830288306
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--all-targets"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "test",
+                "--all-targets"
+              ],
+              "exit_code": 0,
+              "seconds": 1253.6994365839055
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_review_dialects",
+            "--",
+            "--ignored",
+            "--skip",
+            "native"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "test",
+                "--test",
+                "sized_review_dialects",
+                "--",
+                "--ignored",
+                "--skip",
+                "native"
+              ],
+              "exit_code": 0,
+              "seconds": 1.4837436249945313
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_sized_primitive_catalog.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_sized_primitive_catalog.py"
+              ],
+              "exit_code": 0,
+              "seconds": 5.466061957995407
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "doc",
+            "--no-deps"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "doc",
+                "--no-deps"
+              ],
+              "exit_code": 0,
+              "seconds": 1.6606535000028089
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--doc"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "test",
+                "--doc"
+              ],
+              "exit_code": 0,
+              "seconds": 1.0041925840778276
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "db0c57a6c9e63eb7345d84ab419f2b61359d161257622fc646a1d01513c405d4"
+    },
+    {
+      "group": "rust-msrv",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        },
+        "cargo-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+          "stderr": ""
+        },
+        "clippy-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)",
+          "stderr": ""
+        },
+        "rust-msrv": {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/check_lean_kernel.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_lean_kernel.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.56187541608233
+            }
+          ]
+        },
+        {
+          "argv": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "build"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "lake",
+                "-d",
+                "lean-kernel",
+                "build"
+              ],
+              "exit_code": 0,
+              "seconds": 0.18602045904845
+            }
+          ]
+        },
+        {
+          "argv": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "lean-kernel/Audit.lean"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "lake",
+                "-d",
+                "lean-kernel",
+                "env",
+                "lean",
+                "-DwarningAsError=true",
+                "lean-kernel/Audit.lean"
+              ],
+              "exit_code": 0,
+              "seconds": 5.194234583992511
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/run_msrv.py",
+            "test",
+            "--all-targets"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/run_msrv.py",
+                "test",
+                "--all-targets"
+              ],
+              "exit_code": 0,
+              "seconds": 1254.500382542028
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "abd5bc0bb43ad750307d3141ece17ee1aa9b64731764432d41817858c045ff27"
+    },
+    {
+      "group": "rust-latest-lint-research",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "59da05df84a6dbc8e6937430356b5a6e343ca62ce4c0d45cc866e1d96ccfd078"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "rust-latest": {
+          "command": [
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+          "stderr": ""
+        },
+        "cargo-latest": {
+          "command": [
+            "cargo",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "clippy",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "clippy",
+                "--all-targets",
+                "--",
+                "-D",
+                "warnings"
+              ],
+              "exit_code": 0,
+              "seconds": 5.444214791990817
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "fmt",
+            "--manifest-path",
+            "research/semantic-kernel/Cargo.toml",
+            "--check"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "fmt",
+                "--manifest-path",
+                "research/semantic-kernel/Cargo.toml",
+                "--check"
+              ],
+              "exit_code": 0,
+              "seconds": 0.3524920829804614
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--manifest-path",
+            "research/semantic-kernel/Cargo.toml",
+            "--all-targets"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "test",
+                "--manifest-path",
+                "research/semantic-kernel/Cargo.toml",
+                "--all-targets"
+              ],
+              "exit_code": 0,
+              "seconds": 142.68985783401877
+            }
+          ]
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.98.1",
+            "clippy",
+            "--manifest-path",
+            "research/semantic-kernel/Cargo.toml",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "cargo",
+                "clippy",
+                "--manifest-path",
+                "research/semantic-kernel/Cargo.toml",
+                "--all-targets",
+                "--",
+                "-D",
+                "warnings"
+              ],
+              "exit_code": 0,
+              "seconds": 3.7005710839293897
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "bafff568459fd3579fdc56bf4656c9a972b2831491b39d6962b7937ea207c39b"
+    },
+    {
+      "group": "rust-msrv-lint-research",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "59da05df84a6dbc8e6937430356b5a6e343ca62ce4c0d45cc866e1d96ccfd078"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "cargo-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+          "stderr": ""
+        },
+        "clippy-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        },
+        "rust-msrv": {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/run_msrv.py",
+                "clippy",
+                "--all-targets",
+                "--",
+                "-D",
+                "warnings"
+              ],
+              "exit_code": 0,
+              "seconds": 6.7177369999699295
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/run_msrv.py",
+            "test",
+            "--manifest-path",
+            "research/semantic-kernel/Cargo.toml",
+            "--all-targets"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/run_msrv.py",
+                "test",
+                "--manifest-path",
+                "research/semantic-kernel/Cargo.toml",
+                "--all-targets"
+              ],
+              "exit_code": 0,
+              "seconds": 142.07790241600014
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--manifest-path",
+            "research/semantic-kernel/Cargo.toml",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/run_msrv.py",
+                "clippy",
+                "--manifest-path",
+                "research/semantic-kernel/Cargo.toml",
+                "--all-targets",
+                "--",
+                "-D",
+                "warnings"
+              ],
+              "exit_code": 0,
+              "seconds": 3.6738226249581203
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "f40e1f057ecfcb65e1d29a1fad9fc73eed3ac6c6dd755f4886c4a7325ec4b15d"
+    },
+    {
+      "group": "source-integrity",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": null,
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/check_verification_inventory.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_verification_inventory.py"
+              ],
+              "exit_code": 0,
+              "seconds": 1.1397809999762103
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_production_coverage.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_production_coverage.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.6070115419570357
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_input_corpus.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_input_corpus.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.8491233329987153
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_current_source_fixtures.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_current_source_fixtures.py"
+              ],
+              "exit_code": 0,
+              "seconds": 42.204286833060905
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_observation_sources.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_observation_sources.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2887565839337185
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "ed76aa04a8ff890d2ad6c1f6806337b728e187849431ddbe4a2e126582624da4"
+    },
+    {
+      "group": "source-contracts",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": {
+        "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "sha256": "75faca30c7abe5f9a802a788e8e6fcf6a842974833deebd996e48f5470480d10"
+      },
+      "commands": [
+        {
+          "argv": [
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+            "check",
+            "tests/fixtures/lean_layout/first_source"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+                "check",
+                "tests/fixtures/lean_layout/first_source"
+              ],
+              "exit_code": 0,
+              "seconds": 0.6697287919232622
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+            "check",
+            "tests/fixtures/lean_layout_dag/first_source"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+                "check",
+                "tests/fixtures/lean_layout_dag/first_source"
+              ],
+              "exit_code": 0,
+              "seconds": 0.5511966249905527
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+            "check",
+            "tests/fixtures/lean_phase_layout/first_source"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+                "check",
+                "tests/fixtures/lean_phase_layout/first_source"
+              ],
+              "exit_code": 0,
+              "seconds": 0.554863249999471
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_lean_phase_layout.py",
+            "--source-only",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_lean_phase_layout.py",
+                "--source-only",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 1.6760950000025332
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_lean_interference.py",
+            "--source-only",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_lean_interference.py",
+                "--source-only",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 2.757053416920826
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_lean_qft.py",
+            "--source-only",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_lean_qft.py",
+                "--source-only",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 4.810808749985881
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_lean_qpe.py",
+            "--source-only",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_lean_qpe.py",
+                "--source-only",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 3.3855415829457343
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_lean_controlled_power.py",
+            "--source-only",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_lean_controlled_power.py",
+                "--source-only",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 2.0233432500390336
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_cli_json.py",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_cli_json.py",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 7.686937500024214
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "93ae8c40f0d39470e8f2c4b68c20a144186b07c74dd99b263d0064966b386375"
+    },
+    {
+      "group": "source-semantics",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": {
+        "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "sha256": "75faca30c7abe5f9a802a788e8e6fcf6a842974833deebd996e48f5470480d10"
+      },
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/test_test_qli_differential.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_test_qli_differential.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.24114991701208055
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_qli_differential.py",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+            "--cases=96"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_qli_differential.py",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+                "--cases=96"
+              ],
+              "exit_code": 0,
+              "seconds": 146.2257794169709
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_verification_baseline.py",
+            "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_verification_baseline.py",
+                "/private/tmp/qleisli-bits-meaning-target/debug/qleisli"
+              ],
+              "exit_code": 0,
+              "seconds": 26.523132750065997
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "97dfaee0aec89403f70a3d8614efab799229430391c608d8c1fe4175db61e4d6"
+    },
+    {
+      "group": "book",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "mdbook": {
+          "command": [
+            "mdbook",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "mdbook v0.5.4",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": null,
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "mdbook",
+            "build",
+            "docs"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "mdbook",
+                "build",
+                "docs"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2491402920568362
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_book.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_book.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2928964999737218
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_book.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_book.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.38306216592900455
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "7e0a51c72486e451e28a733657f491e87f6ed420001d0660e3007203d9b69ada"
+    },
+    {
+      "group": "ci-preflight",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "526508d22210a34593eae98cab8fec6abb797113775c95fa3721025d89291a86"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": null,
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/check_whitespace.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_whitespace.py"
+              ],
+              "exit_code": 0,
+              "seconds": 5.440854040905833
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_whitespace.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_whitespace.py"
+              ],
+              "exit_code": 0,
+              "seconds": 2.165160625008866
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_pr_size.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_pr_size.py"
+              ],
+              "exit_code": 0,
+              "seconds": 8.938283500028774
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_fixture_budget.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_fixture_budget.py"
+              ],
+              "exit_code": 0,
+              "seconds": 11.49596270895563
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_ci_profiles.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_ci_profiles.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.9832205830607563
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_ci_source_checks.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_ci_source_checks.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.3401989579433575
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_ci_actions.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_ci_actions.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.8349666250869632
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_measure_ci.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_measure_ci.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.07382741710171103
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_run_native_ci.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_run_native_ci.py"
+              ],
+              "exit_code": 0,
+              "seconds": 2.9400587499840185
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_package_lean_kernel.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_package_lean_kernel.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2322429169435054
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_archive_lean_kernel.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_archive_lean_kernel.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.177054375060834
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "ff322c3f33a57b4c9808acbaaf4f9c14ba172ee18b5b76784b6e491848f0b62a"
+    },
+    {
+      "group": "repository-integrity",
+      "status": "passed",
+      "binding": {
+        "head": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+        "working_inputs_sha256": "af0d5a98b9019fe5d3e55170d468310cca6e43cb3309ba164056a49ab430578c"
+      },
+      "manifest_sha256": "ae71be12ab905fce5683eed87f53b8ff63e2ff446860e6ff996917b7155842da",
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        }
+      },
+      "kernel": {
+        "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+      },
+      "compiler": null,
+      "commands": [
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_editions.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_editions.py"
+              ],
+              "exit_code": 0,
+              "seconds": 1.002280459040776
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_editions.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_editions.py"
+              ],
+              "exit_code": 0,
+              "seconds": 4.7052728330018
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_docs.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_docs.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.28980587504338473
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_current_source_fixtures.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_current_source_fixtures.py"
+              ],
+              "exit_code": 0,
+              "seconds": 28.32436966698151
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_observation_sources.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_observation_sources.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.18749533302616328
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_ratification_packet.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_ratification_packet.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.3458487499738112
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_ratification_packet.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_ratification_packet.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.0726312919287011
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_constitution.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_constitution.py"
+              ],
+              "exit_code": 0,
+              "seconds": 126.85614129190799
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_release_ready.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_release_ready.py"
+              ],
+              "exit_code": 0,
+              "seconds": 79.79877724999096
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_initial_guarantees.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_initial_guarantees.py"
+              ],
+              "exit_code": 0,
+              "seconds": 39.19238645792939
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_initial_guarantees.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_initial_guarantees.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.940154124982655
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_maintain_release.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_maintain_release.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2925567500060424
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_native_harness.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_native_harness.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.13197462493553758
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_production_coverage.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_production_coverage.py"
+              ],
+              "exit_code": 0,
+              "seconds": 3.8328291249927133
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_test_native_acceptance_replay.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_test_native_acceptance_replay.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.07598600001074374
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_production_coverage.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_production_coverage.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.3449193749111146
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_lean_kernel.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_lean_kernel.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.2897732499986887
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_schema_registry.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_schema_registry.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.7258990419795737
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_schema_registry.py",
+            "--source-only"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_schema_registry.py",
+                "--source-only"
+              ],
+              "exit_code": 0,
+              "seconds": 0.07722816697787493
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_fixture_archives.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_fixture_archives.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.3478926250245422
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_fixture_archives.py",
+            "--git-baseline"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_fixture_archives.py",
+                "--git-baseline"
+              ],
+              "exit_code": 0,
+              "seconds": 0.4041330419713631
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_docs.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_docs.py"
+              ],
+              "exit_code": 0,
+              "seconds": 4.155815624981187
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_verification_inventory.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_verification_inventory.py"
+              ],
+              "exit_code": 0,
+              "seconds": 10.116934875026345
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_verification_inventory.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_verification_inventory.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.5096004579681903
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_test_verification_baseline.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_test_verification_baseline.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.5102210000623018
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_authoring_sessions.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_authoring_sessions.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.12512650003191084
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_authoring_sessions.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_authoring_sessions.py"
+              ],
+              "exit_code": 0,
+              "seconds": 1.7680829169694334
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_input_corpus.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_input_corpus.py"
+              ],
+              "exit_code": 0,
+              "seconds": 33.01610208302736
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_input_corpus.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_input_corpus.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.8911873750621453
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_distribution.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_distribution.py"
+              ],
+              "exit_code": 0,
+              "seconds": 5.769974707975052
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_imaginary_v1_examples.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_imaginary_v1_examples.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.07741970894858241
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_imaginary_v1_examples.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_imaginary_v1_examples.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.040264375042170286
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/test_check_semantic_contract_examples.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/test_check_semantic_contract_examples.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.07584816601593047
+            }
+          ]
+        },
+        {
+          "argv": [
+            "python3",
+            "scripts/check_semantic_contract_examples.py"
+          ],
+          "status": "passed",
+          "observations": [
+            {
+              "executed_command": [
+                "python3",
+                "scripts/check_semantic_contract_examples.py"
+              ],
+              "exit_code": 0,
+              "seconds": 0.13070383307058364
+            }
+          ]
+        }
+      ],
+      "full_local_report_sha256": "b96f9879d1d26cbc0aa7c8cdee46509fa251aee85876244cd86c345aa3a67822"
+    }
+  ],
+  "rust_all_targets": [
+    {
+      "toolchain": "rust-latest",
+      "passed": 978,
+      "existing_ignored": 52,
+      "executables": 102,
+      "ownership_cases": 4000,
+      "ownership_seconds": 410.95,
+      "log_sha256": "3017197157e0e6b981c0327fe4613a9d5101461290d7fa4afdb97d78e961abdf"
+    },
+    {
+      "toolchain": "rust-msrv",
+      "passed": 978,
+      "existing_ignored": 52,
+      "executables": 102,
+      "ownership_cases": 4000,
+      "ownership_seconds": 411.46,
+      "log_sha256": "4343641a86fd4cb3c3ac9afc07cc7aa973c6c6fd4d149a643c538543ce29aa4f"
+    }
+  ],
+  "first_regression": {
+    "status": "failed-as-expected",
+    "log_sha256": "ec3b310fae6e4e58b369bba20d1ed44390484062299a5cb565e4f6d814e4cc24",
+    "reason": "The added negative construction test observed acceptance without Adjointable(U) before the repair. The two original CLI observations are preserved separately in this session."
+  },
+  "contract": "The already adopted #45 constructor requires Adjointable(U), even when unused, nested under control, doubled, in a dead arm, on Unit, or under zero power. No new capability is granted.",
+  "invariants": "All 4000 ownership cases, generator, seed/order, both source consumers and fresh native acceptance are retained. No accepted-result cache or fixture regeneration is used. Native representations, Lean definitions, dependencies and both admitted constitutional guarantee scopes are unchanged.",
+  "identity_note": "Each local group binds its own exact working inputs. Recording these observations and fixing the independent instrument mutation caller are subsequent changes, not claims that those additions ran in the earlier Rust groups. Clean-commit native comparisons and a new exact-head hosted CI are required separately.",
+  "scope": "Ordinary conformance repair under adopted QS/PR/RS and EXACT interpretations. No full capability/provider calculus, external-provider support, source preservation theorem, additional guarantee admission, full QS/PR/quantitative RS or EXACT discharge, release readiness or publication is claimed."
+}

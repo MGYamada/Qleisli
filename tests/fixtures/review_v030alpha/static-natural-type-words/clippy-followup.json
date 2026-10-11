@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.static-natural-parser-clippy-followup",
+  "version": 1,
+  "prior_validation": {
+    "path": "tests/fixtures/review_v030alpha/static-natural-type-words/validation.json",
+    "sha256": "995ab07105f711a0e74a69c0049ba48031a80e00024d16a3f18ace71e2d9bf4c"
+  },
+  "prior_test_source": {
+    "path": "tests/fixtures/review_v030alpha/static-natural-type-words/parser-tests.pre-clippy.rs.txt",
+    "sha256": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6"
+  },
+  "current_test_source": {
+    "path": "src/frontend/parser/tests.rs",
+    "sha256": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47"
+  },
+  "change": "Replace err().expect() by an explicit Err/Ok match with the same panic text and assertion. No parser or test semantic change.",
+  "validation": "Root owns focused tests and actual MSRV Clippy rerun; this record preserves the source change only."
+}

@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.source-provider-all-target-checkpoint.v1",
+  "checked_commit": "2039a99c4045b74e20205a364dd74ca951a8a798",
+  "prior_hosted_failure": "tests/fixtures/review_v030alpha/hosted-source-provider-37522735109.json",
+  "runs": [
+    {
+      "toolchain": "latest",
+      "session": 21702,
+      "exit_code": 0,
+      "target_summaries": 101,
+      "passed": 924,
+      "failed": 0,
+      "ignored": 52,
+      "log_sha256": "06d6621debba2034e645cdf3ab75c57ece34ad2e64327962cb182c0c58b5f2f2",
+      "log_location": "/private/tmp/qleisli-source-access-all-targets-latest.log"
+    },
+    {
+      "toolchain": "msrv",
+      "session": 8478,
+      "exit_code": 0,
+      "target_summaries": 101,
+      "passed": 924,
+      "failed": 0,
+      "ignored": 52,
+      "log_sha256": "f334e48929b6a41b9ad171f17e46cfce25f514e9b4be6697c77ffe66b12154b9",
+      "log_location": "/private/tmp/qleisli-source-access-all-targets-msrv.log"
+    }
+  ],
+  "validation_scope": "Actual complete cargo test --locked --all-targets runs with explicit unchanged selected native checker; MSRV uses scripts/run_msrv.py. Existing ignored tests remain ignored. No ignored gate is relabeled passed.",
+  "native_binary": {
+    "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "limits": [
+    "Hosted CI must run against the pushed commit; these local results do not establish hosted success or release readiness.",
+    "Bits implementation remains isolated and unverified as a whole; it is not included in this checked commit.",
+    "No new guarantee admission or Issue closure is claimed."
+  ]
+}

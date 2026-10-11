@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{init0,h,x};
+use std::observe::measure_z;
+pub observe fn f(a: Q<Bit>,b: Q<Bit>) -> (Bit,Bit,Bit) { let x = measure_z(a); let y = measure_z(b); (not x,x xor y,x and y) }
+observe fn main() -> (Bit,Bit,Bit) { f(h(init0()),x(init0())) }

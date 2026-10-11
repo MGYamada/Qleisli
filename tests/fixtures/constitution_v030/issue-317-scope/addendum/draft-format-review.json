@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.ordinary-draft-format-repair",
+  "version": 1,
+  "first_docs_check": {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 1,
+    "diagnostic": "tests/fixtures/constitution_v030/issue-317-scope/addendum/checkpoint-proposal.md:11: missing target q",
+    "kind": "Transcript copied from actual tool output; no raw output file was captured for that first invocation."
+  },
+  "first_draft": "checkpoint-proposal.first.md.txt",
+  "first_sha256": "55c17ecaf40003f98b21cf2bdee0896e9376874ce2d404ee47c636b72e3c1fa5",
+  "repair": "Describe the current call application without a Markdown-looking inline [N](q) link. Contract and twenty-four original criteria unchanged."
+}

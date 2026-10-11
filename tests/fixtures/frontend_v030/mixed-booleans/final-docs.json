@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_docs.py"
+  ],
+  "exit": 0,
+  "stdout": "Checked 1723 local links, 12 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n",
+  "stderr": ""
+}

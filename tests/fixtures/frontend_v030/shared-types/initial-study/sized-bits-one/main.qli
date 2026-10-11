@@ -1,0 +1,1 @@
+pub unitary fn keep(q: Q<Bits<1>>) -> Q<Bit> { q }

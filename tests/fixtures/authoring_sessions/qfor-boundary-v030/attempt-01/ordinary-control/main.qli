@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub observe fn main()->Bit{for static i in 0..3 carry b=0{yield not b;}}

@@ -1,0 +1,12 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::phase_eighth;
+pub unitary fn phase(q: Q<Unit>) -> Q<Unit> { do () <- phase_eighth(q); pure () }
+use std::quantum::{init0,split};
+use std::observe::discard;
+unitary fn expected(q: Q<Unit>) -> Q<Unit> { phase_eighth(q) }
+observe fn main() -> Bit {
+    let pair = do bit <- init0(); pure ((),bit);
+    let (unit,bit) = split(pair);
+    let unit = apply_contract(phase,expected,unit);
+    discard(unit); discard(bit); 1
+}

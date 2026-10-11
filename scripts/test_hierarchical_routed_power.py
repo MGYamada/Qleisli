@@ -3,7 +3,7 @@
 
 The native result is a component obligation, not provider evidence or named QPE
 acceptance. Provider matrices below are independent diagnostic formulas only.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import cmath

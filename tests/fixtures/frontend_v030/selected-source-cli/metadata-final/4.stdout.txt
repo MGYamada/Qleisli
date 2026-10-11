@@ -1,0 +1,1 @@
+Checked 1735 local links, 15 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.

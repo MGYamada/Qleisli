@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fresh checked Rust execution versus independent small complex coefficient oracles.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Includes named QPE and bounded fresh-shot clients; no maximum-size or source proof.
 """
 import argparse

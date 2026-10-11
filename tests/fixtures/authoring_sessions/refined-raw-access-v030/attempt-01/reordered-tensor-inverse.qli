@@ -1,0 +1,7 @@
+use std::quantum::{split,join,phase};
+fn swap(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(b,a)}
+fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+classical fn swap_bits((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}
+meaning S:(Bit,Bit)=permutation_by(swap_bits);
+fn invoke[const U:Op<((Bit,Bit),Bit)>](q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)> requires Applicable(U){U(q)}
+pub fn main(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{invoke[adjoint(tensor_op(checked_op(swap,S),twist))](q)}

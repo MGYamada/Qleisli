@@ -1,0 +1,4 @@
+Concrete 4-by-4 finite checker reduction with by decide exceeded maxHeartbeats at 200000 and again at 800000.
+/private/tmp/QleisliWrapperExamples.lean:35:59: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (800000) has been reached
+
+Both attempts exited 1. This is an elaboration-budget diagnostic for a small example, not a semantic counterexample. The generic all-width correspondence proof compiles at the default heartbeat budget. The final fixture retains five small by-decide checks and runs all nine explicit executable assertions via #eval IO; no native_decide proof oracle is used.

@@ -1,0 +1,29 @@
+{
+  "status": "saved-before-edit-and-before-test-execution",
+  "files": [
+    {
+      "path": "tests/frontend_types.rs",
+      "sha256": "f1a58f669f8da5045eb5fa9625468d1592ff525d80c81eda7d99ceb2120f85f5",
+      "saved_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-prior-tests/frontend_types.rs.txt",
+      "reference_commit": "9a1ecef79f2f1e42f94093b6f4822f282f6e9129",
+      "reference_blob_sha256": "f1a58f669f8da5045eb5fa9625468d1592ff525d80c81eda7d99ceb2120f85f5",
+      "matches_reference_blob": true
+    },
+    {
+      "path": "tests/quantum_unit_maps.rs",
+      "sha256": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+      "saved_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-prior-tests/quantum_unit_maps.rs.txt",
+      "reference_commit": "9a1ecef79f2f1e42f94093b6f4822f282f6e9129",
+      "reference_blob_sha256": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+      "matches_reference_blob": true
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "sha256": "40e36e9d9b238f82cdf4381a7393ed048fc37e122d8eecb3388fddc2516b192e",
+      "saved_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-prior-tests/sized_source.rs.txt",
+      "reference_commit": "9a1ecef79f2f1e42f94093b6f4822f282f6e9129",
+      "reference_blob_sha256": "40e36e9d9b238f82cdf4381a7393ed048fc37e122d8eecb3388fddc2516b192e",
+      "matches_reference_blob": true
+    }
+  ]
+}

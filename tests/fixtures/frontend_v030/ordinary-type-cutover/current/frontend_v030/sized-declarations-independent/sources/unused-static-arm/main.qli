@@ -1,0 +1,2 @@
+pub unitary fn entry(q:Q<Bit>)->Q<Bit>{q}
+unitary fn unused(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){if static 0==0{(q,r)}else{(q,q)}}

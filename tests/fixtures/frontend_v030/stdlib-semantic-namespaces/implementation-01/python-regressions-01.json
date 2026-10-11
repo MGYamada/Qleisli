@@ -1,0 +1,29 @@
+{
+  "format": "qleisli.namespace-python-regressions",
+  "version": 1,
+  "records": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "seconds": 16.41,
+      "stdout": "corpus-regressions-01.stdout.txt",
+      "stderr": "corpus-regressions-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_current_source_fixtures.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.421,
+      "stdout": "fixture-regressions-01.stdout.txt",
+      "stderr": "fixture-regressions-01.stderr.txt"
+    }
+  ],
+  "scope": "Pure provenance/selector/oracle regression checks; no compiler, native or Lean execution."
+}

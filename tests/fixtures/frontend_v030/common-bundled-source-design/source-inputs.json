@@ -1,0 +1,105 @@
+{
+  "format": "qleisli.local-common-source-design-inputs",
+  "version": 1,
+  "status": "read-only-current-working-tree-observation",
+  "observed_at_utc": "2026-10-05T16:09:36.295465+00:00",
+  "hash_role": "Byte identity only; not validation, authenticity, AST coherence or proof.",
+  "files": {
+    "src/frontend/mod.rs": {
+      "sha256": "b058a99e03961ed21602b7241e26b4cf977d07613a1ed81bff3162d63df27ad7",
+      "bytes": 678
+    },
+    "src/frontend/ast.rs": {
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "bytes": 7260
+    },
+    "src/frontend/parser.rs": {
+      "sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67",
+      "bytes": 63429
+    },
+    "src/frontend/project.rs": {
+      "sha256": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
+      "bytes": 25214
+    },
+    "src/frontend/project/edition.rs": {
+      "sha256": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
+      "bytes": 7396
+    },
+    "src/frontend/project/manifest.rs": {
+      "sha256": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
+      "bytes": 9690
+    },
+    "src/frontend/project/source_file.rs": {
+      "sha256": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+      "bytes": 22378
+    },
+    "src/frontend/resolve.rs": {
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+      "bytes": 15766
+    },
+    "src/frontend/resolve/locals.rs": {
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "bytes": 29846
+    },
+    "src/frontend/sized.rs": {
+      "sha256": "2dd8dbe88f98e523118c347b1fdba109d15931706f2ad1c0e488df9acfd2ae27",
+      "bytes": 18639
+    },
+    "src/frontend/sized/parser.rs": {
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "bytes": 15956
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "d8e5023d0c3673467dcb1e417af24621a771fff8e1043946d94991356d9d242d",
+      "bytes": 52049
+    },
+    "src/frontend/compile/mod.rs": {
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "bytes": 42146
+    },
+    "src/frontend/compile/profile.rs": {
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "bytes": 5886
+    },
+    "src/bin/qleisli/source_plan.rs": {
+      "sha256": "99003d69faab808ce6be69216c39329aa3210ef41f7a6bcd0561db2a419556e1",
+      "bytes": 21319
+    },
+    "stdlib/Qargo.toml": {
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+      "bytes": 151
+    },
+    "stdlib/src/arithmetic.qli": {
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "bytes": 2016
+    },
+    "stdlib/src/basis.qli": {
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "bytes": 825
+    },
+    "stdlib/src/routines.qli": {
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "bytes": 2436
+    },
+    "stdlib/src/transforms.qli": {
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "bytes": 1433
+    },
+    "tests/project.rs": {
+      "sha256": "2e3b8d8687272a17c3881cc417b7544419bb7bc5f1506156441b065b3e99e9e0",
+      "bytes": 9144
+    },
+    "tests/source_capacities.rs": {
+      "sha256": "f65bd985b83e521ef06fd629b1cf7879072eeaf11fa34096589cf070f7108063",
+      "bytes": 3518
+    },
+    "tests/shared_resolution.rs": {
+      "sha256": "28b55e399155d5bc7464be38839ebbb7f6161629c61c7b5bd935e21f9e47d834",
+      "bytes": 3329
+    },
+    "tests/source_snapshots.rs": {
+      "sha256": "9896546acb72d1858a7bf447b4484facf719e3cdb92e70aed1a46f90bfda70f2",
+      "bytes": 8580
+    }
+  }
+}

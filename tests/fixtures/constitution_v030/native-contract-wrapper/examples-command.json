@@ -1,0 +1,12 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "../tests/fixtures/constitution_v030/native-contract-wrapper/Examples.lean"
+  ],
+  "cwd": "lean",
+  "exit_code": 0,
+  "elapsed_seconds": 7.275
+}

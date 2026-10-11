@@ -4,7 +4,7 @@ import QleisliKernel.Hierarchical.QpeRoot
 /-! Provider semantics from the single fresh QPE root check.
 The independent requested graph is interpreted by its own finite reader; exact
 finite equations remain the stated transitional integration obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.HierarchicalQpeRoot
 open QleisliKernel.Hierarchical
 open Artifact HierarchicalFiniteEvaluation HierarchicalOperators HierarchicalTyping

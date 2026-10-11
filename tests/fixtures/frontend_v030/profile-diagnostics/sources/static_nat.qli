@@ -1,0 +1,2 @@
+unitary fn power[static n: Nat, static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { U(q) }

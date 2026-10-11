@@ -14,7 +14,7 @@ use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z; use std::observe::discard;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 
@@ -44,7 +44,7 @@ fn phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits() {
     for (logical, body, expected) in [("z", "(d,z(a))", true), ("identity", "(d,h(h(a)))", false)] {
         let source = format!(
             "{IMPORTS}
-            observe fn main() -> CBit {{
+            observe fn main() -> Bit {{
                 let q = with_computed(h(init0()), predicate, {logical}) {{ |d,a| {body} }};
                 measure_z(h(q))
             }}"
@@ -78,7 +78,7 @@ fn phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits() {
 fn simultaneous_data_auxiliary_flip_preserves_reference_correlations() {
     let result = run(&format!(
         "{IMPORTS}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let (r,q) = cnot(h(init0()),init0());
             let q = with_computed(q,predicate,x) {{ |d,a| (x(d),x(a)) }};
             (measure_z(r),measure_z(q))
@@ -92,7 +92,7 @@ fn simultaneous_data_auxiliary_flip_preserves_reference_correlations() {
 fn certified_phase_is_visible_against_a_correlated_reference() {
     let result = run(&format!(
         "{IMPORTS}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let (r,q) = cnot(h(init0()),init0());
             let q = with_computed(q,predicate,z) {{ |d,a| (d,z(a)) }};
             let (r,q) = cnot(r,q);
@@ -124,7 +124,7 @@ fn explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning() {
 #[test]
 fn predicate_and_returned_axis_order_participate_in_the_equation() {
     let result = run(&format!(
-        "{IMPORTS} observe fn main() -> CBit {{
+        "{IMPORTS} observe fn main() -> Bit {{
             let q = with_computed(x(init0()),predicate,identity) {{ |d,a| (a,d) }};
             measure_z(q)
         }}"
@@ -133,7 +133,7 @@ fn predicate_and_returned_axis_order_participate_in_the_equation() {
     for body in ["(a,d)", "(d,z(a))"] {
         rejects(
             &format!(
-                "{IMPORTS} basis fn zero(x: Bit) -> Bit {{ 0 }}
+                "{IMPORTS} classical fn zero(x: Bit) -> Bit {{ 0 }}
                 unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
                     with_computed(q,zero,z) {{ |d,a| {body} }}
                 }}"
@@ -167,16 +167,16 @@ fn source_body_cannot_capture_or_lose_ownership() {
 fn outer_classical_values_are_unavailable_but_closed_classical_branches_are_static() {
     rejects(
         &format!(
-            "{IMPORTS} unitary fn candidate(flag: CBit, q: Q<Bit>) -> Q<Bit> {{
+            "{IMPORTS} unitary fn candidate(flag: Bit, q: Q<Bit>) -> Q<Bit> {{
                 with_computed(q,predicate,identity) {{ |d,a| if flag {{ (d,a) }} else {{ (d,a) }} }}
             }}"
         ),
         ErrorCode::Ownership,
     );
     let result = run(&format!(
-        "{IMPORTS} observe fn main() -> CBit {{
+        "{IMPORTS} observe fn main() -> Bit {{
             let q = with_computed(init0(),predicate,identity) {{ |d,a|
-                if true xor false {{ (d,h(h(a))) }} else {{ (d,a) }}
+                if 1 xor 0 {{ (d,h(h(a))) }} else {{ (d,a) }}
             }};
             measure_z(q)
         }}"
@@ -189,7 +189,7 @@ fn predicate_and_logical_names_obey_outer_shadowing() {
     for name in ["predicate", "identity"] {
         rejects(
             &format!(
-                "{IMPORTS} unitary fn candidate({name}: CBit, q: Q<Bit>) -> Q<Bit> {{
+                "{IMPORTS} unitary fn candidate({name}: Bit, q: Q<Bit>) -> Q<Bit> {{
                     with_computed(q,predicate,identity) {{ |d,a| (d,a) }}
                 }}"
             ),
@@ -209,7 +209,7 @@ fn predicate_and_logical_names_obey_outer_shadowing() {
 #[test]
 fn temporary_binders_do_not_consume_shadowed_outer_owners() {
     let result = run(&format!(
-        "{IMPORTS} observe fn main() -> (CBit,CBit) {{
+        "{IMPORTS} observe fn main() -> (Bit,Bit) {{
             let a = x(init0());
             let q = with_computed(init0(),predicate,identity) {{ |d,a| (d,a) }};
             (measure_z(a),measure_z(q))
@@ -222,9 +222,9 @@ fn temporary_binders_do_not_consume_shadowed_outer_owners() {
 fn exact_basis_shape_and_declared_unitary_effect_are_required() {
     for declaration in [
         "unitary fn specified(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { q }",
-        "iso fn specified(q: Q<Bit>) -> Q<Bit> { q }",
+        "observe fn specified(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q}",
     ] {
-        let code = if declaration.starts_with("iso") {
+        let code = if declaration.starts_with("observe") {
             ErrorCode::Effect
         } else {
             ErrorCode::TypeMismatch
@@ -253,14 +253,14 @@ fn exact_basis_shape_and_declared_unitary_effect_are_required() {
 #[test]
 fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     let source = format!(
-        "{IMPORTS} basis fn yes(q: Unit) -> Bit {{ 1 }}
+        "{IMPORTS} classical fn yes(q: Unit) -> Bit {{ 1 }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}
         unitary fn certified(q: Q<Unit>) -> Q<Unit> {{
             with_computed(q,yes,phase) {{ |d,a| (d,z(a)) }}
         }}
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
-        observe fn main() -> CBit {{
-            let q = do x <- init0(); pure ((),x);
+        observe fn main() -> Bit {{
+            let q = basis init0() as x {{ ((),x) }};
             let (u,q) = split(q);
             let (c,u) = qif(h(init0()),u) {{ 0 => unit_identity, 1 => certified }};
             discard(u); discard(q); measure_z(h(c))
@@ -269,7 +269,7 @@ fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     probability(&run(&source), &[true], 1.0);
     rejects(
         &format!(
-            "{IMPORTS} basis fn no(q: Unit) -> Bit {{ 0 }}
+            "{IMPORTS} classical fn no(q: Unit) -> Bit {{ 0 }}
             unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
             unitary fn candidate(q: Q<Unit>) -> Q<Unit> {{
                 with_computed(q,no,unit_identity) {{ |d,a| ((),a) }}
@@ -285,8 +285,8 @@ fn certified_functions_support_adjoint_and_coherent_control() {
         "{IMPORTS} unitary fn phase(q: Q<Bit>) -> Q<Bit> {{
             with_computed(q,predicate,t) {{ |d,a| (d,h(h(t(a)))) }}
         }}
-        observe fn main() -> (CBit,CBit) {{
-            let q = adjoint(phase,phase(h(init0())));
+        observe fn main() -> (Bit,Bit) {{
+            let q = adjoint(phase)(phase(h(init0())));
             let (c,tgt) = qif(h(init0()),x(init0())) {{ 0 => identity, 1 => phase }};
             discard(tgt);
             (measure_z(h(q)),measure_z(h(c)))
@@ -300,7 +300,7 @@ fn certified_functions_support_adjoint_and_coherent_control() {
 fn one_logical_client_accepts_two_phase_oracle_implementations() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} use oracle::phase;
-        observe fn main() -> CBit {{ measure_z(h(phase(h(init0())))) }}"
+        observe fn main() -> Bit {{ measure_z(h(phase(h(init0())))) }}"
     ));
     for body in ["(d,z(a))", "(d,h(h(z(a))))"] {
         root.write(
@@ -325,13 +325,13 @@ fn certified_source_checks_step_width_and_recursion_limits() {
     rejects(
         &format!(
             "{IMPORTS} unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
-                with_computed(q,predicate,identity) {{ |d,a| (d,repeat_static(1025,h,a)) }}
+                with_computed(q,predicate,identity) {{ |d,a| (d,power(h,1025)(a)) }}
             }}"
         ),
         ErrorCode::Limit,
     );
     rejects(
-        "basis fn predicate(a: Bit,b: Bit,c: Bit,d: Bit,e: Bit,f: Bit) -> Bit { a }
+        "classical fn predicate((((((a,b),c),d),e),f): (((((Bit,Bit),Bit),Bit),Bit),Bit)) -> Bit { a }
         unitary fn identity(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> { q }
         unitary fn candidate(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> {
             with_computed(q,predicate,identity) { |d,a| (d,a) }

@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::x;
+pub unitary fn gate(q: Q<Bit>) -> Q<Bit> { x(q) }
+pub unitary fn f[const U: Op<Bit>](((),q): (Unit,Q<Bit>)) -> Q<Bit> requires Apply(U) { U(q) }

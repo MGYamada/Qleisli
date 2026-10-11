@@ -1,0 +1,27 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "parser",
+    "--test",
+    "compile",
+    "--test",
+    "frontend_types",
+    "--test",
+    "static_semantics"
+  ],
+  "exit_code": 0,
+  "seconds": 11.470782916003373,
+  "sources_unchanged": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+  "test_result_lines": [
+    "test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.20s",
+    "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+    "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s",
+    "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.27s"
+  ]
+}

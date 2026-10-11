@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.coherent-basis-metadata-archive",
+  "version": 1,
+  "created_utc": "2026-10-06T03:56:39.203897+00:00",
+  "first_sources_sha256": "71dbee1670094b69dff88ada3e68c161662337b9886d412ffaa69c7fca6e47e9",
+  "reason": "The two byte-preserved README metadata captures contain relative links valid only in the original roots. After all OLD/AFTER captures they were renamed as raw .txt evidence, so they are not accidentally treated as maintained relocated documents. Original README roots, first source QLI bytes, first source identity record and every actual capture remain unchanged. This explicit append-only path map preserves the captured content identity.",
+  "files": [
+    {
+      "captured_path": "before-sources/qualtran/less_than2/README.md",
+      "archive_path": "before-sources/qualtran/less_than2/README.md.txt",
+      "sha256": "e2d5d58700246388070aa10a2c8820ee07eb7294c7c593b3433274dd301a4efc",
+      "content_unchanged": true
+    },
+    {
+      "captured_path": "before-sources/pennylane_demos/vqe_excitation/README.md",
+      "archive_path": "before-sources/pennylane_demos/vqe_excitation/README.md.txt",
+      "sha256": "92c03cc1e12146fd60e0d2d08bdafd999086907a7278d06efe8ee89bac7ea652",
+      "content_unchanged": true
+    }
+  ]
+}

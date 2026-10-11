@@ -1,0 +1,22 @@
+{
+  "format": "qleisli.first-source-inventory",
+  "version": 1,
+  "frozen_before_commands_utc": "2026-10-06T05:27:30.107719+00:00",
+  "files": {
+    "attempt-01/explicit-isometry-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/explicit-isometry-default/main.qli": "14897ccf92a902370872ac5f3fc2ca3bd11a2404aaeb93faa6ad20f76ac75bb2",
+    "attempt-01/explicit-unit-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/explicit-unit-default/main.qli": "981840738e540c46e3bc810dede63bc25206e6763c80f0c260efed5c6f7e15d9",
+    "attempt-01/false-unitary-caller/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/false-unitary-caller/main.qli": "e38476f1ea125a94204a5ded78700889a17dea23b258b617f6334781ffee21c2",
+    "attempt-01/nested-unit-wildcard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/nested-unit-wildcard/main.qli": "ebb9d3aaba3a237e03eabc142a6d1e35fdf9f02012c1fdcfd79b3354972b15cf",
+    "attempt-01/ordinary-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/ordinary-default/main.qli": "f078eb4797b7d7ffad615f893e4674f3a54b6c134d78282932add490efd58d74",
+    "attempt-01/unused-generic-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/unused-generic-default/main.qli": "19474cb91103f6084c3b9b42d866cea9b01928768f292cf8eff48e2dc1db5109",
+    "context.md": "bd0a4f90670a8feb4e2a4ae905df8e49f9191e31de548150cf2cdc68d3bf911c",
+    "predictions-before.json": "cd30973789809f3ee7160cc84908fd5c7254b1605f2a6cf49f46d9ad708bc64c",
+    "session.pending.json": "ed2e0e9687aed4679638be554e934a594cdc2de81303b38bf5b4dae09bfcb947"
+  }
+}

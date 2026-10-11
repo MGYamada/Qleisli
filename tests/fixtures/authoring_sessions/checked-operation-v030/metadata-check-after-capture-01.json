@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.authoring-metadata-integrity-observation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:28:41.244579+00:00",
+  "session_sha256": "6fd59a273bb5d2dc8ec724a8c36458b4399bbc05cebd6b6fe44321351384bb75",
+  "method": "Pure check_session for this session; no recorded command execution",
+  "exit_code": 0,
+  "result": {
+    "snapshots": 1,
+    "observations": 56
+  }
+}

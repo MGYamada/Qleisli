@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.FourierStage
 
 /-! Bind the actual finite H obligation and explicit one-bit owner renaming.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Opaque payloads are never validated by this inspector. They must be freshly
 decoded and compared to the independently specified phase-fixed H matrix. -/
 

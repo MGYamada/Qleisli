@@ -1,0 +1,17 @@
+
+running 12 tests
+test every_source_fixture_belongs_to_an_exercised_case ... ok
+test type_correct_forward_qft_fault_negates_the_phase_label ... ok
+test inline_and_modular_teleportation_agree_on_every_classical_message ... ok
+test bell_components_support_dense_coding_and_entanglement_swapping ... ok
+test every_quick_reference_program_compiles_and_executes ... ok
+test authoring_limitations_and_useful_guardrails_have_source_reproductions ... ok
+test type_correct_protocol_faults_are_detected_by_branch_sensitive_oracles ... ok
+test phase_estimation_matches_off_grid_probabilities_and_reference_instruments ... ok
+test hadamard_tests_preserve_the_target_and_measure_both_overlap_components ... ok
+test teleportation_recovers_seven_states_and_an_entangled_reference ... ok
+test amplification_handles_all_marked_labels_and_detects_overshoot ... ok
+test phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.09s
+

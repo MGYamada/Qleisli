@@ -1,0 +1,30 @@
+{
+  "scope": "Independent intended ordered-bit results; not observed successes or mathematical proof.",
+  "closed_distributions": {
+    "zero-copy": {
+      "": 1
+    },
+    "generic-one": {
+      "1": 1
+    },
+    "nested-copy": {
+      "01101": 1
+    },
+    "measured-copy": {
+      "0000": "1/2",
+      "1111": "1/2"
+    },
+    "pack-00": {
+      "00": 1
+    },
+    "pack-01": {
+      "01": 1
+    },
+    "pack-10": {
+      "10": 1
+    },
+    "pack-11": {
+      "11": 1
+    }
+  }
+}

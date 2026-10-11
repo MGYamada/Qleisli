@@ -1,0 +1,1 @@
+observe fn main() -> Bit { measure_z(init0()) }

@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/duplicate-unit/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004974500043317676,
+  "recorded_utc": "2026-10-05T13:00:36.974766+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "unbound or consumed value q",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/duplicate-unit/main.qli",
+          "start": 114,
+          "end": 115
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

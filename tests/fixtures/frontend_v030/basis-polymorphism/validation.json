@@ -1,0 +1,236 @@
+{
+  "format": "qleisli.opaque-basis-checkpoint",
+  "version": 1,
+  "edition": "2026",
+  "release": "0.3.0-alpha",
+  "completed_issues": 13,
+  "selected_issues": 110,
+  "percentage": 11.82,
+  "issue_44_status": "open; Meaning integration, final project-profile convergence and complete criteria remain pending",
+  "rust_records": {
+    "final-latest-focused": {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "inference_law",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "quantum_tuple_unitors",
+        "--test",
+        "cli",
+        "--test",
+        "cli_json",
+        "--test",
+        "discovery_paths",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "sized_cli",
+        "--test",
+        "parser",
+        "--test",
+        "compile",
+        "--test",
+        "frontend_types",
+        "--test",
+        "static_semantics"
+      ],
+      "exit_code": 0,
+      "seconds": 28.437213207944296,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "test_result_lines": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.47s",
+        "test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.03s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.03s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s",
+        "test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.32s"
+      ]
+    },
+    "final-latest-library": {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "frontend::"
+      ],
+      "exit_code": 0,
+      "seconds": 5.900450957997236,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "test_result_lines": [
+        "test result: ok. 57 passed; 0 failed; 2 ignored; 0 measured; 51 filtered out; finished in 0.24s"
+      ]
+    },
+    "final-latest-clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 4.842560084012803,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "test_result_lines": []
+    },
+    "final-msrv-focused": {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "inference_law",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "quantum_tuple_unitors",
+        "--test",
+        "cli",
+        "--test",
+        "cli_json",
+        "--test",
+        "discovery_paths",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "sized_cli"
+      ],
+      "exit_code": 0,
+      "seconds": 17.430005125002936,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+      "test_result_lines": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.73s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.56s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.05s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s",
+        "test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+      ]
+    },
+    "final-msrv-clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 5.335817290993873,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+      "test_result_lines": []
+    },
+    "final-format": {
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5904462090111338,
+      "sources_unchanged": true,
+      "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_BUILD_JOBS": "2",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "test_result_lines": []
+    }
+  },
+  "passed_tests_by_record": {
+    "final-latest-focused": 136,
+    "final-latest-library": 57,
+    "final-latest-clippy": 0,
+    "final-msrv-focused": 72,
+    "final-msrv-clippy": 0,
+    "final-format": 0
+  },
+  "latest_total": 193,
+  "selected_native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "protected_state": "Constitution, actual human adoptions, two scoped QLV1 meanings and native constructors/modes unchanged; broader QS/PR/RS and EXACT pending",
+  "checked_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "scope": "Bounded local tests and source/API route review, not a new guarantee, fresh Lean replay, same-commit full CI, release approval or completed #44. Original authoring inputs and every observed failure are retained."
+}

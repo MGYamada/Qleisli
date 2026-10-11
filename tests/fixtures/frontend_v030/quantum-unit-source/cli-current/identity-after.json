@@ -1,0 +1,9 @@
+{
+  "binary_sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_deltas": {},
+  "baseline_deltas": {},
+  "build_sources_sha256": "5cfa5884e26275d0b4f42b4238f77fcf00efc448551a9d25f3f4314b7066d40a",
+  "build_result_sha256": "3d443d99a171b50e6228315448a955fa2161f8768d2cf5da75d9c5dc4b91b3ba",
+  "baseline_manifest_sha256": "292bf6372b934da1e692540cb01f5d9fe75f2169256c2a77b157a1ca146f6fb7"
+}

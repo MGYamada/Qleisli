@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.TypedRule
 
 /-! Inspect the actual recursively shared phase-gradient definitions.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This component must be combined with actual whole-artifact typing and semantic
 proofs before issuing evidence. It accepts no matrix, cache or success flag. -/
 

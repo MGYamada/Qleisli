@@ -1,0 +1,1 @@
+unitary fn bad(q:Q<Bit>) -> Unit { if q { () } else { () } }

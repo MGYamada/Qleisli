@@ -1,0 +1,10 @@
+//! Phase 1/8 is halfway between two bins at two-bit precision.
+use estimation::phase2;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> ((Bit,Bit),Bit) {
+    let (word,target) = phase2[eighth_phase](x(init0()));
+    (word,measure_z(target))
+}

@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Readout
 /-! Binding actual measurement nodes and classical result assembly.
 This additive component checks readout only; it cannot issue a QPE receipt or
 justify the preceding initialization, unitary circuit or source translation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Hierarchical.Readout
 open Artifact

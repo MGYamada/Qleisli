@@ -1,0 +1,34 @@
+
+running 8 tests
+test non_utf8_command_reports_usage_without_panicking ... FAILED
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... FAILED
+
+failures:
+
+---- non_utf8_command_reports_usage_without_panicking stdout ----
+
+thread 'non_utf8_command_reports_usage_without_panicking' (12821611) panicked at tests/cli.rs:158:5:
+assertion `left == right` failed
+  left: "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+ right: "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- closed_stdout_reports_failure_without_panicking_for_every_text_command stdout ----
+
+thread 'closed_stdout_reports_failure_without_panicking_for_every_text_command' (12821606) panicked at tests/cli.rs:81:5:
+could not write selected source result: Broken pipe (os error 32)
+
+
+
+failures:
+    closed_stdout_reports_failure_without_panicking_for_every_text_command
+    non_utf8_command_reports_usage_without_panicking
+
+test result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s
+

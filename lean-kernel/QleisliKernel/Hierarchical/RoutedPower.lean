@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Wiring
 
 /-! Actual controlled powers with phase-free owner-renaming shells.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This inspector returns a component obligation, not semantic evidence. Complete
 artifact typing and independent binding of the actual provider remain required.
 It reads no proposed meaning, proof conclusion, provider name or success flag. -/

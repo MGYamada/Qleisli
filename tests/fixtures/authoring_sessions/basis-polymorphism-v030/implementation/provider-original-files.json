@@ -1,0 +1,13 @@
+{
+  "files": {
+    "tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/Qargo.toml": {
+      "retained_at": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/implementation/provider-original-Qargo.toml.txt",
+      "sha256": "966c4a68b4e72794894bafa573cc4b6438b909f851600c4747f2b4999d1a01cf"
+    },
+    "tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/main.qli": {
+      "retained_at": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/implementation/provider-original-main.qli.txt",
+      "sha256": "ee89cbe74b1fba5fe67f3b1f0a4bce4d96b7126e66558ea2082473b8abce7864"
+    }
+  },
+  "scope": "Exact additional-provider inputs from the failed first implementation observation; primary attempt-02 sources unchanged. The manifest used schema rather than the required schema-version."
+}

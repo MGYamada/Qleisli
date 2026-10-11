@@ -1,0 +1,91 @@
+{
+  "format": "qleisli.namespace-final-policy-validation",
+  "version": 1,
+  "records": [
+    {
+      "label": "format",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.77,
+      "stdout": "format-final-04.stdout.txt",
+      "stderr": "format-final-04.stderr.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "docs",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 3.032,
+      "stdout": "docs-final-04.stdout.txt",
+      "stderr": "docs-final-04.stderr.txt",
+      "stdout_sha256": "120b136159649f9050fdf4f22a905c0749c38dd7c50933ad747bad9a38ef54d3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "authoring",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.789,
+      "stdout": "authoring-final-04.stdout.txt",
+      "stderr": "authoring-final-04.stderr.txt",
+      "stdout_sha256": "57f90eaa56a57d26db5762c5cdea7cc7f1f07b77f52425fde1f486454b90ab29",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "editions",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 4.709,
+      "stdout": "editions-final-04.stdout.txt",
+      "stderr": "editions-final-04.stderr.txt",
+      "stdout_sha256": "e87ff6fae178b62a0495d29e8bc355d02cb51a7af31c7c06411cf5627a14deca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "corpus-metadata",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.333,
+      "stdout": "corpus-metadata-final-04.stdout.txt",
+      "stderr": "corpus-metadata-final-04.stderr.txt",
+      "stdout_sha256": "cfbe0271cffb327fd9755e367e4a8ce516de78e619692ebaf7a7369167ae80d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "inventory",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.426,
+      "stdout": "inventory-final-04.stdout.txt",
+      "stderr": "inventory-final-04.stderr.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d75b973c227917e768323cddd75989bf4af210b7651f4ce6955226c44c82892c"
+    }
+  ],
+  "scope": "Final lightweight source/metadata/constitutional identity checks after comment correction, completed evidence and diagnostic metadata. Not a new Lean replay, broad test rerun or release gate."
+}

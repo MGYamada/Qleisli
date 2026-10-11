@@ -3,7 +3,7 @@ import QleisliKernel.Raw.StreamedInstrument
 
 /-! Experimental original matrix-free instrument envelope; production transport
 binding and native packaging remain separate VM-28/29 obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.StreamedObservation
 open Lean
 

@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "status": "failed",
+  "failures": [
+    {
+      "stage": "run",
+      "id": "quantum_katas/grover2",
+      "type": "ValueError",
+      "message": "current source differs from latest attempt: quantum_katas/grover2/kernel.qli"
+    }
+  ],
+  "cases": [],
+  "semantic_faults": [],
+  "negative_cases": [],
+  "created_utc": "2026-10-04T15:44:54.455309+00:00",
+  "exhaustive_unitary_entries": false,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "manifest_sha256": "778b367aee49afd2233a482698fe706d099c56e027ad6fbe535f66b4d5411325"
+}

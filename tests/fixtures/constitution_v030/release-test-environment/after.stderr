@@ -1,0 +1,27 @@
+test_actual_cli_producer_binds_bytes_and_rejects_wrong_job (__main__.SyntheticRelease.test_actual_cli_producer_binds_bytes_and_rejects_wrong_job) ... ok
+test_actual_cli_rejects_missing_context_and_unreviewed_requirements (__main__.SyntheticRelease.test_actual_cli_rejects_missing_context_and_unreviewed_requirements) ... ok
+test_admitted_removal_fabricated_discharge_and_hidden_pending_reject (__main__.SyntheticRelease.test_admitted_removal_fabricated_discharge_and_hidden_pending_reject) ... ok
+test_candidate_cannot_rewrite_criterion_or_exclude_required_work (__main__.SyntheticRelease.test_candidate_cannot_rewrite_criterion_or_exclude_required_work) ... ok
+test_changed_record_during_check_rejects (__main__.SyntheticRelease.test_changed_record_during_check_rejects) ... ok
+test_complete_synthetic_candidate_retains_pending_scope (__main__.SyntheticRelease.test_complete_synthetic_candidate_retains_pending_scope) ... ok
+test_dirty_candidate_and_trusted_sha_mismatch_reject (__main__.SyntheticRelease.test_dirty_candidate_and_trusted_sha_mismatch_reject) ... ok
+test_failure_created_report_and_source_only_receipt_reject (__main__.SyntheticRelease.test_failure_created_report_and_source_only_receipt_reject) ... ok
+test_full_conformance_claim_rejects (__main__.SyntheticRelease.test_full_conformance_claim_rejects) ... ok
+test_ignored_file_cannot_supply_candidate_evidence (__main__.SyntheticRelease.test_ignored_file_cannot_supply_candidate_evidence) ... ok
+test_legacy_cli_delegates_instead_of_pending_obligation_placeholder (__main__.SyntheticRelease.test_legacy_cli_delegates_instead_of_pending_obligation_placeholder) ... ok
+test_live_receipt_uses_fixed_verifier_and_rechecks_inputs (__main__.SyntheticRelease.test_live_receipt_uses_fixed_verifier_and_rechecks_inputs) ... ok
+test_missing_and_corrupted_native_assets_reject (__main__.SyntheticRelease.test_missing_and_corrupted_native_assets_reject) ... ok
+test_missing_duplicate_issue_and_removed_criterion_reject (__main__.SyntheticRelease.test_missing_duplicate_issue_and_removed_criterion_reject) ... ok
+test_missing_stale_evidence_and_unknown_keys_reject (__main__.SyntheticRelease.test_missing_stale_evidence_and_unknown_keys_reject) ... ok
+test_native_source_commit_and_version_mismatch_reject (__main__.SyntheticRelease.test_native_source_commit_and_version_mismatch_reject) ... ok
+test_receipt_path_escape_and_symlink_reject (__main__.SyntheticRelease.test_receipt_path_escape_and_symlink_reject) ... ok
+test_tests_model_lanes_and_incomplete_suites_reject (__main__.SyntheticRelease.test_tests_model_lanes_and_incomplete_suites_reject) ... ok
+test_unknown_fields_duplicate_json_and_schema_coercions_reject (__main__.SyntheticRelease.test_unknown_fields_duplicate_json_and_schema_coercions_reject) ... ok
+test_workflow_runs_final_gate_and_trusted_producer_outputs (__main__.SyntheticRelease.test_workflow_runs_final_gate_and_trusted_producer_outputs) ... ok
+test_wrong_commit_run_attempt_and_digest_reject (__main__.SyntheticRelease.test_wrong_commit_run_attempt_and_digest_reject) ... ok
+test_wrong_tag_manual_request_and_untrusted_digest_reject (__main__.SyntheticRelease.test_wrong_tag_manual_request_and_untrusted_digest_reject) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 58.075s
+
+OK

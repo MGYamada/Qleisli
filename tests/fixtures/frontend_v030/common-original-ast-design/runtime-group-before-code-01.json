@@ -1,0 +1,14 @@
+{
+  "format": "qleisli.ordinary-before-code-record",
+  "version": 1,
+  "repository": "MGYamada/Qleisli",
+  "issue": 32,
+  "comment_id": 6005081767,
+  "comment_url": "https://github.com/MGYamada/Qleisli/issues/32#issuecomment-6005081767",
+  "candidate": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-clarification-01.md",
+    "sha256": "b87f71d5d84f6082fd6d0ba3aac67a06378c2e6e2e9e1db21af914c0b535a1a1"
+  },
+  "scope": "Ordinary correction to direct runtime quantum groups, checked Nat decrease and concrete runtime/opaque split. Independent read-only candidate/code/raw-log review preceded record. No implementation, human interpretation adoption, guarantee discharge, accepted handle or completed issue is established by this record.",
+  "protected_status": "Edition2026 and QS/PR/RS/EXACT pending duties plus two scoped QLV1 guarantees unchanged; confirmed14/111."
+}

@@ -1,0 +1,7 @@
+use left::ua;
+use right::vb;
+pub unitary fn f(a:Q<Bits<0>>, r:Q<Bits<0>>, c:Q<Bit>, b:Q<Bit>) -> (Q<Bits<0>>,Q<Bits<0>>,Q<Bit>,Q<Bit>) {
+    let (c,a) = controlled(ua)(c,a);
+    let (c,b) = controlled(vb)(c,b);
+    (a,r,c,b)
+}

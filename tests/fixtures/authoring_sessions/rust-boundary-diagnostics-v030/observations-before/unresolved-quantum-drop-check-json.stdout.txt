@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unknown_name","severity":"error","message":"unresolved function drop","primary":{"path":"main.qli","start":153,"end":157,"line":5,"column":5},"related":[]}],"result":null}

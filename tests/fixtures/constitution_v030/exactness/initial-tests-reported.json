@@ -1,0 +1,41 @@
+{
+  "kind": "Agent-reported actual command outcomes from tool output; this is a summary, not recreated raw stdout/stderr",
+  "base_commit": "a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+  "commands": [
+    {
+      "reporter": "review_platform",
+      "command": [
+        "python3",
+        "scripts/test_check_constitution.py"
+      ],
+      "exit": 0,
+      "tests": 62,
+      "seconds": 125.777
+    },
+    {
+      "reporter": "review_frontend",
+      "command": [
+        "python3",
+        "scripts/test_check_release_ready.py"
+      ],
+      "exit": 0,
+      "tests": 26,
+      "seconds": 66.082
+    }
+  ],
+  "production_shape_reproduction_before_fix": {
+    "reporter": "review_frontend",
+    "procedure": "Use SyntheticRelease setup; replace pending_obligations with deep-copy of actual ledger rows, refresh ledger/acceptance hash and pending IDs using interpretation, then call acceptance directly.",
+    "observed_exception": "KeyError: 'id'",
+    "wrapper_exit": 0,
+    "scope": "Test wrapper caught the exception; no real release was evaluated."
+  },
+  "source_sha256": {
+    "scripts/check_constitution.py": "8b3b6787e7b49c1b8def423b4d6b3f800d5ff3fa94595eab32e341e44e7435be",
+    "scripts/test_check_constitution.py": "c38693722d633956c044a80ce7bd4f6989c713e41c15351be4c2ad4332beb328",
+    "scripts/check_release_ready.py": "70f687dcc99c816882e58b22e4f50ca2131660ad3f70e18fa981551d5ebc3351",
+    "scripts/test_check_release_ready.py": "057408833cf226384971a7b76e61fc3ebc72dd9f2fd5d1daa000066876b4dc58",
+    "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+  },
+  "scope": "Initial integration tests before any later independent-review repairs. Synthetic positive release results are not real release readiness; current replay is recorded separately."
+}

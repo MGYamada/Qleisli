@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized] target(s) in 0.13s
+     Running unittests src/lib.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/qleisli-f3146c8dfbb32aea)

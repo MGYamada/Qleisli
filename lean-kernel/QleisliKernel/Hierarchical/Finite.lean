@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Rule
 
 /-! Bind finite unitary reconstruction requests to the actual artifact.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Pending requests are data, never evidence. The transitional Rust adapter must
 reconstruct their complete bytes and independently check their exact equation. -/
 
@@ -60,9 +60,9 @@ theorem project_unique (artifact : Artifact) (index : Nat) (first second : Reque
     (right : project artifact index = some second) : first = second := by
   exact Option.some.inj (left.symm.trans right)
 
-/-- Bits requires an explicit structural adapter; a width is not a type tree. -/
+/-- Exact finite atoms retain Bits tags; native reconstruction checks the tree. -/
 def legacy (basis : Basis) : Bool := basis.all fun atom => match atom with
-  | .bits _ => false
+  | .bits n => n ≤ 6
   | _ => true
 
 def unary (interface : Interface) : Bool :=

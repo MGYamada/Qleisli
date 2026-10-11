@@ -1,0 +1,6 @@
+2026-10-04T17:02:35.7698825Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-04T17:02:35.7699143Z 
+2026-10-04T17:02:35.7699561Z HEAD is now at 392f403 Merge bfceca338a1dfc07b9501758afcd00675b88733d into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-04T17:02:35.7723953Z ##[endgroup]
+2026-10-04T17:02:35.7770481Z [command]/usr/bin/git log -1 --format=%H
+2026-10-04T17:02:35.7799339Z 392f403434557e5644e7641a1f86170cb9f1a5dd

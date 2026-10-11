@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-policy",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T19:25:05.378452+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.916396334010642,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 20,
+  "native_argv_log": "runtime-shadows-static-policy-finite-check-text.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "runtime-shadows-static-policy-finite-check-text.stdout.bin",
+  "stderr_raw": "runtime-shadows-static-policy-finite-check-text.stderr.bin",
+  "stdout_sha256": "c31e368745de2199e8f5313469efcf5ca7b4de88639e41e41317f70ceac47fd9",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+  "outcomes_predicted": false,
+  "transcript": "checked source and verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-policy\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately."
+}

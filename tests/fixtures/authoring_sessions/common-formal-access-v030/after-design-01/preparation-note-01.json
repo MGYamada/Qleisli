@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.formal-after-preparation-note",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:48:11.438343+00:00",
+  "status": "actual-preparation-assertion-failure-retained",
+  "reason": "Initial metadata preparation wrongly expected only seven changed/added inputs. Root independently updated Reference type-model.md, so the exact-input assertion failed before inputs.json was written. Root confirmed this separate intentional delta. No collector import/execution, child command, capture output or source repair occurred.",
+  "failed_assertion": "set(changed) == seven authorized production paths",
+  "corrected_map_scope": "Seven production paths plus explicit Reference delta; current full declared input closure guarded, historical old closure retained as data only.",
+  "reference_delta": {
+    "docs/src/reference/type-model.md": {
+      "before": {
+        "bytes": 28181,
+        "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608"
+      },
+      "after": {
+        "bytes": 28842,
+        "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/method-boundary-v030/attempt-01/quantum-method.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T07:15:33.128622+00:00",
+  "cli_sha256_before": "3772150a899515aec5c2b52a01b9eb68f4aae03703af60c9b57e346dfe82768a",
+  "cli_sha256_after": "3772150a899515aec5c2b52a01b9eb68f4aae03703af60c9b57e346dfe82768a",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "unexpected character `.`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/method-boundary-v030/attempt-01/quantum-method.qli",
+          "start": 175,
+          "end": 176
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

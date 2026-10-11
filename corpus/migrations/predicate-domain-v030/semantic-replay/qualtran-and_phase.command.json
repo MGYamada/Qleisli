@@ -1,0 +1,17 @@
+{
+  "case": "qualtran/and_phase",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "qualtran/and_phase",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-fixed-replay/qualtran-and_phase.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+  "exit_code": 0,
+  "seconds": 15.094390166981611,
+  "stdout": "qualtran-and_phase.stdout",
+  "stderr": "qualtran-and_phase.stderr"
+}

@@ -1,0 +1,40 @@
+{
+  "format": "qleisli.quantum-unit-maps-local-validation",
+  "version": 1,
+  "status": "focused-validation-passed",
+  "base_commit": "e01e98a42a00c04892617205307f2db76b5c404e",
+  "passed_per_toolchain": 149,
+  "new_target_tests_per_toolchain": 12,
+  "remaining_ignored_in_selected_targets": 0,
+  "kernel": {
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "status": "Reused stable existing checker; no new local Lean build/audit/replay."
+  },
+  "scope": "Actual bounded source/native tests and independent requests; not full CI, general source preservation, full constitutional proof or completion of #43/#32. Source manifests select project/test inputs, not every dependency or operating-system input.",
+  "rust": {
+    "latest-first": {
+      "result_sha256": "932d1861b9263d9af67e3d79658d28df2e979f57c5744f9c0d2930c4a3ad1cb2",
+      "passed": 144,
+      "source_count": 531,
+      "selected_source_manifest_sha256": "79c8fa5ce183daa04f4efc9483b19ce30012b92faf4e53604049143e4cbcfa08"
+    },
+    "msrv-first": {
+      "result_sha256": "83146140f95cc0aa29f1080833edd873a8a0a1fa6038d1a051ca1dcace9ff7c3",
+      "passed": 144,
+      "source_count": 531,
+      "selected_source_manifest_sha256": "79c8fa5ce183daa04f4efc9483b19ce30012b92faf4e53604049143e4cbcfa08"
+    },
+    "latest-native": {
+      "result_sha256": "bf01a461e1d99bd760363b005b19610bd67059872826cf4bc62d2c4366b0e2c9",
+      "passed": 5,
+      "source_count": 531,
+      "selected_source_manifest_sha256": "79c8fa5ce183daa04f4efc9483b19ce30012b92faf4e53604049143e4cbcfa08"
+    },
+    "msrv-native": {
+      "result_sha256": "6fbbddcbb38b18974b7aeac82d69d4e6c96b8d6ae613b626e21f8af1f6d72665",
+      "passed": 5,
+      "source_count": 531,
+      "selected_source_manifest_sha256": "79c8fa5ce183daa04f4efc9483b19ce30012b92faf4e53604049143e4cbcfa08"
+    }
+  }
+}

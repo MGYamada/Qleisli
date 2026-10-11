@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "head": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "tested_merge": "27959ca1be562d5157a41d2e7a9c39d38373c71f",
+  "base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "records": [
+    {
+      "job_id": 112118783557,
+      "lane": "rust",
+      "workflow_run": 37417326872,
+      "excerpt_path": "tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/rust-failure-01.txt",
+      "selection": "Exact failing test stdout through Cargo rerun instruction, inclusive; full fetched job log is not stored."
+    },
+    {
+      "job_id": 112118783565,
+      "lane": "rust-msrv",
+      "workflow_run": 37417326872,
+      "excerpt_path": "tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/rust-msrv-failure-01.txt",
+      "selection": "Exact failing test stdout through Cargo rerun instruction, inclusive; full fetched job log is not stored."
+    },
+    {
+      "job_id": 112118783633,
+      "lane": "lean-kernel",
+      "workflow_run": 37417326872,
+      "excerpt_path": "tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/lean-kernel-failure-01.txt",
+      "selection": "Exact failing test stdout through Cargo rerun instruction, inclusive; full fetched job log is not stored."
+    }
+  ],
+  "conclusion": "Three actual hosted lanes reach the same retained stale historical do/pure positive fixture. Each executes ten successful and one failing quantum_tuple_unitors test; distribution inner cause is not established by these logs.",
+  "limits": "Advisory observation, no gate success, release readiness, source preservation or proof discharge."
+}

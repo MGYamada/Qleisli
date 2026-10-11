@@ -1,0 +1,8 @@
+[
+  {
+    "stage": "run",
+    "id": "quantum_katas/deutsch_jozsa3",
+    "type": "ValueError",
+    "message": "current source differs from latest attempt: quantum_katas/grover2/kernel.qli"
+  }
+]

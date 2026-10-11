@@ -1,0 +1,19 @@
+
+running 14 tests
+test predicate_and_logical_names_obey_outer_shadowing ... ok
+test exact_basis_shape_and_declared_unitary_effect_are_required ... ok
+test certified_source_checks_step_width_and_recursion_limits ... ok
+test source_body_cannot_capture_or_lose_ownership ... ok
+test explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning ... ok
+test certified_phase_is_visible_against_a_correlated_reference ... ok
+test outer_classical_values_are_unavailable_but_closed_classical_branches_are_static ... ok
+test simultaneous_data_auxiliary_flip_preserves_reference_correlations ... ok
+test temporary_binders_do_not_consume_shadowed_outer_owners ... ok
+test certified_functions_support_adjoint_and_coherent_control ... ok
+test predicate_and_returned_axis_order_participate_in_the_equation ... ok
+test phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits ... ok
+test zero_width_data_ownership_and_scalar_phase_are_preserved ... ok
+test one_logical_client_accepts_two_phase_oracle_implementations ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.34s
+

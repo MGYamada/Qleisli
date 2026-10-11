@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "leanchecker",
+    "--fresh",
+    "Qleisli.RoutedControlCommutation"
+  ],
+  "cwd": "/Users/masa/git/Qleisli/lean",
+  "started_at": "2026-10-04T15:32:54.757885+00:00",
+  "elapsed_seconds": 325.4385916659958,
+  "exit_code": 0,
+  "stdout": "module-replay.stdout.txt",
+  "stderr": "module-replay.stderr.txt"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "case": "source-order-errors",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:42..80: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors/main.qli\", span: Span { start: 128, end: 129 }, line: 3, column: 48 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "ambiguous-import",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli:19..23: name `gate` collides with another declaration or import\nsized.parse: main:12..24: name: ambiguous imported name gate\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli\", span: Span { start: 19, end: 23 }, line: 1, column: 20 }) }\n",
+    "stderr": ""
+  }
+]

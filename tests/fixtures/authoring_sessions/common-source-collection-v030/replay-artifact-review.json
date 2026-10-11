@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.common-source-collection-replay-artifact-review",
+  "version": 1,
+  "recorded_utc": "2026-10-05T16:23:35.135569+00:00",
+  "reviewer_agent": "/root/isometry_cli_tests",
+  "review_kind": "Author inspection of actual fixed replay artifacts and original comparison results; not an invented independent reviewer report or a mathematical proof.",
+  "records_checked": 23,
+  "all_recorded_comparison_fields_match": true,
+  "frozen_baseline_and_first_inputs_unchanged": true,
+  "cli_before_sha256": "a2755f3c13068f30f92d92d12d88a4b81a8ae7c0fbd69374aed632e3fb23bacc",
+  "cli_after_sha256": "9906ea86e6a88086476558d95ce3ac4b34636c4467402e055adbe84ddcb1db5d",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "unchanged_lean_kernel_and_stdlib": true,
+  "changed_contracts": [
+    "docs/src/reference/source-text.md",
+    "docs/src/reference/primitive-boundary.md"
+  ],
+  "ordering_controls": [
+    "profile-before-late-parse",
+    "parse-before-late-profile"
+  ],
+  "scope_limits": [
+    "Producer-consistency native source checks and exact observed output/proposal-byte identity.",
+    "No independent semantic request, general source-preservation proof, common checker completion or canonical generic stdlib exposure.",
+    "No new guarantee admission or QS/PR/RS/EXACT discharge.",
+    "HEAD is a prior record-only commit; captured current uncommitted Rust and CLI hashes do not attest compilation of that HEAD."
+  ],
+  "index": {
+    "first_sources": "attempt-01/",
+    "before_identity": "before/identity.json",
+    "after_identity": "after-final/identity.json",
+    "before_commands": "before/summary.json",
+    "after_commands": "after-final/summary.json",
+    "exact_comparisons": "after-final/comparison.json",
+    "frozen_baseline_map": "baseline-files.json",
+    "before_results": "results-before.md",
+    "after_results": "results-after.md"
+  }
+}

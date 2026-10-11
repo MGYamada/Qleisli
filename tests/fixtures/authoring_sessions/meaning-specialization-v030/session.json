@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#44 exact Meaning-bound operation specialization and Nat composition",
+  "baseline_commit": "566b340ecfef3460ca49172a8efc014b5cf39197",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex /root; informed source/code access; exact deployed model and sampling settings unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four complete first sources frozen before checks or acceptance edits; current selected projection refusals do not prove semantic negative conditions.",
+      "sha256": {
+        "correct-x/main.qli": "20378b980bb390b3256fd9bc5e4e6047e83fa95847d1945f24cfd59cf1255442",
+        "wrong-x/main.qli": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
+        "scalar-minus/main.qli": "9bdb25570daf83ad34d71253b4c59cdc10f87d0621af386bfa85589a914de2e7",
+        "nat-repeat/main.qli": "13c6fd7f553f2b101ca55bae1118dafb7ffd844e0865bc4d826e41289e1dcf74"
+      },
+      "observations": [
+        "observations-before/correct-x-finite.json",
+        "observations-before/correct-x-selected.json",
+        "observations-before/wrong-x-finite.json",
+        "observations-before/wrong-x-selected.json",
+        "observations-before/scalar-minus-finite.json",
+        "observations-before/scalar-minus-selected.json",
+        "observations-before/nat-repeat-finite.json",
+        "observations-before/nat-repeat-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "First finite positives checked definitions but did not explicitly bind the provider to its Meaning. Add a full checked_op caller before further checks; first sources and observations remain unchanged.",
+      "sha256": {
+        "correct-x/main.qli": "f357bf17b6d415bbe4514086ce411e35aae8d1fdf4c8ad519d2a2a02524fa938",
+        "scalar-minus/main.qli": "8dec21ad350dc73a6881ee3bf5cf3751743b70bf31a1408c10033585bf8a8c91"
+      },
+      "observations": [
+        "observations-repaired/correct-x-finite.json",
+        "observations-repaired/correct-x-selected.json",
+        "observations-repaired/scalar-minus-finite.json",
+        "observations-repaired/scalar-minus-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "The explicit selected bound entry was private in attempt-02. Preserve those visibility failures and add pub to that entry only before repeating selected checks.",
+      "sha256": {
+        "correct-x/main.qli": "1bfe84a31a27ca89629b1dc48f6c4daed9890c86e1452b19c789e04e96f81e21",
+        "scalar-minus/main.qli": "4314ee0361111997186a377d41d8550ff9ffd933086980bf2d6195ea279a98f7"
+      },
+      "observations": [
+        "observations-public/correct-x-selected.json",
+        "observations-public/scalar-minus-selected.json"
+      ]
+    }
+  ],
+  "scope": "Bounded pre-implementation observations; no proof, guarantee, release, generic QFT or static-array work."
+}

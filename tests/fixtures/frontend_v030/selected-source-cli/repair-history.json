@@ -1,0 +1,24 @@
+{
+  "first_run": "latest-first/result.json",
+  "first_run_outcome": "Compilation succeeded; cli usage golden and legacy broken-pipe description failed before later targets ran.",
+  "first_driver": "first-driver.py.txt",
+  "corrections": [
+    "Keep historical verification_v029/usage.txt unchanged; add reviewed current usage.txt here and select it in live cli/cli_json tests.",
+    "Restore legacy sized result stdout-write error description; retain selected source result for the new command form."
+  ],
+  "second_run": "latest-repair/result.json",
+  "second_run_outcome": "Existing CLI/project/mixed/ordinary/runtime-parameter suites passed; three newly authored selected-source tests failed.",
+  "tested_first_selected_source": "selected-source-cli-first.rs.txt",
+  "test_corrections": [
+    "Explicitly select Raw for Raw-only capability negatives; Auto legitimately retains hierarchy for supported quantum output.",
+    "Reject Q<Unit> as unsupported in this selected pipeline; keep positive ordinary Unit and Q<Bits<0>> shape cases.",
+    "Replace standalone evolve-body request with hand-authored closed QPE shell meaning and the correct fresh interface arities. The fixed request still independently chooses omega=exp(i*pi/4) and eight analytic coefficients.",
+    "Add a ninth test for source-binding conflicts and invalid unused declarations before a native call."
+  ],
+  "successful_runs": [
+    "latest-final/result.json",
+    "msrv-final/result.json"
+  ],
+  "final_selected_source_test_sha256": "9df52b807d7e22d4db31326484b4d90bd506c54d04f46fb23eb89ee0bd9ac29e",
+  "success": "Both actual toolchains:107 focused tests +2 previously ignored native CLI tests; all-target Clippy and fmt pass. Three other ignored sized_source tests remain unrun."
+}

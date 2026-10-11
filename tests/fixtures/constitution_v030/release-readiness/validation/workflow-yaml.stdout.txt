@@ -1,0 +1,12 @@
+changes
+check-rust
+check-rust-msrv
+check-macos-source
+check-interop
+check-lean
+check-lean-kernel
+check-distribution
+check-docs
+required
+release-readiness
+["changes", "check-rust", "check-rust-msrv", "check-macos-source", "check-interop", "check-lean", "check-lean-kernel", "check-distribution", "check-docs"]

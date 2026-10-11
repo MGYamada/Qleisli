@@ -1,0 +1,15 @@
+
+running 5 tests
+test closed_transparent_provider_keeps_its_conditional_control_path ... FAILED
+test apply_only_wrapper_retains_forward_use_without_inverse_or_control ... ok
+test declared_paths_support_the_inverse_and_control_positive_controls ... FAILED
+test reversing_an_adjoint_only_wrapper_needs_the_original_apply_path ... ok
+test unused_actual_operations_still_constrain_the_conservative_wrapper ... ok
+
+failures:
+
+failures:
+    closed_transparent_provider_keeps_its_conditional_control_path
+    declared_paths_support_the_inverse_and_control_positive_controls
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s

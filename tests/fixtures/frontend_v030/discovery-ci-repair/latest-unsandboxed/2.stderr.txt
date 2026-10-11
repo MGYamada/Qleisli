@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized] target(s) in 0.34s
+     Running unittests src/lib.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/qleisli-f3146c8dfbb32aea)
+     Running unittests src/bin/qleisli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/qleisli-71b5b1057cb8d2e2)
+     Running tests/algorithms.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/algorithms-ba29021bfd61cd10)
+     Running tests/authoring_ergonomics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/authoring_ergonomics-ee90fc15c4d68ed6)
+     Running tests/b019_trusted_boundary.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/b019_trusted_boundary-8b75aeff0dd40663)
+     Running tests/certified_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/certified_source-8e96611dac4bd08e)
+     Running tests/cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli-1b11e95c071714b3)
+     Running tests/cli_json.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli_json-efa0983cbb4cedaf)
+error: test failed, to rerun pass `--test cli_json`

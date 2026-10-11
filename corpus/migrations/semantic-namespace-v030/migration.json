@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "kind": "explicit-source-migration",
+  "issue": 317,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-06T02:49:06.218346+00:00",
+  "context": "The semantic namespace cutover changes only imported paths in six finite translation kernels. The complete twelve-file snapshots follow the latest ordinary-type migration identities. Original shipped source, historical authoring and every prior migration remain unchanged. Fixed QFT interfaces, tuple shapes, exact phase, reflection sign, upstream pins and notices are preserved. Actual check observations are pending; this record does not assert checking, source preservation, proof discharge, generic QFT support or release readiness.",
+  "projects": [
+    "qualtran/qft2",
+    "qualtran/qpe2",
+    "qualtran/reflection2",
+    "quantum_katas/qpe3",
+    "quantum_katas/grover2",
+    "pennylane_demos/qpe3"
+  ],
+  "files": {
+    "qualtran/qft2/kernel.qli": {
+      "before": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a",
+      "after": "1282300d10ba6ed5fafd552fb12456f0f580084d443de7497f8787984568835e"
+    },
+    "qualtran/qft2/main.qli": {
+      "before": "6937e93642473de709f1c277bc4d01522014907707ba0aebd1d4b144c644fd50",
+      "after": "6937e93642473de709f1c277bc4d01522014907707ba0aebd1d4b144c644fd50"
+    },
+    "qualtran/qpe2/kernel.qli": {
+      "before": "f92af9bedac5237a91854f606588a205480a09e67ab779e0c17d0855ba94e75a",
+      "after": "a8c4b566438ec601a96bd9d6c35653bc628981261ebd9bd5957e7abab41b9201"
+    },
+    "qualtran/qpe2/main.qli": {
+      "before": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161",
+      "after": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161"
+    },
+    "qualtran/reflection2/kernel.qli": {
+      "before": "f794eacadbc7fd46ed6fc8bef7dbe2d0c262bec6d9a132b9e436e89b35cc3dea",
+      "after": "b55182b70645fcd7a9f81d4df8a33de88aed8f7c0d640306258255a20c011d54"
+    },
+    "qualtran/reflection2/main.qli": {
+      "before": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a",
+      "after": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a"
+    },
+    "quantum_katas/qpe3/kernel.qli": {
+      "before": "7bf19c837512d27e44a3a23085ded55faef863e727ffc1fc9cab4c08feeb2fee",
+      "after": "b63da12e784bc6160febd49b8e6ca30ae8367613c3e9250b6df08bf44fb30012"
+    },
+    "quantum_katas/qpe3/main.qli": {
+      "before": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01",
+      "after": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01"
+    },
+    "quantum_katas/grover2/kernel.qli": {
+      "before": "42a14bc04dfd58d54a527e8798acc49381a054e5e421c362f6e4e75450705071",
+      "after": "d033b4644afe2483f7b503d64b0f76dd5c1c4a1d47fc4cd2fa73400fc262ebaf"
+    },
+    "quantum_katas/grover2/main.qli": {
+      "before": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+      "after": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a"
+    },
+    "pennylane_demos/qpe3/kernel.qli": {
+      "before": "19075932c37f442aafd63ee47e76aa37a3472b6879fae98e3468fd139fc23dcf",
+      "after": "f452eeb85c4be3fffc9d1db392f4726e3d73eaba25015aec54cdc31cc29b9aa3"
+    },
+    "pennylane_demos/qpe3/main.qli": {
+      "before": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8",
+      "after": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8"
+    }
+  },
+  "observations": [
+    "checks.json"
+  ],
+  "source_selection": "snapshot"
+}

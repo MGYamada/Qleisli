@@ -2,7 +2,7 @@ import Protocol.Qirf
 import QleisliKernel.Qirf.Ownership
 
 /-! Bounded VM-28 transport, separate from the pure acceptance definitions.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Validity
 open Lean
 
@@ -107,12 +107,12 @@ theorem check_acceptance (bytes : ByteArray) (hasRequest : Bool) (work left : Na
 
 /-- The decoded ordinary root of the original packet is linearly safe.
 No optional request, Rust decision, or external semantic witness is required. -/
-theorem check_resourceSafe (bytes : ByteArray) (hasRequest : Bool) (work left : Nat)
+theorem check_ownershipSafe (bytes : ByteArray) (hasRequest : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok hasRequest,left)) :
     ∃ binding : Acceptance bytes hasRequest work left,
       ∃ program, binding.artifact.programs[binding.artifact.root]? = some program ∧
-        Semantics.Ownership.ResourceSafe program := by
+        Semantics.Ownership.OwnershipSafe program := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
-  exact ⟨binding,QleisliKernel.Qirf.Validity.inspect_resourceSafe _ _ _ _ _ binding.accepted⟩
+  exact ⟨binding,QleisliKernel.Qirf.Validity.inspect_ownershipSafe _ _ _ _ _ binding.accepted⟩
 
 end QleisliKernel.Protocol.Validity

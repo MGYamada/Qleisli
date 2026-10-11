@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-isometry",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-isometry\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::entry\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "stderr": "",
+  "binary_sha256": "9e6a146da8c97d2dfaf72b4afddc4217e4ccee285db96f2df8a62fa21aa01849",
+  "kernel_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731",
+  "recorded_utc": "2026-10-10T12:31:57.149975+00:00"
+}

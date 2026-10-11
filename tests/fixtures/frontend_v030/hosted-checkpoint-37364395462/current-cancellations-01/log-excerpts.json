@@ -1,0 +1,36 @@
+{
+  "job_id": 111946020733,
+  "tool": "github_fetch_workflow_job_logs",
+  "complete_decoded_bytes": 1758700,
+  "complete_decoded_sha256": "9f353e2a721cda076862809797c132f3ec4f5f6eb3d4e1f6adcdc3e365580acd",
+  "complete_decoded_line_count": 13576,
+  "complete_decoded_retained": false,
+  "excerpts": [
+    {
+      "path": "changes-checkout-selection.log.gz",
+      "compression": "gzip",
+      "original_one_based_lines": [
+        1,
+        205
+      ],
+      "bytes": 4027,
+      "sha256": "76b4c7102ddc7075a3a2ca274e82ecbe030ef0ba67692b045f4a16a9ff31adc1",
+      "decoded_bytes": 14012,
+      "decoded_sha256": "c07643b779882e12612509d9f44e24770b6e1b86c2ada1cc3fc24cd86e6ccc24",
+      "scope": "Exact contiguous decoded-log excerpt; intermediate lines are not retained."
+    },
+    {
+      "path": "changes-summary-tail.log.gz",
+      "compression": "gzip",
+      "original_one_based_lines": [
+        13520,
+        13576
+      ],
+      "bytes": 1990,
+      "sha256": "4eddfcb2841373b5b3171d442533e0b5651464f37fc2e4a1055cead186ed6b63",
+      "decoded_bytes": 5529,
+      "decoded_sha256": "530aa76cc9e39f1906efa2c8e1a7ce88f8daa75249fb24b2f878cf3c7adb9fc0",
+      "scope": "Exact contiguous decoded-log excerpt; intermediate lines are not retained."
+    }
+  ]
+}

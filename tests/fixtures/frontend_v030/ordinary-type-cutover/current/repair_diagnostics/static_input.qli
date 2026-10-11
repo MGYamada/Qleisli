@@ -1,0 +1,1 @@
+unitary fn bad[static U:Op<Bit>](q:Q<(Bit,Bit)>) -> Q<(Bit,Bit)> requires Apply(U) { U(q) }

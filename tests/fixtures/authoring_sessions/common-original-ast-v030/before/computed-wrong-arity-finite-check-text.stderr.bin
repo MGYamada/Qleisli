@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-wrong-arity/main.qli:5:21: arity: with_computed predicate requires exactly one explicit basis parameter of type `(Bit,Bit)`; found 2 parameters

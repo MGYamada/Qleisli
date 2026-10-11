@@ -1,0 +1,665 @@
+{
+  "format": "qleisli.shared-finite-label-evaluator-review.v1",
+  "baseline_commit": "c63ea3baa601b078ad52cedb922ade7ea8e46b1a",
+  "reviewer": "/root; developer integration review, not independent reviewer or human adequacy ruling",
+  "scope": "Prerequisite to #44 selected Meaning integration. No new source acceptance or completed criterion.",
+  "inventory_delta": [
+    {
+      "path": "src/frontend/compile/basis.rs",
+      "old_sha256": "2e68bfb8b3ce96712da4cc5af31ea2c6ee8dbd53b09c338e56f57d8df1644a62",
+      "new_sha256": "f6f89e4715acf40003e4b3361c759f3e796c0ba4c9c24adf65c009adfa05cbd7",
+      "public_surface": "unchanged",
+      "role": "untrusted finite-label evaluation; existing compiler now delegates to original-AST traversal shared by future Meaning materialization"
+    },
+    {
+      "path": "src/frontend/ordinary.rs",
+      "old_sha256": "07f203b9b04b41385442c6281a9f1ca905c369b20ba8711e3e3c886eb0c21ace",
+      "new_sha256": "a1def1da99e3571a913b22b28bba862f5ac42d7ff754d54d8f3f542a30cfc395",
+      "public_surface": "unchanged",
+      "role": "untrusted finite-label evaluation; existing compiler now delegates to original-AST traversal shared by future Meaning materialization"
+    },
+    {
+      "path": "src/frontend/ordinary/finite.rs",
+      "old_sha256": null,
+      "new_sha256": "9bf4ba3245e7d470d28e07af6cc5638fbc200133fed53c8c2a98b507e3a93c88",
+      "public_surface": "none; private frontend module"
+    }
+  ],
+  "preservation_review": [
+    "Original Ident/BasisExpr addresses and lexical keys are retained; no reconstructed AST or span/name lookup was added.",
+    "Each original expression still charges one tick before the depth-64 check. Name/type clones and call signatures retain their previous charges.",
+    "Tuple fields evaluate left to right; each width check precedes its shift/insertion and the next field, retaining the 12-bit finite profile.",
+    "Both AND operands evaluate before operand-type checks; no Boolean short circuit was introduced.",
+    "Call table lookup, declared arity, exact parameter/result type and least-significant-leaf offsets are unchanged.",
+    "Every completed expression retains the original type-tree capacity check. No work/depth/size limit changed."
+  ],
+  "actual_initial_failures": [
+    {
+      "command": "cargo check --locked --all-targets",
+      "session": 80215,
+      "exit_code": 101,
+      "errors": [
+        "E0425: expr missing in extracted call adapter (two call-span uses)",
+        "E0609: locals missing on LabelContext; required compiler.locals"
+      ],
+      "repair": "Use the explicit original call span and delegated compiler field; no semantic rule changed."
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py --help",
+      "exit_code": 1,
+      "error": "Checker has no help mode and reported frozen source changed: src/frontend/compile/basis.rs",
+      "repair": "Reviewed the actual traversal/context extraction, retained old/new source identities here, and updated exactly two existing private source hashes plus the new private source inventory entry."
+    },
+    {
+      "command": "cargo +1.85.0 test --locked --test classical_functions --test operation_parameters --test checked_operations --test predicate_domain --test unit_patterns --test function_contracts",
+      "exit_code": 101,
+      "error": "The default cargo executable is standalone, not the rustup proxy; +1.85.0 is not a cargo subcommand. No MSRV test ran in this invocation.",
+      "repair": "Resolve and invoke the actual rustup-managed toolchain explicitly before claiming MSRV validation."
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "exit_code": 1,
+      "error": "public surface changed; review VM29 coverage",
+      "repair": "Reviewed the complete inventory delta (one new private source path); updated the aggregate surface identity without changing route classifications, authority or open proof gates."
+    }
+  ],
+  "limits": [
+    "Meaning-refined selected parameters and checked_op remain refused until actual provider/equality evidence is connected.",
+    "Existing finite Meaning and exact phase/native acceptance tests remain in place. No Lean/schema/primitive/effect/guarantee changes.",
+    "A computed classical table is untrusted; interpreter sharing is not a source-preservation or QS/PR/RS theorem."
+  ],
+  "cli_comparison": {
+    "constructed_commands": "Commands were freshly constructed for the retained projects, not executed from observation records.",
+    "cli_sha256": "00c5546de9f690772cee71271b66f1b28ee32a61a785ae5809d062368e5045ff",
+    "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "count": 14,
+    "native_invocations": "not instrumented",
+    "result": "All structured stdout, stderr and exits match preserved pre-refactor observations.",
+    "observations": [
+      {
+        "attempt": "attempt-01",
+        "case": "correct-x",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 0,
+        "recorded_utc": "2026-10-06T12:49:45.139561+00:00",
+        "elapsed_seconds": 0.39819941599853337,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "stderr": "",
+        "source_sha256": "20378b980bb390b3256fd9bc5e4e6047e83fa95847d1945f24cfd59cf1255442",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "correct-x",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::client",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--operation=U=main::implementation"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.166802+00:00",
+        "elapsed_seconds": 0.015852667042054236,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: meaning-refined operation parameters are not supported",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli",
+                "start": 264,
+                "end": 268
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "20378b980bb390b3256fd9bc5e4e6047e83fa95847d1945f24cfd59cf1255442",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "wrong-x",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.237746+00:00",
+        "elapsed_seconds": 0.06085195898776874,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "contract",
+              "severity": "error",
+              "message": "static argument does not establish the required phase-fixed meaning",
+              "primary": {
+                "path": "main.qli",
+                "start": 353,
+                "end": 367,
+                "line": 7,
+                "column": 43
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "wrong-x",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::client",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--operation=U=main::implementation"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.264244+00:00",
+        "elapsed_seconds": 0.01651245797984302,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: meaning-refined operation parameters are not supported",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
+                "start": 261,
+                "end": 265
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "scalar-minus",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 0,
+        "recorded_utc": "2026-10-06T12:49:45.680275+00:00",
+        "elapsed_seconds": 0.40592600003583357,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "stderr": "",
+        "source_sha256": "9bdb25570daf83ad34d71253b4c59cdc10f87d0621af386bfa85589a914de2e7",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "scalar-minus",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::client",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--operation=U=main::implementation"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.706533+00:00",
+        "elapsed_seconds": 0.0162272080196999,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: meaning-refined operation parameters are not supported",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
+                "start": 347,
+                "end": 352
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "9bdb25570daf83ad34d71253b4c59cdc10f87d0621af386bfa85589a914de2e7",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "nat-repeat",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/nat-repeat",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.734441+00:00",
+        "elapsed_seconds": 0.017871249991003424,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "finite profile does not support static Nat parameters",
+              "primary": {
+                "path": "main.qli",
+                "start": 255,
+                "end": 256,
+                "line": 6,
+                "column": 30
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "13c6fd7f553f2b101ca55bae1118dafb7ffd844e0865bc4d826e41289e1dcf74",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-01",
+        "case": "nat-repeat",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::client",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/nat-repeat/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--operation=U=main::implementation",
+          "--nat=n=2"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:45.761106+00:00",
+        "elapsed_seconds": 0.01669341599335894,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: meaning-refined operation parameters are not supported",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/nat-repeat/main.qli",
+                "start": 277,
+                "end": 281
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "13c6fd7f553f2b101ca55bae1118dafb7ffd844e0865bc4d826e41289e1dcf74",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-02",
+        "case": "correct-x",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/correct-x",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 0,
+        "recorded_utc": "2026-10-06T12:49:46.222453+00:00",
+        "elapsed_seconds": 0.4509811250027269,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "stderr": "",
+        "source_sha256": "f357bf17b6d415bbe4514086ce411e35aae8d1fdf4c8ad519d2a2a02524fa938",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-02",
+        "case": "correct-x",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::bound",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/correct-x/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:46.248283+00:00",
+        "elapsed_seconds": 0.015990624960977584,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "visibility",
+              "severity": "error",
+              "message": "dependency main::bound is private",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/correct-x/main.qli",
+                "start": 0,
+                "end": 0
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "f357bf17b6d415bbe4514086ce411e35aae8d1fdf4c8ad519d2a2a02524fa938",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-02",
+        "case": "scalar-minus",
+        "route": "finite",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/scalar-minus",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 0,
+        "recorded_utc": "2026-10-06T12:49:46.700464+00:00",
+        "elapsed_seconds": 0.44245849997969344,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "stderr": "",
+        "source_sha256": "8dec21ad350dc73a6881ee3bf5cf3751743b70bf31a1408c10033585bf8a8c91",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-02",
+        "case": "scalar-minus",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::bound",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/scalar-minus/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:46.726549+00:00",
+        "elapsed_seconds": 0.016053333994932473,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "visibility",
+              "severity": "error",
+              "message": "dependency main::bound is private",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-02/scalar-minus/main.qli",
+                "start": 0,
+                "end": 0
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "8dec21ad350dc73a6881ee3bf5cf3751743b70bf31a1408c10033585bf8a8c91",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-03",
+        "case": "correct-x",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::bound",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-03/correct-x/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:46.752979+00:00",
+        "elapsed_seconds": 0.01645737502258271,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: unsupported static operation constructor",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-03/correct-x/main.qli",
+                "start": 360,
+                "end": 391
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "1bfe84a31a27ca89629b1dc48f6c4daed9890c86e1452b19c789e04e96f81e21",
+        "matches_preserved_observation": true
+      },
+      {
+        "attempt": "attempt-03",
+        "case": "scalar-minus",
+        "route": "selected",
+        "command": [
+          "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+          "check",
+          "--entry=main::bound",
+          "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-03/scalar-minus/main.qli",
+          "--format=json",
+          "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+        ],
+        "exit_code": 1,
+        "recorded_utc": "2026-10-06T12:49:46.779162+00:00",
+        "elapsed_seconds": 0.016305041033774614,
+        "stdout": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "error",
+          "diagnostics": [
+            {
+              "code": "unsupported",
+              "severity": "error",
+              "message": "sized preparation profile: unsupported static operation constructor",
+              "primary": {
+                "module": "main",
+                "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-03/scalar-minus/main.qli",
+                "start": 447,
+                "end": 479
+              },
+              "related": []
+            }
+          ],
+          "result": null
+        },
+        "stderr": "",
+        "source_sha256": "4314ee0361111997186a377d41d8550ff9ffd933086980bf2d6195ea279a98f7",
+        "matches_preserved_observation": true
+      }
+    ]
+  },
+  "coverage_delta": {
+    "old_surface_sha256": "41bfea1c7f37d599c4f29e2789b2ed5f81339a556eb6af4cffc10aed3e802f2d",
+    "new_surface_sha256": "48684805332ac098a504535fb1c466869d0e0c755bc3404327b5f977a94fc54b",
+    "finding": "One new private source path with empty exported declarations/functions/capacity constants; original production path classifications, native modes, boundary obligations and constructor variants unchanged."
+  },
+  "validation": {
+    "latest": {
+      "rustc": "1.98.1 (48a229cea 2026-09-01), Homebrew",
+      "all_target_compile": {
+        "session": 52931,
+        "exit_code": 0
+      },
+      "focused_runtime": {
+        "session": 27919,
+        "exit_code": 0,
+        "targets": [
+          "checked_operations",
+          "classical_functions",
+          "function_contracts",
+          "operation_parameters",
+          "predicate_domain",
+          "unit_patterns"
+        ],
+        "passed": 68,
+        "failed": 0,
+        "ignored": 0
+      },
+      "all_target_clippy": {
+        "session": 70391,
+        "exit_code": 0,
+        "warnings_denied": true
+      }
+    },
+    "msrv": {
+      "rustc": "1.85.0 (4d91de4e4 2025-02-17), rustup run 1.85.0",
+      "focused_runtime": {
+        "session": 93538,
+        "exit_code": 0,
+        "targets": [
+          "checked_operations",
+          "classical_functions",
+          "function_contracts",
+          "operation_parameters",
+          "predicate_domain",
+          "unit_patterns"
+        ],
+        "passed": 68,
+        "failed": 0,
+        "ignored": 0
+      },
+      "all_target_clippy": {
+        "session": 81436,
+        "exit_code": 0,
+        "warnings_denied": true
+      }
+    },
+    "other_checks": {
+      "inventory": "275 constructors, 264 sources, 20 boundaries; exit 0",
+      "coverage": "36 groups, 21 paths, 9 modes, 20 public boundaries; S05-C1-C5 remain open; exit 0",
+      "authoring": "50 records, 73 snapshots, 1231 observations; integrity only, exit 0",
+      "docs": "2186 local links, 30 Markdown anchors, 206 Lean modules; exit 0",
+      "constitutional_continuity": "exit 0 against 38baae7d19535602b21270e11e97617d45205b37; no fresh Lean replay",
+      "fixture_budget": "17834 files, 133474004 bytes; exit 0, ceilings unchanged",
+      "format": "cargo fmt --all -- --check: exit 0"
+    },
+    "raw_transcripts": "Actual command outputs remain in this chat; test/compiler summaries here are not reconstructed raw transcripts."
+  }
+}

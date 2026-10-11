@@ -1,0 +1,7 @@
+{
+  "format": "qleisli.checked-operation-test-scope-review",
+  "prepared_test_sha256": "db1b7b8e3965caa79915186e5ffee57809c6ededc9f3644a7a65daaad4a75cc0",
+  "not_executed": "The newly proposed 9999/10000-token public-loading capacity case was not generated or executed.",
+  "reason": "Respect the approved plan against new maximum-scale cases. Test lexer capacity-before-retirement with a one-token private allowance instead; retain existing public loader and depth policies without a new large-input run.",
+  "prepared_source": "tests/fixtures/frontend_v030/checked-operation/implementation-01/checked-operations-prepared-01.rs.txt"
+}

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"named Basis types are outside the finite lowering profile","primary":{"path":"main.qli","start":105,"end":106,"line":2,"column":32},"related":[]}],"result":null}

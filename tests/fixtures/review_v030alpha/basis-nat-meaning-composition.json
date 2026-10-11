@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.basis-nat-meaning-composition-review",
+  "version": 1,
+  "issue": 44,
+  "base_commit": "c5f618f324b57ead3218dca0fca9c14013d0f139",
+  "issue_record": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6022898288",
+  "criteria": "Direct combined evidence for original criterion 7; no acceptance criterion reduced.",
+  "source_sha256": {
+    "tests/basis_polymorphism.rs": "9df85febbf63598bdfff772eab3cb50a18eadf7be70e13e3a08bfa5b208cc79f"
+  },
+  "case": "One original opaque Basis/Nat/Op repeat body called from fixed original Op<Bit,Flip> and Op<Unit,Eighth> contracts; n=0/1/2. Original A/n, input/output type tree, native leaf and actual emitted hierarchy are checked. Lying providers reject even at zero iterations.",
+  "independent_action": "Bit X parity and scalar omega^n multiplied into joint complex coefficients with an external reference; <=1 system qubit. Native exact requests remain distinct from supplemental f64 comparisons.",
+  "checks": {
+    "latest": "11 Basis integration tests passed on Rust 1.98.1; focused Clippy passed -D warnings.",
+    "actual_msrv": "Same 11 tests and focused Clippy passed via scripts/run_msrv.py (actual Rust/Cargo 1.85.0)."
+  },
+  "remaining_gap": "Packaged Q<(Unit,(Bit,Bit))> swap source is refused by Raw leaf quantum-basis preflight. Actual same-source pre-code diagnostic retained under meaning-enforcement-v030/tuple-attempt-01; before-code implementation contract recorded in Issue44. This refusal must be resolved for the pending convergence work.",
+  "not_claimed": [
+    "Original AST preservation theorem",
+    "Full generic/profile convergence",
+    "Full current-head Rust/Lean CI",
+    "Fresh Lean build/audit/replay",
+    "New guarantee or interpretation",
+    "Release/package/install certification"
+  ],
+  "protected": "Constitution, human QS/PR/RS/EXACT interpretations and both scoped QLV1 guarantees unchanged.",
+  "completion": "22/111 (19.82%); Issue44 remains open."
+}

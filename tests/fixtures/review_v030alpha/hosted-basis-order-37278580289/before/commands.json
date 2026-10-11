@@ -1,0 +1,17 @@
+[
+  {
+    "argv": [
+      "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "forwarding_checks_callee_size_and_access_premises"
+    ],
+    "toolchain": "msrv",
+    "exit_code": 101,
+    "seconds": 1.9453774999710731,
+    "stdout": "00-msrv.stdout.txt",
+    "stderr": "00-msrv.stderr.txt"
+  }
+]

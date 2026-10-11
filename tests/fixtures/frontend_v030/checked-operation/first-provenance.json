@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.checked-operation-selector-first-provenance",
+  "version": 1,
+  "created_utc": "2026-10-06T04:24:45.123765+00:00",
+  "baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "authority": "Issue #82 ordinary decision comment6009162442 selects checked_op for the existing StaticOpKind::Bind with identifier arguments. This packet does not adopt any new interpretation or guarantee.",
+  "sources": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/permutation.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/permutation.qli",
+      "before_sha256": "4a9109cd594cc39bc10d07283b5d1cc9d814f29695edef5640df648d50027556",
+      "bytes": 734
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/phase_mismatch.qli",
+      "before_sha256": "02ca67b00eefbc3ce991ea58376a3ef43202f695cb48ebe6e77607aea088e46b",
+      "bytes": 694
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "before_sha256": "a918a92203d3e42a3b4ed003de5263eee34685661ad50a1cf3ae8d03a423b829",
+      "bytes": 697
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "before_sha256": "e7c5d800664e7643e4e0dc4b2bb5a1fe076f26de3dc9aedb4374edc5608c46e4",
+      "bytes": 689
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "before_sha256": "bf1630d5650dcfb22172a1898568e67073cfe297acc0f9b1b76d468fcfdcafe6",
+      "bytes": 692
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_11.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_11.qli",
+      "before_sha256": "9753501a68b2c08a02993a3280114e9c8b097451bc681600d4bcb5dacbce39e3",
+      "bytes": 286
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "before_sha256": "72f2cfb0f252e1f806cf67cd019831b984a872ff661433427cc9ac64cbffda0e",
+      "bytes": 807
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/checked-operation/current/coherent-basis/current/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "before_sha256": "dae94000dfba8fa816f70b0d82ecfed6e5a6a99889d8ea390897dd6c433a7866",
+      "bytes": 801
+    }
+  ],
+  "prior_maps": {
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/source-map.json": "34414eb55f6fd3f0fece7408b8ec579bcb3678a4c08b71e3a959db7a14608b7a",
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespace-source-map.json": "5ccc3f0b807805b927124effd5fff1999008d64a21a943cf0f583c0479b9e466",
+    "tests/fixtures/frontend_v030/coherent-basis/source-map.json": "b5ad765ca5e4517851c13742eec9a8ada4d9766a1090eff42851495719eda2f3"
+  },
+  "selector_before": {
+    "scripts/current_source_fixtures.py": "c7f753204c9dc8ffa45425c5ad716d3afe8a38a844de2c23dd65c98bde72f760",
+    "scripts/test_current_source_fixtures.py": "ba8977fbbdfbb1f2e4669c253507eaf8bc6f764155f08d96eeba43e99f7551fd"
+  },
+  "intended_delta": "Exactly eight final selected source files, each with one bind_op call, become append-only checked_op spelling derivatives. Source bodies, providers, meanings, comments, layouts, owners and prior maps stay fixed. No whole-client project or corpus migration.",
+  "validation_status": "Provenance saved before creating derivatives or changing the selector. No compiler or after-code test has been run."
+}

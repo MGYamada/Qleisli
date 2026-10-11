@@ -1,0 +1,7 @@
+{
+  "18_pairs_compared": true,
+  "zero_native_calls": true,
+  "only_3_exact_text_help_requests_change_status": true,
+  "3_binding_source_rejections_byte_identical": true,
+  "ecosystem_chapter_bytes_identical": true
+}

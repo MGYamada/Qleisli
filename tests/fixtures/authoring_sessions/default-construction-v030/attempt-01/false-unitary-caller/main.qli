@@ -1,0 +1,10 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::observe::measure_z;
+
+iso fn default() -> Q<Bit> { init0() }
+
+// The deliberate false assertion must not hide the callee's Iso action.
+unitary fn pretend_unitary() -> Q<Bit> { default() }
+
+observe fn main() -> Bit { measure_z(pretend_unitary()) }

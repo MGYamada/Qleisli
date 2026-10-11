@@ -1,0 +1,98 @@
+[
+  {
+    "case": "success",
+    "result": "passed",
+    "work_status": "removed",
+    "source_present_after_validate": false,
+    "package_present_after_validate": false,
+    "installation_present_after_validate": false,
+    "target_count": 5,
+    "targets_present_after_validate": 0,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "failure",
+    "result": "failed",
+    "work_status": "removed",
+    "source_present_after_validate": false,
+    "package_present_after_validate": false,
+    "installation_present_after_validate": false,
+    "target_count": 4,
+    "targets_present_after_validate": 0,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "keep-success",
+    "result": "passed",
+    "work_status": "retained",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 5,
+    "targets_present_after_validate": 5,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "keep-failure",
+    "result": "failed",
+    "work_status": "retained",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 4,
+    "targets_present_after_validate": 4,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "external-success",
+    "result": "passed",
+    "work_status": "removed",
+    "source_present_after_validate": false,
+    "package_present_after_validate": false,
+    "installation_present_after_validate": false,
+    "target_count": 5,
+    "targets_present_after_validate": 5,
+    "external_sentinel_unchanged": true,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "external-failure",
+    "result": "failed",
+    "work_status": "removed",
+    "source_present_after_validate": false,
+    "package_present_after_validate": false,
+    "installation_present_after_validate": false,
+    "target_count": 4,
+    "targets_present_after_validate": 4,
+    "external_sentinel_unchanged": true,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "cleanup-error",
+    "result": "failed",
+    "work_status": "cleanup-failed",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 5,
+    "targets_present_after_validate": 5,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  },
+  {
+    "case": "failure-and-cleanup-error",
+    "result": "failed",
+    "work_status": "cleanup-failed",
+    "source_present_after_validate": true,
+    "package_present_after_validate": true,
+    "installation_present_after_validate": true,
+    "target_count": 4,
+    "targets_present_after_validate": 4,
+    "external_sentinel_unchanged": null,
+    "durable_evidence_verified": true
+  }
+]

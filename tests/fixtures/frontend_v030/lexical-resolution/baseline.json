@@ -1,0 +1,16 @@
+{
+  "commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "production_equal_to": "af21dd5d3e4373083edcf207ef9890967d4c7dab",
+  "archive_argv": [
+    "git",
+    "archive",
+    "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+    "Cargo.toml",
+    "Cargo.lock",
+    "src",
+    "stdlib"
+  ],
+  "archive_sha256": "e0fcf112807cca21b1f7e121e6ffe18a9a1f7ed7a5302ee554a3805b649f07cf",
+  "checkout": "/private/tmp/qleisli-lexical-baseline-fae0",
+  "initial_study": "Original files copied byte for byte before production edits; earlier study source commit af21 is retained, not rewritten."
+}

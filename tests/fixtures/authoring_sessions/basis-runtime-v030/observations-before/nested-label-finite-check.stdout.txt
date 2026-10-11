@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"Basis and Meaning declarations are not ordinary runtime callees","primary":{"path":"main.qli","start":224,"end":228,"line":6,"column":32},"related":[]}],"result":null}

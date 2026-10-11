@@ -4,7 +4,7 @@ import Mathlib.Algebra.BigOperators.Ring.List
 
 /-! General matrix denotation of the actual bounded exact implementation.
 Successful execution preserves complete complex amplitudes, with arbitrary
-untouched reference indices. Copyright 2026 Masahiko G. Yamada.
+untouched reference indices. Copyright 2026 Qleisli Project Contributors.
 SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Exact

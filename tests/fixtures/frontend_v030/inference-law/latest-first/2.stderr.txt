@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 5.62s
+     Running tests/frontend_types.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/frontend_types-f5b7d97e61407465)
+     Running tests/function_evidence.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/function_evidence-9863f5c396daeab0)
+     Running tests/inference_law.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/inference_law-6571b17a5bf3f1a8)
+     Running tests/operation_parameters.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/operation_parameters-4c3c333420fe5a90)
+     Running tests/shared_resolution.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/shared_resolution-dd8762aaa93f18b6)
+     Running tests/tuple_shapes.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/tuple_shapes-8e5a0d4010991be0)

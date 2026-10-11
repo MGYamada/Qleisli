@@ -1,0 +1,128 @@
+diff --git a/.github/ci/README.md b/.github/ci/README.md
+index 938fd0a..765badf 100644
+--- a/.github/ci/README.md
++++ b/.github/ci/README.md
+@@ -138,7 +138,7 @@ component proofs, independent semantic oracles and audit jobs remain required.
+ 
+ `release-readiness` runs after the eight real validation jobs for tags and for
+ an explicitly selected `workflow_dispatch.release_readiness`. Ordinary PRs and
+-manual full validation do not require completion of the 108 selected issues.
++manual full validation do not require completion of the 109 selected issues.
+ The gate requires both the full suite profile and full proof lane. The legacy
+ `check_constitution.py --require-release-ready` delegates to the same checker;
+ it rejects missing caller context instead of treating the three broader pending
+@@ -148,7 +148,7 @@ The human/workflow caller supplies an exact trusted base commit through the
+ manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
+ tag. There is no fallback to candidate HEAD. Before using this gate for a real
+ release, review and commit `release/requirements.json` at that base: the exact
+-13 groups/108 IDs, complete applicable criteria, immutable Issue snapshot
++13 groups/109 IDs (including #311), complete applicable criteria, immutable Issue snapshot
+ references and an explicit review record. The checker reads these from Git
+ blobs at the base. A candidate `release/acceptance.json` supplies evidence for
+ exactly those criteria. GitHub remains the only decisions/progress ledger;
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index ee3f868..30fe7f1 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
+ 
+ ## Unreleased
+ 
++- Include #311 in the maintainer-confirmed 109-Issue release scope and progress
++  denominator. Require its criteria and evidence in release readiness; preserve
++  the original 108 targets and historical validation records (#142).
+ - Record the Guardian's adopted EXACT-2026-01 interpretation: epsilon error
+   bounds cannot replace edition-2026 exact QS, PR or RS obligations. Preserve
+   the Constitution, three original interpretations, two admitted guarantees
+diff --git a/ROADMAP.md b/ROADMAP.md
+index 1d5e4ac..3406d33 100644
+--- a/ROADMAP.md
++++ b/ROADMAP.md
+@@ -45,7 +45,8 @@ were subsequently admitted after proof review and explicit human approval; the
+ [guarantee record](docs/src/design/initial-guarantees.md) states their exact
+ scope and assumptions. The three broader obligations remain pending. The
+ [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
+-tracks the 108 selected issues. Edition 2026 identifies the constitutional
++tracks the 109 selected issues, including the exactness interpretation in #311.
++Edition 2026 identifies the constitutional
+ regime and remains unchanged by the syntax, type-system and CLI migration.
+ 
+ **Documentation cleanup completed for v0.3.0-alpha:** `docs/` retains the entire
+diff --git a/docs/src/design/ratification.md b/docs/src/design/ratification.md
+index 8b1cf3b..a21993e 100644
+--- a/docs/src/design/ratification.md
++++ b/docs/src/design/ratification.md
+@@ -139,4 +139,5 @@ The remaining [constitutional CI work](https://github.com/MGYamada/Qleisli/issue
+ must connect binding interpretations, formal obligations, checked proofs and
+ current production/artifact identity. Hash checks alone do not complete it.
+ The [release umbrella](https://github.com/MGYamada/Qleisli/issues/142) tracks all
+-108 selected issues and the separate implementation, proof and publication gates.
++109 selected issues, including #311, and the separate implementation, proof and
++publication gates.
+diff --git a/scripts/check_release_ready.py b/scripts/check_release_ready.py
+index e830913..2ec0cf0 100644
+--- a/scripts/check_release_ready.py
++++ b/scripts/check_release_ready.py
+@@ -27,7 +27,7 @@ ACCEPTANCE = "release/acceptance.json"
+ LEDGER = "governance/guarantees.json"
+ GROUPS = {
+     "G01": [129, 134, 137, 138, 149],
+-    "G02": [135, 136, 139, 140, 154, 280, 281], "G03": [141, 142],
++    "G02": [135, 136, 139, 140, 154, 280, 281, 311], "G03": [141, 142],
+     "G04": [22, 27, 43, 44, 84, 100],
+     "G05": [28, 30, 31, 39, 40, 45, 46, 47, 63, 83, 89],
+     "G06": [29, 69, 70, 71, 72, 73, 74, 75, 76, 77, 79, 85, 86, 156, 157, 158, 198, 303],
+@@ -174,7 +174,7 @@ def requirements(root, base, snapshot):
+     require(data["release_line"] == "0.3.0" and data["identities"] == IDENTITIES,
+             "reviewed release/edition/schema identities differ")
+     require(type(data["identities"]["qrate_schema"]) is int, "qrate schema must be an integer")
+-    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/108 Issues")
++    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/109 Issues")
+     require(all(type(number) is int for numbers in data["groups"].values() for number in numbers),
+             "group Issue identities must be integers")
+     # References in the reviewed requirements resolve against immutable Git blobs.
+diff --git a/scripts/test_check_release_ready.py b/scripts/test_check_release_ready.py
+index 509703f..4d72fa5 100644
+--- a/scripts/test_check_release_ready.py
++++ b/scripts/test_check_release_ready.py
+@@ -262,6 +262,40 @@ class SyntheticRelease(unittest.TestCase):
+             with self.subTest(change=change):
+                 self.acceptance=copy.deepcopy(original); self.update_acceptance(change); self.reject('ID')
+ 
++    def test_prior_108_issue_candidate_cannot_omit_exactness_requirement_or_acceptance(self):
++        self.assertEqual(len(checker.ISSUES), 109)
++        self.assertIn(311, checker.GROUPS['G02'])
++        current_requirements = copy.deepcopy(self.requirements)
++        current_acceptance = copy.deepcopy(self.acceptance)
++        previous_ids = checker.ISSUES - {311}
++        self.assertEqual(len(previous_ids), 108)
++        cases = [
++            ('previous groups and criteria', True, True, '13 groups/109 Issues'),
++            ('updated groups without Issue 311 criteria', False, True,
++             'reviewed Issues: missing or unexpected IDs'),
++            ('updated requirements without Issue 311 acceptance', False, False,
++             'acceptance Issues: missing or unexpected IDs'),
++        ]
++        for label, old_groups, old_criteria, diagnostic in cases:
++            with self.subTest(case=label):
++                self.requirements = copy.deepcopy(current_requirements)
++                if old_groups:
++                    self.requirements['groups']['G02'].remove(311)
++                if old_criteria:
++                    self.requirements['issues'] = [row for row in self.requirements['issues']
++                                                   if row['id'] != 311]
++                    self.assertEqual({row['id'] for row in self.requirements['issues']}, previous_ids)
++                self.write(checker.REQUIREMENTS, encoded(self.requirements))
++                self.base = self.commit()
++                self.acceptance = copy.deepcopy(current_acceptance)
++                self.acceptance['issues'] = [row for row in self.acceptance['issues'] if row['id'] != 311]
++                self.assertEqual({row['id'] for row in self.acceptance['issues']}, previous_ids)
++                self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
++                self.write(checker.ACCEPTANCE, encoded(self.acceptance))
++                self.head = self.commit()
++                self.refresh_receipts()
++                self.reject(diagnostic)
++
+     def test_candidate_cannot_rewrite_criterion_or_exclude_required_work(self):
+         self.update_acceptance(lambda x:x['issues'][0]['criteria'][0].update(disposition='explicit-later-version'))
+         self.reject('unauthorized exclusion')

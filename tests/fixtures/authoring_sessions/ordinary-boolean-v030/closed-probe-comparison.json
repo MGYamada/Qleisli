@@ -1,0 +1,102 @@
+{
+  "scope": "Compare nine fixed closed wrappers against the independently stated first-source expectations. No open-input, retained-operation or arbitrary-reference claim.",
+  "absolute_tolerance": 1e-12,
+  "results": [
+    {
+      "name": "constants",
+      "observation": "observations/closed-constants.json",
+      "expected": {
+        "01": 1
+      },
+      "actual": {
+        "01": 1
+      }
+    },
+    {
+      "name": "truth-operations",
+      "observation": "observations/closed-truth-operations.json",
+      "expected": {
+        "010": 1
+      },
+      "actual": {
+        "010": 1
+      }
+    },
+    {
+      "name": "copy-drop",
+      "observation": "observations/closed-copy-drop.json",
+      "expected": {
+        "00": 1
+      },
+      "actual": {
+        "00": 1
+      }
+    },
+    {
+      "name": "mixed-passthrough",
+      "observation": "observations/closed-mixed-passthrough.json",
+      "expected": {
+        "10": 0.5,
+        "11": 0.5
+      },
+      "actual": {
+        "10": 0.5000000000000001,
+        "11": 0.5000000000000001
+      }
+    },
+    {
+      "name": "classical-control",
+      "observation": "observations/closed-classical-control.json",
+      "expected": {
+        "11": 1
+      },
+      "actual": {
+        "11": 1
+      }
+    },
+    {
+      "name": "measured-feedback",
+      "observation": "observations/closed-measured-feedback.json",
+      "expected": {
+        "00": 0.5,
+        "11": 0.5
+      },
+      "actual": {
+        "00": 0.5000000000000001,
+        "11": 0.5000000000000001
+      }
+    },
+    {
+      "name": "measured-logic",
+      "observation": "observations/closed-measured-logic.json",
+      "expected": {
+        "001": 0.5,
+        "110": 0.5
+      },
+      "actual": {
+        "001": 0.5000000000000001,
+        "110": 0.5000000000000001
+      }
+    },
+    {
+      "name": "unit-observation-retention",
+      "observation": "observations/closed-unit-observation-retention.json",
+      "expected": {
+        "1": 1
+      },
+      "actual": {
+        "1": 1
+      }
+    },
+    {
+      "name": "eager-and-observation",
+      "observation": "observations/closed-eager-and-observation.json",
+      "expected": {
+        "0": 1
+      },
+      "actual": {
+        "0": 1
+      }
+    }
+  ]
+}

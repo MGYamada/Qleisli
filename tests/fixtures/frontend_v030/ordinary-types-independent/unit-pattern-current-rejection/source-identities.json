@@ -1,0 +1,14 @@
+{
+  "src/frontend/sized/check.rs": {
+    "preserved": "check.rs.txt",
+    "sha256": "aa59d53116040b169147e076895c4e0b0ab40974f4863e5d42b7c6d431b62198"
+  },
+  "src/frontend/sized/elaborate.rs": {
+    "preserved": "elaborate.rs.txt",
+    "sha256": "7e07872e1a1237a8df8b0000535802a608244c36a7ac15369f1dd13b7737e41d"
+  },
+  "tests/ordinary_types.rs": {
+    "preserved": "ordinary_types.rs.txt",
+    "sha256": "919e936281d70198287782c14450002b14c26bb0d02857d54c657f18b153a739"
+  }
+}

@@ -1,0 +1,14 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+use rotation::prepare;
+use reflection::reflect_low;
+
+/// G = A Z A† Z on the low-bit plane, with all other bits as spectators.
+/// The order and global sign matter when QPE controls this operation.
+pub unitary fn grover[static n: Nat, static j: Nat, static d: Nat](q: Q<Bits<n>>) -> Q<Bits<n>>
+requires n >= 1 {
+    let q = reflect_low[n](q);
+    let q = adjoint(prepare[n,j,d],q);
+    let q = reflect_low[n](q);
+    prepare[n,j,d](q)
+}

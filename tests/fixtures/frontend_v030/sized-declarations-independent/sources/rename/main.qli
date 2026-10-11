@@ -1,0 +1,2 @@
+use dep::gate as alias;
+pub unitary fn entry(q:Q<Bit>)->Q<Bit>{q}

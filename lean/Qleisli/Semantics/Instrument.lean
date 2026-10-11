@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 No acceptance checker, proof table, source producer or hierarchy module is
 imported here. The middle operator is supplied as a phase-sensitive coefficient
 function; a separate theorem must derive that function from actual IR.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Semantics.Instrument
 open QleisliKernel.Semantics

@@ -1,0 +1,77 @@
+{
+  "command": [
+    "/private/tmp/qleisli-rust-boundary-before",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/unresolved-classical-drop",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "unresolved-classical-drop",
+  "phase": "before",
+  "mode": "finite",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T05:14:51.727950+00:00",
+  "recorded_utc": "2026-10-06T05:14:51.733334+00:00",
+  "seconds": 0.005372291954699904,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-before",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-before",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "b09f68165525e30ef4d93b619421996fc0bbe2026b3abd6199e01f9b09594a2a",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-before/unresolved-classical-drop-check-json.stdout.txt",
+      "sha256": "a2f521655d96d9729f90895a272aef9e39773085bf059a1fcb1333402a652088",
+      "bytes": 272
+    },
+    "stderr": {
+      "path": "observations-before/unresolved-classical-drop-check-json.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Actual bounded public CLI observation; selected native bytes identify a path, not child-start attestation, authenticated build provenance or a source/runtime theorem.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unknown_name",
+        "severity": "error",
+        "message": "unresolved function drop",
+        "primary": {
+          "path": "main.qli",
+          "start": 103,
+          "end": 107,
+          "line": 2,
+          "column": 29
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

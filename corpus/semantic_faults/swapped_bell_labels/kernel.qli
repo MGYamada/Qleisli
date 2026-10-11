@@ -11,7 +11,7 @@ use std::quantum::h;
 use std::quantum::split;
 use std::observe::measure_z;
 
-pub observe fn bell_measure(q: Q<(Bit, Bit)>) -> (CBit, CBit) {
+pub observe fn bell_measure(q: Q<(Bit, Bit)>) -> (Bit, Bit) {
     let (a, b) = split(q);
     let (a, b) = cnot(a, b);
     (measure_z(b), measure_z(h(a)))

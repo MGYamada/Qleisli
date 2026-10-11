@@ -1,0 +1,109 @@
+[
+  {
+    "argv": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "exit_code": 0,
+    "seconds": 1.3757857090095058,
+    "recorded_utc": "2026-10-05T15:33:06.440868+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5009607500396669,
+    "recorded_utc": "2026-10-05T15:33:06.942205+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.1689807499642484,
+    "recorded_utc": "2026-10-05T15:33:07.111423+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5573791250353679,
+    "recorded_utc": "2026-10-05T15:33:07.669078+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 2.338570250023622,
+    "recorded_utc": "2026-10-05T15:33:10.008073+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt"
+  },
+  {
+    "argv": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.0904404169996269,
+    "recorded_utc": "2026-10-05T15:33:10.098732+00:00",
+    "stdout": "05.stdout.txt",
+    "stderr": "05.stderr.txt"
+  },
+  {
+    "argv": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "build",
+      "docs",
+      "--dest-dir",
+      "/private/tmp/qleisli-isometry-mdbook"
+    ],
+    "exit_code": 0,
+    "seconds": 0.09375279198866338,
+    "recorded_utc": "2026-10-05T15:33:10.192731+00:00",
+    "stdout": "06.stdout.txt",
+    "stderr": "06.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_book.py",
+      "--root",
+      "/private/tmp/qleisli-isometry-mdbook"
+    ],
+    "exit_code": 0,
+    "seconds": 0.22539187502115965,
+    "recorded_utc": "2026-10-05T15:33:10.418371+00:00",
+    "stdout": "07.stdout.txt",
+    "stderr": "07.stderr.txt"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.03411216603126377,
+    "recorded_utc": "2026-10-05T15:33:10.452744+00:00",
+    "stdout": "08.stdout.txt",
+    "stderr": "08.stderr.txt"
+  }
+]

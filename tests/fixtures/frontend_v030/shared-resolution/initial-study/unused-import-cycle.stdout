@@ -1,0 +1,2 @@
+finite.load: /private/tmp/qleisli-resolution-study-6daea68/unused-import-cycle/b.qli:0..9: cyclic import: a -> b -> a
+sized.parse: ok

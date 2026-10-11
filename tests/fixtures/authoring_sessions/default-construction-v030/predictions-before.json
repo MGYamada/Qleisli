@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.informed-default-boundary-predictions",
+  "version": 1,
+  "recorded_before_commands_utc": "2026-10-06T05:27:30.107719+00:00",
+  "cases": {
+    "ordinary-default": {
+      "mode": "finite",
+      "check_exit": 0,
+      "class": "ordinary checked helper; ordinary products copied and ignored",
+      "run_result": {
+        "bits": [
+          false
+        ],
+        "probability": 1
+      }
+    },
+    "explicit-isometry-default": {
+      "mode": "finite",
+      "check_exit": 0,
+      "class": "explicit Iso helper retains effect and owner; measure_z consumes it",
+      "run_result": {
+        "bits": [
+          false
+        ],
+        "probability": 1
+      }
+    },
+    "false-unitary-caller": {
+      "mode": "finite",
+      "check_exit": 1,
+      "code": "effect",
+      "class": "false Unitary assertion must reject a transitive Iso caller",
+      "locate": "default()",
+      "prediction_note": "Actual precise effect span/category will be preserved, not corrected in this prediction.",
+      "predicted_span": {
+        "start": 284,
+        "end": 293
+      },
+      "span_encoding": "half-open UTF-8 bytes; these tokens are ASCII"
+    },
+    "unused-generic-default": {
+      "mode": "finite",
+      "check_exit": 1,
+      "code": "unknown_name",
+      "class": "unused generic source body gets no implicit Default factory",
+      "locate": "default()",
+      "callee_only": true,
+      "predicted_span": {
+        "start": 197,
+        "end": 204
+      },
+      "span_encoding": "half-open UTF-8 bytes; these tokens are ASCII"
+    },
+    "explicit-unit-default": {
+      "mode": "selected",
+      "check_exit": 0,
+      "class": "explicit fresh Unit owners and finish retain scalar phase",
+      "run_result": {
+        "sole_complex_coefficient": [
+          "1/sqrt(2)",
+          "1/sqrt(2)"
+        ],
+        "phase": "exp(i*pi/4)"
+      },
+      "prediction_note": "Selected run is conditional on actual check success, not assumed support."
+    },
+    "nested-unit-wildcard": {
+      "mode": "selected",
+      "check_exit": 1,
+      "code": "ownership",
+      "class": "nested zero-axis Q<Unit> remains linear",
+      "locate": "_",
+      "wildcard": true,
+      "predicted_span": {
+        "start": 275,
+        "end": 276
+      },
+      "span_encoding": "half-open UTF-8 bytes; these tokens are ASCII"
+    }
+  },
+  "after_rule": "Same original sources/commands, acceptance, category/span and successful output; only designated rejected-default message changes. Predictions are not results.",
+  "pre_command_revision_note": "Before any CLI call, the public error-code mapping was read and the default callee length was checked; the frozen prediction uses effect and seven-byte default."
+}

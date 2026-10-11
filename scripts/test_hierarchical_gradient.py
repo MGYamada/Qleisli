@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual shared-gradient binding, native rejection and independent phase oracles.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No external schema or finite obligation is discharged by these diagnostics.
 """
 import argparse

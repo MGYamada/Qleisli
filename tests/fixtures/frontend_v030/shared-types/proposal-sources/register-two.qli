@@ -1,0 +1,1 @@
+use std::registers::take_bit; use std::registers::put_bit; pub unitary fn f(q: Q<Bits<2>>) -> Q<Bits<2>> { let (a,b) = take_bit[2,1](q); put_bit[2,1](a,b) }

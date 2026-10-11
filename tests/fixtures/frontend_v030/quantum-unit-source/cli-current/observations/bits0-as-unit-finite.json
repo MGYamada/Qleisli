@@ -1,0 +1,50 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/bits0-as-unit"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T00:06:07.825121+00:00",
+  "elapsed_seconds": 0.0042007090523839,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"register types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":96,\"end\":103,\"line\":2,\"column\":23},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "register types are outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 96,
+          "end": 103,
+          "line": 2,
+          "column": 23
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "baseline_observation": "tests/fixtures/authoring_sessions/quantum-unit-v030/observations/bits0-as-unit-finite.json",
+  "baseline_observation_sha256": "75f5882ca382fa0c06188edc5f9e4e0deb517c769f9fce3982ff3cd8b716f164",
+  "source_sha256": "e4f3287c397f00d490e5301f40ec71642f00f85ff083f9683f3093cbd999c2a3",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "same_argv_and_explicit_environment": true,
+  "baseline_exit_stdout_stderr_unchanged": true,
+  "classification": "unchanged finite result",
+  "expected_current_result": true
+}

@@ -1,0 +1,9 @@
+//! Closed providers for fixed-width operation parameters; all preserve phase.
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::t;
+
+pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+pub unitary fn hadamard(q: Q<Bit>) -> Q<Bit> { h(q) }
+pub unitary fn flip(q: Q<Bit>) -> Q<Bit> { x(q) }
+pub unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }

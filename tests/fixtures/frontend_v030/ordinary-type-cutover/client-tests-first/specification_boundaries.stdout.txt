@@ -1,0 +1,15 @@
+
+running 10 tests
+test ordinary_boolean_operands_require_cbits_and_have_checked_dependencies ... ok
+test basis_calls_ignore_outer_cbit_names_but_respect_basis_binders ... ok
+test zero_wire_ownership_requires_explicit_consumption ... ok
+test entry_point_accepts_nested_classical_products ... ok
+test computed_auxiliary_shadow_preserves_the_outer_owner ... ok
+test boolean_operands_are_eager_and_preserve_pending_quantum_ownership ... ok
+test basis_lifts_destructure_exact_product_patterns ... ok
+test basis_call_arity_is_distinct_from_lift_injectivity ... ok
+test basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits ... ok
+test ordinary_bit_literals_and_operators_have_their_truth_tables ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.38s
+

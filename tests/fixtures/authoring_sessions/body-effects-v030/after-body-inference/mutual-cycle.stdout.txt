@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"cycle","severity":"error","message":"mutually recursive dependency cycle is unsupported","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/mutual-cycle/main.qli","start":0,"end":0},"related":[]}],"result":null}

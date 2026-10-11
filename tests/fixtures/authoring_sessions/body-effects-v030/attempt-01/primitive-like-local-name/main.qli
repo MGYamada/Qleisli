@@ -1,0 +1,1 @@
+fn init0(q:Q<Bit>)->Q<Bit>{q} pub fn f(q:Q<Bit>)->Q<Bit>{init0(q)}

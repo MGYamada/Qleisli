@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{split,join,finish,unit,init0,h};
+fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+pub fn main(q:Q<Unit>)->Q<Bit>{prepare(q)}

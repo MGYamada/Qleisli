@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/static-nat-tables-v030/attempt-01/empty-index",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T12:24:56.149075+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected an identifier",
+        "primary": {
+          "path": "main.qli",
+          "start": 94,
+          "end": 95,
+          "line": 2,
+          "column": 20
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "compiler_sha256": "442cfc775e28e6fd96ed584e4a9ea742c29b0dfd7e2546ea6fcf5407b1bd1d37",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_sha256": "70d7bec2f791250f909deab25b230e37b11b5b6de3afd2fb382bede53076d9e4",
+  "phase": "before static table implementation"
+}

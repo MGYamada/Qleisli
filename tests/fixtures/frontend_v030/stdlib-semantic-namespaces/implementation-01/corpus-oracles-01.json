@@ -1,0 +1,113 @@
+{
+  "format": "qleisli.namespace-selected-corpus-oracles",
+  "version": 1,
+  "status": "failed",
+  "created_utc": "2026-10-06T02:58:29.403046+00:00",
+  "failures": [
+    {
+      "stage": "negative_cases",
+      "id": "measurement_adjoint",
+      "type": "ValueError",
+      "message": "wrong negative diagnostic: measurement_adjoint"
+    }
+  ],
+  "cases": [
+    {
+      "id": "pennylane_demos/qpe3",
+      "semantic_probes": 108,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1
+      }
+    },
+    {
+      "id": "qualtran/qft2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/qpe2",
+      "semantic_probes": 52,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/reflection2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/grover2",
+      "semantic_probes": 24,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/qpe3",
+      "semantic_probes": 108,
+      "shipped_main": "passed",
+      "host_observables": {}
+    }
+  ],
+  "semantic_faults": [],
+  "negative_cases": [
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    },
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    }
+  ],
+  "compiler_sha256": "424f8c5cf4dbbccccfa18f35a4535de881e448811d5b3c1f5021acc4976e0684",
+  "oracle_script_sha256": "12823222f777b0f6da9039db309a58d3dcf5e8695f2f3037c96b473934873e26",
+  "manifest_sha256": "56ac8fa4e4ec2a5124a9d820fa41a5087f4323b4e9686b4377a4777113fbcc9d",
+  "source_sha256": {
+    "migrations/semantic-namespace-v030/sources/quantum_katas/grover2/kernel.qli": "d033b4644afe2483f7b503d64b0f76dd5c1c4a1d47fc4cd2fa73400fc262ebaf",
+    "migrations/semantic-namespace-v030/sources/quantum_katas/grover2/main.qli": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+    "migrations/semantic-namespace-v030/sources/quantum_katas/qpe3/kernel.qli": "b63da12e784bc6160febd49b8e6ca30ae8367613c3e9250b6df08bf44fb30012",
+    "migrations/semantic-namespace-v030/sources/quantum_katas/qpe3/main.qli": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01",
+    "migrations/semantic-namespace-v030/sources/qualtran/qft2/kernel.qli": "1282300d10ba6ed5fafd552fb12456f0f580084d443de7497f8787984568835e",
+    "migrations/semantic-namespace-v030/sources/qualtran/qft2/main.qli": "6937e93642473de709f1c277bc4d01522014907707ba0aebd1d4b144c644fd50",
+    "migrations/semantic-namespace-v030/sources/qualtran/qpe2/kernel.qli": "a8c4b566438ec601a96bd9d6c35653bc628981261ebd9bd5957e7abab41b9201",
+    "migrations/semantic-namespace-v030/sources/qualtran/qpe2/main.qli": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161",
+    "migrations/semantic-namespace-v030/sources/qualtran/reflection2/kernel.qli": "b55182b70645fcd7a9f81d4df8a33de88aed8f7c0d640306258255a20c011d54",
+    "migrations/semantic-namespace-v030/sources/qualtran/reflection2/main.qli": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a",
+    "migrations/semantic-namespace-v030/sources/pennylane_demos/qpe3/kernel.qli": "f452eeb85c4be3fffc9d1db392f4726e3d73eaba25015aec54cdc31cc29b9aa3",
+    "migrations/semantic-namespace-v030/sources/pennylane_demos/qpe3/main.qli": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8",
+    "negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+  },
+  "source_migration_sha256": {
+    "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+    "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+    "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b"
+  },
+  "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+  "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "semantic_fault_source_sha256": {},
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "selected_projects": {
+    "quantum_katas/grover2": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/grover2",
+    "quantum_katas/qpe3": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/qpe3",
+    "qualtran/qft2": "corpus/migrations/semantic-namespace-v030/sources/qualtran/qft2",
+    "qualtran/qpe2": "corpus/migrations/semantic-namespace-v030/sources/qualtran/qpe2",
+    "qualtran/reflection2": "corpus/migrations/semantic-namespace-v030/sources/qualtran/reflection2",
+    "pennylane_demos/qpe3": "corpus/migrations/semantic-namespace-v030/sources/pennylane_demos/qpe3"
+  },
+  "scope": "Six existing tiny finite corpus cases (2..4 qubits) against independent mathematical complex/interference oracles plus associated faults and existing negatives. No upstream frameworks, generic QFT, maximum cases, exact/general theorem, guarantee admission or release validation.",
+  "changed_input_binding": false,
+  "seconds": 149.331
+}

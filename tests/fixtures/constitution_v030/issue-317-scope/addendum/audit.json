@@ -1,0 +1,47 @@
+{
+  "book_inputs": {
+    "build_or_link_check_run": false,
+    "count": 24,
+    "map_sha256": "e91f51fd0fc775ec04e68409df071accd03b79fecc6fa4c9d5ac98e1ed801492",
+    "unchanged_during_readonly_audit": true
+  },
+  "format": "qleisli.issue-317-readonly-addendum-audit",
+  "msrv_input_identity": {
+    "mismatches": [],
+    "record": "tests/fixtures/frontend_v030/isometry-preparation/full-msrv-profile-permitted/identity.json",
+    "record_sha256": "d8927ec20a3b94b872e26672a5c0652131d1765673451e49685e31aad821f4b6",
+    "source_count": 200,
+    "source_map_sha256": "e155488e8bcfa53dc7fc8256e9b7dcce29cc37cdd696c2bd403597bb58211ab4",
+    "unchanged_during_readonly_audit": true,
+    "validation_status": "not inferred from source identity"
+  },
+  "performed": "Read-only source/record/REST snapshot analysis; no test, proof, build or tracker mutation.",
+  "release_index": {
+    "acceptance_exists": false,
+    "automatic_live_issue_addition_detection": false,
+    "next_review_must_include_all_24_issue317_criteria": true,
+    "requirements_exists": false,
+    "reviewed_criterion_ids_enforced": true
+  },
+  "scope": {
+    "added_criteria": 4,
+    "current_criteria": 24,
+    "group_count": 13,
+    "implemented_by_accounting": 0,
+    "issue317_group": "G10",
+    "original_body_exact_prefix": true,
+    "original_criteria": 20,
+    "original_criteria_text_and_order_unchanged": true,
+    "selected_issue_count": 111
+  },
+  "snapshots": {
+    "addition_sha256": "e66e7e1aafe45c4da81d4dd3a8c7381fa25605e2527a8d042c33896aa2e9b6a3",
+    "api_body_exact_bytes_match": true,
+    "current_api_response_sha256": "700472fd8f2f535b0f4397798d70ff19fff2e0131b65de5b09a77f39cf34fb53",
+    "current_body_sha256": "591bb92fd57c1af3310890575cbd5a92509eea1efc8efff7adf5e7428d0c9823",
+    "original_body_sha256": "b4ab70a17959bf57f47e7380d9c52769352a4c6e6a888a151f56c61876f112ab",
+    "prior_record_manifest_sha256": "3258c3e68388b9fd29a612b71565914df9811a6c282e43e17904bc6d088395d1",
+    "prior_record_mismatches": []
+  },
+  "version": 1
+}

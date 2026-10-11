@@ -7,3 +7,6 @@ __pycache__/
 /python/build/
 /python/dist/
 /python/*.egg-info/
+
+# Local experimental Julia dependency resolution.
+/julia/Manifest.toml

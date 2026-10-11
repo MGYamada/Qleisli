@@ -1,0 +1,3 @@
+use a::flip; use b::phase;
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{local(q)}
+unitary fn local(q:Q<Bit>)->Q<Bit>{phase(flip(q))}

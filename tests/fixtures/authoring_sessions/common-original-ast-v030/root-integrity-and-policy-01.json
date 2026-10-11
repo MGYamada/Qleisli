@@ -1,0 +1,57 @@
+{
+  "format": "qleisli.original-ast-first-root-integrity-and-policy",
+  "version": 1,
+  "checkout_marker": "7e04f20f0c908fd56720a50655bc56c072c80ceb",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "tool_terminal_chunk": "20c6b0",
+      "scope": "Current constitutional identity/evidence continuity, not a fresh Lean replay."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "tool_terminal_chunk": "b3894b",
+      "result": "38 records, 53 snapshots, 794 observations; recorded commands not executed."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "tool_terminal_chunk": "8a6756",
+      "result": "2635 .qli, 5 .qlt, 692 explicit manifests; 42 historical in-memory sources/14 unused manifests separate."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "tool_terminal_chunk": "d768d5",
+      "result": "1975 local links, 19 Markdown anchors, 206 Lean root modules."
+    }
+  ],
+  "hash_verification": {
+    "tool_terminal_chunk": "f5c998",
+    "exit_code": 0,
+    "first_files": 41,
+    "output_members": 365,
+    "independent_audit_selected_inputs": 24,
+    "rust_build_inputs": 107,
+    "prior_msrv_inputs": 715,
+    "prior_msrv_records": 29,
+    "both_selected_binary_hashes_match": true
+  },
+  "scope": "Actual small source/document/identity checks and read/hash of frozen evidence. No new Rust/Lean build, native replay, semantic oracle, guarantee admission or Issue completion. First sources/outputs are unchanged."
+}

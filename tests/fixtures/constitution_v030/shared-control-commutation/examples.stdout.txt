@@ -1,0 +1,27 @@
+PASS: shared-control-H-A-X-B/first-then-second; rows=8; remaining_work=999232
+PASS: shared-control-H-A-X-B/second-then-first; rows=8; remaining_work=999232
+PASS: asymmetric-X-A-T-B/first-then-second; rows=8; remaining_work=999232
+PASS: asymmetric-X-A-T-B/second-then-first; rows=8; remaining_work=999232
+PASS: left-Unit-minus-right-H/first-then-second; rows=4; remaining_work=999808
+PASS: left-Unit-minus-right-H/second-then-first; rows=4; remaining_work=999808
+PASS: left-T-right-Unit-minus/first-then-second; rows=4; remaining_work=999808
+PASS: left-T-right-Unit-minus/second-then-first; rows=4; remaining_work=999808
+PASS: both-Unit-scalars/first-then-second; rows=2; remaining_work=999952
+PASS: both-Unit-scalars/second-then-first; rows=2; remaining_work=999952
+PASS: retained-H-C-prefix-X-C-suffix/first-then-second; rows=2; remaining_work=999904
+PASS: retained-H-C-prefix-X-C-suffix/second-then-first; rows=2; remaining_work=999904
+PASS: shared-target-X-then-Z; rows=4; remaining_work=999808
+PASS: shared-target-Z-then-X; rows=4; remaining_work=999808
+PASS: H-control-then-CX; rows=4; remaining_work=999808
+PASS: CX-then-H-control; rows=4; remaining_work=999808
+PASS: correlated-reference-H-A-X-B; physical_rows=8; reference_columns=2
+PASS: correlated-reference-X-B-H-A; physical_rows=8; reference_columns=2
+'Qleisli.SharedControlCommutation.Examples.unit_phase_visible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Qleisli.SharedControlCommutation.Examples.four_control_sectors' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Qleisli.SharedControlCommutation.Examples.four_sectors_commute' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,22 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/comparison.py
+// Selected symbol(s): Equals
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::init0;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use kernel::kernel;
+use std::quantum::x;
+
+observe fn main() -> ((((CBit, CBit), CBit), CBit), CBit) {
+    let q = kernel(join(join(join(join(x(init0()), init0()), x(init0())), init0()), x(init0())));
+    let (part4, w4) = split(q);
+    let (part3, w3) = split(part4);
+    let (part2, w2) = split(part3);
+    let (w0, w1) = split(part2);
+    ((((measure_z(w0), measure_z(w1)), measure_z(w2)), measure_z(w3)), measure_z(w4))
+}

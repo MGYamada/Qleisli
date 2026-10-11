@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent root-request framing, graph-proposal and contract mutations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The handwritten transport never invokes the Rust proposal producer.
 """
 import argparse
@@ -10,11 +10,13 @@ from pathlib import Path
 import struct
 import subprocess
 import time
+import tomllib
 
 from test_hierarchical_host import phase_bridge
 from test_hierarchical_artifact import build_and_run
 
 ROOT = Path(__file__).resolve().parent.parent
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def request_bridge(*, meanings=1, pairs=None, order=None):
@@ -169,7 +171,7 @@ def main():
     started = time.monotonic()
     observed = []
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-request-pending'], input=data,
+        result = subprocess.run([str(binary), '--hierarchy-request-pending', PRODUCT_VERSION], input=data,
                                 capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
         assert lines[:1] == ['qleisli.hierarchy-request-pending 3'], (name, result)

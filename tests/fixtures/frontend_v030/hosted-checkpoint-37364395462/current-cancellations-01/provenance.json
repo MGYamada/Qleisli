@@ -1,0 +1,47 @@
+{
+  "format": "qleisli.hosted-ci-cancellation-provenance",
+  "version": 1,
+  "run_id": 37364395462,
+  "attempt": 1,
+  "clock_observation_after_metadata_fetch_utc": "2026-10-05T21:58:19Z",
+  "clock_limit": "Tool observation after the fetches, not an authenticated timestamp of each HTTP response or a later terminal-run observation.",
+  "requests": [
+    {"tool": "github_fetch_workflow_run_jobs", "repo_full_name": "MGYamada/Qleisli", "run_id": 37364395462, "role": "Purpose-built initial jobs snapshot; full generic API response retained in jobs.json."},
+    {"tool": "github_fetch", "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37364395462", "retained": "run.json"},
+    {"tool": "github_fetch", "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37364395462/jobs?per_page=100", "retained": "jobs.json"},
+    {"tool": "github_fetch", "url": "https://api.github.com/repos/MGYamada/Qleisli/commits/73aca78e13bc65125c4e533da48dd1318cf1cc51/check-runs", "retained": "check-runs.json"},
+    {"tool": "github_fetch_workflow_job_steps", "repo_full_name": "MGYamada/Qleisli", "job_id": 111949519787, "observed_steps": []},
+    {"tool": "github_fetch_workflow_job_steps", "repo_full_name": "MGYamada/Qleisli", "job_id": 111949519998, "observed_steps": []},
+    {"tool": "github_fetch_workflow_job_logs", "repo_full_name": "MGYamada/Qleisli", "job_id": 111949519787, "retained": "access-failures.json", "observation": "404 BlobNotFound"},
+    {"tool": "github_fetch_workflow_job_logs", "repo_full_name": "MGYamada/Qleisli", "job_id": 111949519998, "retained": "access-failures.json", "observation": "404 BlobNotFound"},
+    {"tool": "github_fetch_workflow_job_logs", "repo_full_name": "MGYamada/Qleisli", "job_id": 111946020733, "retained": "Two gzip excerpts and complete decoded-content identity in log-excerpts.json; full content discarded."},
+    {"tool": "github_fetch", "url": "https://api.github.com/repos/MGYamada/Qleisli/git/commits/f7707f2aa4506ca354e93f46c702b63014f2ef44", "retained": "merge-commit.json"},
+    {"tool": "github_fetch", "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/f7707f2aa4506ca354e93f46c702b63014f2ef44/.github/workflows/ci.yml", "retained": "tested-workflow.yml"}
+  ],
+  "unsuccessful_connector_attempt_keys": {
+    "ci_cancellation_2": "Purpose-built MSRV log retrieval, 404 BlobNotFound.",
+    "ci_cancellation_3": "Purpose-built distribution log retrieval, 404 BlobNotFound.",
+    "ci_job_0": "Generic fetch direct MSRV actions/jobs URL, connector allowlist rejection.",
+    "ci_job_1": "Generic fetch direct distribution actions/jobs URL, connector allowlist rejection.",
+    "ci_job_2": "Generic fetch direct live Rust actions/jobs URL, connector allowlist rejection.",
+    "ci_annotations_0": "Generic fetch MSRV check-run annotations URL, connector allowlist rejection.",
+    "ci_annotations_1": "Generic fetch distribution check-run annotations URL, connector allowlist rejection.",
+    "ci_more_0": "Generic fetch MSRV public job page, connector allowlist rejection.",
+    "ci_more_1": "Generic fetch distribution public job page, connector allowlist rejection."
+  },
+  "unsuccessful_web_fallback": "Public job-page reader returned Cache miss for both cancelled jobs; exact result retained in access-failures.json and supplies no cancellation cause.",
+  "encoding": "API JSON is the connector's decoded UTF-8 content with one terminating newline added. These are not original HTTP wire bytes. Gzip excerpts are exact contiguous decoded lines with terminating newlines and deterministic gzip mtime 0; no output normalization or command execution.",
+  "local_metadata_audit": {"observed_exit_code": 0, "reported_status": "passed", "checks": "Exact run/head/merge parents, nine jobs and five/two/one producer counts, cancelled zero runner/steps, live Rust step 24, tested workflow timeout absence, complete decoded-log identity and compressed/decoded excerpts."},
+  "constitutional_startup_guard": {
+    "argv": ["python3", "scripts/check_constitution.py", "--base-ref", "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"],
+    "cwd": "repository root",
+    "observed_exit_code": 0,
+    "stdout": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader obligations and one exactness supplement retain pending proof/enforcement duties; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n",
+    "stderr": "",
+    "scope": "Only identity/continuity; no native execution, Lean replay or proof/adoption status change."
+  },
+  "commands_from_evidence_executed": false,
+  "build_archives_downloaded": false,
+  "github_mutations": false,
+  "release_ready_claimed": false
+}

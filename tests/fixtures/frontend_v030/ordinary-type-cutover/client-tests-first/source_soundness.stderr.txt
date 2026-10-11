@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+     Running tests/source_soundness.rs (target/debug/deps/source_soundness-58240591b4221d51)

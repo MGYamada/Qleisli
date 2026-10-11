@@ -1,0 +1,24 @@
+{
+  "files": {
+    "attempt-01/abstract-split/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/abstract-split/main.qli": "14a4581b86e9acecf2c21f3c102e268787aef08d149255f613f4cc40e6f3aa07",
+    "attempt-01/assumed-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/assumed-unit/main.qli": "b33de818cf78a9fbee6d1bc17a18e39825acfd4830639aa561bf08fd69126509",
+    "attempt-01/concrete-control/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/concrete-control/main.qli": "39c8aa3a9ef839071ccf5dae8228ffda283613291f2746b1cf08b84b0033a94f",
+    "attempt-01/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-owner/main.qli": "7d78670e36fe0d8e88c8a2d95f7168ccef80a8da3a59a10f87ab4c954a89e41f",
+    "attempt-01/forward-kind/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/forward-kind/main.qli": "a40ae38452a4a0ba6abe235ef054ef0c94ec1c99c73f37dc9536d9ad2433ede5",
+    "attempt-01/missing-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/missing-access/main.qli": "4b7d76ec9b29fabf0c53486c66bcc9d5b7807ed476c35d22e3defe6bc74e0607",
+    "attempt-01/opaque-forward/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/opaque-forward/main.qli": "bba5fb289c34e028e8e853fe8042812fbd4aed21d4815e3a64099b5770c29c22",
+    "attempt-01/opaque-repeat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/opaque-repeat/main.qli": "28594a7bca1a2dea0d5acbb391a1b59c12e88e29ae557d4beb0e1f8d21f2ea35",
+    "attempt-01/unknown-basis/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/unknown-basis/main.qli": "e27171b0b1735a7b51dc0f939ea124e0198c62f780198bb4443857d1b2bfa402",
+    "context.md": "56351b840305ce0370de4e5e793bb47413a46737d222cec10f3659d1a5e1d3b9"
+  },
+  "status": "frozen before observation"
+}

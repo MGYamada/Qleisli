@@ -1,0 +1,103 @@
+{
+  "format": "qleisli.benchmark-source-selection-observation",
+  "version": 1,
+  "created_utc": "2026-10-06T03:16:46.728238+00:00",
+  "status": "passed",
+  "selector_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+  "manifest_sha256": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+  "benchmark_script_sha256": "660916454fe17d56877e6be01cdb6f713df2df408ee9ab7a96cae2acea0fe9ac",
+  "six_snapshot_selections": [
+    {
+      "project": "qualtran/qft2",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/qualtran/qft2",
+      "sources": {
+        "kernel.qli": "1282300d10ba6ed5fafd552fb12456f0f580084d443de7497f8787984568835e",
+        "main.qli": "6937e93642473de709f1c277bc4d01522014907707ba0aebd1d4b144c644fd50"
+      }
+    },
+    {
+      "project": "qualtran/qpe2",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/qualtran/qpe2",
+      "sources": {
+        "kernel.qli": "a8c4b566438ec601a96bd9d6c35653bc628981261ebd9bd5957e7abab41b9201",
+        "main.qli": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161"
+      }
+    },
+    {
+      "project": "qualtran/reflection2",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/qualtran/reflection2",
+      "sources": {
+        "kernel.qli": "b55182b70645fcd7a9f81d4df8a33de88aed8f7c0d640306258255a20c011d54",
+        "main.qli": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a"
+      }
+    },
+    {
+      "project": "quantum_katas/qpe3",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/qpe3",
+      "sources": {
+        "kernel.qli": "b63da12e784bc6160febd49b8e6ca30ae8367613c3e9250b6df08bf44fb30012",
+        "main.qli": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01"
+      }
+    },
+    {
+      "project": "quantum_katas/grover2",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/grover2",
+      "sources": {
+        "kernel.qli": "d033b4644afe2483f7b503d64b0f76dd5c1c4a1d47fc4cd2fa73400fc262ebaf",
+        "main.qli": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a"
+      }
+    },
+    {
+      "project": "pennylane_demos/qpe3",
+      "selected_path": "corpus/migrations/semantic-namespace-v030/sources/pennylane_demos/qpe3",
+      "sources": {
+        "kernel.qli": "f452eeb85c4be3fffc9d1db392f4726e3d73eaba25015aec54cdc31cc29b9aa3",
+        "main.qli": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8"
+      }
+    }
+  ],
+  "benchmark_selection": [
+    {
+      "name": "bell",
+      "source": "corpus/quantum_katas/bell_measure",
+      "existing_qubits": 2
+    },
+    {
+      "name": "classical_branch",
+      "source": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+      "existing_qubits": 2
+    },
+    {
+      "name": "grover2",
+      "source": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/grover2",
+      "existing_qubits": 2
+    },
+    {
+      "name": "qft2",
+      "source": "corpus/migrations/semantic-namespace-v030/sources/qualtran/qft2",
+      "existing_qubits": 2
+    },
+    {
+      "name": "qpe3",
+      "source": "corpus/migrations/semantic-namespace-v030/sources/quantum_katas/qpe3",
+      "existing_qubits": 4
+    },
+    {
+      "name": "add2",
+      "source": "corpus/qualtran/add2",
+      "existing_qubits": 4
+    },
+    {
+      "name": "qaoa_path3",
+      "source": "corpus/pennylane_demos/qaoa_path_layer3",
+      "existing_qubits": 3
+    },
+    {
+      "name": "negative_rotation",
+      "source": "corpus/pennylane_demos/rotation_both_negative",
+      "existing_qubits": 1
+    }
+  ],
+  "selected_source_binding_entries": 251,
+  "scope": "Static selection and recorded source identity checks only. No benchmark execution, performance observations, quantum case generation, Cargo/Lean build or native call."
+}

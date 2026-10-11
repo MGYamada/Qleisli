@@ -1,0 +1,98 @@
+{
+  "status": "explicit product signatures migrated; function bodies, upstream pins and notices retained",
+  "active_files": [
+    {
+      "path": "stdlib/src/routines.qli",
+      "sha256_before": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+      "predicates": [
+        "nonzero2"
+      ],
+      "sha256_after": "2718c8a13f45e2078bdf830d55e36dfb47489547c8885d4cfedc4662306d0d55"
+    },
+    {
+      "path": "examples/bernstein_vazirani/oracle.qli",
+      "sha256_before": "3af6324a523b1f05ba570a0400bccaef1a0c9865bd884f95fcd501dc7b8879ea",
+      "predicates": [
+        "linear"
+      ],
+      "sha256_after": "b2ed675950dc5b9ca528a2dde8f9a849cca534a4b9c2768b95d4746035fd1bc3"
+    },
+    {
+      "path": "examples/grover/oracle.qli",
+      "sha256_before": "efd57b65aa0091d2f23e05ab7e26a6db00bcbfff05deacf68f36f4d98ed86c38",
+      "predicates": [
+        "marked"
+      ],
+      "sha256_after": "f0da6bce758b4036aabea5ee219b0068eeee706fb51a932a70eb3f1cb0099682"
+    },
+    {
+      "path": "examples/operation_algorithms/oracles.qli",
+      "sha256_before": "fc3e4ec61026daa36ec35c560123872761ed5bd5d86cb6539a4328b24a550a7c",
+      "predicates": [
+        "is00",
+        "is01",
+        "is10",
+        "is11",
+        "nonzero"
+      ],
+      "sha256_after": "e70d1ae821f50965c818e8b4cd00f49227e58a2135d4c70d6715d7158c4f0e2e"
+    },
+    {
+      "path": "corpus/pennylane_demos/phase_lock/kernel.qli",
+      "sha256_before": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78",
+      "predicates": [
+        "lock"
+      ],
+      "sha256_after": "6794ed8c4a7af4190e645fa283c1954488fd49e6607b8261478062e45077cb54"
+    },
+    {
+      "path": "corpus/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256_before": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37",
+      "predicates": [
+        "occupied"
+      ],
+      "sha256_after": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41"
+    },
+    {
+      "path": "corpus/qualtran/and_phase/kernel.qli",
+      "sha256_before": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+      "predicates": [
+        "both"
+      ],
+      "sha256_after": "c393a6c5c239552134c6673dd67998ca4e46a2c93af5355ccd9b895d813368f4"
+    },
+    {
+      "path": "corpus/qualtran/reflection2/kernel.qli",
+      "sha256_before": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+      "predicates": [
+        "zero"
+      ],
+      "sha256_after": "f794eacadbc7fd46ed6fc8bef7dbe2d0c262bec6d9a132b9e436e89b35cc3dea"
+    },
+    {
+      "path": "corpus/quantum_katas/deutsch_jozsa3/kernel.qli",
+      "sha256_before": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+      "predicates": [
+        "majority"
+      ],
+      "sha256_after": "f3235adb5697826c472fb01b251494daee7c9b8bb524a53b3cdb2cc931afec91"
+    },
+    {
+      "path": "corpus/quantum_katas/grover2/kernel.qli",
+      "sha256_before": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+      "predicates": [
+        "marked"
+      ],
+      "sha256_after": "42a14bc04dfd58d54a527e8798acc49381a054e5e421c362f6e4e75450705071"
+    },
+    {
+      "path": "corpus/semantic_faults/majority_replaced_by_parity/kernel.qli",
+      "sha256_before": "17c8cc4bc5ef631d733f5bc624fc71abe8333ee9a28350bab8b0ddad5698782a",
+      "predicates": [
+        "majority"
+      ],
+      "sha256_after": "c00074dfe4ae380db2a86f633092afcc2d35fb5d8d14f19753b7305b58484d0d"
+    }
+  ],
+  "historical_policy": "Original source/session/fixed artifact bytes remain unchanged; current translations are separate."
+}

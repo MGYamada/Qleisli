@@ -1,0 +1,1 @@
+fn g(q:Q<Bit>)->Q<Bit>{f(q)} pub fn f(q:Q<Bit>)->Q<Bit>{g(q)}

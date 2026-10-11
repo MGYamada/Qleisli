@@ -1,0 +1,60 @@
+[
+  {
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/first_source",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.4238390409736894,
+    "stdout": "results/direct-ci-lean_layout.stdout.txt",
+    "stderr": "results/direct-ci-lean_layout.stderr.txt",
+    "source_sha256": {
+      "tests/fixtures/lean_layout/first_source/main.qli": "f5920286250b4786c37bb36d376267ca9e0bac6cfe079cc4acda696f563b24f9"
+    }
+  },
+  {
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/lean_layout_dag/first_source",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.42701866698917,
+    "stdout": "results/direct-ci-lean_layout_dag.stdout.txt",
+    "stderr": "results/direct-ci-lean_layout_dag.stderr.txt",
+    "source_sha256": {
+      "tests/fixtures/lean_layout_dag/first_source/main.qli": "9d1f8840f51be06a7583446d4f7dc813e146c0a9d0dc58e10391b6afab3ec81f"
+    }
+  },
+  {
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/lean_phase_layout/first_source",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.5003739589592442,
+    "stdout": "results/direct-ci-lean_phase_layout.stdout.txt",
+    "stderr": "results/direct-ci-lean_phase_layout.stderr.txt",
+    "source_sha256": {
+      "tests/fixtures/lean_phase_layout/first_source/main.qli": "9d479e02485412d84005f08fedf4b54a3f87566e727f8ccf117c37c30ec9128b"
+    }
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_current_source_fixtures.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "stdout": "results/fixture-identity-tests.stdout.txt",
+    "stderr": "results/fixture-identity-tests.stderr.txt"
+  }
+]

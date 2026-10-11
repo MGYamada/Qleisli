@@ -1,0 +1,8 @@
+use oracle::phase_oracle;
+use std::quantum::init0;
+use std::quantum::h;
+use std::observe::measure_z;
+
+observe fn main() -> CBit {
+    measure_z(h(phase_oracle(h(init0()))))
+}

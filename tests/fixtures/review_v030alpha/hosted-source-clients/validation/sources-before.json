@@ -1,0 +1,7 @@
+{
+  "tests/native_roundtrip.rs": "94d528ce0d2b8c3f7165585bdb3f09c77f6f9a195173a9f546efbb13e7482722",
+  "tests/review_v019.rs": "48acf2aa51e4fc2df46e775a84a9414e032f02840dc59d8903c32dd9fd1d0e2c",
+  "tests/common/mod.rs": "7a1a2e24f960a091877e55ea5725a429c2cac106234aadd32240a56f93781743",
+  "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+  "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+}

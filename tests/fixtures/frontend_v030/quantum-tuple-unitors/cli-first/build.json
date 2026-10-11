@@ -1,0 +1,30 @@
+[
+  {
+    "command": [
+      "rustc",
+      "--version"
+    ],
+    "exit": 0,
+    "seconds": 0.021032667020335793
+  },
+  {
+    "command": [
+      "cargo",
+      "--version"
+    ],
+    "exit": 0,
+    "seconds": 0.026064999983645976
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "--bin",
+      "qleisli"
+    ],
+    "exit": 0,
+    "seconds": 0.19845620798878372
+  }
+]

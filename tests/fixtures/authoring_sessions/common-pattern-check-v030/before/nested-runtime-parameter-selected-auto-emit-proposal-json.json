@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/nested-runtime-parameter/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/before/nested-runtime-parameter-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "seconds": 0.011311415990348905,
+  "recorded_utc": "2026-10-05T16:33:53.825973+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "nested-runtime-parameter-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "nested-runtime-parameter-selected-auto-emit-proposal-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "untrusted-proposal",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "none"
+    }
+  },
+  "proposal_file": "before/nested-runtime-parameter-selected-auto-emit-proposal-json.proposal.json",
+  "proposal_sha256": "43e12768368b4f745272e1a421a0a8cad199ec275552626112f772a1fc5e27a9",
+  "proposal_bytes": 1429,
+  "proposal_authority": "Untrusted producer result; not native acceptance or source preservation."
+}

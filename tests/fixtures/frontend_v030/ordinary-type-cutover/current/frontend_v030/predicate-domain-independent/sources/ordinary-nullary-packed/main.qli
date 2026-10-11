@@ -1,0 +1,1 @@
+basis fn constant()->Bit{1} basis fn predicate(_:Unit)->Bit{constant(())}

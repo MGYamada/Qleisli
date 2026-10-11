@@ -1,0 +1,12 @@
+
+running 7 tests
+test parity_measurement_keeps_coherence_within_each_parity_sector ... ok
+test derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks ... ok
+test bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors ... ok
+test documented_structured_algorithms_have_their_expected_results ... ok
+test bernstein_vazirani_recovers_every_two_bit_secret ... ok
+test single_bit_flip_recovery_preserves_entanglement_with_a_reference ... ok
+test grover_all_targets_and_iteration_counts_match_amplitude_amplification ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.17s
+

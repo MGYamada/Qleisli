@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.classical-ci-adapter-repair",
+  "version": 1,
+  "failed_run": 37428954630,
+  "failed_head": "b98071629e8b2dcfdbd0f6e4a956f5ed36cdce05",
+  "failures": {
+    "rust": 112155559980,
+    "msrv": 112155560178,
+    "native": 112155560021
+  },
+  "repair": "Select existing hash-checked current corpus sources; preserve frozen source/IR/oracle files. Remove needless closure borrowing and explicit lifetimes.",
+  "checks": {
+    "latest_clippy": "passed, all targets, warnings denied",
+    "msrv_clippy": "passed, Rust 1.85.0, all targets, warnings denied",
+    "vm22": "12 finite comparisons, 12 source decisions; emitted artifacts byte-identical to frozen records, no capture",
+    "observation_source_stage": "5 small sources emitted through existing native acceptance; shared by streamed instrument runner",
+    "guard_tests": 75,
+    "inventory": "270 constructors, 262 snapshots, 20 boundaries",
+    "coverage": "36 groups, 21 paths, 9 modes; S05-C1-C5 remain open"
+  },
+  "logs": {
+    "/private/tmp/qleisli-classical-vm22-repaired.json": {
+      "sha256": "90842ce358297d95151e9f09767c60d3ecc0d3c671341ea739a4799d5db89c46",
+      "bytes": 19086
+    },
+    "/private/tmp/qleisli-classical-observation-sources.json": {
+      "sha256": "1a9e1ec88c71d9b54c0f9f03492b5e04cfba8cd03ee48ce4ba05f73c133614df",
+      "bytes": 21181
+    }
+  },
+  "limits": [
+    "Full observation/streamed native comparisons await hosted CI; no fresh local Lean replay.",
+    "Initial observer wrapper emitted a source then failed looking up the default target/debug binary for provenance; corrected explicit compiler argument records actual compiler bytes.",
+    "Initial local cargo +1.85.0 invocation used standalone cargo and failed; rustup run 1.85.0 cargo passed.",
+    "No Issue closure, proof discharge or release approval."
+  ]
+}

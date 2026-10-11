@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/summarize.py", line 41, in <module>
+    assert recorded['raw_event_sha256'] == digest(raw_path)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'raw_event_sha256'

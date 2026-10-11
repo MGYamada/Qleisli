@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/test_lean_qpe.py",
+    "--source-only",
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--record",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/qpe-source-clients-01.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 1.355,
+  "stdout": "qpe-source-clients-01.stdout.txt",
+  "stderr": "qpe-source-clients-01.stderr.txt",
+  "scope": "Existing two fixed-QPE source clients against independent instrument probability/coherence oracle; no new Lean build."
+}

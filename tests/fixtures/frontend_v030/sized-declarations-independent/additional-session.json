@@ -1,0 +1,11 @@
+{
+  "kind": "informed follow-up declaration diagnostic study",
+  "saved_before_observation": true,
+  "purpose": "First invalid declaration follows source order; imported leaf names remain ambiguous despite different module identities.",
+  "source_sha256": {
+    "sources/source-order-errors/main.qli": "ff4caafc9a9e0ae51bb5351cf9909250069d5b1346a2ddb77d3759f6503403c6",
+    "sources/ambiguous-import/main.qli": "4f327d58e0f986773ce7b926ad673208093e1573ff2981653a630edd0fa9caa9",
+    "sources/ambiguous-import/a.qli": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+    "sources/ambiguous-import/b.qli": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e"
+  }
+}

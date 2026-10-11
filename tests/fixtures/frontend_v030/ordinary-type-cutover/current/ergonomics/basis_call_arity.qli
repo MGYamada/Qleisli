@@ -1,0 +1,2 @@
+basis fn pair((a,b): (Bit,Bit)) -> Bit { a xor b }
+basis fn bad(a:Bit,b:Bit) -> Bit { pair(a,b) }

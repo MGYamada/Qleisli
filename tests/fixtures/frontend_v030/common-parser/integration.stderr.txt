@@ -1,0 +1,13 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
+     Running tests/compile.rs (target/debug/deps/compile-21be87d151c5bc8a)
+     Running tests/diagnostics.rs (target/debug/deps/diagnostics-7c098e4fc53101d3)
+     Running tests/documentation.rs (target/debug/deps/documentation-43eca3fb3da30db3)
+     Running tests/operation_parameters.rs (target/debug/deps/operation_parameters-e82ead800812bcff)
+     Running tests/parser.rs (target/debug/deps/parser-9b127f065bfaef57)
+     Running tests/project.rs (target/debug/deps/project-56357891fbd75904)
+     Running tests/sized_cli.rs (target/debug/deps/sized_cli-47f5e96001afe2e4)
+     Running tests/sized_review_diagnostics.rs (target/debug/deps/sized_review_diagnostics-433824366be8e8c6)
+     Running tests/sized_review_dialects.rs (target/debug/deps/sized_review_dialects-5a4051bc5c694371)
+     Running tests/sized_source.rs (target/debug/deps/sized_source-9c7800cc21e8c647)
+     Running tests/static_operations.rs (target/debug/deps/static_operations-b76656b5a8af2a86)

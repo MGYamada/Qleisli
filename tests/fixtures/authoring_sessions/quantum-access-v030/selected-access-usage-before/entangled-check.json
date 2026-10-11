@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/entangled/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 2,
+  "recorded_utc": "2026-10-09T07:05:49.819588+00:00",
+  "cli_sha256_before": "0fddcafb69ed7865c1fa59d652d08064171c478dd2d7778d24b256693b4bc7c9",
+  "cli_sha256_after": "0fddcafb69ed7865c1fa59d652d08064171c478dd2d7778d24b256693b4bc7c9",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "usage",
+        "severity": "error",
+        "message": "usage: qleisli <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --type=name=TYPE --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  [--operation-type=name.parameter=TYPE] (repeat)\n  [--ir-profile=auto|raw|hierarchy] [--lean-kernel=PATH]\n  [--request=PATH | --qpe-provider=PATH] [--format=json]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --kernel is an alias for --lean-kernel; otherwise use QLEISLI_KERNEL.\n  Raw run/sample require zero runtime parameters and no quantum result.\n  --basis is hierarchy run/sample-only (default 0); it is never ordinary input.\n  --type binds an exact closed ordinary Basis; it does not select runtime input.\n  Selected-source sample requires shots in 1..1024 and a seed.\n  emit-proposal requires output and no kernel/request/provider; it is untrusted.\n  Module-map checking covers every declaration, native checking the selected instance.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

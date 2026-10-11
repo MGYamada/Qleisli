@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli:4:33: unsupported: register types are outside the finite lowering profile

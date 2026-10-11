@@ -1,0 +1,27 @@
+// Upstream authors (repository usernames): Dan. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_phase_kickback/demo.py
+// Selected symbol(s): quantum_lock; quantum_locking_mechanism
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::join;
+use std::quantum::split;
+basis fn lock(((((control, a), b), c), d): ((((Bit, Bit), Bit), Bit), Bit)) -> Bit {
+    control and not a and b and c and d
+}
+pub unitary fn kernel(q: Q<((((Bit, Bit), Bit), Bit), Bit)>) -> Q<((((Bit, Bit), Bit), Bit), Bit)> {
+    let (part4, e) = split(q);
+    let (part3, d) = split(part4);
+    let (part2, c) = split(part3);
+    let (a, b) = split(part2);
+    let q = join(join(join(join(h(a), b), c), d), e);
+    let q = with_computed(q, lock) { |flag| z(flag) };
+    let (part4, e) = split(q);
+    let (part3, d) = split(part4);
+    let (part2, c) = split(part3);
+    let (a, b) = split(part2);
+    join(join(join(join(h(a), b), c), d), e)
+}

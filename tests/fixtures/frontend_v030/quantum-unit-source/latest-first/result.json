@@ -1,0 +1,80 @@
+{
+  "base_commit": "d753962de3eedd39629c8441f2b82521ce01d70f",
+  "driver_sha256": "a48dd3447adc33ae1b6229fa067d0b4e621154e70da76a2a9842216bf10655b8",
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.020780916966032237,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.02070854202611372,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.24274654098553583,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "sized_source",
+        "--test",
+        "sized_cli",
+        "--test",
+        "sized_review_diagnostics",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "mixed_booleans"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 1.9733226249809377,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    }
+  ],
+  "source_manifest_sha256": "ef1b7d6a120a02d7b6bf3c5abe3f3e752f90bae2b6f53ab8fa98423d60cac775",
+  "source_count": 319,
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+  "target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "free_bytes_before": 22323200000,
+  "free_bytes_after": 22323200000,
+  "scope": "Nine focused integration targets, sized library tests, existing ignored native CLI tests, all-target Clippy and formatting; not all-target runtime or release validation"
+}

@@ -1,0 +1,50 @@
+94	2026-10-04T23:13:09.7736657Z ##[group]Fetching the repository
+95	2026-10-04T23:13:09.7745776Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +dca850b5e8b543af36cf1a907826a7a819dd9a4b:refs/remotes/pull/307/merge
+96	2026-10-04T23:13:11.2633984Z From https://github.com/MGYamada/Qleisli
+97	2026-10-04T23:13:11.2638648Z  * [new ref]         dca850b5e8b543af36cf1a907826a7a819dd9a4b -> pull/307/merge
+98	2026-10-04T23:13:11.2640902Z ##[endgroup]
+99	2026-10-04T23:13:11.2641429Z ##[group]Determining the checkout info
+121	2026-10-04T23:13:11.8650521Z 
+122	2026-10-04T23:13:11.8650891Z HEAD is now at dca850b Merge d753962de3eedd39629c8441f2b82521ce01d70f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+123	2026-10-04T23:13:11.8674841Z ##[endgroup]
+124	2026-10-04T23:13:11.8723739Z [command]/usr/bin/git log -1 --format=%H
+125	2026-10-04T23:13:11.8750717Z dca850b5e8b543af36cf1a907826a7a819dd9a4b
+126	2026-10-04T23:13:11.9250128Z ##[group]Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596
+127	2026-10-04T23:13:11.9250605Z with:
+465	2026-10-04T23:15:28.1850702Z 
+466	2026-10-04T23:15:28.1937382Z ##[group]Run cargo +1.85.0 test --all-targets
+467	2026-10-04T23:15:28.1937752Z [36;1mcargo +1.85.0 test --all-targets[0m
+468	2026-10-04T23:15:28.2001440Z shell: /usr/bin/bash -e {0}
+1125	2026-10-04T23:38:22.4959360Z      Running tests/ordinary_types.rs (target/debug/deps/ordinary_types-734a3dc4a4b36b1f)
+1126	2026-10-04T23:38:22.4973624Z 
+1127	2026-10-04T23:38:22.4973901Z running 14 tests
+1128	2026-10-04T23:38:22.5052920Z test existing_execution_profile_limits_remain_explicit ... FAILED
+1129	2026-10-04T23:38:22.5901307Z test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+1130	2026-10-04T23:38:22.5922022Z test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+1131	2026-10-04T23:38:22.5972958Z test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+1132	2026-10-04T23:38:22.6000394Z test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+1133	2026-10-04T23:38:22.6060539Z test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+1134	2026-10-04T23:38:22.6103997Z test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+1135	2026-10-04T23:38:22.7412220Z test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+1144	2026-10-04T23:38:27.5657454Z 
+1145	2026-10-04T23:38:27.5657777Z ---- existing_execution_profile_limits_remain_explicit stdout ----
+1146	2026-10-04T23:38:27.5658624Z 
+1147	2026-10-04T23:38:27.5660912Z thread 'existing_execution_profile_limits_remain_explicit' panicked at tests/ordinary_types.rs:369:84:
+1148	2026-10-04T23:38:27.5668141Z called `Result::unwrap_err()` on an `Ok` value: ParsedProgram { sources: {"main": "pub unitary fn f() -> Bit { 0 }\n"}, syntax: {"main": Module { uses: [], decls: [Decl { public: true, kind: Unitary, name: Ident { text: "f", span: Span { start: 15, end: 16 } }, static_params: [], requires: [], params: [], return_type: Type { kind: Bit, span: Span { start: 22, end: 25 } }, body: Quantum(Block { implicit_result: false, statements: [], result: Expr { kind: Bit(false), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }), span: Span { start: 0, end: 31 } }], span: Span { start: 0, end: 32 } }}, modules: {"main": Module { functions: [Function { lexical: Some(Table { definition: DefId(0), binders: [], uses: [], scopes: [None, Some(ScopeId { definition: DefId(0), ordinal: 0 })] }), name: "f", effect: Unitary, parameters: [], arguments: [], result: Type { kind: Bit }, requires: [], body: Block { statements: [], result: Expr { kind: Boolean(Constant(false), []), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }, span: Span { start: 0, end: 31 } }] }}, resolution: Resolution { modules: [ModuleNames { name: "main", declarations: {"f": DefId(0)} }], names: {"main": ModuleId(0)}, declarations: [Declaration { module: ModuleId(0), name: ("main", "f"), ast_index: 0, public: true, kind: Unitary }], scopes: {ModuleId(0): Scope { imports: {}, edges: [] }} } }
+1149	2026-10-04T23:38:27.5674580Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+1150	2026-10-04T23:38:27.5674896Z 
+1151	2026-10-04T23:38:27.5674900Z 
+1152	2026-10-04T23:38:27.5674983Z failures:
+1153	2026-10-04T23:38:27.5675240Z     existing_execution_profile_limits_remain_explicit
+1154	2026-10-04T23:38:27.5675478Z 
+1155	2026-10-04T23:38:27.5675753Z test result: FAILED. 13 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.07s
+1156	2026-10-04T23:38:27.5676116Z 
+1157	2026-10-04T23:38:27.5676288Z error: test failed, to rerun pass `--test ordinary_types`
+1158	2026-10-04T23:38:27.5695708Z ##[error]Process completed with exit code 101.
+1159	2026-10-04T23:38:27.5867457Z Post job cleanup.
+1160	2026-10-04T23:38:27.6718172Z [command]/usr/bin/git version
+1161	2026-10-04T23:38:27.6763134Z git version 2.55.0
+1162	2026-10-04T23:38:27.6808498Z Temporarily overriding HOME='/home/runner/work/_temp/2a3e7bca-7b7a-4d01-ac57-e78241c46de3' before making global git config changes
+1163	2026-10-04T23:38:27.6810281Z Adding repository directory to the temporary git global config as a safe directory
+1164	2026-10-04T23:38:27.6814597Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Qleisli/Qleisli
+1165	2026-10-04T23:38:27.6853833Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand

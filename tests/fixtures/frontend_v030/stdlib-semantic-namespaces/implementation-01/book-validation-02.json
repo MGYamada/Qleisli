@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.namespace-book-links-validation",
+  "version": 1,
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/check_book.py",
+    "--root",
+    "/private/tmp/qleisli-ci-repair-book"
+  ],
+  "exit_code": 0,
+  "seconds": 0.104,
+  "stdout": "book-links-02.stdout.txt",
+  "stderr": "book-links-02.stderr.txt",
+  "scope": "Correct --root invocation against same retained HTML from successful pinned book-build-01; initial positional-argument harness failure remains recorded."
+}

@@ -1,0 +1,1275 @@
+{
+  "format": 1,
+  "compiler_sha256": "2a2dd77b16005a8ab72477b3934fa1c730081fb47b1a2da5ed306c70c100fff2",
+  "native_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "oracle_sha256": "37241a2622883463c23b78432415e03e5dc5eb682291da7b660ddbf75dd038e3",
+  "preparation_sha256": "49da14416611228308d6ad8d4bea7f4fe484313cad5ee45ed0c97ff98d7278d2",
+  "results": [
+    {
+      "id": "erased_rotation_scalar",
+      "project": "semantic_faults/erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+    },
+    {
+      "id": "rx_missing_scalar",
+      "project": "semantic_faults/rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "zz_erased_scalar",
+      "project": "semantic_faults/zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "id": "negative_rx_missing_scalar",
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "reference": "pennylane_demos/rx_negative_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_negative_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "mixed_rotation_order_reversed",
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "reference": "pennylane_demos/rotation_mixed_sign",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_mixed_sign entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+    },
+    {
+      "id": "half_rotation_order_reversed",
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "reference": "pennylane_demos/rotation_half_y",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_half_y entry 0,0 y: (True, False): 0.7285533905932741 != 0.02144660940672623"
+    },
+    {
+      "id": "negative_zz_missing_scalar",
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "reference": "pennylane_demos/ising_zz_negative2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_negative2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "id": "edge_layer_reversed_order",
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "reference": "pennylane_demos/qaoa_edge_layer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_edge_layer2 entry 0,1 x: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+    },
+    {
+      "id": "rotation_negative_x_positive_y_fault",
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "reference": "pennylane_demos/rotation_negative_x_positive_y",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_negative_x_positive_y entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+    },
+    {
+      "id": "qaoa_negative_mixer2_fault",
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "reference": "pennylane_demos/qaoa_negative_mixer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_negative_mixer2 entry 0,1 y: (False, False, False): 0.0625 != 0.5624999999999997"
+    },
+    {
+      "id": "qaoa_path_layer3_fault",
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "reference": "pennylane_demos/qaoa_path_layer3",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_path_layer3 entry 0,0 x: (True, False, False, False): 0.15625000000000006 != 0.28124999999999983"
+    },
+    {
+      "id": "negative_rotations_reversed",
+      "project": "semantic_faults/negative_rotations_reversed",
+      "reference": "pennylane_demos/rotation_both_negative",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_both_negative entry 0,0 y: (True, False): 0.6250000000000002 != 0.12499999999999994"
+    },
+    {
+      "id": "path_cost_lost_second_phase",
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "reference": "pennylane_demos/qaoa_path_cost3",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_path_cost3 entry 0,0 x: (False, False, False, False): 0.8535533905932742 != 0.4999999999999999"
+    },
+    {
+      "id": "negative_edge_cost_sign",
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "reference": "pennylane_demos/qaoa_negative_edge_layer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_negative_edge_layer2 entry 0,0 y: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+    },
+    {
+      "id": "measurement_adjoint",
+      "project": "negative/measurement_adjoint",
+      "source_rejection_code": "type_mismatch"
+    }
+  ],
+  "actual_cli_observations": [
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5548539999872446,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+        "main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf"
+      },
+      "main_source": "// Upstream authors (repository usernames): mariaschuld. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_kernel_based_training/demo.py\n// Selected symbol(s): kernel\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\n\nobserve fn main() -> (Bit, Bit) {\n    let q = kernel(join(init0(), init0()));\n    let (w0, w1) = split(q);\n    (measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-mxw3dobo",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5804514579940587,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-mxw3dobo",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6649494579760358,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.45619066699873656,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+        "main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol(s): circuit(params)\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-apfe8cie",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.45428283303044736,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-apfe8cie",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5130851250141859,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.43087741697672755,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+        "main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol(s): U_C(gamma), single-edge factor\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\n\nobserve fn main() -> (Bit, Bit) {\n    let q = kernel(join(init0(), init0()));\n    let (a, b) = split(q);\n    (measure_z(a), measure_z(b))\n}\n"
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-hevjtk97",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.42185916705057025,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-hevjtk97",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.494362958939746,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.48862158390693367,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+        "main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol(s): circuit(params)\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-w1yl9rxx",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4827169580385089,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-w1yl9rxx",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6264653750695288,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4464324170257896,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+        "main.qli": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol(s): circuit(params)\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\n\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = x(init0());\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-eyoqsv5o",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4404952909098938,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-eyoqsv5o",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5002614160766825,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-eyoqsv5o",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5007866671076044,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+        "main.qli": "67ba08a1a3f32d91266e8eee16a8eda0090e1cd525b6acb6d153c3d05a8ed134"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.436970500042662,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+        "main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol(s): circuit(params)\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-12grkbou",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.44070499995723367,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-12grkbou",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5133728750515729,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.37500000000000017},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.37500000000000017},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-12grkbou",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4985437080031261,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.02144660940672623},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.7285533905932741},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+        "main.qli": "67ba08a1a3f32d91266e8eee16a8eda0090e1cd525b6acb6d153c3d05a8ed134"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.40273354190867394,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+        "main.qli": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol(s): U_C(gamma), single-edge factor\n// Fixed-scope adaptation; see README.md and corpus/POLICY.md.\n\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), x(init0()));\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-tbiitj99",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4073230839567259,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-tbiitj99",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4795675420900807,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5886887919623405,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbols: U_C, U_B; graph=[(0,1)], gamma=pi/2, beta=pi/4\nuse std::quantum::init0;\nuse std::quantum::x;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\n\nobserve fn main() -> (Bit, Bit) {\n    let q = join(init0(), init0());\n    let q = kernel(q);\n    let (w0, w1) = split(q);\n    (measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5767144170822576,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6331270829541609,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.48927669529663714},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.13572330470336313},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.621247333008796,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "ed3302393ae355c3442f205be640098f050d8905ac92996c8e2b376488a87c14"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6174042499624193,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.13572330470336313},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.48927669529663714}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "b3d2f017811e5c97d2785018bac914f562589a614ef9479d59831baf962c7a46"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6192012919345871,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.48927669529663714},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.13572330470336313}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "99ee4e7783d7a2cb49d877d29918be8034af47940c278d1819a66cba0c183d24"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5588337921071798,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "7f7480f4db567562eaa9bf24c72e551ab5f235b8502759c0799ee6120a5fb420"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(x(init0()), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-f22gbbqq",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6157353339949623,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+        "main.qli": "6223cc7ee33c7d00296d5c8c1881b1b75be9944478a236bfa67f264fc68417f0"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(x(init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5240884590893984,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+        "main.qli": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol: circuit(params)\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-r8e4yysx",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5240242499858141,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-r8e4yysx",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5830929999938235,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-r8e4yysx",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5791033339919522,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+        "main.qli": "67ba08a1a3f32d91266e8eee16a8eda0090e1cd525b6acb6d153c3d05a8ed134"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5174279169877991,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol: U_B\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5237040419597179,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5815282090334222,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5625000000000002},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.0625},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5833794169593602,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "ed3302393ae355c3442f205be640098f050d8905ac92996c8e2b376488a87c14"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5936358340550214,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.0625},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.5625000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "b3d2f017811e5c97d2785018bac914f562589a614ef9479d59831baf962c7a46"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6438577499939129,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.3125000000000001},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.3125000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "99ee4e7783d7a2cb49d877d29918be8034af47940c278d1819a66cba0c183d24"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5475625420222059,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "7f7480f4db567562eaa9bf24c72e551ab5f235b8502759c0799ee6120a5fb420"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(x(init0()), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6035415410296991,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "6223cc7ee33c7d00296d5c8c1881b1b75be9944478a236bfa67f264fc68417f0"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(x(init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-jt8l9dv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5803932920098305,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.0625},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.5625000000000002},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+        "main.qli": "13cfb5b362c2abf9f8ee17c4467fee55bf0ae24c93e9787052d79f3dc684e08d"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(x(w0), w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(x(init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5991020419169217,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+        "main.qli": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol: U_C; U_B\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet q = kernel(q);\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n((measure_z(w0), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ypvw8jv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6010619999142364,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+        "main.qli": "19e9dbd450e7262a8c587729499e7553e63a9357999361cfef4b71be283f32fe"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet q = kernel(q);\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n((measure_z(w0), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ypvw8jv0",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6617083749733865,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.40625000000000017},{\"bits\":[false,false,false,true],\"probability\":0.031250000000000014},{\"bits\":[false,false,true,false],\"probability\":0.031250000000000014},{\"bits\":[false,false,true,true],\"probability\":0.031250000000000014},{\"bits\":[false,true,false,false],\"probability\":0.031250000000000014},{\"bits\":[false,true,false,true],\"probability\":0.031250000000000014},{\"bits\":[false,true,true,false],\"probability\":0.031250000000000014},{\"bits\":[false,true,true,true],\"probability\":0.031250000000000014},{\"bits\":[true,false,false,false],\"probability\":0.15625000000000006},{\"bits\":[true,false,false,true],\"probability\":0.031250000000000014},{\"bits\":[true,false,true,false],\"probability\":0.031250000000000014},{\"bits\":[true,false,true,true],\"probability\":0.031250000000000014},{\"bits\":[true,true,false,false],\"probability\":0.031250000000000014},{\"bits\":[true,true,false,true],\"probability\":0.031250000000000014},{\"bits\":[true,true,true,false],\"probability\":0.031250000000000014},{\"bits\":[true,true,true,true],\"probability\":0.031250000000000014}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+        "main.qli": "e695a214d850ec7505ef7351bff30719ecf95815840860cadf6a5ef97161443d"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5198005830170587,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+        "main.qli": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63"
+      },
+      "main_source": "// Upstream authors (repository usernames): josh. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py\n// Selected symbol: circuit(params)\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\n    let q = init0();\n    let q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-wpq910i2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5222390829585493,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+        "main.qli": "4e771898ca722e77ecd94d1c943df03b1c5394f1f3c22936d393258da55a580c"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> Bit {\nlet q = init0();\nlet q = kernel(q);\nlet w0 = q;\nmeasure_z(w0)\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-wpq910i2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5825384589843452,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+        "main.qli": "fc4437875133ab3d0b6567b7d4967bceca980d968641afcdadd02f032f515e20"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-wpq910i2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5752769580576569,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.12500000000000003},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.6250000000000002},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+        "main.qli": "67ba08a1a3f32d91266e8eee16a8eda0090e1cd525b6acb6d153c3d05a8ed134"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.43920720799360424,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+        "main.qli": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol: U_C\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> ((Bit, Bit), Bit) {\n    let q = join(join(init0(), init0()), init0());\n    let q = kernel(q);\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n((measure_z(w0), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-36iqk3r7",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.44761862501036376,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+        "main.qli": "19e9dbd450e7262a8c587729499e7553e63a9357999361cfef4b71be283f32fe"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet q = kernel(q);\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n((measure_z(w0), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-36iqk3r7",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5598068750696257,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.8535533905932742},{\"bits\":[true,false,false,false],\"probability\":0.1464466094067263}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+        "main.qli": "e695a214d850ec7505ef7351bff30719ecf95815840860cadf6a5ef97161443d"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5845927499467507,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+        "main.qli": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef"
+      },
+      "main_source": "// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.\n// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada\n// SPDX-License-Identifier: Apache-2.0\n// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py\n// Selected symbol: U_C; U_B\nuse std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\n    let q = join(init0(), init0());\n    let q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-qsll50c4",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6229960419004783,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+        "main.qli": "77a3029225aebf00ba19537818f7f7d9541e5237abcddc119a97583fe1976237"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nobserve fn main() -> (Bit, Bit) {\nlet q = join(init0(), init0());\nlet q = kernel(q);\nlet (w0, w1) = split(q);\n(measure_z(w0), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-qsll50c4",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.7332088750554249,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.48927669529663714},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.13572330470336313},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+        "main.qli": "386d9c5a9449d4362dbcb6a964b293f58cd9b25e5bc0dd8d40e1ebd4631b4511"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n"
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-qsll50c4",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6315517500042915,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "source_sha256": {
+        "kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+        "main.qli": "ed3302393ae355c3442f205be640098f050d8905ac92996c8e2b376488a87c14"
+      },
+      "main_source": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+    }
+  ],
+  "scope": "Existing mathematical small-system oracle; type-correct deliberate faults must still disagree. Selected command streams are retained, not source-preservation or a new guarantee."
+}

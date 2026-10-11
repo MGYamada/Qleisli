@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-desired",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T04:21:28.312084+00:00",
+  "elapsed_seconds": 0.055332332965917885,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "wrong-phase-desired",
+  "action": "default-text-check-02",
+  "output_format": "default-text",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "d8cbce7105d5040d8052ac547d6c582089be0da40be10e98392461a25aa3e71a",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-before/wrong-phase-desired-default-text-02.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "raw_stderr": {
+    "path": "observations-before/wrong-phase-desired-default-text-02.stderr.txt",
+    "sha256": "2b69384862544f53da9ac860caed7f77b0cee8f7490b1c8ef99ed846c6114747"
+  },
+  "stdout_text": "",
+  "stderr_text": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-desired/main.qli:17:26: parse: parse error: expected `]`, found `(`\n",
+  "identity_checked_before_and_after": true,
+  "prediction": "new name parse refusal, no downstream check",
+  "prediction_matched": true,
+  "scope": "Separate authored default-text command, not source repair or replay of an observation."
+}

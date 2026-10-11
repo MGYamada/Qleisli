@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.FourierStage
 
 /-! Actual four-node one-bit base of the shared Fourier recursion.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Reuse the stage's geometry record: its gradient fields alias the first tensor
 only as unused metadata. No gradient child is inserted into the artifact.
 The Bound predicate below records the actual four children, not five. -/

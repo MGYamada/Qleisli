@@ -12,9 +12,12 @@ import QleisliKernel.Raw.Protected
 import QleisliKernel.Raw.Pure
 import QleisliKernel.Raw.Observation
 import QleisliKernel.Raw.ObservationOwnership
+import QleisliKernel.Raw.Unit
 import QleisliKernel.Raw.ObservationScope
 import QleisliKernel.Semantics.OwnershipLaws
 import QleisliKernel.Raw.Instrument
+import QleisliKernel.Raw.InstrumentEquality
+import QleisliKernel.Qirf.InstrumentContract
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
 import QleisliKernel.LayoutDag
@@ -64,3 +67,4 @@ import QleisliKernel.Hierarchical.QpeRoot
 import QleisliKernel.Hierarchical.QpeInstrument
 
 import QleisliKernel.Qirf.Contract
+import QleisliKernel.Qirf.ControlAccess

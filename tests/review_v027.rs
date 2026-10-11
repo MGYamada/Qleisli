@@ -68,7 +68,7 @@ fn unused_manifest_warnings_are_host_independent_and_located() {
 
 fn emit(root: &SourceRoot, destination: &Path) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["sized", "emit-proposal", "--entry=main::f"])
+        .args(["emit-proposal", "--entry=main::f"])
         .arg(format!(
             "--module=main={}",
             root.0.join("main.qli").display()
@@ -146,7 +146,7 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;f(q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;f(q)}",
             "a local value is not callable",
         ),
         (
@@ -158,27 +158,27 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;adjoint(f,f)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;adjoint(f)(f)}",
             "static operation requires a function name, not a local value",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;repeat_static(0,f,f)}",
-            "static operation requires a function name, not a local value",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;power(f,0)(f)}",
+            "a local or spent runtime value cannot be a static operation",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if true{let f=q;f(f)}else{q}}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if 1{let f=q;f(f)}else{q}}",
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;apply_contract(f,f,q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;apply_contract(f,f,q)}",
             "apply_contract requires function names, not local values",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;with_computed(q,f){|a|a}}",
-            "with_computed requires a basis function name",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;with_computed(q,f){|a|a}}",
+            "with_computed requires a classical function name",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|f|f(f)}} basis fn p(b:Bit)->Bit{b}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|f|f(f)}} classical fn p(b:Bit)->Bit{b}",
             "a local value is not callable",
         ),
     ] {
@@ -194,7 +194,7 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
 fn dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers() {
     for (source, expected) in [
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if true{let f=true;()}else{()};f(q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if 1{let f=1;()}else{()};f(q)}",
             ErrorCode::UnknownName,
         ),
         (
@@ -222,8 +222,8 @@ fn dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers() {
 #[test]
 fn basis_and_coherent_lift_bindings_are_not_global_dependencies() {
     for source in [
-        "basis fn bad(f:Bit)->Bit{f(f)}",
-        "unitary fn bad(q:Q<Bit>)->Q<Bit>{do f <- q; pure f(f)}",
+        "classical fn bad(f:Bit)->Bit{f(f)}",
+        "unitary fn bad(q:Q<Bit>)->Q<Bit>{basis q as f { f(f) }}",
     ] {
         let root = SourceRoot::new(source);
         let error = check_project(&root.0).unwrap_err();
@@ -234,7 +234,7 @@ fn basis_and_coherent_lift_bindings_are_not_global_dependencies() {
 
 #[test]
 fn local_static_argument_reports_its_type_at_the_original_argument() {
-    let source = "unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+    let source = "unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 unitary fn bad(q:Q<Bit>)->Q<Bit>{apply[q](q)}";
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();

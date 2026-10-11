@@ -1,0 +1,2 @@
+pub fn provider(q:Bit)->Bit{q}
+pub fn entry[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}

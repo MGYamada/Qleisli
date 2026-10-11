@@ -1,0 +1,5 @@
+// λ: vocabulary migration control
+use std::quantum::init0;
+use std::observe::measure_z;
+iso fn prepare() -> Q<Bit> { init0() }
+pub observe fn main() -> Bit { measure_z(prepare()) }

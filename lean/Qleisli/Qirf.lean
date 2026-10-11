@@ -4,7 +4,7 @@ import Qleisli.HierarchicalUnitary
 
 /-! Original-index QIRF graph and root denotation from actual native success.
 No Rust extractor, supplied receipt, selected-arm summary or isometry premise.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Qirf
 open QleisliKernel.Qirf QleisliKernel.Semantics.ObservingFunction
 open QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Exact

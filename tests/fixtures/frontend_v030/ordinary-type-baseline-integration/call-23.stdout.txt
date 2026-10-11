@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"emit-ir","outcome":"ok","diagnostics":[],"result":{"path":"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-975td8rv/program.qirf"}}

@@ -1,0 +1,166 @@
+{
+  "format": "qleisli.local-ci-repair-validation",
+  "version": 1,
+  "source_commit": "60d83ae9240dc9204339a33729cb17cd15caaf05",
+  "repairs_commit": "164ae7bd4266e103311f2d6732b033f77600f4d0",
+  "full_rust_runs_started_at_commit": "164ae7bd4266e103311f2d6732b033f77600f4d0",
+  "subsequent_changes": "Only the unimplemented operation authoring record was normalized and committed in 60d83ae9240dc9204339a33729cb17cd15caaf05; Rust/Lean production and test code stayed unchanged throughout the runs.",
+  "host": "local macOS",
+  "rust_versions": [
+    "1.98.1",
+    "1.85.0"
+  ],
+  "compact_environment": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "kernel": {
+    "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+  },
+  "trusted_constitution_base": "38baae7d19535602b21270e11e97617d45205b37",
+  "actual_pr_base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "full_ci_scope": "Local equivalents of ordinary check-docs, check-rust and check-rust-msrv validation commands; external build directories and selected installed toolchains. GitHub setup/cache/upload steps, Linux execution, fresh native packaging, full Lean replay, release producer receipts and publication are separate. Existing fixed-QFT regressions retained; no generic QFT or maximum-size source cases added.",
+  "progress": {
+    "completed": 24,
+    "selected": 111,
+    "percentage": 21.62
+  },
+  "recorded_utc": "2026-10-07T00:51:56.081829+00:00",
+  "workflow_sha256": "09bc305404c963442e1c796bef6fd4d1aa507d72fd8fb73a24c3707057296e12",
+  "all_target_runs": [
+    {
+      "rust": "1.98.1",
+      "command": [
+        "cargo",
+        "test",
+        "--all-targets",
+        "--no-fail-fast",
+        "-j2"
+      ],
+      "target_dir": "/private/tmp/qleisli-bits-meaning-target",
+      "exit_code": 0,
+      "normal_permissions": true,
+      "completed_targets": 102,
+      "passed": 941,
+      "failed": 0,
+      "ignored": 52,
+      "external_log": "/private/tmp/qleisli-local-ci-latest-all-targets.log",
+      "log_sha256": "af0db1eb4ee7fec40f8a84aa7bc93146096a1f51537cf059e1253904232e29f7"
+    },
+    {
+      "rust": "1.85.0",
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--all-targets",
+        "--no-fail-fast",
+        "-j2"
+      ],
+      "target_dir": "/private/tmp/qleisli-bits-meaning-msrv-target",
+      "exit_code": 0,
+      "normal_permissions": true,
+      "completed_targets": 102,
+      "passed": 941,
+      "failed": 0,
+      "ignored": 52,
+      "external_log": "/private/tmp/qleisli-local-ci-msrv-all-targets.log",
+      "log_sha256": "ce3f2522c1b2274cee19d4c73907302c18c27b4468fa6f845231612de91a55ac"
+    }
+  ],
+  "additional_job_checks": {
+    "docs-repaired": {
+      "commands": 39,
+      "passed": 39,
+      "failed": 0,
+      "external_results": "/private/tmp/qleisli-local-ci-docs-repaired-results.json",
+      "results_sha256": "600fbd899c31ecbb1819d7831839d9ae578a5e937f9e80224473ab025005aeca",
+      "command_list_sha256": "003bf984d12b373bed37fb512c13d881e2861837ad93d69a6ec337a4f00d0a9c"
+    },
+    "rust-extra": {
+      "commands": 22,
+      "passed": 22,
+      "failed": 0,
+      "external_results": "/private/tmp/qleisli-local-ci-rust-extra-results.json",
+      "results_sha256": "178d9e539606852f3d6073d1c96e728fc0ae0a9bbc30c830120300c2f4d25aa6",
+      "command_list_sha256": "b30ca7c6c888901551e3baad5cce12bb6c35af49f41fa70bd20b642d05385178"
+    },
+    "msrv-extra": {
+      "commands": 12,
+      "passed": 12,
+      "failed": 0,
+      "external_results": "/private/tmp/qleisli-local-ci-msrv-extra-results.json",
+      "results_sha256": "6a09de0ca79c26efe562964fa66053b1e5179879650d511782ba71a933697146",
+      "command_list_sha256": "50453e9fc4189f2bcc6eca7dea1505fa5a155d4759ca5d0423ae5360f1212951"
+    },
+    "changes": {
+      "commands": 7,
+      "passed": 7,
+      "failed": 0,
+      "external_results": "/private/tmp/qleisli-local-ci-changes-results.json",
+      "results_sha256": "f6c13bfc6fe92e24d350448c2e1495654adc7a63b18d55d376c7cf6d9b0902ea",
+      "command_list_sha256": "8b55b57536b3cd8ddb7838177076959c1897e9faeb324fd5678eebc6e10b73a4"
+    }
+  },
+  "first_documentation_sweep": {
+    "commands": 39,
+    "passed": 38,
+    "failed": 1,
+    "failure": "Authoring attempt IDs must be consecutive with reasons.",
+    "results_sha256": "1716ce7a04f804eb0d80fbe00c519476fb4d1abe5d9919c27888f5153697968f",
+    "repair": "60d83ae9240dc9204339a33729cb17cd15caaf05 preserves source and actual observation bytes while recording the relocation to consecutive attempt-03; no validation rule changed."
+  },
+  "kernel_audit": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "declarations": 11608,
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "fresh_full_replay": false
+  },
+  "constitution_checks": {
+    "trusted_base_exit_code": 0,
+    "actual_pr_base_exit_code": 0,
+    "new_guarantee_admissions": 0,
+    "broader_obligations": "QS, PR, RS and EXACT remain pending."
+  },
+  "book": {
+    "version": "0.5.4",
+    "output": "/private/tmp/qleisli-local-ci-book",
+    "build_and_rendered_links_exit_code": 0
+  },
+  "corpus": {
+    "mode": "quick-representative-v1",
+    "entries": 87,
+    "status": "passed",
+    "external_report": "/private/tmp/qleisli-local-ci-corpus.json",
+    "sha256": "f217f0b4ad7f4ff167be4b77b074abfdd2bd57727cae32a989263c4badf3a196",
+    "exhaustive": false,
+    "upstream_frameworks_executed": false
+  },
+  "earlier_hosted_run": {
+    "run": 37549060739,
+    "head": "efdc39b8be807aea5d95ceaeedea95f6d998219e",
+    "conclusion": "failure",
+    "individual_failures": [
+      "check-rust: test-only executable rewrite race",
+      "check-docs: preserved timestamp-line trailing whitespace"
+    ],
+    "other_selected_individual_jobs": "Passed, including distribution; stable required contexts failed by aggregation. The local repairs have not yet been hosted at this recording time."
+  },
+  "limits": "The existing 52 ignored all-target tests per toolchain retain their separate native/proof/capacity duties. No skip or ceiling was changed. Passing local tests is not Linux execution, full constitutional discharge, release readiness or publication.",
+  "unchanged_validation_source_map_sha256": "74989b9577a1211206be3553b3a39699897c80fc12806ae9bf7a5295a59a4090"
+}

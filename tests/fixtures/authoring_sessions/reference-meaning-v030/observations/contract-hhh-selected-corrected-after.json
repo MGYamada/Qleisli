@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::main\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "stderr": "",
+  "seconds": 0.42714987497311085,
+  "recorded_utc": "2026-10-11T00:19:11.758819+00:00",
+  "cli_sha256_before": "dd972871a7d816b93108984a312e6af33757a710bb561008292cb5eb3fa0746b",
+  "cli_sha256_after": "dd972871a7d816b93108984a312e6af33757a710bb561008292cb5eb3fa0746b",
+  "kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+  "source_sha256": "e690b03f88bf55ffdc60db1a50d72bb184ca360764f19897ee5c9145d255a0fa"
+}

@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Retire the legacy iso prefix with a located diagnostic while preserving canonical isometry behavior",
+  "author": "Codex assistant; informed maintenance, no external model",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "02ec802061432d5e3a9f1368e6e499ccbd7bd859",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze legacy comparison source",
+      "sha256": {
+        "main.qli": "4e4be3998cb4d41a956abdc0f978327953346b55db1e31e7aab587b4fb17b54e"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/before-1-check.json",
+        "observations/before-1-run.json",
+        "observations/after-1-check.json",
+        "observations/after-1-run.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Change only iso to the adopted isometry prefix before comparing",
+      "sha256": {
+        "main.qli": "8dbfbf9db44f311f2fd3ab735c5027f1fdaad257546dc9776022750bc4118120"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/before-2-check.json",
+        "observations/before-2-run.json",
+        "observations/after-2-check.json",
+        "observations/after-2-run.json"
+      ]
+    }
+  ]
+}

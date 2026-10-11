@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"access","severity":"error","message":"missing Apply operation access","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli","start":111,"end":115},"related":[]}],"result":null}

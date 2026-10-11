@@ -1,0 +1,183 @@
+{
+  "format": 1,
+  "task": "Exact ordinary runtime parameter patterns with shared lexical IDs, retained argument trees and linear owners",
+  "baseline_commit": "56eb0725b77670be38d11ce450c1d525b90a5636",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; exact deployment and sampling unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Six bounded desired sources preserved before observation; no production implementation yet.",
+      "sha256": {
+        "unit/main.qli": "5bccf667e1986ef914ce4f923ac471b47fe0315e9e68778918ff92e08302bb56",
+        "nested-copy-wildcard/main.qli": "6af544573c4e3f5c95bc1a77621ac328fefd72ecc670961edf78826aaf803617",
+        "mixed-swap/main.qli": "1b798bcffeca283bdd37f16ef306e3b53a7f665c44088186444e686b2b334c17",
+        "wildcard-ordinary/main.qli": "e2c5ac6bc70e802f4eaca9eeaa065b9f0574d090b324423713eb86e6f18a9edb",
+        "static-mixed/main.qli": "99678803900677a6b0739346365affae2f7cb6f472a9f5073b9187e790286604",
+        "effectful-unit/main.qli": "e5c79a9d494bc5c3a1df462e5c0ca61c7fbbbde7fdd118dde870659e697e1e5e"
+      },
+      "observations": [
+        "observations/finite-attempt-01-unit.json",
+        "observations/finite-attempt-01-nested-copy-wildcard.json",
+        "observations/finite-attempt-01-mixed-swap.json",
+        "observations/finite-attempt-01-wildcard-ordinary.json",
+        "observations/finite-attempt-01-static-mixed.json",
+        "observations/finite-attempt-01-effectful-unit.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "counterexamples-quantum-wildcard",
+      "reason": "Wildcard must not consume an owner implicitly.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-wildcard/main.qli": "85d582fdada66e34e05a2b0481c337eb2ed2c397f43bae3b22ce7943af29c384"
+      },
+      "reports": [
+        "observations/finite-counterexamples-quantum-wildcard.json"
+      ]
+    },
+    {
+      "id": "counterexamples-quantum-tuple-pattern",
+      "reason": "Tuple pattern must not split one quantum product owner; sized product basis remains unsupported.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-tuple-pattern/main.qli": "24e2d2b1242a91fa75fd65b57336a1037adc88238962745d87d0daceb28c8db3"
+      },
+      "reports": [
+        "observations/finite-counterexamples-quantum-tuple-pattern.json"
+      ]
+    },
+    {
+      "id": "counterexamples-unit-shape",
+      "reason": "Equal zero width does not equate Unit and a product of Units.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unit-shape/main.qli": "a7e4f4a0a07242d64e916ccf5a099b7f235a0cdbf09600cb39a5627034633e92"
+      },
+      "reports": [
+        "observations/finite-counterexamples-unit-shape.json"
+      ]
+    },
+    {
+      "id": "counterexamples-duplicate-across-parameters",
+      "reason": "Duplicate binder across distinct nested parameters must reject, including when declaration is unused.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/duplicate-across-parameters/main.qli": "3e6f2e96713f61214fbd641fe5bee4b040f536a97696a5138d2a6c9bbb9143c6"
+      },
+      "reports": [
+        "observations/finite-counterexamples-duplicate-across-parameters.json"
+      ]
+    },
+    {
+      "id": "counterexamples-static-collision",
+      "reason": "Runtime binder must not shadow static Nat; annotation lookup must not be rebound to runtime data.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/static-collision/main.qli": "db62624787f77d76b0bb677abfb0eb6adf09fcb36f42034b12bff6f57243dca7"
+      },
+      "reports": [
+        "observations/finite-counterexamples-static-collision.json"
+      ]
+    },
+    {
+      "id": "counterexamples-unused-bad",
+      "reason": "Every declaration must be checked before selecting f.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unused-bad/main.qli": "f0fd47465ade5cd842f0bf011509f48c4d3d8d268a4b2249eb26f298b7d5255a"
+      },
+      "reports": [
+        "observations/finite-counterexamples-unused-bad.json"
+      ]
+    },
+    {
+      "id": "counterexamples-lost-owner",
+      "reason": "Destructuring must not hide the unreturned r owner from function exit checks.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/lost-owner/main.qli": "6788d8619066c465190a50233bfc69f507dc36f69a20277c0901d391f630a3ad"
+      },
+      "reports": [
+        "observations/finite-counterexamples-lost-owner.json"
+      ]
+    },
+    {
+      "id": "counterexamples-call-arity",
+      "reason": "Two bound leaves do not change one product parameter into two call arguments.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/call-arity/main.qli": "e1af24b59c5ffa38032c986a5468a993de4a381795ce234196c770eb4ef5d38c"
+      },
+      "reports": [
+        "observations/finite-counterexamples-call-arity.json"
+      ]
+    },
+    {
+      "id": "counterexamples-zero-owner-wildcard",
+      "reason": "Zero-width Q<Bits<0>> remains linear; finite Bits profile rejection remains explicit.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/zero-owner-wildcard/main.qli": "94de3fc725651b4c92bf3025ee3a5b8bb930568e60d957ca5c10fbec5ce18500"
+      },
+      "reports": [
+        "observations/finite-counterexamples-zero-owner-wildcard.json"
+      ]
+    },
+    {
+      "id": "controls-named-unit",
+      "reason": "Existing named argument with exact Unit let-pattern.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-unit/main.qli": "3e0cbe845f797e3d720cf47e1e4ae787c689e75bd78f83b775495a32f2c4e887"
+      },
+      "reports": [
+        "observations/finite-controls-named-unit.json"
+      ]
+    },
+    {
+      "id": "controls-named-mixed-swap",
+      "reason": "Existing named argument and exact nested let-pattern; same independent swap meaning.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-mixed-swap/main.qli": "3ff72eb6c3f16f903d83ab51ad2d9e7c8cc337a9105b1cbd69376f5993ae29ad"
+      },
+      "reports": [
+        "observations/finite-controls-named-mixed-swap.json"
+      ]
+    },
+    {
+      "id": "controls-named-effectful-unit",
+      "reason": "Existing named parameter control for retained argument effects.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-effectful-unit/main.qli": "04104ccbe7168e598053c027c0980e9df0a95070f3be0168117bcbb2002e77b9"
+      },
+      "reports": [
+        "observations/finite-controls-named-effectful-unit.json"
+      ]
+    },
+    {
+      "id": "additional-wildcards-let-wildcard",
+      "reason": "Same nonlinear wildcard policy in let binding, without parameter syntax changes.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/let-wildcard/main.qli": "744aafec8e2941dd97eb90473530301d52681350c302cde7eb899d9018a77eb4"
+      },
+      "reports": [
+        "observations/finite-additional-wildcards-let-wildcard.json"
+      ]
+    },
+    {
+      "id": "additional-wildcards-zero-fold-wildcard",
+      "reason": "Same nonlinear wildcard policy in a zero-iteration fold; body remains generically checked.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/zero-fold-wildcard/main.qli": "3dad54f5fe7e944f1873627192b784a93899a46c11d449dfc566eb54d950add1"
+      },
+      "reports": [
+        "observations/finite-additional-wildcards-zero-fold-wildcard.json"
+      ]
+    },
+    {
+      "id": "additional-wildcards-quantum-let-wildcard",
+      "reason": "Wildcard let must continue rejecting quantum ownership loss.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/quantum-let-wildcard/main.qli": "6827faad127444ba7718ce7d9758ba4a17d6c70d06c1f4dd1e88cf9a21b039ea"
+      },
+      "reports": [
+        "observations/finite-additional-wildcards-quantum-let-wildcard.json"
+      ]
+    }
+  ]
+}

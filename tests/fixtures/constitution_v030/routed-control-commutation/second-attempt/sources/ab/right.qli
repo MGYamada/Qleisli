@@ -1,0 +1,2 @@
+use std::quantum::t;
+pub unitary fn vb(q:Q<Bit>) -> Q<Bit> { t(q) }

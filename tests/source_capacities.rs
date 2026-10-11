@@ -32,7 +32,7 @@ fn source_boundaries_count_utf8_bytes_before_decoding() {
 
 #[test]
 fn aggregate_includes_many_files_and_bundled_sources() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for i in 0..20 {
         root.write(&format!("m{i}.qli"), "// a small module\n");
     }
@@ -60,7 +60,7 @@ fn aggregate_includes_many_files_and_bundled_sources() {
 #[test]
 fn old_host_api_and_explicit_legacy_policy_keep_large_sources() {
     let source = format!(
-        "observe fn main() -> CBit {{ false }}\n//{}",
+        "observe fn main() -> Bit {{ 0 }}\n//{}",
         "x".repeat(1 << 20)
     );
     let root = SourceRoot::new(&source);

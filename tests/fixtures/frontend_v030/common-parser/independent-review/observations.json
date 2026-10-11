@@ -1,0 +1,138 @@
+{
+  "scope": "Bounded parser-only snapshot comparison; no native checking or feature completion",
+  "fixed_compiler_argv": [
+    "rustc",
+    "--edition=2024",
+    "/private/tmp/qleisli-common-parser-review/fixed/main.rs",
+    "-o",
+    "/private/tmp/qleisli-common-parser-review/fixed/parse"
+  ],
+  "snapshots": {
+    "/private/tmp/qleisli-common-parser-review": {
+      "scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+      "documentation.rs": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+      "main.rs": "01f1616e0980f8b5edbfacc98d9c89cd1d22df1883979dd6a75355482d05a566",
+      "ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+      "lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+      "parser.rs": "690c117211d10bdf58fc8f5c5615ef583be2218e08afac0f8e591fd4cef15c82"
+    },
+    "/private/tmp/qleisli-common-parser-review/fixed": {
+      "scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+      "documentation.rs": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+      "main.rs": "01f1616e0980f8b5edbfacc98d9c89cd1d22df1883979dd6a75355482d05a566",
+      "ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+      "lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+      "parser.rs": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d"
+    }
+  },
+  "cases": [
+    {
+      "name": "basis-predicate",
+      "source_path": "/private/tmp/qleisli-common-parser-review/basis-predicate.qli",
+      "source": "basis fn f(x:Bit)->Bit requires 0 == 0 {x}",
+      "runs": [
+        {
+          "stage": "before-fix",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/parse",
+            "basis fn f(x:Bit)->Bit requires 0 == 0 {x}"
+          ],
+          "exit_code": 101,
+          "stdout": "/private/tmp/qleisli-common-parser-review/basis-predicate.before-fix.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/basis-predicate.before-fix.stderr.txt"
+        },
+        {
+          "stage": "fixed",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/fixed/parse",
+            "basis fn f(x:Bit)->Bit requires 0 == 0 {x}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/basis-predicate.fixed.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/basis-predicate.fixed.stderr.txt"
+        }
+      ]
+    },
+    {
+      "name": "basis-access",
+      "source_path": "/private/tmp/qleisli-common-parser-review/basis-access.qli",
+      "source": "basis fn f(x:Bit)->Bit requires Apply(U) {x}",
+      "runs": [
+        {
+          "stage": "before-fix",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/parse",
+            "basis fn f(x:Bit)->Bit requires Apply(U) {x}"
+          ],
+          "exit_code": 101,
+          "stdout": "/private/tmp/qleisli-common-parser-review/basis-access.before-fix.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/basis-access.before-fix.stderr.txt"
+        },
+        {
+          "stage": "fixed",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/fixed/parse",
+            "basis fn f(x:Bit)->Bit requires Apply(U) {x}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/basis-access.fixed.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/basis-access.fixed.stderr.txt"
+        }
+      ]
+    },
+    {
+      "name": "empty-reference",
+      "source_path": "/private/tmp/qleisli-common-parser-review/empty-reference.qli",
+      "source": "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}",
+      "runs": [
+        {
+          "stage": "before-fix",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/parse",
+            "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/empty-reference.before-fix.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/empty-reference.before-fix.stderr.txt"
+        },
+        {
+          "stage": "fixed",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/fixed/parse",
+            "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/empty-reference.fixed.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/empty-reference.fixed.stderr.txt"
+        }
+      ]
+    },
+    {
+      "name": "empty-yield",
+      "source_path": "/private/tmp/qleisli-common-parser-review/empty-yield.qli",
+      "source": "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}",
+      "runs": [
+        {
+          "stage": "before-fix",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/parse",
+            "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/empty-yield.before-fix.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/empty-yield.before-fix.stderr.txt"
+        },
+        {
+          "stage": "fixed",
+          "argv": [
+            "/private/tmp/qleisli-common-parser-review/fixed/parse",
+            "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}"
+          ],
+          "exit_code": 0,
+          "stdout": "/private/tmp/qleisli-common-parser-review/empty-yield.fixed.stdout.txt",
+          "stderr": "/private/tmp/qleisli-common-parser-review/empty-yield.fixed.stderr.txt"
+        }
+      ]
+    }
+  ]
+}

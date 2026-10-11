@@ -1,0 +1,548 @@
+{
+  "record_kind": "subsequent_terminal_kernel_and_required_gate_observation",
+  "run_id": 37392202925,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925",
+  "branch_head": "7f6529ef93838d565552c3f501ce016ef1d1d2b4",
+  "executed_pr_merge": "a675d87a9e0c550200e179bcd2cc375f7c45458a",
+  "prior_record": "observations.json",
+  "observation_limit": "This supplement records the later terminal job snapshot and selected complete actual log lines. It does not rewrite earlier observations or record new local validation.",
+  "jobs_snapshot_source": "github_fetch_workflow_run_jobs for this exact run",
+  "all_returned_jobs_terminal": true,
+  "producer_statuses": [
+    {
+      "job_id": 112039745953,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Check source budgets, project loading and edition manifests"
+      ]
+    },
+    {
+      "job_id": 112039745975,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run cargo +1.85.0 test --all-targets"
+      ]
+    },
+    {
+      "job_id": 112039745992,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "job_id": 112039746053,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "job_id": 112039746097,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "job_id": 112039746137,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run all retained native comparisons with bounded parallelism"
+      ]
+    },
+    {
+      "job_id": 112039746162,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Verify clean package and complete source archive"
+      ]
+    },
+    {
+      "job_id": 112039746290,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run cargo +1.98.1 test --all-targets"
+      ]
+    }
+  ],
+  "required_aggregates": [
+    {
+      "job_id": 112045901979,
+      "name": "lean-kernel",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902015,
+      "name": "distribution",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902034,
+      "name": "rust",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902043,
+      "name": "macos-source",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902046,
+      "name": "rust-msrv",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902059,
+      "name": "interop",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902069,
+      "name": "lean",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 112045902160,
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "release_readiness": [
+    {
+      "job_id": 112045902899,
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "kernel": {
+    "job_id": 112039746137,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112039746137",
+    "status": "completed",
+    "conclusion": "failure",
+    "step_results": [
+      {
+        "number": 6,
+        "name": "Reject kernel/backend source escape hatches and unaudited imports",
+        "conclusion": "success"
+      },
+      {
+        "number": 7,
+        "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+        "conclusion": "success"
+      },
+      {
+        "number": 8,
+        "name": "Audit axioms, unsafe/partial declarations and runtime replacements",
+        "conclusion": "success"
+      },
+      {
+        "number": 9,
+        "name": "Replay retained proof reductions and refactoring equivalence",
+        "conclusion": "success"
+      },
+      {
+        "number": 10,
+        "name": "Replay the compiled project definitions through Lean's kernel",
+        "conclusion": "success"
+      },
+      {
+        "number": 11,
+        "name": "Reject backend unsafe, implemented_by, extern and partial counterexamples",
+        "conclusion": "success"
+      },
+      {
+        "number": 12,
+        "name": "Run all retained native comparisons with bounded parallelism",
+        "conclusion": "failure"
+      },
+      {
+        "number": 13,
+        "name": "Build and audit a clean relocated Linux native bundle",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 14,
+        "name": "Exercise optional QIR/Python paths against the same audited bundle",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 15,
+        "name": "Archive the freshly replayed Linux checker for distribution",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 16,
+        "name": "Retain Linux native distribution",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 17,
+        "name": "Retain complete coverage, per-command timings and independent logs",
+        "conclusion": "success"
+      },
+      {
+        "number": 18,
+        "name": "Bind successful producer evidence for scoped release readiness",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 19,
+        "name": "Retain exact producer receipt and planned artifact bytes",
+        "conclusion": "skipped"
+      }
+    ],
+    "observed_comparison_status_line_counts": {
+      "passed": 56,
+      "failed": 11
+    },
+    "failed_comparisons": [
+      "hierarchical-execution",
+      "sized-instrument",
+      "hierarchical-routed-power",
+      "hierarchical-circuit-trace",
+      "hierarchical-qpe-schedule",
+      "hierarchical-qpe-root",
+      "hierarchical-qpe-instrument",
+      "instrument-host",
+      "sized-qft",
+      "sized-arithmetic",
+      "native-acceptance"
+    ],
+    "interpretation": "The kernel build, axiom audit, replay stages and compiled checker regression completed successfully. The producer failed its retained comparison stage; this is not an observed Lean proof or build failure.",
+    "excerpt": {
+      "file": "kernel.log-excerpts-02.txt",
+      "scope": "Selected complete decoded original lines, not a full log",
+      "decoded_original_line_count": 1145,
+      "selected_original_one_based_lines": [
+        97,
+        124,
+        127,
+        469,
+        493,
+        494,
+        495,
+        549,
+        550,
+        551,
+        552,
+        553,
+        554,
+        555,
+        556,
+        557,
+        558,
+        559,
+        560,
+        561,
+        562,
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572,
+        573,
+        574,
+        575,
+        576,
+        577,
+        578,
+        579,
+        580,
+        581,
+        582,
+        583,
+        584,
+        585,
+        586,
+        587,
+        588,
+        589,
+        590,
+        591,
+        592,
+        593,
+        594,
+        595,
+        596,
+        597,
+        598,
+        599,
+        600,
+        601,
+        602,
+        603,
+        604,
+        605,
+        607,
+        608,
+        609,
+        610,
+        611,
+        643,
+        645,
+        646,
+        647,
+        648,
+        674,
+        676,
+        677,
+        678,
+        704,
+        706,
+        707,
+        708,
+        734,
+        736,
+        737,
+        738,
+        764,
+        766,
+        767,
+        768,
+        794,
+        796,
+        797,
+        798,
+        799,
+        800,
+        801,
+        802,
+        803,
+        804,
+        805,
+        806,
+        807,
+        808,
+        809,
+        841,
+        843,
+        844,
+        845,
+        846,
+        847,
+        848,
+        849,
+        850,
+        880,
+        882,
+        883,
+        884,
+        885,
+        886,
+        887,
+        888,
+        889,
+        890,
+        891,
+        892,
+        893,
+        894,
+        895,
+        896,
+        897,
+        898,
+        899,
+        900,
+        901,
+        902,
+        903,
+        904,
+        905,
+        906,
+        907,
+        908,
+        909,
+        910,
+        911,
+        912,
+        913,
+        914,
+        915,
+        916,
+        917,
+        918,
+        919,
+        921,
+        922,
+        923,
+        924,
+        925,
+        926,
+        927,
+        928,
+        929,
+        930,
+        1056,
+        1057,
+        1058,
+        1059,
+        1060,
+        1061,
+        1062,
+        1063,
+        1064,
+        1065,
+        1066,
+        1067,
+        1068,
+        1069,
+        1070,
+        1071,
+        1072,
+        1073,
+        1074,
+        1075,
+        1076,
+        1077,
+        1078,
+        1079,
+        1080,
+        1081,
+        1082,
+        1083,
+        1084,
+        1085,
+        1086,
+        1087,
+        1089,
+        1090,
+        1091,
+        1092,
+        1093,
+        1094,
+        1095,
+        1096,
+        1097,
+        1099,
+        1100,
+        1101
+      ],
+      "omitted_long_selected_lines": [
+        1088
+      ],
+      "limit": "The huge ParsedProgram success dump in the stale coherent-lift test is intentionally omitted."
+    }
+  },
+  "failures": [
+    {
+      "comparisons": [
+        "hierarchical-execution",
+        "sized-instrument",
+        "hierarchical-routed-power",
+        "hierarchical-circuit-trace",
+        "hierarchical-qpe-schedule",
+        "hierarchical-qpe-root",
+        "hierarchical-qpe-instrument",
+        "instrument-host",
+        "sized-qft"
+      ],
+      "observed_exception": "compile_sized_corpus.SourceError: unknown or unimported operation init_zero",
+      "source_diagnosis": "The Python parser only accepts ordinary call names present in its explicit imports table. The retained initializer now uses a same-module recursive call, following the production rule that an import of one's own declaration collides."
+    },
+    {
+      "comparisons": [
+        "sized-arithmetic"
+      ],
+      "observed_exception": "compile_sized_corpus.SourceError: unknown static operation parameter or definition all_ones",
+      "source_diagnosis": "The same Python resolver gap also affects a current local declaration used as the controlled operation target."
+    },
+    {
+      "comparisons": [
+        "native-acceptance"
+      ],
+      "observed_failed_target": "quantum_unit_maps",
+      "observed_target_counts": {
+        "passed": 10,
+        "failed": 2,
+        "ignored": 0
+      },
+      "observed_failures": [
+        {
+          "test": "isolated_wrong_types_and_arities_reject_before_argument_evaluation",
+          "assertion": "expected type; received arity for unit()",
+          "contract": "type-model.md explicitly specifies unit() as an arity error; runtime wrong-count cases must retain rejection at the correct category."
+        },
+        {
+          "test": "selected_coherent_lifts_remain_separate_from_explicit_packaged_maps",
+          "assertion": "unwrap_err received an Ok ParsedProgram for the existing coherent projection source",
+          "contract": "Current source checking is separate from concrete profile eligibility. The existing source can pass common checking but must still fail concrete instantiation with located unsupported."
+        }
+      ],
+      "scope": "The grouped comparison includes several passing targets before the observed quantum_unit_maps target failure; its overall failure is not a claim that every grouped test failed."
+    }
+  ],
+  "minimal_repair_recommendations": [
+    "Resolve the actual current local declaration through an explicit canonical module context in the Python proposal adapters; cover ordinary calls, operation definitions, static operation arguments and adjoint lookups, and reject explicit import/local-name collisions. Do not restore the four self-import lines or allow arbitrary unknown names.",
+    "Preserve existing complete source checking, type/arity checks, shadowing restrictions, operation capability checks, same-size/excessive instantiation rejection, source hashes and fresh independent native checks.",
+    "For quantum_unit_maps, change only the four runtime wrong-count expected categories from type to arity. Keep wrong-type arguments, static-argument priority and unchanged negative sources.",
+    "For the two existing coherent projections, expect common parsing success followed by located unsupported at instantiate; preserve their original source and positive identity/owner/tree assertions."
+  ],
+  "gate_excerpts": [
+    {
+      "job_id": 112045902160,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112045902160",
+      "source": "Decoded github_fetch_workflow_job_logs response",
+      "lines": [
+        {
+          "original_one_based_line": 122,
+          "text": "2026-10-06T00:27:54.7532240Z ##[group]Run python3 scripts/ci_profiles.py --gate --report \"$RUNNER_TEMP/required-results.json\""
+        },
+        {
+          "original_one_based_line": 181,
+          "text": "2026-10-06T00:27:54.8116262Z CI validation: check-rust: expected success, got failure"
+        },
+        {
+          "original_one_based_line": 182,
+          "text": "2026-10-06T00:27:54.8169059Z ##[error]Process completed with exit code 1."
+        }
+      ]
+    },
+    {
+      "job_id": 112045901979,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37392202925/job/112045901979",
+      "source": "Decoded github_fetch_workflow_job_logs response",
+      "lines": [
+        {
+          "original_one_based_line": 122,
+          "text": "2026-10-06T00:27:52.2269429Z ##[group]Run python3 scripts/ci_profiles.py --gate --report \"$RUNNER_TEMP/required-results.json\""
+        },
+        {
+          "original_one_based_line": 181,
+          "text": "2026-10-06T00:27:52.2827632Z CI validation: check-rust: expected success, got failure"
+        },
+        {
+          "original_one_based_line": 182,
+          "text": "2026-10-06T00:27:52.2883969Z ##[error]Process completed with exit code 1."
+        }
+      ]
+    }
+  ],
+  "aggregation_diagnosis": "The sampled docs and lean-kernel required aggregate logs both reject check-rust: expected success, got failure. All eight required aggregates failed; this complete-selected gate is separate from the individually successful docs, Lean and interop producers.",
+  "distribution_limit": "The distribution producer failed source archive all-targets; detailed 60.6 MB ZIP logs remain uninspected and its underlying test failure remains unverified.",
+  "work_performed": "Read-only current log/API/source diagnosis plus this new evidence supplement only. No tests, builds, native execution, restarts, reruns, cancellation or product/test edits.",
+  "qft_scope": "The failing retained sized-qft comparison belongs to existing fixed support. Generic qft<N> implementation remains outside all v0.3.0 and the current goal."
+}

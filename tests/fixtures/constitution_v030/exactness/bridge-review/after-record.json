@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.release-ledger-bridge-review",
+  "version": 1,
+  "status": "identical-counterexample-rejected-after-repair",
+  "scope": "Same explicit-mock boundary experiment as before-record.json; no Rust/Lean builds, true hosted context, native check, human approval, or release readiness.",
+  "command": [
+    "python3",
+    "/private/tmp/qleisli-release-ledger-substitution.py"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "outcome": "PacketError: constitutional verifier validated different ledger bytes",
+  "implementation_review": "The inner constitutional checker returns SHA-256 of its already validated ledger_bytes with no new read. record_constitution compares that SHA with its captured before bytes before writing a receipt. _check captures its ledger snapshot before invoking the validator, compares the returned SHA, then parses those same snapshot bytes. Missing digest rejects; existing final unchanged checks and full receipt-result equality remain.",
+  "files": {
+    "reproduce.py": "d28877cb224454745d2c046031d2746cb26c90a8673a25a3d1e2833183c793f9",
+    "after.stdout.json": "76f739ff423f7c8a91499045dc9e6a01f667bd070804e57a0ab79741b43b5dfc"
+  },
+  "source_sha256": {
+    "scripts/check_constitution.py": "424f8e9b9bedbc5cbbd49915b600026e5db8ad933460aa24e2f7a7c8c7cba8e1",
+    "scripts/test_check_constitution.py": "96398e481aabbc318d0e563bb841298771f73bef9d46261f8cbdab469467b24c",
+    "scripts/check_release_ready.py": "c8274c1254ac69267e6630604eeba4629ee57715e13ba89098436f2bc611e5c8",
+    "scripts/test_check_release_ready.py": "b7057aeee15381e6826a8624189107649be0a1be4900fa167cca9375fa41a4b2",
+    "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+  }
+}

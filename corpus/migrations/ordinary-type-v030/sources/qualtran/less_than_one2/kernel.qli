@@ -1,0 +1,24 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/comparison.py
+// Selected symbol: LessThanConstant
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::s;
+use std::quantum::t;
+use std::quantum::tdg;
+use std::quantum::id;
+use std::quantum::phase_eighth;
+use std::quantum::toffoli;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, d) = split(q);
+    let (a, b) = split(ab);
+    let ((a, b), d) = toffoli(x(a), x(b), d);
+    join(join(x(a), x(b)), d)
+}

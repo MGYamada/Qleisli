@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "sized_source",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 2.9812980419956148,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stdout.txt",
+      "sha256": "3757d3dea06a7df53059fd57eec0765b8ff1c03f80f6b057f44fa81abdf1ad21"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stderr.txt",
+      "sha256": "88481d501e9c38e85559594c8ece49a8b3c54d8ef59506cb521d6d6cffd6628e"
+    }
+  }
+}

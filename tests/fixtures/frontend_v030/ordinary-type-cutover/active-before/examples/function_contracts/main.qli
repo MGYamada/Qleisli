@@ -1,0 +1,28 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::cnot;
+use std::observe::measure_z;
+use std::observe::discard;
+use implementation::selected;
+use specification::phase;
+
+unitary fn contracted_phase(q: Q<Bit>) -> Q<Bit> {
+    apply_contract(selected, phase, q)
+}
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+
+observe fn main() -> ((CBit, CBit), CBit) {
+    let (reference, data) = cnot(h(init0()), init0());
+    let data = contracted_phase(data);
+    let (reference, data) = cnot(reference, data);
+    let reference_result = measure_z(h(reference));
+    let data_result = measure_z(data);
+
+    let (control, target) = qif(h(init0()), x(init0())) {
+        0 => identity, 1 => contracted_phase
+    };
+    discard(target);
+    ((reference_result, data_result), measure_z(h(control)))
+}

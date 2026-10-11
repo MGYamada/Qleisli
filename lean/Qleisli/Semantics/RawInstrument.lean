@@ -4,7 +4,7 @@ import Qleisli.Semantics.Raw
 /-! Independent original-operation instrument semantics. These judgments retain
 every hidden outcome, classical value and unnormalized operator. They import
 neither acceptance predicates nor evaluator code or work/capacity policies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.RawInstrument
 open QleisliKernel.Semantics.Observation QleisliKernel.Semantics.Exact
 open QleisliKernel.Semantics.Finite Qleisli.Semantics.Exact

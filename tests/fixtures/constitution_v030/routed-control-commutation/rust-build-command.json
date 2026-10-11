@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "cargo",
+    "build",
+    "--offline",
+    "--lib"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "elapsed_seconds": 0.083
+}

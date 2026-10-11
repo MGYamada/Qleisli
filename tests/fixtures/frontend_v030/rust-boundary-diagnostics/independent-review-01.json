@@ -1,0 +1,72 @@
+{
+  "format": "qleisli.rust-boundary-independent-advisory-review",
+  "version": 1,
+  "recorded_utc": "2026-10-06T05:21:25.666449+00:00",
+  "reviewer": "Codex subagent /root/current_ci_failure_audit; separate from production, Reference and independent test authors",
+  "status": "no-remaining-blocker-in-reviewed-slice",
+  "public_source_baseline": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "reviewed_files": {
+    "src/frontend/check/body.rs": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab",
+    "tests/source_scope.rs": "963ac205da9a619c0d58eaa82a81111e0890412ab00f2a2d44d8238431bd640c",
+    "tests/rust_boundary_diagnostics.rs": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd",
+    "docs/src/reference/rust-boundary.md": "80752a6b7bf86cfef80d0ac79db01d5f3140c4b9882a40bd22e34003e77263d4"
+  },
+  "implementation_findings": [
+    "disposal_error is called only from the same five existing failed ownership branches: linear wildcard, still-live shadow, unreturned parameter, linear expression statement and escaping local owner. Conditions, category, original prefix and span are retained.",
+    "unresolved_function_message runs only for ResolvedUse::Unresolved. Resolved declarations and local values retain normal categories. Callee resolution still precedes argument evaluation; matching a name does not grant consumption, effect or access.",
+    "No successful path, owner state transition, constructor, work charge or checking order changed. Classical unrestricted data remains reusable and ignorable; nested Q<Unit> remains linear despite zero width.",
+    "Observe user drop and returned reset owners remain valid; reset is not clean-release evidence. The diagnostic lists distinct operations without recommending an invented release call.",
+    "The source_scope assertion preserves the complete former diagnostic prefix and original exact binder span. Its added suffix is separately checked by the new tests."
+  ],
+  "resolved_reference_finding": {
+    "location": "docs/src/reference/rust-boundary.md:136",
+    "original_sha256": "8d2c489b9f73a6987c4e1a2fa358e656ce7feee16c9ad872a93b70353f422d16",
+    "finding": "Separation alone was described as equivalent to return to the declared fixed pure state; fixed |1> is separable but fails declared |0> return.",
+    "resolution": "Reread corrected text: under adopted all-input channel premises, factorization must contain the same declared fixed pure state; separation alone is explicitly insufficient. This applies the existing adopted QS equation, not a new interpretation.",
+    "correction_record": {
+      "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/reference-review-correction-01.json",
+      "sha256": "0a5b1eb4af5d242812cc90b8532b1bbe0b4e2f4c859c5306f21b98cd93110721"
+    },
+    "independent_prose_check": "A separate read-only child also found this issue and no other requested prose/contract blocker."
+  },
+  "test_and_record_review": {
+    "prepared_test_unchanged": true,
+    "before_archives_match_public_baseline": true,
+    "source_cases_in_four_new_tests": {
+      "rejected": 13,
+      "accepted": 8
+    },
+    "reviewed_existing_latest_and_msrv_results": {
+      "total_tests_each": 23,
+      "body_effects": 13,
+      "functional_boundary": 3,
+      "new_rust_boundary": 4,
+      "source_scope": 3,
+      "failed_each": 0,
+      "ignored_each": 0
+    },
+    "authoring_comparison": {
+      "unchanged_first_projects": 9,
+      "actual_before_observations": 21,
+      "actual_after_observations": 21,
+      "source_repairs": 0,
+      "unchanged_raw_observations": 11,
+      "changed_raw_observations": 10
+    },
+    "record_identity_checks": "All existing validation stream hashes, nine first .qli source hashes and all eighteen JSON-check raw-stream hashes matched. Actual public diagnostic codes and byte spans are unchanged before/after; only five designated rejected-case messages differ.",
+    "coverage": "Common and explicit finite absent-kernel rejection paths; callee priority including invalid arguments and Unicode/CRLF spans; ordinary versus nested zero-width ownership loss; user/local name resolution; use-after-move; explicit observing consumption and fresh reset output.",
+    "limits": "Saved builds/tests and book checks were performed by root/assigned observers. The saved original book checks precede the final prose correction; this review does not claim a rebuild of that corrected chapter. Bounded execution is not universal acceptance equivalence or source preservation."
+  },
+  "performed_by_reviewer": [
+    "Read production diff, checking/resolution/pattern context, Reference and adopted contracts.",
+    "Read raw selected existing observations and validation records and checked their identities.",
+    "Ran only required python3 scripts/check_constitution.py --base-ref faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2; exit 0.",
+    "Wrote only this advisory review record."
+  ],
+  "not_performed": [
+    "No Cargo/Lean build, runtime/client test, native checker run, GitHub access or Git mutation.",
+    "No original fixture, source, protected record, verification inventory or proof-status edit."
+  ],
+  "scope": "Ordinary #68 diagnostic and Reference slice only. VM22 original frozen inventory and first actual source_changed rejection must be preserved; any one-entry reviewed body identity refresh is root-owned. QS/PR/quantitative RS/EXACT broad duties remain pending and both admitted QLV1 scopes/premises unchanged. No new interpretation, guarantee, primitive admission, broad feature completion, full CI, release approval or generic QFT claim."
+}

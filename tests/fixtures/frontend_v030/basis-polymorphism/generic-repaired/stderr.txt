@@ -1,0 +1,6 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 5.63s
+     Running tests/basis_polymorphism.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/basis_polymorphism-6d169daf7ebe7ac0)
+     Running tests/inference_law.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/inference_law-6571b17a5bf3f1a8)
+     Running tests/quantum_tuple_unitors.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_tuple_unitors-8c0d20f669306ca1)
+     Running tests/quantum_unit_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_unit_source-73a50a1479d81920)

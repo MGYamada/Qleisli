@@ -1,0 +1,4 @@
+    Finished `test` profile [unoptimized] target(s) in 0.40s
+     Running tests/sized_review_diagnostics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_review_diagnostics-443073b2542578f2)
+     Running tests/sized_review_dialects.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_review_dialects-584dd1c029a422d5)
+error: test failed, to rerun pass `--test sized_review_dialects`

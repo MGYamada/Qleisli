@@ -6,7 +6,7 @@ not new public Qleisli language or compiler APIs. The
 system design governs the
 meaning/implementation boundary and distinguishes the initial subset from
 production integration. Qleisli's Apache-2.0 license and
-[attribution](../../NOTICE) apply. Copyright 2026 Masahiko G. Yamada.
+[attribution](../../NOTICE) apply. Copyright 2026 Qleisli Project Contributors.
 
 The v0.1.5 decision selects a
 bounded M2 continuation, replacing indefinite deferral. The existing term/proof

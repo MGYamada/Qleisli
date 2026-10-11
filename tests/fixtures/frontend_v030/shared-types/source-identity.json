@@ -1,0 +1,42 @@
+{
+  "baseline_commit": "44e23e4d0a6302eff17f3b39c42b735fcee7583d",
+  "baseline": {
+    "src/frontend/types.rs": null,
+    "src/frontend/mod.rs": "be33c9b5983cec74f91fba1809b4b6c540fe7a5b65d8e3ec1609e0e74cc10b94",
+    "src/frontend/compile/mod.rs": "02200d5197275124faaa14d84f15fa8ea71dac4c7f284b1a45f69dcdbe53a668",
+    "src/frontend/compile/basis.rs": "f37a935885ab3ff57945d5fb4d3a6096ad741e0dd276a2bd42c12f707537c0ce",
+    "src/frontend/compile/operations.rs": "0f3064f5c02ed615b2fd4116f73049c16416b891a728e59bbdef8fec49b071d1",
+    "src/frontend/compile/lower/mod.rs": "4d409be367c44555ac2c8fa367bd96f0f5418c013d9f1f87a7da2a574ed192f2",
+    "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+    "src/frontend/compile/lower/scope.rs": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+    "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+    "src/frontend/compile/lower/branch.rs": "71abef9520176904ce2f372408e103b23647f44310e26cc3ed3c8254be5df755",
+    "src/frontend/compile/lower/certified.rs": "9fea23f2834063d2fdc9ce67414c4ca48b840d5693b677ddc8f9ebb3ad64e4e8",
+    "src/frontend/compile/lower/function_contract.rs": "50f11ce3fccd9649abeca96cbb7f10a6d1ed6e1e742e2985abb24d7f36976a27",
+    "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+    "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+    "tests/frontend_types.rs": null
+  },
+  "after": {
+    "src/frontend/types.rs": "95acfa6a050b2bf2304e28672c54f2c3383b9de1420f8ab307f700bed23989cd",
+    "src/frontend/mod.rs": "79240de8d16e346b0f1cae5b99de4bf7b9fd694db4b53f948cb2670fdd5bf3fa",
+    "src/frontend/compile/mod.rs": "59bcae91d84ca2bd38ebe6079c94e52975c60b919e9e76162b6e04e3682c259d",
+    "src/frontend/compile/basis.rs": "c831576502b85bfad857fa4331d5d93c644ae707c9f89830b8321b663d0cae53",
+    "src/frontend/compile/operations.rs": "f9080cce5aee892f2a841db73db4e649ad179f4b7ef2d86ae0ae9e43679921e6",
+    "src/frontend/compile/lower/mod.rs": "9113a5e2984ac170b2c4252d094062fbe6ec85ecc7639c49e4d8a2883f95e59d",
+    "src/frontend/compile/lower/value.rs": "d7e161bdce1f7a31e6f45a3899d91dd2e52d03165aa8a0c2d0784b72da9e6f74",
+    "src/frontend/compile/lower/scope.rs": "dd0800bbc194aaef050e07f46ff293d1d49576b407298dbb014857d200b985d4",
+    "src/frontend/compile/lower/primitives.rs": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+    "src/frontend/compile/lower/branch.rs": "44ac4d45b6379d09b9f336fe98c4abc924757dab73a5000c891909b26ac94959",
+    "src/frontend/compile/lower/certified.rs": "05adf12f262f37e9690a62a6a77e3029413fcf1b913bccc6c941738ecdd75850",
+    "src/frontend/compile/lower/function_contract.rs": "f3cc34b229727baefd12223573e9eada57b12b407a22651f6e316adfab06bec2",
+    "src/frontend/sized/check.rs": "b328921be85c34cb60030a98f86a7d425db65a15a733ea143f757debf92e8146",
+    "src/frontend/sized/elaborate.rs": "22f367d04d3da37a921f4190a5a319298150f3c732596ab5205a5133efb8ba1f",
+    "tests/frontend_types.rs": "86819ee44195437955536bee780aa11e7be44f53ce9c4996807a6e135f1bdf7f"
+  },
+  "scope": "Hashes bind the changed Rust files, not all concurrently edited repository/Lean sources.",
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  }
+}

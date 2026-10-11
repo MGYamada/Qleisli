@@ -1,0 +1,8 @@
+2026-10-06T03:40:26.8372545Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +7e768e6ccdbb98077818664f985886bb5a86a374:refs/remotes/pull/307/merge
+2026-10-06T03:40:30.0742707Z HEAD is now at 7e768e6 Merge 73355382a3db94893982e5954e9400fffcd7f48e into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T03:40:30.0842545Z 7e768e6ccdbb98077818664f985886bb5a86a374
+2026-10-06T03:42:48.7476196Z ##[group]Run python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
+2026-10-06T04:06:54.4958283Z command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-3ge6uscx/logs/14.stderr
+2026-10-06T04:06:54.4970903Z Distribution validation failed; report: /home/runner/work/_temp/qleisli-distribution.json
+2026-10-06T04:06:54.5079379Z ##[error]Process completed with exit code 1.
+2026-10-06T04:06:54.5150655Z   name: distribution-7e768e6ccdbb98077818664f985886bb5a86a374

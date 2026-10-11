@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#79 explicit Default/quantum construction boundary with unchanged acceptance",
+  "baseline_commit": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; informed Issue/code/specification access; exact model/sampling unavailable",
+  "context": "context.md",
+  "record_status": "actual-before-and-after-observations-registered; zero source repairs",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Six complete independent first-source controls and deliberate counterexamples; no repair sequence.",
+      "sha256": {
+        "explicit-isometry-default/main.qli": "14897ccf92a902370872ac5f3fc2ca3bd11a2404aaeb93faa6ad20f76ac75bb2",
+        "explicit-unit-default/main.qli": "981840738e540c46e3bc810dede63bc25206e6763c80f0c260efed5c6f7e15d9",
+        "false-unitary-caller/main.qli": "e38476f1ea125a94204a5ded78700889a17dea23b258b617f6334781ffee21c2",
+        "nested-unit-wildcard/main.qli": "ebb9d3aaba3a237e03eabc142a6d1e35fdf9f02012c1fdcfd79b3354972b15cf",
+        "ordinary-default/main.qli": "f078eb4797b7d7ffad615f893e4674f3a54b6c134d78282932add490efd58d74",
+        "unused-generic-default/main.qli": "19474cb91103f6084c3b9b42d866cea9b01928768f292cf8eff48e2dc1db5109"
+      },
+      "observations": [
+        "observations-before/ordinary-default-check-json.json",
+        "observations-before/ordinary-default-check-text.json",
+        "observations-before/explicit-isometry-default-check-json.json",
+        "observations-before/explicit-isometry-default-check-text.json",
+        "observations-before/false-unitary-caller-check-json.json",
+        "observations-before/false-unitary-caller-check-text.json",
+        "observations-before/unused-generic-default-check-json.json",
+        "observations-before/unused-generic-default-check-text.json",
+        "observations-before/explicit-unit-default-check-json.json",
+        "observations-before/explicit-unit-default-check-text.json",
+        "observations-before/nested-unit-wildcard-check-json.json",
+        "observations-before/nested-unit-wildcard-check-text.json",
+        "observations-before/ordinary-default-run-json.json",
+        "observations-before/explicit-isometry-default-run-json.json",
+        "observations-before/explicit-unit-default-run-json.json",
+        "observations-after/ordinary-default-check-json.json",
+        "observations-after/ordinary-default-check-text.json",
+        "observations-after/explicit-isometry-default-check-json.json",
+        "observations-after/explicit-isometry-default-check-text.json",
+        "observations-after/false-unitary-caller-check-json.json",
+        "observations-after/false-unitary-caller-check-text.json",
+        "observations-after/unused-generic-default-check-json.json",
+        "observations-after/unused-generic-default-check-text.json",
+        "observations-after/explicit-unit-default-check-json.json",
+        "observations-after/explicit-unit-default-check-text.json",
+        "observations-after/nested-unit-wildcard-check-json.json",
+        "observations-after/nested-unit-wildcard-check-text.json",
+        "observations-after/ordinary-default-run-json.json",
+        "observations-after/explicit-isometry-default-run-json.json",
+        "observations-after/explicit-unit-default-run-json.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "predictions-before.json",
+        "observations-before/capture.json",
+        "assessment-before.json",
+        "observations-after/capture.json",
+        "comparison-after.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "explicit-isometry-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "explicit-unit-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "false-unitary-caller/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-unit-wildcard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "unused-generic-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Informed bounded source/diagnostic study; no trait feature or proof completion.",
+  "registration": {
+    "recorded_utc": "2026-10-06T05:29:03.554863+00:00",
+    "pending_sha256": "ed2e0e9687aed4679638be554e934a594cdc2de81303b38bf5b4dae09bfcb947",
+    "capture_before_sha256": "68b75c60f8033fbe8a49f8315b7b0de3e78d5b72ed63af2163db511c333cf2d0",
+    "assessment_before_sha256": "63318864a7ed23b83db25edc24e81f2df28b403e0d26bd957f9223737bc1f659",
+    "capture_after_sha256": "ce334398c5c67c101dd2131958899279cce66c7632e29a84229b27d2bc12431f",
+    "comparison_after_sha256": "981fbd51ca29eb6bf8785cd2495ad926f79bfc26dd146ee3682421db9821beab",
+    "session_before_sha256": "f059fef391b2aed662c3f00ccf8cc8952ea4664127d8b722775cc400dd3fa2e2",
+    "completed_utc": "2026-10-06T05:30:54.747827+00:00"
+  }
+}

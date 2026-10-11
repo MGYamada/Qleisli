@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:45:14.466696+00:00",
+  "elapsed_seconds": 0.00521933299023658,
+  "case": "phase-reference-desired",
+  "action": "finite-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "b4b044a949d7234c67a6861f27e3ef4d31c486d207c9cbfb3ebeda0b77124f05",
+  "raw_stdout": {
+    "path": "observations-before/phase-reference-desired-finite-check.stdout.txt",
+    "sha256": "313b47dc5c03822025b6e05d1e84cf0fb7a2acccc91fb79ce545d5190410698e"
+  },
+  "raw_stderr": {
+    "path": "observations-before/phase-reference-desired-finite-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `(`, found `basis`",
+        "primary": {
+          "path": "main.qli",
+          "start": 357,
+          "end": 362,
+          "line": 11,
+          "column": 50
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

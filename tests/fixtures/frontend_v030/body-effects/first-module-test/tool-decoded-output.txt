@@ -1,0 +1,25 @@
+
+running 7 tests
+test names_and_module_paths_do_not_grant_body_effects_or_access ... FAILED
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+
+failures:
+
+---- names_and_module_paths_do_not_grant_body_effects_or_access stdout ----
+
+thread 'names_and_module_paths_do_not_grant_body_effects_or_access' (14072335) panicked at tests/body_effects.rs:225:92:
+called `Result::unwrap()` on an `Err` value: Error { code: "module", module: Some("std::ordinary"), span: Span { start: 0, end: 0 }, message: "invalid module path" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    names_and_module_paths_do_not_grant_body_effects_or_access
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.89s
+
+error: test failed, to rerun pass `--test body_effects`

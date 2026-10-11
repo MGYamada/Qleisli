@@ -12,7 +12,7 @@ use std::quantum::z;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-pub observe fn send(phase: CBit, parity: CBit) -> (CBit, CBit) {
+pub observe fn send(phase: Bit, parity: Bit) -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     let a = if phase { z(a) } else { a };
     let a = if parity { x(a) } else { a };

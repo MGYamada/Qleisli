@@ -1,0 +1,1478 @@
+{
+  "scope": "Observe only the existing VM22 source_comparisons function; never its main.\n\nThe main entrypoint invokes Cargo and has no --source-only option. This driver\nkeeps the existing source function and frozen-byte comparisons intact, adding\nonly bounded records of its calls and any mismatch bytes. It never captures\nor overwrites the historical VM22 fixtures.\n",
+  "selected_function": "test_verification_baseline.source_comparisons(binary, False)",
+  "full_script_success_claimed": false,
+  "capture": false,
+  "driver_argv": [
+    "tests/fixtures/frontend_v030/ordinary-type-baseline-integration/run.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "source_before": {
+    "corpus/negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18",
+    "corpus/negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "corpus/negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "corpus/negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "corpus/pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
+    "corpus/pennylane_demos/phase_kickback1/main.qli": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440",
+    "corpus/pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "corpus/pennylane_demos/rx_quarter/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "corpus/qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
+    "corpus/qualtran/bitwise_not2/main.qli": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77",
+    "corpus/qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
+    "corpus/qualtran/xor_constant2/main.qli": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d",
+    "corpus/quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
+    "corpus/quantum_katas/fredkin3/main.qli": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be",
+    "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
+    "corpus/quantum_katas/swap2/main.qli": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59",
+    "examples/bell/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+    "examples/bell/main.qli": "8a661821aa78ca3a3f8ef4c3547838f171bd1a1e74edbf7d248704249e593246",
+    "examples/feedback/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/feedback/control.qli": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6",
+    "examples/feedback/main.qli": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9",
+    "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+    "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
+    "src/bin/qleisli.rs": "5863d1652709663ce577d012ceb6e45a43249ee5e5cc11d431a2fb1a0ae8a096",
+    "src/bin/qleisli/artifacts.rs": "a6c50b60764b070f4deeb0f1b38794c21f8d7108a5d2a88c0893e7810c974d47",
+    "src/bin/qleisli/interop.rs": "3b543cd1c360ff647bacc2a8da52eb37f6b2cd0b4e1dc9faa971dadcb3be326a",
+    "src/bin/qleisli/json.rs": "e05bec3229c78eb6aa02c98aa73afb037870f06eb9b8e6edf2a3418e18a0519a",
+    "src/bin/qleisli/options.rs": "bf2058bf12225c43e304be7746bb6e3f767a3eaf086f8b719ef5200fbc5d47ed",
+    "src/bin/qleisli/samples.rs": "3adafc74789ad0ca1e38919dfafcde79c89f001d70c083c79257cdcb3a27a1bc",
+    "src/bin/qleisli/sized.rs": "bf0be6d54c6ddf53ea1ce4ff43751d116401be2afceb498c07063f63bbd71479",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "src/bin/qleisli/source_commands.rs": "386fb4823e63dac7fb66f2b4095a72e322e83d29ce258047a29baa57566dfd60",
+    "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+    "src/contract/function.rs": "dd8bc84054cb830d55702f5102c531d93df3432969b56072bcf88561f0d91ee8",
+    "src/contract/meaning.rs": "5928730da1973c9c2e2ae0627a397eb164f610d59da32f0ec297698da4b3a73d",
+    "src/contract/mod.rs": "4aa9dc811c8c09aa629e7d7411fd036a7906dc128e71142627986ff31747a580",
+    "src/frontend/ast.rs": "d030ccea0dcd5a22362e2f80cc49d1134dcd8b7a32b6af245259f24de39a763e",
+    "src/frontend/compile/basis.rs": "b3cecb102484ea1f562c82f89c81838696afa4ce67556db2fb7c30b93bda0dd2",
+    "src/frontend/compile/circuit.rs": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
+    "src/frontend/compile/lower/branch.rs": "44ac4d45b6379d09b9f336fe98c4abc924757dab73a5000c891909b26ac94959",
+    "src/frontend/compile/lower/certified.rs": "be81a25690eac259b7d750af972e1465ba26ede3dbb7c70f2d1724d56b72b80f",
+    "src/frontend/compile/lower/function_contract.rs": "333e9eaffb1851f1c71d563a367ac5ffbad8075c51d8296024c74a1cd18ea301",
+    "src/frontend/compile/lower/mod.rs": "54d3ddf9d7c8b41e9adc7e10d867f6fb3f6de8e526f0a6f4209ad3244f9f627c",
+    "src/frontend/compile/lower/operations.rs": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
+    "src/frontend/compile/lower/primitives.rs": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+    "src/frontend/compile/lower/scope.rs": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
+    "src/frontend/compile/lower/transforms.rs": "09b5a680ee2bfba06eb1cf8d8e2e0b8d1cc96d7e00c98eda65eac32847df6681",
+    "src/frontend/compile/lower/value.rs": "8d72d9349ab3d43ca5c43dc1e452c1da7ede71cf5ddcb77dbdb0339be49b6453",
+    "src/frontend/compile/mod.rs": "f521762da4a9bc87d06d4af94fbd766944473ccab666f0780920392f9f4ebfed",
+    "src/frontend/compile/operations.rs": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
+    "src/frontend/compile/profile.rs": "62d7817d59d2425d73c48bd5a9c123ebacba7851da1cf5c0ea0a249ce857d7de",
+    "src/frontend/core.rs": "a5b5793259b45cb20f586708aba9c96f5b4085f517654c8bb8964a522208ca90",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+    "src/frontend/documentation.rs": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/mod.rs": "c7b00487d60e4dd63bc4f7738a9f91bf905fbdfa44b185892da5784118663004",
+    "src/frontend/parser.rs": "a992f8827df1d2c08635941b15a3425fe4f8c0bf5cc6eb5d8627095022deeadd",
+    "src/frontend/parser/tests.rs": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+    "src/frontend/project.rs": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
+    "src/frontend/project/edition.rs": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
+    "src/frontend/project/manifest.rs": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
+    "src/frontend/project/source_file.rs": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+    "src/frontend/resolve.rs": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+    "src/frontend/resolve/locals.rs": "9a0575f82bea44d8cecefa1c360ecdb34eecb0b6240e2c834ed0f955bf03fa90",
+    "src/frontend/scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+    "src/frontend/sized.rs": "e2928779d30d4b45e7227a77f5bb013fa827e5ed62af112803de747fdf9a10a7",
+    "src/frontend/sized/ast.rs": "fe15a7da31c865b0aca9dab5e9f88bcc1a46d269e0f6ce3c6480900c6ec4433e",
+    "src/frontend/sized/check.rs": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
+    "src/frontend/sized/elaborate.rs": "7f80139e63316d44c647466eaaf05773ac1287fbeec279db36ebe0fc5f0c434c",
+    "src/frontend/sized/fourier.rs": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
+    "src/frontend/sized/linear.rs": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+    "src/frontend/sized/lower.rs": "c2e7766861cb8c468fbdd19f42b1549eb5407c0ace8950f2e4a5a5aa79770469",
+    "src/frontend/sized/lower/preservation.rs": "898ca8c9ffa99015c8c8361449273ab8d8572f8c4cd4d7977f7152ac502cafc9",
+    "src/frontend/sized/parser.rs": "e9944db04fd268f8d165ee5f287eb4bd6bb27369d0d8a8c9615182076bfe9fde",
+    "src/frontend/sized/primitive.rs": "9ed3bbdf2099486eda1bb771159a9856f01ede7f53b5febb131284e2e9542e2c",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/frontend/types.rs": "02eadd7fe64287e139898165aac6e390c9cd467b9ab242d601bf6fd916fcb324",
+    "src/host.rs": "97905424475c6500a9ebcd9336b8f69013350d60ca97062bd1f16a6fa8600e7c",
+    "src/host/factoring.rs": "cf462c2561cd38ef00103dc3f1d7a9b64dd0e32b1c21af5d49e4508216509a38",
+    "src/interchange/codec.rs": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+    "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+    "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+    "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+    "src/interchange/finite_leaf.rs": "095706e42eb58485d759bf866313dcfba126e2a4222dd4e9f8bb57e6a77de45a",
+    "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+    "src/interchange/hierarchical.rs": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
+    "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+    "src/interchange/hierarchical/bridge/instrument.rs": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "src/interchange/hierarchical/bridge/request.rs": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+    "src/interchange/hierarchical/execution.rs": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+    "src/interchange/hierarchical/runtime.rs": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
+    "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+    "src/interchange/mod.rs": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
+    "src/interchange/native.rs": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+    "src/interchange/native/contracts.rs": "0f7e9f24fef3bc0da1cfc0f7e116e143697fab27a8faf1e029f5c17fea397ae4",
+    "src/interchange/native/runtime.rs": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
+    "src/interchange/native/view.rs": "c10cf04a4b938fd152b42cacd567d2faf9fbdaee9c50176725f207f75745908d",
+    "src/interchange/process.rs": "f9661d21e3b163c12aea0ad780995bd99737126d04493f606f0cef4a455c4a5a",
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/mod.rs": "8d520dcda5fb56f47eca1dbb4ce623b335e9851c76e69e39f8bb955a7c5389f2",
+    "src/interop/openqasm.rs": "e9542d809af360dd4a229e35c288fbd61c8b9dc53e3e01716a915d5f234e53bd",
+    "src/interop/profile.rs": "2c95c01b949a883e00cd9e2d09ecf14cb5eb414ecd7879d06ff7ce983b50ef3f",
+    "src/interop/qir.rs": "a03659389c83d440f99c6db795d5fb14d3a2a5b914c556e8e1b7f6dc067887c6",
+    "src/ir.rs": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
+    "src/ir/compat.rs": "89f7ad8f214b8b4bb386a699fb3299d8d174fcb706e5204bd4e2f04df9e1f071",
+    "src/lib.rs": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
+    "src/sim.rs": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+    "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+    "src/sim/sampling.rs": "f8913d06559195348cd6811906ef106df88f1f0b3643d7da23f013096cfcae07",
+    "src/sim/state.rs": "213bbd8ab841937f05d940d9cb87e0986ba6bf5737f3e747c598b70d206762c3",
+    "src/sim/tests.rs": "19ddac9bf29e910a10409ca6006c3b48a8acda0069909dc6d3bbedcfaf6469da",
+    "stdlib/.DS_Store": "9b32d7bae5396fbe1e19a0f0f5ed86a3030ea859d1156026e5a8caa19fb06f8b",
+    "stdlib/Qargo.toml": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+    "stdlib/docs/README.md": "b2c412a417f77c1f7f7641c067a17158c409a24a29ae6486e43148346719be65",
+    "stdlib/src/arithmetic.qli": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/routines.qli": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+    "stdlib/src/transforms.qli": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+    "stdlib/tests/README.md": "4f383e568aa72d90824b3da81d42a91ffb043feb6126b9725a1473eaa1cda989",
+    "tests/compile.rs": "97b6e25b745972c601309ae11fb2cf8d22a2b75943be7795266bc39ad11d8710",
+    "tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf": "25b2d38ea57f9257cef00bb5e3c7c0df007d23080f774b36edf0e3a2aceed99f",
+    "tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf": "defb977770333d0fb6751c0aece3e7b7c6dea509c4e8e301b8b8f10e4efb2bc5",
+    "tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf": "ea2c947dc9132701b4fee25ad87ba3a0336ef0ed1789a42e69fe316b9326b432",
+    "tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf": "ace616dbf5f8f6fed909b2c0ff0505e38d62008efaabc0a23f40050ecdda2f07",
+    "tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf": "ea51e5169a7919756fde68018d1aafd2168369b8bcbe55f31f5b7c41e9f50d3c",
+    "tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf": "f13115d5700eed434d4a3fb69d7660d8cbb8e2b42e4e7d41e9fe48474af4f264",
+    "tests/fixtures/verification_v022/source/examples_bell.qirf": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "tests/fixtures/verification_v022/source/examples_feedback.qirf": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+    "tests/operation_parameters.rs": "b5efe6329dcf33f81612b35f8bf7700fd157563dfd80fe9d746cc969ec53a38c"
+  },
+  "source_after": {
+    "corpus/negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18",
+    "corpus/negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "corpus/negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "corpus/negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "corpus/pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
+    "corpus/pennylane_demos/phase_kickback1/main.qli": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440",
+    "corpus/pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "corpus/pennylane_demos/rx_quarter/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "corpus/qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
+    "corpus/qualtran/bitwise_not2/main.qli": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77",
+    "corpus/qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
+    "corpus/qualtran/xor_constant2/main.qli": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d",
+    "corpus/quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
+    "corpus/quantum_katas/fredkin3/main.qli": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be",
+    "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
+    "corpus/quantum_katas/swap2/main.qli": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59",
+    "examples/bell/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+    "examples/bell/main.qli": "8a661821aa78ca3a3f8ef4c3547838f171bd1a1e74edbf7d248704249e593246",
+    "examples/feedback/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "examples/feedback/control.qli": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6",
+    "examples/feedback/main.qli": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9",
+    "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+    "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
+    "src/bin/qleisli.rs": "5863d1652709663ce577d012ceb6e45a43249ee5e5cc11d431a2fb1a0ae8a096",
+    "src/bin/qleisli/artifacts.rs": "a6c50b60764b070f4deeb0f1b38794c21f8d7108a5d2a88c0893e7810c974d47",
+    "src/bin/qleisli/interop.rs": "3b543cd1c360ff647bacc2a8da52eb37f6b2cd0b4e1dc9faa971dadcb3be326a",
+    "src/bin/qleisli/json.rs": "e05bec3229c78eb6aa02c98aa73afb037870f06eb9b8e6edf2a3418e18a0519a",
+    "src/bin/qleisli/options.rs": "bf2058bf12225c43e304be7746bb6e3f767a3eaf086f8b719ef5200fbc5d47ed",
+    "src/bin/qleisli/samples.rs": "3adafc74789ad0ca1e38919dfafcde79c89f001d70c083c79257cdcb3a27a1bc",
+    "src/bin/qleisli/sized.rs": "bf0be6d54c6ddf53ea1ce4ff43751d116401be2afceb498c07063f63bbd71479",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "src/bin/qleisli/source_commands.rs": "386fb4823e63dac7fb66f2b4095a72e322e83d29ce258047a29baa57566dfd60",
+    "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+    "src/contract/function.rs": "dd8bc84054cb830d55702f5102c531d93df3432969b56072bcf88561f0d91ee8",
+    "src/contract/meaning.rs": "5928730da1973c9c2e2ae0627a397eb164f610d59da32f0ec297698da4b3a73d",
+    "src/contract/mod.rs": "4aa9dc811c8c09aa629e7d7411fd036a7906dc128e71142627986ff31747a580",
+    "src/frontend/ast.rs": "d030ccea0dcd5a22362e2f80cc49d1134dcd8b7a32b6af245259f24de39a763e",
+    "src/frontend/compile/basis.rs": "b3cecb102484ea1f562c82f89c81838696afa4ce67556db2fb7c30b93bda0dd2",
+    "src/frontend/compile/circuit.rs": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
+    "src/frontend/compile/lower/branch.rs": "44ac4d45b6379d09b9f336fe98c4abc924757dab73a5000c891909b26ac94959",
+    "src/frontend/compile/lower/certified.rs": "be81a25690eac259b7d750af972e1465ba26ede3dbb7c70f2d1724d56b72b80f",
+    "src/frontend/compile/lower/function_contract.rs": "333e9eaffb1851f1c71d563a367ac5ffbad8075c51d8296024c74a1cd18ea301",
+    "src/frontend/compile/lower/mod.rs": "54d3ddf9d7c8b41e9adc7e10d867f6fb3f6de8e526f0a6f4209ad3244f9f627c",
+    "src/frontend/compile/lower/operations.rs": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
+    "src/frontend/compile/lower/primitives.rs": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+    "src/frontend/compile/lower/scope.rs": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
+    "src/frontend/compile/lower/transforms.rs": "09b5a680ee2bfba06eb1cf8d8e2e0b8d1cc96d7e00c98eda65eac32847df6681",
+    "src/frontend/compile/lower/value.rs": "8d72d9349ab3d43ca5c43dc1e452c1da7ede71cf5ddcb77dbdb0339be49b6453",
+    "src/frontend/compile/mod.rs": "f521762da4a9bc87d06d4af94fbd766944473ccab666f0780920392f9f4ebfed",
+    "src/frontend/compile/operations.rs": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
+    "src/frontend/compile/profile.rs": "62d7817d59d2425d73c48bd5a9c123ebacba7851da1cf5c0ea0a249ce857d7de",
+    "src/frontend/core.rs": "a5b5793259b45cb20f586708aba9c96f5b4085f517654c8bb8964a522208ca90",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+    "src/frontend/documentation.rs": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/mod.rs": "c7b00487d60e4dd63bc4f7738a9f91bf905fbdfa44b185892da5784118663004",
+    "src/frontend/parser.rs": "a992f8827df1d2c08635941b15a3425fe4f8c0bf5cc6eb5d8627095022deeadd",
+    "src/frontend/parser/tests.rs": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+    "src/frontend/project.rs": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
+    "src/frontend/project/edition.rs": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
+    "src/frontend/project/manifest.rs": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
+    "src/frontend/project/source_file.rs": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+    "src/frontend/resolve.rs": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+    "src/frontend/resolve/locals.rs": "9a0575f82bea44d8cecefa1c360ecdb34eecb0b6240e2c834ed0f955bf03fa90",
+    "src/frontend/scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+    "src/frontend/sized.rs": "e2928779d30d4b45e7227a77f5bb013fa827e5ed62af112803de747fdf9a10a7",
+    "src/frontend/sized/ast.rs": "fe15a7da31c865b0aca9dab5e9f88bcc1a46d269e0f6ce3c6480900c6ec4433e",
+    "src/frontend/sized/check.rs": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
+    "src/frontend/sized/elaborate.rs": "7f80139e63316d44c647466eaaf05773ac1287fbeec279db36ebe0fc5f0c434c",
+    "src/frontend/sized/fourier.rs": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
+    "src/frontend/sized/linear.rs": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+    "src/frontend/sized/lower.rs": "c2e7766861cb8c468fbdd19f42b1549eb5407c0ace8950f2e4a5a5aa79770469",
+    "src/frontend/sized/lower/preservation.rs": "898ca8c9ffa99015c8c8361449273ab8d8572f8c4cd4d7977f7152ac502cafc9",
+    "src/frontend/sized/parser.rs": "e9944db04fd268f8d165ee5f287eb4bd6bb27369d0d8a8c9615182076bfe9fde",
+    "src/frontend/sized/primitive.rs": "9ed3bbdf2099486eda1bb771159a9856f01ede7f53b5febb131284e2e9542e2c",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/frontend/types.rs": "02eadd7fe64287e139898165aac6e390c9cd467b9ab242d601bf6fd916fcb324",
+    "src/host.rs": "97905424475c6500a9ebcd9336b8f69013350d60ca97062bd1f16a6fa8600e7c",
+    "src/host/factoring.rs": "cf462c2561cd38ef00103dc3f1d7a9b64dd0e32b1c21af5d49e4508216509a38",
+    "src/interchange/codec.rs": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+    "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+    "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+    "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+    "src/interchange/finite_leaf.rs": "095706e42eb58485d759bf866313dcfba126e2a4222dd4e9f8bb57e6a77de45a",
+    "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+    "src/interchange/hierarchical.rs": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
+    "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+    "src/interchange/hierarchical/bridge/instrument.rs": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "src/interchange/hierarchical/bridge/request.rs": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+    "src/interchange/hierarchical/execution.rs": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+    "src/interchange/hierarchical/runtime.rs": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
+    "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+    "src/interchange/mod.rs": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
+    "src/interchange/native.rs": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+    "src/interchange/native/contracts.rs": "0f7e9f24fef3bc0da1cfc0f7e116e143697fab27a8faf1e029f5c17fea397ae4",
+    "src/interchange/native/runtime.rs": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
+    "src/interchange/native/view.rs": "c10cf04a4b938fd152b42cacd567d2faf9fbdaee9c50176725f207f75745908d",
+    "src/interchange/process.rs": "f9661d21e3b163c12aea0ad780995bd99737126d04493f606f0cef4a455c4a5a",
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/mod.rs": "8d520dcda5fb56f47eca1dbb4ce623b335e9851c76e69e39f8bb955a7c5389f2",
+    "src/interop/openqasm.rs": "e9542d809af360dd4a229e35c288fbd61c8b9dc53e3e01716a915d5f234e53bd",
+    "src/interop/profile.rs": "2c95c01b949a883e00cd9e2d09ecf14cb5eb414ecd7879d06ff7ce983b50ef3f",
+    "src/interop/qir.rs": "a03659389c83d440f99c6db795d5fb14d3a2a5b914c556e8e1b7f6dc067887c6",
+    "src/ir.rs": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
+    "src/ir/compat.rs": "89f7ad8f214b8b4bb386a699fb3299d8d174fcb706e5204bd4e2f04df9e1f071",
+    "src/lib.rs": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
+    "src/sim.rs": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+    "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+    "src/sim/sampling.rs": "f8913d06559195348cd6811906ef106df88f1f0b3643d7da23f013096cfcae07",
+    "src/sim/state.rs": "213bbd8ab841937f05d940d9cb87e0986ba6bf5737f3e747c598b70d206762c3",
+    "src/sim/tests.rs": "19ddac9bf29e910a10409ca6006c3b48a8acda0069909dc6d3bbedcfaf6469da",
+    "stdlib/.DS_Store": "9b32d7bae5396fbe1e19a0f0f5ed86a3030ea859d1156026e5a8caa19fb06f8b",
+    "stdlib/Qargo.toml": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+    "stdlib/docs/README.md": "b2c412a417f77c1f7f7641c067a17158c409a24a29ae6486e43148346719be65",
+    "stdlib/src/arithmetic.qli": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/routines.qli": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+    "stdlib/src/transforms.qli": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+    "stdlib/tests/README.md": "4f383e568aa72d90824b3da81d42a91ffb043feb6126b9725a1473eaa1cda989",
+    "tests/compile.rs": "97b6e25b745972c601309ae11fb2cf8d22a2b75943be7795266bc39ad11d8710",
+    "tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf": "25b2d38ea57f9257cef00bb5e3c7c0df007d23080f774b36edf0e3a2aceed99f",
+    "tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf": "defb977770333d0fb6751c0aece3e7b7c6dea509c4e8e301b8b8f10e4efb2bc5",
+    "tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf": "ea2c947dc9132701b4fee25ad87ba3a0336ef0ed1789a42e69fe316b9326b432",
+    "tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf": "ace616dbf5f8f6fed909b2c0ff0505e38d62008efaabc0a23f40050ecdda2f07",
+    "tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf": "ea51e5169a7919756fde68018d1aafd2168369b8bcbe55f31f5b7c41e9f50d3c",
+    "tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf": "f13115d5700eed434d4a3fb69d7660d8cbb8e2b42e4e7d41e9fe48474af4f264",
+    "tests/fixtures/verification_v022/source/examples_bell.qirf": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "tests/fixtures/verification_v022/source/examples_feedback.qirf": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+    "tests/operation_parameters.rs": "b5efe6329dcf33f81612b35f8bf7700fd157563dfd80fe9d746cc969ec53a38c"
+  },
+  "comment_only_deltas": {
+    "src/frontend/types.rs": {
+      "built": "dcfce93ce348bc59404ae8ecbb72de2822dee46c7f1c938afd367a9a1eabfaf5",
+      "current": "02eadd7fe64287e139898165aac6e390c9cd467b9ab242d601bf6fd916fcb324",
+      "kind": "module documentation comments only"
+    },
+    "src/lib.rs": {
+      "built": "6a22e150ee2d9a850d863e182fd5faf6d760212ea15bb24429e9e4bcdd54bcd6",
+      "current": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
+      "kind": "module documentation comments only"
+    }
+  },
+  "binary": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+  "binary_sha256": "3dfd46195b43c254f8a21635b7462d28467069a162f6f02cdbf1207fd1229be0",
+  "kernel": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "compiled_source_manifest_sha256": "b8fef2b21231960c48cb28de3e9c5ffa2c4298a749f51b352991fbdabebaf4f2",
+  "calls": [
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/swap2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4979083750513382,
+      "stdout": "call-01.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-01.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/quantum_katas/swap2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4865735829807818,
+      "stdout": "call-02.stdout.txt",
+      "stdout_sha256": "98257d29863581fe0ad605a113571b969398326f5ce8a79100f7bf4637d8d02b",
+      "stderr": "call-02.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/quantum_katas/swap2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-ry08bj4j/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5056090829893947,
+      "stdout": "call-03.stdout.txt",
+      "stdout_sha256": "e231f607fdc616698c7b4fb9638dadc98b444b8403b01b239b4b66ce1843507a",
+      "stderr": "call-03.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.04024562501581386,
+      "stdout": "call-04.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-04.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/fredkin3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6054270829772577,
+      "stdout": "call-05.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-05.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/quantum_katas/fredkin3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.598816458019428,
+      "stdout": "call-06.stdout.txt",
+      "stdout_sha256": "aa8fe82418d836e25e750edb7bfa5891a13324314e421bcd6015bc9faf6d62e4",
+      "stderr": "call-06.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/quantum_katas/fredkin3",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-cgaq_beq/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6135332089615986,
+      "stdout": "call-07.stdout.txt",
+      "stdout_sha256": "dd0fbbc03655fa31b7773bd9f55d7eeea9a21d5ea2ecc5d2a8e703a8bc216d97",
+      "stderr": "call-07.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.039120999979786575,
+      "stdout": "call-08.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-08.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/qualtran/xor_constant2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.49621899996418506,
+      "stdout": "call-09.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-09.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/qualtran/xor_constant2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.45111704198643565,
+      "stdout": "call-10.stdout.txt",
+      "stdout_sha256": "abc70ed015c6fb89709fa891a4d2421d1b28b9880d31de215891e877ea2c00b2",
+      "stderr": "call-10.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/qualtran/xor_constant2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-0d7_6k1y/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4870454170159064,
+      "stdout": "call-11.stdout.txt",
+      "stdout_sha256": "551575dfe0b61a91c40a582b37d577c016b0946e6262cbdb4cdef088144253c3",
+      "stderr": "call-11.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.038153667002916336,
+      "stdout": "call-12.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-12.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/qualtran/bitwise_not2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5011472090263851,
+      "stdout": "call-13.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-13.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/qualtran/bitwise_not2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4510976250167005,
+      "stdout": "call-14.stdout.txt",
+      "stdout_sha256": "98257d29863581fe0ad605a113571b969398326f5ce8a79100f7bf4637d8d02b",
+      "stderr": "call-14.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/qualtran/bitwise_not2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-dihpr2kw/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5103978750412352,
+      "stdout": "call-15.stdout.txt",
+      "stdout_sha256": "4f36999996bb3b1f446043d4d23ae50c9d8fa06d5a309f5b04ee6890dfaedddd",
+      "stderr": "call-15.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.040191459003835917,
+      "stdout": "call-16.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-16.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/rx_quarter",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6066868749912828,
+      "stdout": "call-17.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-17.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/pennylane_demos/rx_quarter",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6096055419766344,
+      "stdout": "call-18.stdout.txt",
+      "stdout_sha256": "b498fe2477c2574c591b4564b1c812e94655e67033fffa3841b84eb4a6d35f48",
+      "stderr": "call-18.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/pennylane_demos/rx_quarter",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-r44k1sm0/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6067479170160368,
+      "stdout": "call-19.stdout.txt",
+      "stdout_sha256": "b9832c20532bde336b29b3d6b88a28aef36894c393043740e8072c4cfb3344be",
+      "stderr": "call-19.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.039340084011200815,
+      "stdout": "call-20.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-20.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/phase_kickback1",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6137901250040159,
+      "stdout": "call-21.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-21.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "corpus/pennylane_demos/phase_kickback1",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6140970000415109,
+      "stdout": "call-22.stdout.txt",
+      "stdout_sha256": "dbc89dbf9bc18da79fa2e74c7300de626738e5c5cb6f1d979af7ddc75437c6ef",
+      "stderr": "call-22.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "corpus/pennylane_demos/phase_kickback1",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-975td8rv/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5991247919737361,
+      "stdout": "call-23.stdout.txt",
+      "stdout_sha256": "75d0ccda2f208191a01b3595f194bdc181b30b7136bcbc509a6754aff2724d14",
+      "stderr": "call-23.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.03947700001299381,
+      "stdout": "call-24.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-24.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "examples/bell",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4942480419995263,
+      "stdout": "call-25.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-25.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "examples/bell",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4541012500412762,
+      "stdout": "call-26.stdout.txt",
+      "stdout_sha256": "350d7f4e62664334f3fff3c8e606c3b830b8011f134ce312675421ec528cbc04",
+      "stderr": "call-26.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "examples/bell",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-49vb1vl3/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5086192089947872,
+      "stdout": "call-27.stdout.txt",
+      "stdout_sha256": "4f7dd6d0a640fd8f6d5022dea9d76f5fac36e8d5da32d668491c9066dd7dba16",
+      "stderr": "call-27.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/examples_bell.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.039932082989253104,
+      "stdout": "call-28.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-28.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "examples/feedback",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.49821691698161885,
+      "stdout": "call-29.stdout.txt",
+      "stdout_sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "stderr": "call-29.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "run",
+        "examples/feedback",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4533217499847524,
+      "stdout": "call-30.stdout.txt",
+      "stdout_sha256": "1d439693c688b72a273a0b8437691e995deabb7a10a9e9663b7c6c19d80b0ccb",
+      "stderr": "call-30.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "emit-ir",
+        "examples/feedback",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-vm22-source-0p45mbr0/program.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4874561670003459,
+      "stdout": "call-31.stdout.txt",
+      "stdout_sha256": "6deedc6ca8cf45ebd3ea33dedd1b0849ab21b41131733bde3a3eac8373b9bc9e",
+      "stderr": "call-31.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/source/examples_feedback.qirf",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.04035904200281948,
+      "stdout": "call-32.stdout.txt",
+      "stdout_sha256": "16eab1fc0619fce7c9baf42481f89d57810c25124b5c105a8bc04c8930eaa31a",
+      "stderr": "call-32.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/negative/duplicate_owner",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.009522459004074335,
+      "stdout": "call-33.stdout.txt",
+      "stdout_sha256": "0b6e427714810d7fb7277715810dc4f0607b6ccf5f7eff3c9248063c32a54468",
+      "stderr": "call-33.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/negative/measured_owner",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.010059416992589831,
+      "stdout": "call-34.stdout.txt",
+      "stdout_sha256": "f4a81cf1fe1bf62e8845c1d55cccf31d1cd8a7f358eb6ef7cdeda0d855ea3a9c",
+      "stderr": "call-34.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/negative/measurement_adjoint",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.03603354201186448,
+      "stdout": "call-35.stdout.txt",
+      "stdout_sha256": "85715f4ff013e2635dbf6ea278178a790b882f9b26042636bca4d848d5ac6b40",
+      "stderr": "call-35.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+        "check",
+        "corpus/negative/dirty_auxiliary",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.010374874982517213,
+      "stdout": "call-36.stdout.txt",
+      "stdout_sha256": "931bb91cbcbe3bea0f5cff9ea8c9798e64ae43f6689f5f28a59cdb58a1510b26",
+      "stderr": "call-36.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifact_comparisons": [
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf",
+      "expected_sha256": "f13115d5700eed434d4a3fb69d7660d8cbb8e2b42e4e7d41e9fe48474af4f264",
+      "actual_sha256": "f13115d5700eed434d4a3fb69d7660d8cbb8e2b42e4e7d41e9fe48474af4f264",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf",
+      "expected_sha256": "ea51e5169a7919756fde68018d1aafd2168369b8bcbe55f31f5b7c41e9f50d3c",
+      "actual_sha256": "ea51e5169a7919756fde68018d1aafd2168369b8bcbe55f31f5b7c41e9f50d3c",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf",
+      "expected_sha256": "ace616dbf5f8f6fed909b2c0ff0505e38d62008efaabc0a23f40050ecdda2f07",
+      "actual_sha256": "ace616dbf5f8f6fed909b2c0ff0505e38d62008efaabc0a23f40050ecdda2f07",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf",
+      "expected_sha256": "ea2c947dc9132701b4fee25ad87ba3a0336ef0ed1789a42e69fe316b9326b432",
+      "actual_sha256": "ea2c947dc9132701b4fee25ad87ba3a0336ef0ed1789a42e69fe316b9326b432",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf",
+      "expected_sha256": "defb977770333d0fb6751c0aece3e7b7c6dea509c4e8e301b8b8f10e4efb2bc5",
+      "actual_sha256": "defb977770333d0fb6751c0aece3e7b7c6dea509c4e8e301b8b8f10e4efb2bc5",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf",
+      "expected_sha256": "25b2d38ea57f9257cef00bb5e3c7c0df007d23080f774b36edf0e3a2aceed99f",
+      "actual_sha256": "25b2d38ea57f9257cef00bb5e3c7c0df007d23080f774b36edf0e3a2aceed99f",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/examples_bell.qirf",
+      "expected_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+      "actual_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+      "identical": true
+    },
+    {
+      "path": "tests/fixtures/verification_v022/source/examples_feedback.qirf",
+      "expected_sha256": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+      "actual_sha256": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+      "identical": true
+    }
+  ],
+  "decisions": [
+    {
+      "project": "corpus/quantum_katas/swap2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/quantum_katas/fredkin3",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/qualtran/xor_constant2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/qualtran/bitwise_not2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/pennylane_demos/rx_quarter",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false
+                ],
+                "probability": 0.5000000000000002
+              },
+              {
+                "bits": [
+                  true
+                ],
+                "probability": 0.5000000000000002
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/pennylane_demos/phase_kickback1",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  true
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "examples/bell",
+      "artifact": "tests/fixtures/verification_v022/source/examples_bell.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              },
+              {
+                "bits": [
+                  true,
+                  true
+                ],
+                "probability": 0.5000000000000001
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "examples/feedback",
+      "artifact": "tests/fixtures/verification_v022/source/examples_feedback.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              },
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/negative/duplicate_owner",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 297,
+              "end": 298,
+              "line": 9,
+              "column": 24
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/measured_owner",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 297,
+              "end": 298,
+              "line": 9,
+              "column": 20
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/measurement_adjoint",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "effect",
+            "severity": "error",
+            "message": "static operation requires a unitary function",
+            "primary": {
+              "path": "main.qli",
+              "start": 282,
+              "end": 286,
+              "line": 7,
+              "column": 36
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/dirty_auxiliary",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking",
+            "primary": {
+              "path": "main.qli",
+              "start": 327,
+              "end": 345,
+              "line": 9,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    }
+  ],
+  "error": null,
+  "seconds": 13.247832500026561,
+  "result": "passed"
+}

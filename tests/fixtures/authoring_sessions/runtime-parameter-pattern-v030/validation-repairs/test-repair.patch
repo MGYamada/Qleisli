@@ -1,0 +1,47 @@
+--- a/tests/runtime_parameter_patterns.rs
++++ b/tests/runtime_parameter_patterns.rs
+@@ -23,11 +23,23 @@
+ }
+ 
+ fn case(category: &str, name: &str) -> String {
+-    source(&format!("{category}/{name}/main.qli"))
++    // Explicit derivatives preserve the first missing-static sources and their
++    // actual baseline diagnostics; source-map.json binds both byte identities.
++    match (category, name) {
++        ("counterexamples", "static-collision") | ("attempt-01", "static-mixed") => {
++            source(&format!("validation-repairs/{name}.qli"))
++        }
++        _ => source(&format!("{category}/{name}/main.qli")),
++    }
+ }
+ 
+ fn validation(name: &str) -> String {
+-    source(&format!("validation-sources/{name}.qli"))
++    let directory = match name {
++        "static-forwarding" | "operation-binding" | "static-operation-collision"
++        | "unitary-argument-effect" => "validation-repairs",
++        _ => "validation-sources",
++    };
++    source(&format!("{directory}/{name}.qli"))
+ }
+ 
+ fn parsed(input: &str) -> ParsedProgram {
+@@ -122,7 +134,7 @@
+     finite_reject(&case("counterexamples", "call-arity"), ErrorCode::Arity);
+     finite_reject(&validation("unit-nullary-call"), ErrorCode::Arity);
+     let input = validation("non-nullary-entry");
+-    check_project(&SourceRoot::new(&input).0).unwrap();
++    finite_reject(&input, ErrorCode::InvalidEntry);
+     let error = compile_project(&SourceRoot::new(&input).0).unwrap_err();
+     assert_eq!(error.code, ErrorCode::InvalidEntry);
+ }
+@@ -253,6 +265,9 @@
+ 
+ #[test]
+ fn static_substitutions_and_provider_bindings_keep_declaration_and_source_identity() {
++    parsed(&case("attempt-01", "static-mixed"))
++        .instantiate("main::f", BTreeMap::from([("n".into(), 1)]), BTreeMap::new())
++        .unwrap().elaborate().unwrap();
+     let text = validation("static-forwarding");
+     for n in [0, 1] {
+         let graph = parsed(&text)

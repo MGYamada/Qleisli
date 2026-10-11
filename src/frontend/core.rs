@@ -4,7 +4,7 @@
 //! not allow source files to declare or replace primitives. `A` and `B` below
 //! are specification metavariables, not new generic source syntax.
 //!
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 use super::ast::FnKind;
 
@@ -23,8 +23,22 @@ pub struct Primitive {
 pub const PRIMITIVES: &[Primitive] = &[
     Primitive {
         module: "std::quantum",
+        name: "unit",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Unit) -> Q<Unit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "finish",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<Unit>) -> Unit",
+    },
+    Primitive {
+        module: "std::quantum",
         name: "init0",
-        kind: FnKind::Iso,
+        kind: FnKind::Isometry,
         arity: 0,
         signature: "() -> Q<Bit>",
     },
@@ -124,7 +138,7 @@ pub const PRIMITIVES: &[Primitive] = &[
         name: "measure_z",
         kind: FnKind::Observe,
         arity: 1,
-        signature: "(Q<Bit>) -> CBit",
+        signature: "(Q<Bit>) -> Bit",
     },
     Primitive {
         module: "std::observe",

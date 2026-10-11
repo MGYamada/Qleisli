@@ -1,0 +1,42 @@
+{
+  "kind": "separate whitespace repair before Bits implementation",
+  "base_commit": "f2c4f1f5a3b7d1bdca37763431bccfee085268ed",
+  "reason": "First source tokenized adjacent > and = as >= and stopped in parsing. Add the required lexical separation at the two Meaning declarations only. Original source and actual parse failures remain unchanged. This is a source repair, not a compiler change or successful Meaning check.",
+  "previous_source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/main.qli",
+  "previous_source_sha256": "0c43df6b1a0aa4faf2c61e5cd5502a150e6a60411cc16231a51e7fba58f86a1c",
+  "cli_sha256": "8ad0f7f8eeaed13d76bb115e55109a0f6d136f8863e4b8fc5746e4f2bfbd873d",
+  "observations": [
+    {
+      "entry": "zero",
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+      "source_sha256": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89",
+      "argv": [
+        "/private/tmp/qleisli-bits-before-cli",
+        "check",
+        "--format=json",
+        "--entry=main::zero",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite Meaning signatures require exact Unit, Bit or ordered products; Bits tags are unsupported\",\"primary\":{\"module\":\"main\",\"path\":\"tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli\",\"start\":645,\"end\":670},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "entry": "one",
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+      "source_sha256": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89",
+      "argv": [
+        "/private/tmp/qleisli-bits-before-cli",
+        "check",
+        "--format=json",
+        "--entry=main::one",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite Meaning signatures require exact Unit, Bit or ordered products; Bits tags are unsupported\",\"primary\":{\"module\":\"main\",\"path\":\"tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli\",\"start\":747,\"end\":772},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

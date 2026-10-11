@@ -1,0 +1,3 @@
+finite.load: ok, 1 local modules
+sized.parse: ok
+finite.check: ok

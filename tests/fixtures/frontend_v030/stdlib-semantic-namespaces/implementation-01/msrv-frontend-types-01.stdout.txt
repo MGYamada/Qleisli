@@ -1,0 +1,8 @@
+
+running 3 tests
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

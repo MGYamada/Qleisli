@@ -1,0 +1,3141 @@
+{
+  "format": "qleisli.qft-experimental-history-relocation",
+  "version": 1,
+  "scope": "Explicit maintainer instruction: generic-QFT obligations removed from v0.3.0 and current goal; attempts/history retained only under experimental.",
+  "records": [
+    {
+      "original_directory": "tests/fixtures/authoring_sessions/qft-family-v030",
+      "archive": "experimental/qft/history/qft-family-v030.tar.gz",
+      "archive_bytes": 49770,
+      "archive_sha256": "2c13c09f0de356cc0e67a76d5acc48611bc60dc19e00a94a1907b4d5ad1d4fe3",
+      "members": {
+        "tests/fixtures/authoring_sessions/qft-family-v030/README.md": {
+          "bytes": 718,
+          "sha256": "e1a2cc08aaeeb117e8275ba68b35ad59c33991c0bcfd79c673d7b7be64aacd4e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/Qargo.toml": {
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/transform.qli": {
+          "bytes": 1638,
+          "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/Qargo.toml": {
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/reference.qli": {
+          "bytes": 1054,
+          "sha256": "28989c572d79ab94bda01ab84180e8fab4ed1c56bc8841e1769d2deef5f15ef5",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/transform.qli": {
+          "bytes": 1638,
+          "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/context.md": {
+          "bytes": 3414,
+          "sha256": "f055723959fcd301bbb6ad4f4aaf4cf14f923c4122609c18b806660ea6890587",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/executed-driver.py.txt": {
+          "bytes": 4041,
+          "sha256": "57e815524243d7e05712a22c98f64ccec0295dc81b347407063d4b56fb7e0222",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/help.json": {
+          "bytes": 238,
+          "sha256": "1cf973af9711dab42f598c6dcf56b243865aa1228304615270a177cfdc164c7e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/help.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/help.stdout.txt": {
+          "bytes": 2865,
+          "sha256": "3e74cc8305a9f3a2d4d469b000e439eba486b0b824c91b7ea365775f72071d4f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-json.json": {
+          "bytes": 1272,
+          "sha256": "6ade41745e9d63421d69620b7a3d5e6c1843bc9b37e05e777b4c8f7442fcff01",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-json.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-json.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-json.stdout.txt": {
+          "bytes": 476,
+          "sha256": "b3dd9b31ed9de1df2b0a1632a237cbec59567ab2cff5392a9657979ab68a2e33",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-text.json": {
+          "bytes": 1051,
+          "sha256": "ef20f509f43b8475636be1bb1110e7ac71a2216c598293beeb25e4dcb481520b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-text.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-text.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n0-text.stdout.txt": {
+          "bytes": 377,
+          "sha256": "2f5b4b69bdd6efc2a5303bffc5486737f281741bdced8b4f977277428846292f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-json.json": {
+          "bytes": 1273,
+          "sha256": "9af98e0f0bfb81b602d0c6c065e3dbbdb0440ce6bd4e86e7dfc19ea2ec8b820a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-json.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-json.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-json.stdout.txt": {
+          "bytes": 476,
+          "sha256": "b3dd9b31ed9de1df2b0a1632a237cbec59567ab2cff5392a9657979ab68a2e33",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-text.json": {
+          "bytes": 1052,
+          "sha256": "b7ab77e0944dd964d1c819dc69d020469f3e68e46e8aba53c4a842a5a68316ef",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-text.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-text.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n1-text.stdout.txt": {
+          "bytes": 377,
+          "sha256": "2f5b4b69bdd6efc2a5303bffc5486737f281741bdced8b4f977277428846292f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-json.json": {
+          "bytes": 1273,
+          "sha256": "92d13f676be0902b3a9dddce9e91363811feb80d4b3830c1c5705c78ef732081",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-json.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-json.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-json.stdout.txt": {
+          "bytes": 476,
+          "sha256": "b3dd9b31ed9de1df2b0a1632a237cbec59567ab2cff5392a9657979ab68a2e33",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-text.json": {
+          "bytes": 1051,
+          "sha256": "ed830aaad88c6fd2058aa95477c0b10e68e5f42c19d2eefd2c24414da517b25e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-text.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-text.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n2-text.stdout.txt": {
+          "bytes": 377,
+          "sha256": "2f5b4b69bdd6efc2a5303bffc5486737f281741bdced8b4f977277428846292f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-json.json": {
+          "bytes": 1273,
+          "sha256": "a5165706de2df4df3eab118039ec730ebae31f91aa57515b02e385ec54be9920",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-json.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-json.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-json.stdout.txt": {
+          "bytes": 476,
+          "sha256": "b3dd9b31ed9de1df2b0a1632a237cbec59567ab2cff5392a9657979ab68a2e33",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-text.json": {
+          "bytes": 1052,
+          "sha256": "044c61435d08ba1df169cff7d80ae763e3fb832dd052014ee806c79a26697bee",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-text.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-text.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-checks/n3-text.stdout.txt": {
+          "bytes": 377,
+          "sha256": "2f5b4b69bdd6efc2a5303bffc5486737f281741bdced8b4f977277428846292f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/first-files.json": {
+          "bytes": 918,
+          "sha256": "bba6a6dcc57a7f2616d966bbc862b414fbcd5039b7b23ee849b700a788eeddd9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/identity-after.json": {
+          "bytes": 757,
+          "sha256": "f0596ad755f6860677e90d3dfeafb59f2bbe34835a15029065bf63625cb8eae1",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/identity-before.json": {
+          "bytes": 23908,
+          "sha256": "49c078bc4420aed22e2024eeb895a8fc691c057ded1125f6430b888d4cb54ab9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/independent-review.json": {
+          "bytes": 4078,
+          "sha256": "4962afc0be4e85ba465269e2200d5e210f2a49f2c13e69149bd30cb53d996aa4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/native-log.py": {
+          "bytes": 372,
+          "sha256": "d8fc13ce2406e26792aa9c4085363d4ba27ee9d0a806ce75fc3417ef829818d6",
+          "mode": 493
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/observe.py": {
+          "bytes": 4041,
+          "sha256": "57e815524243d7e05712a22c98f64ccec0295dc81b347407063d4b56fb7e0222",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/packet-files.json": {
+          "bytes": 20179,
+          "sha256": "b2f72c080b45aba2c5b7ad1d72095f69946ec7ca77fd70ba85dd6c3544659576",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-results.md": {
+          "bytes": 1930,
+          "sha256": "b81a134a28a30d06c574e27e31d8899f35731f26958befce0d2e2529f3c42afd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/00.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/00.stdout.txt": {
+          "bytes": 95,
+          "sha256": "99c4dcb935b394efd3f35883f8766f0e1e486f33fa734937596ae1033fc09165",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/01.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/01.stdout.txt": {
+          "bytes": 109,
+          "sha256": "2bd19fc08eb2add9eb7183f50ac40719c973f96d88f399a1e053c705f63309a0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/02.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/02.stdout.txt": {
+          "bytes": 236,
+          "sha256": "396aca7b6b994b97914e4c106dc271bde0c2707f7da2eff51644c41ba13a0587",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/03.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/03.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/commands.json": {
+          "bytes": 1204,
+          "sha256": "1e12e738c7e9300861186c7b0004f25b61865e7b9877826f42d5af1892f815a7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/driver-failure.json": {
+          "bytes": 852,
+          "sha256": "d1e2c43162a2e65c5edd4ed135c4a352be06e37cc75cf6e47bae0cc93284e7ba",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/executed-driver.py.txt": {
+          "bytes": 3316,
+          "sha256": "da2ff886b4c32195abaf84427c945c0de42a6913fd093c1fa93200692f31a60f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation/packet-whitespace.json": {
+          "bytes": 278,
+          "sha256": "4b723f2cda4a5094ccfdd097de8c818dee8d6e1a009ed2b0999a2574e6a36fc4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/00.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/00.stdout.txt": {
+          "bytes": 95,
+          "sha256": "99c4dcb935b394efd3f35883f8766f0e1e486f33fa734937596ae1033fc09165",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/01.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/01.stdout.txt": {
+          "bytes": 109,
+          "sha256": "2bd19fc08eb2add9eb7183f50ac40719c973f96d88f399a1e053c705f63309a0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/02.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/02.stdout.txt": {
+          "bytes": 236,
+          "sha256": "396aca7b6b994b97914e4c106dc271bde0c2707f7da2eff51644c41ba13a0587",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/03.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/03.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/commands.json": {
+          "bytes": 1203,
+          "sha256": "fff7854ef39370234755f0bf70ba001771edc0fde5f712a782879c5b59e23bc6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/executed-driver.py.txt": {
+          "bytes": 3546,
+          "sha256": "e3a0394bdaf814432c4689efedbae7e83bbfe6d1b40d052ac057424a5841cdfd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/packet-whitespace.json": {
+          "bytes": 71952,
+          "sha256": "0616307752e481e301a86d5f81c4223bb0fea3df05e5673f22b7d24535f5c4d7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/post-record-whitespace.json": {
+          "bytes": 843,
+          "sha256": "8da6da81d9464dcc4fb637d95bd9177772e76dcbecebfa45e2548cd2f3363f0f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/summary.json": {
+          "bytes": 311,
+          "sha256": "aae6f23cb31147911135c86204814a427050de6b62cb531bf1f98b9b8f9a3b19",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy-validation-final/supplementary-review-whitespace.json": {
+          "bytes": 419,
+          "sha256": "a08446174ee9dc3c0fc95706ef381f8e84f6894f33114b745a2f4f0b8a808e75",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy_check.first.py.txt": {
+          "bytes": 3316,
+          "sha256": "da2ff886b4c32195abaf84427c945c0de42a6913fd093c1fa93200692f31a60f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/policy_check.py": {
+          "bytes": 3546,
+          "sha256": "e3a0394bdaf814432c4689efedbae7e83bbfe6d1b40d052ac057424a5841cdfd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/probe-context.md": {
+          "bytes": 1560,
+          "sha256": "58a080317ddc23157404d4f8f6d0297ae60d36b0398351b1183ade8bee62909a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/probe-files.json": {
+          "bytes": 713,
+          "sha256": "1fc1aff4e7e04365649112a13a0aba0b8252d237c6bf289196a4a8df1ef3403f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/probe-session-before.json": {
+          "bytes": 1601,
+          "sha256": "efbb58d90dbd0f9dea68e37eeb20db1e45c54dee7eadbf63491ad7c44e61d3af",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/probe.py": {
+          "bytes": 6272,
+          "sha256": "f4b6faee294a2813ae43b8315abf690bdbeb3b8f3603b588348b4be3fc7dec69",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/results.md": {
+          "bytes": 3275,
+          "sha256": "0cc0e86fa2f4c17101a23b52a05dbd76b51059cf13f3a8b18f25b76752fbbf36",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/session-before.json": {
+          "bytes": 807,
+          "sha256": "c6379999d4de775f357c6b13d3a8ec78cce08f484f661942862e36e6b43e27c8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/session.json": {
+          "bytes": 2696,
+          "sha256": "d9423953273d72f64bb092863e7992dec3243c88b861464dac7999405171011e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-check.json": {
+          "bytes": 1410,
+          "sha256": "ee9bce4142225421ea6058e317bf9f52d3573e81e8725d98cadaefffd5a28218",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-check.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-check.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-check.stdout.txt": {
+          "bytes": 482,
+          "sha256": "ac1c614c1e79f99bf1526a87834caf142a880f86f75a1c7128c08feeeb9afebd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-run.json": {
+          "bytes": 1906,
+          "sha256": "0362905ead4e8ebc0ae1e044d0519908714c3ad37a231a27cacfe5fc76e9edec",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-run.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-run.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n1-run.stdout.txt": {
+          "bytes": 550,
+          "sha256": "d26399154151828dfeaad975f8f01e8dda1579e051d1a6386944d2fce89e0991",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-check.json": {
+          "bytes": 1410,
+          "sha256": "768504609982f37ebcd8e7f28819a9c1714e4979bea23524c70ec88c56759ffd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-check.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-check.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-check.stdout.txt": {
+          "bytes": 482,
+          "sha256": "ac1c614c1e79f99bf1526a87834caf142a880f86f75a1c7128c08feeeb9afebd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-run.json": {
+          "bytes": 2519,
+          "sha256": "cf6b9f0827f585b7e497f4c0a579462b73329cf0980ac0e29debf1df6e862186",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-run.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-run.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n2-run.stdout.txt": {
+          "bytes": 706,
+          "sha256": "4f25ff8a3acb2b314a74954f246d2bb86977e5fa636b2cce10181e4ec15a72fe",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-check.json": {
+          "bytes": 1410,
+          "sha256": "83afa53ff93984e03c770aacd0a5b2bd404dcf38cf652d8b57d680d7f63def31",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-check.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-check.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-check.stdout.txt": {
+          "bytes": 482,
+          "sha256": "ac1c614c1e79f99bf1526a87834caf142a880f86f75a1c7128c08feeeb9afebd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-run.json": {
+          "bytes": 3397,
+          "sha256": "bd4df6501a3a3ca57ed0aed29a7d9c847b3ab7d61ecdd47bd7df0460572f5bed",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-run.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-run.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/entangled-n3-run.stdout.txt": {
+          "bytes": 996,
+          "sha256": "35a4be23f05eec3a65542e61f9d4362fbb7eba6669df4c34a746bd5c80bd49ad",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/executed-driver.py.txt": {
+          "bytes": 6272,
+          "sha256": "f4b6faee294a2813ae43b8315abf690bdbeb3b8f3603b588348b4be3fc7dec69",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n0-basis0.json": {
+          "bytes": 1545,
+          "sha256": "b5e0def1cc5db86217bcca6b7374444f56d1ee26a12407d4bd51c57213f7e0e4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n0-basis0.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n0-basis0.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n0-basis0.stdout.txt": {
+          "bytes": 447,
+          "sha256": "e331dcfeeba10507a37f7756e77dfc4afbcea782bd08fdde695f113d0f415720",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis0.json": {
+          "bytes": 1708,
+          "sha256": "e2519dbfd8b0b674f584e10bdea29973f561f4a75601d5b979eed74fa13a971a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis0.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis0.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis0.stdout.txt": {
+          "bytes": 489,
+          "sha256": "437b0e82f38771867a0e7a7beaade1ab5fcf5142b049bf55cc296400bd86698f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis1.json": {
+          "bytes": 1725,
+          "sha256": "e3ee27006beb62c085d0466eef16e7cdaab9cfb303d659393958e8f363dc18b2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis1.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis1.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n1-basis1.stdout.txt": {
+          "bytes": 490,
+          "sha256": "d411fcdecae6eb8923ac1ffab8c5ba4629c4a478d627eeb28af8ab3b82557c57",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis0.json": {
+          "bytes": 1876,
+          "sha256": "0d9fedf689c10946e9a59cae7629770a87aed1cb8b8f7d7c620335ba57078ef7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis0.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis0.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis0.stdout.txt": {
+          "bytes": 543,
+          "sha256": "193fc7c150c9506d3ab35ae60e2eb04bdbeaf20aaf82dbfccf066dbf15c76997",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis1.json": {
+          "bytes": 1973,
+          "sha256": "3dd4a28628c50fe54afafe5379e187b11210180a75b61e44f32150ce22956282",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis1.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis1.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis1.stdout.txt": {
+          "bytes": 584,
+          "sha256": "8e3b2a1f1b169588eff05fc4d9c521a9ec3efc7cf5cf1e47fee863e37fa9cb15",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis2.json": {
+          "bytes": 1937,
+          "sha256": "906970bacdd7df980296b2bf16d361b2dda0bbde634385c19fefdd406e4bf4a8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis2.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis2.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis2.stdout.txt": {
+          "bytes": 545,
+          "sha256": "265c06da736fed5727f334c62faab60ee8c4afda2d62abe740ff7f01f43a88f0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis3.json": {
+          "bytes": 1974,
+          "sha256": "508657d1cd26b352f2aff28ee93d67c08a5cb2a8202b8b37400403f76b1c3a28",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis3.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis3.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n2-basis3.stdout.txt": {
+          "bytes": 584,
+          "sha256": "6b7e11beff48b105ba8f5f16da5336e8437af36ef8f7f9c33019430faa9d3d87",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis0.json": {
+          "bytes": 2408,
+          "sha256": "e2d0fad689293bf9a438e0fd2a6511a4c77653ba36d5fc7c5927a86a5706db4f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis0.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis0.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis0.stdout.txt": {
+          "bytes": 659,
+          "sha256": "b9ecf602f4ad7f4c4faea11dc4d130db573084668aa19a1e8c873c0c8c2ed438",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis1.json": {
+          "bytes": 2580,
+          "sha256": "d6da0901313cec0246cada7aa5ca6d23e19837fbbaa5ad8b72b0d731b5576875",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis1.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis1.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis1.stdout.txt": {
+          "bytes": 734,
+          "sha256": "b13cc0a7374241a13a9aad5d4fd734717c5f42ea911b5b6abd8613aac77645eb",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis2.json": {
+          "bytes": 2627,
+          "sha256": "e79065b7c596c397b46fe172faf77e63511d7de53904a6655c296df94611b82f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis2.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis2.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis2.stdout.txt": {
+          "bytes": 741,
+          "sha256": "ad79fda9e50ef8d6125f4bf8410ab874d682e7c5755cae11318fe70c23ef23df",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis3.json": {
+          "bytes": 2594,
+          "sha256": "4463805ef253273992ef44fe1d25779a0d2766dc820f71eb627b07ec1fc2cfe9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis3.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis3.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis3.stdout.txt": {
+          "bytes": 736,
+          "sha256": "6c4b5dbd298f15702f0b7ac2d79fa1b19c1b67b49396c355513ba79e69b4872f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis4.json": {
+          "bytes": 2550,
+          "sha256": "78ae0205c0e427b1d4a312c2deac2949c9d170089664d31bd8a47c25c28735d8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis4.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis4.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis4.stdout.txt": {
+          "bytes": 663,
+          "sha256": "1f9c17fbb78dfc06f2a28991265a0288cf55ea52248ff68b30ea9e4a0fe42309",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis5.json": {
+          "bytes": 2605,
+          "sha256": "0a4c7903055b6161ebab4ae0d75e82750ffe4836d911a62a0204fce0c296ad1c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis5.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis5.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis5.stdout.txt": {
+          "bytes": 734,
+          "sha256": "0519bf72846206ae81603e03952a4a267b29f67253ab81c53691fe2597ffbe64",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis6.json": {
+          "bytes": 2622,
+          "sha256": "f6cb4dc35af69e14816e93ecc6eb161c4c2795d9297428dca295b6655301bdf1",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis6.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis6.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis6.stdout.txt": {
+          "bytes": 741,
+          "sha256": "a7eddffc6cc3a15f5b3fe1f8337d5afd9fc39c86b7313271d7cb2946daacfbd3",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis7.json": {
+          "bytes": 2611,
+          "sha256": "67a47a26bd63161a4ff24dd017ae0e01d7f64734cdbcc067df7249ad363feee1",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis7.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis7.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/qft-n3-basis7.stdout.txt": {
+          "bytes": 736,
+          "sha256": "75a3566222ec0f5f57373ddaf9d451e38a825d280d4c5c0a4c249fc1b781758e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/summary.json": {
+          "bytes": 388,
+          "sha256": "5680ffc9faa44db086356d102cd5c1bae8fb1dcaacc655d39a0907c6ed998149",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-check.json": {
+          "bytes": 1403,
+          "sha256": "6a5ffd84dfaca1af83b22352bf8c9aeacd7195861bc28d92acb2aed8046793a7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-check.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-check.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-check.stdout.txt": {
+          "bytes": 487,
+          "sha256": "6f50807ff43286475061ea3d695b1ab1bf9c67aa291bd9d8aa67c46af64fbb3b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-run.json": {
+          "bytes": 1747,
+          "sha256": "cff176761b5da708d48c924f6de51eca27b976cec923d1a05e3c7fb4e986be90",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-run.native.jsonl": {
+          "bytes": 47,
+          "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-run.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-family-v030/small-probes/zero-reference-run.stdout.txt": {
+          "bytes": 531,
+          "sha256": "174caa60c2a74fa7d6c78c3d481ae2206c44ae60f34191f506cc02a92e597e15",
+          "mode": 420
+        }
+      },
+      "verification": "All original root-relative member names, bytes, SHA-256 and modes verified before original directory removal; no extraction or recorded command execution."
+    },
+    {
+      "original_directory": "tests/fixtures/authoring_sessions/qft-exact-request-v030",
+      "archive": "experimental/qft/history/qft-exact-request-v030.tar.gz",
+      "archive_bytes": 169894,
+      "archive_sha256": "2cbf6ae9c6fa90a37d7ba08bc49980183d98afe4e22c8f5ccee2214ee7af4942",
+      "members": {
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/README.md": {
+          "bytes": 3493,
+          "sha256": "a0f2c97c59218514c0a68478edeb1d04855584e5b8cd4a57d26d581e9603e032",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/attempt-01/Qargo.toml": {
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/attempt-01/transform.qli": {
+          "bytes": 1638,
+          "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n0.association.json": {
+          "bytes": 8011,
+          "sha256": "22462d49165edbe358b0d7daad765134aa33c9749794d81370734c239742b939",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n0.proposal.json": {
+          "bytes": 2903,
+          "sha256": "eea7a1ebfa05191cba5185d2852462458efbf64bae39fe45e58c74aed1b0b5b6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n1.association.json": {
+          "bytes": 23159,
+          "sha256": "444c6f9a7e2751a98cbe51160453f387a202c40ebbd35cda9a37a084424906c3",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n1.proposal.json": {
+          "bytes": 47806,
+          "sha256": "3796c67efd2431c3bca7091287564adde0ceef410c199c2ec4549f0da835f7ea",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.association.json": {
+          "bytes": 39311,
+          "sha256": "57057909c393db86954f05aedb9a90f05205508dd636343ec2cf51f79811fb7d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.proposal.json": {
+          "bytes": 95799,
+          "sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n3.association.json": {
+          "bytes": 58716,
+          "sha256": "fb1357d33f65278fd53461b02c3b672794a726b1640f6d3e66b91b099f75cbfa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n3.proposal.json": {
+          "bytes": 154572,
+          "sha256": "2ed23b36b4ab90316cb5ad5dde9045749ee1a283216150e2fa1489e2216f637e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/prepared-files.json": {
+          "bytes": 1998,
+          "sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/started.json": {
+          "bytes": 201,
+          "sha256": "932fc9417503d13d4a1f1cc49d95747ffe3de3df379493ae196b2aebe0d39e89",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/summary.json": {
+          "bytes": 410,
+          "sha256": "029736de8b20430ad0e66c65ee23425e6719023dfac13001b4a9a806ffba00bf",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/command-before.json": {
+          "bytes": 722,
+          "sha256": "3b543ddeb3e158b042953085d5b4c101fcf7d4b2fce83f73366f8751ac6f53b0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "72d7ec6985811626237ccc96fc0cb5e01382cc7e564cf95b66f5b4386c9e113f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "ce9639ba36e72cecf343d8b30a3c374225b43860390dddacafe8245f414a90ba",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/result.json": {
+          "bytes": 1577,
+          "sha256": "0569360fcf296b55c1fc255822cccfbdbcda035226e23b745ac3abfcf7e4e14c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/stdin.bin": {
+          "bytes": 304,
+          "sha256": "fd3082c91be7bd2702f7bbd3d70b3994eb0f808d54e462ee5739e089ffbf888b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/native/call-01/stdout.bin": {
+          "bytes": 45,
+          "sha256": "14e08fd532d9840b9fb62d76b0dffffb6906522c05ad85998dc449661d440ee2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/result.json": {
+          "bytes": 3813,
+          "sha256": "dd9ee7c4ebaabbe9ba3047e02530872868b50b0bb98435b558a76dcb32884aab",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/stdout.bin": {
+          "bytes": 175,
+          "sha256": "192e7a794c169c2e07f505ccb71ece8850e7c10b792e2b922d64321e4d23d5d9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/command-before.json": {
+          "bytes": 826,
+          "sha256": "7fd15056855276a433aa71f82974d40e08ec4afcbeb2b83246bf130447bd1489",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "f85a2e4ded5b0f3928b5de65e28475b3194e1ff0b4d455f8cb5c923b94144bc7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "415631ed81d77989b6e7d230327c6980df19942411a7ac46caf90be441f8f5bf",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/result.json": {
+          "bytes": 1593,
+          "sha256": "42a1e076b61844186fa1439cbbd806518fba544b706c82c7a0e15a876844f370",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/stdin.bin": {
+          "bytes": 484,
+          "sha256": "c7642f2d8e05a1e440e426410d2e1adee592f4a76958d8875974d5368bca5cfe",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/native/call-01/stdout.bin": {
+          "bytes": 55,
+          "sha256": "67249a7734f9b9740c4a1b19ada5ad1eb4540855422bb24a36e34f7268127caa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/result.json": {
+          "bytes": 3934,
+          "sha256": "91d74f155279019f1fa0fe39c4ee4df3f98a2ea0823ac4f764ccfc97915dd238",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/stdout.bin": {
+          "bytes": 175,
+          "sha256": "d23450a7fecfe8d6fc772aa58c10b5b2c7e18db8deca06c68cfa07e560dddad7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/command-before.json": {
+          "bytes": 722,
+          "sha256": "75258bb163fa2b6041377783e3bb1ad8564833c51c6aa8017831c26a9e215627",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "8bd45f38e66c006ac8e205c1ea476456177c1d89503728ae912307abf3e90c6f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "50e6d5a754e65dbba8545f50f8009f492ec26bacc3540aea5ba7e07b361c8f33",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/result.json": {
+          "bytes": 1580,
+          "sha256": "00ab1391a5abff7457102bc248d2c01c200aebd2bac73ab83ee6b39127ef6762",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/stdin.bin": {
+          "bytes": 5992,
+          "sha256": "ef3a40cb58f66aca6549c4c15aee85406867944485e37d6e378295de6b3a4eea",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/native/call-01/stdout.bin": {
+          "bytes": 50,
+          "sha256": "748951c78e69a75fa7c773a19343b7e0b7360eb22c4ac16171129b3ec7eafce0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/result.json": {
+          "bytes": 3820,
+          "sha256": "186d438674fb3e4b9500784f2fa2f97269c49ac5510a22848277593388bceb54",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/stdout.bin": {
+          "bytes": 179,
+          "sha256": "9d4989b5e665305711b4fd83b9630b65317ab5fded8d21c795664a0de988779b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/command-before.json": {
+          "bytes": 826,
+          "sha256": "a3f907c6d7cdedbfb9ff9d2e3eff006c731d1f2d8659736f64642ea526532060",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "c47d0513b1a9529f04ff832d2db3ee55e6aaa37b8bb7db92b549ec4ba0d09bb5",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "82d812f51404f29e810b71f9e3dff8e439bd6dc63f0564a313d7faa9262b5bec",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/result.json": {
+          "bytes": 1595,
+          "sha256": "07222db8ace64d0298fec2c8538015572e896285a8d0b700ab4d29ecb59f0ccc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/stdin.bin": {
+          "bytes": 6184,
+          "sha256": "921ed7149f0bb306ee1d1e03d0c351dac4f5710696761037b14a3312ea8ced3c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/native/call-01/stdout.bin": {
+          "bytes": 62,
+          "sha256": "0539d55dc5bae5ae92de40d7e6f0aa59c743dfd55c1b669407851b877cfac818",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/result.json": {
+          "bytes": 3940,
+          "sha256": "48ace63a9372aff0adc88fef626ddab5748b6220d79a4840265d731ca5ff71f2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/stdout.bin": {
+          "bytes": 179,
+          "sha256": "aecd8fa5d40008b110db3100c39266a14770233d09abd9cc33b710e642b7fc24",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/command-before.json": {
+          "bytes": 722,
+          "sha256": "c533002f70b8cb9357c2eaddaecbe639f20cf2e3106c6d658e4b8b8dfa383b0e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "c0e33ef0440d4b838094056388aa7dfb8fe01224494f2e945324e6c364771b04",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "f3806f188d7bc9f1e5a08be5643ac7b7e41b09ff84494675234a1c8a31a88ea2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/result.json": {
+          "bytes": 1582,
+          "sha256": "7bd8581a017864d44efe5dfb674381c329fa625e5964c1d0e1cefd0eaa794af4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/stdin.bin": {
+          "bytes": 12092,
+          "sha256": "3d5d0a0f3ad443fac2bdd3b69bfd6728cebc3d749078d03f487ac23e339fe776",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native/call-01/stdout.bin": {
+          "bytes": 54,
+          "sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/result.json": {
+          "bytes": 3823,
+          "sha256": "34312e7a25b1b50b849c9a4fe154f91880112739cc60cbbf6aa4d3b6323dd9d0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/stdout.bin": {
+          "bytes": 180,
+          "sha256": "c11fa1a66dba92e5d2dee8aee81bc3bbe56fbd4d442bc64388b9cfe1d14452ff",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/command-before.json": {
+          "bytes": 826,
+          "sha256": "f17e8e35fd1124c1bc793007d53a65132045e789e8d28b54796c428584381086",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "0a454cf0a0b7cd31c7c12eff6ce2fb57bce92ce705bf76ac1a309b0d3ec7f53d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "686973bc771979f71e4c77f4fb1d282409e8b5ae0a6c2f3614ce457c1a832d3f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/result.json": {
+          "bytes": 1597,
+          "sha256": "8cf267e7a35ccbc6f3a5d7d9aa7221527f235a6100a283f667c6ef966922cc27",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/stdin.bin": {
+          "bytes": 12312,
+          "sha256": "9a78549424b682cf5aa901eb554f8c0ed493d9ed05c79776529e86733243059d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/native/call-01/stdout.bin": {
+          "bytes": 69,
+          "sha256": "a9957b8bec429a1532cf06ab164b5743a627721dd4ee90d1a895c22f29aa26b6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/result.json": {
+          "bytes": 3943,
+          "sha256": "27013f54b52d9debedf651c17836a8480d5588787d4a1067b41756225d8ebd21",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/stdout.bin": {
+          "bytes": 180,
+          "sha256": "5ddd20b84023b8622b4649aa26aa5608ea85cb629ebcc582a1c03a47ef6777f4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/command-before.json": {
+          "bytes": 722,
+          "sha256": "1ac4b98bfd180f6d2287aaa3f9fb891d204a825259a944acc3a8f83c2aba10e0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "ebc0569837dfb5790ff96707fb88bf3c276980fd58f432ee288ea70216b2db51",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "c608dac69720aeed770a5fac83ce88bcbcbc37c206a323af887de9bb532d4351",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/result.json": {
+          "bytes": 1582,
+          "sha256": "7e670e8b8282d4aa06b9e20ba4be86483bc0435f8e031437b4b1c1e5773ca9d5",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/stdin.bin": {
+          "bytes": 19428,
+          "sha256": "9a635912298363871059666cc1e31f4b66647c757d122e78b18efe15fea0ddc6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/native/call-01/stdout.bin": {
+          "bytes": 57,
+          "sha256": "31debb82d9ab658c951596245762ea5d34f17c70c9343a0d37453ef6ed1c0b86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/result.json": {
+          "bytes": 3823,
+          "sha256": "cd5d198c86a794395a309e457f5cd0962e51c1f60fd6f903fe9822c30d840141",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/stdout.bin": {
+          "bytes": 181,
+          "sha256": "07d31b2d87e09fc1aec486490a95d364ca96d25983b36e9d9a957150f9ee6150",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/command-before.json": {
+          "bytes": 826,
+          "sha256": "78b7aa3d12f3430fb873c28dd2223ef08c104731d389d0e4212cd6d7ea7a2736",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "6b124066d85cbce2981305cee45664a8e610c255b960f9b675e96bf78955f705",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "d7bda26301713b5e72c9dfa20612597780680bb0fc452c87181aa2de8aeae246",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/result.json": {
+          "bytes": 1598,
+          "sha256": "39336ceed71cc4168bf8c5b31b67211c6ab39db03bbcb1a289f08ad5312190d5",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/stdin.bin": {
+          "bytes": 19684,
+          "sha256": "ade91e7a0e9dc5fe8f1ac8000200e119d94648b2e4fb9523cddcd23b9697108b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/native/call-01/stdout.bin": {
+          "bytes": 75,
+          "sha256": "9c453df3e8e04e653f51cbe8cf01577985995dec82494f1899b945ea9c7af8c4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/result.json": {
+          "bytes": 3944,
+          "sha256": "472ae6cf74eb88cde108fbe53648975a42faac5a534df55998d70898d248bdda",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/stdout.bin": {
+          "bytes": 181,
+          "sha256": "b2d5619ae7881d311b4fc8834f5248718346c6259b1e5b08cc3b754103b2fdab",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/started.json": {
+          "bytes": 502,
+          "sha256": "e0f57e6a417a95547ab06a7df6e26cff9ea9bb680ae0766c88af9f5062ab2991",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/summary.json": {
+          "bytes": 738,
+          "sha256": "c282db366cee95fb988233edb6c9a28778ce178598359a1ba0fb8f0d00194992",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/capture-first.py": {
+          "bytes": 10444,
+          "sha256": "3ba308c842aaafbbccda84cbf2db87c1afb4bdcae2c923d8896fded7618f9f32",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/commands-before.json": {
+          "bytes": 4101,
+          "sha256": "c6d1908839e5f4c662a4ed203cc7a85f9a8d34c6c48a5630ffd7ad9a21513dd3",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/context.md": {
+          "bytes": 5059,
+          "sha256": "9bafc6c138875ca74e2df7c66c33b962a3880c1a0869dc810963e97c684b0e7b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/executed-driver.py.txt": {
+          "bytes": 10444,
+          "sha256": "3ba308c842aaafbbccda84cbf2db87c1afb4bdcae2c923d8896fded7618f9f32",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/input-identities.json": {
+          "bytes": 1027,
+          "sha256": "e14a8725effb961006de7f6f1c55189004724d7e916d94a7cc702aa8a9ed6b2b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n0.json": {
+          "bytes": 2472,
+          "sha256": "2fc7edb77029f23011b4a6b27307e3fa149fd45981dd6d5f9f5b38f141f8d58d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n0.native.jsonl": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n0.proposal.json": {
+          "bytes": 1185,
+          "sha256": "01e914469e7b8a02992e706476b425452962dc5f871a026ba6362e447852502a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n0.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n0.stdout.txt": {
+          "bytes": 273,
+          "sha256": "80b2e0e522620d13df7fbd90a9f29fc21a891906c5c362c22d602dece9b56fd6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n1.json": {
+          "bytes": 2475,
+          "sha256": "b7ba3d1782f266d2af12c103c251a8a70ecb5d54ea24a0d41fdd0339052ee74f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n1.native.jsonl": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n1.proposal.json": {
+          "bytes": 15162,
+          "sha256": "eee8e5ca2114e8ff9c7983ad502041a8bf232fd41b092c8dec005384eab09043",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n1.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n1.stdout.txt": {
+          "bytes": 273,
+          "sha256": "80b2e0e522620d13df7fbd90a9f29fc21a891906c5c362c22d602dece9b56fd6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.json": {
+          "bytes": 2475,
+          "sha256": "05d70c42458b2d49cfedaa96a7bebc58593f3c3daa30e1b70dcd96c19ec46d39",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.native.jsonl": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json": {
+          "bytes": 32126,
+          "sha256": "daf3a59659d75ef19a543decb5061b2326b39bd2aff704e04a146470e5b89b70",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.stdout.txt": {
+          "bytes": 273,
+          "sha256": "80b2e0e522620d13df7fbd90a9f29fc21a891906c5c362c22d602dece9b56fd6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.json": {
+          "bytes": 2475,
+          "sha256": "32749dfb8ddb0660d9a6f76e5fd4db5f8e68df71b3736fa0714efa9a43ad848b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.native.jsonl": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.proposal.json": {
+          "bytes": 52423,
+          "sha256": "b5859d46ed14d3e9250350020fc11fca603ecf4b4372f490c1f40dff6ebcd768",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.stdout.txt": {
+          "bytes": 273,
+          "sha256": "80b2e0e522620d13df7fbd90a9f29fc21a891906c5c362c22d602dece9b56fd6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/native-attempts.jsonl": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/started.json": {
+          "bytes": 218,
+          "sha256": "270d57ed32d632fec52c2c7f1dd28edf55b88ad7e2c0198fdeca9f1da090b821",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/summary.json": {
+          "bytes": 435,
+          "sha256": "ad95faa0bb706c7d40fb40603ceba424073f903f05843b76d6bab2aeb0ba8a6c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-files.json": {
+          "bytes": 3051,
+          "sha256": "5414941b13b959b3e80b799c4a93720b766864b257046aa5b39be7237b5aa978",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/identity-before.json": {
+          "bytes": 51909,
+          "sha256": "e7e6099b12a5f820acfd42575e251bca5289b06e51db798d8375802ceb86e8e5",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-sentinel.py": {
+          "bytes": 779,
+          "sha256": "14ed2f48b675cdfca28747e3a6928aca686ddc78979cfc5b63a34a8b26dc532e",
+          "mode": 493
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/command-before.json": {
+          "bytes": 816,
+          "sha256": "97784c2398c77c1d030102eff2c30f5f957b17417b5ee51f522e0ec6cfc2cdf8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "bd78f15388b5140d4346b06a3034b690b56a7d1f8ccd07c142e218f7cf3f03d2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "759a7a7ed566ddb0d0b60e71592fab96c15bcb33201206cf2db362062a02f0ca",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/result.json": {
+          "bytes": 1582,
+          "sha256": "9490b205d1bcb4dedd6b0c1d766402307e512afacecf69416e7d4c783c553849",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/stdin.bin": {
+          "bytes": 12092,
+          "sha256": "59bb5f34d0c5ea19b128d21c9f92cfb30477063666af65dc45397e276abc113f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/stdout.bin": {
+          "bytes": 45,
+          "sha256": "3871e53881bb59f9d0ddd377b7b9efc28b7f84189de6c00830b16c0c2bd142d4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/result.json": {
+          "bytes": 3973,
+          "sha256": "180478dc49df9b62474e49a7f34515b71b319bc5e1e5e9db540171fc857a3a9b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/stdout.bin": {
+          "bytes": 200,
+          "sha256": "a82f043f935477f2bf57ae2e860d29e6e50deee6329ff5242ca5440e52d79bda",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-request-skipped.json": {
+          "bytes": 263,
+          "sha256": "bfd4e5055f890817c92fdc520ebd5bc0bb65404633acaddb37f95656ba936478",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/command-before.json": {
+          "bytes": 807,
+          "sha256": "2a2312e2fb662c6c5cf68df9629d7e3a17f4dda7e53320b21aba0acb567198b9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "b91c0d984ac6c5a4dde6080b1729e84f8de8f1f8dd1196864f2c6dd1683e750c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "39cbdd4762b970434effc9265b43c69b18c585694e6f6f7ceb3e49671821adaf",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/result.json": {
+          "bytes": 1582,
+          "sha256": "966b2774040dee209ef154651e03883ea74c484642deac5dc2a77939989b963f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/stdin.bin": {
+          "bytes": 12091,
+          "sha256": "3a6aaaaf32e10b6946c996fa943267e8c37cb66052249f95d3506ca959d05e54",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/stdout.bin": {
+          "bytes": 54,
+          "sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/result.json": {
+          "bytes": 3951,
+          "sha256": "5a6c0ac9f158560247aaa0f6abfa0c8456e67b45d632812546c3262ad2ccc311",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/stdout.bin": {
+          "bytes": 180,
+          "sha256": "6e8011dee834680b342094d25bf9b868db9bdec94e38e5562e839964e18a877c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/command-before.json": {
+          "bytes": 911,
+          "sha256": "4943f778d610d2b63c7c291ae2967fc84f983de9f0b756c30600ca06e2bbb71c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "caf8ce2bddea702889fe6766bdfa4f0929e57974aa91e99a74c05d27b64e76fa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "219954d397a92b8e8a38fbce4eef50ec7003274a3156ca8d280c69c80ae8d040",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/result.json": {
+          "bytes": 1597,
+          "sha256": "6973c36b120f8d04c10552c6fe1c8ab9b1af824ec890ccbacef786b6e10a5046",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/stdin.bin": {
+          "bytes": 12311,
+          "sha256": "3d0507a031c72000a1bfcce3feeee45b688300f9371fd4f5891d9896fc2e7683",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/result.json": {
+          "bytes": 4094,
+          "sha256": "c93bc725f33047ba4146e74d4182f6d87374b651da14d766e07706dab0efd09c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/started.json": {
+          "bytes": 1067,
+          "sha256": "1439e1662c982d41d64b7c5ce5df3356ed8e929753d015ff27678e02fbf70c38",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/summary.json": {
+          "bytes": 1821,
+          "sha256": "65d4d238ee440ccaf0b5b5ee129ed11cf3a198e494bdf1041a9e017987403a28",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/command-before.json": {
+          "bytes": 813,
+          "sha256": "9898547e2a4aedaf6fc9bbeadda64c6db7250acd9c80eae9a4bf8f61c114c8d2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "23cc78a7ed84f06cbc8041c502c5243f3fa071a214e2e8c743b17888fe6b295b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "a349f071d360a6251b67cd6004bb5ed68f413372ae444a213f52340d95cd44d6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/result.json": {
+          "bytes": 1581,
+          "sha256": "fa008382366957aa130cad9e21a1e3917785ec7584c291cc45c6a4074ba2e97b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/stdin.bin": {
+          "bytes": 12092,
+          "sha256": "4923870c6110f280ff8597db1c2188d232da6cbc373620391631a2f2c53f0173",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/stdout.bin": {
+          "bytes": 54,
+          "sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/result.json": {
+          "bytes": 3959,
+          "sha256": "adee25441e4b914642cc81caef539befc57d4ab6c838f47f9c55038ee66a2de3",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/stdout.bin": {
+          "bytes": 180,
+          "sha256": "c11fa1a66dba92e5d2dee8aee81bc3bbe56fbd4d442bc64388b9cfe1d14452ff",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/command-before.json": {
+          "bytes": 917,
+          "sha256": "7c6ae2e47b43ce4eee686243c727fdad7e25401e6275ae145d6b1deb11c22240",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "897def7fa906201bf88511e5e21ba071758954641230fe60b0118c859789b6b8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "94070a9e73004fc756b174fdc294729b842029b4d8e2d14027581a77613622f0",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/result.json": {
+          "bytes": 1598,
+          "sha256": "3232a1547c2fa76eefad9ed3c5b0fab437990b87ee1f36323e09ae75fb90c7fc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/stdin.bin": {
+          "bytes": 12312,
+          "sha256": "fbb21232bbcf224fb63ef78415a84bcced8c52c5aef62bf61669833da2c74b51",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/result.json": {
+          "bytes": 4105,
+          "sha256": "6fd5b2dab27dd6f5b46735a998c4ab87f88f0ef707e3a754ebf12f55aeaa4ddb",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/cancelled-real-reversal.delta.json": {
+          "bytes": 2613,
+          "sha256": "c2d91ae30317c8840eb544028daad8f5a44d59872415609bf569b02c62250696",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/cancelled-real-reversal.proposal.json": {
+          "bytes": 95799,
+          "sha256": "95710d34cbbdc9dcb4164d05385d1ee55517265bf59c7cabfcc3270e08ab1d73",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/high-h-replaced-by-x.delta.json": {
+          "bytes": 2357,
+          "sha256": "43ace227bd323d8460466175ffe524afa85519338b7c61e1d255f040bb193dfc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/high-h-replaced-by-x.proposal.json": {
+          "bytes": 95798,
+          "sha256": "e5d34abb2bb43bcb47eb5e11c892166c4af0dd5d202a287db92d1b2e5b36d15b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/prepared-files.json": {
+          "bytes": 2282,
+          "sha256": "ff11ae3c90effdb327f646c23490381bf36efb540daad8f44c8c81dc4822c582",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/started.json": {
+          "bytes": 866,
+          "sha256": "9e1c304a52a0eff58524fc15b2c9fd22ae119dafccb30702f4ca37f2592107ce",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/summary.json": {
+          "bytes": 439,
+          "sha256": "b79a33ca78067629d1e9067bdbf42e84e8b0550b05faf908a34b2ed933a9106d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/wrong-controlled-phase.delta.json": {
+          "bytes": 2347,
+          "sha256": "de3200d8717bd7b6e7ab392b26c1ca6a7dc4dc40850869d4b57fb24809a28fb9",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/wrong-controlled-phase.proposal.json": {
+          "bytes": 95799,
+          "sha256": "36dba8e5a02784c8f8ed04e63ad67a683d345f390a0911354b7c9ca8f20dc723",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/command-before.json": {
+          "bytes": 900,
+          "sha256": "df436a2e1c817752f75c29f132e80f52627e5416e6b38a7ec3069a20b78309b6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "cf96548c7482c29977fad6a64b6455d4a3675a2b1c5b0ef995c197924be56957",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "f4fc2986b64cb2766fb7afd93ec2917441743e43e6030a1e00ed604758595ba7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/result.json": {
+          "bytes": 1581,
+          "sha256": "b797b7226915195eb71a15ae5080c3b3b1e37b44f94b6c51f436ca31b7df1052",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/stdin.bin": {
+          "bytes": 12612,
+          "sha256": "6903fb80b86a710cd6dd868538b38bb3692856b3677081bd27337570ae62fa28",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01/stdout.bin": {
+          "bytes": 54,
+          "sha256": "21cfbc9e218688f7be5c0cebc1e1f422dd1f8fde09651a40e9739c7b78c230b2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/result.json": {
+          "bytes": 4086,
+          "sha256": "54679fdaa33ecc3dd67895bd7f4c3da59e3ed1a19a40800bb84add39ea4a3afc",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/stdout.bin": {
+          "bytes": 181,
+          "sha256": "5469c30f9d6f5b06514c2364f1619417582190cbc43f4e362c3caa9468bb1daa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/command-before.json": {
+          "bytes": 1004,
+          "sha256": "6cec4f74aba04ec701e48396318855cdb2d5356cfd7de1ef65085cbd996779c4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "eb03c9f2b0ede5a96a37c284096b248e1486d72519f6e38bd58fd102af43f5fa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "4cfe285801d46d5f8da5b2db8d382f04534aeb014725d0f8b9ed141f21241bd8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/result.json": {
+          "bytes": 1598,
+          "sha256": "a8d472b0c4c34b9d1c1117a0b89dccda845dca14ff5dd09c740b720c564592f4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/stdin.bin": {
+          "bytes": 12840,
+          "sha256": "1d8d01b81a4ac043495e7ce0df55009d2d3a6e66c36c5304f3383c85ecb12779",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/result.json": {
+          "bytes": 4230,
+          "sha256": "0534a6593e5a7f670a20c31996d5625df2a116875c52e436fbd88b812f29b27b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/started.json": {
+          "bytes": 1232,
+          "sha256": "99e3bd759403b1ae9916c651a86b9853beea742cbf4f4ea5b7b714df6b16e290",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/summary.json": {
+          "bytes": 1092,
+          "sha256": "e72e379818c4e5a692d4f99cdf8256a82e0ba7b66f470a6a1afc81a45c892887",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/cancelled-actual-reversal-by-structural-composition.delta.json": {
+          "bytes": 33838,
+          "sha256": "e404f034c432e22d6858a8476e5b1bcd15da2f24458b4c6a30316ebf830ecf5a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/cancelled-actual-reversal-by-structural-composition.proposal.json": {
+          "bytes": 100368,
+          "sha256": "07cb642595afd732756b0c49ebf0ccdc36c938d379de56c5ae3532bc4460b901",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/prepared-files.json": {
+          "bytes": 1703,
+          "sha256": "e1c14c727f18d6159a308a2fea59f841e67762fcd6c32e22980094389a519171",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/started.json": {
+          "bytes": 927,
+          "sha256": "86b16d0dbfb7ac8d00e0075a03a24dcf9dbfd95c670e01dd60a45f7270c73b02",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/summary.json": {
+          "bytes": 346,
+          "sha256": "008985fb3315f5274e7023ffb0592893fad059aa9fe35e092d964a4db209a09f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/executed-bounded-process.py.txt": {
+          "bytes": 4402,
+          "sha256": "0ce0b915687f1df32c2d9775353fb1c01aa2a5ad45642b2c2379bfcfa84be4be",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/executed-driver.py.txt": {
+          "bytes": 10158,
+          "sha256": "8661863f76a65688f5878be552b08cf009153e42b51b1f885c8a2f0a8950e8cd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/executed-forwarder.py.txt": {
+          "bytes": 5935,
+          "sha256": "f163dcca0807a47bdcbdf4a076f50e871e7e18224aca41383485338007493737",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/command-before.json": {
+          "bytes": 667,
+          "sha256": "0777dc59bd8c1c7ca9254001e3ecac16e3f05ea100c901be5f6394d9e60fb03c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "93cafd68299d1a623d72765a22048470ab02e91e751bfc378ee32ee70c70df38",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "8efc2ee2071be2be822a2b23c903e1627c204f05f691ba382b56c9da0c825251",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/result.json": {
+          "bytes": 1577,
+          "sha256": "33bb2f0fcc44ff99e98aa2beca00d70e662c81ba860d346717fc68e7a6a73c85",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/stdin.bin": {
+          "bytes": 304,
+          "sha256": "7e893e5e9bc5db52fe512f7640ffe578b9511a28ccec2d7384779abdaae3a0ea",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/native/call-01/stdout.bin": {
+          "bytes": 45,
+          "sha256": "14e08fd532d9840b9fb62d76b0dffffb6906522c05ad85998dc449661d440ee2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/result.json": {
+          "bytes": 3765,
+          "sha256": "29cb15b6beacce160710c99ecfc8e3164e95b54df2ae0d72d8fd41a7466b9e90",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-inspect/stdout.bin": {
+          "bytes": 175,
+          "sha256": "8ae87c239b3e09d73cc0f764aa2212ff3a8a6954aa3590f79deb1f15fbf294b2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/command-before.json": {
+          "bytes": 771,
+          "sha256": "fbe51f6c60650c9a3db3713e1a6a0126ade4b0eea57080872fd0a8f5f40e3b0f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "bb0cf8888e06f77ad1a3445449d40057e73856f4c212f0ddcb4d0c3d574885dd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "e83cc59e379b3897fef87a74855e9bad22620fe2cc9e90413c8ebfe72540f9f4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/result.json": {
+          "bytes": 1594,
+          "sha256": "ab1dbc211807e9161979531ca9e5043e0050100782a9367b0686de676c48b978",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/stdin.bin": {
+          "bytes": 484,
+          "sha256": "a1d16aa3b1d022d8fb788a3d5da751cbee1c43a01cc5438068725e0cdd448a3a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "f3a2a1279dab9e07e6fe959f5c430363650bab6fbadd2454c6ee1abf40e62225",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/result.json": {
+          "bytes": 3908,
+          "sha256": "ce7a06e9e01e3705012adf28191486f8184ea94d0168c6e81ee950b78159c75d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n0-request/stdout.bin": {
+          "bytes": 207,
+          "sha256": "98d7c360f10bf3b2a8d786d0a846d4a5df2d10c450e3161ef185deb1d1065eef",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/command-before.json": {
+          "bytes": 667,
+          "sha256": "2ce5d1f59c896247b96a99dc807db2637d99d0ef69db8ef16397366e56692070",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "cb2419bd911653afe771b1e96dc2917f8a67ec9991b36a04d5306f4c11362300",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "aa42e56a412e36fcb79c19d814b015dfbc31ba3414f451c06904a0bb5ad41885",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/result.json": {
+          "bytes": 1578,
+          "sha256": "7df10415903b741ff834480409fc4e323ff080d64025d9df2761b857e7ca6bec",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/stdin.bin": {
+          "bytes": 5220,
+          "sha256": "44403cbb2acc101ccb0af338970d542dd0efe4cd4d8f7a5c7a48462618cd1b8b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/native/call-01/stdout.bin": {
+          "bytes": 50,
+          "sha256": "9a8fad8bb0f63a3d413e810786712e6e74d0d41bd2d190dc5b02c5ea2b2e86c2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/result.json": {
+          "bytes": 3771,
+          "sha256": "22a63ba73caa2224de08c59abe6b346d5ffcefb28c18ffef209093250e9d60f8",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-inspect/stdout.bin": {
+          "bytes": 179,
+          "sha256": "a8a2d9b77ee77dad49541676543aa65523489855aca16d9c724178abd2fdd8ad",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/command-before.json": {
+          "bytes": 771,
+          "sha256": "b6f76c31b57f603637971b71d197f91de230e9127265b858225fbce27a59c975",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "7bd5eb7813e36292900287799500ee48e96e1372a20b498de3730a5f1b123f34",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "a3bfb5ad82a826b126dedf3606522b1404a3598232c6e4db499b873451f3992e",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/result.json": {
+          "bytes": 1595,
+          "sha256": "d9db67baaeb0c220f8a5c9d55ea6136e969ad57cfb73c48055ea013143927e2d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/stdin.bin": {
+          "bytes": 5400,
+          "sha256": "ac98f70f4136fedd794fbaa3c6eab645711a007963e4fa03979ab0892ee2c3cf",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/result.json": {
+          "bytes": 3917,
+          "sha256": "5dbeda7097b433cd5410174bde7b92574beb7f857cf554adf238781fc19d8441",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n1-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/command-before.json": {
+          "bytes": 667,
+          "sha256": "760a7c9d184b9da1da77cce0213a3358cb1986971141cc49077b0c1a64f5d861",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "acf10f86e8a36bf16da8b2971fa7ec0e32d5063ae8557388c545598d7168b8d2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "fa09b604ed1e6ee6adedf4460530eb33dd22f0b05208e23d6ef06afd373cb8be",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/result.json": {
+          "bytes": 1581,
+          "sha256": "a843b9b9540f28134a4f6db4e2124c8bf71524d840131df1c8c572f478796072",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/stdin.bin": {
+          "bytes": 11248,
+          "sha256": "e400cbf4604ee86e85ef37d7f39a96979fa7d61d5f795aba71b885bc85faa1df",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/native/call-01/stdout.bin": {
+          "bytes": 54,
+          "sha256": "10e6cc124d9838ef9674cbcfd8116bc82d1e04b71eb09bdcfd7da14390ede405",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/result.json": {
+          "bytes": 3775,
+          "sha256": "e084bc66e395ad1e6bbf4f0fa53d174562fd3e7a4a6acdbca5e9fccfc1d3196c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/stdout.bin": {
+          "bytes": 180,
+          "sha256": "8b463be04929996e6c427b988b3da88c4e7fcf9e5315e92bac6a438625fbc85c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/command-before.json": {
+          "bytes": 771,
+          "sha256": "f0ab2e9c25cd286d81e62b8568b4e3dc822351baf4b225c94a6912684840e922",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "3c2615e6e156e24c92f4147f73354a060f61614d208ab6d594733a2923960d2b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "af8f10ebbfec1a30ace744a7570d28bdb414525793a8634d68a01c3910959159",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/result.json": {
+          "bytes": 1598,
+          "sha256": "d82ba09be5d176d3ae305872f9f3a4c551f97de8f1d85bcb2a183c78ff930ae2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/stdin.bin": {
+          "bytes": 11456,
+          "sha256": "a622762c30dfc7ab8648f43c8d634aed37599a8673aedd51647ca282b1c4eb7b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/result.json": {
+          "bytes": 3919,
+          "sha256": "d2466f9bc4947f337fd08805556e5ae8410dae40a1eba460473cccd6e7ae4a47",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/command-before.json": {
+          "bytes": 667,
+          "sha256": "f47b46875a75ad3da603246287a8277165b5562415c79874e8fb07326f98972c",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/attempt.json": {
+          "bytes": 736,
+          "sha256": "4a1b596d4845cd99d821eedf4c50b092a4f666dd6c059492cabc39e7ef2a598b",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/process-started.json": {
+          "bytes": 303,
+          "sha256": "c631fd686e0256d05ab049aa3baf22dfdab30c20b8dad03528f5dcf70a4d2c61",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/result.json": {
+          "bytes": 1582,
+          "sha256": "c9ca35d304ce4faadd2140c84387610eb06d66107f24f6477a4f805a010e2079",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/stdin.bin": {
+          "bytes": 18512,
+          "sha256": "91fadffa41d4aa3bab5e1bf1ba11d50035a5e25de11cbfcdda6e05dc7983a324",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01/stdout.bin": {
+          "bytes": 57,
+          "sha256": "cc1209d03a0a3204fe51e50256a404f5c84a496c43582ed048b767b05b6864ba",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/result.json": {
+          "bytes": 3776,
+          "sha256": "1a3f468d39edfbeea619959d272f2a4d8598a58f831980c44e1d2150ac2fd757",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/stdout.bin": {
+          "bytes": 180,
+          "sha256": "d4c9616720d3db7b338b385ee91ef96378dc4ee09ecc07bb6ed85f20da7d0d52",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/command-before.json": {
+          "bytes": 771,
+          "sha256": "2d06f82dea266bd16958e732f0666775b02cdcf727d079f15c56e81903aa9f25",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/attempt.json": {
+          "bytes": 752,
+          "sha256": "c22aa8b4a84df33d04ae6612fe60d684b66853ce7d3d03cb3027afeeb33db920",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/process-started.json": {
+          "bytes": 311,
+          "sha256": "b487e7192efdaaff12ef8a62bdf70e94cad9046c9de318671514182d4ac31c40",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/result.json": {
+          "bytes": 1597,
+          "sha256": "1d90c6c2081e08f44d8e22e72f061caf542c14c33f80900faa841530240a1574",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/stdin.bin": {
+          "bytes": 18756,
+          "sha256": "be508e5968fe6d1b413990ff93dfa53f57ec120506bfe2bcb3b3a94692643eaa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/native/call-01/stdout.bin": {
+          "bytes": 51,
+          "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/result.json": {
+          "bytes": 3919,
+          "sha256": "61d96a1b8cd9401eadd34b64260affe4bb40bbf66db0eb6654cc504d08bfd0b4",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-request/stdout.bin": {
+          "bytes": 215,
+          "sha256": "2904456a36f77629bd3023bcdd5142ce0d51096fe7beff09cee9395fe345ba7f",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/observed-inputs.json": {
+          "bytes": 1003,
+          "sha256": "1d871e4520c403c933e96432217924891b33d2df9d7b85c0668e8e5a2e34ec6d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/started.json": {
+          "bytes": 404,
+          "sha256": "97abbee7d39c5db78a901d59e4768e934fb638e68dfc46a5f1341405007e44c2",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/summary.json": {
+          "bytes": 671,
+          "sha256": "f48d57a77caa0038d12d8ba49ec6ff978918a14ea01f6fa9b12265600ca349e7",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/preparation-checks.json": {
+          "bytes": 2313,
+          "sha256": "964aca3d64dba3ea7ee21e6bcc1b18903e99725b94f9ecedc49a0e6cb2bb5b28",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/record-checks-01.json": {
+          "bytes": 1683,
+          "sha256": "32e9f61785ecdf2322d87bf137919a1b4a6332c0192f5b380650a77bb935d1da",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/record-checks-canonical-01.json": {
+          "bytes": 2723,
+          "sha256": "d42be615431a96cefc52a058392e9f8cf19c45a26f77ba3bd5edcb2e348cdd8a",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/record-checks-final-01.json": {
+          "bytes": 2436,
+          "sha256": "a0d841974b20234131edec0751c6217d06a2daecee4b2c87ad100fe4bfd28bdd",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/request-contract.json": {
+          "bytes": 2788,
+          "sha256": "c4b4760cdb260e5c55befaee8e8e190cc38e983dc0a6bde2ca8d6dc2665b0bb6",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n0.json": {
+          "bytes": 1544,
+          "sha256": "011aba8f38b9b668f0f45bd1fda0ef0a5a4db2c156c43f8a6f9d1cd7bde52971",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n1.json": {
+          "bytes": 1544,
+          "sha256": "be2842f16dd8d2a17c06071392d1ad621aefb206eef6fccf7a4e0f885a91a72d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n2.json": {
+          "bytes": 1612,
+          "sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n3.json": {
+          "bytes": 1680,
+          "sha256": "4d407efd1dd4d0c621440310ccaa0f67c0af8db69da0fafc5a0517a9c60b015d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/results-canonical.md": {
+          "bytes": 4556,
+          "sha256": "de6f681f027eec38c22cf19ebba23887e720e53a6b5af676a18b4050f16de464",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/results-first.md": {
+          "bytes": 4213,
+          "sha256": "6a76fcfe27cf3791eac5c19efc159b9019830f3c5a9a723b333a61ea884ed863",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/results-negatives-01.md": {
+          "bytes": 3395,
+          "sha256": "9f32008e16cb7cd5c5b2f553b1befe0e8b5d65124a3f237f846c346b357953aa",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/results-reversal-02.md": {
+          "bytes": 3293,
+          "sha256": "59db0dfaaa392ea0f7f503a62535e9c823c3ec669ef47e6beb0f14b3190573ed",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/session-before.json": {
+          "bytes": 868,
+          "sha256": "6cb67a06af1f6f5493f9ac72b3dc7fa717e3ec040f5307f16ea76a7f491f712d",
+          "mode": 420
+        },
+        "tests/fixtures/authoring_sessions/qft-exact-request-v030/session.json": {
+          "bytes": 1014,
+          "sha256": "edcc122f74c73fc935566395a25c1ee984065a817b2e1120ad1a647a6841aa7e",
+          "mode": 420
+        }
+      },
+      "verification": "All original root-relative member names, bytes, SHA-256 and modes verified before original directory removal; no extraction or recorded command execution."
+    },
+    {
+      "original_directory": "tests/fixtures/frontend_v030/qft-exact-request-design",
+      "archive": "experimental/qft/history/qft-exact-request-design.tar.gz",
+      "archive_bytes": 212738,
+      "archive_sha256": "31f50bc4f7a0ba592e7b7532152e6fbef3447893369c56240a603c929fe46d3f",
+      "members": {
+        "tests/fixtures/frontend_v030/qft-exact-request-design/README.md": {
+          "bytes": 995,
+          "sha256": "f080d0b9f1b0bc89d3354c6c2835654e6fe6af03271bbaea2cb278498301e9dd",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-and-negatives-packet-01.json": {
+          "bytes": 67005,
+          "sha256": "b3444f520868fb83177ca87a67bd045fbda2e5265201293830db44ab24f00ec5",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/README.md": {
+          "bytes": 3712,
+          "sha256": "1486c07590a98f886f2b6854297febf524ea198a58f4fcb21ae943a187f54f65",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/canonical-inputs.json": {
+          "bytes": 5540,
+          "sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/capture-adapted.py": {
+          "bytes": 7876,
+          "sha256": "1e4c0d339e3b98a0d65ed6c6ffced9a30067793a24aadce5cdaae2882b12ace8",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/draft-01/adapter.py": {
+          "bytes": 16769,
+          "sha256": "d7f774dbf61023ac1e22908e09e6782a6b87c10d23ff1d6b9bdddd115f603a36",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/generate.py": {
+          "bytes": 22995,
+          "sha256": "b48204fbe6e1e7e72151bafa9518fc3d3d0123122efff534f92350a6d0393b6f",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/audit-attempt-01.md": {
+          "bytes": 1279,
+          "sha256": "394a5c0d6d280ee0cb0d57f57a4f730e7a894ce06808ad225d76e936d0fd3c7c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/audit.json": {
+          "bytes": 6979,
+          "sha256": "e6647d805816cdaf9e94a74d92dec2a696b1ae0970c1116c61d21d8b3be517cc",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/constitution.json": {
+          "bytes": 736,
+          "sha256": "ebc028c242c32572952a019eb70cde8ed026435d33cbcd245c8337fdfc1f2933",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/constitution.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/constitution.stdout.txt": {
+          "bytes": 420,
+          "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/packet-files.json": {
+          "bytes": 1248,
+          "sha256": "f1ec2ad91515e7353a948527baa03469b72131e99b2750bfa7105614a8d09899",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/review.md": {
+          "bytes": 4883,
+          "sha256": "54b0e9f6643973f96d97a65933615dce01d1f40509bf03786383832493d190d6",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-results-review-by-docs-01/audit.json": {
+          "bytes": 16217,
+          "sha256": "ed1fa4466b6063bf73c86ca8e73a9e18fe6c8c075fbb8f90ba2664129aa1d10d",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-results-review-by-docs-01/packet-files.json": {
+          "bytes": 644,
+          "sha256": "141ed06acf5f4ca15903c4845582c4249b25f331e75a88bb3d687a4824b52ef9",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-results-review-by-docs-01/review.md": {
+          "bytes": 3559,
+          "sha256": "71ba2ff35193bef082b90f11aead810815c44ee69ba6411fa2d6eece2979e7ac",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/constitutional-check.json": {
+          "bytes": 776,
+          "sha256": "c73bd312e7ff1224df56abe23bdf7fa2d266658596d5690b45c00aa34423cc02",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/context.json": {
+          "bytes": 2911,
+          "sha256": "d2726953e7639b2533d6a1995ee73c3a5babebcf386a066d693d897029aa5afd",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/draft-01.md": {
+          "bytes": 15531,
+          "sha256": "eb5a4631e99902eb1d7c2439ff31adad36781f75783ed49990d6e9715ea5b471",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/independent-design-inputs.json": {
+          "bytes": 8844,
+          "sha256": "5b3bb56241a002cc1901b745ca82f9bb2b2d05b436c03e71378feb9cd3413901",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/independent-design-review.md": {
+          "bytes": 11708,
+          "sha256": "304c3f0e31a5e1ae9d9793a7f8a75d1cb744111c12ba13e45d7db0946923d86e",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/independent-request-design-review-inputs.json": {
+          "bytes": 9008,
+          "sha256": "5cc4fc2cbf158c41bd2efd571d000551f307fe4f3bf2d1acb5a12c474f850c5b",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/independent-request-design-review.md": {
+          "bytes": 10783,
+          "sha256": "0d8610ffc90ffaf53fc50e220bdea1f33761d197482ab57c3edb87b293263c8c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/inputs.json": {
+          "bytes": 8970,
+          "sha256": "ef645c211c608c0d176ac9814fdcbfee8529dda2f171545bd313f862dc0f481c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/issue-317.connector.json": {
+          "bytes": 33743,
+          "sha256": "30669232d8b46688eb46547606d6d0e6eeaa6599e810046ceba092c97af28208",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/issue-317.md": {
+          "bytes": 31668,
+          "sha256": "40a9e4537553692d931ac7a1b3840a4595bd92f7881f22a28a63bc0f097c31d1",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/local-record-checks.json": {
+          "bytes": 807,
+          "sha256": "0a8344d749922e44b32839cb4c1fd766a10c29c9c97f192547e2735df3ee67f0",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/README.md": {
+          "bytes": 6477,
+          "sha256": "5306c1b7385ff95fcaacd1dd5431cc56d3b6dfffa2aaee19813c2c14567d8619",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/bounded_process.py": {
+          "bytes": 4402,
+          "sha256": "0ce0b915687f1df32c2d9775353fb1c01aa2a5ad45642b2c2379bfcfa84be4be",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-inputs.json": {
+          "bytes": 18793,
+          "sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-originals.py": {
+          "bytes": 10158,
+          "sha256": "8661863f76a65688f5878be552b08cf009153e42b51b1f885c8a2f0a8950e8cd",
+          "mode": 493
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/independent-review-by-docs-01/inputs.after.json": {
+          "bytes": 3045,
+          "sha256": "6df5d5999218fcdda377bf82e1ce578465120272c035f0805fd8cef385cc876a",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/independent-review-by-docs-01/inputs.before.json": {
+          "bytes": 3696,
+          "sha256": "323064fc5780e9a3b21a09d93ce09701da578ff5ec5b1e206ff0a6f10805d27c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/independent-review-by-docs-01/packet-files.json": {
+          "bytes": 614,
+          "sha256": "a6ee12bfdc6bf31045996143fd58b3e25992292f80c53a85288c747d246e06f4",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/independent-review-by-docs-01/review.md": {
+          "bytes": 4434,
+          "sha256": "67e25800f79bdea55c7b8f63a5d2c5d8a76a34a464d4108f432c1e84c7d568a1",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py": {
+          "bytes": 5935,
+          "sha256": "f163dcca0807a47bdcbdf4a076f50e871e7e18224aca41383485338007493737",
+          "mode": 493
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-design-01/Cargo.toml": {
+          "bytes": 355,
+          "sha256": "24ee359343c0fe6e49dc28cc6849c531ba82686a02f0bccd5373640a50afbc44",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-design-01/README.md": {
+          "bytes": 3782,
+          "sha256": "503d53fe0dfcb0a76f4e1b3f32e9d205391941e8c743f1aaca2956044954a064",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-design-01/design-files.json": {
+          "bytes": 6403,
+          "sha256": "4ec40ba944b253c7e1b451a4e796964f397b79e99fa128ee4ec3598a7fb7f2b4",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-design-01/src/main.rs": {
+          "bytes": 6658,
+          "sha256": "7e5df3c4c988954b6d60a6a33b10f066c066e32319c09892b387f81b2b3c3936",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/Cargo.lock": {
+          "bytes": 5482,
+          "sha256": "906da964f930b9eeba2b724124d034ee20140b24b68381517028c955200d1099",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/Cargo.toml": {
+          "bytes": 355,
+          "sha256": "24ee359343c0fe6e49dc28cc6849c531ba82686a02f0bccd5373640a50afbc44",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/README.md": {
+          "bytes": 2202,
+          "sha256": "d3d0ac8f43968de4d07443572e1b73d949603bed602e467f35bfb9c83150ac4f",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/00.rust-version.json": {
+          "bytes": 224,
+          "sha256": "4e04bf15e9f9d12ebf6c9e9f964a8eea063531eb02e5ccf804712a5f9ded5acb",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/00.rust-version.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/00.rust-version.stdout.txt": {
+          "bytes": 36,
+          "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/01.format-before.json": {
+          "bytes": 380,
+          "sha256": "c351f041c833d9282f75469c58306787bc21c6136148c2c8fe0d8666f2303264",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/01.format-before.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/01.format-before.stdout.txt": {
+          "bytes": 515,
+          "sha256": "672ed17aecb40ea8749a91d32aba1903f5e2162e52c241e65ae3cc7a73ff7f7c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/02.format.json": {
+          "bytes": 358,
+          "sha256": "3b1943566de58915357baa6208050a8fcf0c07dcbb2455d1a0f8a2ed15193148",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/02.format.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/02.format.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/03.format-after.json": {
+          "bytes": 379,
+          "sha256": "2a98c691956b8da028025dc1424fc6d3e351e7f779a878638fc362b48f57ca7d",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/03.format-after.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/03.format-after.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/04.clippy.json": {
+          "bytes": 432,
+          "sha256": "b8921f75a3e050279309ca3b6148411e7797e951f4fc3f9a13e2db07b95df9bb",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/04.clippy.stderr.txt": {
+          "bytes": 286,
+          "sha256": "a58b7fdb2c3033192a8362379cd41c46f96f05f2cf86db24188824a6153e4483",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/04.clippy.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/05.build.json": {
+          "bytes": 394,
+          "sha256": "a30dc9d9e1ce88c113bbb8c2b31f0dc0030c30143660d8cc5fc35f2e7b861916",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/05.build.stderr.txt": {
+          "bytes": 286,
+          "sha256": "e21aa27d8e25577ecc2a23c7b5f2d4b0573b56a32ca1ceb5a612ad1bb28f08a9",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/05.build.stdout.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/inputs-before.json": {
+          "bytes": 10706,
+          "sha256": "582ce9d62a21a08ddf11b276510b8dbaf3c803aacd64941774e52669da6094d3",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/main.after.rs.txt": {
+          "bytes": 6692,
+          "sha256": "9c41554a2340f33ce573ae712a0b505ad6179e3a9c41f28a07141026ecce51b2",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/main.before.rs.txt": {
+          "bytes": 6658,
+          "sha256": "7e5df3c4c988954b6d60a6a33b10f066c066e32319c09892b387f81b2b3c3936",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/planned.json": {
+          "bytes": 1819,
+          "sha256": "7b6baa2a4f8ae8169d3d9e3859d3aba6b9226080d9208bffbed7e4fedee73ce4",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/result.json": {
+          "bytes": 3150,
+          "sha256": "261f8c06c769a30d40a43ee4df1cd4a042b0e4daa3d86816fdfc335dcab2dc4f",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-client.py": {
+          "bytes": 4022,
+          "sha256": "65266b3c9ddb1e8527ca6582a1a47f1d55e49d80c3b3dccae09bdcd1b702bea0",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/lock-review.json": {
+          "bytes": 1396,
+          "sha256": "7b514f511de7c718bfed304adf33afd275ad5dd438f4613b0a76ae07da579795",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/metadata-resolved.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/metadata-resolved.stdout.json": {
+          "bytes": 100018,
+          "sha256": "96e0987816a58d35b9befa5915d9bd1926c03a09d4983dd83d3e74082674e67b",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/metadata.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/metadata.stdout.json": {
+          "bytes": 1925,
+          "sha256": "39f10f30cc6292774bf6befb70c3f89dd670a4f65828ce9471253fb27d0e3068",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/preparation.json": {
+          "bytes": 864,
+          "sha256": "3b53fda085ae2269670e8b65a52278c5771f4d0a91a97627033f246074b24f16",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/src/main.rs": {
+          "bytes": 6692,
+          "sha256": "9c41554a2340f33ce573ae712a0b505ad6179e3a9c41f28a07141026ecce51b2",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/candidate.md": {
+          "bytes": 8556,
+          "sha256": "a918580039258342416f7ad807ccbdc8ffa545428dbeb1ecff4ec9c8ccfb09ef",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/capture_negatives.py": {
+          "bytes": 12606,
+          "sha256": "9ad07dc381597c83ef47a7f6065ca86eae55656691447bb0a0108177c6580aed",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/generate_negatives.py": {
+          "bytes": 20634,
+          "sha256": "ea80dd386daf7a63a88f78b76934b641a70d7020c2f1cbec8a798d9f9492c58c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/inputs.json": {
+          "bytes": 8352,
+          "sha256": "d3d6c9cb774c1180d2b017f88bb0f64792a8d7e06d588031a54b324086b47175",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/script-inputs.json": {
+          "bytes": 11019,
+          "sha256": "44f482ed6189f530221ca65eec01041d4954b0e42007846026404b52b554f70b",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/scripts.md": {
+          "bytes": 4863,
+          "sha256": "4217e5cb92f2a305720cfd27f2ce281db7abfb5fc480741e46a5200e025c427f",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/audit.json": {
+          "bytes": 13817,
+          "sha256": "34661aca93c5a78553c9d89b91b5ec24dd31dbd7d3d0250cd05125bb94772c02",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/packet-files.json": {
+          "bytes": 1123,
+          "sha256": "45b9fe0ef290d11e4181e3c18b74c8aa5ebf1cd2bda2d713524acc54e8954579",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/review.md": {
+          "bytes": 5714,
+          "sha256": "0ebf891bf3a9d13fe613416e418a1de6b0ca800a002c20721bb44da44651c73e",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/startup-continuity.json": {
+          "bytes": 664,
+          "sha256": "dd71031394ae548432d909155d5288f16b8e7a37f8dc7ba794a221cf4c5576a8",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/startup-continuity.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-results-review-by-docs-01/startup-continuity.stdout.txt": {
+          "bytes": 420,
+          "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-review-by-docs-01/audit.json": {
+          "bytes": 9368,
+          "sha256": "6d2d655ef03f7454e83543b82bbfeecbdb7578f0f73375a10dd939215372cb35",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-review-by-docs-01/packet-files.json": {
+          "bytes": 606,
+          "sha256": "4f6a252bfcfe85768800562c183a0cc8f104a6a40652eb85f3ce6c0366ec4339",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-review-by-docs-01/review.md": {
+          "bytes": 4505,
+          "sha256": "987c81f37bd287f278707703f48302acef20b0cebf2d533d889679cdaa951e57",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/original-capture-packet-01.json": {
+          "bytes": 49025,
+          "sha256": "1cafaa493f6a7e9969533c61e0e6669f22c399535cffbbf747a1253484f2914d",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/original-results-review-01/audit.json": {
+          "bytes": 5676,
+          "sha256": "2d339e8f0639224a0d9ad42f73ca1ae2e66fbed8a4ab7e6c76e9555c0b72d9b2",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/original-results-review-01/packet-files.json": {
+          "bytes": 464,
+          "sha256": "8148aa7f337c7c7a00baa358421a06e531ac50105150a97259a088abc065d6cc",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/original-results-review-01/review.md": {
+          "bytes": 2923,
+          "sha256": "20f161ea532e552b6e4010a78d2252ba93d5cdece585ca0b37a99f09b058f7fb",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/packet-files.json": {
+          "bytes": 1526,
+          "sha256": "831d44a6451cc2f7a5a3dd4cb143faac3ae2b424ac609ba8bc3a58f8c6bba46c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/constitution.json": {
+          "bytes": 766,
+          "sha256": "f0257e96805ff5d3284f99c9be035de4ad0e9157cf359790d3f045552f44c9d5",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/constitution.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/constitution.stdout.txt": {
+          "bytes": 420,
+          "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/inputs.after.json": {
+          "bytes": 7754,
+          "sha256": "ddde6a01251eeeaf28fa8d8ec367442e265c09a023e7a3ff0ca90f2bdf8c384c",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/inputs.before.json": {
+          "bytes": 8027,
+          "sha256": "184ef358ceae75a712a8625375101013b4e84b8cdd4b80e43926e2ec68c7427a",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/packet-files.json": {
+          "bytes": 1180,
+          "sha256": "4c23f09b10d1959e542c76c74cc8ed39397b6b0591e18bcb8f82789d0066f288",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/review-record.json": {
+          "bytes": 2682,
+          "sha256": "6fd7e49f7050f7d22f92f0d1f6e9fd397c7add7aabd9c3e12a029778987ca004",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/review.md": {
+          "bytes": 5980,
+          "sha256": "6a3566ece06097c79c87b7259fcdedc8a13ec0ae84eeec02c0a47ff15062c2f5",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/candidate.md": {
+          "bytes": 8868,
+          "sha256": "491058d547c040583ddf65bfd986afcdbb025eceb13e9de78e2b57f9ca26d904",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/capture-inputs-v2.json": {
+          "bytes": 23238,
+          "sha256": "ccf3ca9c3526a5725d9d5a7cf973285bd9fe27c4afb6ed00233224ab0a18ed87",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/capture_reversal.py": {
+          "bytes": 15184,
+          "sha256": "a52b836f69f95e19729e375f5e60660442f15faf8b458935f257726d94d6d108",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/capture_reversal_v2.py": {
+          "bytes": 16866,
+          "sha256": "b4fb56ce3a76f35330824eab80eb6d204f5abafd4e171379989f948647662331",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/generate_reversal.py": {
+          "bytes": 13038,
+          "sha256": "f445a6e64543704707d9c87890bc41572bb8bbc23ee2001c56af39fcf2150a37",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/inputs.json": {
+          "bytes": 9853,
+          "sha256": "b41062238563c64f03881db667c8525968fd938b9e94e647db6d1f7f26438916",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/script-inputs.json": {
+          "bytes": 22515,
+          "sha256": "006d38a3faf0dae0cb251bedf167bc6cd19d904bcdd4f61b1601557ec2e0e7b2",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/scripts-v2.md": {
+          "bytes": 4278,
+          "sha256": "2245fc45f39a158b33bae93cda9d97b1d22326339f5eee3a16bcd95a050df6a7",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/scripts.md": {
+          "bytes": 6186,
+          "sha256": "2a8d52b5bb30becb6e1ca47b0b2c23df83853cfb5e16a9010fcd00fbcfcdd064",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-candidate-review-by-docs-01/audit.json": {
+          "bytes": 1351,
+          "sha256": "4cf1b441471d66f5f7983f0eb01e3441aaa80e46fe09744efaf4816eaab6b429",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-candidate-review-by-docs-01/packet-files.json": {
+          "bytes": 613,
+          "sha256": "d253c4df5737ff34cff04178b33150d8506c88db425cb041d5c73a36ebbe7c50",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-candidate-review-by-docs-01/review.md": {
+          "bytes": 3765,
+          "sha256": "6cb61ba81569f43b8095a6ad99137227af4a9d1bb444a8b41d15590cd6d24d94",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-capture-v2-review-by-docs-01/audit.json": {
+          "bytes": 1407,
+          "sha256": "47d1e0eb8e240aa4dbcc74912ce7bb40a2c8364f3ff92ed6d1688d2dc3dfebf6",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-capture-v2-review-by-docs-01/packet-files.json": {
+          "bytes": 580,
+          "sha256": "e385b99c5c1dafbfaab18cc145dce0d469a72f091ed66a33c0662cc9cc7c9415",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-capture-v2-review-by-docs-01/review.md": {
+          "bytes": 3435,
+          "sha256": "ec5ad217ad992b7cb694e11aae18a5f00d49559b70adc58b48dfb39c7a503aa7",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-results-review-by-docs-01/audit.json": {
+          "bytes": 8809,
+          "sha256": "adc14277d6c2e7ebbe6bce03a1740c2b627038f68ce2ef73fb5bd26d65b21799",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-results-review-by-docs-01/packet-files.json": {
+          "bytes": 615,
+          "sha256": "1f76d20b49c0e1abccf05ca64f5d13c974105b43108d473679bb681fb9be18a7",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-results-review-by-docs-01/review.md": {
+          "bytes": 5118,
+          "sha256": "2aceed9c31b049b25d907f1204a4181b250724814dcfd5d71d156a968da265bf",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-script-review-by-docs-01/audit.json": {
+          "bytes": 859,
+          "sha256": "b2459d9f60d1345248d6dce6d706f82288c0eb372e43b914a24819aa2862d6e4",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-script-review-by-docs-01/packet-files.json": {
+          "bytes": 625,
+          "sha256": "db6c6ae21ddc95ee98bcbec1e87199262ea8a99270b851eccd1706879f447994",
+          "mode": 420
+        },
+        "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02-script-review-by-docs-01/review.md": {
+          "bytes": 3254,
+          "sha256": "7bcf26e868531a9559e5417ca1751ff79edb52fb0a3cfe0e759f0ca98c953a17",
+          "mode": 420
+        }
+      },
+      "verification": "All original root-relative member names, bytes, SHA-256 and modes verified before original directory removal; no extraction or recorded command execution."
+    }
+  ],
+  "original_maps": "Historical hashes and path fields remain unchanged inside each archive; names describe archive members, not existing checkout paths.",
+  "active_authoring_sessions": "Two archived sessions are no longer dynamically discovered; do not report them as current checked sessions."
+}

@@ -295,7 +295,7 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
 #[test]
 fn qli_frontend_and_qir_profile_contract() {
     let p = qleisli::frontend::compile::compile_project(std::path::Path::new(
-        "tests/fixtures/interop/terminal",
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
     ))
     .unwrap();
     let qasm = export_openqasm3(&p).unwrap();

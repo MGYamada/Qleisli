@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.basis-arity-study-validation",
+  "version": 1,
+  "executables": {
+    "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer": "4e562b76222ec5993e46617cb4eae325c7fc7278c1f34da1ddb264bd64b63e06",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "observer_build_record": "tests/fixtures/frontend_v030/multi-declaration/after/validation.json",
+  "original_sources_unchanged": true,
+  "selected_production_sources_unchanged": true,
+  "executables_unchanged": true,
+  "session_sha256": "e5ca5c43a0e33dd214462d34ca50616ce18a5a246b9d2019e42ddb360859ffe4",
+  "observations_sha256": "0f7510bf3b0f49ef794c9a67b75d376eb965aca124cefee986604b82206f5b22",
+  "process_count": 26,
+  "all_observer_processes_exit_zero": true,
+  "scope": "Observer exit zero includes diagnostic rejection. Read finite.check separately; no native execution or universal source-preservation assertion."
+}

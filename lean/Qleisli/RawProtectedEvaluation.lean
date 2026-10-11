@@ -3,7 +3,7 @@ import Qleisli.RawDenotation
 import Qleisli.RawProtected
 
 /-! Actual original-use evaluation to complete physical complex coefficients.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.ProtectedEvaluation
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Raw QleisliKernel.Raw.ProtectedEvaluation QleisliKernel.Finite

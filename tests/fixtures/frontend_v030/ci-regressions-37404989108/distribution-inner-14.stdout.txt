@@ -1,0 +1,412 @@
+
+running 113 tests
+test contract::exact::tests::canonical_dyadics_and_irrational_components_remain_distinct ... ok
+test contract::exact::tests::capacity_errors_never_wrap_or_approximate ... ok
+test contract::exact::tests::denominator_alignment_preserves_sign_at_capacity ... ok
+test contract::exact::tests::exact_complex_algebra_includes_cross_terms ... ok
+test contract::exact::tests::dimensions_entries_and_getters_are_bounded ... ok
+test contract::exact::tests::all_eighth_root_products_and_conjugates_are_exact ... ok
+test contract::exact::tests::shared_budget_cannot_be_reset_by_matrix_composition ... ok
+test contract::exact::tests::isometry_checks_cross_column_inner_products ... ok
+test contract::exact::tests::hadamard_squared_and_phase_sensitive_adjoint ... ok
+test contract::exact::tests::tensor_places_first_operand_on_low_bits ... ok
+test contract::function::snapshot_tests::shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification ... ok
+test contract::tests::counterexample_diagnostic_preserves_the_shared_work_budget ... ok
+test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+test contract::function::snapshot_tests::shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies ... ok
+test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+test frontend::lexer::common_token_tests::bounded_common_tokens_count_pairs_before_owning_spellings ... ok
+test contract::function::snapshot_tests::aggregate_budget_charges_each_fresh_native_decision ... ok
+test frontend::lexer::common_token_tests::comment_bound_and_doc_recognition_are_independent_of_tokens ... ok
+test frontend::parser::tests::contextual_natural_syntax_does_not_resolve_an_unbound_name ... ok
+test frontend::parser::tests::contextual_naturals_do_not_unreserve_runtime_global_or_operation_names ... ok
+test frontend::parser::tests::contextual_naturals_are_retained_in_fold_indices_and_bounds ... ok
+test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+test frontend::compile::snapshot_tests::constructed_ordinary_parameter_patterns_use_runtime_binding_rules ... ok
+test frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans ... ok
+test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+test frontend::project::source_file::tests::missing_linux_source_is_not_misreported_as_missing_procfs ... ok
+test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+test frontend::resolve::locals::tests::cloned_and_relocated_syntax_keeps_structural_ids_but_rebuilds_lookup ... ok
+test frontend::resolve::locals::tests::constructed_deep_syntax_and_sibling_scopes_do_not_alias_bindings ... ok
+test frontend::resolve::locals::tests::equal_spans_do_not_merge_initializer_and_rebinding_identities ... ok
+test frontend::resolve::locals::tests::later_static_naturals_and_global_candidates_keep_the_same_local_identity ... ok
+test frontend::resolve::locals::tests::static_candidate_does_not_replace_the_runtime_shadow_identity ... ok
+test frontend::resolve::tests::all_declarations_have_canonical_collection_local_identities ... ok
+test frontend::resolve::tests::constructed_empty_import_is_a_located_error ... ok
+test frontend::resolve::tests::source_resolution_uses_the_whole_fixed_catalog_for_both_consumers ... ok
+test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+test frontend::parser::tests::contextual_naturals_retain_name_span_type_dimensions_and_constraints ... ok
+test frontend::parser::tests::contextual_naturals_pass_through_specialization_and_operation_counts ... ok
+test frontend::parser::tests::contextual_naturals_keep_all_comparisons_separate_from_type_angles ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_native_valid_phased_finish_cannot_implement_original_source ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_helper_retains_entangled_caller_frame_and_axis_order ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_two_moved_initializations_keep_reversed_axes_and_reference ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_empty_branch_preserves_complex_phase_and_external_reference ... ok
+test frontend::sized::lower::preservation::tests::source_trace_charges_idle_zero_width_basis_before_frame_cloning ... ok
+test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_product_maps ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_native_valid_scalar_for_canonical_unit_maps ... ok
+test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_preserves_entangled_caller_frame_through_an_ordinary_call ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns ... ok
+test frontend::types::tests::equal_width_does_not_identify_type_or_owner_trees ... ok
+test frontend::types::tests::linearity_retains_zero_width_owners_inside_mixed_products ... ok
+test frontend::types::tests::size_obligations_keep_order_and_errors_after_a_sibling_mismatch ... ok
+test frontend::types::tests::size_solver_cannot_equate_different_tuple_or_quantum_shapes ... ok
+test host::factoring::tests::minimality_and_work_exhaustion_are_checked ... ok
+test interchange::codec::tests::every_frozen_raw_operation_and_action_preserves_its_fields ... ok
+test interchange::codec::tests::record_wire_fields_and_work_are_stable_and_unknown_fields_are_rejected ... ok
+test interchange::codec::tests::wire_integer_bounds_retain_field_range_and_u32_error_precedence ... ok
+test interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ignored, run scripts/test_verification_decoders.py with the native decoder view
+test interchange::hierarchical::execution::tests::capability_scan_rejects_unsupported_zero_repeat_children_and_classical_inputs ... ok
+test interchange::hierarchical::execution::tests::explicit_limits_dimensions_and_numeric_overflow ... ok
+test interchange::hierarchical::execution::tests::negative_control_retains_a_zero_qubit_leaf_scalar ... ok
+test interchange::hierarchical::execution::tests::pending_metadata_is_bounded_before_wide_sequence_enqueue ... ok
+test interchange::hierarchical::execution::tests::permutation_direction_inverse_and_zero_width ... ok
+test interchange::hierarchical::execution::tests::repeats_spend_actual_work_even_under_inactive_control ... ok
+test interchange::hierarchical::execution::tests::sampling_norm_guard_rejects_zero_nonfinite_and_excessive_drift ... ok
+test interchange::hierarchical::execution::tests::sampling_uses_full_branch_weights_and_never_selects_zero_branches ... ok
+test interchange::hierarchical::execution::tests::sequence_adjoint_retains_complex_phase_and_reference ... ok
+test interchange::hierarchical::execution::tests::tensor_places_left_axes_first_and_control_keeps_global_phase ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::capacity_failure_identifies_the_selected_native_check_without_a_work_claim ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::every_failure_mode_requires_exact_eof_after_the_final_newline ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::framed_obligations_remain_mode_specific_and_reject_malformed_counts ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::isometry_hierarchy_version_failure_is_explicit_and_never_accepts_generic_frames ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance ... ok
+test frontend::sized::raw::tests::raw_source_replay_rejects_native_valid_semantic_and_structural_mutations ... ok
+test frontend::sized::raw::preservation::tests::raw_source_replay_mixed_rejects_native_valid_gate_control_measurement_and_extra_mutations ... ok
+test interchange::native::runtime::tests::replies_bind_request_presence_and_reject_ambiguous_success ... ok
+test frontend::sized::lower::preservation::isometry_tests::isometry_roots_match_independently_authored_exact_composition_requests ... ok
+test interchange::tests::display_omits_only_the_absent_pointer ... ok
+test interchange::tests::graph_checks_cycles_dangling_unused_and_every_shared_path ... ok
+test interchange::tests::shared_snapshots_charge_once_and_preserve_order_and_duplicate_checks ... ok
+test interchange::tests::source_and_identity_limits_are_aggregate_and_sources_never_resolve ... ok
+test interchange::tests::strict_json_bounds_and_unicode_do_not_normalize_identities ... ok
+test interop::profile::tests::gate_columns_match_independent_exact_definitions_including_phase ... ok
+test sim::sampling::tests::norm_allowance_tracks_executed_work_and_remains_bounded ... ok
+test sim::sampling::tests::rejects_nonfinite_zero_and_excessive_norm_error ... ok
+test sim::tests::certified_cleanup_alarm_is_relative_and_preserves_numerical_mass ... ok
+test sim::tests::certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries ... ok
+test sim::tests::certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::nonzero_runtime_exit_preserves_framing_errors_and_checker_rejections ... ok
+test interchange::native::runtime::tests::process_failures_never_fall_back_or_wait_beyond_the_deadline ... ok
+test interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads ... ok
+test sim::tests::physical_raw_auxiliary_execution_agrees_with_extracted_contracts ... ok
+test sim::tests::legacy_qif_matches_independent_exact_extraction_and_retains_limits ... ok
+test sim::tests::generated_circuits_match_exact_amplitudes_adjoint_and_control_laws ... ok
+
+test result: ok. 110 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 45.84s
+
+
+running 4 tests
+test json::tests::bundled_and_local_locations_have_portable_identities ... ok
+test json::tests::invalid_probabilities_fail_before_a_success_document_is_written ... ok
+test json::tests::json_escaping_covers_controls_quotes_backslashes_and_unicode ... ok
+test samples::tests::aggregate_failure_does_not_return_earlier_shots ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 7 tests
+test derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks ... ok
+test bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors ... ok
+test parity_measurement_keeps_coherence_within_each_parity_sector ... ok
+test documented_structured_algorithms_have_their_expected_results ... ok
+test bernstein_vazirani_recovers_every_two_bit_secret ... ok
+test single_bit_flip_recovery_preserves_entanglement_with_a_reference ... ok
+test grover_all_targets_and_iteration_counts_match_amplitude_amplification ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.77s
+
+
+running 7 tests
+test nary_patterns_types_and_basis_values_preserve_immediate_arity ... ok
+test corpus_dropped_owner_now_points_to_b_not_the_body ... ok
+test flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits ... ok
+test missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliaries ... ok
+test pattern_arity_totality_ownership_and_exact_tree_guards_remain ... ok
+test ordinary_parameter_patterns_execute_with_canonical_ordinary_types ... ok
+test patterned_basis_contracts_and_nary_clients_execute ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.74s
+
+
+running 1 test
+test every_two_bit_permutation_retains_phase_under_control_axis_transport_and_adjoint ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.84s
+
+
+running 10 tests
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... ok
+test unused_source_type_arguments_obey_the_same_closed_binding_capacity ... ok
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis ... ok
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+
+
+running 13 tests
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.67s
+
+
+running 14 tests
+test exact_basis_shape_and_declared_unitary_effect_are_required ... ok
+test certified_source_checks_step_width_and_recursion_limits ... ok
+test explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning ... ok
+test certified_phase_is_visible_against_a_correlated_reference ... ok
+test certified_functions_support_adjoint_and_coherent_control ... ok
+test predicate_and_logical_names_obey_outer_shadowing ... ok
+test outer_classical_values_are_unavailable_but_closed_classical_branches_are_static ... ok
+test one_logical_client_accepts_two_phase_oracle_implementations ... ok
+test source_body_cannot_capture_or_lose_ownership ... ok
+test simultaneous_data_auxiliary_flip_preserves_reference_correlations ... ok
+test predicate_and_returned_axis_order_participate_in_the_equation ... ok
+test phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits ... ok
+test temporary_binders_do_not_consume_shadowed_outer_owners ... ok
+test zero_width_data_ownership_and_scalar_phase_are_preserved ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.58s
+
+
+running 9 tests
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test check_and_run_accept_existing_non_utf8_source_roots ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test non_utf8_command_reports_usage_without_panicking ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.34s
+
+
+running 8 tests
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_type_failure_is_located_in_the_original_source ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_command_identity_is_independent_of_leading_options ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.58s
+
+
+running 3 tests
+test invalid_flags_and_failed_sampling_never_emit_shots ... ok
+test cli_new_default_has_an_explicit_legacy_escape ... ok
+test seeded_samples_have_atomic_human_and_json_outputs ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s
+
+
+running 5 tests
+test closed_transparent_provider_keeps_its_conditional_control_path ... ok
+test declared_paths_support_the_inverse_and_control_positive_controls ... ok
+test reversing_an_adjoint_only_wrapper_needs_the_original_apply_path ... ok
+test unused_actual_operations_still_constrain_the_conservative_wrapper ... ok
+test apply_only_wrapper_retains_forward_use_without_inverse_or_control ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 30 tests
+test annotated_types_and_computed_domains_share_the_tree_limits ... ok
+test branch_created_wires_and_classical_results_merge ... ok
+test bundled_basis_functions_control_a_product_register ... ok
+test common_work_limits_preserve_the_original_copy_case_and_a_bounded_control ... ok
+test conditional_swap_pairs_different_input_registers ... ok
+test exponential_call_expansion_has_a_checked_work_limit ... ok
+test finite_v0_basis_lifts_are_injective_and_closed ... ok
+test finite_v0_local_names_shadow_static_callees ... ok
+test finite_v0_mixed_values_move_as_a_whole ... ok
+test finite_v0_computed_blocks_require_the_structural_certificate ... ok
+test documented_projects_compile_verify_and_simulate ... ok
+test growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack ... ok
+test imported_argument_errors_point_to_the_call_and_actual_argument ... ok
+test invalid_callee_body_still_reports_its_own_source ... ok
+test function_branch_preserves_the_callers_quantum_frame ... ok
+test invalid_source_is_rejected_before_execution ... ok
+test missing_import_reports_the_call_site_even_in_unused_functions ... ok
+test finite_v0_effects_classify_quantum_maps_and_respect_declarations ... ok
+test quantum_rebinding_inside_a_branch_cannot_escape_its_scope ... ok
+test repeated_tree_copies_and_branch_frames_spend_the_work_budget ... ok
+test nested_toffoli_result_reset_and_discard_lower_to_observation ... ok
+test library_check_needs_no_entry_and_project_errors_have_coordinates ... ok
+test finite_v0_type_shapes_and_zero_wire_ownership ... ok
+test resource_rules_mixed_branch_results_follow_positions ... ok
+test resource_rules_reject_lost_or_differently_consumed_bindings ... ok
+test resource_rules_nested_classical_results_keep_their_scopes ... ok
+test resource_rules_pending_mixed_argument_survives_nested_call ... ok
+test resource_rules_pending_tuple_field_survives_branch ... ok
+test resource_rules_reset_branch_keeps_reference_and_classical_history ... ok
+test resource_rules_zero_width_result_and_frame_are_both_merged ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.75s
+
+
+running 6 tests
+test malformed_options_are_usage_errors_before_reading_input ... ok
+test qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity ... ok
+test file_inputs_and_early_usage_rejection_do_not_require_stdin_reads ... ok
+test malformed_or_unsupported_input_has_no_partial_result ... ok
+test malformed_artifact_pointer_matches_the_verify_ir_envelope ... ok
+test terminal_import_execution_export_and_seeded_fresh_shots ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+
+running 6 tests
+test parser_failure_remains_project_category_with_explicit_parse_context ... ok
+test function_contract_mismatch_reports_an_exact_phase_counterexample ... ok
+test structured_parse_diagnostics_preserve_unicode_crlf_and_eof_spans ... ok
+test invalid_contract_inside_an_isolated_computed_body_keeps_its_source_span ... ok
+test structured_load_errors_distinguish_source_spans_from_missing_files ... ok
+test invalid_computed_contract_points_to_its_expression_including_nested_branches ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+
+
+running 3 tests
+test ecosystem_help_is_the_single_canonical_chapter ... ok
+test standalone_help_discovers_native_tools_without_project_or_checker ... ok
+test unavailable_tools_and_invalid_help_keep_usage_failures_and_discovery ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 11 tests
+test all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics ... ok
+test doc_text_normalizes_crlf_but_preserves_utf8_source_spans ... ok
+test every_bundled_module_and_public_or_private_definition_has_documentation ... ok
+test markdown_includes_private_docs_and_uses_safe_signature_fences ... ok
+test misplaced_documentation_is_rejected_in_both_parse_entry_points ... ok
+test ordinary_and_nested_comment_delimiters_follow_rust_distinctions ... ok
+test rust_style_docs_attach_to_modules_imports_and_functions_in_source_order ... ok
+test deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax ... ok
+test unfinished_comment_blocks_cannot_swallow_later_declarations ... ok
+test common_parser_shares_documentation_attachment_with_sized_source ... ok
+test documentation_neither_changes_ir_nor_authorizes_invalid_ownership ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.18s
+
+
+running 11 tests
+test empty_files_and_directory_entries_consume_bounded_discovery_capacity ... ok
+test malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source ... ok
+test manifest_bytes_are_bounded_and_decoded_independently_of_source_policy ... ok
+test manifest_symlinks_and_non_files_cannot_fall_back_to_an_ancestor ... ok
+test missing_manifest_has_no_default_and_all_filesystem_loaders_check_it ... ok
+test non_file_manifest_is_rejected_before_platform_open ... ok
+test closest_manifest_wins_without_changing_import_roots_or_skipping_invalid_files ... ok
+test sized_and_documentation_files_use_their_enclosing_manifest ... ok
+test qlt_drafts_require_an_edition_without_claiming_execution_support ... ok
+test edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib ... ok
+test full_qrate_manifest_and_toml_string_forms_select_the_same_edition ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.80s
+
+
+running 16 tests
+test fresh_process_child ... ok
+test classical_phi_output_uses_verified_fresh_axes ... ok
+test fresh_serialized_process_child ... ok
+test fresh_process_decodes_both_sides_and_rejects_changed_meaning ... ok
+test embedded_receipts_are_reconstructed_before_leaf_equality ... ok
+test fresh_process_reconstruction_rejects_a_global_phase_mutation ... ok
+test malformed_payload_matrix_and_outside_six_bit_boundary_reject ... ok
+test phase_on_unit_and_zero_width_owner_are_retained ... ok
+test independently_specified_cnot_and_final_axis_order ... ok
+test reconstruct_hadamard_in_both_formats_and_bind_complete_bytes ... ok
+test serialized_equations_reject_phase_shape_and_authority_flag_mutations ... ok
+test serialized_meaning_retains_both_byte_strings_and_exact_work ... ok
+test serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves ... ok
+test shared_exact_budget_is_not_reset_for_each_leaf ... ok
+test type_tree_owner_and_wire_mutations_are_not_dimension_equality ... ok
+test six_bit_identity_stays_within_the_finite_matrix_boundary ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.29s
+
+
+running 6 tests
+test aggregate_decode_work_is_precharged_and_never_reset_on_failure ... ok
+test handwritten_description_fixes_coefficient_and_row_major_order ... ok
+test independent_exponents_preserve_the_full_existing_scalar_capacity ... ok
+test reject_noncanonical_or_out_of_capacity_dyadics ... ok
+test reject_unknown_envelopes_dimensions_counts_and_json_ambiguities ... ok
+test all_exact_phases_and_sixty_four_dimensions_round_trip ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 1 test
+test finite_and_sized_checkers_agree_on_common_linear_ownership has been running for over 60 seconds
+test finite_and_sized_checkers_agree_on_common_linear_ownership ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 580.57s
+
+
+running 3 tests
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... FAILED
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+
+failures:
+
+---- symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics stdout ----
+
+thread 'symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics' (109800) panicked at tests/frontend_types.rs:121:9:
+assertion `left == right` failed
+  left: "type or tuple/size shape mismatch: expected `Q<Bit>`, found `Q<Bits<1>>`"
+ right: "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

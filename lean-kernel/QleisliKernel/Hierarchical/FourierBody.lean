@@ -3,7 +3,7 @@ import QleisliKernel.Hierarchical.FourierControl
 import QleisliKernel.Hierarchical.Hadamard
 
 /-! Inspect the complete shared recursive Fourier body with one remaining budget.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Only full-byte-bound finite H equations remain pending. This is the reversed
 output body, not the complete outer Fourier request or a production seal. -/
 

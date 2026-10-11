@@ -223,7 +223,7 @@ const MIX: &str = "
 unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
     let a = t(h(a));
-    let b = do label <- b; pure not label;
+    let b = basis b as label { not label };
     let (a,b) = cnot(a,b);
     join(b,a)
 }
@@ -233,7 +233,7 @@ unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
 fn adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries() {
     // U|a,b> = sum_r (-1)^(a*r) zeta^r |b xor 1 xor r,r>/sqrt(2).
     let preparation = "let q = join(init0(),init0());";
-    let forward = compiled_steps(MIX, preparation, "repeat_static(1,mix,q)");
+    let forward = compiled_steps(MIX, preparation, "power(mix,1)(q)");
     assert_operator(2, &forward, |row, column| {
         let (a, b, r) = (column & 1, column >> 1, row >> 1);
         if row & 1 == b ^ 1 ^ r {
@@ -243,7 +243,7 @@ fn adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries() {
         }
     });
     // U^dagger|c,d> = sum_a (-1)^(a*d) zeta^(-d)|a,c xor 1 xor d>/sqrt(2).
-    let backward = compiled_steps(MIX, preparation, "adjoint(mix,q)");
+    let backward = compiled_steps(MIX, preparation, "adjoint(mix)(q)");
     assert_operator(2, &backward, |row, column| {
         let (c, d, a, b) = (column & 1, column >> 1, row & 1, row >> 1);
         if b == c ^ 1 ^ d {
@@ -256,14 +256,14 @@ fn adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries() {
         "{MIX}
 unitary fn nested(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {{
     let (ab,c) = split(q); let (a,b) = split(ab);
-    let (c,a) = split(repeat_static(1,mix,join(c,a)));
+    let (c,a) = split(power(mix,1)(join(c,a)));
     join(join(b,c),a)
 }}"
     );
     let steps = compiled_steps(
         &nested,
         "let q = join(join(init0(),init0()),init0());",
-        "repeat_static(1,nested,q)",
+        "power(nested,1)(q)",
     );
     // Apply U to the ordered, nonadjacent pair (c,a), then return (b,c',a').
     assert_operator(3, &steps, |row, column| {
@@ -284,7 +284,7 @@ fn finite_repetition_preserves_the_phase_of_a_noncommuting_operator() {
         let steps = compiled_steps(
             definitions,
             "let q = init0();",
-            &format!("repeat_static({count},forward,q)"),
+            &format!("power(forward,{count})(q)"),
         );
         assert_operator(1, &steps, |row, column| {
             if row == column ^ (count % 2) {
@@ -300,7 +300,7 @@ fn finite_repetition_preserves_the_phase_of_a_noncommuting_operator() {
 fn nested_qif_preserves_zero_one_controls_and_branch_phases() {
     let definitions = "
 unitary fn forward(q: Q<Bit>) -> Q<Bit> { t(x(q)) }
-unitary fn backward(q: Q<Bit>) -> Q<Bit> { adjoint(forward,q) }
+unitary fn backward(q: Q<Bit>) -> Q<Bit> { adjoint(forward)(q) }
 unitary fn first(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (b,c) = split(q); let (b,c) = qif(b,c) { 0 => forward, 1 => backward }; join(b,c)
 }
@@ -313,7 +313,7 @@ unitary fn nested(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     let steps = compiled_steps(
         definitions,
         "let q = join(init0(),join(init0(),init0()));",
-        "repeat_static(1,nested,q)",
+        "power(nested,1)(q)",
     );
     assert_operator(3, &steps, |row, column| {
         let (a, b, c) = (column & 1, (column >> 1) & 1, column >> 2);
@@ -335,23 +335,23 @@ unitary fn nested(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
 #[test]
 fn computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control() {
     let definitions = "
-basis fn yes(value: Unit) -> Bit { 1 }
+classical fn yes(value: Unit) -> Bit { 1 }
 unitary fn identity(q: Q<Unit>) -> Q<Unit> { q }
 unitary fn phase(q: Q<Unit>) -> Q<Unit> { with_computed(q,yes) { |a| z(t(t(t(a)))) } }
 unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     let (c,u) = split(q); let (c,u) = qif(c,u) { 0 => phase, 1 => identity }; join(c,u)
 }";
     let preparation =
-        "let pair = do b <- init0(); pure ((),b); let (u,b) = split(pair); discard(b);";
+        "let pair = basis init0() as b { ((),b) }; let (u,b) = split(pair); discard(b);";
     // C_yes^dagger Z T^3 C_yes contributes zeta^7 on the one-dimensional space.
-    for (operation, phase) in [("repeat_static(1,phase,u)", 7), ("adjoint(phase,u)", 1)] {
+    for (operation, phase) in [("power(phase,1)(u)", 7), ("adjoint(phase)(u)", 1)] {
         let steps = compiled_steps(definitions, preparation, operation);
         assert_operator(0, &steps, |_, _| Exact::phase(phase));
     }
     let steps = compiled_steps(
         definitions,
         &format!("{preparation} let q = join(init0(),u);"),
-        "repeat_static(1,controlled,q)",
+        "power(controlled,1)(q)",
     );
     assert_operator(1, &steps, |row, column| {
         if row == column {
@@ -367,9 +367,9 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     let imports = "use std::quantum::{s,sdg,tdg,id,phase_eighth};";
     for (name, exponent) in [("s", 2), ("sdg", 6), ("tdg", 7)] {
         for (operation, power) in [
-            (format!("repeat_static(1,{name},q)"), exponent),
-            (format!("adjoint({name},q)"), 8 - exponent),
-            (format!("repeat_static(3,{name},q)"), 3 * exponent),
+            (format!("power({name},1)(q)"), exponent),
+            (format!("adjoint({name})(q)"), 8 - exponent),
+            (format!("power({name},3)(q)"), 3 * exponent),
         ] {
             let steps = compiled_steps(imports, "let q = init0();", &operation);
             assert_operator(1, &steps, |row, column| {
@@ -391,7 +391,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
         let steps = compiled_steps(
             &definitions,
             "let q = join(init0(),init0());",
-            "repeat_static(1,controlled,q)",
+            "power(controlled,1)(q)",
         );
         assert_operator(2, &steps, |row, column| {
             if row == column {
@@ -408,7 +408,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
         unitary fn direct(q:Q<Bit>)->Q<Bit>{{ phase_eighth(tdg(sdg(s(id(q))))) }}"
         ),
         "let q = init0();",
-        "repeat_static(1,direct,q)",
+        "power(direct,1)(q)",
     );
     assert_operator(1, &steps, |row, column| {
         if row == column {
@@ -422,13 +422,13 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
 #[test]
 fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
     let imports = "use std::quantum::{id,phase_eighth};";
-    let unit = "let pair = do b <- init0(); pure ((),b);
+    let unit = "let pair = basis init0() as b { ((),b) };
         let (q,b) = split(pair); discard(b);";
     for (operation, exponent) in [
-        ("repeat_static(1,id,q)", 0),
-        ("repeat_static(1,phase_eighth,q)", 1),
-        ("adjoint(phase_eighth,q)", 7),
-        ("repeat_static(8,phase_eighth,q)", 0),
+        ("power(id,1)(q)", 0),
+        ("power(phase_eighth,1)(q)", 1),
+        ("adjoint(phase_eighth)(q)", 7),
+        ("power(phase_eighth,8)(q)", 0),
     ] {
         let steps = compiled_steps(imports, unit, operation);
         assert_operator(0, &steps, |_, _| Exact::phase(exponent));
@@ -446,7 +446,7 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     let steps = compiled_steps(
         &definitions,
         &format!("{unit} let q = join(join(init0(),q),init0());"),
-        "repeat_static(1,mixed,q)",
+        "power(mixed,1)(q)",
     );
     assert_operator(2, &steps, |row, column| {
         if row == column {
@@ -458,7 +458,7 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     let steps = compiled_steps(
         imports,
         "let q = join(init0(),init0());",
-        "adjoint(phase_eighth,q)",
+        "adjoint(phase_eighth)(q)",
     );
     assert_operator(2, &steps, |row, column| {
         if row == column {
@@ -491,7 +491,7 @@ fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
             ErrorCode::Ownership,
         ),
         (
-            "use std::quantum::phase_eighth; unitary fn f(q:CBit)->CBit{phase_eighth(q)}",
+            "use std::quantum::phase_eighth; unitary fn f(q:Bit)->Bit{phase_eighth(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
@@ -499,7 +499,7 @@ fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
             ErrorCode::TypeMismatch,
         ),
         (
-            "use std::quantum::tdg; unitary fn f(q:Q<Unit>)->Q<Unit>{repeat_static(0,tdg,q)}",
+            "use std::quantum::tdg; unitary fn f(q:Q<Unit>)->Q<Unit>{power(tdg,0)(q)}",
             ErrorCode::TypeMismatch,
         ),
     ] {
@@ -564,7 +564,9 @@ fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
 
 #[test]
 fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
-    let c3x = include_str!("fixtures/review_v023/c3x.qli");
+    let c3x = include_str!(
+        "fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli"
+    );
     let root = SourceRoot::new(&format!(
         "{IMPORTS}\n{c3x}
         observe fn main()->Unit {{
@@ -595,9 +597,9 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
     ));
 
     let steps = compiled_steps(
-        "use std::transforms::qft3;",
+        "use std::transform::qft3;",
         "let q = join(join(init0(),init0()),init0());",
-        "repeat_static(1,qft3,q)",
+        "power(qft3,1)(q)",
     );
     assert_operator(3, &steps, |row, column| {
         Exact::phase(row * column) * Exact::inverse_sqrt_two() * Exact::new([1, 0, 0, 0], 1)
@@ -617,8 +619,8 @@ fn closed_classical_computation_selects_static_branches_and_preserves_output_axe
     let definitions = "
 unitary fn choose(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
-    let flag = if true { false xor not false } else { false };
-    let a = if flag and true { t(x(a)) } else { z(a) };
+    let flag = if 1 { 0 xor not 0 } else { 0 };
+    let a = if flag and 1 { t(x(a)) } else { z(a) };
     join(b,a)
 }
 unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
@@ -630,7 +632,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     // U|a,b> = zeta^(1-a)|b,1-a>; both branch phis and final
     // ownership order participate in the exact inverse and controlled matrix.
     let preparation = "let q = join(init0(),init0());";
-    let steps = compiled_steps(definitions, preparation, "repeat_static(1,choose,q)");
+    let steps = compiled_steps(definitions, preparation, "power(choose,1)(q)");
     assert_operator(2, &steps, |row, column| {
         let a = column & 1;
         let b = column >> 1;
@@ -640,7 +642,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
             Exact::ZERO
         }
     });
-    let inverse = compiled_steps(definitions, preparation, "adjoint(choose,q)");
+    let inverse = compiled_steps(definitions, preparation, "adjoint(choose)(q)");
     assert_operator(2, &inverse, |row, column| {
         let b = column & 1;
         let a = 1 - (column >> 1);
@@ -650,8 +652,8 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
             Exact::ZERO
         }
     });
-    let else_definitions = definitions.replace("if true {", "if false {");
-    let else_steps = compiled_steps(&else_definitions, preparation, "repeat_static(1,choose,q)");
+    let else_definitions = definitions.replace("if 1 {", "if 0 {");
+    let else_steps = compiled_steps(&else_definitions, preparation, "power(choose,1)(q)");
     assert_operator(2, &else_steps, |row, column| {
         let a = column & 1;
         let b = column >> 1;
@@ -664,7 +666,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     let controlled = compiled_steps(
         definitions,
         "let q = join(init0(),join(init0(),init0()));",
-        "repeat_static(1,control,q)",
+        "power(control,1)(q)",
     );
     assert_operator(3, &controlled, |row, column| {
         let c = column & 1;
@@ -682,11 +684,11 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
         }
     });
     let scalar_definitions = "
-basis fn one(u:Unit)->Bit { 1 }
+classical fn one(u:Unit)->Bit { 1 }
 unitary fn identity(q:Q<Unit>)->Q<Unit> { q }
 unitary fn scalar(q:Q<Unit>)->Q<Unit> {
-    if not false {
-        if true and false { q } else { with_computed(q,one) { |a| z(t(a)) } }
+    if not 0 {
+        if 1 and 0 { q } else { with_computed(q,one) { |a| z(t(a)) } }
     } else { q }
 }
 unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
@@ -696,8 +698,8 @@ unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
 }";
     let scalar = compiled_steps(
         scalar_definitions,
-        "let q=do b <- init0(); pure (b,());",
-        "repeat_static(1,controlled,q)",
+        "let q=basis init0() as b { (b,()) };",
+        "power(controlled,1)(q)",
     );
     assert_operator(1, &scalar, |row, column| {
         if row == column {
@@ -712,7 +714,7 @@ unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
 fn product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control() {
     let definitions = "
 unitary fn permute(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-    do (a,b) <- q; pure (b,a xor b)
+    basis q as (a,b) { (b,a xor b) }
 }
 unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
 unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
@@ -723,7 +725,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     let inverse = compiled_steps(
         definitions,
         "let q=join(init0(),init0());",
-        "adjoint(permute,q)",
+        "adjoint(permute)(q)",
     );
     assert_operator(2, &inverse, |row, column| {
         let b = column & 1;
@@ -737,7 +739,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     let controlled = compiled_steps(
         definitions,
         "let q=join(init0(),join(init0(),init0()));",
-        "repeat_static(1,control,q)",
+        "power(control,1)(q)",
     );
     assert_operator(3, &controlled, |row, column| {
         let c = column & 1;

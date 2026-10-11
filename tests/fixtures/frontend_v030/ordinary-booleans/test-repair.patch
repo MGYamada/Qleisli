@@ -1,0 +1,53 @@
+--- tests/fixtures/frontend_v030/ordinary-booleans/first-test.rs.txt
++++ tests/ordinary_booleans.rs
+@@ -76,7 +76,7 @@
+             "unitary fn truth(a: Bit, b: Bit) -> (Bit,Bit,Bit) {{
+                 (not a, a xor b, a and b)
+              }}
+-             observe fn main() -> (Bit,Bit,Bit) {{ truth({a},{b}) }}"
++             pub observe fn main() -> (Bit,Bit,Bit) {{ truth({a},{b}) }}"
+         );
+         let graph = both_closed(&source, &expected);
+         let truth = graph
+@@ -107,7 +107,7 @@
+     let source = "unitary fn f((u,(a,b)): (Unit,(Bit,Bit))) -> ((Bit,Unit),(Bit,(Bit,Unit))) {
+         let alias = a; let _ = b; ((alias,()),(a,(not a,u)))
+     }
+-    observe fn main() -> ((Bit,Unit),(Bit,(Bit,Unit))) { f(((),(1,0))) }";
++    pub observe fn main() -> ((Bit,Unit),(Bit,(Bit,Unit))) { f(((),(1,0))) }";
+     let graph = both_closed(source, &[true, true, false]);
+     let definition = graph
+         .definitions()
+@@ -135,7 +135,7 @@
+     // allowed, but does not erase its already evaluated Boolean source steps.
+     let graph = both_closed(
+         "unitary fn forget(b: Bit) -> Unit { let _ = not b; () }
+-         observe fn main() -> Unit { let () = forget(1); () }",
++         pub observe fn main() -> Unit { let () = forget(1); () }",
+         &[],
+     );
+     let accepted = accept(&graph);
+@@ -155,7 +155,7 @@
+ fn repeated_shared_calls_keep_each_invocations_classical_values() {
+     let graph = both_closed(
+         "unitary fn flip(b: Bit) -> Bit { not b }
+-         observe fn main() -> (Bit,Bit,Bit) { (flip(0),flip(1),flip(flip(0))) }",
++         pub observe fn main() -> (Bit,Bit,Bit) { (flip(0),flip(1),flip(flip(0))) }",
+         &[true, false, false],
+     );
+     assert_eq!(
+@@ -254,6 +254,14 @@
+         "pub unitary fn f(q: Q<Bit>) -> (Bit,Q<Bit>) {
+             let bit = for static i in 0..0 carry bit = 0 { let _ = not q; yield bit; };
+             (bit,q)
++        }",
++        // The quantum value is outside the fold's carry scope. That existing
++        // ownership failure precedes checking its Boolean operand type.
++        "ownership",
++    );
++    sized_reject(
++        "pub unitary fn f() -> Bit {
++            for static i in 0..0 carry bit = 0 { let _ = not (); yield bit; }
+         }",
+         "type",
+     );

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--lib",
+    "raw_source_replay"
+  ],
+  "exit": 0,
+  "seconds": 5.857715832942631,
+  "sources_stable": true,
+  "source_manifest_sha256": "97f6fb14758571b82ce150425c75ac06bf6c2905acddc4009b63ace709391a3e",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "base_commit": "10553a9f94f6fd6a4555961244e0e9be41154f8f",
+  "rust": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+  "scope": "One native-valid Raw mutation/source-step replay regression; no all-target validation or Lean rebuild",
+  "target": "/private/tmp/qleisli-bounded-validation-target"
+}

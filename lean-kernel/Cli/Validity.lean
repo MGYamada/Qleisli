@@ -3,7 +3,7 @@ import Protocol.Validity
 import Protocol.NativeContract
 
 /-! Fresh stdin validity checks for the single native production gate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Cli
 
 private def readValidity (handle : IO.FS.Stream) : IO ByteArray := do

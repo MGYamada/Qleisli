@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn eligibility_barrier[const A: Basis](q: Q<A>) -> Q<A> { q }
+fn forwards[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { U(q) }
+fn inverse[const W: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Adjoint(W) { adjoint(W,q) }
+pub fn probe[const V: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(V) { inverse[forwards[V]](q) }

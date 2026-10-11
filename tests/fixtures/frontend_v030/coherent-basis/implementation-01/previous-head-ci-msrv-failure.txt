@@ -1,0 +1,15 @@
+2026-10-06T04:01:37.8591274Z ---- common_syntax_does_not_grant_missing_profile_or_capability_support stdout ----
+2026-10-06T04:01:37.8591545Z 
+2026-10-06T04:01:37.8591829Z thread 'common_syntax_does_not_grant_missing_profile_or_capability_support' panicked at tests/sized_source.rs:2028:5:
+2026-10-06T04:01:37.8592345Z assertion failed: error.message.contains("expected Q(Bit), found Unit")
+2026-10-06T04:01:37.8592746Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T04:01:37.8592978Z 
+2026-10-06T04:01:37.8592981Z 
+2026-10-06T04:01:37.8593055Z failures:
+2026-10-06T04:01:37.8593300Z     common_syntax_does_not_grant_missing_profile_or_capability_support
+2026-10-06T04:01:37.8593524Z 
+2026-10-06T04:01:37.8593738Z test result: FAILED. 37 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.64s
+2026-10-06T04:01:37.8594011Z 
+2026-10-06T04:01:37.8598809Z error: test failed, to rerun pass `--test sized_source`
+2026-10-06T04:01:37.8624185Z ##[error]Process completed with exit code 101.
+2026-10-06T04:01:37.8756499Z Post job cleanup.

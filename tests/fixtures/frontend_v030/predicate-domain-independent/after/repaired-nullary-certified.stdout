@@ -1,0 +1,3 @@
+finite.load: ok, 1 local modules
+sized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function
+finite.check: Diagnostic { code: "arity", message: "with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli", span: Span { start: 403, end: 406 }, line: 8, column: 55 }) }

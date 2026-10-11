@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.007392917003016919,
+  "recorded_utc": "2026-10-05T17:12:02.462380+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "first-type-before-later-duplicate-finite-check-json.native.jsonl",
+  "stdout_raw": "first-type-before-later-duplicate-finite-check-json.stdout.txt",
+  "stderr_raw": "first-type-before-later-duplicate-finite-check-json.stderr.txt",
+  "stdout_sha256": "dfccdad1fb4b74d964fa06151738840101bd5ed055e6058d6a0cf9d3d7190972",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "named Basis types are outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 103,
+          "end": 110,
+          "line": 2,
+          "column": 29
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

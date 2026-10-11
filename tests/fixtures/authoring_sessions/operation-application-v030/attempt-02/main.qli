@@ -1,0 +1,16 @@
+// Desired canonical operation application; not reported as executable.
+use std::quantum::{h,z,init0};
+use std::observe::measure_z;
+
+unitary fn oracle(q: Q<Bit>) -> Q<Bit> { z(q) }
+unitary fn amplify[static A: Basis, static k: Nat, static U: Op<A>](
+    c: Q<Bit>, q: Q<A>
+) -> (Q<Bit>, Q<A>)
+requires Apply(U), Adjoint(U), Controlled(U), k <= 2 {
+    let (c,q) = controlled(power(U,k))(c,q);
+    (c,inverse(U)(q))
+}
+pub observe fn main() -> (Bit,Bit) {
+    let (c,q) = amplify[type(Bit),1,oracle](h(init0()),h(init0()));
+    (measure_z(c),measure_z(q))
+}

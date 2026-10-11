@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "kind": "explicit-source-migration",
+  "issue": 81,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-06T03:54:40.281507+00:00",
+  "context": "Only the coherent expression spelling changes in two existing finite kernels. Complete four-QLI-file snapshots preserve the input, binder, basis body, ordinary type tree, exact phase/axis/owner contract, upstream pins and notices. Original roots and earlier migrations stay frozen. OLD check/run/IR observations are saved; AFTER checks, default-run comparison and emitted-IR comparison are pending. This does not establish a universal source-preservation theorem, discharge QS/PR/RS, support generic QFT or certify release readiness.",
+  "projects": [
+    "qualtran/less_than2",
+    "pennylane_demos/vqe_excitation"
+  ],
+  "files": {
+    "qualtran/less_than2/kernel.qli": {
+      "before": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20",
+      "after": "7100a4cddf4ded1c1de2ab3ae729e836e533a3231f3b69ec612f9a86807cd5e9"
+    },
+    "qualtran/less_than2/main.qli": {
+      "before": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+      "after": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce"
+    },
+    "pennylane_demos/vqe_excitation/kernel.qli": {
+      "before": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41",
+      "after": "90e3ba606a272a76bdca01fc692ad7a13a3c6cfe3d12ecd49884d13f644adadd"
+    },
+    "pennylane_demos/vqe_excitation/main.qli": {
+      "before": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+      "after": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd"
+    }
+  },
+  "observations": [
+    "checks.json"
+  ],
+  "source_selection": "snapshot"
+}

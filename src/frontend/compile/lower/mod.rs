@@ -6,9 +6,9 @@
 
 mod branch;
 mod certified;
+mod classical;
 mod function_contract;
 mod operations;
-pub(super) use operations::check_generic;
 mod primitives;
 mod scope;
 mod transforms;
@@ -17,13 +17,30 @@ mod value;
 use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
+use crate::frontend::pattern::{self, BindingContext};
+use crate::frontend::raw_state::RawState;
 use crate::ir::*;
+use std::borrow::Cow;
+
+#[derive(Clone, Copy)]
+enum CallArguments<'a> {
+    Runtime(RuntimeArguments<'a>),
+    Classical(&'a [BasisExpr]),
+}
+impl CallArguments<'_> {
+    fn span(self, index: usize) -> Span {
+        match self {
+            Self::Runtime(args) => args.get(index).span,
+            Self::Classical(args) => args[index].span,
+        }
+    }
+}
 
 #[derive(Clone, Copy)]
 struct CallSite<'a> {
     module: &'a str,
     span: Span,
-    args: &'a [Expr],
+    args: CallArguments<'a>,
 }
 
 // Diagnostic metadata only: acceptance still depends solely on raw IR.
@@ -71,7 +88,10 @@ fn verification_error(
             ErrorCode::InvalidIr
         },
         match &compiler.checking {
-            Some(key) => format!("{failure} while checking {}::{}", key.0, key.1),
+            Some(key) => format!(
+                "{failure} while checking {}",
+                compiler.resolution.path(*key)
+            ),
             None => failure.to_string(),
         },
     )
@@ -83,24 +103,122 @@ fn verification_error(
 // Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
-    registers: BTreeMap<Slot, Register>,
-    operations: Vec<RawOp>,
+    raw: RawState<std::convert::Infallible>,
     operation_sources: OperationSources,
+    instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
-    next_token: u32,
-    next_wire: u32,
-    next_classical: u32,
-    next_slot: u32,
+    access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
     effect: Effect,
     // Origin of the strongest derived effect; diagnostic metadata only.
     effect_source: Option<(String, Span)>,
     depth: usize,
     bindings: super::operations::Bindings,
-    abstract_check: bool,
+}
+
+struct PatternBinding<'a, 'c, 'p> {
+    lowerer: &'a mut Lowerer<'c, 'p>,
+    module: &'a str,
+    env: &'a mut Env,
+}
+impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
+    type Value = Value;
+    type Size = std::convert::Infallible;
+    type Error = CompileError;
+
+    fn linear(&self, value: &Value) -> bool {
+        value.owns_quantum()
+    }
+
+    fn pattern_type<'v>(&self, value: &'v Value) -> Cow<'v, Ty> {
+        Cow::Owned(value.ty())
+    }
+
+    fn consume_fields(&mut self, value: Value) -> Vec<Value> {
+        value.into_fields().expect("checked nonempty tuple shape")
+    }
+
+    fn bind_name(&mut self, name: &Ident, _span: Span, value: Value) -> Result<(), CompileError> {
+        let binder = self.lowerer.compiler.locals.binder(name);
+        if self
+            .lowerer
+            .compiler
+            .locals
+            .info(binder)
+            .shadowed
+            .and_then(|old| self.env.get(self.lowerer.compiler.locals.key(old)))
+            .and_then(Binding::as_ref)
+            .is_some_and(Value::owns_quantum)
+        {
+            return Err(self.lowerer.error(
+                self.module,
+                name.span,
+                ErrorCode::Ownership,
+                "binding would hide unconsumed quantum ownership",
+            ));
+        }
+        if let Some(origins) = self.lowerer.tuple_binding_origins.last_mut() {
+            // Names (including non-tuples) shadow outer diagnostic metadata.
+            // No quantum slot/type tree is copied here.
+            origins.insert(
+                name.text.clone(),
+                matches!(&value, Value::Pair(..) | Value::Tuple(_)).then(|| TupleBindingOrigin {
+                    module: self.module.to_owned(),
+                    span: name.span,
+                    name: name.text.clone(),
+                }),
+            );
+        }
+        self.lowerer.bind_env(name, Binding::Live(value), self.env);
+        Ok(())
+    }
+
+    fn wildcard_error(&self, span: Span) -> CompileError {
+        self.lowerer.error(
+            self.module,
+            span,
+            ErrorCode::Ownership,
+            "wildcard would discard quantum ownership",
+        )
+    }
+
+    fn duplicate_error(&self, span: Span) -> CompileError {
+        self.lowerer.error(
+            self.module,
+            span,
+            ErrorCode::Ownership,
+            "duplicate name in a binding pattern",
+        )
+    }
+
+    fn shape_error(&self, span: Span, arity: usize, value: &Value, actual: &Ty) -> CompileError {
+        let help = if matches!(value, Value::Quantum(..)) {
+            "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
+        } else {
+            ""
+        };
+        self.lowerer.error(
+            self.module,
+            span,
+            ErrorCode::TypeMismatch,
+            if arity == 0 {
+                format!("empty pattern requires ordinary Unit, found `{}`", actual.runtime())
+            } else {
+                format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {arity} immediate fields, found `{}`{help}", actual.runtime())
+            },
+        )
+    }
 }
 
 impl Lowerer<'_, '_> {
+    fn bind_env(&self, name: &Ident, value: Binding, env: &mut Env) {
+        let id = self.compiler.locals.binder(name);
+        if let Some(old) = self.compiler.locals.info(id).shadowed {
+            env.remove(self.compiler.locals.key(old));
+        }
+        env.insert(self.compiler.locals.key(id).clone(), value);
+    }
+
     fn add_effect(&mut self, module: &str, span: Span, effect: Effect) {
         if effect > self.effect {
             self.effect_source = Some((module.to_owned(), span));
@@ -118,38 +236,21 @@ impl Lowerer<'_, '_> {
         self.compiler.error(module, span, code, message)
     }
     fn token(&mut self) -> TokenId {
-        let id = TokenId(self.next_token);
-        self.next_token += 1;
-        id
+        self.raw.token()
     }
     fn wire(&mut self) -> WireId {
-        let id = WireId(self.next_wire);
-        self.next_wire += 1;
-        id
+        self.raw.wire()
     }
     fn classical(&mut self) -> ClassicalId {
-        let id = ClassicalId(self.next_classical);
-        self.next_classical += 1;
-        id
+        self.raw.classical()
     }
     fn slot(&mut self) -> Slot {
-        let id = self.next_slot;
-        self.next_slot += 1;
-        id
+        self.raw.slot()
     }
 
     fn register(&mut self, basis: Ty, wires: Vec<WireId>) -> Value {
-        let slot = self.slot();
-        let token = self.token();
-        self.registers.insert(
-            slot,
-            Register {
-                token,
-                wires,
-                basis: basis.clone(),
-            },
-        );
-        Value::Quantum(slot, basis)
+        let slot = self.raw.register(basis.clone(), wires);
+        Value::quantum(slot, basis)
     }
 
     fn input(
@@ -160,14 +261,14 @@ impl Lowerer<'_, '_> {
         quantum: &mut Vec<QuantumPort>,
         classical: &mut Vec<ClassicalId>,
     ) -> Result<Value, CompileError> {
-        Ok(match ty {
-            Ty::Unit => Value::Unit,
-            Ty::CBit => {
+        Ok(match &ty.kind {
+            Kind::Unit => Value::Unit,
+            Kind::Bit => {
                 let id = self.classical();
                 classical.push(id);
                 Value::Classical(id)
             }
-            Ty::Q(basis) => {
+            Kind::Q(basis) => {
                 let wires = (0..basis.basis_bits().expect("basis type"))
                     .map(|_| self.wire())
                     .collect();
@@ -175,7 +276,7 @@ impl Lowerer<'_, '_> {
                 let Value::Quantum(slot, _) = &value else {
                     unreachable!()
                 };
-                let reg = &self.registers[slot];
+                let reg = &self.raw.registers[slot];
                 quantum.push(QuantumPort {
                     token: reg.token,
                     wires: reg.wires.clone(),
@@ -190,18 +291,21 @@ impl Lowerer<'_, '_> {
                 });
                 value
             }
-            Ty::Pair(a, b) => {
-                let a = self.input(a, module, span, quantum, classical)?;
-                let b = self.input(b, module, span, quantum, classical)?;
-                Value::pair(a, b)
-            }
-            Ty::Tuple(fields) => Value::Tuple(
+            Kind::Tuple(fields) => Value::tuple(
                 fields
                     .iter()
                     .map(|field| self.input(field, module, span, quantum, classical))
                     .collect::<Result<_, _>>()?,
             ),
-            Ty::Bit => unreachable!("ordinary signature"),
+            Kind::Bits(n) => match *n {},
+            Kind::Parameter(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "unresolved Basis parameter in finite input",
+                ));
+            }
         })
     }
 
@@ -212,9 +316,10 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
+        let key_name = self.compiler.resolution.declaration(*key).name.clone();
         if self.depth >= MAX_DEPTH {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 decl.span,
                 ErrorCode::Limit,
                 "function expansion exceeds the initial depth limit",
@@ -223,8 +328,10 @@ impl Lowerer<'_, '_> {
         self.depth += 1;
         // A callee's lexical binders cannot explain the caller's operands.
         let caller_origins = std::mem::take(&mut self.tuple_binding_origins);
+        let caller_updates = std::mem::take(&mut self.access_updates);
         let result = self.call_user_inner(key, args, site);
         self.tuple_binding_origins = caller_origins;
+        self.access_updates = caller_updates;
         self.depth -= 1;
         result
     }
@@ -236,19 +343,21 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
-        self.compiler.tick(&key.0, decl.span)?;
+        let key_name = self.compiler.resolution.declaration(*key).name.clone();
+        self.compiler.tick(&key_name.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
-        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
+        if decl.kind == FnKind::Meaning {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 decl.span,
                 ErrorCode::TypeMismatch,
-                "basis functions are used only in basis expressions and with_computed",
+                "Meaning declarations are not ordinary runtime callees",
             ));
         }
         if args.len() != params.len() {
-            let (module, span) =
-                site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
+            let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+                (site.module, site.span)
+            });
             return Err(self.error(
                 module,
                 span,
@@ -257,82 +366,102 @@ impl Lowerer<'_, '_> {
             ));
         }
         let mut env = Env::new();
+        let mut names = BTreeSet::new();
         for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
-            let PatternKind::Name(name) = &param.pattern.kind else {
-                unreachable!("ordinary parameters are parsed as names")
-            };
-            let (module, span) = site.map_or((key.0.as_str(), param.span), |site| {
-                (site.module, site.args[index].span)
+            let (module, span) = site.map_or((key_name.0.as_str(), param.span), |site| {
+                (site.module, site.args.span(index))
             });
             self.compiler
                 .charge(module, span, value.tree_size().nodes)?;
             if value.ty() != ty {
+                let argument = match &param.pattern.kind {
+                    PatternKind::Name(name) => format!("argument `{}`", name.text),
+                    _ => format!("argument {}", index + 1),
+                };
                 return Err(self.error(
                     module,
                     span,
                     ErrorCode::TypeMismatch,
                     format!(
-                        "argument `{}` has the wrong type: expected `{ty}`, found `{}`",
-                        name.text,
-                        value.ty()
+                        "{argument} has the wrong type: expected `{}`, found `{}`",
+                        ty.runtime(),
+                        value.ty().runtime()
                     ),
                 ));
             }
-            env.insert(name.text.clone(), Binding::Live(value));
+            self.bind(&key_name.0, &param.pattern, value, &mut env, &mut names)?;
         }
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
-        let FnBody::Quantum(body) = &decl.body else {
-            unreachable!("ordinary function")
+        let (value, result_span, body_span) = match &decl.body {
+            FnBody::Quantum(body) => (
+                self.block(&key_name.0, body, &mut env)?,
+                body.result.span,
+                body.span,
+            ),
+            FnBody::Basis(body) if decl.kind == FnKind::Classical => (
+                self.classical_expr(&key_name.0, body, &mut env)?,
+                body.span,
+                body.span,
+            ),
+            _ => unreachable!("complete checked callable declaration"),
         };
-        let value = self.block(&key.0, body, &mut env)?;
         self.compiler
-            .charge(&key.0, body.result.span, value.tree_size().nodes)?;
+            .charge(&key_name.0, result_span, value.tree_size().nodes)?;
         if value.ty() != return_ty {
             return Err(self.error(
-                &key.0,
-                body.result.span,
+                &key_name.0,
+                result_span,
                 ErrorCode::TypeMismatch,
-                format!("result does not match the function return type: expected `{return_ty}`, found `{}`", value.ty()),
+                format!(
+                    "result does not match the function return type: expected `{}`, found `{}`",
+                    return_ty.runtime(),
+                    value.ty().runtime()
+                ),
             ));
         }
-        self.no_owned_bindings(
-            &key.0,
-            body.span,
-            &env,
-            decl.params.iter().filter_map(|param| {
-                if let PatternKind::Name(name) = &param.pattern.kind {
-                    Some(name)
-                } else {
-                    None
-                }
-            }),
-        )?;
-        if self.effect > effect(decl.kind) {
+        let mut pending: Vec<_> = decl.params.iter().rev().map(|p| &p.pattern).collect();
+        let mut parameter_names = Vec::new();
+        while let Some(pattern) = pending.pop() {
+            match &pattern.kind {
+                PatternKind::Name(name) => parameter_names.push(name),
+                PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+                PatternKind::Wildcard => {}
+            }
+        }
+        self.no_owned_bindings(&key_name.0, body_span, &env, parameter_names)?;
+        let inferred = self.effect;
+        let Some(fact) = crate::frontend::effects::FunctionEffect::checked(decl.kind, inferred)
+        else {
             let (module, span) = self
                 .effect_source
                 .as_ref()
-                .map_or((key.0.as_str(), decl.span), |(module, span)| {
+                .map_or((key_name.0.as_str(), decl.span), |(module, span)| {
                     (module.as_str(), *span)
                 });
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::Effect,
-                format!(
-                    "body effect `{:?}` exceeds declared `{:?}` effect of `{}`",
-                    self.effect,
-                    effect(decl.kind),
-                    decl.name.text
-                ),
+                crate::frontend::effects::assertion_error(&decl.name.text, decl.kind, inferred),
+            ));
+        };
+        let source_fact = self.compiler.effects[key];
+        if fact.inferred() > source_fact.inferred() {
+            return Err(self.error(
+                &key_name.0,
+                result_span,
+                ErrorCode::Effect,
+                "concrete expansion exceeds the complete checked source effect",
             ));
         }
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
-        let (module, span) =
-            site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
-        self.add_effect(module, span, effect(decl.kind));
+        let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+            (site.module, site.span)
+        });
+        self.add_effect(module, span, inferred);
         Ok(value)
     }
 
@@ -349,7 +478,7 @@ impl Lowerer<'_, '_> {
         {
             let span = bindings
                 .into_iter()
-                .find(|binding| binding.text == *name)
+                .find(|binding| binding.text == name.name)
                 .map_or(fallback, |binding| binding.span);
             Err(self.error(
                 module,
@@ -364,8 +493,15 @@ impl Lowerer<'_, '_> {
 
     fn block(&mut self, module: &str, block: &Block, env: &mut Env) -> Result<Value, CompileError> {
         self.tuple_binding_origins.push(BTreeMap::new());
+        self.access_updates.push(BTreeSet::new());
         let result = self.block_inner(module, block, env);
         self.tuple_binding_origins.pop();
+        let updates = self.access_updates.pop().expect("block updates");
+        if result.is_ok() {
+            if let Some(parent) = self.access_updates.last_mut() {
+                parent.extend(updates);
+            }
+        }
         result
     }
 
@@ -379,15 +515,24 @@ impl Lowerer<'_, '_> {
             .charge(module, block.span, env_size(env).saturating_mul(2))?;
         let mut entry = env.clone();
         let mut local = env.clone();
-        let mut rebound = BTreeSet::new();
         for stmt in &block.statements {
             self.compiler.tick(module, stmt.span)?;
             match &stmt.kind {
+                // The shared judgment checked this compile-time binding.
+                // It has no runtime value or owner in a finite body.
+                StmtKind::StaticLet { .. } => {}
+                StmtKind::MutableLet { .. } | StmtKind::Assign { .. } => {
+                    return Err(self.error(
+                        module,
+                        stmt.span,
+                        ErrorCode::Unsupported,
+                        "mutable bindings and place assignment cannot be lowered",
+                    ));
+                }
                 StmtKind::Let { pattern, value } => {
                     let value = self.expr(module, value, &mut local)?;
                     let mut names = BTreeSet::new();
                     self.bind(module, pattern, value, &mut local, &mut names)?;
-                    rebound.extend(names);
                 }
                 StmtKind::Expr(expr) => {
                     let value = self.expr(module, expr, &mut local)?;
@@ -403,14 +548,16 @@ impl Lowerer<'_, '_> {
             }
         }
         let result = self.expr(module, &block.result, &mut local)?;
-        scope::close_scope(&mut entry, &local, &rebound).map_err(|name| {
-            // A direct rebinding supersedes an earlier binder of the same name.
-            // Nested scopes diagnose their own locals before returning here.
-            let span = block.statements.iter().rev().find_map(|stmt| {
-                if let StmtKind::Let { pattern, .. } = &stmt.kind {
-                    scope::binding_span(pattern, name)
-                } else { None }
-            }).unwrap_or(block.span);
+        if !self
+            .access_updates
+            .last()
+            .expect("block updates")
+            .is_empty()
+        {
+            self.compiler.charge(module, block.span, env_size(&entry))?;
+        }
+        scope::close_scope_with_updates(&mut entry, &local, self.access_updates.last().expect("block updates")).map_err(|name| {
+            let span = self.compiler.locals.info(name.id).span;
             self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
         *env = entry;
@@ -425,78 +572,331 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
         names: &mut BTreeSet<String>,
     ) -> Result<(), CompileError> {
-        match &pattern.kind {
-            PatternKind::Wildcard => {
-                if value.owns_quantum() {
-                    return Err(self.error(
-                        module,
-                        pattern.span,
-                        ErrorCode::Ownership,
-                        "wildcard would discard quantum ownership",
-                    ));
+        pattern::bind(
+            pattern,
+            value,
+            names,
+            &mut PatternBinding {
+                lowerer: self,
+                module,
+                env,
+            },
+        )
+    }
+
+    // Canonical direct power and inverse share the existing finite transform
+    // path. A zero count still checks the real body before repeating its steps.
+    fn named_transform(
+        &mut self,
+        module: &str,
+        span: Span,
+        function: &Ident,
+        count: Option<u16>,
+        input: &Expr,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let value = self.expr(module, input, env)?;
+        let slot = self.quantum(module, input.span, &value, false)?;
+        let basis = self.raw.registers[&slot].basis.clone();
+        let access = if count.is_none() {
+            Access::Adjoint
+        } else {
+            Access::Apply
+        };
+        let operation = self.operation_steps(module, function, &basis, env, access)?;
+        let is_operation = operation.is_some();
+        let mut steps = match operation {
+            Some(steps) => steps,
+            None => self.static_steps(module, function, &basis, env)?,
+        };
+        let cost = total_size(steps.iter().map(super::circuit::size));
+        let mut expected = self.target_meaning(module, function, &basis)?;
+        match count {
+            None => {
+                self.compiler.charge(module, span, cost)?;
+                if !is_operation {
+                    super::circuit::invert(&mut steps);
                 }
+                expected = expected
+                    .map(|m| m.adjoint(&mut self.compiler.exact_work))
+                    .transpose()
+                    .map_err(|e| self.compiler.op_error(module, span, e.into()))?;
             }
-            PatternKind::Name(name) => {
-                if !names.insert(name.text.clone()) {
-                    return Err(self.error(
-                        module,
-                        name.span,
-                        ErrorCode::Ownership,
-                        "duplicate name in a binding pattern",
-                    ));
-                }
-                if env
-                    .get(&name.text)
-                    .and_then(Binding::as_ref)
-                    .is_some_and(Value::owns_quantum)
+            Some(count) => {
+                self.compiler.charge(
+                    module,
+                    span,
+                    cost.saturating_add(1).saturating_mul(usize::from(count)),
+                )?;
+                if is_operation
+                    && steps.len().saturating_mul(usize::from(count))
+                        > crate::contract::MAX_CONTRACT_STEPS
                 {
                     return Err(self.error(
                         module,
-                        name.span,
-                        ErrorCode::Ownership,
-                        "binding would hide unconsumed quantum ownership",
+                        span,
+                        ErrorCode::Limit,
+                        "operation repetition exceeds 1024 steps",
                     ));
                 }
-                if let Some(origins) = self.tuple_binding_origins.last_mut() {
-                    // Names (including non-tuples) shadow outer diagnostic
-                    // metadata. No quantum slot/type tree is copied here.
-                    origins.insert(
-                        name.text.clone(),
-                        matches!(&value, Value::Pair(..) | Value::Tuple(_)).then(|| {
-                            TupleBindingOrigin {
-                                module: module.to_owned(),
-                                span: name.span,
-                                name: name.text.clone(),
-                            }
-                        }),
-                    );
-                }
-                env.insert(name.text.clone(), Binding::Live(value));
-            }
-            PatternKind::Tuple(patterns) => {
-                let actual = value.ty();
-                let help = if matches!(value, Value::Quantum(..)) {
-                    "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
-                } else {
-                    ""
-                };
-                let Some(fields) = value
-                    .into_fields()
-                    .filter(|fields| fields.len() == patterns.len())
-                else {
-                    return Err(self.error(
-                        module,
-                        pattern.span,
-                        ErrorCode::TypeMismatch,
-                        format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{actual}`{help}", patterns.len()),
-                    ));
-                };
-                for (pattern, field) in patterns.iter().zip(fields) {
-                    self.bind(module, pattern, field, env, names)?;
-                }
+                // Bind one body to its independently extracted meaning.
+                // Validate serial copies structurally, without constructing U^n.
+                self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
+                let body = steps;
+                steps = (0..count).flat_map(|_| body.iter().cloned()).collect();
+                transforms::check_repeated_steps(&body, &steps, count)
+                    .map_err(|e| self.compiler.op_error(module, span, e))?;
+                expected = None;
             }
         }
-        Ok(())
+        self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
+        self.apply_circuit(slot, steps);
+        Ok(value)
+    }
+
+    fn exclusive_call(
+        &mut self,
+        module: &str,
+        callee: &Ident,
+        static_args: &[StaticOp],
+        arguments: &[AccessArgument],
+        env: &mut Env,
+        span: Span,
+    ) -> Result<Value, CompileError> {
+        self.compiler
+            .charge(module, span, arguments.len().saturating_mul(3))?;
+        let mut owners = Vec::new();
+        let mut seen = BTreeSet::new();
+        let control = arguments
+            .iter()
+            .any(|arg| arg.access == QuantumAccess::Ctrl);
+        let mut ports = Vec::new();
+        let mut signatures = Vec::new();
+        let mut axes = Vec::new();
+        let mut offset = 0;
+        for argument in arguments {
+            let ExprKind::Name(name) = &argument.value.kind else {
+                return Err(self.error(
+                    module,
+                    argument.value.span,
+                    ErrorCode::Unsupported,
+                    "exclusive access requires a whole lexical Q<A> owner",
+                ));
+            };
+            let key = self.compiler.locals.local_key(name).ok_or_else(|| {
+                self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive owner is unavailable",
+                )
+            })?;
+            let value = env.get(key).and_then(Binding::as_ref).ok_or_else(|| {
+                self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive owner is consumed or hidden",
+                )
+            })?;
+            if !matches!(value, Value::Quantum(..)) || !seen.insert(key.clone()) {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive access requires distinct live Q<A> owners",
+                ));
+            }
+            let mut charge = key.name.len() + value.tree_size().nodes;
+            if control {
+                let Value::Quantum(slot, _) = value else {
+                    unreachable!("whole quantum owner checked above");
+                };
+                let register = &self.raw.registers[slot];
+                charge += register.size();
+                signatures.push(super::operations::contract_basis(&register.basis));
+                ports.push(QuantumPort {
+                    token: register.token,
+                    wires: register.wires.clone(),
+                    shape: BasisShape {
+                        bits: register.wires.len() as u8,
+                    },
+                });
+                if argument.access == QuantumAccess::Ctrl {
+                    axes.extend(offset..offset + register.wires.len());
+                }
+                offset += register.wires.len();
+            }
+            owners.push((key.clone(), value.ty()));
+            self.compiler.charge(module, name.span, charge)?;
+        }
+        let first = self.raw.operations.len();
+        let result = self.runtime_call(
+            module,
+            callee,
+            static_args,
+            RuntimeArguments::Accesses(arguments),
+            env,
+            span,
+        )?;
+        let returned = if owners.len() == 1 {
+            vec![result]
+        } else {
+            result.into_fields().ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "exclusive call must return the same ordered owner partition",
+                )
+            })?
+        };
+        if returned.len() != owners.len()
+            || returned
+                .iter()
+                .zip(&owners)
+                .any(|(value, (_, ty))| !matches!(value, Value::Quantum(..)) || value.ty() != *ty)
+        {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "exclusive call must return the same exact ordered Q<A> interface",
+            ));
+        }
+        if control {
+            self.compiler.charge(
+                module,
+                span,
+                self.raw.operations.len() - first + returned.len(),
+            )?;
+            let outputs = returned
+                .iter()
+                .map(|value| {
+                    let Value::Quantum(slot, _) = value else {
+                        unreachable!("exact returned owner interface checked above");
+                    };
+                    self.raw.registers[slot].token
+                })
+                .collect();
+            // Check the actual emitted call interval with the original ordered
+            // ports. A declared Unitary effect is not sector evidence.
+            let call = RawProgram {
+                quantum_inputs: ports,
+                classical_inputs: vec![],
+                operations: self.raw.operations[first..].to_vec(),
+                quantum_outputs: outputs,
+                classical_outputs: vec![],
+                declared_effect: Effect::Unitary,
+            };
+            self.compiler
+                .kernel
+                .check_control_owners(&call, &signatures, &axes, &mut self.compiler.exact_work)
+                .map_err(|failure| {
+                    let code = match failure.code {
+                        "contract" => ErrorCode::Contract,
+                        "limit" => ErrorCode::Limit,
+                        "io" | "kernel" => ErrorCode::Project,
+                        _ => ErrorCode::InvalidIr,
+                    };
+                    self.error(
+                        module,
+                        span,
+                        code,
+                        format!(
+                            "{failure}; {}",
+                            crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
+                        ),
+                    )
+                })?;
+        }
+        for ((key, _), value) in owners.into_iter().zip(returned) {
+            self.access_updates
+                .last_mut()
+                .expect("exclusive call inside a block")
+                .insert(key.clone());
+            env.insert(key, Binding::Live(value));
+        }
+        Ok(Value::Unit)
+    }
+
+    fn runtime_call(
+        &mut self,
+        module: &str,
+        callee: &Ident,
+        static_args: &[StaticOp],
+        args: RuntimeArguments<'_>,
+        env: &mut Env,
+        span: Span,
+    ) -> Result<Value, CompileError> {
+        // Keep legacy ordinary-call resolution and diagnostics. New
+        // static calls resolve descriptions after runtime arguments.
+        let legacy_target = if static_args.is_empty() && self.bound_operation(callee).is_none() {
+            if self
+                .compiler
+                .locals
+                .local_key(callee)
+                .is_some_and(|key| env.contains_key(key))
+            {
+                return Err(self.error(
+                    module,
+                    callee.span,
+                    ErrorCode::TypeMismatch,
+                    "a local value is not callable",
+                ));
+            }
+            Some(self.compiler.resolve(module, callee)?)
+        } else {
+            None
+        };
+        let values = args
+            .iter()
+            .map(|arg| self.expr(module, arg, env))
+            .collect::<Result<Vec<_>, _>>()?;
+        self.static_name(module, callee, env)?;
+        if self.bound_operation(callee).is_some() {
+            if !static_args.is_empty() || values.len() != 1 {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Arity,
+                    "operation application requires one quantum argument",
+                ));
+            }
+            let value = values.into_iter().next().expect("one argument");
+            let slot = self.quantum(module, span, &value, false)?;
+            let basis = self.raw.registers[&slot].basis.clone();
+            let steps = self
+                .operation_steps(module, callee, &basis, env, Access::Apply)?
+                .expect("bound operation");
+            self.apply_circuit(slot, steps);
+            return Ok(value);
+        }
+        let site = CallSite {
+            module,
+            span,
+            args: CallArguments::Runtime(args),
+        };
+        match legacy_target
+            .map(Ok)
+            .unwrap_or_else(|| self.compiler.resolve(module, callee))?
+        {
+            Callee::User(key) => {
+                let bindings = self.bind_operations(&key, static_args, env, site)?;
+                self.call_bound(&key, values, Some(site), bindings)
+            }
+            Callee::Sealed(namespace, name) => {
+                if !static_args.is_empty() {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Arity,
+                        "sealed operations have no static parameters",
+                    ));
+                }
+                self.sealed_with_source(module, span, &namespace, &name, values, args)
+            }
+        }
     }
 
     fn expr(&mut self, module: &str, expr: &Expr, env: &mut Env) -> Result<Value, CompileError> {
@@ -510,13 +910,13 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.depth += 1;
-        let first_operation = self.operations.len();
+        let first_operation = self.raw.operations.len();
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
-        for index in first_operation..self.operations.len() {
+        for index in first_operation..self.raw.operations.len() {
             self.operation_sources
                 .entry(vec![index])
                 .or_insert_with(|| (module.to_owned(), expr.span));
@@ -536,6 +936,21 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::UnsupportedClosure(_) => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "runtime closure values are unsupported",
+            )),
+            ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "expression is outside the finite lowering profile",
+            )),
+            ExprKind::Controlled { operation, args } => {
+                self.controlled_application(module, expr.span, operation, args, env)
+            }
             ExprKind::ApplyContract {
                 implementation,
                 specification,
@@ -551,74 +966,75 @@ impl Lowerer<'_, '_> {
                     env,
                 )
             }
-            ExprKind::Adjoint { function, input }
-            | ExprKind::RepeatStatic {
-                function, input, ..
-            } => {
+            ExprKind::ApplyStatic { operation, input } => {
+                if let Some((function, count, count_span)) = named_literal_repetition(operation) {
+                    let count = u16::try_from(count)
+                        .ok()
+                        .filter(|count| *count <= 4096)
+                        .ok_or_else(|| {
+                            self.error(
+                                module,
+                                count_span,
+                                ErrorCode::Limit,
+                                "static repetition exceeds the 4096-count limit",
+                            )
+                        })?;
+                    return self.named_transform(
+                        module,
+                        expr.span,
+                        function,
+                        Some(count),
+                        input,
+                        env,
+                    );
+                }
                 let value = self.expr(module, input, env)?;
                 let slot = self.quantum(module, input.span, &value, false)?;
-                let basis = self.registers[&slot].basis.clone();
-                let access = if matches!(expr.kind, ExprKind::Adjoint { .. }) {
-                    Access::Adjoint
-                } else {
-                    Access::Apply
-                };
-                let operation = self.operation_steps(module, function, &basis, env, access)?;
-                let is_operation = operation.is_some();
-                let mut steps = match operation {
-                    Some(steps) => steps,
-                    None => self.static_steps(module, function, &basis, env)?,
-                };
-                let cost = total_size(steps.iter().map(super::circuit::size));
-                let mut expected = self.target_meaning(module, function, &basis)?;
-                match &expr.kind {
-                    ExprKind::Adjoint { .. } => {
-                        self.compiler.charge(module, expr.span, cost)?;
-                        if !is_operation {
-                            super::circuit::invert(&mut steps);
-                        }
-                        expected = expected
-                            .map(|m| m.adjoint(&mut self.compiler.exact_work))
-                            .transpose()
-                            .map_err(|e| self.compiler.op_error(module, expr.span, e.into()))?;
-                    }
-                    ExprKind::RepeatStatic { count, .. } => {
-                        self.compiler.charge(
-                            module,
-                            expr.span,
-                            cost.saturating_add(1).saturating_mul(usize::from(*count)),
-                        )?;
-                        if is_operation
-                            && steps.len().saturating_mul(usize::from(*count))
-                                > crate::contract::MAX_CONTRACT_STEPS
-                        {
-                            return Err(self.error(
-                                module,
-                                expr.span,
-                                ErrorCode::Limit,
-                                "operation repetition exceeds 1024 steps",
-                            ));
-                        }
-                        // Bind one body to its independently extracted meaning.
-                        // Validate serial copies structurally, without constructing U^n.
-                        self.check_transformed(
-                            module,
-                            expr.span,
-                            &basis,
-                            &steps,
-                            expected.as_ref(),
-                        )?;
-                        let body = steps;
-                        steps = (0..*count).flat_map(|_| body.iter().cloned()).collect();
-                        transforms::check_repeated_steps(&body, &steps, *count)
-                            .map_err(|e| self.compiler.op_error(module, expr.span, e))?;
-                        expected = None;
-                    }
-                    _ => unreachable!(),
+                let basis = self.raw.registers[&slot].basis.clone();
+                let op = self.operation(module, operation, env)?;
+                if op.basis != basis {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "operation and input have different exact basis trees",
+                    ));
                 }
-                self.check_transformed(module, expr.span, &basis, &steps, expected.as_ref())?;
+                let steps = op.steps(module, expr.span, Access::Apply, self.compiler)?;
+                self.check_transformed(module, expr.span, &basis, &steps, op.meaning.as_ref())?;
                 self.apply_circuit(slot, steps);
                 Ok(value)
+            }
+            ExprKind::Adjoint { operation, input }
+                if !matches!(operation.kind, StaticOpKind::Name(_)) =>
+            {
+                self.constructed_inverse(module, expr.span, operation, input, env)
+            }
+            ExprKind::Adjoint { input, .. } | ExprKind::RepeatStatic { input, .. } => {
+                let function = match &expr.kind {
+                    ExprKind::Adjoint {
+                        operation:
+                            StaticOp {
+                                kind: StaticOpKind::Name(name),
+                                ..
+                            },
+                        ..
+                    } => name,
+                    ExprKind::RepeatStatic { function, .. } => function,
+                    _ => {
+                        return Err(self.error(
+                            module,
+                            expr.span,
+                            ErrorCode::Unsupported,
+                            "finite adjoint requires a function name",
+                        ));
+                    }
+                };
+                let count = match expr.kind {
+                    ExprKind::RepeatStatic { count, .. } => Some(count),
+                    _ => None,
+                };
+                self.named_transform(module, expr.span, function, count, input, env)
             }
             ExprKind::QuantumIf {
                 control,
@@ -630,7 +1046,7 @@ impl Lowerer<'_, '_> {
                 self.quantum(module, control.span, &c, true)?;
                 let q = self.expr(module, target, env)?;
                 let slot = self.quantum(module, target.span, &q, false)?;
-                let basis = self.registers[&slot].basis.clone();
+                let basis = self.raw.registers[&slot].basis.clone();
                 let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
                 let mut steps = Vec::new();
                 let mut operation_arm = false;
@@ -686,7 +1102,7 @@ impl Lowerer<'_, '_> {
                 self.check_transformed(
                     module,
                     expr.span,
-                    &Ty::pair(Ty::Bit, basis),
+                    &Ty::pair(Ty::bit(), basis),
                     &steps,
                     expected.as_ref(),
                 )?;
@@ -696,122 +1112,25 @@ impl Lowerer<'_, '_> {
                 self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
             }
             ExprKind::Unit => Ok(Value::Unit),
-            ExprKind::CBit(value) => {
-                let output = self.classical();
-                self.operations.push(RawOp::ClassicalConst {
-                    value: *value,
-                    output,
-                });
-                Ok(Value::Classical(output))
-            }
-            ExprKind::Not(input) => {
-                let value = self.expr(module, input, env)?;
-                let Value::Classical(input) = value else {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "not requires a CBit operand: expected `CBit`, found `{}`",
-                            value.ty()
-                        ),
-                    ));
+            ExprKind::Bit(_) | ExprKind::Not(_) | ExprKind::And(..) | ExprKind::Xor(..) => {
+                use crate::frontend::ordinary::Boolean;
+                let (operation, operands): (_, Vec<&Expr>) = match &expr.kind {
+                    ExprKind::Bit(value) => (Boolean::Constant(*value), vec![]),
+                    ExprKind::Not(input) => (Boolean::Not, vec![input]),
+                    ExprKind::And(left, right) => (Boolean::And, vec![left, right]),
+                    ExprKind::Xor(left, right) => (Boolean::Xor, vec![left, right]),
+                    _ => unreachable!("matched Boolean source expression"),
                 };
-                let output = self.classical();
-                self.operations.push(RawOp::ClassicalNot { input, output });
-                Ok(Value::Classical(output))
+                self.boolean(
+                    module,
+                    expr.span,
+                    operation,
+                    operands.into_iter(),
+                    env,
+                    |lowerer, operand, env| lowerer.expr(module, operand, env),
+                )
             }
-            ExprKind::And(left, right) | ExprKind::Xor(left, right) => {
-                let value = self.expr(module, left, env)?;
-                let Value::Classical(left) = value else {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "and/xor require CBit operands: expected `CBit`, found `{}`",
-                            value.ty()
-                        ),
-                    ));
-                };
-                // Both operands are evaluated, left to right. In particular,
-                // false AND must still execute effects in its right operand.
-                let value = self.expr(module, right, env)?;
-                let Value::Classical(right) = value else {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "and/xor require CBit operands: expected `CBit`, found `{}`",
-                            value.ty()
-                        ),
-                    ));
-                };
-                let output = self.classical();
-                self.operations
-                    .push(if matches!(expr.kind, ExprKind::And(..)) {
-                        RawOp::ClassicalAnd {
-                            left,
-                            right,
-                            output,
-                        }
-                    } else {
-                        RawOp::ClassicalXor {
-                            left,
-                            right,
-                            output,
-                        }
-                    });
-                Ok(Value::Classical(output))
-            }
-            ExprKind::Name(name) => {
-                let binding = env.get_mut(&name.text).ok_or_else(|| {
-                    self.error(
-                        module,
-                        name.span,
-                        ErrorCode::UnknownName,
-                        format!("unknown value `{}`", name.text),
-                    )
-                })?;
-                let value = match binding {
-                    Binding::Live(value) => value,
-                    Binding::Consumed => {
-                        return Err(self.error(
-                            module,
-                            name.span,
-                            ErrorCode::Ownership,
-                            format!(
-                                "quantum ownership `{}` has already been consumed",
-                                name.text
-                            ),
-                        ));
-                    }
-                    Binding::Hidden { quantum } => {
-                        let repair = if *quantum {
-                            "include it in the source data with `join` and access it through the data binder of three-argument `with_computed`, or restructure the body"
-                        } else {
-                            "use a closed classical expression or restructure the body"
-                        };
-                        return Err(self.error(
-                            module,
-                            name.span,
-                            ErrorCode::Ownership,
-                            format!(
-                                "with_computed body cannot capture outer binding `{}`; {repair}",
-                                name.text
-                            ),
-                        ));
-                    }
-                };
-                self.compiler
-                    .charge(module, name.span, value.tree_size().nodes)?;
-                Ok(if value.owns_quantum() {
-                    binding.take().expect("live value")
-                } else {
-                    value.clone()
-                })
-            }
+            ExprKind::Name(name) => self.read_name(module, name, env),
             ExprKind::Tuple(fields) => Ok(Value::tuple(
                 fields
                     .iter()
@@ -822,72 +1141,19 @@ impl Lowerer<'_, '_> {
                 callee,
                 static_args,
                 args,
-            } => {
-                // Keep legacy ordinary-call resolution and diagnostics. New
-                // static calls resolve descriptions after runtime arguments.
-                let legacy_target =
-                    if static_args.is_empty() && !self.bindings.contains_key(&callee.text) {
-                        if env.contains_key(&callee.text) {
-                            return Err(self.error(
-                                module,
-                                callee.span,
-                                ErrorCode::TypeMismatch,
-                                "a local value is not callable",
-                            ));
-                        }
-                        Some(self.compiler.resolve(module, callee)?)
-                    } else {
-                        None
-                    };
-                let values = args
-                    .iter()
-                    .map(|arg| self.expr(module, arg, env))
-                    .collect::<Result<Vec<_>, _>>()?;
-                self.static_name(module, callee, env)?;
-                if self.bindings.contains_key(&callee.text) {
-                    if !static_args.is_empty() || values.len() != 1 {
-                        return Err(self.error(
-                            module,
-                            expr.span,
-                            ErrorCode::Arity,
-                            "operation application requires one quantum argument",
-                        ));
-                    }
-                    let value = values.into_iter().next().expect("one argument");
-                    let slot = self.quantum(module, expr.span, &value, false)?;
-                    let basis = self.registers[&slot].basis.clone();
-                    let steps = self
-                        .operation_steps(module, callee, &basis, env, Access::Apply)?
-                        .expect("bound operation");
-                    self.apply_circuit(slot, steps);
-                    return Ok(value);
-                }
-                let site = CallSite {
-                    module,
-                    span: expr.span,
-                    args,
-                };
-                match legacy_target
-                    .map(Ok)
-                    .unwrap_or_else(|| self.compiler.resolve(module, callee))?
-                {
-                    Callee::User(key) => {
-                        let bindings = self.bind_operations(&key, static_args, env, site)?;
-                        self.call_bound(&key, values, Some(site), bindings)
-                    }
-                    Callee::Sealed(namespace, name) => {
-                        if !static_args.is_empty() {
-                            return Err(self.error(
-                                module,
-                                expr.span,
-                                ErrorCode::Arity,
-                                "sealed operations have no static parameters",
-                            ));
-                        }
-                        self.sealed_with_source(module, expr.span, &namespace, &name, values, args)
-                    }
-                }
-            }
+            } => self.runtime_call(
+                module,
+                callee,
+                static_args,
+                RuntimeArguments::Values(args),
+                env,
+                expr.span,
+            ),
+            ExprKind::AccessCall {
+                callee,
+                static_args,
+                args,
+            } => self.exclusive_call(module, callee, static_args, args, env, expr.span),
             ExprKind::If {
                 condition,
                 then_branch,
@@ -900,8 +1166,8 @@ impl Lowerer<'_, '_> {
                         expr.span,
                         ErrorCode::TypeMismatch,
                         format!(
-                            "if requires a CBit condition: expected `CBit`, found `{}`",
-                            value.ty()
+                            "if requires a Bit condition: expected `Bit`, found `{}`",
+                            value.ty().runtime()
                         ),
                     ));
                 };
@@ -922,12 +1188,18 @@ impl Lowerer<'_, '_> {
                 body,
             } => {
                 let source = self.expr(module, source, env)?;
-                if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
+                if self
+                    .compiler
+                    .locals
+                    .local_key(function)
+                    .is_some_and(|key| env.contains_key(key))
+                    || self.bound_operation(function).is_some()
+                {
                     return Err(self.error(
                         module,
                         function.span,
                         ErrorCode::TypeMismatch,
-                        "with_computed requires a basis function name",
+                        "with_computed requires a classical function name",
                     ));
                 }
                 self.computed(module, expr.span, source, function, binder, body, env)
@@ -958,8 +1230,8 @@ impl Lowerer<'_, '_> {
 
     fn apply_circuit(&mut self, slot: Slot, steps: Vec<CircuitStep>) {
         let output = self.token();
-        let reg = self.registers.get_mut(&slot).expect("owned register");
-        self.operations.push(RawOp::ApplyUnitary {
+        let reg = self.raw.registers.get_mut(&slot).expect("owned register");
+        self.raw.operations.push(RawOp::ApplyUnitary {
             input: reg.token,
             output,
             steps,
@@ -974,7 +1246,13 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
     ) -> Result<Vec<CircuitStep>, CompileError> {
-        if env.contains_key(&name.text) || self.bindings.contains_key(&name.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(name)
+            .is_some_and(|key| env.contains_key(key))
+            || self.bound_operation(name).is_some()
+        {
             return Err(self.error(
                 module,
                 name.span,
@@ -983,15 +1261,19 @@ impl Lowerer<'_, '_> {
             ));
         }
         let target = self.compiler.resolve(module, name)?;
-        let ty = Ty::Q(Box::new(basis.clone()));
+        let ty = Ty::quantum(basis.clone());
         match &target {
             Callee::User(key) => {
-                if self.compiler.declarations[key].kind != FnKind::Unitary {
+                if self.compiler.effects.get(key).map(|fact| fact.inferred())
+                    != Some(Effect::Unitary)
+                {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::Effect,
-                        "static operation requires a unitary function",
+                        crate::frontend::effects::unitary_required(
+                            "static operation requires a function with inferred Unitary effect",
+                        ),
                     ));
                 }
                 if !self.compiler.declarations[key].static_params.is_empty() {
@@ -1026,7 +1308,7 @@ impl Lowerer<'_, '_> {
                         "static sealed operation requires a unary unitary quantum primitive",
                     ));
                 }
-                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::Bit {
+                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::bit() {
                     return Err(self.error(
                         module,
                         name.span,
@@ -1040,19 +1322,15 @@ impl Lowerer<'_, '_> {
             .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
         let mut inner = Lowerer {
             compiler: self.compiler,
-            registers: BTreeMap::new(),
-            operations: vec![],
+            raw: RawState::new(),
             operation_sources: BTreeMap::new(),
+            instrument_calls: Vec::new(),
             tuple_binding_origins: Vec::new(),
-            next_token: 0,
-            next_wire: 0,
-            next_classical: 0,
-            next_slot: 0,
+            access_updates: Vec::new(),
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
             bindings: BTreeMap::new(),
-            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
@@ -1073,8 +1351,8 @@ impl Lowerer<'_, '_> {
         let raw = RawProgram {
             quantum_inputs,
             classical_inputs,
-            operations: inner.operations,
-            quantum_outputs: vec![inner.registers[&slot].token],
+            operations: inner.raw.operations,
+            quantum_outputs: vec![inner.raw.registers[&slot].token],
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
@@ -1106,8 +1384,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let slot = self.quantum(module, span, &input, false)?;
         self.compiler
-            .charge(module, span, self.registers[&slot].size())?;
-        let reg = self.registers[&slot].clone();
+            .charge(module, span, self.raw.registers[&slot].size())?;
+        let reg = self.raw.registers[&slot].clone();
         let mut result_ty = None;
         let mut table = Vec::new();
         let mut seen = BTreeSet::new();
@@ -1150,13 +1428,13 @@ impl Lowerer<'_, '_> {
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
         let output = self.token();
-        self.operations.push(RawOp::LiftBasis {
+        self.raw.operations.push(RawOp::LiftBasis {
             input: reg.token,
             output,
             output_wires: wires.clone(),
             table,
         });
-        self.registers.insert(
+        self.raw.registers.insert(
             slot,
             Register {
                 token: output,
@@ -1165,9 +1443,9 @@ impl Lowerer<'_, '_> {
             },
         );
         if bits > reg.wires.len() {
-            self.add_effect(module, span, Effect::Iso);
+            self.add_effect(module, span, Effect::Isometry);
         }
-        Ok(Value::Quantum(slot, basis))
+        Ok(Value::quantum(slot, basis))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1187,7 +1465,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         };
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
@@ -1195,7 +1473,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             )
         })?;
         let size = predicate
@@ -1203,25 +1481,16 @@ impl Lowerer<'_, '_> {
             .saturating_add(predicate.table.len());
         self.compiler.charge(module, function.span, size)?;
         let predicate = self.compiler.basis[&key].clone();
-        let mut params = predicate.params.into_iter();
-        let mut domain = params.next().unwrap_or(Ty::Unit);
-        for param in params {
-            domain = Ty::pair(domain, param);
-            self.compiler
-                .check_tree(module, function.span, domain.tree_size())?;
-        }
-        if domain != self.registers[&source_slot].basis || predicate.result != Ty::Bit {
-            return Err(self.error(
-                module,
-                function.span,
-                ErrorCode::TypeMismatch,
-                format!("predicate must map the source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", self.registers[&source_slot].basis, predicate.result),
-            ));
-        }
+        self.compiler.check_predicate_domain(
+            module,
+            function.span,
+            &predicate,
+            &self.raw.registers[&source_slot].basis,
+        )?;
         let wire = self.wire();
-        let ancilla = self.register(Ty::Bit, vec![wire]);
+        let ancilla = self.register(Ty::bit(), vec![wire]);
         let ancilla_slot = self.quantum(module, span, &ancilla, true)?;
-        let initial_token = self.registers[&ancilla_slot].token;
+        let initial_token = self.raw.registers[&ancilla_slot].token;
         // This first source form exposes only the ancilla and classical outer
         // values. Other quantum registers remain in the surrounding frame.
         self.compiler.charge(module, body.span, env_size(env))?;
@@ -1236,8 +1505,8 @@ impl Lowerer<'_, '_> {
                 (name.clone(), visible)
             })
             .collect();
-        local.insert(binder.text.clone(), Binding::Live(ancilla));
-        let start = self.operations.len();
+        self.bind_env(binder, Binding::Live(ancilla), &mut local);
+        let start = self.raw.operations.len();
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
@@ -1253,7 +1522,7 @@ impl Lowerer<'_, '_> {
         }
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
-        if result != Value::Quantum(ancilla_slot, Ty::Bit) {
+        if result != Value::quantum(ancilla_slot, Ty::bit()) {
             return Err(self.error(
                 module,
                 body.span,
@@ -1263,7 +1532,7 @@ impl Lowerer<'_, '_> {
         }
         let mut expected_input = initial_token;
         let mut use_ops = Vec::new();
-        for operation in &self.operations[start..] {
+        for operation in &self.raw.operations[start..] {
             match operation {
                 RawOp::Gate { gate, input, output } if matches!(gate, SingleGate::Z | SingleGate::T) && *input == expected_input => {
                     use_ops.push(ProtectedUse::ProtectedGate { bit: ProtectedBit { region: ProtectedRegion::Ancilla, index: 0 }, gate: *gate });
@@ -1272,11 +1541,12 @@ impl Lowerer<'_, '_> {
                 _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking")),
             }
         }
-        self.operations.truncate(start);
+        self.raw.operations.truncate(start);
         // The temporary gates become one protected operation below; their old
         // operation paths must not label this operation or a later expression.
         self.operation_sources.split_off(&vec![start]);
         let ancilla = self
+            .raw
             .registers
             .remove(&ancilla_slot)
             .expect("returned ancilla");
@@ -1290,10 +1560,11 @@ impl Lowerer<'_, '_> {
         }
         let output = self.token();
         let source_reg = self
+            .raw
             .registers
             .get_mut(&source_slot)
             .expect("protected source");
-        self.operations.push(RawOp::ComputeUseUncompute {
+        self.raw.operations.push(RawOp::ComputeUseUncompute {
             source: source_reg.token,
             source_out: output,
             targets: vec![],
@@ -1310,46 +1581,35 @@ pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
 ) -> Result<AcceptedProgram, CompileError> {
-    lower_function_inner(compiler, key, BTreeMap::new(), false)?.ok_or_else(|| {
-        compiler.error(
-            &key.0,
-            compiler.declarations[key].span,
-            ErrorCode::InvalidIr,
-            "missing concrete program",
-        )
-    })
+    lower_function_inner(compiler, key, BTreeMap::new())
 }
 
 fn lower_function_inner(
     compiler: &mut Compiler<'_>,
     key: &Key,
     bindings: super::operations::Bindings,
-    abstract_check: bool,
-) -> Result<Option<AcceptedProgram>, CompileError> {
+) -> Result<AcceptedProgram, CompileError> {
     let decl = compiler.declarations[key];
+    let key_name = compiler.resolution.declaration(*key).name.clone();
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
         compiler,
-        registers: BTreeMap::new(),
-        operations: Vec::new(),
+        raw: RawState::new(),
         operation_sources: BTreeMap::new(),
+        instrument_calls: Vec::new(),
         tuple_binding_origins: Vec::new(),
-        next_token: 0,
-        next_wire: 0,
-        next_classical: 0,
-        next_slot: 0,
+        access_updates: Vec::new(),
         effect: Effect::Unitary,
         effect_source: None,
         depth: 0,
         bindings,
-        abstract_check,
     };
     let mut quantum_inputs = Vec::new();
     let mut classical_inputs = Vec::new();
     // Signature types are already bounded; account for constructing their
     // value tree and the register's copy of each quantum basis type.
     lower.compiler.charge(
-        &key.0,
+        &key_name.0,
         decl.span,
         total_size(params.iter().map(|ty| ty.tree_size().nodes)).saturating_mul(2),
     )?;
@@ -1358,7 +1618,7 @@ fn lower_function_inner(
         .map(|ty| {
             lower.input(
                 ty,
-                &key.0,
+                &key_name.0,
                 decl.span,
                 &mut quantum_inputs,
                 &mut classical_inputs,
@@ -1368,55 +1628,30 @@ fn lower_function_inner(
     let result = lower.call_user(key, args, None)?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
-    fn outputs(
-        value: &Value,
-        registers: &BTreeMap<Slot, Register>,
-        quantum: &mut Vec<TokenId>,
-        classical: &mut Vec<ClassicalId>,
-    ) {
-        match value {
-            Value::Quantum(slot, _) => quantum.push(registers[slot].token),
-            Value::Classical(id) => classical.push(*id),
-            Value::Pair(a, b) => {
-                outputs(a, registers, quantum, classical);
-                outputs(b, registers, quantum, classical);
-            }
-            Value::Tuple(fields) => {
-                for field in fields {
-                    outputs(field, registers, quantum, classical);
-                }
-            }
-            Value::Unit => {}
-        }
-    }
-    outputs(
-        &result,
-        &lower.registers,
+    result.outputs(
+        &lower.raw.registers,
         &mut quantum_outputs,
         &mut classical_outputs,
     );
     let raw = RawProgram {
         quantum_inputs,
         classical_inputs,
-        operations: lower.operations,
+        operations: lower.raw.operations,
         quantum_outputs,
         classical_outputs,
-        declared_effect: effect(decl.kind),
+        declared_effect: lower.effect,
     };
-    if abstract_check {
-        return Ok(None);
-    }
     lower
         .compiler
         .kernel
         .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
-        .map(Some)
+        .map(|program| program.retain_instrument_calls(lower.instrument_calls))
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(
                 lower.compiler,
                 &lower.operation_sources,
-                &key.0,
+                &key_name.0,
                 decl.span,
                 failure,
                 limit,

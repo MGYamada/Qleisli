@@ -224,6 +224,8 @@ mod tests {
         // Distinct asymmetric fields catch accidental swaps as well as omission.
         // These are wire-codec fixtures; semantic validity is checked separately.
         let variants = vec![
+            ("pack_unit", RawOp::PackUnit { output: t(401) }),
+            ("unpack_unit", RawOp::UnpackUnit { input: t(402) }),
             (
                 "certified_compute",
                 RawOp::CertifiedCompute {

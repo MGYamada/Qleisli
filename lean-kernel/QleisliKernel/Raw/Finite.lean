@@ -3,7 +3,7 @@ import QleisliKernel.Raw.Trace
 /-! VM-25 finite semantics reconstructed from actual pure raw bodies.
 The general structural checker retains twelve-bit registers. Dense semantic
 inspection is the existing six-bit finite profile, not a production restriction.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Exact Semantics.Finite Semantics.Raw Finite
 

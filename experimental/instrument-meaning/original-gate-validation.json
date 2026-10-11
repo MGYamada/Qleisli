@@ -1,0 +1,690 @@
+{
+  "format": 1,
+  "status": "passed",
+  "kind": "unwired-original-qirf-instrument-gate",
+  "baseline_commit": "1074a0a1088f7f0ac785db0026f94b168956caa5",
+  "recorded_utc": "2026-10-11T04:49:19.246859+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "experimental/instrument-meaning/check_gate.py",
+    "--record",
+    "/private/tmp/qleisli-instrument-gate-final-validation.json"
+  ],
+  "max_live_qubits": 2,
+  "cases": [
+    {
+      "name": "redundant_HH_readout",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9998855,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "unobservable_branch_phase",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9998902,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "public_result_relabeling",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999562
+      }
+    },
+    {
+      "name": "different_hidden_Kraus_basis",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9998990,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "same_probabilities_wrong_residual",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9997239
+      }
+    },
+    {
+      "name": "global_phase_in_CP_family_only",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999861
+      }
+    },
+    {
+      "name": "same_branch_probability_wrong_channel",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999873
+      }
+    },
+    {
+      "name": "ordered_public_results",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999505
+      }
+    },
+    {
+      "name": "same_width_different_input_basis",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999926
+      }
+    },
+    {
+      "name": "same_width_different_result_type",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999926
+      }
+    },
+    {
+      "name": "same_width_different_result_tree",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999924
+      }
+    },
+    {
+      "name": "ordinary_zero_bits",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9999037,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "ordinary_unit_not_zero_bits",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999926
+      }
+    },
+    {
+      "name": "zero_width_input_owner",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9999758,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "zero_width_result_owner",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9998917,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "missing_zero_width_result_owner",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999862
+      }
+    },
+    {
+      "name": "extra_zero_width_result_owner",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999870
+      }
+    },
+    {
+      "name": "annotation_does_not_supply_principal_observe",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999877
+      }
+    },
+    {
+      "name": "empty_result_prefix",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999928
+      }
+    },
+    {
+      "name": "incomplete_result_prefix",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999922
+      }
+    },
+    {
+      "name": "extra_result_prefix",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999922
+      }
+    },
+    {
+      "name": "noncanonical_tuple_arity",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.limit",
+        "remaining": 9999919
+      }
+    },
+    {
+      "name": "insufficient_pending_children",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999907
+      }
+    },
+    {
+      "name": "complete_nested_unit_tree",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9999025,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "wrong_classical_arity",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999878
+      }
+    },
+    {
+      "name": "wrong_input_width",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999878
+      }
+    },
+    {
+      "name": "runtime_classical_input",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.request",
+        "remaining": 9999873
+      }
+    },
+    {
+      "name": "selected_wrong_original_root",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999925
+      }
+    },
+    {
+      "name": "root_outside_graph",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 10000000
+      }
+    },
+    {
+      "name": "fresh_original_dependency",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9998718,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "dependency_substitution",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999706
+      }
+    },
+    {
+      "name": "fresh_valid_dependency_changes_whole_instrument",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999246
+      }
+    },
+    {
+      "name": "producer_supplied_acceptance",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 10000000
+      }
+    },
+    {
+      "name": "source_index_outside_snapshot",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.invalid",
+        "remaining": 9999925
+      }
+    },
+    {
+      "name": "ordered_residual_axes",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9996810
+      }
+    },
+    {
+      "name": "ordered_residual_axes_self",
+      "expected": true,
+      "observed": {
+        "accepted": true,
+        "remaining": 9952114,
+        "result": {
+          "equal": true
+        }
+      }
+    },
+    {
+      "name": "empty_identity",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.limit",
+        "remaining": 9999944
+      }
+    },
+    {
+      "name": "invalid_source_path",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.limit",
+        "remaining": 9999944
+      }
+    },
+    {
+      "name": "zero_work_budget",
+      "expected": false,
+      "observed": {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.arithmetic (QleisliKernel.Exact.Error.workLimit)",
+        "remaining": 0
+      }
+    }
+  ],
+  "driver_sha256": "4003cb069b83bcb0ba21509c3ae27f96538d9ea1fea7bf57fce080f47ee4821a",
+  "binary_sha256": "afdffc2f4948f723342765270667a81177ac9ce1d8f1e22746e89474567c384b",
+  "inputs_sha256": "6727775081944bde3cc1d324dbac6095b30ac873a40db914da5d27b85c680601",
+  "stdout_sha256": "e7964b4a26fb7420e670f0d97945b54e96be938cbb11b30db2867be4927a4ce5",
+  "kernel_source_sha256": "58716e93981a8ea71b223d18f2d2a0307837b73206bb34219dde1f556211ea2f",
+  "kernel_library_sha256": "4f76587ce75a1cbcd0ea054683a095159e441764532619f8afa1e6ddc9bdbfba",
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (234 jobs).\n",
+      "stderr": "",
+      "seconds": 0.7432566250208765
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq",
+        "-c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq/Main.c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq/Main.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 7.931119499960914
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanc",
+        "-O3",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq/native-test",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq/Main.c",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 2.3039439589483663
+    },
+    {
+      "driver_source_sha256": "4003cb069b83bcb0ba21509c3ae27f96538d9ea1fea7bf57fce080f47ee4821a",
+      "executable_sha256": "afdffc2f4948f723342765270667a81177ac9ce1d8f1e22746e89474567c384b"
+    },
+    {
+      "command": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-qirf-gate-24qh1hcq/native-test"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit": 0,
+      "seconds": 1.036043250001967,
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "experimental/instrument-meaning/check_gate.py": "17ed1e00aad3222da31569fcc02e0862e139405d20b06fc3be9a5c3d7bd46ceb",
+    "experimental/instrument-meaning/check.py": "4a1f35a0621ca5a0289e3fe0ce350cae88f59c4afac2e01f4e3dfec8f858f014"
+  },
+  "limits": [
+    "experimental driver; public protocol and private handle not enabled",
+    "full signatures are checked request data; no source-to-IR type preservation proof",
+    "no full QS/PR/RS discharge, new guarantee or release claim"
+  ],
+  "prior_drafts": [
+    "Temporary driver initially omitted Protocol.Qirf import; native compilation rejected it.",
+    "Wrong-root substitution rejects at the existing complete-graph check (invalid), before equation comparison.",
+    "The zero-budget control preserves the existing arithmetic(workLimit) error wrapper."
+  ],
+  "compatibility_recheck": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "experimental/instrument-meaning/check.py",
+      "--native",
+      "--native-compare",
+      "--record",
+      "/private/tmp/qleisli-instrument-all-native-final.json"
+    ],
+    "recorded_utc": "2026-10-11T04:43:38.040035+00:00",
+    "baseline_commit": "1074a0a1088f7f0ac785db0026f94b168956caa5",
+    "native": {
+      "driver_sha256": "c9b9c684cd00eb9cb11aac16e387e85ea657913e49af7cae5fc43500e06e37c7",
+      "binary_sha256": "f8a99d406f92854e4b2330c6f1b924956b0e49c7da9f4ce7a15d529f99c2fbc6",
+      "input_sha256": "21ddc3cd78d85d77791b3c32b2379e66ac07d709c632258a1d9588592a7d1459",
+      "stdout_sha256": "7f3adacae7fcd8481e35c8aca338978777737464ca4d5d98dd64b95d6e0e4a51",
+      "stderr": "",
+      "programs": 13,
+      "exact_history_matches": 13,
+      "kernel_source_sha256": "58716e93981a8ea71b223d18f2d2a0307837b73206bb34219dde1f556211ea2f",
+      "kernel_library_sha256": "4f76587ce75a1cbcd0ea054683a095159e441764532619f8afa1e6ddc9bdbfba",
+      "lean_toolchain": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)"
+    },
+    "native_comparison": {
+      "driver_sha256": "49cd0fa54c98fbd5779ca86df2b1f5c114411b06609a4fd39d7460202cf07037",
+      "binary_sha256": "1571a44d682272b6fc4bd0fdcb1f3e1a88c62cd2cad1893aada1a7ce41725124",
+      "input_sha256": "a9b810c29cb5649893181d1f1ef2244612310f0b01a691d778ccf4bd3305cef8",
+      "stdout_sha256": "bacaa84d6167d46fe31781d4af3d806870b3125f4c1279bc8aa815f635277fa9",
+      "kernel_source_sha256": "58716e93981a8ea71b223d18f2d2a0307837b73206bb34219dde1f556211ea2f",
+      "kernel_library_sha256": "4f76587ce75a1cbcd0ea054683a095159e441764532619f8afa1e6ddc9bdbfba",
+      "comparisons": 8,
+      "observed": [
+        {
+          "accepted": true,
+          "remaining": 9998988,
+          "result": {
+            "equal": true
+          }
+        },
+        {
+          "accepted": true,
+          "remaining": 9999031,
+          "result": {
+            "equal": true
+          }
+        },
+        {
+          "accepted": false,
+          "error": "QleisliKernel.Finite.Error.equation",
+          "remaining": 9999689
+        },
+        {
+          "accepted": true,
+          "remaining": 9999113,
+          "result": {
+            "equal": true
+          }
+        },
+        {
+          "accepted": false,
+          "error": "QleisliKernel.Finite.Error.equation",
+          "remaining": 9997394
+        },
+        {
+          "accepted": true,
+          "remaining": 9998364,
+          "result": {
+            "equal": true
+          }
+        },
+        {
+          "accepted": false,
+          "error": "QleisliKernel.Finite.Error.equation",
+          "remaining": 9999477
+        },
+        {
+          "accepted": false,
+          "error": "QleisliKernel.Finite.Error.equation",
+          "remaining": 9999646
+        },
+        {
+          "accepted": false,
+          "error": "QleisliKernel.Finite.Error.arithmetic (QleisliKernel.Exact.Error.workLimit)",
+          "remaining": 0
+        }
+      ],
+      "scope": "unwired exact coefficient component; no production signature/source gate"
+    },
+    "commands": [
+      {
+        "command": [
+          "lake",
+          "build",
+          "QleisliKernel:static"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "Build completed successfully (234 jobs).\n",
+        "stderr": "",
+        "seconds": 0.1575134580489248
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv",
+          "-c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv/Main.c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv/Main.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 0.924379708012566
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "leanc",
+          "-O3",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv/native-test",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv/Main.c",
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 1.6575490409741178
+      },
+      {
+        "driver_source_sha256": "c9b9c684cd00eb9cb11aac16e387e85ea657913e49af7cae5fc43500e06e37c7",
+        "executable_sha256": "f8a99d406f92854e4b2330c6f1b924956b0e49c7da9f4ce7a15d529f99c2fbc6"
+      },
+      {
+        "command": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-meaning-z36kwplv/native-test"
+        ],
+        "cwd": "/Users/masa/git/Qleisli",
+        "exit": 0,
+        "seconds": 0.8341326250229031,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "lake",
+          "build",
+          "QleisliKernel:static"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "Build completed successfully (234 jobs).\n",
+        "stderr": "",
+        "seconds": 0.15342250000685453
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4",
+          "-c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4/Main.c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4/Main.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 0.8817109579686075
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "leanc",
+          "-O3",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4/native-test",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4/Main.c",
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 0.6738783749751747
+      },
+      {
+        "driver_source_sha256": "49cd0fa54c98fbd5779ca86df2b1f5c114411b06609a4fd39d7460202cf07037",
+        "executable_sha256": "1571a44d682272b6fc4bd0fdcb1f3e1a88c62cd2cad1893aada1a7ce41725124"
+      },
+      {
+        "command": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-iesdbag4/native-test"
+        ],
+        "cwd": "/Users/masa/git/Qleisli",
+        "exit": 0,
+        "seconds": 0.9602073340211064,
+        "stderr": ""
+      }
+    ],
+    "source_sha256": {
+      "experimental/instrument-meaning/check.py": "4a1f35a0621ca5a0289e3fe0ce350cae88f59c4afac2e01f4e3dfec8f858f014",
+      "scripts/test_lean_observation.py": "19a1016f46d19cbb251b613b84bb287a0bc7f46a9c3342d448d2da88c85a172f",
+      "scripts/test_lean_exact.py": "ff1181cb30a6abad05ecd36037c87afa75e99ddc8e2df60de6aa256716a9346d",
+      "scripts/test_lean_finite.py": "df9ad348c9b24c5ca0d0ba4e3a96e679d883ffbcf046e72682af98500eaefcbd",
+      "scripts/test_lean_raw.py": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
+      "scripts/native_harness.py": "e4f71e179c0e0f2bcb9d4b0ccb1b026cc49e72f07cae1c09ddbb055d712c00ee",
+      "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean": "0037f8a95d0461eb5c42966500e652a8ac4a052c95a2528b8e4712b5b1fe962a"
+    },
+    "limits": [
+      "not a production requested-instrument gate",
+      "no source preservation or full QS/PR/RS proof",
+      "no signature/type-tree/effect admission is inferred from CP equality",
+      "pure operation Meaning remains phase-sensitive and Unitary-only"
+    ]
+  }
+}

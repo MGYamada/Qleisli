@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Call expansion through existing rules, checked against an independent oracle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The fixture caller is typed separately; no external call receipt is issued.
 """
 import argparse

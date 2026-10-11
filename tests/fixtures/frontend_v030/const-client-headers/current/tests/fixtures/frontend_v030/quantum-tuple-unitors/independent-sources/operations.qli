@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{unit,finish,split,join,phase_eighth};
+pub unitary fn scalar(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,a)=split(q);let()=finish(phase_eighth(u));join(unit(()),a)}
+pub unitary fn apply[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){U(q)}
+pub unitary fn inverse[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Adjoint(U){adjoint(U,q)}
+pub unitary fn eight[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){apply[repeat_op(8,U)](q)}
+pub unitary fn controlled_four[const U:Op<(Unit,Bit)>](c:Q<Bit>,q:Q<(Unit,Bit)>)->(Q<Bit>,Q<(Unit,Bit)>) requires Controlled(U){controlled(repeat_op(4,U))(c,q)}

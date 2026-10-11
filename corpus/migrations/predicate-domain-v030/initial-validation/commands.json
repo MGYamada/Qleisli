@@ -1,0 +1,104 @@
+[
+  {
+    "case": "quantum_katas/grover2",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "quantum_katas/grover2",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/quantum_katas-grover2.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.4725010840338655,
+    "stdout": "quantum_katas-grover2.stdout",
+    "stderr": "quantum_katas-grover2.stderr"
+  },
+  {
+    "case": "qualtran/and_phase",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "qualtran/and_phase",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/qualtran-and_phase.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.47236687497934327,
+    "stdout": "qualtran-and_phase.stdout",
+    "stderr": "qualtran-and_phase.stderr"
+  },
+  {
+    "case": "qualtran/reflection2",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "qualtran/reflection2",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/qualtran-reflection2.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.14696500002173707,
+    "stdout": "qualtran-reflection2.stdout",
+    "stderr": "qualtran-reflection2.stderr"
+  },
+  {
+    "case": "pennylane_demos/vqe_excitation",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "pennylane_demos/vqe_excitation",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/pennylane_demos-vqe_excitation.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.1468787079793401,
+    "stdout": "pennylane_demos-vqe_excitation.stdout",
+    "stderr": "pennylane_demos-vqe_excitation.stderr"
+  },
+  {
+    "case": "pennylane_demos/phase_lock",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "pennylane_demos/phase_lock",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/pennylane_demos-phase_lock.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.13164595904527232,
+    "stdout": "pennylane_demos-phase_lock.stdout",
+    "stderr": "pennylane_demos-phase_lock.stderr"
+  },
+  {
+    "case": "quantum_katas/deutsch_jozsa3",
+    "argv": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+      "--case",
+      "quantum_katas/deutsch_jozsa3",
+      "--report",
+      "/private/tmp/qleisli-predicate-corpus-replay/quantum_katas-deutsch_jozsa3.json"
+    ],
+    "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+    "exit_code": 1,
+    "seconds": 0.1316554579534568,
+    "stdout": "quantum_katas-deutsch_jozsa3.stdout",
+    "stderr": "quantum_katas-deutsch_jozsa3.stderr"
+  }
+]

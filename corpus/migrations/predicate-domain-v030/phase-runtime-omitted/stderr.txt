@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "cases",
+    "id": "pennylane_demos/phase_lock",
+    "type": "ValueError",
+    "message": "run failed (/private/tmp/qleisli-predicate-corpus-fixed/corpus/pennylane_demos/phase_lock): {\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL\",\"primary\":null,\"related\":[]}],\"result\":null}\n "
+  },
+  {
+    "stage": "negative_cases",
+    "id": "duplicate_owner",
+    "type": "ValueError",
+    "message": "wrong negative diagnostic: duplicate_owner"
+  },
+  {
+    "stage": "negative_cases",
+    "id": "measured_owner",
+    "type": "ValueError",
+    "message": "wrong negative diagnostic: measured_owner"
+  },
+  {
+    "stage": "negative_cases",
+    "id": "measurement_adjoint",
+    "type": "ValueError",
+    "message": "wrong negative diagnostic: measurement_adjoint"
+  },
+  {
+    "stage": "negative_cases",
+    "id": "dirty_auxiliary",
+    "type": "ValueError",
+    "message": "wrong negative diagnostic: dirty_auxiliary"
+  }
+]

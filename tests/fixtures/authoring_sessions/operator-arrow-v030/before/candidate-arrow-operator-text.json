@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/candidate-arrow-operator/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:100..102: parse: expected `>`, found `->`\n",
+  "native_invocations": 0,
+  "seconds": 0.007231124967802316,
+  "transcript": "main:100..102: parse: expected `>`, found `->`\n"
+}

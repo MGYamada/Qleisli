@@ -3,7 +3,7 @@
 
 Runs outside the checkout with no helper tools on the child's PATH. Does not
 download, install or publish anything. Python 3.11+ is a development dependency.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse
@@ -45,7 +45,7 @@ def quickstart_manifest(text):
 
 
 def check_registry_links(root, landing, version):
-    # Package documentation must remain usable after docs-old is deleted.
+    # Package documentation follows current sources after the docs cleanup.
     historical = []
     for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", landing):
         require(target.startswith(("https://", "#")), f"relative registry link: {target}")
@@ -54,29 +54,35 @@ def check_registry_links(root, landing, version):
             ref, relative = target[len(prefix):].split("/", 1)
             path = relative.split("#")[0]
             require(ref == "v" + version, "registry link uses an unreviewed source version")
-            require(not path.startswith("docs-old/") and (
-                not path.startswith("docs/")
-                or path == "docs/lean-backend-plan-v0.3.md"
-                or path.startswith("docs/imaginary-v1/")), "registry link targets retired documentation")
+            require(not path.startswith("docs-old/"), "registry link targets retired documentation")
             require((root / path).is_file(), f"missing registry link target: {target}")
     return historical
 
 
-def check(root, binary):
-    package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
+def check_documentation(root, package):
+    """Bind the example and declared versions without prescribing installation."""
     registry = root / package["readme"]
     readme, source = quickstart(root / "README.md")
     landing, landing_source = quickstart(registry)
     require(source == landing_source, "repository and registry quickstarts differ")
     manifest = quickstart_manifest(readme)
     require(manifest == quickstart_manifest(landing), "quickstart edition manifests differ")
-    install = f'cargo install {package["name"]} --version {package["version"]} --locked'
-    for text in [readme, landing]:
-        require(install in text, "quickstart install command differs from manifest")
+    for name, text, pattern in [
+        ("README.md", readme, r"Development version: ([^\s*]+)"),
+        (package["readme"], landing, r"Package version: \*\*([^\s*]+)\*\*"),
+    ]:
+        require(re.findall(pattern, text) == [package["version"]],
+                f"{name}: documented version differs from manifest or is missing/duplicated")
     # The registry page must not depend on relative repository links or MathJax.
     historical = check_registry_links(root, landing, package["version"])
     require("```math" not in landing and "$$" not in landing,
             "registry README requires a math renderer")
+    return source, manifest, historical
+
+
+def check(root, binary):
+    package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
+    source, manifest, historical = check_documentation(root, package)
 
     with tempfile.TemporaryDirectory(prefix="qleisli-installed-") as directory:
         work = Path(directory)
@@ -135,9 +141,9 @@ def check(root, binary):
 use std::quantum::init0;
 use std::quantum::join;
 use std::quantum::split;
-use std::transforms::qft2;
+use std::transform::qft2;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = split(qft2(join(init0(), init0())));
     (measure_z(a), measure_z(b))
 }
@@ -152,7 +158,7 @@ observe fn main() -> (CBit, CBit) {
         write_project("invalid-ownership", """
 use std::quantum::init0;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let q = init0();
     (measure_z(q), measure_z(q))
 }

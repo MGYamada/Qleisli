@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.issue-count-prose-review",
+  "version": 1,
+  "status": "no-actionable-mismatch-found",
+  "reviewed_paths": [
+    ".github/ci/README.md",
+    "CHANGELOG.md",
+    "ROADMAP.md",
+    "docs/src/design/ratification.md"
+  ],
+  "source_identity_record": "documentation-results/after.json",
+  "actual_diff_record": "documentation-results/0.stdout.txt",
+  "findings": [
+    "Active release and roadmap descriptions now name 109 selected Issues and explicitly include #311.",
+    "The earlier CHANGELOG entry describing the original 108-Issue tracking remains historical and unchanged.",
+    "The gate changes only G02 membership and the expected-count diagnostic; the original 108 IDs and criterion handling are retained.",
+    "The current prose does not present the accounting correction as a new Guardian act or guarantee discharge."
+  ],
+  "github_verification": "No independent GitHub fetch; the latest scope correction and four completed Issue identities are recorded as a root report."
+}

@@ -1,0 +1,57 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sized",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/partial-call/main.qli"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "attempt": "attempt-01",
+  "case": "partial-call",
+  "mode": "sized-adapter",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T04:47:43.180923+00:00",
+  "recorded_utc": "2026-10-06T04:47:43.239314+00:00",
+  "seconds": 0.007097667024936527,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "9e472eabe7c171d25359208c18e391c9ffc7296d042f7e3676ea1fd4de642395",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-followup/attempt-01-partial-call-sized-adapter-check-text.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "observations-followup/attempt-01-partial-call-sized-adapter-check-text.stderr.txt",
+      "sha256": "dffe53d5943846c059f0a30e207a56557e4dbc0d5cb5819fec36fb04646adaac",
+      "bytes": 54
+    }
+  },
+  "scope": "Actual bounded observation; shared selected-source adapter, not independent implementation or preservation proof.",
+  "transcript": "stdout:\n\nstderr:\nmain:239..254: arity: runtime argument arity mismatch\n"
+}

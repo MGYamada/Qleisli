@@ -1,0 +1,10 @@
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+observe fn main() -> Bit {
+    let q = h(init0());
+    measure_z(q)
+}

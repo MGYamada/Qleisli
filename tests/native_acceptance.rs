@@ -1,7 +1,7 @@
 //! The first #276 vertical slice starts with the Bell .qli quickstart's raw
 //! meaning and a feed-forward variant. Expected distributions are independent
 //! of both verifiers; no legacy AcceptedProgram is constructed in these tests.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use qleisli::interchange::Version;
 use qleisli::interchange::native::{Kernel, Proposal};
 use qleisli::ir::{

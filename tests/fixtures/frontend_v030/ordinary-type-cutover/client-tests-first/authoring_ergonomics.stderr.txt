@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/authoring_ergonomics.rs (target/debug/deps/authoring_ergonomics-f201827a48979734)

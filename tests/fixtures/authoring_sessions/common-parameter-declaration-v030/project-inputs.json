@@ -1,0 +1,29 @@
+{
+  "status": "first-sources-and-manifests-unexecuted",
+  "files": {
+    "attempt-01/duplicate-before-empty-register/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-before-empty-register/main.qli": "a19c19836d41bae5b2e59b49a227483e999592e85819ed2979d6dc6b4e8ff4c8",
+    "attempt-01/duplicate-static-natural/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-static-natural/main.qli": "cace87151b58f17a99d68ab73175f41e31c66a039a74fe6d031d671f8a561617",
+    "attempt-01/duplicate-static-operation-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-static-operation-unit/main.qli": "f7c9342f0bcf4afa689310f016edf645fc38b24879e45a12bd3fe73ff8d63d40",
+    "attempt-01/first-type-before-later-duplicate/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/first-type-before-later-duplicate/main.qli": "54d0814ae3c702e1da20a7e0bad97ce1b276a84a8263b82fcaeb79da2e996a0e",
+    "attempt-01/forward-operation-kind/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/forward-operation-kind/main.qli": "754a9b1c0e96a2380c4a0e3798feb7c14a98215245433ed372c5da5a7ad53d24",
+    "attempt-01/nested-runtime-duplicate/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/nested-runtime-duplicate/main.qli": "810627da0e72e7fd5d555a459f96b66be76f823dc7087c799c5b4a83b1512799",
+    "attempt-01/static-runtime-collision/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/static-runtime-collision/main.qli": "d46af92834b9cdefea18f73bfdc74ead9eb2e347fc5d4be4d1751f58d9c1d3f0",
+    "attempt-01/symbolic-type-before-later-duplicate/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/symbolic-type-before-later-duplicate/main.qli": "d35213938f7bbf9daf22629d377870b576eb52881f7b85178d3455ac67f77557",
+    "attempt-01/unused-invalid-sibling/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/unused-invalid-sibling/main.qli": "2fc43241bd48565eb368d8290fdfc69439f89ac334498b9e84a51c4c8ef57384",
+    "attempt-01/valid-nested-unit-quantum/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/valid-nested-unit-quantum/main.qli": "5be9684a8b093d39392eaedf1e0faf8b74ee271e8f96ac6b7917446474b4dd97"
+  },
+  "project_count": 10,
+  "source_count": 10,
+  "manifest_count": 10,
+  "scope": "Exact original source/edition bytes only; no parser/CLI observation or behavioral proof."
+}

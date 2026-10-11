@@ -1,0 +1,43 @@
+{
+  "argv": [
+    [
+      "git",
+      "diff",
+      "--",
+      ".github/ci/README.md",
+      "CHANGELOG.md",
+      "ROADMAP.md",
+      "docs/src/design/ratification.md",
+      "scripts/check_release_ready.py",
+      "scripts/test_check_release_ready.py"
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ],
+    [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "--version"
+    ],
+    [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "build",
+      "docs"
+    ],
+    [
+      "python3",
+      "scripts/check_book.py"
+    ]
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "mdbook_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "required_mdbook_version": "mdbook v0.5.4"
+}

@@ -2,7 +2,7 @@ import QleisliKernel.Qirf.Checked
 
 /-! Refinement contracts for the actual typed QIRF acceptance stages.
 The compatibility projections preserve successes, errors and remaining work.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.Validity
 open Semantics.Exact Semantics.Finite Semantics.Observation Finite
 

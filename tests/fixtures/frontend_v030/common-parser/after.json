@@ -1,0 +1,125 @@
+{
+  "compiler_argv": [
+    "rustc",
+    "--edition=2024",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/observe.rs",
+    "--extern",
+    "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-common-parser-replay/observe"
+  ],
+  "observations": [
+    {
+      "name": "shared",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "shared.after.stdout.txt",
+      "stderr": "shared.after.stderr.txt"
+    },
+    {
+      "name": "contextual-type-name",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "contextual-type-name.after.stdout.txt",
+      "stderr": "contextual-type-name.after.stderr.txt"
+    },
+    {
+      "name": "reserved-name",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/reserved-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "reserved-name.after.stdout.txt",
+      "stderr": "reserved-name.after.stderr.txt"
+    },
+    {
+      "name": "misplaced-doc",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/misplaced-doc.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "misplaced-doc.after.stdout.txt",
+      "stderr": "misplaced-doc.after.stderr.txt"
+    },
+    {
+      "name": "multi-declaration",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/multi-declaration.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "multi-declaration.after.stdout.txt",
+      "stderr": "multi-declaration.after.stderr.txt"
+    },
+    {
+      "name": "static-fold",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "static-fold.after.stdout.txt",
+      "stderr": "static-fold.after.stderr.txt"
+    },
+    {
+      "name": "counted-control",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/counted-control.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "counted-control.after.stdout.txt",
+      "stderr": "counted-control.after.stderr.txt"
+    },
+    {
+      "name": "empty-owner",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "empty-owner.after.stdout.txt",
+      "stderr": "empty-owner.after.stderr.txt"
+    },
+    {
+      "name": "empty-block",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-block.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "empty-block.after.stdout.txt",
+      "stderr": "empty-block.after.stderr.txt"
+    },
+    {
+      "name": "runtime-controlled-name",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-replay/observe",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/runtime-controlled-name.qli"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "runtime-controlled-name.after.stdout.txt",
+      "stderr": "runtime-controlled-name.after.stderr.txt"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import QleisliKernel.Exact
 
 /-! Admission and exact work accounting for the actual bounded matrix operations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Exact
 open Semantics.Exact

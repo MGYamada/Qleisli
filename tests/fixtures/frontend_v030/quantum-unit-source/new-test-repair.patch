@@ -1,0 +1,127 @@
+--- first-test.rs.txt
++++ tests/quantum_unit_source.rs
+@@ -488,7 +488,10 @@
+ 
+ #[test]
+ fn scalar_work_precedes_readout_and_cannot_be_retimed_past_observation() {
+-    let text = source("phase-then-measure");
++    // The original Bit-returning first sources remain immutable. This explicit
++    // derivative packs the ordinary result into the current Bits<1> readout
++    // interface without changing the quantum work or its chronological order.
++    let text = source("phase-then-measure-bits");
+     let graph = elaborate(&text, "main::f", BTreeMap::new());
+     let proposal = graph.lower().unwrap();
+     assert!(proposal.is_instrument());
+@@ -498,7 +501,7 @@
+             .iter()
+             .map(|e| e.kind())
+             .collect::<Vec<_>>(),
+-        ["pure", "observe"]
++        ["pure", "observe", "empty_bits", "prepend_bit"]
+     );
+     let phase = &proposal.source_events()[0];
+     assert!(phase.unitary_definition().is_some());
+@@ -533,7 +536,7 @@
+             .collect::<Vec<_>>();
+         close(&output.branches[outcome], &expected);
+     }
+-    let text = source("measure-then-phase");
++    let text = source("measure-then-phase-bits");
+     let after = elaborate(&text, "main::f", BTreeMap::new());
+     assert!(matches!(
+         after.hierarchy_eligibility().unwrap(),
+@@ -547,6 +550,94 @@
+ }
+ 
+ #[test]
++fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
++    for (declaration, code, message) in [
++        (
++            "pub unitary fn f(u: Unit) -> Unit { phase_eighth(u) }",
++            "type",
++            "scalar phase requires one Q<Unit>",
++        ),
++        (
++            "pub unitary fn f(b: Bit) -> Bit { phase_eighth(b) }",
++            "type",
++            "scalar phase requires one Q<Unit>",
++        ),
++        (
++            "pub unitary fn f(q: Q<Unit>,r: Q<Bit>) -> (Q<Unit>,Q<Bit>) { phase_eighth((q,r)) }",
++            "type",
++            "scalar phase requires one Q<Unit>",
++        ),
++        (
++            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth[0](not q) }",
++            "static",
++            "static argument arity mismatch",
++        ),
++        (
++            "pub unitary fn f() -> Q<Unit> { phase_eighth() }",
++            "type",
++            "runtime argument arity mismatch",
++        ),
++        (
++            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(q,q) }",
++            "type",
++            "runtime argument arity mismatch",
++        ),
++    ] {
++        let text = format!("use std::quantum::phase_eighth; {declaration}");
++        let error =
++            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
++        assert_eq!(error.code(), code, "{text}: {error}");
++        assert!(error.message().contains(message), "{text}: {error}");
++        assert_eq!(error.module(), Some("main"));
++        assert!(error.span().end > error.span().start);
++        assert!(text[error.span().start..error.span().end].starts_with("phase_eighth"));
++    }
++}
++
++#[test]
++fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
++    let text = "use std::quantum::phase_eighth; pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(phase_eighth(q)) }";
++    let graph = elaborate(text, "main::f", BTreeMap::new());
++    let definition = &graph.definitions()[graph.root()];
++    assert_eq!(definition.steps().len(), 2);
++    let first = &definition.steps()[0];
++    let second = &definition.steps()[1];
++    assert_eq!(first.inputs()[0], definition.inputs()[0]);
++    assert_eq!(second.inputs()[0], *first.output());
++    assert_eq!(definition.output(), second.output());
++    assert_ne!(first.inputs()[0].identity(), first.output().identity());
++    assert_ne!(first.output().identity(), second.output().identity());
++    for step in definition.steps() {
++        assert_eq!(step.primitive(), Some("std::quantum::phase_eighth"));
++    }
++    let proposal = graph.lower().unwrap();
++    let reconstructed = kernel().inspect(proposal.payload()).unwrap();
++    assert_eq!(reconstructed.leaves().len(), 2);
++    let required = Matrix::new(1, 1, vec![Exact::phase(1)]).unwrap();
++    for (_, serialized) in reconstructed.leaves() {
++        let leaf = serialized.leaf();
++        check_unitary(
++            leaf.payload(),
++            leaf.boundary(),
++            &required,
++            &mut Budget::new(DEFAULT_EXACT_WORK),
++        )
++        .unwrap();
++    }
++    // Producer consistency for the composition, independent exact requirements
++    // for both leaves, and an independent numeric oracle i * reference state.
++    let accepted = kernel()
++        .check_against_native(proposal.payload(), proposal.comparison_request())
++        .unwrap();
++    let output = accepted.execute_pure(&input(0), 2, limits()).unwrap();
++    let expected = input(0)
++        .into_iter()
++        .map(|z| multiply([0.0, 1.0], z))
++        .collect::<Vec<_>>();
++    close(&output.amplitudes, &expected);
++}
++
++#[test]
+ fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() {
+     for name in ["unused-invalid", "unused-zero-provider"] {
+         let error =

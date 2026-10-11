@@ -1,0 +1,827 @@
+{
+  "base_commit": "9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43",
+  "driver_sha256": "f45a857df64aeb1da49317e840710653c0d2ac500278ed6223c5309297ba711e",
+  "input_count": 144,
+  "inputs_stable": true,
+  "binary_sha256": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+  "binary_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "observations": [
+    {
+      "project": "aliased-zero-owner",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/aliased-zero-owner/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.24941187497461215,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "aliased-zero-owner-selected.stdout.txt",
+      "stderr": "aliased-zero-owner-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "aliased-zero-owner",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/aliased-zero-owner"
+      ],
+      "exit": 1,
+      "seconds": 0.018446083995513618,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "aliased-zero-owner-finite.stdout.txt",
+      "stderr": "aliased-zero-owner-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "bits0-is-not-unit",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/bits0-is-not-unit/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.014777250005863607,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "bits0-is-not-unit-selected.stdout.txt",
+      "stderr": "bits0-is-not-unit-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "bits0-is-not-unit",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/bits0-is-not-unit"
+      ],
+      "exit": 1,
+      "seconds": 0.014749999972991645,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "bits0-is-not-unit-finite.stdout.txt",
+      "stderr": "bits0-is-not-unit-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "controlled-four",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.06374637497356161,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "controlled-four-selected.stdout.txt",
+      "stderr": "controlled-four-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "controlled-four",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four"
+      ],
+      "exit": 1,
+      "seconds": 0.014730583992786705,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "controlled-four-finite.stdout.txt",
+      "stderr": "controlled-four-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "effectful-argument",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/effectful-argument/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.014286416990216821,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "effectful-argument-selected.stdout.txt",
+      "stderr": "effectful-argument-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "effectful-argument",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/effectful-argument"
+      ],
+      "exit": 1,
+      "seconds": 0.035646708973217756,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "effectful-argument-finite.stdout.txt",
+      "stderr": "effectful-argument-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-atom-control",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/existing-atom-control/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.06204891699599102,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "existing-atom-control-selected.stdout.txt",
+      "stderr": "existing-atom-control-selected.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "existing-atom-control",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/existing-atom-control"
+      ],
+      "exit": 0,
+      "seconds": 0.41972633299883455,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "existing-atom-control-finite.stdout.txt",
+      "stderr": "existing-atom-control-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "finite-coherent-unitors",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.01364012499107048,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "finite-coherent-unitors-selected.stdout.txt",
+      "stderr": "finite-coherent-unitors-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "finite-coherent-unitors",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors"
+      ],
+      "exit": 0,
+      "seconds": 0.4597240419825539,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "finite-coherent-unitors-finite.stdout.txt",
+      "stderr": "finite-coherent-unitors-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "finite-split-join",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-split-join/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05867929104715586,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "finite-split-join-selected.stdout.txt",
+      "stderr": "finite-split-join-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "finite-split-join",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-split-join"
+      ],
+      "exit": 0,
+      "seconds": 0.4238504999666475,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "finite-split-join-finite.stdout.txt",
+      "stderr": "finite-split-join-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "implicit-destructure",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/implicit-destructure/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.013686750025954098,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "implicit-destructure-selected.stdout.txt",
+      "stderr": "implicit-destructure-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "implicit-destructure",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/implicit-destructure"
+      ],
+      "exit": 1,
+      "seconds": 0.014403208973817527,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "implicit-destructure-finite.stdout.txt",
+      "stderr": "implicit-destructure-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "left-insert",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-insert/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05963433301076293,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "left-insert-selected.stdout.txt",
+      "stderr": "left-insert-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "left-insert",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-insert"
+      ],
+      "exit": 1,
+      "seconds": 0.014582332980353385,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "left-insert-finite.stdout.txt",
+      "stderr": "left-insert-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "left-remove",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-remove/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.058342000003904104,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "left-remove-selected.stdout.txt",
+      "stderr": "left-remove-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "left-remove",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-remove"
+      ],
+      "exit": 1,
+      "seconds": 0.014206584019120783,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "left-remove-finite.stdout.txt",
+      "stderr": "left-remove-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "lost-revived-owners",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/lost-revived-owners/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.013689541956409812,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "lost-revived-owners-selected.stdout.txt",
+      "stderr": "lost-revived-owners-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "lost-revived-owners",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/lost-revived-owners"
+      ],
+      "exit": 1,
+      "seconds": 0.01443191699218005,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "lost-revived-owners-finite.stdout.txt",
+      "stderr": "lost-revived-owners-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "nested-product",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/nested-product/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.06296800001291558,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "nested-product-selected.stdout.txt",
+      "stderr": "nested-product-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "nested-product",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/nested-product"
+      ],
+      "exit": 1,
+      "seconds": 0.01441674999659881,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "nested-product-finite.stdout.txt",
+      "stderr": "nested-product-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "ordered-axes",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/ordered-axes/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.0633493330096826,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "ordered-axes-selected.stdout.txt",
+      "stderr": "ordered-axes-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "ordered-axes",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/ordered-axes"
+      ],
+      "exit": 0,
+      "seconds": 0.4745183749473654,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "ordered-axes-finite.stdout.txt",
+      "stderr": "ordered-axes-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "removed-unit-phase",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/removed-unit-phase/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.062014165974687785,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "removed-unit-phase-selected.stdout.txt",
+      "stderr": "removed-unit-phase-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "removed-unit-phase",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/removed-unit-phase"
+      ],
+      "exit": 1,
+      "seconds": 0.015026459004729986,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "removed-unit-phase-finite.stdout.txt",
+      "stderr": "removed-unit-phase-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "right-insert",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-insert/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.0594251659931615,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "right-insert-selected.stdout.txt",
+      "stderr": "right-insert-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "right-insert",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-insert"
+      ],
+      "exit": 1,
+      "seconds": 0.014681500033475459,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "right-insert-finite.stdout.txt",
+      "stderr": "right-insert-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "right-remove",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-remove/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05837741697905585,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "right-remove-selected.stdout.txt",
+      "stderr": "right-remove-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "right-remove",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-remove"
+      ],
+      "exit": 1,
+      "seconds": 0.015246166032738984,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "right-remove-finite.stdout.txt",
+      "stderr": "right-remove-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "roundtrips",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/roundtrips/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.061229084036313,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "roundtrips-selected.stdout.txt",
+      "stderr": "roundtrips-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "roundtrips",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/roundtrips"
+      ],
+      "exit": 1,
+      "seconds": 0.014844540972262621,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "roundtrips-finite.stdout.txt",
+      "stderr": "roundtrips-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "same-width-wrong-tree",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/same-width-wrong-tree/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.014030458987690508,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "same-width-wrong-tree-selected.stdout.txt",
+      "stderr": "same-width-wrong-tree-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "same-width-wrong-tree",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/same-width-wrong-tree"
+      ],
+      "exit": 1,
+      "seconds": 0.015740583010483533,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "same-width-wrong-tree-finite.stdout.txt",
+      "stderr": "same-width-wrong-tree-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "tuple-provider",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/tuple-provider/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05836800002725795,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "tuple-provider-selected.stdout.txt",
+      "stderr": "tuple-provider-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "tuple-provider",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/tuple-provider"
+      ],
+      "exit": 0,
+      "seconds": 0.5298914589802735,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "tuple-provider-finite.stdout.txt",
+      "stderr": "tuple-provider-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "unused-zero-fold",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/unused-zero-fold/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.013877041987143457,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "unused-zero-fold-selected.stdout.txt",
+      "stderr": "unused-zero-fold-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "unused-zero-fold",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/unused-zero-fold"
+      ],
+      "exit": 1,
+      "seconds": 0.014859625021927059,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "unused-zero-fold-finite.stdout.txt",
+      "stderr": "unused-zero-fold-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "wrong-arities",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/wrong-arities/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.01405916700605303,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "wrong-arities-selected.stdout.txt",
+      "stderr": "wrong-arities-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "wrong-arities",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/wrong-arities"
+      ],
+      "exit": 1,
+      "seconds": 0.015089042019098997,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "wrong-arities-finite.stdout.txt",
+      "stderr": "wrong-arities-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    },
+    {
+      "project": "zero-unit-pair",
+      "route": "selected",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/zero-unit-pair/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05811149999499321,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "zero-unit-pair-selected.stdout.txt",
+      "stderr": "zero-unit-pair-selected.stderr.txt",
+      "unchanged_from_baseline": false
+    },
+    {
+      "project": "zero-unit-pair",
+      "route": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/zero-unit-pair"
+      ],
+      "exit": 1,
+      "seconds": 0.014502667007036507,
+      "binary_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "binary_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+      "stdout": "zero-unit-pair-finite.stdout.txt",
+      "stderr": "zero-unit-pair-finite.stderr.txt",
+      "unchanged_from_baseline": true
+    }
+  ],
+  "scope": "Actual build and unchanged first-source checks; open functions are not executed, masked diagnostics are not downstream rule checks; no new Lean build/replay."
+}

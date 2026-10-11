@@ -1,0 +1,11 @@
+
+running 6 tests
+test basis_context_is_closed_and_has_its_own_callable_shadowing ... ok
+test branch_local_shadows_expire_but_moved_outer_names_remain_reserved ... ok
+test ordinary_basis_and_computed_names_resolve_in_the_declaration_module ... ok
+test basis_domains_and_branch_results_preserve_exact_product_trees ... ok
+test computed_certificates_preserve_effects_and_outer_name_restrictions ... ok
+test declared_effects_survive_arguments_tuples_conditions_and_both_arms ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.84s
+

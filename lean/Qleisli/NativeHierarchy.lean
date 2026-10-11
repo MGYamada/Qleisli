@@ -4,7 +4,7 @@ import Protocol.HierarchicalFinite
 /-! Semantic discharge of every fresh native finite obligation. The actual
 structural derivation composes these leaves, not Rust-reader assumptions.
 Transport/compiler and general source preservation remain separate boundaries.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.NativeHierarchy
 open QleisliKernel QleisliKernel.Hierarchical
 open Protocol.HierarchicalFinite Qleisli.Semantics.ObservingFunction

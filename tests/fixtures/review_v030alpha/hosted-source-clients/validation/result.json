@@ -1,0 +1,89 @@
+{
+  "base_commit": "c0ac2b3f80f0cee522774885abb4b9fd21d1c2f9",
+  "results": [
+    {
+      "toolchain": "latest",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "native_roundtrip",
+        "--test",
+        "review_v019"
+      ],
+      "exit": 0,
+      "seconds": 74.6624931669794,
+      "stdout": "latest-0.stdout.txt",
+      "stderr": "latest-0.stderr.txt"
+    },
+    {
+      "toolchain": "latest",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--test",
+        "native_roundtrip",
+        "--test",
+        "review_v019",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 0.3516890830360353,
+      "stdout": "latest-1.stdout.txt",
+      "stderr": "latest-1.stderr.txt"
+    },
+    {
+      "toolchain": "msrv",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "native_roundtrip",
+        "--test",
+        "review_v019"
+      ],
+      "exit": 0,
+      "seconds": 76.87076845904812,
+      "stdout": "msrv-0.stdout.txt",
+      "stderr": "msrv-0.stderr.txt"
+    },
+    {
+      "toolchain": "msrv",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--test",
+        "native_roundtrip",
+        "--test",
+        "review_v019",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 0.5669416669989005,
+      "stdout": "msrv-1.stdout.txt",
+      "stderr": "msrv-1.stderr.txt"
+    }
+  ],
+  "source_files_sha256": {
+    "tests/native_roundtrip.rs": "94d528ce0d2b8c3f7165585bdb3f09c77f6f9a195173a9f546efbb13e7482722",
+    "tests/review_v019.rs": "48acf2aa51e4fc2df46e775a84a9414e032f02840dc59d8903c32dd9fd1d0e2c",
+    "tests/common/mod.rs": "7a1a2e24f960a091877e55ea5725a429c2cac106234aadd32240a56f93781743",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "source_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Two targeted integration suites and Clippy, not all-target/package or fresh Lean validation"
+}

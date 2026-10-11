@@ -1,0 +1,105 @@
+{
+  "command": [
+    "cargo",
+    "fmt"
+  ],
+  "exit_code": 0,
+  "scope": "Formatting after frozen executable observations; no new Rust compilation or execution. Prior source identities remain unchanged in historical records.",
+  "changes": [
+    {
+      "path": "src/frontend/types.rs",
+      "before_sha256": "02eadd7fe64287e139898165aac6e390c9cd467b9ab242d601bf6fd916fcb324",
+      "after_sha256": "3217e86016c514b65510809e2dc19848eb3db29437ea9c915fdc3758701abe48"
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "a992f8827df1d2c08635941b15a3425fe4f8c0bf5cc6eb5d8627095022deeadd",
+      "after_sha256": "02d30ba4a770080de0d30b152e4afc42a3b9f9ed14034efae01aeb0c2a0107d0"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "before_sha256": "e9944db04fd268f8d165ee5f287eb4bd6bb27369d0d8a8c9615182076bfe9fde",
+      "after_sha256": "79219b953f65f7e54cc201aa7ae2e34d6de5917aefe1086fc7f6c7b0fe1c105e"
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "before_sha256": "7f80139e63316d44c647466eaaf05773ac1287fbeec279db36ebe0fc5f0c434c",
+      "after_sha256": "ca9aed2642cfe2600b3155fa76ed0408db62ca0df3ff6e246093751a3b5302a9"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "before_sha256": "f521762da4a9bc87d06d4af94fbd766944473ccab666f0780920392f9f4ebfed",
+      "after_sha256": "ce80213cfda91622bf5e5f308964426cf17de827b0691f02cf96c758933aa600"
+    },
+    {
+      "path": "tests/qli_corpus.rs",
+      "before_sha256": "7864fdddd8f229a9a007d7eb7ea94750488725a09dcd57daae9663ccff0dd891",
+      "after_sha256": "3df4fa067652859d13825119918d0faf07efd4ad5ec937a63c4449dba6869ad5"
+    },
+    {
+      "path": "tests/review_v021.rs",
+      "before_sha256": "5558e3eb5ddb32eeb7fe538f563f17262ae9ca79999bb062afe45f092cc0f19b",
+      "after_sha256": "638466ec66efaff72f1a771c4d75e8a41968682b9b81b101f3bc55881610e77f"
+    },
+    {
+      "path": "tests/authoring_ergonomics.rs",
+      "before_sha256": "5ff9742c404956fdd70c3392ddcb98f00b1a9329c49bc5ac0806f5bd5042e67d",
+      "after_sha256": "20e551a222f0642e08c7dbfa364461b66d01bcdbb04b2a267d33d5aa804be0f5"
+    },
+    {
+      "path": "tests/source_scope.rs",
+      "before_sha256": "21295b0ce26458a1e503e44a030b7b719899eed9d363ecd21c694de921180a59",
+      "after_sha256": "8c58678622f83b1764b75421faeb138d82d5dac3a3c9777381da64a6a2e49433"
+    },
+    {
+      "path": "tests/review_v020.rs",
+      "before_sha256": "2f3bebd7d20163de8b077c272d10a1cd85cee5d6ef7f629dc75135369b988d70",
+      "after_sha256": "d433c5c74eab381d83f5bae02553e85b90dfe5936fabb276a470224b20e46fc3"
+    },
+    {
+      "path": "tests/sized_review_dialects.rs",
+      "before_sha256": "742afae152ef8bcdc63341258bc38fb91c20c4abf935824731150448056a37fc",
+      "after_sha256": "5072a3a435eeb6592fe54079142e754e09517c04d56f1351f7e02a35d6cda1a9"
+    },
+    {
+      "path": "tests/frontend_types.rs",
+      "before_sha256": "92a217da331c7aaf942a9715bade6d5368dac7d845b39dbbd687c88a47cca4f0",
+      "after_sha256": "79b3b5c5670823cf323aebabbadb406583118f013872f08e8ccaf2ffc424d38b"
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "before_sha256": "75dbb78ea289addbe590682f8f4a480697d221e936a27f6154b75c273fe6387f",
+      "after_sha256": "9672f98ce54316f07df0f8e13fe4420138134d29394dfa2175b3f9589e1afb65"
+    },
+    {
+      "path": "tests/repair_diagnostics.rs",
+      "before_sha256": "d0649c119eb0ecd823eeacbf958fc89c081084ef548c2c2f623a048d9e1f1a03",
+      "after_sha256": "36483f44aa741c146c1fed94970d421adafa3855f62f198ff81c5969959fbc12"
+    },
+    {
+      "path": "tests/review_v019.rs",
+      "before_sha256": "86932744dff8b28e087a1c5c6685acd3b3f5c0365f181a44c766cba623f27e51",
+      "after_sha256": "74920de4a3e04adccba6afa581cd1be684de3291a2f04ed4c3d2a18fe981c5ec"
+    },
+    {
+      "path": "tests/sampling.rs",
+      "before_sha256": "c2d4f6573bbabb0680bf7a1ee8b322283c3c978ec2a2cbf65b71d2f5c7194b7d",
+      "after_sha256": "081a72407a5c4f7f6e58a8fe8472f8fb13af33cf35c34e62fe1cdba4ed2b80d6"
+    },
+    {
+      "path": "tests/iterative_qpe.rs",
+      "before_sha256": "cb81977102a5a8129c9be81e0f429de46c2846333fcc6b4853712cad6c59c26b",
+      "after_sha256": "9940102ae0877e736622d3d97f3576d7b63d0892b7f15b17051b8bc2c8fc219e"
+    },
+    {
+      "path": "tests/static_semantics.rs",
+      "before_sha256": "aade5351a84464fcdcdad6a95189b15805cd99453a878ad47e3f0cbbdd6b66e6",
+      "after_sha256": "887dac116c23ccf1bed77e762b29028894aac9410adb37566fc11c2f4b96fafc"
+    },
+    {
+      "path": "tests/tuple_shapes.rs",
+      "before_sha256": "38264ce2dd55b5468c437aade28c3759633ea8accefa6a51e16cd6d221dca7a4",
+      "after_sha256": "ef8814ddea6f42c8ef925923e12fb248c896bf0055e760192ff975942b3f47b0"
+    }
+  ]
+}

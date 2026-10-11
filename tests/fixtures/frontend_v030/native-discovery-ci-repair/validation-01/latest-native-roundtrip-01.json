@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--jobs",
+    "2",
+    "--test",
+    "native_roundtrip",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 56.06739954202203,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/latest-native-roundtrip-01.stdout.txt",
+      "sha256": "6624f54be39cb15caf8a25aa299c663e762662b0b85779ef3cfa2098a2e07294"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/latest-native-roundtrip-01.stderr.txt",
+      "sha256": "3e0dc41ea15a56515fa1052a010f4c6f7a0b8b7a7ab29c15dba5e03144793a3e"
+    }
+  }
+}

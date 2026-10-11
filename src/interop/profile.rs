@@ -294,6 +294,8 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                         | RawOp::Discard { .. }
                         | RawOp::Split { .. }
                         | RawOp::Join { .. }
+                        | RawOp::PackUnit { .. }
+                        | RawOp::UnpackUnit { .. }
                 )
             {
                 return Err(InteropError::unsupported(
@@ -301,6 +303,16 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                 ));
             }
             match op {
+                RawOp::PackUnit { output } => {
+                    owners.insert(*output, vec![]);
+                }
+                RawOp::UnpackUnit { input } => {
+                    if !owners.remove(input).expect("verified owner").is_empty() {
+                        return Err(InteropError::unsupported(
+                            "Unit map has nonempty coordinates",
+                        ));
+                    }
+                }
                 RawOp::Init0 { output, .. } => {
                     if circuit.qubits >= MAX_QUBITS {
                         return Err(InteropError::limit("at most 12 allocated qubits"));

@@ -1,0 +1,51 @@
+{
+  "format": "qleisli.local-design-files",
+  "version": 1,
+  "files": {
+    "README.md": {
+      "sha256": "fa4a45f8d182409fc4488acf622343995b21ade17aab188f3d8f457d68a04bd8",
+      "bytes": 1570
+    },
+    "audit.json": {
+      "sha256": "f09b0385de66aff8788916c748d3e172369cc362f471436ae762addeb50e90f8",
+      "bytes": 888
+    },
+    "commands.json": {
+      "sha256": "2e27505f19292ad5024480e7788fad1a0731f96403b5d7afb74e0f3da1c64c91",
+      "bytes": 671
+    },
+    "constitution-check.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420
+    },
+    "contract.md": {
+      "sha256": "09fad1342eca78f29924f536a4c7733d5c1f5a43fd83b7bb6637efeddad6e2c9",
+      "bytes": 8102
+    },
+    "issue-317.json": {
+      "sha256": "55674dffe4f9ae50aaf5337e1eb6d19720fca071558413282af6546679a3e609",
+      "bytes": 31571
+    },
+    "issue-317.md": {
+      "sha256": "bf566febe2fba1f2e14b67e26b5513ce41a5fbb9544ee6a4cc2c9e509a218086",
+      "bytes": 24927
+    },
+    "issue-32.json": {
+      "sha256": "83518c19fe22191d2a2b8f4c52aefe5ecb80615616e7b65ef9fc6fe233b6e8b8",
+      "bytes": 69482
+    },
+    "issue-32.md": {
+      "sha256": "47d93dc78ecd16b21319b1aea6ea6e08238fc41601ff1b1296dc8b26c883d691",
+      "bytes": 63009
+    },
+    "provenance.json": {
+      "sha256": "958247873902d70864d2dbb8eb5beff913c7b62b4bd25089c7b19224d169f2bc",
+      "bytes": 1424
+    },
+    "source-inputs.json": {
+      "sha256": "3bf520a554a1b95e43bf54308b495776085872c003d25eeb75d97d48597fc247",
+      "bytes": 3812
+    }
+  },
+  "self_excluded": "files.json"
+}

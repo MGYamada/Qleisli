@@ -1,0 +1,6 @@
+//! A second iteration overshoots: all four labels again have probability 1/4.
+use amplification::uniform;
+use amplification::amplify_twice;
+use oracles::mark11;
+use std::routines::measure_z2;
+observe fn main() -> (Bit,Bit) { measure_z2(amplify_twice[uniform,mark11]()) }

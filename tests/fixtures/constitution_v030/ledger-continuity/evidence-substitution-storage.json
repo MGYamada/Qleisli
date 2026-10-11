@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.mutable-evidence-substitution-storage",
+  "version": 1,
+  "scope": "Actual before/after fixed-checker executions in an isolated fixture with read timing only mocked. No human approval or new theorem claim.",
+  "stored_files": {
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/after-command.json": "4d81e77028f56b77478a64bd4ccb2ab12ba9b21c1c8d71aeb768edf645f44fea",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/after.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/after.stdout.json": "e58812c4d72c8e71718b15aa948b23c5a4f1a9e28e99a0952376c2d7c0dbeb71",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/before-command.json": "dc89a5b5c4c46ac6e62cba574cc8dd3e3c7135817521c6206a7bd18cd5b11e56",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/before.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/before.stdout.json": "750d51ffb3e994d947c46da4d26fa3dbd861877bc97691bfeea4def407074ade",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_constitution.py.after.txt": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_constitution.py.before.txt": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_guarantee_ledger.py.after.txt": "6bc1911bb0c4b8cff7357ff804f6dcc4c50fb99cce1318c0c2e6140bdbeb099c",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_guarantee_ledger.py.before.txt": "3e58e592f4a691091e91b8fd5b281c3dfceb56e8adf12a59c7f77d620a9ec46b",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_initial_guarantees.py.after.txt": "73cce808ddedca4571211e546f9d381cc7a00ddbb06958a82ed81573b91e5702",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/check_initial_guarantees.py.before.txt": "230119ff57b24cd50d71f4d9e922222f2e2714ac226c1e706c690c4bce76774d",
+    "tests/fixtures/constitution_v030/ledger-continuity/evidence-substitution/qleisli-ledger-evidence-substitution.py": "b0a09883cdc3ed32373f53496ee1d318f796fe35b398c31ffb25e5c9c7947b16"
+  }
+}

@@ -1,7 +1,7 @@
 import Std
 
 /-! Typed, phase-free owner/axis permutations for the next hierarchy boundary.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This bounded component does not verify source translation or general gates. -/
 
 namespace QleisliKernel.Layout

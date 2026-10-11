@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.informed-public-source-capture",
+  "version": 1,
+  "phase": "after",
+  "recorded_utc": "2026-10-06T05:29:57.146749+00:00",
+  "actual_observations": [
+    "observations-after/ordinary-default-check-json.json",
+    "observations-after/ordinary-default-check-text.json",
+    "observations-after/explicit-isometry-default-check-json.json",
+    "observations-after/explicit-isometry-default-check-text.json",
+    "observations-after/false-unitary-caller-check-json.json",
+    "observations-after/false-unitary-caller-check-text.json",
+    "observations-after/unused-generic-default-check-json.json",
+    "observations-after/unused-generic-default-check-text.json",
+    "observations-after/explicit-unit-default-check-json.json",
+    "observations-after/explicit-unit-default-check-text.json",
+    "observations-after/nested-unit-wildcard-check-json.json",
+    "observations-after/nested-unit-wildcard-check-text.json",
+    "observations-after/ordinary-default-run-json.json",
+    "observations-after/explicit-isometry-default-run-json.json",
+    "observations-after/explicit-unit-default-run-json.json"
+  ],
+  "first_inventory_sha256": "cefa4a524bee027eb91e59ced9bfa0d380735f926d3b6d5445905a9eb97a144e",
+  "prediction_sha256": "cd30973789809f3ee7160cc84908fd5c7254b1605f2a6cf49f46d9ad708bc64c",
+  "pending_session_sha256": "ed2e0e9687aed4679638be554e934a594cdc2de81303b38bf5b4dae09bfcb947",
+  "observer_sha256": "dd4733aebf4804cbd217de38a981241ec8a258dcd111f3ecfecda10062cb3097",
+  "binary_first": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_final": {
+    "cli": {
+      "path": "/private/tmp/qleisli-default-boundary-after",
+      "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "First sources/results unchanged; no commands taken from records, no source repairs, builds, maximum-size cases or generic QFT."
+}

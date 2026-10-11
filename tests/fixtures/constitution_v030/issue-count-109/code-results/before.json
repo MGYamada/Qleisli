@@ -1,0 +1,7 @@
+{
+  "scope": "Two active release checker/test files before the authorized Issue 311 addition; historical evidence is not rewritten.",
+  "files": {
+    "scripts/check_release_ready.py": "c8274c1254ac69267e6630604eeba4629ee57715e13ba89098436f2bc611e5c8",
+    "scripts/test_check_release_ready.py": "b7057aeee15381e6826a8624189107649be0a1be4900fa167cca9375fa41a4b2"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/README.md": {
+    "sha256": "4086d0cb42234a111e304db1e3d7effc1e5f5de77bbd27f9661f4861aee5e72b",
+    "bytes": 777
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-142.after.json.gz": {
+    "sha256": "8df130513281650a24bcd0bcab618e6d40fc8f944f88daf8be1c7e3294ef8791",
+    "bytes": 23494
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-142.before.json.gz": {
+    "sha256": "f9d591f413f687ebb45ff36a0cc3ad5f0b48d175d3cba84e10d8a879c6b63721",
+    "bytes": 23286
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-317.after.json.gz": {
+    "sha256": "f9c1022a6f5bcd709b205bbd1fd429a43751e0962703ce040c2b715851bb208e",
+    "bytes": 12576
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-317.before.json.gz": {
+    "sha256": "5bc3cfdaba6ea15fc8fe0ca456a130c4d7a7c2e22d7000019f3d7c6dfffa27e4",
+    "bytes": 11733
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-32.after.json.gz": {
+    "sha256": "5320565c39fb71bc67ba2c7788802d6e88861c020c093343b8cade7487438dbf",
+    "bytes": 33020
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/issue-32.before.json.gz": {
+    "sha256": "d0e1f3e8030a305aec25304996ca394232b32da6d67cc97a7713d6815abd1006",
+    "bytes": 32200
+  },
+  "tests/fixtures/frontend_v030/common-pattern-implemented-checkpoint/record.json": {
+    "sha256": "78962f75cbe5704450fe775a26aff069987400ad05f0803f5b779ec626e1a31e",
+    "bytes": 1649
+  }
+}

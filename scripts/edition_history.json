@@ -1,0 +1,236 @@
+{
+  "format": "qleisli.edition-history",
+  "records": [
+    {
+      "anchors": {
+        "Generate.rs": "8bd91bcf91d94b02c46e5ea4502a2d197ca28a7d311be7f222b6da3ebf388d10",
+        "validation.json": "f7e94d248f943d71e06a51f1b337145b34795978d69bd605c5a9176f5a535f9d"
+      },
+      "explanation": "Generate.rs read main/left/right .qli into a BTreeMap and called ParsedProgram::parse directly. These frozen Qargo files were not consulted; their [qrate].schema = 2 is not valid top-level schema-version = 2. Retention is historical input identity, not admission as filesystem source projects. New CLI clients require separately recorded schema-2 manifests.",
+      "files": {
+        "first-attempt/sources/ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "first-attempt/sources/ab/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "first-attempt/sources/ab/main.qli": "6b3998e75a53b2db81011554761a3bb911e26ae4dc5adc5c8c6464c6baa9c6d6",
+        "first-attempt/sources/ab/right.qli": "b8d212674728f13a0c6c94ab949f948faa5a058c76e3cdbda17b533016652e31",
+        "first-attempt/sources/ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "first-attempt/sources/ba/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "first-attempt/sources/ba/main.qli": "abf682781bdd9a3c751e2822265c129c9d2c78d9f4eeaceeff6c39c92a4e5e49",
+        "first-attempt/sources/ba/right.qli": "b8d212674728f13a0c6c94ab949f948faa5a058c76e3cdbda17b533016652e31",
+        "negative-authoring-attempt/sources/overlap-ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "negative-authoring-attempt/sources/overlap-ab/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "negative-authoring-attempt/sources/overlap-ab/main.qli": "e8961951daeaaeb6a11886e777a3898118c6141d447a9f1758f6bd0b494b290c",
+        "negative-authoring-attempt/sources/overlap-ab/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "negative-authoring-attempt/sources/overlap-ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "negative-authoring-attempt/sources/overlap-ba/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "negative-authoring-attempt/sources/overlap-ba/main.qli": "69c5c4a33715b4fa0a0f76b0a0fffca1f409354ae108a6b2436977025bcd1654",
+        "negative-authoring-attempt/sources/overlap-ba/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "negative-authoring-attempt/sources/wrong-output-route/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "negative-authoring-attempt/sources/wrong-output-route/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "negative-authoring-attempt/sources/wrong-output-route/main.qli": "e8961951daeaaeb6a11886e777a3898118c6141d447a9f1758f6bd0b494b290c",
+        "negative-authoring-attempt/sources/wrong-output-route/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "second-attempt/sources/ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "second-attempt/sources/ab/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "second-attempt/sources/ab/main.qli": "e8961951daeaaeb6a11886e777a3898118c6141d447a9f1758f6bd0b494b290c",
+        "second-attempt/sources/ab/right.qli": "b8d212674728f13a0c6c94ab949f948faa5a058c76e3cdbda17b533016652e31",
+        "second-attempt/sources/ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "second-attempt/sources/ba/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "second-attempt/sources/ba/main.qli": "69c5c4a33715b4fa0a0f76b0a0fffca1f409354ae108a6b2436977025bcd1654",
+        "second-attempt/sources/ba/right.qli": "b8d212674728f13a0c6c94ab949f948faa5a058c76e3cdbda17b533016652e31",
+        "sources/ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/ab/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "sources/ab/main.qli": "e8961951daeaaeb6a11886e777a3898118c6141d447a9f1758f6bd0b494b290c",
+        "sources/ab/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/ba/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "sources/ba/main.qli": "69c5c4a33715b4fa0a0f76b0a0fffca1f409354ae108a6b2436977025bcd1654",
+        "sources/ba/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/overlap-ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/overlap-ab/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "sources/overlap-ab/main.qli": "1fadb62a732a4156202ac3efb72aab216364fa87d47f7a7c897bdfcc5fa8993a",
+        "sources/overlap-ab/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/overlap-ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/overlap-ba/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "sources/overlap-ba/main.qli": "e418caabc133065fea6f704c41e69f68ccbf1548a01244592c5096e1f08635fd",
+        "sources/overlap-ba/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/unit-ab/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/unit-ab/left.qli": "29e7a407f7ae1df18759f433c1be2820762f168312d61249419d60b32c3e97b5",
+        "sources/unit-ab/main.qli": "53e2492d88a6a3e5a5dfeea0a255fa2982db6bd2ae086af3fc011c804d04db4a",
+        "sources/unit-ab/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/unit-ba/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/unit-ba/left.qli": "29e7a407f7ae1df18759f433c1be2820762f168312d61249419d60b32c3e97b5",
+        "sources/unit-ba/main.qli": "74d33d4717d484ff93d047b68e0f2366e199937949c37c2222bd80965221238e",
+        "sources/unit-ba/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763",
+        "sources/wrong-output-route/Qargo.toml": "c8f2c64a3fc9d1441c550bbe76759ceae076353a21141d957a365f9d841f4de2",
+        "sources/wrong-output-route/left.qli": "a15255ffe106ed8b7ef54c287aec13a845a94feb22d9fe3398c588469f105883",
+        "sources/wrong-output-route/main.qli": "65942ba658b436adda635da7309c6dce8d84950f2d6ac9832657eec778998250",
+        "sources/wrong-output-route/right.qli": "c2577ae4c2fcce910fa2aa742da9c6ed3723066c45e2575e14d16c4683dab763"
+      },
+      "filesystem_admission": false,
+      "kind": "in-memory-source-experiment",
+      "projects": [
+        "first-attempt/sources/ab",
+        "first-attempt/sources/ba",
+        "negative-authoring-attempt/sources/overlap-ab",
+        "negative-authoring-attempt/sources/overlap-ba",
+        "negative-authoring-attempt/sources/wrong-output-route",
+        "second-attempt/sources/ab",
+        "second-attempt/sources/ba",
+        "sources/ab",
+        "sources/ba",
+        "sources/overlap-ab",
+        "sources/overlap-ba",
+        "sources/unit-ab",
+        "sources/unit-ba",
+        "sources/wrong-output-route"
+      ],
+      "root": "tests/fixtures/constitution_v030/routed-control-commutation"
+    },
+    {
+      "anchors": {
+        "observation-before.json": "ba8b4770dd3954513199567d4ecde3a49c46b8ed38092765958bbbbe75033a05"
+      },
+      "explanation": "The first filesystem CLI attempt was actually refused because its manifest omitted schema-version = 2. Preserve the exact original source, manifest and recorded refusal; this classification does not admit the project. The separately corrected attempt-02 remains subject to ordinary schema-2 edition coverage.",
+      "files": {
+        "attempt-01/Qargo.toml": "df323886f5ef582f35cc99a3e41218126afa4e322fe20532edff4159a083c3ff",
+        "attempt-01/main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "filesystem_admission": false,
+      "kind": "rejected-filesystem-authoring-attempt",
+      "projects": [
+        "attempt-01"
+      ],
+      "root": "tests/fixtures/authoring_sessions/operation-application-v030"
+    },
+    {
+      "anchors": {
+        "before/basis-project.json": "4c07a20e9aed5c28f770a990d09cac5d8c19ebec403a531d75045439f44ac65f",
+        "before/basis-selected.json": "3b84b5e6e12aad626a9defcd59c0cf4dd48324e4805705295f174bc5e3bf2ad7",
+        "before/duplicate-project.json": "e1fef0eb53f39a48391617d7838d8fac743629ca15c96fd6208e9cc95259151b",
+        "before/duplicate-selected.json": "cd4dadd5a43e915dfd99036b26b5389452d161fe4573859fcd57c0c15b4770d2",
+        "before/legacy-control-project.json": "9392b23daf5ad9c0090a8e82a75a61364bb62175d8b7d30eea50177f044d672c",
+        "before/legacy-control-selected.json": "63e7467d8e9be472aef3307493aaf5c7795d2119614c701c9fdd4088ae833409",
+        "before/natural-project.json": "209123e7c368a84a0db772bf7f90182c84b20013b16c3ace353a919c8ee6cbe2",
+        "before/natural-selected.json": "69cd9f3e752dde93a76247938df8f15d2f8e5539ad4cbdc68612b774ac3841cf",
+        "before/no-marker-project.json": "e2d9eca2cfa19d71dfbf5ab44f42e04695c5ff268862cb371d313bff93f131a5",
+        "before/no-marker-selected.json": "897175684f091c395b24872a847c6da562c484e9b2e3897e7bcda40c70a5886a",
+        "before/operation-project.json": "d2c4114095925ae848667f4f08dc744a07add2f280061f7f011fd06a4a4f98e7",
+        "before/operation-selected.json": "9995c6bc982b5c8a6d4852bc0ad564bb5790a016887a18bb7bf67b0737277683",
+        "before/ordinary-name-project.json": "71472414fdb83a05a5ed8d8c63ef07ddd70109ea48ad80268c9aaf4a1b9642f7",
+        "before/ordinary-name-selected.json": "53e4e78ef82f11434b1675356fd29061ac2c6c58896b5cd19190a3f381b4baf6",
+        "before/unused-invalid-project.json": "a1cbe69f5a2f2be9967daead9a42b189f131bafaabc9343f076dd1c49664e986",
+        "before/unused-invalid-selected.json": "f24cf4167ea23f5082ad2121c9bd68b15218509448e8fc7b5b862d6bdf83ea94"
+      },
+      "explanation": "Eight first filesystem CLI projects were actually refused for the wrong schema key. Preserve exact source/manifest bytes and all sixteen original project refusals. This is historical classification only, not filesystem source admission; attempt-02 and post-implementation clients remain subject to ordinary schema-2 checks.",
+      "files": {
+        "attempt-01/basis/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/basis/main.qli": "5b1170639d02ebf0aaa5615a20537d35412d8b23e38039835b1fbd6157235dfc",
+        "attempt-01/duplicate/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/duplicate/main.qli": "5108cdbb3bf905817de95d403ffe098dc75bca467dd45df0a82b2fcc3094a467",
+        "attempt-01/legacy-control/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/legacy-control/main.qli": "6ed170872fb72bac041904723415dc8c2840fcf138cc33470d27d459599b0eed",
+        "attempt-01/natural/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/natural/main.qli": "9a20ea85c7b0dd12338dad53dba6f4fd1cebc104aa90ca5d7bd6c2c7a0551f97",
+        "attempt-01/no-marker/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/no-marker/main.qli": "dbded415e96eba2c209027a5f228caf329e22d89894e0603bba8e61191ca4179",
+        "attempt-01/operation/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/operation/main.qli": "04c680d190c076aa53c43ea3dba73abd0a22ddb1a62a9f01dea348632ff03f4a",
+        "attempt-01/ordinary-name/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/ordinary-name/main.qli": "3b023e80429d008dc05922258eac1eb181d8dd476cae38b26989b12fd3cb8112",
+        "attempt-01/unused-invalid/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/unused-invalid/main.qli": "7c50c43197dfc6c7be5a443209c826f79786fa6ab4340b756420397442080e96"
+      },
+      "filesystem_admission": false,
+      "kind": "rejected-filesystem-authoring-attempt",
+      "projects": [
+        "attempt-01/basis",
+        "attempt-01/duplicate",
+        "attempt-01/legacy-control",
+        "attempt-01/natural",
+        "attempt-01/no-marker",
+        "attempt-01/operation",
+        "attempt-01/ordinary-name",
+        "attempt-01/unused-invalid"
+      ],
+      "root": "tests/fixtures/authoring_sessions/const-parameters-v030"
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/structured-exit-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "Six first filesystem CLI checks were actually rejected for the incorrect schema key before source parsing. Retain their exact source/manifest bytes and observed failures. This classifies only immutable rejected historical inputs, not filesystem admission; the manifest-only attempt-02 and all subsequent clients require ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01/assert",
+        "attempt-01/early-return",
+        "attempt-01/ordinary-identifiers",
+        "attempt-01/panic",
+        "attempt-01/residual",
+        "attempt-01/unreachable"
+      ],
+      "files": {
+        "attempt-01/assert/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/assert/main.qli": "53d3006b1e178aa2a0f2284a140fae3463306a8e77438856d84aa8a99c1ec0ee",
+        "attempt-01/early-return/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/early-return/main.qli": "3c786d7d7a2deb50cfdbc4e4fdebcaa9ba06bc35a008dec21b2129b37e3e3a10",
+        "attempt-01/ordinary-identifiers/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/ordinary-identifiers/main.qli": "e7bcf380d36cfb1aee40e5b650c12ac57c12af37d06a2a7955b7afa729cad780",
+        "attempt-01/panic/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/panic/main.qli": "0a0be91dc14cdd3326478c8dc63306f3c51287b0b68e56a04398cce206737bc8",
+        "attempt-01/residual/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/residual/main.qli": "4ec87c811c0b22d6b4c191b56f7b6722afa4d8e7007e1208374662838aefa0b8",
+        "attempt-01/unreachable/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/unreachable/main.qli": "b46aa2d24e32e4ac04471c1474f49a9030664e4241f554258934c6efa0f1496e"
+      },
+      "anchors": {
+        "before/assert.json": "2b37bbd9349bf9905560b0aaae8944ab8341fdfb3516980ce060cacc7b466bed",
+        "before/early-return.json": "82941393f202ef2bc75973563a1a20c63db55f0e8dafbb13cd84188321da92de",
+        "before/ordinary-identifiers.json": "513888acf8fe195332614f84a2523392e95cfb7fe0e9df124d7084b2db376700",
+        "before/panic.json": "e856395a5ace06480a231e1a643f52a90a5fbcb57bb69f291e3f2923393be13f",
+        "before/residual.json": "d2b750da7dced34f579f457a6d8a299d3aff79866bb1668f6e7452fc3ab87710",
+        "before/unreachable.json": "97b3a466162c1fc07bf21879af157a7d30c85d814511100dda7d4797b33aa232"
+      }
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/general-arrows-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "Six first CLI checks rejected the invented schema key before source parsing. Preserve their exact source/manifest bytes and observed project refusals. This record grants no filesystem admission; manifest-only attempt-02 remains subject to ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01"
+      ],
+      "files": {
+        "attempt-01/Qargo.toml": "942e5d973bb98e537a950356b2a8bd3e2d0f78473aa6d90bb37fa7c018ec60b7",
+        "attempt-01/controlled.qli": "7a31a9f4dfc78c8c82c016fbaacef26ed20828c7854e40c73f2f329caeb073f6",
+        "attempt-01/false-unitary.qli": "c73d36522d3b2ce3295349885360e1c65c98b6efccaa95d0bbca00223a020d98",
+        "attempt-01/preparation.qli": "85d51ba59ccd3f68631ebe60b0e0bda863388faeb1fd417f3f80f6fe4528b201",
+        "attempt-01/unitor.qli": "30f4b9ef7775d357c6695abefb7e3300fd178cefd12c91c0fb806d222a0b490e",
+        "attempt-01/wrong-input.qli": "082571142672e764e11d14ff49965e1992ae095e5dc59d9c6a88fb8f41f0b040",
+        "attempt-01/zero-power.qli": "a1aeca87b8129740d9aa0705649121c3f0d9517574cb323c78626d08762ce2a2"
+      },
+      "anchors": {
+        "observations/controlled-before.json": "1bf84ff41b2dcf87f6a712685a330765d105361a13708f082cc209ad7ff7f63b",
+        "observations/false-unitary-before.json": "1eca1e22dba87f53957011c4febdf504785f75d5c96bdeb37ae968b7dffd0a8f",
+        "observations/preparation-before.json": "7f551c05a00cd0455f5a5aff396fda58ade55d4520acc98b88fd27ac140b8e74",
+        "observations/unitor-before.json": "c90cfdacb4b8ad0308f82b2aba231bcc3ccca1eb15b4fb22a2be2bd2bd70ba05",
+        "observations/wrong-input-before.json": "fa037a768b489c87819d02584f16dc94ef7b7f07028927545793997eae64b7a4",
+        "observations/zero-power-before.json": "1db2894521b159d53183eec7c833bee74f08122ddd35fc891890847bb5ec7e35"
+      }
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/direct-arrow-adjoint-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "The first CLI check rejected the incorrect schema key before source checking. Preserve the exact source, manifest and observed project refusal. This record grants no filesystem admission; the manifest-only attempt-02 and all subsequent clients remain subject to ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01"
+      ],
+      "files": {
+        "attempt-01/Qargo.toml": "530004057c52b82fac2f53f009676c26ea2c6a401f856b50a7f8292bffea5a97",
+        "attempt-01/main.qli": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c"
+      },
+      "anchors": {
+        "observations/before.json": "2ce1600a4f5e2982c70daee24df63f4563966b373825857a7fb3899eb58dbdec"
+      }
+    }
+  ],
+  "version": 1
+}

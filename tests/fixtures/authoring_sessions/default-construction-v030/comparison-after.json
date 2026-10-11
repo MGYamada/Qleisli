@@ -1,0 +1,182 @@
+{
+  "format": "qleisli.informed-default-boundary-comparison",
+  "version": 1,
+  "recorded_utc": "2026-10-06T05:30:54.747827+00:00",
+  "actual_commands": 30,
+  "matching_observation_pairs": 15,
+  "source_repairs": 0,
+  "first_sources_context_predictions_unchanged": true,
+  "before_capture_sha256": "68b75c60f8033fbe8a49f8315b7b0de3e78d5b72ed63af2163db511c333cf2d0",
+  "after_capture_sha256": "ce334398c5c67c101dd2131958899279cce66c7632e29a84229b27d2bc12431f",
+  "raw_stream_pairs_unchanged": 13,
+  "designated_changed_observation_pairs": 2,
+  "new_message_suffix": " This includes Q<Unit> and products containing quantum owners; zero physical width does not grant Default.",
+  "comparisons": [
+    {
+      "before_observation": "observations-before/ordinary-default-check-json.json",
+      "after_observation": "observations-after/ordinary-default-check-json.json",
+      "case": "ordinary-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/ordinary-default-check-text.json",
+      "after_observation": "observations-after/ordinary-default-check-text.json",
+      "case": "ordinary-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/explicit-isometry-default-check-json.json",
+      "after_observation": "observations-after/explicit-isometry-default-check-json.json",
+      "case": "explicit-isometry-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/explicit-isometry-default-check-text.json",
+      "after_observation": "observations-after/explicit-isometry-default-check-text.json",
+      "case": "explicit-isometry-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/false-unitary-caller-check-json.json",
+      "after_observation": "observations-after/false-unitary-caller-check-json.json",
+      "case": "false-unitary-caller",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/false-unitary-caller-check-text.json",
+      "after_observation": "observations-after/false-unitary-caller-check-text.json",
+      "case": "false-unitary-caller",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/unused-generic-default-check-json.json",
+      "after_observation": "observations-after/unused-generic-default-check-json.json",
+      "case": "unused-generic-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": false,
+      "designated_message_change_only": true
+    },
+    {
+      "before_observation": "observations-before/unused-generic-default-check-text.json",
+      "after_observation": "observations-after/unused-generic-default-check-text.json",
+      "case": "unused-generic-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": false,
+      "designated_message_change_only": true
+    },
+    {
+      "before_observation": "observations-before/explicit-unit-default-check-json.json",
+      "after_observation": "observations-after/explicit-unit-default-check-json.json",
+      "case": "explicit-unit-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/explicit-unit-default-check-text.json",
+      "after_observation": "observations-after/explicit-unit-default-check-text.json",
+      "case": "explicit-unit-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/nested-unit-wildcard-check-json.json",
+      "after_observation": "observations-after/nested-unit-wildcard-check-json.json",
+      "case": "nested-unit-wildcard",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/nested-unit-wildcard-check-text.json",
+      "after_observation": "observations-after/nested-unit-wildcard-check-text.json",
+      "case": "nested-unit-wildcard",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/ordinary-default-run-json.json",
+      "after_observation": "observations-after/ordinary-default-run-json.json",
+      "case": "ordinary-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/explicit-isometry-default-run-json.json",
+      "after_observation": "observations-after/explicit-isometry-default-run-json.json",
+      "case": "explicit-isometry-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    },
+    {
+      "before_observation": "observations-before/explicit-unit-default-run-json.json",
+      "after_observation": "observations-after/explicit-unit-default-run-json.json",
+      "case": "explicit-unit-default",
+      "command_arguments_after_executable_same": true,
+      "exits_same": true,
+      "source_manifest_identities_same": true,
+      "diagnostic_code_span_and_nonmessage_result_same": true,
+      "raw_streams_identical": true,
+      "designated_message_change_only": false
+    }
+  ],
+  "scope": "Actual fixed before/after public CLI observations only. One rejection gains the designated teaching suffix in JSON/default text; all observed acceptance, codes, spans, successful outputs and other streams stay equal. No generic trait or full-language source-preservation theorem is claimed."
+}

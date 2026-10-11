@@ -1,0 +1,5 @@
+// This was accepted by left-folding tuple syntax; v0.2.0 must reject it.
+classical fn silently_reassociate((a,b,c): (Bit,Bit,Bit)) -> ((Bit,Bit),Bit) {
+    (a,b,c)
+}
+observe fn main() -> Unit { () }

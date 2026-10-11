@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "run",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/selected-source-cli-v030/attempt-01/unit-parameter/main.qli",
+    "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"Raw run/sample require zero runtime parameters; even a Unit parameter requires an explicit checked invocation\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/selected-source-cli-v030/attempt-01/unit-parameter/main.qli\",\"start\":0,\"end\":39},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.004210249986499548,
+  "source_sha256": "3a4fa70a4d41b8f6307c9ff9c71949e35b2b7306c6c86357c84e47da9b7ace60",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "e8dc6a969d9a58ebb9b3f32b2307a36d0fb24679492f0ce086a397434159303e",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+}

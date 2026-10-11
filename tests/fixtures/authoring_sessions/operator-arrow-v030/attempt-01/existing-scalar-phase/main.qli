@@ -1,0 +1,2 @@
+use std::quantum::phase_eighth;
+fn entry(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}

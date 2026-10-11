@@ -1,0 +1,8 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "finite profile does not support static Nat parameters", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Bits(1) }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Bits(1) }, identity: Some(0), fields: [] }
+sized.lower: Error { code: "unsupported", module: Some("main"), span: Span { start: 0, end: 64 }, message: "selected sized lowering profile requires quantum entry values; classical entry values are unsupported" }

@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+unitary fn keep_empty(q: Q<Unit>) -> Q<Unit> {
+    q
+}
+
+observe fn main() -> Unit {
+    ()
+}

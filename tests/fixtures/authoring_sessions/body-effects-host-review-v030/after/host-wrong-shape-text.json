@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:31..103: type: concrete provider must have one quantum input with the exact output type\n",
+  "native_invocations": 0,
+  "seconds": 0.004858041007537395,
+  "recorded_utc": "2026-10-05T10:12:36.636766+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "transcript": "main:31..103: type: concrete provider must have one quantum input with the exact output type\n"
+}

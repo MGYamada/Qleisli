@@ -1,0 +1,117 @@
+{
+  "scope": "Independent small closed-wrapper probability oracles, not proof that source steps or ignored observations were retained. Existing finite endpoint only.",
+  "comparisons": [
+    {
+      "case": "eager-zero",
+      "observation": "observations/closed-eager-zero.json",
+      "sha256": "3164839413690fb2d86f0d340845b174facf2aeabc4ed8c72d6ad999380c9a35",
+      "expected": {
+        "0": 1.0
+      },
+      "actual": {
+        "0": 1
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "bell-xor",
+      "observation": "observations/closed-bell-xor.json",
+      "sha256": "8ad561c45b466121854e5348d3fab100824fdcb50b647af47ec3983a0095dda0",
+      "expected": {
+        "00": 0.5,
+        "10": 0.5
+      },
+      "actual": {
+        "00": 0.5000000000000001,
+        "10": 0.5000000000000001
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "pending-argument",
+      "observation": "observations/closed-pending-argument.json",
+      "sha256": "a16a250e084e11818b2b01a2d3173f6ffdf60cd7123f516499e6c0d91695d34f",
+      "expected": {
+        "10": 0.5,
+        "01": 0.5
+      },
+      "actual": {
+        "01": 0.5000000000000001,
+        "10": 0.5000000000000001
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "repeated-helper",
+      "observation": "observations/closed-repeated-helper.json",
+      "sha256": "a039693575755416f30fd3e2f200f26e5886dea9f75bfa4aa16cd49473b7455c",
+      "expected": {
+        "11": 1.0
+      },
+      "actual": {
+        "11": 1
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "unit-effect",
+      "observation": "observations/closed-unit-effect.json",
+      "sha256": "6dffa983e9e24624590d993624e24e2d54b6a80f224ecd4691ec3dedfb7a3409",
+      "expected": {
+        "1": 1.0
+      },
+      "actual": {
+        "1": 1
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "finite-t",
+      "observation": "observations/closed-finite-t.json",
+      "sha256": "7177641205fa0304c9f099c7fa3914b37c761b5d9bac9df41fe48cff13a5c2fb",
+      "expected": {
+        "0": 0.8535533905932737,
+        "1": 0.1464466094067262
+      },
+      "actual": {
+        "0": 0.8535533905932742,
+        "1": 0.1464466094067263
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "runtime-if",
+      "observation": "observations/closed-runtime-if.json",
+      "sha256": "a3cae97168f046c76b90ca51f4c485b2faa1c89471faac74227cfef2b2be803e",
+      "expected": {
+        "0": 0.5,
+        "1": 0.5
+      },
+      "actual": {
+        "0": 0.5000000000000001,
+        "1": 0.5000000000000001
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "case": "provider",
+      "observation": "observations/closed-provider.json",
+      "sha256": "11d10fd01012eefd85bb447d9944f9f4c82908d802d27b7713074b647cf3d68a",
+      "expected": {
+        "1": 1.0
+      },
+      "actual": {
+        "1": 1
+      },
+      "absolute_tolerance": 1e-12,
+      "passed": true
+    }
+  ]
+}

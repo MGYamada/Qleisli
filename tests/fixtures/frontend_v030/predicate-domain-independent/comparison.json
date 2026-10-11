@@ -1,0 +1,140 @@
+{
+  "observation_count": 56,
+  "accepted_count": 16,
+  "accepted": [
+    "sources/and-certified",
+    "sources/and-restricted",
+    "sources/certified-flat",
+    "sources/certified-left",
+    "sources/certified-right",
+    "sources/constant-certified",
+    "sources/constant-restricted",
+    "sources/meaning-flat",
+    "sources/meaning-left",
+    "sources/meaning-right",
+    "sources/restricted-flat",
+    "sources/restricted-left",
+    "sources/restricted-right",
+    "sources/unit-certified",
+    "sources/unit-restricted",
+    "repaired/unit-meaning"
+  ],
+  "rejected_count": 40,
+  "changed_finite_checks": [
+    {
+      "folder": "sources",
+      "case": "legacy-certified-three",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli\", span: Span { start: 370, end: 379 }, line: 6, column: 78 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "legacy-restricted-three",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli\", span: Span { start: 367, end: 376 }, line: 6, column: 75 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "nullary-certified",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli\", span: Span { start: 283, end: 286 }, line: 6, column: 56 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "nullary-restricted",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli\", span: Span { start: 283, end: 286 }, line: 6, column: 56 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-flat-as-left",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-flat-as-right",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-left-as-flat",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-left-as-right",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-right-as-flat",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-certified-right-as-left",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-flat-as-left",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-flat-as-right",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-left-as-flat",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-left-as-right",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-right-as-flat",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "wrong-restricted-right-as-left",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }"
+    },
+    {
+      "folder": "sources",
+      "case": "zero-width-wrong-restricted",
+      "before": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli\", span: Span { start: 112, end: 117 }, line: 1, column: 113 }) }",
+      "after": "finite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli\", span: Span { start: 112, end: 117 }, line: 1, column: 113 }) }"
+    },
+    {
+      "folder": "repaired",
+      "case": "legacy-certified-three",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli\", span: Span { start: 556, end: 565 }, line: 8, column: 75 }) }"
+    },
+    {
+      "folder": "repaired",
+      "case": "nullary-certified",
+      "before": "finite.check: ok",
+      "after": "finite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli\", span: Span { start: 403, end: 406 }, line: 8, column: 55 }) }"
+    }
+  ],
+  "unchanged_finite_checks": 37
+}

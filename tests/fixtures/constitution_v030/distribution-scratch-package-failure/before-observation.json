@@ -1,0 +1,10 @@
+{
+  "scope": "First observed package command failure after tiny archive creation; command result synthetic, validator/archive/logging/cleanup real; no compiler/build/installer/Lean execution. Harness cleans its own tiny fixture after observation.",
+  "validator_sha256": "062020e85affce94baa5cd834aae626341b473cef18407a9dd6c0013c5a95a97",
+  "driver_sha256": "98ce492c7cf78102800e20a8d2010f6557b4ad72bf3f3ac8e0bd2032a42f9f16",
+  "status": "failed",
+  "cleanup": "removed",
+  "archive_generated_before_failure": true,
+  "generated_archive_exists_after_validate": false,
+  "durable_crates": []
+}

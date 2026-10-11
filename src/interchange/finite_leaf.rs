@@ -179,7 +179,7 @@ pub fn check_unitary(
     )
 }
 
-fn check_with_kernel(
+pub(crate) fn check_with_kernel(
     kernel: &super::native::Kernel,
     payload: &[u8],
     boundary: &UnitaryBoundary,

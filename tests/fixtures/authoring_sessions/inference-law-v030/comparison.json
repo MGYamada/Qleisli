@@ -1,0 +1,173 @@
+{
+  "scope": "24 unchanged projects; exit/native count and original locations/categories preserved. All6 successes byte-equivalent JSON;18 rejections remain zero-native.",
+  "observations": [
+    {
+      "label": "natural-missing-both",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing [m, n]; unexpected []"
+    },
+    {
+      "label": "natural-missing-m",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing [m]; unexpected []"
+    },
+    {
+      "label": "natural-extra-z",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing []; unexpected [z]"
+    },
+    {
+      "label": "natural-missing-and-extra",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing [m]; unexpected [z]"
+    },
+    {
+      "label": "natural-missing-and-extra-reversed",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing [m]; unexpected [z]"
+    },
+    {
+      "label": "natural-exact",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    },
+    {
+      "label": "natural-exact-reversed",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    },
+    {
+      "label": "operation-missing",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete operation bindings for entry main::f must exactly match the declaration; missing [U]; unexpected []"
+    },
+    {
+      "label": "operation-extra",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete operation bindings for entry main::f must exactly match the declaration; missing []; unexpected [V]"
+    },
+    {
+      "label": "operation-missing-and-extra",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete operation bindings for entry main::f must exactly match the declaration; missing [U]; unexpected [V]"
+    },
+    {
+      "label": "operation-wrong-category",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for entry main::f must exactly match the declaration; missing []; unexpected [U]"
+    },
+    {
+      "label": "operation-identity",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    },
+    {
+      "label": "operation-flip",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    },
+    {
+      "label": "operation-pair-missing-v",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete operation bindings for entry main::f must exactly match the declaration; missing [V]; unexpected []"
+    },
+    {
+      "label": "operation-pair-extra-w",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete operation bindings for entry main::f must exactly match the declaration; missing []; unexpected [W]"
+    },
+    {
+      "label": "provider-natural-missing",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for operation U provider main::keep must exactly match the declaration; missing [n]; unexpected []"
+    },
+    {
+      "label": "provider-natural-extra",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for operation U provider main::keep must exactly match the declaration; missing []; unexpected [z]"
+    },
+    {
+      "label": "provider-natural-missing-and-extra",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "concrete natural bindings for operation U provider main::keep must exactly match the declaration; missing [n]; unexpected [z]"
+    },
+    {
+      "label": "provider-natural-exact",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    },
+    {
+      "label": "call-missing-natural",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "wrong number of static arguments for main::g: expected [n: Nat, m: Nat], received 1"
+    },
+    {
+      "label": "call-extra-natural",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "wrong number of static arguments for main::g: expected [n: Nat], received 2"
+    },
+    {
+      "label": "call-missing-operation",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "wrong number of static arguments for main::g: expected [U: Op], received 0"
+    },
+    {
+      "label": "call-extra-operation",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": null,
+      "new_message": "wrong number of static arguments for main::g: expected [U: Op], received 2"
+    },
+    {
+      "label": "call-exact-control",
+      "exit_code_unchanged": true,
+      "native_count_unchanged": true,
+      "positive_output_unchanged": true,
+      "new_message": null
+    }
+  ]
+}

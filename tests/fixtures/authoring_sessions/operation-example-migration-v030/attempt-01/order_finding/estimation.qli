@@ -1,0 +1,18 @@
+use evolution::evolve;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::transform::qft3;
+
+
+// Three phase bits, increasing bit weight. Consume them and retain the target.
+pub observe fn phase3(q: Q<((Bit, Bit), (Bit, Bit))>) -> (((Bit, Bit), Bit), Q<((Bit, Bit), (Bit, Bit))>) {
+    let (a, q) = controlled(evolve)(h(init0()), q);
+    let (b, q) = controlled(power(evolve,2))(h(init0()), q);
+    let (c, q) = controlled(power(evolve,4))(h(init0()), q);
+    let (ab, c) = split(inverse(qft3)(join(join(a, b), c)));
+    let (a, b) = split(ab);
+    (((measure_z(a), measure_z(b)), measure_z(c)), q)
+}

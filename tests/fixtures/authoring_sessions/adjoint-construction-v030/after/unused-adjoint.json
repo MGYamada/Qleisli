@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/adjoint-construction-v030/attempt-01/unused-adjoint",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-08T17:25:44.456970+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "capability",
+        "severity": "error",
+        "message": "missing Adjointable operation access",
+        "primary": {
+          "path": "main.qli",
+          "start": 210,
+          "end": 220,
+          "line": 7,
+          "column": 34
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"capability\",\"severity\":\"error\",\"message\":\"missing Adjointable operation access\",\"primary\":{\"path\":\"main.qli\",\"start\":210,\"end\":220,\"line\":7,\"column\":34},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "kernel_selection": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "compiler_sha256": "75faca30c7abe5f9a802a788e8e6fcf6a842974833deebd996e48f5470480d10",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "source_checker_sha256": "026bf44cd2935285a108b45e8d8e6291dd72319b2471192509558fd8d22ff196",
+  "scope": "Actual unchanged first-source check after the working-tree constructor repair. Not a clean-commit CI, run, native quantum counterexample or proof claim."
+}

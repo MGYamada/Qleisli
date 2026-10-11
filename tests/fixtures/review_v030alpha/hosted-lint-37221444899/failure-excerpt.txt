@@ -1,0 +1,25 @@
+2026-10-04T18:15:30.3064678Z     Checking toml v0.8.23
+2026-10-04T18:15:30.4661529Z     Checking qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-04T18:15:40.9730582Z error: unused variable: `av`
+2026-10-04T18:15:40.9739947Z   --> tests/specification_boundaries.rs:97:17
+2026-10-04T18:15:40.9754172Z    |
+2026-10-04T18:15:40.9779882Z 97 |             let av = u8::from(a);
+2026-10-04T18:15:40.9810361Z    |                 ^^ help: if this is intentional, prefix it with an underscore: `_av`
+2026-10-04T18:15:40.9839792Z    |
+2026-10-04T18:15:40.9840270Z    = note: `-D unused-variables` implied by `-D warnings`
+2026-10-04T18:15:40.9840933Z    = help: to override `-D warnings` add `#[allow(unused_variables)]`
+2026-10-04T18:15:40.9841371Z 
+2026-10-04T18:15:40.9841525Z error: unused variable: `bv`
+2026-10-04T18:15:40.9842043Z   --> tests/specification_boundaries.rs:98:17
+2026-10-04T18:15:40.9842521Z    |
+2026-10-04T18:15:40.9842865Z 98 |             let bv = u8::from(b);
+2026-10-04T18:15:40.9843483Z    |                 ^^ help: if this is intentional, prefix it with an underscore: `_bv`
+2026-10-04T18:15:40.9843971Z 
+2026-10-04T18:15:41.0272954Z error: could not compile `qleisli` (test "specification_boundaries") due to 2 previous errors
+2026-10-04T18:15:41.0273888Z warning: build failed, waiting for other jobs to finish...
+2026-10-04T18:15:41.0786415Z ##[error]Process completed with exit code 101.
+2026-10-04T18:15:41.0931656Z Post job cleanup.
+2026-10-04T18:15:41.1873675Z [command]/usr/bin/git version
+2026-10-04T18:15:41.1923130Z git version 2.55.0
+2026-10-04T18:15:41.1969703Z Temporarily overriding HOME='/home/runner/work/_temp/d7dbb29e-9038-4d64-995f-5fba3083d262' before making global git config changes
+2026-10-04T18:15:41.1971145Z Adding repository directory to the temporary git global config as a safe directory

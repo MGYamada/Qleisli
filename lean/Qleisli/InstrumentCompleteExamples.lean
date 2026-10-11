@@ -3,7 +3,7 @@ import Qleisli.HierarchicalInstrumentComplete
 /-! Calibration for complete accepted readout geometry. The examples exercise
 nonconsecutive axes, reversed measurement order, a retained multi-bit register,
 a retained zero-width owner and pre-existing classical values.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.InstrumentCompleteExamples
 open QleisliKernel.Hierarchical

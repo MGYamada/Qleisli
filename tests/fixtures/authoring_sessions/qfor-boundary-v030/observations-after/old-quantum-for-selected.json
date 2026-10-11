@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qfor-boundary-v030/attempt-01/old-quantum-for/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T10:17:25.236454+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "for static cannot thread quantum owners; use qfor static with explicit carry and yield",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qfor-boundary-v030/attempt-01/old-quantum-for/main.qli",
+          "start": 166,
+          "end": 215
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "compiler_sha256": "aaa2466e9939f803d73a1aac1c22574488d725abbd1db2c1506a85c37ac32d1a"
+}

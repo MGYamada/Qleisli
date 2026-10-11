@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-prepare-arrow/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:53..62: name: unresolved function finish\n",
+  "native_invocations": 0,
+  "seconds": 0.005700375011656433,
+  "transcript": "main:53..62: name: unresolved function finish\n",
+  "recorded_utc": "2026-10-05T12:08:27.685351+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-prepare-arrow-text.json",
+    "sha256": "468c22590ea9309ee529fd1ea3a95e156d2a7c7a78a6da15035c4dfc0a8be59d"
+  }
+}

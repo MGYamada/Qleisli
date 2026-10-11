@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFourierStage
 import QleisliKernel.Hierarchical.Hadamard
 
 /-! Exact H requests bound to actual finite bytes and owner renaming.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The finite-reader equation is an explicit transitional obligation. Unitarity,
 probabilities, a producer's matrix or a serialized success flag cannot replace it. -/
 

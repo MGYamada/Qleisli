@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.checked-operation-first-capture",
+  "version": 1,
+  "baseline_checkout": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "started_utc": "2026-10-06T04:20:10.317920+00:00",
+  "ended_utc": "2026-10-06T04:20:16.649083+00:00",
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "driver_sha256": "fa1573d88215d46d0f1341e64da19f3ecde98cb87cf8288547a03fc55b475493",
+  "frozen_record_sha256": {
+    "first-files.json": "4b61f2321d9a54c87bc45782039cbb6fed0ea530de3e331c1585a2f0aa3a238d",
+    "session.pending.json": "aac15b788ce9643b2402e304acaf463fafc4acbf6ef88efb838f5b07f980b9fe",
+    "context.md": "4b6ab377b0a54819c39e465f220a85586a3d34075e3ff40443fbdf444eaf22e4"
+  },
+  "source_and_executable_identities_unchanged": true,
+  "observations": [
+    "observations-before/providers-reference-control-desired-finite-check-json.json",
+    "observations-before/providers-reference-control-desired-finite-check-text.json",
+    "observations-before/providers-reference-control-desired-public-selected-check-json.json",
+    "observations-before/providers-reference-control-legacy-finite-check-json.json",
+    "observations-before/providers-reference-control-legacy-finite-check-text.json",
+    "observations-before/providers-reference-control-legacy-public-selected-check-json.json",
+    "observations-before/providers-reference-control-legacy-finite-run-json.json",
+    "observations-before/providers-reference-control-legacy-finite-emit-ir-json.json",
+    "observations-before/wrong-phase-desired-finite-check-json.json",
+    "observations-before/wrong-phase-desired-finite-check-text.json",
+    "observations-before/wrong-phase-legacy-finite-check-json.json",
+    "observations-before/wrong-phase-legacy-finite-check-text.json",
+    "observations-before/wrong-tree-desired-finite-check-json.json",
+    "observations-before/wrong-tree-legacy-finite-check-json.json",
+    "observations-before/runtime-provider-capture-desired-finite-check-json.json",
+    "observations-before/runtime-provider-capture-legacy-finite-check-json.json",
+    "observations-before/quantum-provider-capture-desired-finite-check-json.json",
+    "observations-before/quantum-provider-capture-legacy-finite-check-json.json",
+    "observations-before/formal-provider-capture-desired-finite-check-json.json",
+    "observations-before/formal-provider-capture-legacy-finite-check-json.json",
+    "observations-before/spent-owner-reuse-desired-finite-check-json.json",
+    "observations-before/spent-owner-reuse-legacy-finite-check-json.json",
+    "observations-before/nested-constructors-desired-finite-check-json.json",
+    "observations-before/nested-constructors-legacy-finite-check-json.json",
+    "observations-before/nested-constructors-legacy-finite-run-json.json",
+    "observations-before/nested-constructors-legacy-finite-emit-ir-json.json"
+  ],
+  "artifacts": {
+    "observations-before/artifacts/nested-constructors-legacy.qirf": {
+      "sha256": "66ab00461bba159eade17b719c59fc5d4a436bb2de3f2f64af51521e2b75fadf",
+      "bytes": 10127
+    },
+    "observations-before/artifacts/providers-reference-control-legacy.qirf": {
+      "sha256": "f1c0940ba6fd530e3ca9214eb13f917db3dbd1853aa32146f478f767eb44a4cb",
+      "bytes": 10805
+    }
+  },
+  "scope": "Actual fixed pre-code commands on unchanged first sources. Desired spelling parse refusals validate no downstream rule. No source repair, compiler rebuild, independent numerical oracle execution, Lean replay, guarantee/Issue/release completion."
+}

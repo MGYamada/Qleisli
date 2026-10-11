@@ -1,0 +1,22 @@
+{
+  "commit": "44e23e4d0a6302eff17f3b39c42b735fcee7583d",
+  "archive_argv": [
+    "git",
+    "archive",
+    "44e23e4",
+    "Cargo.toml",
+    "Cargo.lock",
+    "src",
+    "stdlib"
+  ],
+  "directory": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+  "argv": [
+    "cargo",
+    "build",
+    "--offline",
+    "--lib",
+    "--bin",
+    "qleisli"
+  ],
+  "exit_code": 0
+}

@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "prior_study_manifest_sha256": "1148f4a18122f46fce2385f16a1a8213d2dce0a5ed9069f5d07652a91c35b6bd",
+  "prior_study_files_unchanged": 131,
+  "files": {
+    "validation-repairs/README.md": "a1a8f15a4ba8c99b8a0f2a8025818c25aceb83792a00143d314495fe7a8cb4a9",
+    "validation-repairs/operation-binding.qli": "ab25a3f4dfd8f95f002bba05586640d687fbc8b3a848de3923b18ad59f362423",
+    "validation-repairs/repair.json": "3fd89517082cac7901bf0c1ba8b6d3f86182415df494e8f19435a5943c12d854",
+    "validation-repairs/source-map.json": "c64886cd0cb5b8007bd90a1fdd83659c1f2cf21d013f8696c14725ccb1ab9ddd",
+    "validation-repairs/static-collision.qli": "89b77c91bbeeb122cf39fc513c35ed42baa9130b439162e912a2b2f6bc7ecd19",
+    "validation-repairs/static-forwarding.qli": "b02edb9d03a2ca4765ce248f358742b70b18c26945416eb1370d3fbaef195d2d",
+    "validation-repairs/static-mixed.qli": "29ee337d11c9453e4e4045658f3a4d4afb6c9ac30ab82a54f8b21b1f4c71ca78",
+    "validation-repairs/static-operation-collision.qli": "8e85acfcb1df1d58c13b950fa34502fca34d32063d96964c33ccc403acd44d89",
+    "validation-repairs/test-repair.patch": "ca227af3767e17778bad7a65ec659d6ba6ebaefb6a1cede25d8c97714c5865e3",
+    "validation-repairs/unitary-argument-effect.qli": "a016b5561f03f33f8f14998cf9b41b9c9555c1b84bc39b1a54517c8790d66f76"
+  },
+  "current_test": {
+    "path": "tests/runtime_parameter_patterns.rs",
+    "sha256": "e1ada49631dfabbd8050dc1e8f50c3aba6096faca1295e5f0bbad77bd6f648f0"
+  },
+  "status": "test repair frozen; rerun pending"
+}

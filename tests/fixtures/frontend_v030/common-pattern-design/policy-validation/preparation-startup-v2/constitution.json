@@ -1,0 +1,15 @@
+{
+  "status": "actual-startup-check-only",
+  "argv": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "observed_at_utc": "2026-10-05T16:53:52.179802+00:00",
+  "actual_exit_code": 0,
+  "stdout_sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Context-reset startup source/evidence identity and trusted-base continuity only; policy driver unexecuted, no Rust/Lean replay or new approval."
+}

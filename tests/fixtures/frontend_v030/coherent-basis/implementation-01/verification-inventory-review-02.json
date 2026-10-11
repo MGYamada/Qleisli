@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.coherent-basis-inventory-completion-review",
+  "version": 1,
+  "issue": 81,
+  "previous_partial_review": "verification-inventory-review-01.json",
+  "first_post_parser_check_errors": [
+    "corpus baseline changed: examples/bell/bell.qli"
+  ],
+  "frozen_example_path_change": {
+    "before_path": "examples/bell/bell.qli",
+    "historical_path": "tests/fixtures/frontend_v030/coherent-basis/before/examples/bell/bell.qli",
+    "preserved_sha256": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+    "current_example_sha256": "6d51d7f1ea4823255d73e560c9ea27d8880f6cdabf6c82811a2f9d303dd41476"
+  },
+  "current_inventory_sha256": "12c1f49a8d97635f22ae0452efbe573bf7f26ee583838cb580d0371a8075468e",
+  "full_inventory_errors": [],
+  "scope": "Preserve the frozen Bell basis-map bytes at an explicit historical path while the live example changes spelling. No frozen baseline count, original corpus contract, verifier boundary, proof status or external schema gate is changed."
+}

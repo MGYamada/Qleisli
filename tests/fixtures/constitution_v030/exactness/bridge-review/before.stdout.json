@@ -1,0 +1,36 @@
+{
+  "captured_ledger_sha256": "811576ce9bd268d85243ac48a160b8a222501f63cfedf08853245803a56852bf",
+  "final_ledger_unchanged": true,
+  "inner_result": {
+    "admitted_guarantees": 2,
+    "ledger_sha256": "414886a52578eb288248db4d8ee1997b338d2c1b6f5a137d9f839a795b0b8f8c",
+    "mode": "source-identity-only",
+    "pending_obligations": 3,
+    "supplemental_pending_obligations": 1
+  },
+  "outcome": "accepted",
+  "release_result": {
+    "admitted": 2,
+    "context": {
+      "attempt": "2",
+      "commit": "a08197a5d4ffbd5d3a9bc165334d45ed509cbd04",
+      "event": "workflow_dispatch",
+      "repository": "MGYamada/Qleisli",
+      "run_id": "17",
+      "tree": "26276a3af5e211a5315de34c71a4f3829c44a98c"
+    },
+    "format": "qleisli.release-readiness",
+    "identities": {
+      "edition": "2026",
+      "native_protocol": "qleisli.qirf-native 1",
+      "qrate_schema": 2
+    },
+    "pending": 3,
+    "product_version": "0.3.0-alpha",
+    "publication": "not-authorized-or-performed",
+    "status": "ready-scoped-candidate",
+    "version": 1
+  },
+  "scope": "explicit mocked constitutional service; no real release/proof/adoption claim",
+  "validated_ledger_sha256": "414886a52578eb288248db4d8ee1997b338d2c1b6f5a137d9f839a795b0b8f8c"
+}

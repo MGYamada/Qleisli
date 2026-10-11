@@ -1,0 +1,6 @@
+    Finished `test` profile [unoptimized] target(s) in 0.13s
+     Running unittests examples/interop.rs (/private/tmp/qleisli-bounded-validation-target/debug/examples/interop-dc65a039434e1c33)
+     Running unittests examples/lean_kernel.rs (/private/tmp/qleisli-bounded-validation-target/debug/examples/lean_kernel-6ae52c884cbe1026)
+     Running unittests examples/native_acceptance.rs (/private/tmp/qleisli-bounded-validation-target/debug/examples/native_acceptance-36455699d27bae20)
+     Running unittests examples/sampled_shor15.rs (/private/tmp/qleisli-bounded-validation-target/debug/examples/sampled_shor15-944a0126a0915d14)
+     Running unittests examples/shor15.rs (/private/tmp/qleisli-bounded-validation-target/debug/examples/shor15-afa8521b6373c125)

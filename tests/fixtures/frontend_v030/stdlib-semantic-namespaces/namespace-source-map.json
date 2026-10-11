@@ -1,0 +1,190 @@
+{
+  "format": "qleisli.semantic-namespace-source-map",
+  "version": 1,
+  "issue": 317,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-06T02:52:14.931042+00:00",
+  "scope": "Explicit namespace-only derivatives of immutable current source inputs. Unmapped files and projects retain their previous selection. The complete native client copies preserve each project source/manifest inventory. Wrong types, predicate arities, reversal and dephasing faults remain unchanged. This map records source identities, not execution, semantic equivalence, generic QFT support or proof discharge.",
+  "files": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/multi_parameter.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/multi_parameter.qli",
+      "before_sha256": "4e356f04500a31ca71027f093b63a88001ad4ce73c7c7450b6c47afb5527a209",
+      "current_sha256": "75200cec17e09f7064c5568053817cdccee91a5bb94e2e806a53c491ac429122"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/permutation.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/permutation.qli",
+      "before_sha256": "a2cb684b101714947cc1f0079b3ec1f6e6abfb79a922a991fadc3d8a9bf79d6f",
+      "current_sha256": "4a9109cd594cc39bc10d07283b5d1cc9d814f29695edef5640df648d50027556"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/ergonomics/phase_mismatch.qli",
+      "before_sha256": "cca030c44020f59461059729d38d9b9ab97a28ec59ff71acafb7dfb83b798e58",
+      "current_sha256": "02ca67b00eefbc3ce991ea58376a3ef43202f695cb48ebe6e77607aea088e46b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "before_sha256": "0cff9708254de8c86749897578fa82e33a106b8e1b0b2bc190e3cb41fe538ad5",
+      "current_sha256": "a918a92203d3e42a3b4ed003de5263eee34685661ad50a1cf3ae8d03a423b829"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "before_sha256": "3f44f153a3cc6d4d3343fa5398ce5c72e90953dd444e0be42c5467e8ddec6287",
+      "current_sha256": "cb456be1c8acf0cbc2fd85f5372546464fb3ad4fff83b6dd00a34eeabd550be7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "before_sha256": "eeba8c026fb04966e6b1f60f971ed7eb5993d2035e293f4106e548f8a9284be3",
+      "current_sha256": "bf1630d5650dcfb22172a1898568e67073cfe297acc0f9b1b76d468fcfdcafe6"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "before_sha256": "cd970331a9b8e1e0afb049fb9124812bc0e6258198e2200deeb721cca3a2e10b",
+      "current_sha256": "61edbae520eaf4d4e6b99a32a5f22ac288c5e5e241433ffebd7a8d317b83284c"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "before_sha256": "05ba9c6b7b703519e64d3a935d167c5f39a47f6cd6b03e8a0de1b848811ff1d8",
+      "current_sha256": "e7c5d800664e7643e4e0dc4b2bb5a1fe076f26de3dc9aedb4374edc5608c46e4"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/pair_contract.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/pair_contract.qli",
+      "before_sha256": "835c8c5780f0d339772c8a05f8aaad6ddcde777ec7ddb6cc5839a6f44c6af709",
+      "current_sha256": "4dc5b89988dbe6a4f011e25cccc81e3c2d26af46bde549b5a6c0d97f19213efd"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/product_reassociation.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/product_reassociation.qli",
+      "before_sha256": "f823f1e57a0f1068b9f6458e3d01ddc4daf5333e9992c1bf52ee29b346135783",
+      "current_sha256": "384505919ec3db1c79a2e1a625416737abc20eab8aa50faa175983e02a3fdbac"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_00.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_00.qli",
+      "before_sha256": "f644e33f2f6e5a08debe6080679f9cbf780091aa386916ee2aad68e1ba335a5b",
+      "current_sha256": "e10b5f117ebc9cf704391ca4b1837a130f4e0d9fe63dc3925b4f8396b677b248"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_01.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_01.qli",
+      "before_sha256": "d7031d4e6498ec5580fa85198982b3c26186c58c6bb8df1b29d89ccba6493d31",
+      "current_sha256": "2e0f658f12cba797991f56420bac3f57b5a3ec7d393b7feb9253ba8463d97429"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_10.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_10.qli",
+      "before_sha256": "549c93cb077da4a61bc0fbeeb5f68ab011fcccfc8d5a9e6716f3d2018985479c",
+      "current_sha256": "abb045d169084759e424f98f4f9fcc4f1d684fc4482adf13cfb917dd659e3bea"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_11.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_11.qli",
+      "before_sha256": "965650d819b398e05a3242ce0c126211308d86b816c2087eaa5dcccb31bff03f",
+      "current_sha256": "9753501a68b2c08a02993a3280114e9c8b097451bc681600d4bcb5dacbce39e3"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_overshoot.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/algorithms/search_overshoot.qli",
+      "before_sha256": "16be56eeb53df8db86c64be37e775d5bb89b76f2b5b4fe2f584d394cbde6f46d",
+      "current_sha256": "ec7e89ff26dc3644553cc9d8986968133648bc27da550f2fe5555a0c57954906"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/phase3_forward_qft.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/faults/phase3_forward_qft.qli",
+      "before_sha256": "fc037432be5ec5de5293a0829b6a7c5784d06ab3613497de7039af47cabb56ce",
+      "current_sha256": "66e129e5c1b808ff1befb1d93c6184f4276b06454358a214166546ad4fc8c779"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/product_association.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/rejected/product_association.qli",
+      "before_sha256": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf",
+      "current_sha256": "39b002ce1fec4312356b84809b4b8794f2697f949f6e37079ce552a7567e7f83"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/phase_kickback.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/quick_reference/phase_kickback.qli",
+      "before_sha256": "387b0b5f26a3e005f7629cad2a559d49720312aa31d8e7788ada7081917a2890",
+      "current_sha256": "48b794092a88efaf3338a9a43bc0e65a66fd18b3f73cc8e3c6ba885660382767"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/predicate-domain/grover-trial-v020/kernel.qli",
+      "before_sha256": "3f44f153a3cc6d4d3343fa5398ce5c72e90953dd444e0be42c5467e8ddec6287",
+      "current_sha256": "cb456be1c8acf0cbc2fd85f5372546464fb3ad4fff83b6dd00a34eeabd550be7"
+    }
+  ],
+  "projects": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/first_source",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/first_source",
+      "files": [
+        {
+          "path": "main.qli",
+          "before_sha256": "62230e8c379002734b4dc044533ecbb8beafe9a9b2d5df259a0839254bb37255",
+          "current_sha256": "4487395b5fe640d927bd1b1d743db646ec261cd901051ff181b675e94812c446"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/wrong_reversal",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/wrong_reversal",
+      "files": [
+        {
+          "path": "main.qli",
+          "before_sha256": "f001b2b08140c699b5c4caed88316166ef185b3705825642ebdae34a87243909",
+          "current_sha256": "f97394685df8b3f098853b817716bcba36c9e1b72a80e12ee9b593274cac0069"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/first_source",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d",
+          "current_sha256": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb",
+          "current_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/dephased",
+      "current_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d",
+          "current_sha256": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1",
+          "current_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/legal-rebinding/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/before/legal-rebinding-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "seconds": 0.010353000019676983,
+  "recorded_utc": "2026-10-05T16:33:57.191135+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "legal-rebinding-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "legal-rebinding-selected-auto-emit-proposal-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "untrusted-proposal",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "none"
+    }
+  },
+  "proposal_file": "before/legal-rebinding-selected-auto-emit-proposal-json.proposal.json",
+  "proposal_sha256": "0886d8473a30dcec073fa80978ad776c0b9bedcdc79c77a1a507735a414a5493",
+  "proposal_bytes": 3271,
+  "proposal_authority": "Untrusted producer result; not native acceptance or source preservation."
+}

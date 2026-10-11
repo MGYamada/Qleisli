@@ -1,0 +1,6 @@
+{
+  "path": "/private/tmp/qleisli-default-boundary-after",
+  "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7",
+  "source_path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+  "scope": "Fixed local executable bytes copied after successful explicit CLI build; no complete source closure or runtime attestation claimed."
+}

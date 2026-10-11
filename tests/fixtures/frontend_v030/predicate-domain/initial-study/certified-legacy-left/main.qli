@@ -1,0 +1,5 @@
+use std::quantum::z;
+basis fn predicate(a:Bit,b:Bit,c:Bit)->Bit{a xor (b and c)}
+unitary fn identity(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{q}
+unitary fn probe(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{with_computed(q,predicate,identity){|data,flag|(data,flag)}}
+observe fn main()->CBit{false}

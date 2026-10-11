@@ -1,0 +1,540 @@
+{
+  "artifacts": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y",
+  "candidate": {
+    "clean": true,
+    "commit": "eebe041e07a7e7ecb530333dfd01683ff26aae91",
+    "tree": "17eb47a548cc7cef3247211e64b6b52630a5e227"
+  },
+  "cargo": "synthetic command passed",
+  "cargo_target": {
+    "ownership": "validator",
+    "path": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target"
+  },
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/00.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/00.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/01.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/01.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--no-deps",
+        "--format-version=1"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/02.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/02.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "tar.umask=0022",
+        "archive",
+        "--format=tar",
+        "eebe041e07a7e7ecb530333dfd01683ff26aae91"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.019,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/03.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/qleisli-0.0.0-synthetic-source.tar"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_input_corpus.py"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/04.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/04.stdout"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/05.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/05.stdout"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/06.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/06.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "package",
+        "--offline",
+        "--list"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/07.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/07.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "package",
+        "--offline",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/package"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+      "elapsed_seconds": 0.002,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/08.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/08.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--locked",
+        "--format-version=1"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/packaged-source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/09.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/09.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "rustdoc",
+        "--offline",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/package-docs",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/packaged-source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/10.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/10.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/package-docs"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/packaged-source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/11.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/11.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "install",
+        "--path",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/packaged-source",
+        "--offline",
+        "--locked",
+        "--bin",
+        "qleisli",
+        "--root",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/installed",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/install"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/12.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/12.stdout"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/packaged-source/scripts/check_installation.py",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/installed/bin/qleisli"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/13.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/13.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/source-production"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/14.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/14.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets",
+        "--manifest-path",
+        "research/semantic-kernel/Cargo.toml",
+        "--target-dir",
+        "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/target/source-research"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/15.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/15.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--no-deps",
+        "--format-version=1",
+        "--manifest-path",
+        "research/semantic-kernel/Cargo.toml"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw/source",
+      "elapsed_seconds": 0.0,
+      "exit_code": 0,
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/16.stderr",
+      "stdout": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/logs/16.stdout"
+    }
+  ],
+  "crate": {
+    "cargo_verification": "passed",
+    "extracted_metadata_and_lock": "validated offline with --locked",
+    "file_count": 48,
+    "path": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/qleisli-0.0.0-synthetic.crate",
+    "sha256": "90ded0c64cac0043fed25dcbedc67d25f8a04842481b965410b604f0b0a5cdfb"
+  },
+  "finished_utc": "2026-10-04T16:19:52.758082+00:00",
+  "format": "qleisli.distribution-validation",
+  "installed_quickstart": {
+    "checks": [
+      "synthetic-only"
+    ],
+    "package": "qleisli",
+    "version": "0.0.0-synthetic"
+  },
+  "not_run": [
+    "MSRV matrix",
+    "Lean build/axiom audit",
+    "hosted CI",
+    "tagging",
+    "push",
+    "publication"
+  ],
+  "package": {
+    "license": "Apache-2.0",
+    "name": "qleisli",
+    "version": "0.0.0-synthetic"
+  },
+  "package_attribution": {
+    "cases": 1,
+    "excluded_tracked_files": [
+      "research/semantic-kernel/Cargo.toml"
+    ],
+    "generated_files": [
+      ".cargo_vcs_info.json",
+      "Cargo.lock",
+      "Cargo.toml",
+      "Cargo.toml.orig"
+    ],
+    "nested_research": "excluded by Cargo; retained and tested in complete source archive",
+    "required_files": [
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "NOTICE",
+      "corpus/NOTICE",
+      "corpus/POLICY.md",
+      "corpus/fixture/case/README.md",
+      "corpus/fixture/case/kernel.qli",
+      "corpus/fixture/case/main.qli",
+      "corpus/manifest.json",
+      "corpus/upstream/fixture/LICENSE"
+    ],
+    "translation_files": 2,
+    "upstream_files": 1
+  },
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "research_package": {
+    "license": "Apache-2.0",
+    "name": "research",
+    "publish": false,
+    "version": "0.0.0-synthetic"
+  },
+  "rustc": "synthetic command passed",
+  "scope": "clean HEAD production package and complete repository source archive",
+  "source_archive": {
+    "excluded_tracked_files": [],
+    "file_count": 46,
+    "path": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-artifacts-dnudqf3y/qleisli-0.0.0-synthetic-source.tar",
+    "sha256": "be51f7c50a2abf03b5eeaee806a9c3e7eec1107b47ea1de4223f88da1cd0cf1e"
+  },
+  "source_attribution": {
+    "cases": 1,
+    "required_files": [
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "NOTICE",
+      "corpus/NOTICE",
+      "corpus/POLICY.md",
+      "corpus/fixture/case/README.md",
+      "corpus/fixture/case/kernel.qli",
+      "corpus/fixture/case/main.qli",
+      "corpus/manifest.json",
+      "corpus/upstream/fixture/LICENSE"
+    ],
+    "translation_files": 2,
+    "upstream_files": 1
+  },
+  "source_root": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/repository",
+  "started_utc": "2026-10-04T16:19:52.521698+00:00",
+  "status": "passed",
+  "tracked_files": {
+    "CONTRIBUTING.md": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "Cargo.toml": {
+      "mode": "0o644",
+      "sha256": "2ed708fd58ff956393e6084c207798f7705af4ab603d807701734fc1b89d3206"
+    },
+    "LICENSE": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "NOTICE": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/NOTICE": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/POLICY.md": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/fixture/case/README.md": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/fixture/case/kernel.qli": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/fixture/case/main.qli": {
+      "mode": "0o644",
+      "sha256": "5de37b4c620461f2b695f1cf6b8ee36e7d025da8334a3693c4ed9aa48a5c7d6a"
+    },
+    "corpus/manifest.json": {
+      "mode": "0o644",
+      "sha256": "a88da734f1f7e7a19674695715e175a4845cfe7d33ec762a528ed21f911790ca"
+    },
+    "corpus/upstream/fixture/LICENSE": {
+      "mode": "0o644",
+      "sha256": "2c059e4c5bd57f82259a536d391463d131417539fdb8e35dc2140ee6f49f7aed"
+    },
+    "examples/lean_kernel.rs": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/Audit.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/Main.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/Protocol.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/QleisliKernel.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/Tests.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/lake-manifest.json": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/lakefile.toml": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean-kernel/lean-toolchain": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean/Audit.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean/SchemaExport.lean": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean/lakefile.toml": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean/lean-toolchain": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "lean/schema-registry.json": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "research/semantic-kernel/Cargo.toml": {
+      "mode": "0o644",
+      "sha256": "d8b9183f100fad63746c3ce2591c694bf6d98956866ad1d1c243529870614f1f"
+    },
+    "scripts/check_lean_kernel.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/check_schema_registry.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_check_lean_kernel.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_check_schema_registry.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_artifact.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_contract_typing.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_derivation.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_graph.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_power.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_structural.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_hierarchical_typing.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_controlled_power.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_hierarchy.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_interference.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_layout.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_layout_dag.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_phase_layout.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_qft.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_qft_graph.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    },
+    "scripts/test_lean_qpe.py": {
+      "mode": "0o644",
+      "sha256": "b2c70bba7bf0ef43959341e03b923efd23fed1a0b3ed1895736736d88a5b39b0"
+    }
+  },
+  "version": 1,
+  "work": {
+    "keep_requested": false,
+    "path": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/tmp79c4i5pp/report-work-kjqh01rw",
+    "status": "removed"
+  }
+}

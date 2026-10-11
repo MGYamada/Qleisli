@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "task": "0.3.0 ordinary and quantum type foundation with a shared generic source body",
+  "baseline_commit": "84a4ae6e8fa7e43f85bc09c6513417c610b2f89b",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve adopted Bit/Q<T>/Unit intentions and a proposed common generic grammar before checking; no adopted syntax claim for the generic experiment",
+      "sha256": {
+        "generic/main.qli": "1126ca706f9165dd8be8f10c45f52d0097329cf8fc4141a7429366314ff46987",
+        "ordinary-bit/main.qli": "acffae4cb81a54af1a68fd8c159f642954947c4cbcc263f91846f08c8f17386f",
+        "unit/main.qli": "5b1885a753f29d4ade240fa6c193c09c791cd4b997f12142a980f74713c9e143"
+      },
+      "observations": [
+        "ordinary-bit-initial.json",
+        "unit-initial.json",
+        "generic-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Follow the actual main-entry diagnostic: change only unit/main.qli entry to observe; preserve all three complete projects and leave the Bit/generic design sources unchanged",
+      "sha256": {
+        "generic/main.qli": "1126ca706f9165dd8be8f10c45f52d0097329cf8fc4141a7429366314ff46987",
+        "ordinary-bit/main.qli": "acffae4cb81a54af1a68fd8c159f642954947c4cbcc263f91846f08c8f17386f",
+        "unit/main.qli": "7d2d6359db52a5fe3a7872683be7a1675fe0a43d998735ac3f4e4b8aa67276f0"
+      },
+      "observations": [
+        "unit-entry-repair.json"
+      ]
+    }
+  ]
+}

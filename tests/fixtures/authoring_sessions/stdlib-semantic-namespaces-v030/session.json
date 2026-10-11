@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Desired #317 semantic namespace clients and preserved local fixed arithmetic before active namespace migration; generic QFT excluded",
+  "baseline_commit": "7f6529ef93838d565552c3f501ce016ef1d1d2b4",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; exact deployed model identifier and sampling settings unavailable; informed repository access",
+  "context": "context.md",
+  "record_status": "actual-before-and-after-source-checks-registered",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four complete first projects retained before any compiler/native invocation. The local arithmetic body is copied byte-for-byte from the existing bundled demo source; no product migration or generic QFT implementation is performed.",
+      "sha256": {
+        "demo-local-arithmetic/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+        "demo-local-arithmetic/main.qli": "3d0bea1653cffffdc89e20d08efaebdb10c21f9152b2160c62fa07df0677cae2",
+        "measurement/main.qli": "cbe12a7789dcb3bb53eb391ddd7baa5ef82210abca72513678d398979b5eb81e",
+        "reflection/main.qli": "46fce5368695a73590927c044980febfcf629e5c43a7a776f1567a7071d579a0",
+        "transform/main.qli": "2b306872b1b6714e304da8f2bdf56495bae0d8b90e433af567da49a381abed69"
+      },
+      "observations": [
+        "observations-before/transform.json",
+        "observations-before/reflection.json",
+        "observations-before/measurement.json",
+        "observations-before/demo-local-arithmetic.json",
+        "observations-after-01/transform.json",
+        "observations-after-01/reflection.json",
+        "observations-after-01/measurement.json",
+        "observations-after-01/demo-local-arithmetic.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "demo-local-arithmetic/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "measurement/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "reflection/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "transform/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "source_provenance": {
+    "demo-local-arithmetic/arithmetic.qli": {
+      "original_path": "stdlib/src/arithmetic.qli",
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "copy": "byte-identical",
+      "source_role": "Qleisli-authored Apache-2.0 local demonstration derivative, not canonical std API",
+      "contracts": [
+        "A001",
+        "A002",
+        "A003"
+      ]
+    }
+  },
+  "scope": "Four preserved first projects: initial desired namespace imports reject, all four pass after actual #317 migration; source unchanged. CLI/native source checks are not independent semantic oracles, source preservation proofs, guarantee admission or Issue completion.",
+  "registration": {
+    "recorded_utc": "2026-10-06T00:32:33Z",
+    "time_note": "Clock-observed transcription/registration time, not an execution timestamp.",
+    "pending_file": "session.pending.json",
+    "pending_sha256": "1e2fc095f51d3a0773f9af2c157c05fa3528b21fc88ed9b140e9d567be8e72ef",
+    "actual_capture": "observations-before/capture.json",
+    "capture_sha256": "78f748d31b2c10b31882f4c5f34fb2eb265fd8dc32316bc4ef257ee560169605",
+    "raw_outputs_preserved": true
+  }
+}

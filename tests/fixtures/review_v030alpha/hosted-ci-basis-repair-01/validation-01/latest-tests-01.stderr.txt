@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.84s
+     Running tests/quantum_tuple_unitors.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_tuple_unitors-8c0d20f669306ca1)

@@ -1,0 +1,2 @@
+finite: ok declarations=1
+sized: error unsupported 25..29 sized preparation profile: operation/quantum basis must be Bit or Bits<n>

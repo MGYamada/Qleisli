@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/main.qli:2:29: unsupported: named Basis types are outside the finite lowering profile

@@ -1,0 +1,1 @@
+main:65..124: unsupported: finite source lowering requires Unit, Bit, Q<Bit> or exact products; Bits and other quantum bases need explicit target support

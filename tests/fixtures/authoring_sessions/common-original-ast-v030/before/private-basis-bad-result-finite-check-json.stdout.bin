@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"basis result does not match its declared type: expected `Bit`, found `(Bit,Bit)`","primary":{"path":"main.qli","start":120,"end":125,"line":2,"column":46},"related":[]}],"result":null}

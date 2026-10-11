@@ -1,0 +1,11 @@
+Actual Cargo invocation used the explicit audited QLEISLI_KERNEL.
+The tool-decoded output, summarized here rather than claimed as raw logs:
+basis_polymorphism: 10 passed, 0 failed.
+body_effects: 1 passed, 2 failed.
+cli_text_and_json_explain_the_semantic_limit_without_tracker_links: passed.
+broad_assertions_do_not_inflate_caller_or_interface_effects: parse rejection
+at the first plain fn, expected `use` or a function declaration.
+false_annotations_reject_direct_and_transitive_effects_in_both_profiles:
+the same parse rejection at the plain callee of the transitive case.
+Cargo exited 101, before compile and sized_source runtime targets.
+Repair the top-level declaration gate; preserve these actual first outcomes.

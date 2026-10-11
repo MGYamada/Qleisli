@@ -1,0 +1,43 @@
+
+running 13 tests
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.84s
+
+
+running 7 tests
+test isometry_cli_sampling_requires_actual_observation ... ok
+test isometry_cli_missing_native_checker_never_falls_back ... ok
+test isometry_cli_explicit_raw_retains_its_actual_support_boundary ... ok
+test isometry_cli_incompatible_native_version_never_falls_back ... FAILED
+test isometry_cli_run_keeps_the_retained_frame_axis_and_exact_scalar_phase ... ok
+test isometry_cli_run_retains_preparation_phase_and_zero_width_owner ... ok
+test isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope ... ok
+
+failures:
+
+---- isometry_cli_incompatible_native_version_never_falls_back stdout ----
+
+thread 'isometry_cli_incompatible_native_version_never_falls_back' (14919872) panicked at tests/isometry_source.rs:324:13:
+format: unknown runtime response; sized isometry profile, producer-consistency contract
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    isometry_cli_incompatible_native_version_never_falls_back
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+

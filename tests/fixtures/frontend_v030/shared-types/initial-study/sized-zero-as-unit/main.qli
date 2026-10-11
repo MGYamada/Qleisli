@@ -1,0 +1,1 @@
+pub unitary fn change(x: CBits<0>) -> () { x }

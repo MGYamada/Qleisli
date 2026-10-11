@@ -3,7 +3,7 @@ import QleisliKernel.Raw.Structure
 /-! Actual raw extraction refines the independent original-operation reader.
 All constructor proofs concern the executable dispatch, not an assumed Rust
 trace or a proposition defined by checker success.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Raw Semantics.Finite
 
@@ -86,6 +86,21 @@ theorem dispatch_reference (dependencies : List Basis) (state : State) (op : Op)
     (ok : dispatch dependencies state op = .ok result) :
     Semantics.RawTrace.step state.reference op = some (result.state.reference,result.events) := by
   cases op with
+  | packUnit output =>
+    obtain ⟨_,_,h⟩ := Finite.except_bind_success _ _ _ ok
+    obtain ⟨next,inserted,h⟩ := Finite.except_bind_success _ _ _ h
+    obtain ⟨_,_,h⟩ := Finite.except_bind_success _ _ _ h
+    cases Except.ok.inj h
+    simp [Semantics.RawTrace.step,insert_reference _ _ _ _ inserted]
+  | unpackUnit input =>
+    obtain ⟨_,_,h⟩ := Finite.except_bind_success _ _ _ ok
+    obtain ⟨⟨port,next⟩,taken,h⟩ := Finite.except_bind_success _ _ _ h
+    obtain ⟨_,zero,h⟩ := Finite.except_bind_success _ _ _ h
+    obtain ⟨_,_,h⟩ := Finite.except_bind_success _ _ _ h
+    cases Except.ok.inj h
+    have good := require_success _ zero
+    simp only [Bool.and_eq_true,beq_iff_eq,List.isEmpty_iff] at good
+    simp [Semantics.RawTrace.step,take_reference _ _ _ _ taken,good.1,good.2]
   | init0 output wire =>
     obtain ⟨reserved,hr,h⟩ := Finite.except_bind_success _ _ _ ok
     obtain ⟨inserted,hi,h⟩ := Finite.except_bind_success _ _ _ h

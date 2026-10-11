@@ -1,0 +1,44 @@
+2026-10-05T03:26:34.8559465Z ##[group]Run python3 scripts/test_sized_primitive_catalog.py
+2026-10-05T03:26:34.8559820Z [36;1mpython3 scripts/test_sized_primitive_catalog.py[0m
+2026-10-05T03:26:34.8615647Z shell: /usr/bin/bash -e {0}
+2026-10-05T03:26:34.8615864Z env:
+2026-10-05T03:26:34.8616172Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-05T03:26:34.8616521Z ##[endgroup]
+2026-10-05T03:26:46.1298417Z Traceback (most recent call last):
+2026-10-05T03:26:46.1299148Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_sized_primitive_catalog.py", line 48, in <module>
+2026-10-05T03:26:46.1299772Z     main()
+2026-10-05T03:26:46.1300232Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_sized_primitive_catalog.py", line 33, in main
+2026-10-05T03:26:46.1301294Z     assert 'Primitive::OmittedPrimitive' in result.stderr, result.stderr
+2026-10-05T03:26:46.1301735Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-05T03:26:46.1303906Z AssertionError:    Compiling serde_core v1.0.229
+2026-10-05T03:26:46.1304426Z    Compiling serde v1.0.229
+2026-10-05T03:26:46.1304715Z     Checking equivalent v1.0.2
+2026-10-05T03:26:46.1304992Z     Checking hashbrown v0.17.1
+2026-10-05T03:26:46.1305271Z    Compiling rustix v1.1.3
+2026-10-05T03:26:46.1305540Z     Checking indexmap v2.14.2
+2026-10-05T03:26:46.1305805Z     Checking winnow v0.7.15
+2026-10-05T03:26:46.1306085Z     Checking linux-raw-sys v0.11.0
+2026-10-05T03:26:46.1306381Z     Checking bitflags v2.13.2
+2026-10-05T03:26:46.1306652Z     Checking toml_datetime v0.6.11
+2026-10-05T03:26:46.1306938Z     Checking serde_spanned v0.6.9
+2026-10-05T03:26:46.1307235Z     Checking toml_edit v0.22.27
+2026-10-05T03:26:46.1307503Z     Checking toml v0.8.23
+2026-10-05T03:26:46.1307914Z     Checking qleisli v0.3.0-alpha (/tmp/qleisli-catalog-mutation-_z84jary)
+2026-10-05T03:26:46.1308333Z error: no rules expected `,`
+2026-10-05T03:26:46.1308627Z   --> src/frontend/sized/primitive.rs:88:74
+2026-10-05T03:26:46.1308926Z    |
+2026-10-05T03:26:46.1309153Z 66 | macro_rules! primitives {
+2026-10-05T03:26:46.1309458Z    | ----------------------- when calling this macro
+2026-10-05T03:26:46.1309754Z ...
+2026-10-05T03:26:46.1310092Z 88 |     OmittedPrimitive => ("std::quantum::omitted", 0, &[Bit], Bit, Unitary, None),
+2026-10-05T03:26:46.1310630Z    |                                                                          ^ no rules expected this token in macro call
+2026-10-05T03:26:46.1311022Z    |
+2026-10-05T03:26:46.1311238Z note: while trying to match `)`
+2026-10-05T03:26:46.1311531Z   --> src/frontend/sized/primitive.rs:67:95
+2026-10-05T03:26:46.1311818Z    |
+2026-10-05T03:26:46.1312224Z 67 |     ($($name:ident => ($path:literal, $arity:literal, $types:expr, $effect:ident, $guard:ident)),+ $(,)?) => {
+2026-10-05T03:26:46.1312781Z    |                                                                                               ^
+2026-10-05T03:26:46.1313042Z 
+2026-10-05T03:26:46.1313217Z error: could not compile `qleisli` (lib) due to 1 previous error
+2026-10-05T03:26:46.1313494Z 
+2026-10-05T03:26:46.1442484Z ##[error]Process completed with exit code 1.

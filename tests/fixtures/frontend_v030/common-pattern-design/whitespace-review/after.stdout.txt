@@ -1,0 +1,12 @@
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:2: trailing whitespace.
+++ 
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:4: trailing whitespace.
+++ 
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:6: trailing whitespace.
+++ 
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:8: trailing whitespace.
+++ 
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:10: trailing whitespace.
+++ 
+tests/fixtures/frontend_v030/common-pattern-design/whitespace-review/before.stdout.txt:12: trailing whitespace.
+++ 

@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--ir-profile=auto",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03-legacy-probe/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-07T00:21:54.624825+00:00",
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"selected concrete preparation does not support std::quantum::z\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03-legacy-probe/main.qli\",\"start\":175,\"end\":179},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "binaries": {
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli": "5c3cc7e225b049d0dde29908c6201b60adb38ee13855e3f14240d426113cd881",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+  },
+  "source_sha256": "4a7e7b3907c10456d1b02c7c379306cc7fbb3ad6a26b3a2d83af32c070335968",
+  "scope": "Separate informed legacy-spelling translation to probe semantic adapter availability before canonical power implementation. Does not rewrite desired source or prove its phase/action or full algorithm. No maximum-size case, new guarantee or release claim.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "selected concrete preparation does not support std::quantum::z",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03-legacy-probe/main.qli",
+          "start": 175,
+          "end": 179
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/reordered-tensor-inverse.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-10T22:20:44.832156+00:00",
+  "cli_sha256_before": "18829d44ba4e2c3c9e48110395b7888dcd92b44f75c9ca9f4cce16818ee1ff39",
+  "cli_sha256_after": "18829d44ba4e2c3c9e48110395b7888dcd92b44f75c9ca9f4cce16818ee1ff39",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": ""
+}

@@ -1,0 +1,2 @@
+unitary fn apply[static A: BasisType, static U: Op<A>](q: Q<A>) -> Q<A>
+requires Apply(U) { U(q) }

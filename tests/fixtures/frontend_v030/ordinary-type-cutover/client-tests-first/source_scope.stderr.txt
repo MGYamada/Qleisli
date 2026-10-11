@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running tests/source_scope.rs (target/debug/deps/source_scope-6eac0bc2e97f79a8)

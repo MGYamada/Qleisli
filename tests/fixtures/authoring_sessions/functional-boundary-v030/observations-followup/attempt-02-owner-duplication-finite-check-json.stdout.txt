@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"quantum ownership `q` has already been consumed","primary":{"path":"main.qli","start":433,"end":434,"line":10,"column":54},"related":[]}],"result":null}

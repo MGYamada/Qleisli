@@ -1,0 +1,6 @@
+{
+  "observed_utc": "2026-10-05 23:09:22 UTC",
+  "run_source": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37364395462",
+  "jobs_source": "GitHub connector github_fetch_workflow_run_jobs, latest attempt first page",
+  "scope": "Terminal API metadata only. Normalized jobs retain connector-supplied fields; no full producer log audit, local implementation verification or release claim. Earlier partial packet remains unchanged."
+}

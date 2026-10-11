@@ -4,7 +4,7 @@ import Qleisli.Finite
 /-! Actual VM-25 raw reconstruction and structured cleanup to complex action.
 There is no Rust-verifier/extractor premise. Native decoding, original source
 preservation and production authority remain separate migration gates.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Raw QleisliKernel.Finite Qleisli.Semantics.Exact

@@ -1,0 +1,24 @@
+{
+  "exit_code": 101,
+  "representation": "Combined tool-decoded output, not original split stdout/stderr.",
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "sized_source",
+    "--test",
+    "basis_polymorphism",
+    "--test",
+    "compile"
+  ],
+  "scope": "Cargo stopped after basis_polymorphism: 8 passed, 2 failures because the driver omitted QLEISLI_KERNEL. The compile and sized_source executables did not run. Retain these outcomes; rerun with the existing explicitly selected audited checker.",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "QLEISLI_KERNEL": null
+  }
+}

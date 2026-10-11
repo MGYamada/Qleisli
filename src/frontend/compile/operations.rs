@@ -7,12 +7,15 @@ use crate::contract::{
     function::RetainedIdentity,
     meaning::{FiniteMeaning, MeaningEvidence},
 };
+use crate::frontend::formals;
+use crate::frontend::resolve::locals::BindingKind;
 use crate::ir::*;
 
 #[derive(Clone)]
 pub(super) struct DeclaredMeaning {
     pub basis: Ty,
-    pub target: FiniteMeaning,
+    pub target: crate::frontend::meaning::Target,
+    pub raw: RawProgram,
     pub matrix: Matrix,
 }
 #[derive(Clone, Debug, PartialEq)]
@@ -23,11 +26,9 @@ pub(super) struct Operation {
     node: Arc<Node>,
     depth: usize,
     nodes: usize,
-    pub abstract_value: bool,
 }
 #[derive(Debug, PartialEq)]
 enum Node {
-    Abstract(String),
     Provider(Arc<FunctionEvidence>),
     Inverse(Operation),
     Then(Operation, Operation),
@@ -36,20 +37,25 @@ enum Node {
     Repeat(u16, Operation),
     Conjugate(Operation, Operation),
 }
-pub(super) type Bindings = BTreeMap<String, Operation>;
+pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
+
+/// Required metadata from the complete checked declaration; never executable.
+pub(super) struct RequiredOperation {
+    pub(super) basis: Ty,
+    pub(super) access: [bool; 3],
+    pub(super) meaning: Option<Matrix>,
+}
 pub(super) fn access_index(access: Access) -> usize {
-    match access {
-        Access::Apply => 0,
-        Access::Adjoint => 1,
-        Access::Controlled => 2,
-    }
+    formals::access_index(access)
 }
 pub(super) fn contract_basis(ty: &Ty) -> BasisType {
-    match ty {
-        Ty::Unit => BasisType::Unit,
-        Ty::Bit => BasisType::Bit,
-        Ty::Pair(a, b) => BasisType::pair(contract_basis(a), contract_basis(b)),
-        Ty::Tuple(fields) => BasisType::Tuple(fields.iter().map(contract_basis).collect()),
+    match &ty.kind {
+        Kind::Unit => BasisType::Unit,
+        Kind::Bit => BasisType::Bit,
+        Kind::Tuple(fields) if fields.len() == 2 => {
+            BasisType::pair(contract_basis(&fields[0]), contract_basis(&fields[1]))
+        }
+        Kind::Tuple(fields) => BasisType::Tuple(fields.iter().map(contract_basis).collect()),
         _ => unreachable!("checked basis"),
     }
 }
@@ -124,10 +130,43 @@ impl Compiler<'_> {
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
         let decl = self.declarations[key];
-        let basis = self.ty(&key.0, &decl.return_type, true)?;
+        let key_name = self.resolution.declaration(*key).name.clone();
+        let (_, basis) = self.signature(key)?;
         contract_basis(&basis)
             .bits()
-            .map_err(|e| self.op_error(&key.0, decl.span, e))?;
+            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        if let FnBody::MeaningReference { function } = &decl.body {
+            let Callee::User(reference) = self.resolve(&key_name.0, function)? else {
+                unreachable!("common reference judgment requires an ordinary definition")
+            };
+            let target =
+                crate::frontend::meaning::Target::reference(contract_basis(&basis), reference)
+                    .map_err(|e| self.op_error(&key_name.0, function.span, e))?;
+            return self.finish_meaning(key, basis, target);
+        }
+        if let FnBody::MeaningCompose { first, second }
+        | FnBody::MeaningTensor {
+            left: first,
+            right: second,
+        } = &decl.body
+        {
+            let left = self.meaning_key(&key_name.0, first)?;
+            let right = self.meaning_key(&key_name.0, second)?;
+            let dimension = 1usize
+                << contract_basis(&basis)
+                    .bits()
+                    .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+            self.charge(&key_name.0, decl.span, dimension * 2)?;
+            let left = &self.meanings[&left].target;
+            let right = &self.meanings[&right].target;
+            let target = if matches!(&decl.body, FnBody::MeaningTensor { .. }) {
+                left.tensor(right)
+            } else {
+                left.compose(right)
+            }
+            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+            return self.finish_meaning(key, basis, target);
+        }
         let FnBody::Meaning {
             permutation,
             function,
@@ -135,30 +174,30 @@ impl Compiler<'_> {
         else {
             unreachable!()
         };
-        let Callee::User(fkey) = self.resolve(&key.0, function)? else {
+        let Callee::User(fkey) = self.resolve(&key_name.0, function)? else {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "meaning requires an ordinary total basis function",
+                "meaning requires an ordinary total classical function",
             ));
         };
         let f = self.basis.get(&fkey).ok_or_else(|| {
             self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "meaning requires an ordinary total basis function",
+                "meaning requires an ordinary total classical function",
             )
         })?;
         let result = if *permutation {
             basis.clone()
         } else {
-            Ty::pair(Ty::Bit, Ty::pair(Ty::Bit, Ty::Bit))
+            Ty::pair(Ty::bit(), Ty::pair(Ty::bit(), Ty::bit()))
         };
         if f.params != [basis.clone()] || f.result != result {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "meaning function has the wrong exact basis signature",
@@ -171,19 +210,72 @@ impl Compiler<'_> {
                 contract_basis(&basis),
                 f.table
                     .iter()
-                    .map(|x| self.narrow_u8(&key.0, function.span, usize::from(*x), "phase label"))
+                    .map(|x| {
+                        self.narrow_u8(&key_name.0, function.span, usize::from(*x), "phase label")
+                    })
                     .collect::<Result<_, _>>()?,
             )
         }
-        .map_err(|e| self.op_error(&key.0, decl.span, e))?;
-        let matrix = target
-            .matrix(&mut self.exact_work)
-            .map_err(|e| self.op_error(&key.0, decl.span, e))?;
+        .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        self.finish_meaning(
+            key,
+            basis,
+            crate::frontend::meaning::Target::monomial(target),
+        )
+    }
+    fn finish_meaning(
+        &mut self,
+        key: &Key,
+        basis: Ty,
+        target: crate::frontend::meaning::Target,
+    ) -> Result<(), CompileError> {
+        let declaration = self.declarations[key];
+        let name = self.resolution.declaration(*key).name.clone();
+        let span = declaration.span;
+        let (raw, matrix) = if let Ok(finite) = target.finite() {
+            let raw = finite
+                .target_ir()
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            let matrix = finite
+                .matrix(&mut self.exact_work)
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            (raw, matrix)
+        } else {
+            let sources = self.retained_sources(&name.0, span)?;
+            let path = self.resolution.path(*key);
+            let identity = || RetainedIdentity::shared(path.clone(), path.clone(), sources.clone());
+            let mut references = BTreeMap::new();
+            for id in target.references() {
+                let program = self.checked.get(&id).ok_or_else(|| {
+                    self.error(
+                        &name.0,
+                        span,
+                        ErrorCode::InvalidIr,
+                        "original reference function has not been independently checked",
+                    )
+                })?;
+                references.insert(id, program.program().clone());
+            }
+            let raw = target
+                .materialize(&self.kernel, &references, &identity, &mut self.exact_work)
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            let evidence = FunctionEvidence::check_retained_with_kernel(
+                &self.kernel,
+                target.signature().clone(),
+                raw.clone(),
+                raw.clone(),
+                identity(),
+                &mut self.exact_work,
+            )
+            .map_err(|e| self.op_error(&name.0, span, e.error))?;
+            (raw, evidence.meaning().clone())
+        };
         self.meanings.insert(
-            key.clone(),
+            *key,
             DeclaredMeaning {
                 basis,
                 target,
+                raw,
                 matrix,
             },
         );
@@ -200,67 +292,99 @@ impl Compiler<'_> {
             )),
         }
     }
-    pub(super) fn abstract_bindings(&mut self, key: &Key) -> Result<Bindings, CompileError> {
+    pub(super) fn required_bindings(
+        &mut self,
+        key: &Key,
+    ) -> Result<BTreeMap<BinderKey, RequiredOperation>, CompileError> {
         let decl = self.declarations[key];
+        let key_name = self.resolution.declaration(*key).name.clone();
         self.signature(key)?;
-        let mut bindings = Bindings::new();
-        for p in &decl.static_params {
-            let basis = self.ty(&key.0, &p.basis, true)?;
+        let mut bindings = BTreeMap::new();
+        for (ordinal, parameter) in decl.static_params.iter().enumerate() {
+            let StaticParamKind::Operation {
+                basis: original_basis,
+                codomain: _,
+                meaning: original_meaning,
+            } = &parameter.kind
+            else {
+                return Err(self.error(
+                    &key_name.0,
+                    parameter.name.span,
+                    ErrorCode::Unsupported,
+                    "finite profile does not support Nat or Basis parameters",
+                ));
+            };
+            let formal = &self.interfaces[key].statics[ordinal];
+            let StaticKind::Operation {
+                basis: checked_basis,
+                codomain: _,
+                meaning: checked_meaning,
+                access,
+            } = &formal.kind
+            else {
+                unreachable!("checked finite static category differs");
+            };
+            let binder = self.locals.info(self.locals.binder(&parameter.name));
+            assert_eq!(
+                binder.kind,
+                BindingKind::StaticOperation,
+                "finite Op binder"
+            );
+            assert_eq!(binder.key, formal.key, "checked formal lexical identity");
+            let parameter_key = formal.key.clone();
+            let access = *access;
+            let meaning_key = *checked_meaning;
+            assert_eq!(
+                meaning_key.is_some(),
+                original_meaning.is_some(),
+                "checked Meaning refinement"
+            );
+            let mut work = self.work;
+            let basis = finite_type(
+                self,
+                &mut work,
+                &key_name.0,
+                original_basis,
+                checked_basis,
+                Stage::Basis,
+            );
+            self.work = work;
+            let basis = basis?;
             contract_basis(&basis)
                 .bits()
-                .map_err(|e| self.op_error(&key.0, p.basis.span, e))?;
-            let meaning = if let Some(m) = &p.meaning {
-                let k = self.meaning_key(&key.0, m)?;
-                let target = &self.meanings[&k];
+                .map_err(|error| self.op_error(&key_name.0, original_basis.span, error))?;
+            let meaning = if let Some(meaning_key) = meaning_key {
+                let original_meaning = original_meaning
+                    .as_ref()
+                    .expect("paired Meaning refinement");
+                assert_eq!(
+                    self.locals.usage(original_meaning).target,
+                    ResolvedUse::Global(Target::Declaration(meaning_key)),
+                    "checked Meaning declaration identity"
+                );
+                let target = &self.meanings[&meaning_key];
                 if target.basis != basis {
                     return Err(self.error(
-                        &key.0,
-                        m.span,
+                        &key_name.0,
+                        original_meaning.span,
                         ErrorCode::TypeMismatch,
                         "parameter and meaning basis trees differ",
                     ));
                 }
                 let cost = target.matrix.entries().len();
-                self.charge(&key.0, m.span, cost)?;
-                Some(self.meanings[&k].matrix.clone())
+                self.charge(&key_name.0, original_meaning.span, cost)?;
+                Some(self.meanings[&meaning_key].matrix.clone())
             } else {
                 None
             };
             bindings.insert(
-                p.name.text.clone(),
-                Operation {
+                parameter_key,
+                RequiredOperation {
                     basis,
-                    access: [false; 3],
+                    access,
                     meaning,
-                    node: Arc::new(Node::Abstract(format!(
-                        "{}::{}::{}",
-                        key.0, key.1, p.name.text
-                    ))),
-                    depth: 1,
-                    nodes: 1,
-                    abstract_value: true,
                 },
             );
-        }
-        for constraint in &decl.requires {
-            let Some(op) = bindings.get_mut(&constraint.name.text) else {
-                return Err(self.error(
-                    &key.0,
-                    constraint.name.span,
-                    ErrorCode::UnknownName,
-                    "access constraint must name a static parameter",
-                ));
-            };
-            let index = access_index(constraint.access);
-            if op.access[index] {
-                return Err(self.error(
-                    &key.0,
-                    constraint.name.span,
-                    ErrorCode::Capability,
-                    "duplicate access constraint",
-                ));
-            }
-            op.access[index] = true;
         }
         Ok(bindings)
     }
@@ -274,10 +398,11 @@ impl Compiler<'_> {
             Callee::User(key) => key,
             Callee::Sealed(namespace, gate) => {
                 let mut message =
-                    "static provider requires an ordinary declared unitary function".to_owned();
+                    "static provider requires an ordinary fn with inferred Unitary body effect"
+                        .to_owned();
                 if namespace == "std::quantum" && matches!(gate.as_str(), "h" | "x" | "z" | "t") {
                     message.push_str(&format!(
-                        "; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
+                        "; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
                         name.text
                     ));
                 }
@@ -285,12 +410,15 @@ impl Compiler<'_> {
             }
         };
         let decl = self.declarations[&key];
-        if decl.kind != FnKind::Unitary {
+        let key_name = self.resolution.declaration(key).name.clone();
+        if self.effects.get(&key).map(|fact| fact.inferred()) != Some(Effect::Unitary) {
             return Err(self.error(
                 module,
                 name.span,
                 ErrorCode::Effect,
-                "static provider must be declared unitary",
+                crate::frontend::effects::unitary_required(
+                    "static provider's inferred body effect must be Unitary",
+                ),
             ));
         }
         if !decl.static_params.is_empty() {
@@ -302,7 +430,7 @@ impl Compiler<'_> {
             ));
         }
         let (params, result) = self.signature(&key)?;
-        let Ty::Q(basis) = &result else {
+        let Kind::Q(basis) = &result.kind else {
             return Err(self.error(
                 module,
                 name.span,
@@ -310,7 +438,8 @@ impl Compiler<'_> {
                 "static provider requires Q<A> -> Q<A>",
             ));
         };
-        if params != [result.clone()] {
+        let ports = crate::frontend::types::UnaryInterface::new(&params, &result);
+        if ports.is_none_or(|ports| ports.input != ports.output) {
             return Err(self.error(
                 module,
                 name.span,
@@ -332,7 +461,7 @@ impl Compiler<'_> {
                 ));
             }
         }
-        let cache = (key.clone(), mkey.clone());
+        let cache = (key, mkey);
         if let Some(op) = self.providers.get(&cache) {
             let cost = op.copy_size();
             self.charge(module, name.span, cost)?;
@@ -349,23 +478,36 @@ impl Compiler<'_> {
         })?;
         let implementation = program.program().clone();
         let identity = RetainedIdentity::shared(
-            format!("{}::{}", key.0, key.1),
+            format!("{}::{}", key_name.0, key_name.1),
             mkey.as_ref().map_or_else(
-                || format!("{}::{}", key.0, key.1),
-                |m| format!("meaning {}::{}", m.0, m.1),
+                || format!("{}::{}", key_name.0, key_name.1),
+                |m| format!("meaning {}", self.resolution.path(*m)),
             ),
             sources,
         );
-        let budget = &mut self.exact_work;
         let evidence = if let Some(mkey) = &mkey {
-            MeaningEvidence::check_retained_with_kernel(
-                &self.kernel,
-                implementation,
-                self.meanings[mkey].target.clone(),
-                identity,
-                budget,
-            )
-            .map(|e| e.receipt())
+            let target = &self.meanings[mkey];
+            if let Ok(finite) = target.target.finite() {
+                MeaningEvidence::check_retained_with_kernel(
+                    &self.kernel,
+                    implementation,
+                    finite.clone(),
+                    identity,
+                    &mut self.exact_work,
+                )
+                .map(|e| e.receipt())
+            } else {
+                FunctionEvidence::check_retained_with_kernel(
+                    &self.kernel,
+                    target.target.signature().clone(),
+                    implementation,
+                    target.raw.clone(),
+                    identity,
+                    &mut self.exact_work,
+                )
+                .map(Arc::new)
+                .map_err(|e| e.error)
+            }
         } else {
             FunctionEvidence::check_retained_with_kernel(
                 &self.kernel,
@@ -373,7 +515,7 @@ impl Compiler<'_> {
                 implementation.clone(),
                 implementation,
                 identity,
-                budget,
+                &mut self.exact_work,
             )
             .map(Arc::new)
             .map_err(|diagnostic| diagnostic.error)
@@ -386,7 +528,6 @@ impl Compiler<'_> {
             node: Arc::new(Node::Provider(evidence)),
             depth: 1,
             nodes: 1,
-            abstract_value: false,
         };
         self.charge(module, name.span, op.copy_size())?;
         self.providers.insert(cache, op.clone());
@@ -411,7 +552,6 @@ impl Compiler<'_> {
             ));
         }
         self.charge(module, span, nodes)?;
-        let abstract_value = a.abstract_value || b.as_ref().is_some_and(|b| b.abstract_value);
         let mut basis = a.basis.clone();
         let caps = a.access;
         if let Some(b) = &b {
@@ -427,10 +567,35 @@ impl Compiler<'_> {
         let (access, node) = match kind {
             StaticOpKind::Inverse(..) => ([caps[1], caps[0], caps[2]], Node::Inverse(a)),
             StaticOpKind::Controlled(..) => {
-                basis = Ty::pair(Ty::Bit, basis);
+                basis = Ty::pair(Ty::bit(), basis);
                 ([caps[2]; 3], Node::Controlled(a))
             }
-            StaticOpKind::Repeat(n, ..) => (caps, Node::Repeat(*n, a)),
+            StaticOpKind::Repeat(count, ..) => {
+                let Count::Natural(Natural {
+                    kind: NatKind::Number(n),
+                    ..
+                }) = count
+                else {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Unsupported,
+                        "finite repetition requires a literal count",
+                    ));
+                };
+                let n = u16::try_from(*n)
+                    .ok()
+                    .filter(|n| *n <= 4096)
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            span,
+                            ErrorCode::Limit,
+                            "static repetition exceeds 4096",
+                        )
+                    })?;
+                (caps, Node::Repeat(n, a))
+            }
             StaticOpKind::Then(..) | StaticOpKind::Tensor(..) | StaticOpKind::Conjugate(..) => {
                 let b = b.expect("binary constructor");
                 let mut access = std::array::from_fn(|i| caps[i] && b.access[i]);
@@ -463,7 +628,6 @@ impl Compiler<'_> {
             node: Arc::new(node),
             depth,
             nodes,
-            abstract_value,
         })
     }
 }
@@ -521,7 +685,6 @@ impl Node {
             a.meaning.as_ref().zip(b.meaning.as_ref())
         }
         Ok(match self {
-            Self::Abstract(_) => None,
             Self::Provider(e) => Some(e.meaning().clone()),
             Self::Inverse(a) => a.meaning.as_ref().map(|m| m.adjoint(budget)).transpose()?,
             Self::Controlled(a) => a
@@ -572,7 +735,10 @@ impl Operation {
                 module,
                 span,
                 ErrorCode::Capability,
-                format!("missing {access:?} access in the generic declaration"),
+                format!(
+                    "missing {} access in the generic declaration",
+                    formals::access_name(access)
+                ),
             ));
         }
         let bits =
@@ -596,15 +762,12 @@ impl Operation {
     ) -> Result<Vec<CircuitStep>, CompileError> {
         self.require(module, span, access, compiler)?;
         compiler.charge(module, span, self.nodes)?;
-        if self.abstract_value {
-            return Ok(vec![]);
-        }
         let steps = self
             .materialize(access)
             .map_err(|e| compiler.op_error(module, span, e))?;
         compiler.charge(module, span, total_size(steps.iter().map(circuit::size)))?;
         let basis = if access == Access::Controlled {
-            Ty::pair(Ty::Bit, self.basis.clone())
+            Ty::pair(Ty::bit(), self.basis.clone())
         } else {
             self.basis.clone()
         };
@@ -643,9 +806,6 @@ impl Operation {
             Ok(a)
         };
         let steps = match self.node.as_ref() {
-            Node::Abstract(_) => {
-                return Err(ContractError::Type("abstract operation is not executable"));
-            }
             Node::Provider(e) => {
                 let s = vec![CircuitStep {
                     controls: vec![],
@@ -717,23 +877,6 @@ impl Operation {
         Ok(steps)
     }
 }
-pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Ident>) {
-    match &op.kind {
-        StaticOpKind::Name(n) => names.push(n),
-        StaticOpKind::Bind {
-            implementation,
-            meaning,
-        } => names.extend([implementation, meaning]),
-        StaticOpKind::Inverse(a) | StaticOpKind::Controlled(a) | StaticOpKind::Repeat(_, a) => {
-            called_static_names(a, names)
-        }
-        StaticOpKind::Then(a, b) | StaticOpKind::Tensor(a, b) | StaticOpKind::Conjugate(a, b) => {
-            called_static_names(a, names);
-            called_static_names(b, names);
-        }
-    }
-}
-
 #[cfg(test)]
 mod review_tests {
     use super::*;

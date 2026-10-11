@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::reset;
+use std::observe::measure_z;
+observe fn refresh(q: Q<Bit>) -> Q<Bit> { reset(q) }
+observe fn main() -> Bit { measure_z(refresh(x(init0()))) }

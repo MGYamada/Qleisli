@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/false-unitary-prepare/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:101..108: effect: body effect `Iso` exceeds asserted `Unitary` effect of `entry`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body\n",
+  "native_invocations": 0,
+  "seconds": 0.004566874995362014,
+  "recorded_utc": "2026-10-05T12:10:35.313025+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:101..108: effect: body effect `Iso` exceeds asserted `Unitary` effect of `entry`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body\n"
+}

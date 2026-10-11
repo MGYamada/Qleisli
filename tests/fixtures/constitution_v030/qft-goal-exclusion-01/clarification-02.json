@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.ordinary-maintainer-scope-clarification",
+  "version": 1,
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "request": "ありがとう。qft<N>の実装義務をv0.3.0のscopeから外すので、experimental/だけ保持してください",
+    "earlier_directory_clarification": "experimental/"
+  },
+  "scope": {
+    "release": "v0.3.0",
+    "current_goal": "QFT implementation completion entirely excluded",
+    "future_target": null,
+    "retention": "Generic-QFT attempts and historical trial tooling retained only under experimental/qft; existing fixed-QFT production/native/corpus behavior is preserved.",
+    "issue_317": "21 applicable namespace/admission/general-family naming criteria; three QFT-specific additions excluded, not completed"
+  },
+  "archives": "experimental/qft/history/relocation.json",
+  "limits": "Archive byte/hash/mode checks preserve historical observations; no QFT compiler/native execution, new proof, interpretation or guarantee follows."
+}

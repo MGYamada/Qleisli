@@ -1,0 +1,7 @@
+thread 'closed_transparent_provider_keeps_its_conditional_control_path' (16177738) panicked at tests/common_source_provider_access.rs:45:5:
+Diagnostic { code: "unsupported", message: "expression is outside the finite lowering profile", primary: Some(SourceLocation { path: "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-43628-0/main.qli", span: Span { start: 271, end: 289 }, line: 5, column: 26 }) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'declared_paths_support_the_inverse_and_control_positive_controls' (16177739) panicked at tests/common_source_provider_access.rs:45:5:
+Diagnostic { code: "unsupported", message: "expression is outside the finite lowering profile", primary: Some(SourceLocation { path: "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-43628-5/main.qli", span: Span { start: 313, end: 331 }, line: 6, column: 26 }) }
+error: test failed, to rerun pass `--test common_source_provider_access`

@@ -1,0 +1,2300 @@
+{
+  "total_count": 18,
+  "jobs": [
+    {
+      "id": 111851329117,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCtvWXQ",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851329117",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851329117",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:10Z",
+      "started_at": "2026-10-05T15:51:13Z",
+      "completed_at": "2026-10-05T15:51:24Z",
+      "name": "changes",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:14Z",
+          "completed_at": "2026-10-05T15:51:15Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:15Z",
+          "completed_at": "2026-10-05T15:51:18Z"
+        },
+        {
+          "name": "Test fail-closed routing and required-check aggregation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:18Z",
+          "completed_at": "2026-10-05T15:51:20Z"
+        },
+        {
+          "name": "Select validation from the exact commit and both sides of its diff",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:51:20Z",
+          "completed_at": "2026-10-05T15:51:20Z"
+        },
+        {
+          "name": "Retain selection inputs and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:51:20Z",
+          "completed_at": "2026-10-05T15:51:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T15:51:21Z",
+          "completed_at": "2026-10-05T15:51:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T15:51:22Z",
+          "completed_at": "2026-10-05T15:51:22Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851329117",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004049,
+      "runner_name": "GitHub Actions 1000004049",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435760,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt128A",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435760",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435760",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T15:53:05Z",
+      "name": "check-docs",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:27Z",
+          "completed_at": "2026-10-05T15:51:28Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:31Z"
+        },
+        {
+          "name": "Install the pinned official mdBook binary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:31Z",
+          "completed_at": "2026-10-05T15:51:31Z"
+        },
+        {
+          "name": "Build the book with the selected mdBook version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:51:31Z",
+          "completed_at": "2026-10-05T15:51:32Z"
+        },
+        {
+          "name": "Retain the rendered book for review",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:51:32Z",
+          "completed_at": "2026-10-05T15:51:33Z"
+        },
+        {
+          "name": "Check edition 2026 coverage of every Qleisli source and QLT draft",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:51:33Z",
+          "completed_at": "2026-10-05T15:51:34Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_docs.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:51:34Z",
+          "completed_at": "2026-10-05T15:51:34Z"
+        },
+        {
+          "name": "Run python3 scripts/test_current_source_fixtures.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:51:34Z",
+          "completed_at": "2026-10-05T15:51:34Z"
+        },
+        {
+          "name": "Check constitutional identity and the historical candidate packet",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T15:51:34Z",
+          "completed_at": "2026-10-05T15:52:16Z"
+        },
+        {
+          "name": "Check recorded scoped QS admission and current evidence identities",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T15:52:16Z",
+          "completed_at": "2026-10-05T15:52:37Z"
+        },
+        {
+          "name": "Run python3 scripts/test_maintain_release.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T15:52:37Z",
+          "completed_at": "2026-10-05T15:52:37Z"
+        },
+        {
+          "name": "Run python3 scripts/test_native_harness.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-05T15:52:37Z",
+          "completed_at": "2026-10-05T15:52:37Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_production_coverage.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-05T15:52:37Z",
+          "completed_at": "2026-10-05T15:52:38Z"
+        },
+        {
+          "name": "Run python3 scripts/check_production_coverage.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-05T15:52:38Z",
+          "completed_at": "2026-10-05T15:52:39Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_lean_kernel.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-05T15:52:39Z",
+          "completed_at": "2026-10-05T15:52:39Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_schema_registry.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-05T15:52:39Z",
+          "completed_at": "2026-10-05T15:52:39Z"
+        },
+        {
+          "name": "Run python3 scripts/check_schema_registry.py --source-only",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-05T15:52:39Z",
+          "completed_at": "2026-10-05T15:52:39Z"
+        },
+        {
+          "name": "Run python3 scripts/check_docs.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-05T15:52:39Z",
+          "completed_at": "2026-10-05T15:52:42Z"
+        },
+        {
+          "name": "Verification inventory coverage and independent oracle calibration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-05T15:52:42Z",
+          "completed_at": "2026-10-05T15:52:55Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_authoring_sessions.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-05T15:52:55Z",
+          "completed_at": "2026-10-05T15:52:55Z"
+        },
+        {
+          "name": "Run python3 scripts/check_authoring_sessions.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-05T15:52:55Z",
+          "completed_at": "2026-10-05T15:52:55Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_input_corpus.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-05T15:52:55Z",
+          "completed_at": "2026-10-05T15:53:00Z"
+        },
+        {
+          "name": "Run python3 scripts/check_input_corpus.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-05T15:53:00Z",
+          "completed_at": "2026-10-05T15:53:00Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_distribution.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-05T15:53:00Z",
+          "completed_at": "2026-10-05T15:53:02Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_imaginary_v1_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-05T15:53:02Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Run python3 scripts/check_imaginary_v1_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Run python3 scripts/test_check_semantic_contract_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Run python3 scripts/check_semantic_contract_examples.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Check whitespace throughout the committed tree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 30,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 31,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 62,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 63,
+          "started_at": "2026-10-05T15:53:03Z",
+          "completed_at": "2026-10-05T15:53:03Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435760",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004050,
+      "runner_name": "GitHub Actions 1000004050",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435782,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt13Bg",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435782",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435782",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:31:04Z",
+      "name": "check-rust-msrv",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:29Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:29Z",
+          "completed_at": "2026-10-05T15:51:32Z"
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:32Z",
+          "completed_at": "2026-10-05T15:53:43Z"
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:53:43Z",
+          "completed_at": "2026-10-05T15:53:47Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:53:47Z",
+          "completed_at": "2026-10-05T15:53:48Z"
+        },
+        {
+          "name": "Install the minimum supported Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:53:48Z",
+          "completed_at": "2026-10-05T15:53:55Z"
+        },
+        {
+          "name": "Run cargo +1.85.0 test --all-targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:53:55Z",
+          "completed_at": "2026-10-05T16:26:12Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T16:26:12Z",
+          "completed_at": "2026-10-05T16:26:12Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T16:26:12Z",
+          "completed_at": "2026-10-05T16:26:13Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T16:26:13Z",
+          "completed_at": "2026-10-05T16:26:14Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T16:26:14Z",
+          "completed_at": "2026-10-05T16:26:15Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-05T16:26:15Z",
+          "completed_at": "2026-10-05T16:26:18Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-05T16:26:18Z",
+          "completed_at": "2026-10-05T16:26:20Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-05T16:26:20Z",
+          "completed_at": "2026-10-05T16:26:24Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-05T16:26:24Z",
+          "completed_at": "2026-10-05T16:26:26Z"
+        },
+        {
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-05T16:26:26Z",
+          "completed_at": "2026-10-05T16:26:35Z"
+        },
+        {
+          "name": "Run cargo +1.85.0 clippy --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-05T16:26:35Z",
+          "completed_at": "2026-10-05T16:26:51Z"
+        },
+        {
+          "name": "Run cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-05T16:26:51Z",
+          "completed_at": "2026-10-05T16:30:54Z"
+        },
+        {
+          "name": "Run cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-05T16:30:54Z",
+          "completed_at": "2026-10-05T16:31:01Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-10-05T16:31:01Z",
+          "completed_at": "2026-10-05T16:31:01Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-10-05T16:31:01Z",
+          "completed_at": "2026-10-05T16:31:01Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 41,
+          "started_at": "2026-10-05T16:31:01Z",
+          "completed_at": "2026-10-05T16:31:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-05T16:31:01Z",
+          "completed_at": "2026-10-05T16:31:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-05T16:31:02Z",
+          "completed_at": "2026-10-05T16:31:02Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435782",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004051,
+      "runner_name": "GitHub Actions 1000004051",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435887,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt13bw",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435887",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435887",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:24:22Z",
+      "name": "check-lean-kernel",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:30Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:30Z",
+          "completed_at": "2026-10-05T15:51:34Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:34Z",
+          "completed_at": "2026-10-05T15:51:35Z"
+        },
+        {
+          "name": "Install the tested Rust toolchain for native host comparisons",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:51:35Z",
+          "completed_at": "2026-10-05T15:51:43Z"
+        },
+        {
+          "name": "Fetch Rust dependencies before offline native host comparisons",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:51:43Z",
+          "completed_at": "2026-10-05T15:51:43Z"
+        },
+        {
+          "name": "Reject kernel/backend source escape hatches and unaudited imports",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:51:43Z",
+          "completed_at": "2026-10-05T15:51:45Z"
+        },
+        {
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:51:45Z",
+          "completed_at": "2026-10-05T15:53:56Z"
+        },
+        {
+          "name": "Audit axioms, unsafe/partial declarations and runtime replacements",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:53:56Z",
+          "completed_at": "2026-10-05T15:54:00Z"
+        },
+        {
+          "name": "Replay retained proof reductions and refactoring equivalence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T15:54:00Z",
+          "completed_at": "2026-10-05T15:54:28Z"
+        },
+        {
+          "name": "Replay the compiled project definitions through Lean's kernel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T15:54:28Z",
+          "completed_at": "2026-10-05T15:58:32Z"
+        },
+        {
+          "name": "Reject backend unsafe, implemented_by, extern and partial counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T15:58:32Z",
+          "completed_at": "2026-10-05T15:59:15Z"
+        },
+        {
+          "name": "Run all retained native comparisons with bounded parallelism",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-05T15:59:15Z",
+          "completed_at": "2026-10-05T16:13:59Z"
+        },
+        {
+          "name": "Build and audit a clean relocated Linux native bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-05T16:13:59Z",
+          "completed_at": "2026-10-05T16:23:28Z"
+        },
+        {
+          "name": "Exercise optional QIR/Python paths against the same audited bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-05T16:23:28Z",
+          "completed_at": "2026-10-05T16:24:04Z"
+        },
+        {
+          "name": "Archive the freshly replayed Linux checker for distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-05T16:24:04Z",
+          "completed_at": "2026-10-05T16:24:15Z"
+        },
+        {
+          "name": "Retain Linux native distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-05T16:24:15Z",
+          "completed_at": "2026-10-05T16:24:18Z"
+        },
+        {
+          "name": "Retain complete coverage, per-command timings and independent logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-05T16:24:18Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-05T16:24:19Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-10-05T16:24:19Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37,
+          "started_at": "2026-10-05T16:24:19Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38,
+          "started_at": "2026-10-05T16:24:19Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39,
+          "started_at": "2026-10-05T16:24:19Z",
+          "completed_at": "2026-10-05T16:24:19Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435887",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004054,
+      "runner_name": "GitHub Actions 1000004054",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435909,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt13hQ",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435909",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435909",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:31:12Z",
+      "name": "check-distribution",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:29Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:29Z",
+          "completed_at": "2026-10-05T15:51:32Z"
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:32Z",
+          "completed_at": "2026-10-05T15:53:45Z"
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:53:45Z",
+          "completed_at": "2026-10-05T15:53:49Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:53:49Z",
+          "completed_at": "2026-10-05T15:53:50Z"
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:53:50Z",
+          "completed_at": "2026-10-05T15:53:57Z"
+        },
+        {
+          "name": "Fetch package dependencies before offline distribution checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:53:57Z",
+          "completed_at": "2026-10-05T15:53:58Z"
+        },
+        {
+          "name": "Verify clean package and complete source archive",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:53:58Z",
+          "completed_at": "2026-10-05T16:31:05Z"
+        },
+        {
+          "name": "Retain candidate hashes, archives and command logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T16:31:05Z",
+          "completed_at": "2026-10-05T16:31:08Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-05T16:31:08Z",
+          "completed_at": "2026-10-05T16:31:08Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-05T16:31:08Z",
+          "completed_at": "2026-10-05T16:31:08Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-05T16:31:08Z",
+          "completed_at": "2026-10-05T16:31:09Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-05T16:31:09Z",
+          "completed_at": "2026-10-05T16:31:09Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-05T16:31:09Z",
+          "completed_at": "2026-10-05T16:31:09Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435909",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004053,
+      "runner_name": "GitHub Actions 1000004053",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435941,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt13pQ",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435941",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435941",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:28Z",
+      "completed_at": "2026-10-05T15:55:55Z",
+      "name": "check-interop",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:29Z",
+          "completed_at": "2026-10-05T15:51:30Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:30Z",
+          "completed_at": "2026-10-05T15:51:33Z"
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:33Z",
+          "completed_at": "2026-10-05T15:53:35Z"
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:53:35Z",
+          "completed_at": "2026-10-05T15:53:39Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:53:39Z",
+          "completed_at": "2026-10-05T15:53:40Z"
+        },
+        {
+          "name": "Install validators and the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:53:40Z",
+          "completed_at": "2026-10-05T15:54:01Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 build --example interop --bin qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:54:01Z",
+          "completed_at": "2026-10-05T15:54:18Z"
+        },
+        {
+          "name": "Independently parse OpenQASM and verify QIR with LLVM",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:54:18Z",
+          "completed_at": "2026-10-05T15:55:45Z"
+        },
+        {
+          "name": "Installed Python API and independently authored QIR input",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T15:55:45Z",
+          "completed_at": "2026-10-05T15:55:52Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-05T15:55:52Z",
+          "completed_at": "2026-10-05T15:55:52Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-05T15:55:52Z",
+          "completed_at": "2026-10-05T15:55:52Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-05T15:55:52Z",
+          "completed_at": "2026-10-05T15:55:53Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-05T15:55:53Z",
+          "completed_at": "2026-10-05T15:55:53Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-05T15:55:53Z",
+          "completed_at": "2026-10-05T15:55:53Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435941",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000004056,
+      "runner_name": "GitHub Actions 1000004056",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435978,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt13yg",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435978",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435978",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:35Z",
+      "completed_at": "2026-10-05T16:11:21Z",
+      "name": "check-macos-source",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:37Z",
+          "completed_at": "2026-10-05T15:51:39Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:39Z",
+          "completed_at": "2026-10-05T15:51:46Z"
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:46Z",
+          "completed_at": "2026-10-05T15:54:28Z"
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:54:28Z",
+          "completed_at": "2026-10-05T15:54:39Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:54:39Z",
+          "completed_at": "2026-10-05T15:54:42Z"
+        },
+        {
+          "name": "Install MSRV and Intel macOS compilation target",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:54:42Z",
+          "completed_at": "2026-10-05T15:54:50Z"
+        },
+        {
+          "name": "Exercise descriptor-relative source loading on macOS",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:54:50Z",
+          "completed_at": "2026-10-05T15:55:34Z"
+        },
+        {
+          "name": "Check source budgets, project loading and edition manifests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:55:34Z",
+          "completed_at": "2026-10-05T15:56:20Z"
+        },
+        {
+          "name": "Build with Rust's existing Intel macOS minimum",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T15:56:20Z",
+          "completed_at": "2026-10-05T15:56:50Z"
+        },
+        {
+          "name": "Install the pinned native kernel toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T15:56:50Z",
+          "completed_at": "2026-10-05T15:56:51Z"
+        },
+        {
+          "name": "Build and audit a clean relocated macOS native bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T15:56:51Z",
+          "completed_at": "2026-10-05T16:11:03Z"
+        },
+        {
+          "name": "Archive the freshly replayed macOS checker for distribution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-05T16:11:03Z",
+          "completed_at": "2026-10-05T16:11:12Z"
+        },
+        {
+          "name": "Retain macOS native distribution and validation records",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-05T16:11:12Z",
+          "completed_at": "2026-10-05T16:11:16Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-10-05T16:11:16Z",
+          "completed_at": "2026-10-05T16:11:16Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-05T16:11:16Z",
+          "completed_at": "2026-10-05T16:11:16Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-10-05T16:11:16Z",
+          "completed_at": "2026-10-05T16:11:16Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30,
+          "started_at": "2026-10-05T16:11:16Z",
+          "completed_at": "2026-10-05T16:11:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31,
+          "started_at": "2026-10-05T16:11:17Z",
+          "completed_at": "2026-10-05T16:11:19Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435978",
+      "labels": [
+        "macos-latest"
+      ],
+      "runner_id": 1000004057,
+      "runner_name": "GitHub Actions 1000004057",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851435989,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt131Q",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851435989",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851435989",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T18:58:52Z",
+      "name": "check-rust",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:29Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:29Z",
+          "completed_at": "2026-10-05T15:51:32Z"
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:32Z",
+          "completed_at": "2026-10-05T15:53:30Z"
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:53:30Z",
+          "completed_at": "2026-10-05T15:53:32Z"
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-05T15:53:32Z",
+          "completed_at": "2026-10-05T15:53:33Z"
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:53:33Z",
+          "completed_at": "2026-10-05T15:53:42Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T15:53:42Z",
+          "completed_at": "2026-10-05T15:53:43Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T15:53:43Z",
+          "completed_at": "2026-10-05T16:26:08Z"
+        },
+        {
+          "name": "Sized Rust and Python source dialect comparisons on small inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T16:26:08Z",
+          "completed_at": "2026-10-05T16:26:08Z"
+        },
+        {
+          "name": "Sized primitive omissions must fail compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-05T16:26:08Z",
+          "completed_at": "2026-10-05T16:26:15Z"
+        },
+        {
+          "name": "Build public API documentation without warnings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-05T16:26:15Z",
+          "completed_at": "2026-10-05T16:26:20Z"
+        },
+        {
+          "name": "Execute public API documentation examples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-05T16:26:20Z",
+          "completed_at": "2026-10-05T16:26:20Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-05T16:26:20Z",
+          "completed_at": "2026-10-05T16:26:21Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-05T16:26:21Z",
+          "completed_at": "2026-10-05T16:26:22Z"
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-05T16:26:22Z",
+          "completed_at": "2026-10-05T16:26:23Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-05T16:26:23Z",
+          "completed_at": "2026-10-05T16:26:24Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-05T16:26:24Z",
+          "completed_at": "2026-10-05T16:26:27Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-05T16:26:27Z",
+          "completed_at": "2026-10-05T16:26:29Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-05T16:26:29Z",
+          "completed_at": "2026-10-05T16:26:33Z"
+        },
+        {
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-05T16:26:33Z",
+          "completed_at": "2026-10-05T16:26:36Z"
+        },
+        {
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-05T16:26:36Z",
+          "completed_at": "2026-10-05T16:26:45Z"
+        },
+        {
+          "name": "Seeded source differential checks with an independent complex oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-05T16:26:45Z",
+          "completed_at": "2026-10-05T16:29:41Z"
+        },
+        {
+          "name": "Frozen VM-22 finite/source comparison inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-05T16:29:41Z",
+          "completed_at": "2026-10-05T16:30:07Z"
+        },
+        {
+          "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-05T16:30:07Z",
+          "completed_at": "2026-10-05T18:54:31Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-05T18:54:31Z",
+          "completed_at": "2026-10-05T18:54:38Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-05T18:54:38Z",
+          "completed_at": "2026-10-05T18:54:38Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-10-05T18:54:38Z",
+          "completed_at": "2026-10-05T18:58:44Z"
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-05T18:58:44Z",
+          "completed_at": "2026-10-05T18:58:50Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 29,
+          "started_at": "2026-10-05T18:58:50Z",
+          "completed_at": "2026-10-05T18:58:50Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 30,
+          "started_at": "2026-10-05T18:58:50Z",
+          "completed_at": "2026-10-05T18:58:50Z"
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 59,
+          "started_at": "2026-10-05T18:58:50Z",
+          "completed_at": "2026-10-05T18:58:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 60,
+          "started_at": "2026-10-05T18:58:50Z",
+          "completed_at": "2026-10-05T18:58:51Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 61,
+          "started_at": "2026-10-05T18:58:51Z",
+          "completed_at": "2026-10-05T18:58:51Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851435989",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004052,
+      "runner_name": "GitHub Actions 1000004052",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111851436073,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaCt14KQ",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111851436073",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111851436073",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T15:51:24Z",
+      "started_at": "2026-10-05T15:51:27Z",
+      "completed_at": "2026-10-05T16:01:13Z",
+      "name": "check-lean",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T15:51:28Z",
+          "completed_at": "2026-10-05T15:51:30Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T15:51:30Z",
+          "completed_at": "2026-10-05T15:51:33Z"
+        },
+        {
+          "name": "Test registry policy and bind the exact shipped source inventory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T15:51:33Z",
+          "completed_at": "2026-10-05T15:51:34Z"
+        },
+        {
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T15:51:34Z",
+          "completed_at": "2026-10-05T15:53:17Z"
+        },
+        {
+          "name": "Compile changed mathematical proofs and audit their declarations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-05T15:53:17Z",
+          "completed_at": "2026-10-05T15:53:17Z"
+        },
+        {
+          "name": "Bind shipped schema types to rebuilt declarations and audited executable sources",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-05T15:53:17Z",
+          "completed_at": "2026-10-05T16:00:59Z"
+        },
+        {
+          "name": "Replay every registered guarantee verifier against the built and audited environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-05T16:00:59Z",
+          "completed_at": "2026-10-05T16:01:11Z"
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-05T16:01:11Z",
+          "completed_at": "2026-10-05T16:01:11Z"
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-05T16:01:11Z",
+          "completed_at": "2026-10-05T16:01:11Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-05T16:01:11Z",
+          "completed_at": "2026-10-05T16:01:11Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-05T16:01:11Z",
+          "completed_at": "2026-10-05T16:01:11Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111851436073",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004055,
+      "runner_name": "GitHub Actions 1000004055",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054080,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6uaQA",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054080",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054080",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "name": "interop",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:00Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:59:00Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054080",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004060,
+      "runner_name": "GitHub Actions 1000004060",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054082,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6uaQg",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054082",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054082",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:59:05Z",
+      "completed_at": "2026-10-05T18:59:12Z",
+      "name": "distribution",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:59:06Z",
+          "completed_at": "2026-10-05T18:59:07Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:59:07Z",
+          "completed_at": "2026-10-05T18:59:09Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:09Z",
+          "completed_at": "2026-10-05T18:59:09Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:09Z",
+          "completed_at": "2026-10-05T18:59:09Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:09Z",
+          "completed_at": "2026-10-05T18:59:10Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:10Z",
+          "completed_at": "2026-10-05T18:59:10Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054082",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004061,
+      "runner_name": "GitHub Actions 1000004061",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054087,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6uaRw",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054087",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054087",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:03Z",
+      "name": "rust",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:57Z",
+          "completed_at": "2026-10-05T18:58:58Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:58:58Z",
+          "completed_at": "2026-10-05T18:59:01Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:01Z",
+          "completed_at": "2026-10-05T18:59:01Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:01Z",
+          "completed_at": "2026-10-05T18:59:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:01Z",
+          "completed_at": "2026-10-05T18:59:01Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:01Z",
+          "completed_at": "2026-10-05T18:59:01Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054087",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004059,
+      "runner_name": "GitHub Actions 1000004059",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054098,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6uaUg",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054098",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054098",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:04Z",
+      "name": "rust-msrv",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:58Z",
+          "completed_at": "2026-10-05T18:58:59Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:02Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:02Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:03Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:03Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:03Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054098",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004065,
+      "runner_name": "GitHub Actions 1000004065",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054171,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6uamw",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054171",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054171",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:06Z",
+      "name": "lean-kernel",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:00Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:59:00Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054171",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004058,
+      "runner_name": "GitHub Actions 1000004058",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054245,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6ua5Q",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054245",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054245",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:04Z",
+      "name": "macos-source",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:58Z",
+          "completed_at": "2026-10-05T18:58:59Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:02Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:02Z",
+          "completed_at": "2026-10-05T18:59:02Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:02Z",
+          "completed_at": "2026-10-05T18:59:02Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:02Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:03Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054245",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004063,
+      "runner_name": "GitHub Actions 1000004063",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054253,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6ua7Q",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054253",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054253",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:58Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "name": "docs",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:58Z",
+          "completed_at": "2026-10-05T18:58:59Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:03Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:03Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:05Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:05Z",
+          "completed_at": "2026-10-05T18:59:05Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:05Z",
+          "completed_at": "2026-10-05T18:59:05Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054253",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004064,
+      "runner_name": "GitHub Actions 1000004064",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932054276,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6ubBA",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932054276",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932054276",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:57Z",
+      "completed_at": "2026-10-05T18:59:07Z",
+      "name": "lean",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-05T18:58:59Z",
+          "completed_at": "2026-10-05T18:59:00Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-05T18:59:00Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Enforce complete selected validation and exact commit binding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Retain required-check and dependency-cache observations",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-05T18:59:04Z",
+          "completed_at": "2026-10-05T18:59:04Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932054276",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004062,
+      "runner_name": "GitHub Actions 1000004062",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111932055584,
+      "run_id": 37336154083,
+      "workflow_name": "Specification and implementation checks",
+      "head_branch": "codex/v0.3.0-foundation",
+      "run_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUr9rbs8AAAAaD6ugIA",
+      "head_sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/jobs/111932055584",
+      "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37336154083/job/111932055584",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-10-05T18:58:52Z",
+      "started_at": "2026-10-05T18:58:52Z",
+      "completed_at": "2026-10-05T18:58:52Z",
+      "name": "release-readiness",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/MGYamada/Qleisli/check-runs/111932055584",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}

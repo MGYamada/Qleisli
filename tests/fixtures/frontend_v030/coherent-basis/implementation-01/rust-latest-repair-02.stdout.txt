@@ -1,0 +1,44 @@
+
+running 12 tests
+test authoring_limitations_and_useful_guardrails_have_source_reproductions ... ok
+test amplification_handles_all_marked_labels_and_detects_overshoot ... ok
+test bell_components_support_dense_coding_and_entanglement_swapping ... ok
+test every_source_fixture_belongs_to_an_exercised_case ... ok
+test every_quick_reference_program_compiles_and_executes ... ok
+test inline_and_modular_teleportation_agree_on_every_classical_message ... ok
+test hadamard_tests_preserve_the_target_and_measure_both_overlap_components ... ok
+test phase_estimation_matches_off_grid_probabilities_and_reference_instruments ... ok
+test teleportation_recovers_seven_states_and_an_entangled_reference ... ok
+test type_correct_forward_qft_fault_negates_the_phase_label ... ok
+test phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates ... ok
+test type_correct_protocol_faults_are_detected_by_branch_sensitive_oracles ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.48s
+
+
+running 8 tests
+test explicit_layout_is_exact_and_preserves_an_entangled_reference ... ok
+test documented_type_categories_and_explicit_only_conversions ... ok
+test formerly_silent_reassociation_now_rejects ... ok
+test flat_arity_and_nested_depth_have_distinct_bounds ... ok
+test nary_owners_include_units_pending_fields_and_branch_frames ... ok
+test nary_type_capacity_and_rejected_deep_drops_are_bounded ... ok
+test nary_static_meanings_retain_shape_and_order ... ok
+test same_shape_wrong_permutation_does_not_pass_identity_evidence ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.22s
+
+
+running 9 tests
+test coherent_unit_lift_retains_exact_scalar_and_reference_action ... ok
+test coherent_control_exposes_unit_phase_for_lift_and_computed_pattern ... ok
+test empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths ... ok
+test effectful_unit_rhs_is_retained_before_the_empty_result_is_bound ... ok
+test exact_pattern_shapes_reject_quantum_bit_and_equal_width_products ... ok
+test runtime_parameter_pattern_now_uses_the_common_exact_shape_rule ... ok
+test sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule ... ok
+test unit_basis_patterns_keep_exact_unary_function_and_predicate_arity ... ok
+test finite_named_unit_parameters_and_nested_patterns_are_ordinary_values ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.95s
+

@@ -1,0 +1,2 @@
+pub unitary fn f[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A>{U(q)}
+

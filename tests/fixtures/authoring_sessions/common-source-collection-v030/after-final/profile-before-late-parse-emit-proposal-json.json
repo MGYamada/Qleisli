@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/profile-before-late-parse/main.qli",
+    "--module=a_basis=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/profile-before-late-parse/a_basis.qli",
+    "--module=z_malformed=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/profile-before-late-parse/z_malformed.qli",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/after-final/profile-before-late-parse-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.005004292004741728,
+  "recorded_utc": "2026-10-05T16:21:38.537867+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: requires an ordinary function",
+        "primary": {
+          "module": "a_basis",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/profile-before-late-parse/a_basis.qli",
+          "start": 75,
+          "end": 110
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

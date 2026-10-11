@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "register types are outside the finite lowering profile", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/copy-word-desired/main.qli", span: Span { start: 23, end: 30 }, line: 1, column: 24 }) }
+sized.generic: Error { code: "unsupported", module: Some("main"), span: Span { start: 23, end: 30 }, message: "sized preparation profile: unsupported runtime type" }

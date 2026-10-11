@@ -1,0 +1,2 @@
+basis fn labels((a,b,c):(Bit,Bit,Bit))->(Bit,(Bit,Bit)){(a,(b,c))}
+meaning LabelPhase:((Bit,Bit),Bit)=phase_by(labels);

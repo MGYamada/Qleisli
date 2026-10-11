@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/pure-control/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 1,
+  "seconds": 0.07470454199938104,
+  "recorded_utc": "2026-10-05T13:00:37.430956+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::entry",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  }
+}

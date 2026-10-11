@@ -1,0 +1,15 @@
+{
+  "kind": "Original merged tool output from final root checks",
+  "command": [
+    "python3 scripts/check_docs.py",
+    "python3 scripts/check_constitution.py --base-ref a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+    "git diff --check"
+  ],
+  "result": {
+    "chunk_id": "856cad",
+    "wall_time_seconds": 0.000022541,
+    "exit_code": 0,
+    "original_token_count": 133,
+    "output": "Checked 1735 local links, 15 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\nRecorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader obligations and one exactness supplement retain pending proof/enforcement duties; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate.\n"
+  }
+}

@@ -1,0 +1,168 @@
+@Qleisli.SharedControlCommutation.block_tensor_commute : ∀ {B : Type} [inst : Fintype.{0} B]
+  [inst_1 : DecidableEq.{1} B] (n m : Nat)
+  (U : B → Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits n) Complex)
+  (V : B → Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits m) Complex),
+  Eq.{1}
+    (HMul.hMul.{0, 0, 0} (Qleisli.ControlledPowers.block fun b => Qleisli.CoordinateOperators.tensor (U b) 1)
+      (Qleisli.ControlledPowers.block fun b => Qleisli.CoordinateOperators.tensor 1 (V b)))
+    (HMul.hMul.{0, 0, 0} (Qleisli.ControlledPowers.block fun b => Qleisli.CoordinateOperators.tensor 1 (V b))
+      (Qleisli.ControlledPowers.block fun b => Qleisli.CoordinateOperators.tensor (U b) 1))
+Qleisli.SharedControlCommutation.controlled_tensor_commute : ∀ (n m : Nat)
+  (U : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits n) (Qleisli.CoordinateOperators.Bits n) Complex)
+  (V : Matrix.{0, 0, 0} (Qleisli.CoordinateOperators.Bits m) (Qleisli.CoordinateOperators.Bits m) Complex),
+  Eq.{1}
+    (HMul.hMul.{0, 0, 0}
+      (Qleisli.HierarchicalRoutedPower.controlled (HAdd.hAdd.{0, 0, 0} n m) (Qleisli.CoordinateOperators.tensor U 1))
+      (Qleisli.HierarchicalRoutedPower.controlled (HAdd.hAdd.{0, 0, 0} n m) (Qleisli.CoordinateOperators.tensor 1 V)))
+    (HMul.hMul.{0, 0, 0}
+      (Qleisli.HierarchicalRoutedPower.controlled (HAdd.hAdd.{0, 0, 0} n m) (Qleisli.CoordinateOperators.tensor 1 V))
+      (Qleisli.HierarchicalRoutedPower.controlled (HAdd.hAdd.{0, 0, 0} n m) (Qleisli.CoordinateOperators.tensor U 1)))
+Qleisli.SharedControlCommutation.apply_controlled_tensor_commute : ∀
+  (targets joint : QleisliKernel.Hierarchical.Artifact.Interface) (n m : Nat)
+  (U V : Qleisli.HierarchicalOperators.Operator),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs targets))
+      (HAdd.hAdd.{0, 0, 0} n m) →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs targets))
+        (HAdd.hAdd.{0, 0, 0} n m) →
+      Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint))
+          (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint))
+            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth U) n →
+            Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth U) n →
+              Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth V) m →
+                Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth V) m →
+                  have first :=
+                    Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                      (List.cons.{0}
+                        (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                          (List.cons.{0} U (List.cons.{0} (Qleisli.HierarchicalOperators.identity m) List.nil.{0})))
+                        List.nil.{0});
+                  have second :=
+                    Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                      (List.cons.{0}
+                        (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                          (List.cons.{0} (Qleisli.HierarchicalOperators.identity n) (List.cons.{0} V List.nil.{0})))
+                        List.nil.{0});
+                  Eq.{1}
+                    (HMul.hMul.{0, 0, 0}
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) first)
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) second))
+                    (HMul.hMul.{0, 0, 0}
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) second)
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) first))
+Qleisli.SharedControlCommutation.apply_sequence_adjacent_swap : ∀
+  (targets joint : QleisliKernel.Hierarchical.Artifact.Interface) (n m : Nat)
+  (U V : Qleisli.HierarchicalOperators.Operator) (before after : List.{0} Qleisli.HierarchicalOperators.Operator),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs targets))
+      (HAdd.hAdd.{0, 0, 0} n m) →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs targets))
+        (HAdd.hAdd.{0, 0, 0} n m) →
+      Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint))
+          (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint))
+            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth U) n →
+            Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth U) n →
+              Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth V) m →
+                Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth V) m →
+                  (∀ (child : Qleisli.HierarchicalOperators.Operator),
+                      Membership.mem.{0, 0} (HAppend.hAppend.{0, 0, 0} before after) child →
+                        And
+                          (Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth child)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1))
+                          (Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth child)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1))) →
+                    have first :=
+                      Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                        (List.cons.{0}
+                          (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                            (List.cons.{0} U (List.cons.{0} (Qleisli.HierarchicalOperators.identity m) List.nil.{0})))
+                          List.nil.{0});
+                    have second :=
+                      Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                        (List.cons.{0}
+                          (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                            (List.cons.{0} (Qleisli.HierarchicalOperators.identity n) (List.cons.{0} V List.nil.{0})))
+                          List.nil.{0});
+                    Eq.{1}
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.sequence
+                          (HAppend.hAppend.{0, 0, 0} before (List.cons.{0} first (List.cons.{0} second after)))))
+                      (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                        (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.sequence
+                          (HAppend.hAppend.{0, 0, 0} before (List.cons.{0} second (List.cons.{0} first after)))))
+@Qleisli.SharedControlCommutation.apply_sequence_adjacent_swap_reference : ∀ {R : Type}
+  (targets joint : QleisliKernel.Hierarchical.Artifact.Interface) (n m : Nat)
+  (U V : Qleisli.HierarchicalOperators.Operator) (before after : List.{0} Qleisli.HierarchicalOperators.Operator),
+  Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs targets))
+      (HAdd.hAdd.{0, 0, 0} n m) →
+    Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs targets))
+        (HAdd.hAdd.{0, 0, 0} n m) →
+      Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.inputs joint))
+          (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+        Eq.{1} (Qleisli.HierarchicalOperators.width (QleisliKernel.Hierarchical.Artifact.Interface.outputs joint))
+            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+          Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth U) n →
+            Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth U) n →
+              Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth V) m →
+                Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth V) m →
+                  (∀ (child : Qleisli.HierarchicalOperators.Operator),
+                      Membership.mem.{0, 0} (HAppend.hAppend.{0, 0, 0} before after) child →
+                        And
+                          (Eq.{1} (Qleisli.HierarchicalOperators.Operator.inputWidth child)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1))
+                          (Eq.{1} (Qleisli.HierarchicalOperators.Operator.outputWidth child)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1))) →
+                    ∀
+                      (ψ :
+                        Qleisli.CoordinateOperators.Bits (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1) →
+                          R → Complex)
+                      (output : Qleisli.CoordinateOperators.Bits (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1))
+                      (reference : R),
+                      have first :=
+                        Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                          (List.cons.{0}
+                            (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                              (List.cons.{0} U (List.cons.{0} (Qleisli.HierarchicalOperators.identity m) List.nil.{0})))
+                            List.nil.{0});
+                      have second :=
+                        Qleisli.HierarchicalOperators.apply joint (Qleisli.HierarchicalSemantics.Tag.control Bool.true)
+                          (List.cons.{0}
+                            (Qleisli.HierarchicalOperators.apply targets Qleisli.HierarchicalSemantics.Tag.tensor
+                              (List.cons.{0} (Qleisli.HierarchicalOperators.identity n) (List.cons.{0} V List.nil.{0})))
+                            List.nil.{0});
+                      Eq.{1}
+                        (Matrix.mulVec.{0, 0, 0}
+                          (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                            (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.sequence
+                              (HAppend.hAppend.{0, 0, 0} before (List.cons.{0} first (List.cons.{0} second after)))))
+                          (fun input => ψ input reference) output)
+                        (Matrix.mulVec.{0, 0, 0}
+                          (Qleisli.HierarchicalOperators.matrixAt (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                            (HAdd.hAdd.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} n m) 1)
+                            (Qleisli.HierarchicalOperators.apply joint Qleisli.HierarchicalSemantics.Tag.sequence
+                              (HAppend.hAppend.{0, 0, 0} before (List.cons.{0} second (List.cons.{0} first after)))))
+                          (fun input => ψ input reference) output)
+'Qleisli.SharedControlCommutation.block_tensor_commute' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.SharedControlCommutation.controlled_tensor_commute' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.SharedControlCommutation.apply_controlled_tensor_commute' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.SharedControlCommutation.apply_sequence_adjacent_swap' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'Qleisli.SharedControlCommutation.apply_sequence_adjacent_swap_reference' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]

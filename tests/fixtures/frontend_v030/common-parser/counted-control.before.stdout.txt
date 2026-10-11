@@ -1,0 +1,2 @@
+finite: error 151..152 unexpected character `^`
+sized: ok

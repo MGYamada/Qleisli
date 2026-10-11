@@ -1,0 +1,14 @@
+{
+  "format": "qleisli.ordinary-tracker-checkpoint-files",
+  "version": 1,
+  "files": {
+    "issue-142-after.json": "975f9689ec0aa481271c8a8c36aaeb7894ee292323ddcbb7ecf308712c9dc656",
+    "issue-142-before.json": "0e270f537ae9f1047c01163f9d87778feef3beb85f0b3ff87efebad73a4b2a71",
+    "issue-317-after.json": "488f2eb45161ac1ec5b8aee4b290a6923208d644fffd2addea53381952e1041f",
+    "issue-317-before.json": "c97fe4281367c9b378d499bcbd84e8dcbbbff76111daeabf39d23e1a640c87ff",
+    "issue-32-after.json": "5fe4c29a72b4318d757b21fade41027c7ecdb2b5c7c529e096ae7627c4eadbfa",
+    "issue-32-before.json": "828a1fc1a0099ad4ca48d1e017d6bab51c71c00128c08e20a62f5194b94a231e",
+    "record.json": "5d2c503a08dcf5c35aa98302ea4269ac9b82f8a1535a1b7bf1b31e9cde8cc945"
+  },
+  "self_excluded": "files.json"
+}

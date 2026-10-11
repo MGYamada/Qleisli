@@ -1,53 +1,25 @@
 # Qleisli
 
-Write quantum algorithms in the language you use to think about them.
+**Qleisli and its tools (qargo, qlippy, qlifmt, qlidoc, qleisliup, and qleisliup-init) are independent projects and are not affiliated with, endorsed by, or sponsored by the Rust Project or the Rust Foundation.**
 
-Qleisli is an **experimental quantum programming language** with linear quantum
-ownership, explicit measurement effects and exact finite semantic contracts.
-The Rust frontend produces IR that an independent native Lean verifier checks before
-reference execution. Human-written and AI-generated programs use the same checks.
+**Rust and Cargo are trademarks of the Rust Foundation.**
 
-Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Package version: **0.2.9** (development; unpublished). The approved
-[breaking verifier migration](https://github.com/MGYamada/Qleisli/issues/276)
-removes the Rust verifier and dual acceptance API. Verification requires a
-matching separately installed native Lean checker; Cargo builds and docs remain
-independent of Lean. Select it with `QLEISLI_KERNEL` or `--lean-kernel=PATH`.
-Missing, incompatible or failing checkers reject without a fallback or download.
- Changes are recorded in
-[CHANGELOG](https://github.com/MGYamada/Qleisli/blob/v0.2.9/CHANGELOG.md).
-**Qleisli language edition: `"2026"` for all current
-`.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
-The bounded implementation and pending proof/migration goals are distinguished below.
-Rust 1.85 or later is required. Cargo builds the implementation and its TOML reader;
-the native checker needs no Lean development environment at runtime. Python and LLVM are optional host adapters.
-On macOS 11+, source loading uses `O_NOFOLLOW_ANY`, requiring only search
-permission on ancestor directories. Older macOS keeps the descriptor-relative
-`openat`/`O_NOFOLLOW` fallback and requires read permission on those directories.
-The runtime version is checked before using the newer flag; Rust's existing
-deployment targets remain supported.
-Filesystem source loading on Linux x86/x86_64, ARM/aarch64 and RISC-V requires
-accessible procfs directory descriptors at `/proc/self/fd`. A missing or
-inaccessible descriptor path produces a targeted runtime diagnostic. Ancestors
-use `O_PATH` directory descriptors and require only search permission.
+Qleisli is an experimental quantum programming language with linear quantum
+ownership, explicit measurement effects and exact semantic contracts. A Rust
+frontend and independent native Lean verifier support small reference simulations.
 
-## Install and run
+Package version: **0.3.0-alpha** (unpublished prerelease).
+Package, executable and Rust library name: **`qleisli`**.
 
-Install from a source checkout with
-`cargo install --path . --locked --bin qleisli`. Once this version is published,
-install it from crates.io with:
+## Edition
 
-```sh
-cargo install qleisli --version 0.2.9 --locked
-```
+**Qleisli language edition: `"2026"`.** Edition identifies the constitutional
+regime, independently of syntax, compiler version and Rust's implementation
+edition. Every source tree requires an explicit schema-2 `Qargo.toml`.
 
-Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
-Install the matching native bundle separately and set `QLEISLI_KERNEL` to its
-`bin/qleisli-kernel` executable. For an unpublished source checkout, run
-`(cd lean-kernel && lake build)` with Lean 4.30.0, then set
-`QLEISLI_KERNEL` to that checkout's `lean-kernel/.lake/build/bin/qleisli-kernel`.
+## Example
 
-Create a directory named `bell` and save this program as `bell/main.qli`:
+Save this Bell-pair program as `bell/main.qli`:
 
 <!-- quickstart:bell -->
 ```qli
@@ -56,14 +28,14 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     (measure_z(a), measure_z(b))
 }
 ```
 <!-- /quickstart:bell -->
 
-Also create `bell/Qargo.toml`:
+Declare the source tree's edition in `bell/Qargo.toml`:
 
 <!-- quickstart:manifest -->
 ```toml
@@ -74,13 +46,7 @@ edition = "2026"
 ```
 <!-- /quickstart:manifest -->
 
-This edition-only declaration applies even when the source tree is not a qrate.
-The standard library is already a qrate named `std` in the `stdlib/` directory,
-with a full [qargo](https://github.com/MGYamada/qargo)-compatible manifest.
-All other source trees will migrate to qrate management in the future. Rust's
-implementation edition remains `"2024"`, independently of Qleisli edition `"2026"`.
-
-From the parent of `bell`:
+With an already configured compatible compiler and native verifier:
 
 ```sh
 qleisli check bell
@@ -88,77 +54,38 @@ qleisli run bell
 qleisli sample bell --shots=8 --seed=0
 ```
 
-The standard library is embedded: this example runs without a repository
-checkout or a separate library directory. `run` reports `00` and `11` with
-probabilities approximately 0.5 each; `sample` returns eight simulated shots,
-each `00` or `11`. These are local reference results, not device measurements.
-Result bit strings follow the returned tuple from left to right. Numerical
-probabilities can contain tiny rounding residues even for ideally impossible
-outcomes. Add `--format=json` for structured results and diagnostics.
+The reference simulation returns `00` and `11` with probabilities approximately
+0.5 each. These are simulated results. Measurement consumes its quantum owner;
+reusing that owner is rejected. The standard library is embedded.
 
-## Embed in Rust
+## Distribution
 
-Once this version is published, add this dependency to your Rust project's `Cargo.toml`:
+**macOS distribution is under consideration.**
 
-```toml
-[dependencies]
-qleisli = "0.2.9"
-```
+Checking and execution require a compatible native Lean verifier. A missing,
+incompatible or failing verifier rejects without a fallback or automatic download.
 
-The [API documentation](https://docs.rs/qleisli) provides a runnable
-OpenQASM import and simulation example. Use `frontend::compile::compile_project`
-for `.qli` projects, `interchange::native::Kernel::accept_raw` for raw IR, `interchange` for checked QIRF transport,
-and `sim` for reference distributions or seeded sampling. Only independently
-checked programs become `AcceptedProgram` values.
+## Experimental adapters
 
-## Supported scope
+**The OpenQASM 3 / QIR adapters are experimental test features. They are not
+suitable for real quantum hardware. Their use on real hardware is not recommended.**
 
-- Finite `.qli` programs, modules, linear ownership, measurement/feedback,
-  static operation parameters and exact finite contracts are implemented.
-- `qleisli interop` supports bounded OpenQASM 3 input/output, QIRF input/output
-  and QIR Base output. The terminal-circuit profile has explicit gate/resource
-  limits; unsupported constructs reject with diagnostics. QASM input must
-  initialize its qubits with `reset`.
-- The separate Python host requires Python 3.11+ and the Rust executable.
-  QIR text/bitcode **input** additionally requires optional PyQIR 0.12.5.
-  Cargo installs neither the Python host nor the Lean checker.
-- The additive experimental `qleisli sized` CLI checks and executes bounded
-  `Bits<n>` / `CBits<m>` source and shared measured QPE. It requires a separately
-  built Lean kernel; Cargo does not install that kernel. General source/runtime
-  correspondence and full-profile migration remain pending.
-- Lean is the sole production acceptance implementation. General **Soundness**, **Physical Realizability** and
-  **Resource Safety** theorems remain goals to prove. Successful checking
-  is not a proof of an algorithm's correctness, physical hardware behavior or
-  a quantitative resource bound.
+They support bounded import/export and reference-simulation tests. Successful
+format checking or native verification does not establish device compatibility
+or physical correctness.
 
-The published 0.2.1 first registry release adopted the name `qleisli` in place of
-the earlier Git/path package `qleisli-core` and Rust import `qleisli_core`.
-Those consumers must update dependency/import names or use the documented
-Cargo alias.
-Version 0.2.9 explicitly breaks the verifier API and runtime installation
-contract: replace `verify`/`VerifiedProgram` with native acceptance/`AcceptedProgram`,
-remove `interchange::dual`, and select the matching checker. Version 0.2.3 also
-requires an edition manifest for filesystem source trees. The planned 0.3.0
-type-system work is a separate
-breaking-change boundary.
+## Documentation and proof scope
 
-## Documentation
+General Soundness, Physical Realizability and quantitative Resource Safety
+remain proof goals. Successful checking is not proof of algorithm correctness
+or hardware behavior.
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.9/tests/fixtures/quick_reference/README.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.9/TRUSTBOUNDARY.md)
-- [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
-
-Current documentation links target `v0.2.9`. Only imaginary-v1 drafts and the
-v0.3 Lean backend plan remain under `docs/`; other former documents are in
-`docs-old/` pending deletion at v0.3.0. Active documentation has no links or
-validation dependencies on that temporary tree.
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md)
+- [Trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
+- [API documentation](https://docs.rs/qleisli) and [source repository](https://github.com/MGYamada/Qleisli)
 
 ## License
 
-Copyright 2026 Masahiko G. Yamada. Qleisli's own code and documentation are
-Apache-2.0 unless individually stated otherwise. See the packaged `LICENSE`
-and `NOTICE`. The included corpus retains source-specific licenses and notices:
-QuantumKatas translations are MIT; Qualtran and PennyLane translations are
-Apache-2.0. This is not an `Apache-2.0 OR MIT` dual-license offer.
+Copyright 2026 Qleisli Project Contributors. First-party code and documentation
+are Apache-2.0 unless individually stated otherwise; see the packaged `LICENSE`
+and `NOTICE`. Third-party material retains its own licenses and notices.

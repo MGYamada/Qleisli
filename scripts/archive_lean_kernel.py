@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Archive a freshly audited native bundle for explicit release distribution.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import gzip
@@ -11,6 +11,8 @@ from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import tarfile
+
+from maintain_release import PRODUCT_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,7 +31,7 @@ def archive_bundle(bundle, output, revision, source_root):
     if manifest.get("validation", {}).get("lane") != "full" or manifest["validation"].get("fresh_replay") is not True:
         raise ValueError("distribution requires full fresh proof replay")
     version = manifest["package_version"]
-    if not re.fullmatch(r"0\.[0-9]+\.[0-9]+", version):
+    if not isinstance(version, str) or not re.fullmatch(PRODUCT_VERSION, version):
         raise ValueError("invalid product version")
     targets = {("Darwin", "arm64"): "aarch64-apple-darwin",
                ("Darwin", "x86_64"): "x86_64-apple-darwin",

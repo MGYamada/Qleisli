@@ -1,0 +1,34 @@
+name: Run and retain source checks
+description: Execute the local/hosted command manifest and retain failed or completed results
+inputs:
+  group:
+    description: Group from .github/ci/source-checks.json
+    required: true
+  compiler:
+    description: Explicit compiler path for groups that require one
+    default: ''
+  artifact-name:
+    description: Override the default group-commit-attempt artifact name
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Execute the shared plan
+      id: check
+      shell: bash
+      env:
+        CHECK_GROUP: ${{ inputs.group }}
+        CHECK_COMPILER: ${{ inputs.compiler }}
+      run: |
+        compiler_args=()
+        if [[ -n "$CHECK_COMPILER" ]]; then
+          compiler_args=(--compiler "$CHECK_COMPILER")
+        fi
+        python3 scripts/ci_profiles.py --checks "$CHECK_GROUP" "${compiler_args[@]}" --output "$RUNNER_TEMP/$CHECK_GROUP"
+    - name: Retain command results and explicit unexecuted checks
+      if: always() && (steps.check.outcome == 'success' || steps.check.outcome == 'failure')
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: ${{ inputs.artifact-name || format('{0}-{1}-{2}', inputs.group, github.sha, github.run_attempt) }}
+        path: ${{ runner.temp }}/${{ inputs.group }}/
+        if-no-files-found: error

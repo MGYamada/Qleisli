@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/quantum-unit-wildcard/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/after/quantum-unit-wildcard-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "timeout": false,
+  "seconds": 0.004493875021580607,
+  "recorded_utc": "2026-10-05T16:49:28.045749+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "identity_digest": "db83a13e721b9b12c7e7a83ccc7f8c9fe953021e78fc20e022957f4885cce60c",
+  "cli_sha256": "58acd18d36849646e4d3d7819651fbb98128c3f5436f86e737b769b86c67c969",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout_raw": "quantum-unit-wildcard-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "quantum-unit-wildcard-selected-auto-emit-proposal-json.stderr.txt",
+  "native_log": "quantum-unit-wildcard-selected-auto-emit-proposal-json.native.jsonl",
+  "native_invocations": 0,
+  "native_argv": [],
+  "proposal_emitted": false,
+  "equality": {
+    "exit_code": true,
+    "stdout": true,
+    "stderr": true,
+    "proposal_presence": true,
+    "proposal_bytes": true,
+    "native_argv": true,
+    "native_count": true
+  },
+  "output_path_substitution": {
+    "stdout": false,
+    "stderr": false
+  },
+  "baseline_event": "before/quantum-unit-wildcard-selected-auto-emit-proposal-json.json"
+}

@@ -1,0 +1,13 @@
+{
+  "format": "qleisli.authoring-source-stream-integrity",
+  "version": 1,
+  "recorded_utc": "2026-10-06T05:30:54.747827+00:00",
+  "first_inventory_sha256": "cefa4a524bee027eb91e59ced9bfa0d380735f926d3b6d5445905a9eb97a144e",
+  "first_inventory_entries_unchanged": 15,
+  "source_projects": 6,
+  "actual_observations": 30,
+  "raw_streams_checked": 60,
+  "session_sha256": "f6730fc809db926782bef9527abde3e303b76c64fc2c86b6ccbf9988fa56f373",
+  "before_after_comparison_sha256": "981fbd51ca29eb6bf8785cd2495ad926f79bfc26dd146ee3682421db9821beab",
+  "scope": "Byte identity and registration checks only; no recorded command replay or semantic certification."
+}

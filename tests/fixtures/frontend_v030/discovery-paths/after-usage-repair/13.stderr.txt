@@ -1,0 +1,17 @@
+usage: qleisli <check|run|sample|emit-proposal> --entry=module::function
+  --module=name=PATH (repeat) --nat=name=N (repeat)
+  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)
+  [--ir-profile=auto|raw|hierarchy] [--lean-kernel=PATH]
+  [--request=PATH | --qpe-provider=PATH] [--format=json]
+  [--basis=N] [--shots=N --seed=N] [--output=PATH]
+  --kernel is an alias for --lean-kernel; otherwise use QLEISLI_KERNEL.
+  Raw run/sample require zero runtime parameters and no quantum result.
+  --basis is hierarchy run/sample-only (default 0); it is never ordinary input.
+  Selected-source sample requires shots in 1..1024 and a seed.
+  emit-proposal requires output and no kernel/request/provider; it is untrusted.
+  Module-map checking covers every declaration, native checking the selected instance.
+discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
+  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
+  These analysis tools are planned, not executable commands in this alpha.
+  Canonical contract: docs/src/reference/discovery.md
+  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md

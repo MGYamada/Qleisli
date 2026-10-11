@@ -1,0 +1,266 @@
+{
+  "format": "qleisli.codebase-review-checkpoint",
+  "version": 1,
+  "reviewed_head": "ed462c8bc8db16cbb17e66a3770628dfc45ab530",
+  "review_complete": false,
+  "feature_goal": {
+    "completed": 24,
+    "total": 111,
+    "percent": "21.62"
+  },
+  "validation": [
+    {
+      "group": "rust-latest",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-shared-rust-02/results.json",
+      "sha256": "2bae0d34cabb53ce691e4f6d2b8eb07671ff35a27f1c5933c02149bbb6d287be",
+      "binding": {
+        "head": "ed462c8bc8db16cbb17e66a3770628dfc45ab530",
+        "working_inputs_sha256": "7f81231509fe808fccb3813c362a711c3a7041186507906a74adb80208738c4a"
+      },
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        },
+        "rust-latest": {
+          "command": [
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+          "stderr": ""
+        },
+        "cargo-latest": {
+          "command": [
+            "cargo",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+          "stderr": ""
+        }
+      },
+      "commands": 9,
+      "command_seconds": 1107.0518327910686,
+      "all_targets": {
+        "passed": 960,
+        "failed": 0,
+        "ignored": 52,
+        "targets": 102
+      },
+      "scope": "Local executed plan, not hosted CI. Existing ignored tests are not successes."
+    },
+    {
+      "group": "rust-msrv",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-shared-msrv-02/results.json",
+      "sha256": "43fba84fe5d2b6ec949e54d15c950ccd265b5bbfe1e49a919f9a235ebd226fc0",
+      "binding": {
+        "head": "ed462c8bc8db16cbb17e66a3770628dfc45ab530",
+        "working_inputs_sha256": "4c2ebc26d99243b833ebffa04404900065c157fd1fdd846a8f96e6ce19cea951"
+      },
+      "toolchain": {
+        "python": {
+          "command": [
+            "python3",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Python 3.14.5",
+          "stderr": ""
+        },
+        "lean": {
+          "command": [
+            "lake",
+            "-d",
+            "lean-kernel",
+            "env",
+            "lean",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+          "stderr": ""
+        },
+        "git": {
+          "command": [
+            "git",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "git version 2.54.0 (Apple Git-157)",
+          "stderr": ""
+        },
+        "cargo-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+          "stderr": ""
+        },
+        "clippy-msrv": {
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "clippy 0.1.85 (4d91de4e48 2025-02-17)",
+          "stderr": ""
+        },
+        "rust-msrv": {
+          "command": [
+            "rustup",
+            "run",
+            "1.85.0",
+            "rustc",
+            "--version"
+          ],
+          "exit_code": 0,
+          "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+          "stderr": ""
+        }
+      },
+      "commands": 4,
+      "command_seconds": 1131.3169768330408,
+      "all_targets": {
+        "passed": 960,
+        "failed": 0,
+        "ignored": 52,
+        "targets": 102
+      },
+      "scope": "Local executed plan, not hosted CI. Existing ignored tests are not successes."
+    },
+    {
+      "group": "native-manifest",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-native-clean/results.json",
+      "sha256": "79740e75f5b1201d93a254fa2ddeeea67f9626b2f133db913fd9f3bf67fbe43f",
+      "head": "763f2ce3401b019c29f0c7ead771a677ef7c3a85",
+      "groups": 67,
+      "commands": 91,
+      "elapsed_seconds": 661.0177412920166,
+      "scope": "Original complete manifest; optional PyQIR check skipped here and exercised separately after installing it."
+    },
+    {
+      "group": "distribution",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-distribution/report.json",
+      "sha256": "ef081a6cf348869b0006f2be61c549874dfdd1a25c263a419d6bff39f71dd903",
+      "candidate": {
+        "clean": true,
+        "commit": "763f2ce3401b019c29f0c7ead771a677ef7c3a85",
+        "tree": "c9fe8febab4f3760899b5e59eda5faa4b01aa8d5"
+      },
+      "started_utc": "2026-10-07T08:37:53.661532+00:00",
+      "finished_utc": "2026-10-07T09:27:34.482988+00:00",
+      "not_run": [
+        "MSRV matrix",
+        "Lean build/axiom audit",
+        "hosted CI",
+        "tagging",
+        "push",
+        "publication"
+      ],
+      "scope": "clean HEAD production package and complete repository source archive"
+    },
+    {
+      "group": "book",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-shared-book/results.json",
+      "sha256": "2e5feea6b5536e553d775e164686ef3c9da65bf1a5acd5b6107aca5fff298574",
+      "head": "355cfcb797e9b753f3acf2ff02d51a366ad0e113"
+    },
+    {
+      "group": "installed-pyqir-native",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-python-native.json",
+      "sha256": "81a047816e0d7bc4a550b939d39fe3d687646bf8f8e045530a25d3d79d06eb09",
+      "tests": 10,
+      "skipped": [],
+      "sources": {
+        "scripts/test_interop_native.py": "a1fe5ffad9f35e653286aae637a6a225f4ba3eadb0d800e337ac575de8d3660f",
+        "src/bin/qleisli/interop.rs": "3b543cd1c360ff647bacc2a8da52eb37f6b2cd0b4e1dc9faa971dadcb3be326a",
+        "python/qleisli/__init__.py": "fcff77129c80296a9cda0d359704691ae8ca15aa8df99d9b566998955d579549",
+        "python/qleisli/__main__.py": "7c0ca09223cb98192ca4e5a16b330685b2cee43debb0d8576acbd40fc8bffb5a"
+      }
+    },
+    {
+      "group": "installed-python",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-python-connections.log",
+      "sha256": "b3f1eadfd90612cb02613da1fe850f4520b204ddd4eafe92f813af66a5fd2b89",
+      "tests": 12,
+      "scope": "Fresh installed host package. Tests performed before the review checkpoint; host source unchanged from df3e6912."
+    },
+    {
+      "group": "external-parsers",
+      "status": "passed",
+      "report": "/private/tmp/qleisli-ci-review-external-parsers-02.log",
+      "sha256": "7e137f43db6a7b6836ec871822404a7166b33ea27384b113f9f23c454536d6b2",
+      "tests": 4,
+      "scope": "OpenQASM 1.0.1 and local LLVM 22.1.6. Does not replace CI LLVM 18. Initial missing-example invocation failed and remains failed."
+    }
+  ],
+  "constitution": {
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "38baae7d19535602b21270e11e97617d45205b37"
+    ],
+    "exit_code": 0,
+    "scope": "Source/evidence identity and trusted-base continuity; no fresh replay in this checkpoint."
+  },
+  "open_finding": {
+    "issue": "https://github.com/MGYamada/Qleisli/issues/343",
+    "status": "reproduced-not-fixed",
+    "host_timeout_seconds": 1.5,
+    "observed_return_seconds": 1.504,
+    "native_entered": true,
+    "native_completed_after_timeout": true,
+    "native_child_sleep_seconds": 3,
+    "source": "OPENQASM 3.0; include \"stdgates.inc\"; qubit q; bit c; reset q; c = measure q;",
+    "host_source_sha256": "fcff77129c80296a9cda0d359704691ae8ca15aa8df99d9b566998955d579549",
+    "rust_process_source_sha256": "8511f65cb91098ee3090e0b87bcffe59c10bf30e71340b848ad501a1ebead2ce"
+  },
+  "not_run": [
+    "Final hosted CI for the local repair commits",
+    "Complete remaining code/proof/documentation review",
+    "Regression repair for #343"
+  ],
+  "scope": "Compact historical local observations. External logs remain outside Git. This record neither upgrades previous runs to a newer commit nor completes the maintenance plan."
+}

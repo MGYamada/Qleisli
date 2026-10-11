@@ -1,0 +1,95 @@
+
+running 9 tests
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s
+
+
+running 30 tests
+test annotated_types_and_computed_domains_share_the_tree_limits ... ok
+test finite_v0_local_names_shadow_static_callees ... ok
+test conditional_swap_pairs_different_input_registers ... ok
+test bundled_basis_functions_control_a_product_register ... ok
+test branch_created_wires_and_classical_results_merge ... ok
+test finite_v0_basis_lifts_are_injective_and_closed ... ok
+test bounded_classical_copies_and_unit_lifts_remain_valid ... ok
+test invalid_callee_body_still_reports_its_own_source ... ok
+test finite_v0_mixed_values_move_as_a_whole ... ok
+test imported_argument_errors_point_to_the_call_and_actual_argument ... ok
+test missing_import_reports_the_call_site_even_in_unused_functions ... ok
+test invalid_source_is_rejected_before_execution ... ok
+test quantum_rebinding_inside_a_branch_cannot_escape_its_scope ... ok
+test exponential_call_expansion_has_a_checked_work_limit ... ok
+test growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack ... ok
+test repeated_tree_copies_and_branch_frames_spend_the_work_budget ... ok
+test function_branch_preserves_the_callers_quantum_frame ... ok
+test library_check_needs_no_entry_and_project_errors_have_coordinates ... ok
+test resource_rules_reject_lost_or_differently_consumed_bindings ... ok
+test nested_toffoli_result_reset_and_discard_lower_to_observation ... ok
+test finite_v0_computed_blocks_require_the_structural_certificate ... ok
+test resource_rules_mixed_branch_results_follow_positions ... ok
+test resource_rules_nested_classical_results_keep_their_scopes ... ok
+test resource_rules_pending_mixed_argument_survives_nested_call ... ok
+test resource_rules_pending_tuple_field_survives_branch ... ok
+test resource_rules_reset_branch_keeps_reference_and_classical_history ... ok
+test documented_projects_compile_verify_and_simulate ... ok
+test resource_rules_zero_width_result_and_frame_are_both_merged ... ok
+test finite_v0_effects_classify_quantum_maps_and_respect_declarations ... ok
+test finite_v0_type_shapes_and_zero_wire_ownership ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.01s
+
+
+running 41 tests
+test common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics ... ok
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test common_lexical_tables_survive_cloning_and_distinguish_fold_activations ... ok
+test common_lexical_static_substitution_uses_callee_binders_and_caller_values ... ok
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel
+test contextual_controlled_and_reserved_words_have_one_classification ... ok
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test existing_empty_sized_spellings_remain_common_syntax ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test indexed_projection_preserves_profile_diagnostic_order_before_resolution ... ok
+test hierarchy_eligibility_retains_boolean_location_and_body_checks ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test lowering_profile_preflight_identifies_unsupported_root_signatures ... ok
+test multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel
+test shadowing_moves_tuple_shape_and_effects ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test common_syntax_does_not_grant_missing_profile_or_capability_support ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test explicit_module_loading_retains_the_same_ast_as_project_loading ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 38 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.31s
+

@@ -1,6 +1,6 @@
 //! Fresh conditional hierarchy inspection and finite reconstruction.
 //! Additive checked-request reports are not production AcceptedProgram values.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod bridge;
 mod runtime;
@@ -585,6 +585,7 @@ fn legacy(value: &Value) -> Result<BasisType> {
         match atom.field("tag")?.text()? {
             "unit" => stack.push(BasisType::Unit),
             "bit" => stack.push(BasisType::Bit),
+            "bits" => stack.push(BasisType::Bits(bridge::number(atom.field("width")?)?)),
             "tuple" => {
                 let arity = bridge::number(atom.field("arity")?)? as usize;
                 if arity < 2 || arity > stack.len() {

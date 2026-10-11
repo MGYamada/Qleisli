@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub unitary fn entry((q, q): (Q<Bit>, Q<Bit>), empty: Q<Bits<0>>)
+    -> (Q<Bit>, Q<Bits<0>>) {
+    (q, empty)
+}

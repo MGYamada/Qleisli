@@ -1,0 +1,1 @@
+main:7..8: parse: bare carriage return is forbidden; use LF or CRLF

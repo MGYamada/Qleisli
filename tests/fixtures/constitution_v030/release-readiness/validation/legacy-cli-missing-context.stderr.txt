@@ -1,0 +1,1 @@
+constitutional record integrity: release readiness requires caller-selected trusted base and hosted evidence context; admission is not release approval

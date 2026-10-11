@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.original-repeat-meaning-observation",
+  "version": 1,
+  "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+  "sha256": "4a9bccd2e5782e5775fa7ef4b02da36643ed26aa83ae68e8fcfa407c40574cba",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::outer",
+    "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+    "--operation=U=main::implementation",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/repeated-bit.stdout.txt",
+  "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/repeated-bit.stderr.txt",
+  "expected": "X^2 is identity, not Flip. Reject inner original binding rather than substituting its X base provider."
+}

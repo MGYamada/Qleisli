@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.coherent-basis-corpus-count-repair",
+  "issue": 81,
+  "before_source_sha256": "390fe41cd914df128a389b1247a540ab93a02723b1abf243e7497392be2c06be",
+  "after_source_sha256": "bdef063b8cf66317732b2b85d3208ab8de7f51883271ee3adf3322c8cfb53676",
+  "logical_corpus_projects": 87,
+  "selected_derivatives": 8,
+  "reason": "The first full hosted run reached a stale expected count of6 after #81 appended two explicit corpus snapshots. Change the test expectation only; preserve corpus roots, pins, notices, source maps and real native compilation/execution checks.",
+  "tested_predecessor_merge": "18997543f87b254063d65e60394b26f999d261ab",
+  "hosted_run": 37413163947,
+  "limits": "Coverage expectation repair only; corpus-independent oracle and source-preservation obligations are not replaced by the smoke test."
+}

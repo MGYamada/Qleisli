@@ -1,0 +1,23 @@
+{
+  "id": "09.docs-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_docs.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T16:57:55.519793+00:00",
+  "elapsed_seconds": 0.2976567919831723,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "09.docs-regression.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "09.docs-regression.stderr.txt",
+    "sha256": "08f105cd19bc8cdf76f029f693f7aaa0bef38602271ebe1672f110c832d822be",
+    "bytes": 135
+  }
+}

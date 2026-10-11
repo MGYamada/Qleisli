@@ -1,0 +1,18 @@
+{
+  "status": "prepared-v2-not-executed",
+  "files": {
+    "driver-v2.py": "07955206bd3460eb0e7e3748287413fb14bbffe5def6f31113bce1ff72a43c79",
+    "README-v2.md": "1d7bb125f465b72a17a97abd95b5fa25b8a381532ad965851ed811f72489c6c6",
+    "metadata-reference-v2.json": "41312b8982e4bb131e5a1ee2c3d60b3cc412d9e6d2f06f3845713635bfc79865"
+  },
+  "self_excluded": "prepared-v2-files.json",
+  "previous_prepared_files_unchanged": true,
+  "syntax_review": "ast.parse only; driver/module/subprocess calls not executed",
+  "planned_fixed_command_count": 13,
+  "root_separate_actual_metadata_regressions": {
+    "inventory": 17,
+    "coverage": 14
+  },
+  "preparation_only_startup_check": "preparation-startup-v2/constitution.json",
+  "runtime_input_map_note": "Root execution captures final before/after identities after the barrier. This preparation is not a policy run."
+}

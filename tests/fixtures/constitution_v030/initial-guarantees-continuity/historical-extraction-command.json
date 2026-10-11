@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean"
+  ],
+  "cwd": "/private/tmp/qleisli-continuity-historical/lean",
+  "exit_code": 0,
+  "stdout_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

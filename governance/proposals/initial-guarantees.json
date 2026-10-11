@@ -1,0 +1,227 @@
+{
+  "format": "qleisli.guarantee-proposal",
+  "version": 1,
+  "edition": "2026",
+  "status": "proposed",
+  "human_adoption": null,
+  "authority": "This JSON is the sole editing source for the two proposed guarantee definitions and their common boundaries. The book chapter is explanatory. An existing theorem, audit, code hash or passing proposal checker does not admit a constitutional guarantee.",
+  "interpretation": {
+    "id": "QS-2026-01",
+    "adoption": {
+      "path": "governance/interpretations/initial-2026-adoption.json",
+      "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+    },
+    "reviewed_text": {
+      "path": "governance/interpretations/initial-2026-reviewed.txt",
+      "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+    }
+  },
+  "source_binding": {
+    "registry_path": "lean/schema-registry.json",
+    "algorithm": "sha256-sorted-path-and-content-map-v1",
+    "sha256": "421ff6eb8911da073fb864d4cc0deaa56b29fe4e4efb0252c72504cec2136bad",
+    "lean_toolchain": "leanprover/lean4:v4.30.0",
+    "meaning": "This identifies the reviewed Lean source closure. Identity is not mathematical adequacy, a release approval, or proof that every deployed binary executes these definitions."
+  },
+  "native_boundary": {
+    "entrypoint": {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "declaration": "QleisliKernel.Protocol.Validity.check"
+    },
+    "acceptance_witness": {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "declaration": "QleisliKernel.Protocol.Validity.Acceptance"
+    },
+    "acceptance_theorem": {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "declaration": "QleisliKernel.Protocol.Validity.check_acceptance"
+    },
+    "cli": {
+      "path": "lean-kernel/Cli/Validity.lean",
+      "declaration": "QleisliKernel.Cli.runValidity"
+    },
+    "cli_condition": "contract = false; the current native wrapper invokes Protocol.Validity.check with initial work 10000000. The contract = true branch invokes a different checker and is outside these proposals.",
+    "quantification": "For every bytes : ByteArray, hasRequest : Bool, and work left : Nat, if (Protocol.Validity.check bytes).run work = (.ok hasRequest, left). Neither success nor receipt data are supplied by Rust or an evidence producer as a proof premise.",
+    "binding": "Acceptance retains exact original packet bytes, extracted body/request bytes, decoded artifact/order, decoded optional requirement, intermediate work values, successful inspect of that artifact, and the request-presence result. The returned program is selected by binding.artifact.programs[binding.artifact.root]? = some program.",
+    "bounded_fragment": "The fragment is all successful inputs to this actual ordinary QLV1 definition with its current structural, transport and work limits. Theorems quantify all natural-number starting/remaining budgets; they are not restricted to tested examples. They do not require a finite contract request, dense matrix reconstruction, or a caller-supplied semantic witness."
+  },
+  "guarantees": [
+    {
+      "id": "QS-QLV1-OWNERSHIP-2026-01",
+      "title": "Linear ownership of the original QLV1 decoded root",
+      "jurisdiction": "QS",
+      "interpretation": "QS-2026-01",
+      "status": "proposed",
+      "theorem": {
+        "path": "lean-kernel/Protocol/Validity.lean",
+        "declaration": "QleisliKernel.Protocol.Validity.check_ownershipSafe"
+      },
+      "property": {
+        "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+        "declaration": "QleisliKernel.Semantics.Ownership.OwnershipSafe"
+      },
+      "formal_statement": "∀ (bytes : ByteArray) (hasRequest : Bool) (work left : Nat),\n  (QleisliKernel.Protocol.Validity.check bytes).run work = (.ok hasRequest, left) →\n  ∃ binding : QleisliKernel.Protocol.Validity.Acceptance bytes hasRequest work left,\n    ∃ program : QleisliKernel.Semantics.Observation.Program,\n      binding.artifact.programs[binding.artifact.root]? = some program ∧\n      QleisliKernel.Semantics.Ownership.OwnershipSafe program",
+      "property_definition": "There exist initial and final independent ownership states such that Inputs {} program.inputs initial, Run initial program.operations final, and Returned final program.outputs.",
+      "scope": "Every original ordinary raw root decoded from bytes on which the current QLV1 check succeeds, with or without an optional independent finite request. This is a root-program ownership property; it is not a separate guarantee about every dependency body or every public source program.",
+      "interface": "The actual root program quantum input ports and output owner tokens, including zero-width ports, their recorded wires and bit counts, and the complete live ownership frame. No source tuple-tree or declared external basis equivalence is inferred from equal bit width.",
+      "covered_properties": [
+        "Quantum inputs are introduced through the independent Inputs rules. Zero physical width does not remove the logical owner.",
+        "Run gives a Valid ownership state at each instruction boundary in both classical branch arms, with exclusive live owners and wires, a complete live frame, and globally issued identities retained after consumption.",
+        "Pure operations obey independent original-operation access and consumption/return rules. Measure, reset and explicit discard have their declared ownership transitions.",
+        "Branch quantum phis cover both live arm interfaces, and Returned accounts for the final live owners without implicit dropping or duplicate return."
+      ],
+      "semantic_dependencies": [
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+          "declaration": "QleisliKernel.Semantics.Ownership.Inputs"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+          "declaration": "QleisliKernel.Semantics.Ownership.Run"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+          "declaration": "QleisliKernel.Semantics.Ownership.Returned"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+          "declaration": "QleisliKernel.Semantics.Ownership.Valid"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/RawTrace.lean",
+          "declaration": "QleisliKernel.Semantics.RawTrace.step"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Observation.lean",
+          "declaration": "QleisliKernel.Semantics.Observation.Program"
+        }
+      ],
+      "proof_chain": [
+        {
+          "path": "lean-kernel/Protocol/Validity.lean",
+          "declaration": "QleisliKernel.Protocol.Validity.check_acceptance"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
+          "declaration": "QleisliKernel.Qirf.Validity.inspect_ownershipSafe"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
+          "declaration": "QleisliKernel.Qirf.Validity.check_ownershipSafe"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean",
+          "declaration": "QleisliKernel.Raw.Observation.verify_ownershipSafe"
+        }
+      ]
+    },
+    {
+      "id": "QS-QLV1-SCOPE-2026-01",
+      "title": "Classical lexical scope of the original QLV1 decoded root",
+      "jurisdiction": "QS",
+      "interpretation": "QS-2026-01",
+      "status": "proposed",
+      "theorem": {
+        "path": "lean/Qleisli/NativeValidity.lean",
+        "declaration": "Qleisli.NativeValidity.check_scopeSafe"
+      },
+      "property": {
+        "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+        "declaration": "QleisliKernel.Semantics.ClassicalScope.ScopeSafe"
+      },
+      "formal_statement": "∀ (bytes : ByteArray) (hasRequest : Bool) (work left : Nat),\n  (QleisliKernel.Protocol.Validity.check bytes).run work = (.ok hasRequest, left) →\n  ∃ binding : QleisliKernel.Protocol.Validity.Acceptance bytes hasRequest work left,\n    ∃ program : QleisliKernel.Semantics.Observation.Program,\n      binding.artifact.programs[binding.artifact.root]? = some program ∧\n      QleisliKernel.Semantics.ClassicalScope.ScopeSafe program",
+      "property_definition": "There exist initial and final independent classical scope states such that Inserts {} program.classicalInputs initial, Run initial program.operations final, and every value in program.classicalOutputs is Visible final.",
+      "scope": "Every original ordinary raw root decoded from bytes on which the current QLV1 check succeeds, with or without an optional independent finite request. This is a root-program classical scope property; it is not a theorem about source name resolution or runtime values.",
+      "interface": "The actual root program classical input identities, original operation lists in both arms, classical phi operands/destinations and returned classical identities. These are IR identities, not source spellings or lifetimes.",
+      "covered_properties": [
+        "Classical inputs and definitions receive fresh globally issued identities, including identities issued in an inaccessible prior branch arm.",
+        "Classical not/xor/and inputs and branch conditions are visible in their lexical environment; both complete branch arms satisfy the independent Run rules.",
+        "Each phi operand is resolved in its own completed arm or enclosing environment before any simultaneous phi destination is introduced.",
+        "Every returned classical identity is visible in the final scope. This does not assert a value, probability or quantum effect semantics."
+      ],
+      "semantic_dependencies": [
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+          "declaration": "QleisliKernel.Semantics.ClassicalScope.Inserts"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+          "declaration": "QleisliKernel.Semantics.ClassicalScope.Run"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+          "declaration": "QleisliKernel.Semantics.ClassicalScope.Visible"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+          "declaration": "QleisliKernel.Semantics.ClassicalScope.Phis"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/Observation.lean",
+          "declaration": "QleisliKernel.Semantics.Observation.Program"
+        }
+      ],
+      "proof_chain": [
+        {
+          "path": "lean/Qleisli/NativeValidity.lean",
+          "declaration": "Qleisli.NativeValidity.check_sound"
+        },
+        {
+          "path": "lean/Qleisli/QirfValidity.lean",
+          "declaration": "Qleisli.Qirf.Validity.inspect_sound"
+        },
+        {
+          "path": "lean/Qleisli/QirfValidity.lean",
+          "declaration": "Qleisli.Qirf.Validity.root_meaning"
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Raw/ObservationScope.lean",
+          "declaration": "QleisliKernel.Raw.Observation.verify_scopeSafe"
+        }
+      ]
+    }
+  ],
+  "assumptions_and_limits": {
+    "formal_logic": "Lean 4.30.0 checks the stated propositions. The recorded standard axiom basis is propext, Classical.choice and Quot.sound; no project axiom or new semantic assumption is introduced by this proposal or the OwnershipSafe rename.",
+    "independent_properties": "OwnershipSafe and ScopeSafe are declarative judgments over the original Observation.Program. Their semantic modules do not import an acceptance checker or define the properties as successful verification. Adequacy of these judgments for the two stated QS components requires human review.",
+    "wire_and_native_correspondence": "The Lean packet and QIRF decoder computations occur in the Acceptance witness. Correspondence of those computations with an independently specified external wire format, and correctness of native compilation, IO, runtime and selected executable provenance, are not proved by these two theorems.",
+    "host_correspondence": "Rust decoding, private accepted-handle binding, re-materialization, simulation, source lowering and other public caller behavior remain separate obligations. A theorem about the Lean decoded root does not by itself establish the meaning of the source program or runtime/exported artifact.",
+    "excluded_claims": [
+      "ordinary-root quantum EffectSound or CPTP semantics",
+      "exact phase or requested algorithm correctness beyond the two stated structural predicates",
+      "clean-workspace or dirty-workspace semantic discharge",
+      "full source type/tuple/basis or source-preservation theorem",
+      "runtime or exported-target correctness",
+      "hierarchical or native-contract acceptance coverage",
+      "Physical Realizability (PR)",
+      "quantitative Resource Safety (RS)",
+      "full QS-2026-01 discharge or production-wide constitutional certification"
+    ],
+    "pending_obligations": [
+      "QS-2026-01",
+      "PR-2026-01",
+      "RS-2026-01"
+    ],
+    "continuity": "Any later admission protects only these two scopes and their recorded meanings/premises. Later releases must bind them to their current actual acceptance definitions and artifacts, with justified semantic transport when representations change. Keeping an old theorem or the present code hash alone is insufficient."
+  },
+  "evidence": {
+    "review_source": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/Review.lean",
+      "sha256": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4"
+    },
+    "printed_declarations": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
+      "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b"
+    },
+    "review_stderr": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "role": "The review material exposes actual elaborated theorem types, property definitions and axiom information. Recorded build/audit/replay checks are proof and identity evidence for their stated scope, not a human adequacy or admission decision.",
+    "validation_record": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/validation.json",
+      "sha256": "0afcb38ce713a998cb8025d4e6b4406a9e1ac023cd04cf273eaae67a58508720"
+    }
+  },
+  "decision_requested": "The appointed human Guardian is asked to judge whether each independent property and its exact actual-checker formalization adequately expresses the stated narrow QS component, and whether to admit the two identified scoped guarantees using the recorded proof evidence. Approval of both would not discharge the three broader interpretations. No silence, general implementation permission, helper-lemma existence, successful audit or automated check can substitute for that affirmative judgment."
+}

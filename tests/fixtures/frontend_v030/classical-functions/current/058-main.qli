@@ -1,0 +1,7 @@
+use std::quantum::init0;use std::quantum::h;use std::quantum::t;
+use std::quantum::join;use std::quantum::split;
+use std::observe::measure_z;use std::observe::discard;
+classical fn predicate((a,b):(Bit,Bit))->Bit{1}
+unitary fn logical(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{with_computed(q,predicate){|flag|t(flag)}}
+unitary fn mark(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{with_computed(q,predicate,logical){|data,flag|(data,t(flag))}}
+observe fn main()->(Bit,Bit){let q=mark(join(init0(),init0()));let(a,b)=split(q);(measure_z(a),measure_z(b))}

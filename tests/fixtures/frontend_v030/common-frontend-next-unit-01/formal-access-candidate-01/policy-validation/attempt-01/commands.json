@@ -1,0 +1,313 @@
+{
+  "commands": [
+    {
+      "id": "00.mdbook-version",
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:19.794414+00:00",
+      "elapsed_seconds": 0.011025749961845577,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "00.mdbook-version.stdout.txt",
+        "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+        "bytes": 14
+      },
+      "stderr": {
+        "path": "00.mdbook-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "01.mdbook-build",
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs",
+        "--dest-dir",
+        "/private/tmp/qleisli-formal-policy-book-_8anjkhq/book"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:19.806694+00:00",
+      "elapsed_seconds": 0.1298232499975711,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "01.mdbook-build.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "01.mdbook-build.stderr.txt",
+        "sha256": "5e37d5d9b2e17b064b32af94abcc5a05790331b3014f5632f8cd4011383402c2",
+        "bytes": 146
+      }
+    },
+    {
+      "id": "02.rendered-book",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_book.py",
+        "--root",
+        "/private/tmp/qleisli-formal-policy-book-_8anjkhq/book"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:19.938200+00:00",
+      "elapsed_seconds": 0.24174870899878442,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "02.rendered-book.stdout.txt",
+        "sha256": "791c4c5ed2b41e868c3af3c7e0378e1b55e00e72d2f9ca867bd9674ca549e4d2",
+        "bytes": 67
+      },
+      "stderr": {
+        "path": "02.rendered-book.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "03.book-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_book.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:20.242050+00:00",
+      "elapsed_seconds": 0.1332804579869844,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "03.book-regression.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "03.book-regression.stderr.txt",
+        "sha256": "39e318b7c69f4f407e0b4e000b39f47db108a302dbe0cafa0c95519ac6912503",
+        "bytes": 111
+      }
+    },
+    {
+      "id": "04.authoring",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:20.242133+00:00",
+      "elapsed_seconds": 0.6282345419749618,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "04.authoring.stdout.txt",
+        "sha256": "3f09fd19a1e76f63bdcd035783dabd391c306b4e1a3d1c0ba7eac29219fc6b4c",
+        "bytes": 95
+      },
+      "stderr": {
+        "path": "04.authoring.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "05.authoring-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:20.376507+00:00",
+      "elapsed_seconds": 0.1303843330242671,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "05.authoring-regression.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "05.authoring-regression.stderr.txt",
+        "sha256": "62f4decbacb2e031de4e76f2bc96caa7cf3ec498967ced4083e0885df723cc1e",
+        "bytes": 105
+      }
+    },
+    {
+      "id": "06.editions",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_editions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:20.507739+00:00",
+      "elapsed_seconds": 4.505417666980065,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "06.editions.stdout.txt",
+        "sha256": "2c960bff8b723f8491d25e630dd72098545128ee520726b7c3bb9e5549969862",
+        "bytes": 236
+      },
+      "stderr": {
+        "path": "06.editions.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "07.edition-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_editions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:20.871287+00:00",
+      "elapsed_seconds": 0.46175279101589695,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "07.edition-regression.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "07.edition-regression.stderr.txt",
+        "sha256": "ae6ad4d8195d28d8d5037a0c8092615c1fc65b192c83c8e8409b83d58dc797b0",
+        "bytes": 110
+      }
+    },
+    {
+      "id": "08.docs",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:21.334110+00:00",
+      "elapsed_seconds": 2.1540657079895027,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "08.docs.stdout.txt",
+        "sha256": "44d8fd3e0b652d1b1f39545b0b133a677b40121fa0e0abc17ef14f0a7305e19c",
+        "bytes": 109
+      },
+      "stderr": {
+        "path": "08.docs.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "09.docs-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:23.489584+00:00",
+      "elapsed_seconds": 0.2976056250045076,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "09.docs-regression.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "09.docs-regression.stderr.txt",
+        "sha256": "338b2029a9a50a4a701fa1050c63cad8bd10ca054f49d0b36bd4a6f63a40174e",
+        "bytes": 135
+      }
+    },
+    {
+      "id": "10.constitution",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:23.788450+00:00",
+      "elapsed_seconds": 1.2180892499745823,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "10.constitution.stdout.txt",
+        "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+        "bytes": 420
+      },
+      "stderr": {
+        "path": "10.constitution.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "11.inventory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:25.008430+00:00",
+      "elapsed_seconds": 0.45479608298046514,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "11.inventory.stdout.txt",
+        "sha256": "9d4004245cecb9388bb9b5fbbd5eb1124983d7b0c5b287b75dd8cc53560d2f73",
+        "bytes": 126
+      },
+      "stderr": {
+        "path": "11.inventory.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "12.coverage",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T19:20:25.014259+00:00",
+      "elapsed_seconds": 0.13242216600337997,
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "stdout": {
+        "path": "12.coverage.stdout.txt",
+        "sha256": "01988f73bb44af12755aa85e81b748373e9f18116c60fdcae362f0a3846b7164",
+        "bytes": 463
+      },
+      "stderr": {
+        "path": "12.coverage.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "recorded_commands_executed": false,
+  "driver_sha256": "9e261bfca582b1197b979a6bd3558283e3534995f1245295c58b1e1a7b7d12e0",
+  "helper_sha256": "5ea1858791b3dd58857ef568b3bacb64cd1d8494bc28869d60d83b9be383a9a2"
+}

@@ -11,5 +11,5 @@ the project's [GitHub Discussions](https://github.com/MGYamada/Qleisli/discussio
 | --- | --- | --- |
 | ![Circular Q with a composition arrow](01-composition-q.png) | ![Q formed from interwoven curves](02-interwoven-q.png) | ![Angular Q with a right-pointing tail](03-angular-q.png) |
 
-Copyright 2026 Masahiko G. Yamada. Distributed under the project's
+Copyright 2026 Qleisli Project Contributors. Distributed under the project's
 [Apache-2.0 license](../../../LICENSE).

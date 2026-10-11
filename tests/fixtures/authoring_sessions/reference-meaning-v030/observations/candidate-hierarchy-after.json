@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/candidate/main.qli",
+    "--entry=main::main",
+    "--ir-profile=hierarchy",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::main\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "stderr": "",
+  "seconds": 0.5442684169393033,
+  "recorded_utc": "2026-10-11T01:56:17.056812+00:00",
+  "cli_sha256_before": "9d9db9e82acd2d190445ea7d4c8268d1ec60926f1894c59d35c0a7c420b8fa1a",
+  "cli_sha256_after": "9d9db9e82acd2d190445ea7d4c8268d1ec60926f1894c59d35c0a7c420b8fa1a",
+  "kernel_sha256": "635892f73e8eede64f16e1cd6dd89b612a3b8caac88904fcd747f69f1e47dff4",
+  "source_sha256": "6758a1fc807a8061d505009f73b3d0d5aa489d40cd2ec626ed255a561542c926"
+}

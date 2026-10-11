@@ -1,0 +1,26 @@
+{
+  "scope": "Ordinary untrusted body-derived effects and immutable metadata; native acceptance constructors and formal obligations unchanged.",
+  "new_constructor": {
+    "FnKind.Inferred": "ordinary typed runtime body, no effect assertion"
+  },
+  "new_source": "src/frontend/effects.rs",
+  "reviewed_sources": [
+    "src/frontend/effects.rs",
+    "src/frontend/sized.rs",
+    "src/frontend/documentation.rs",
+    "src/frontend/mod.rs",
+    "src/frontend/ast.rs",
+    "src/frontend/parser.rs",
+    "src/frontend/sized/check.rs",
+    "src/frontend/sized/ast.rs",
+    "src/frontend/sized/parser.rs",
+    "src/frontend/compile/mod.rs",
+    "src/frontend/compile/operations.rs",
+    "src/frontend/compile/lower/function_contract.rs",
+    "src/frontend/compile/lower/mod.rs"
+  ],
+  "public_metadata": "FunctionEffect/ProjectEffects have private state and no public constructor; copied facts cannot authorize execution. project_effects_with_kernel runs the existing whole-project native checks; documentation binds retained immutable bytes.",
+  "stdlib_migration": "Only redundant prefixes removed in ten ordinary definitions; basis/Meaning rules, primitive catalog, bodies and mathematical comments preserved.",
+  "tests": "tests/body_effects.rs and existing source/native/independent small semantics fixtures",
+  "pending": "No general source-preservation, full QS/PR/RS or exactness discharge. The two admitted QLV1 definitions/evidence remain unchanged."
+}

@@ -1,0 +1,407 @@
+{
+  "rows": [
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/nested-runtime-parameter-finite-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/nested-runtime-parameter-finite-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/nested-runtime-parameter-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/nested-runtime-parameter-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/nested-runtime-parameter-selected-auto-emit-proposal-json.json",
+      "exit_code": 0,
+      "native_invocations": 0,
+      "proposal_emitted": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/duplicate-runtime-parameter-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/duplicate-runtime-parameter-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/duplicate-runtime-parameter-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/duplicate-runtime-parameter-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/duplicate-runtime-parameter-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/legal-rebinding-finite-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/legal-rebinding-finite-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/legal-rebinding-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/legal-rebinding-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/legal-rebinding-selected-auto-emit-proposal-json.json",
+      "exit_code": 0,
+      "native_invocations": 0,
+      "proposal_emitted": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/hidden-live-owner-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/hidden-live-owner-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/hidden-live-owner-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/hidden-live-owner-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/hidden-live-owner-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/duplicate-join-input-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/duplicate-join-input-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/duplicate-join-input-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/duplicate-join-input-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/duplicate-join-input-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/quantum-unit-wildcard-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/quantum-unit-wildcard-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/quantum-unit-wildcard-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/quantum-unit-wildcard-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/quantum-unit-wildcard-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/empty-register-wildcard-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/empty-register-wildcard-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/empty-register-wildcard-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/empty-register-wildcard-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/empty-register-wildcard-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/unused-invalid-sibling-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 1,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "before/unused-invalid-sibling-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "before/unused-invalid-sibling-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false
+    }
+  ],
+  "source_repairs": 0,
+  "captures_only": true,
+  "native_consistency_is_not_source_preservation": true
+}

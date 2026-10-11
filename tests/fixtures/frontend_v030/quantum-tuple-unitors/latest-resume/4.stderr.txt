@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 4.85s
+     Running tests/sized_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_cli-c4d9275118d1deee)

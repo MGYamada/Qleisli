@@ -1,0 +1,10 @@
+{
+  "format": "qleisli.test-authoring-repair",
+  "status": "actual root compile failure; no source checking observed",
+  "original_test_sha256": "244ec68e8a62ba05580f53841204585a86cd258084a8e7764b942a14a7544308",
+  "original_test_bytes": 4258,
+  "raw_failure_log": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-03/03-check-all-targets.stderr.txt",
+  "raw_failure_log_sha256": "ad1b61c608a025d7e59cf3c14ccd116263bbc37865fb9b4096bc6494285aca32",
+  "repair": "Replace four Diagnostic Display interpolations with Debug; no FIRST .qli or manifest changes",
+  "executed_by_packet_author": false
+}

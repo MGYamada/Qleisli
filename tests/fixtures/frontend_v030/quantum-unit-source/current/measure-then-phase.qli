@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::phase_eighth;
+use std::observe::measure_z;
+pub observe fn f(q: Q<Unit>,c: Q<Bit>) -> (Bit,Q<Unit>) { let b = measure_z(c); let q = phase_eighth(q); (b,q) }

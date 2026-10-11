@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::unit;
+use std::quantum::finish;
+pub unitary fn f(q: Q<Bits<0>>) -> Unit { finish(q) }
+pub unitary fn wrong_bit(q: Q<Bit>) -> Unit { finish(q) }
+
+observe fn main() -> Unit { () }

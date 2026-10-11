@@ -1,0 +1,13 @@
+{
+  "finding": "Reference incorrectly equated exact fixed-state return with separation alone.",
+  "counterexample": "An auxiliary fixed at |1> is separable but fails required |0> return.",
+  "original": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/reference-before-review-01.md.txt",
+    "sha256": "8d2c489b9f73a6987c4e1a2fa358e656ce7feee16c9ad872a93b70353f422d16"
+  },
+  "corrected": {
+    "path": "docs/src/reference/rust-boundary.md",
+    "sha256": "80752a6b7bf86cfef80d0ac79db01d5f3140c4b9882a40bd22e34003e77263d4"
+  },
+  "scope": "Ordinary Reference correction applying adopted QS-2026-01 exact fixed-pure-state and all-input channel premises. No interpretation adoption, changed acceptance or proof discharge."
+}

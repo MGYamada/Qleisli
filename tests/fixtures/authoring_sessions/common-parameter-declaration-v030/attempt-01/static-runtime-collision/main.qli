@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub unitary fn entry(q: Q<Bit>) -> Q<Bit> { q }
+
+unitary fn collision[static U: Op<Bit>](U: Q<Bit>) -> Q<Bit>
+    requires Apply(U) {
+    U
+}

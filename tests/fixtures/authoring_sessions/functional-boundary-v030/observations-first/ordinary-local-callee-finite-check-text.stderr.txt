@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/ordinary-local-callee/main.qli:7:15: type_mismatch: a local value is not callable

@@ -1,0 +1,28 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "9a1ecef79f2f1e42f94093b6f4822f282f6e9129"
+    ],
+    "exit": 0,
+    "seconds": 1.2906239579897374
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit": 0,
+    "seconds": 0.41028612497029826
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit": 1,
+    "seconds": 0.04085633298382163
+  }
+]

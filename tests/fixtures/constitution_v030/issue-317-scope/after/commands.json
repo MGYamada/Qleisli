@@ -1,0 +1,75 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:16:10.645521+00:00",
+    "seconds": 1.1499006249941885,
+    "stderr": "01.stderr.txt",
+    "stdout": "01.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_check_release_ready.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:16:11.795454+00:00",
+    "seconds": 79.74016083299648,
+    "stderr": "02.stderr.txt",
+    "stdout": "02.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_ci_profiles.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:17:31.535897+00:00",
+    "seconds": 0.7671659580082633,
+    "stderr": "03.stderr.txt",
+    "stdout": "03.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_docs.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:17:32.303082+00:00",
+    "seconds": 2.28523654199671,
+    "stderr": "04.stderr.txt",
+    "stdout": "04.stdout.txt",
+    "timeout_seconds": 180
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "scripts/check_release_ready.py",
+      "scripts/test_check_release_ready.py",
+      ".github/ci/README.md",
+      "docs/src/design/ratification.md"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "observed_utc": "2026-10-05T15:17:34.588340+00:00",
+    "seconds": 0.01638295903103426,
+    "stderr": "05.stderr.txt",
+    "stdout": "05.stdout.txt",
+    "timeout_seconds": 180
+  }
+]

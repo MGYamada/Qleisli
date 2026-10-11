@@ -8,6 +8,10 @@ use std::path::PathBuf;
 use super::ast::Span;
 use super::compile::{CompileError, ErrorCode};
 
+pub(crate) const CONTROL_ACCESS_EXPLANATION: &str = "ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access";
+
+pub(crate) const UNSUPPORTED_REFERENCE_EXPLANATION: &str = "Rust-style references are not supported; for quantum access, excl grants arbitrary coherent access, while ctrl requires computational-basis sector preservation, not an unchanged quantum state. Phase kickback and entanglement are permitted; do not mechanically replace & with ctrl";
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SourceLocation {
     /// Original source identity, before a CLI makes it project-relative.

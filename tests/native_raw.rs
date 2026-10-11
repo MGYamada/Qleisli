@@ -53,6 +53,30 @@ fn rejected(program: RawProgram, phrase: &str) {
 }
 
 #[test]
+fn appended_classical_history_fits_the_native_deadline() {
+    // A small zero-qubit program previously exhausted the 60-second deadline:
+    // every step checked a growing history with nested membership scans.
+    let count = 6_000u32;
+    let operations = (0..count)
+        .map(|id| RawOp::ClassicalConst {
+            value: false,
+            output: c(id),
+        })
+        .collect();
+    let checked = accept(program(
+        vec![],
+        vec![],
+        operations,
+        vec![],
+        vec![c(count - 1)],
+        Effect::Observe,
+    ))
+    .expect("append-only classical histories must fit the native deadline");
+    assert_eq!(checked.program().operations.len(), count as usize);
+    assert_eq!(checked.program().classical_outputs, vec![c(count - 1)]);
+}
+
+#[test]
 #[ignore = "historical Rust scaling experiment; maximum-size runs are deferred"]
 fn many_live_wires_do_not_require_quadratic_duplicate_checks() {
     let count = 80_000u32;
@@ -68,7 +92,7 @@ fn many_live_wires_do_not_require_quadratic_duplicate_checks() {
         operations,
         (0..count).map(t).collect(),
         vec![],
-        Effect::Iso,
+        Effect::Isometry,
     ))
     .unwrap();
     assert_eq!(checked.program().quantum_outputs.len(), count as usize);
@@ -437,7 +461,7 @@ fn implicit_drop_is_rejected() {
             vec![],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "omitted",
     );
@@ -463,7 +487,7 @@ fn noninjective_and_partial_lifts_are_rejected() {
                 }],
                 vec![t(1)],
                 vec![],
-                Effect::Iso,
+                Effect::Isometry,
             ),
             phrase,
         );
@@ -502,7 +526,7 @@ fn measurement_cannot_claim_pure_effect() {
             }],
             vec![],
             vec![c(0)],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "effect",
     );
@@ -654,7 +678,7 @@ fn branch_rejects_unmerged_or_mismatched_quantum_contexts() {
             }],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "unmerged",
     );
@@ -703,7 +727,7 @@ fn branch_effects_cannot_be_hidden_and_arm_ids_must_be_globally_fresh() {
             }],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "effect",
     );
@@ -858,7 +882,7 @@ fn oversized_register_and_deeply_nested_branch_are_rejected() {
             vec![],
             vec![t(0)],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "finite basis shape",
     );

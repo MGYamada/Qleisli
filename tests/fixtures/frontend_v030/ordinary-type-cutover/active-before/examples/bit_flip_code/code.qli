@@ -1,0 +1,33 @@
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::split;
+use std::quantum::join;
+use std::routines::parity_zz;
+
+pub iso fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
+    do a <- q; pure ((a, a), a)
+}
+
+// Contract: an encoded state with at most one X error, ideal operations.
+// Return every data wire and both classical syndrome bits.
+pub observe fn recover(q: Q<((Bit, Bit), Bit)>) -> (Q<((Bit, Bit), Bit)>, (CBit, CBit)) {
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    let ((a, b), s_ab) = parity_zz(a, b);
+    let ((b, c), s_bc) = parity_zz(b, c);
+    let ((a, b), c) = if s_ab {
+        if s_bc { ((a, x(b)), c) } else { ((x(a), b), c) }
+    } else {
+        if s_bc { ((a, b), x(c)) } else { ((a, b), c) }
+    };
+    (join(join(a, b), c), (s_ab, s_bc))
+}
+
+// Keep the two decoded auxiliaries owned; no implicit pure release.
+pub unitary fn decode(q: Q<((Bit, Bit), Bit)>) -> (Q<Bit>, (Q<Bit>, Q<Bit>)) {
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    let (a, b) = cnot(a, b);
+    let (a, c) = cnot(a, c);
+    (a, (b, c))
+}

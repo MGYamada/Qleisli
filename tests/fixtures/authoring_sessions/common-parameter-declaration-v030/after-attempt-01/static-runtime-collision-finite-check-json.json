@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.01174491597339511,
+  "recorded_utc": "2026-10-05T17:16:43.093008+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "static-runtime-collision-finite-check-json.native.jsonl",
+  "stdout_raw": "static-runtime-collision-finite-check-json.stdout.txt",
+  "stderr_raw": "static-runtime-collision-finite-check-json.stderr.txt",
+  "stdout_sha256": "3b3bc1f391fe2c7c1a6a1c06d855fc623fdac0534dc856a6a0c8923494e2ccd2",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

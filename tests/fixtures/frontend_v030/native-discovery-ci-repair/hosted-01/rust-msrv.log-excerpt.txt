@@ -1,0 +1,21 @@
+Selected original decoded log lines 122-125; this is an excerpt, not a full log.
+2026-10-06T04:42:30.0371113Z HEAD is now at 12e78df Merge 5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:42:30.0401483Z ##[endgroup]
+2026-10-06T04:42:30.0443409Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:42:30.0466433Z 12e78df720405ae46fdb7c2ce7674d3e67708305
+
+Selected original decoded log lines 1179-1192; this is an excerpt, not a full log.
+2026-10-06T04:59:50.6601317Z thread 'compiled_project_discovery_selects_current_sources' panicked at tests/native_roundtrip.rs:182:5:
+2026-10-06T04:59:50.6602047Z assertion `left == right` failed: current corpus snapshots not selected
+2026-10-06T04:59:50.6602486Z   left: 8
+2026-10-06T04:59:50.6602698Z  right: 6
+2026-10-06T04:59:50.6603065Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T04:59:50.6603468Z 
+2026-10-06T04:59:50.6603472Z 
+2026-10-06T04:59:50.6603564Z failures:
+2026-10-06T04:59:50.6603855Z     compiled_project_discovery_selects_current_sources
+2026-10-06T04:59:50.6604065Z 
+2026-10-06T04:59:50.6604462Z test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 73.16s
+2026-10-06T04:59:50.6604901Z 
+2026-10-06T04:59:50.6605745Z error: test failed, to rerun pass `--test native_roundtrip`
+2026-10-06T04:59:50.6629731Z ##[error]Process completed with exit code 101.

@@ -1,0 +1,414 @@
+{
+  "review": "Independent production review plus retained source/diagnostic evidence; no native semantic constructor, proof scope or immutable corpus pin changes.",
+  "inventory_before": "873ba806691a8520d6dceac6b29715bc38227bdd18f0360748041e6cbe3e407b",
+  "inventory_after": "47718169f46157e4e26a45acb7e6366eedd7672da1e967a66adc90fe6bace97b",
+  "sources": [
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "before": "3aef104b7e6910f2befac3bcd2c95052a8a0c50b11dae386385bfd214d814777",
+      "after": "3a167ba29926929bd46759f29de08a3b230114bd79f434402135097854fc5763",
+      "surface_before": {
+        "declarations": [],
+        "functions": [
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [],
+        "functions": [
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before": "f7530be1e3ff58bddaf7959e03f987d9a03d6097a951530d90955371c24bd4a2",
+      "after": "b3f0a2f6f8a813754b997acc35d18487144ac782a63c4d3f4adb994eda5c5d48",
+      "surface_before": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "before": "47f8a38a8f9e03fa1a1c5226067892ce6ddca574c767f1e764ab7f3366bd6d2e",
+      "after": "17e892946f9b44bbbc15bffd9bbe2580843467bb00f2586540ea9196bfb4ce2b",
+      "surface_before": {
+        "declarations": [
+          "ElaboratedProgram",
+          "HierarchyEligibility",
+          "SourceDefinition",
+          "SourceOperation",
+          "SourceStep",
+          "SourceType",
+          "SourceValue"
+        ],
+        "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
+          "pub fn call_instances(&self) -> usize",
+          "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn child(&self) -> Option<&Self>",
+          "pub fn definition(&self) -> Option<usize>",
+          "pub fn definitions(&self) -> &[SourceDefinition]",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn fields(&self) -> &[SourceType]",
+          "pub fn fields(&self) -> &[SourceValue]",
+          "pub fn fold_iterations(&self) -> usize",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
+          "pub fn identity(&self) -> Option<u32>",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn instantiation(&self) -> &Instantiation",
+          "pub fn is_quantum(&self) -> bool",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
+          "pub fn module(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn natural_arguments(&self) -> &[u32]",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn operation(&self) -> Option<&SourceOperation>",
+          "pub fn operation_bindings(&self) -> Option<&BTreeMap<String, SourceOperation>>",
+          "pub fn operations(&self) -> &BTreeMap<String, SourceOperation>",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn path(&self) -> &str",
+          "pub fn peak_quantum_width(&self) -> usize",
+          "pub fn primitive(&self) -> Option<&str>",
+          "pub fn repeat_count(&self) -> Option<u32>",
+          "pub fn root(&self) -> usize",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn steps(&self) -> &[SourceStep]",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn width(&self) -> Option<u32>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_FOLDS: usize = 1_024;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      },
+      "surface_after": {
+        "declarations": [
+          "ElaboratedProgram",
+          "HierarchyEligibility",
+          "SourceDefinition",
+          "SourceOperation",
+          "SourceStep",
+          "SourceType",
+          "SourceValue"
+        ],
+        "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
+          "pub fn call_instances(&self) -> usize",
+          "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn child(&self) -> Option<&Self>",
+          "pub fn definition(&self) -> Option<usize>",
+          "pub fn definitions(&self) -> &[SourceDefinition]",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn fields(&self) -> &[SourceType]",
+          "pub fn fields(&self) -> &[SourceValue]",
+          "pub fn fold_iterations(&self) -> usize",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
+          "pub fn identity(&self) -> Option<u32>",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn instantiation(&self) -> &Instantiation",
+          "pub fn is_quantum(&self) -> bool",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
+          "pub fn module(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn natural_arguments(&self) -> &[u32]",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn operation(&self) -> Option<&SourceOperation>",
+          "pub fn operation_bindings(&self) -> Option<&BTreeMap<String, SourceOperation>>",
+          "pub fn operations(&self) -> &BTreeMap<String, SourceOperation>",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn path(&self) -> &str",
+          "pub fn peak_quantum_width(&self) -> usize",
+          "pub fn primitive(&self) -> Option<&str>",
+          "pub fn repeat_count(&self) -> Option<u32>",
+          "pub fn root(&self) -> usize",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn steps(&self) -> &[SourceStep]",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn width(&self) -> Option<u32>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_FOLDS: usize = 1_024;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/fourier.rs",
+      "before": "2761a265a0a81ed110e53ea8fe0a16362c0f3e856498f796fc0fb6dcb0548530",
+      "after": "a0742c45503a91cbc7402d749fe607efe7c257fbcfc310b5aac6be173a3cbaee",
+      "surface_before": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "before": "e7b77e5050348184b0272af08c530cb2d7e83ab4f157df1874f5d2a9cfc61e2e",
+      "after": "211cc20c96a5edbc9530b67a00a192f92e302a5a5c50ad4f3b008c6a126a9fb8",
+      "surface_before": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/lower/preservation.rs",
+      "before": "054bb96b3a53c1dddbda85ad7ea96de0eaf8aa991ea5bd8050681ebf58779f15",
+      "after": "086eb537d40a6ff5a15a604b065d61e948e96de068b874a96756e8ba1c319ce7",
+      "surface_before": {
+        "declarations": [
+          "FramePort",
+          "InitializationMove",
+          "PreparationValidation",
+          "SourceEvent"
+        ],
+        "functions": [
+          "pub fn axes(&self) -> &[u32]",
+          "pub fn basis_kind(&self) -> &'static str",
+          "pub fn call_path(&self) -> &[usize]",
+          "pub fn crossed_events(&self) -> &[usize]",
+          "pub fn definition(&self) -> usize",
+          "pub fn events(&self) -> usize",
+          "pub fn initialization_event(&self) -> usize",
+          "pub fn input_frame(&self) -> impl Iterator<Item = FramePort<'_>>",
+          "pub fn is_bit(&self) -> bool",
+          "pub fn kind(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn movements(&self) -> usize",
+          "pub fn output_frame(&self) -> impl Iterator<Item = FramePort<'_>>",
+          "pub fn owner(&self) -> u32",
+          "pub fn span(&self) -> Span",
+          "pub fn step(&self) -> usize",
+          "pub fn unitary_definition(&self) -> Option<usize>"
+        ],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [
+          "FramePort",
+          "InitializationMove",
+          "PreparationValidation",
+          "SourceEvent"
+        ],
+        "functions": [
+          "pub fn axes(&self) -> &[u32]",
+          "pub fn basis(&self) -> &SourceType",
+          "pub fn basis_kind(&self) -> &'static str",
+          "pub fn call_path(&self) -> &[usize]",
+          "pub fn crossed_events(&self) -> &[usize]",
+          "pub fn definition(&self) -> usize",
+          "pub fn events(&self) -> usize",
+          "pub fn initialization_event(&self) -> usize",
+          "pub fn input_frame(&self) -> impl Iterator<Item = FramePort<'_>>",
+          "pub fn is_bit(&self) -> bool",
+          "pub fn kind(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn movements(&self) -> usize",
+          "pub fn output_frame(&self) -> impl Iterator<Item = FramePort<'_>>",
+          "pub fn owner(&self) -> u32",
+          "pub fn span(&self) -> Span",
+          "pub fn step(&self) -> usize",
+          "pub fn unitary_definition(&self) -> Option<usize>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "before": "2ad3556645b8a0550308835beef87883ecd4b4f3fb000c6cfa35555b812249ca",
+      "after": "a86610fdceafe7fe18c7dbb06bd29f3147056a4007ed4d57207eab8d5da866f8",
+      "surface_before": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/primitive.rs",
+      "before": "d676744dfb426b1a59f8679a91bf6d85cca163a88c788e23a21c325d2ae3dfb5",
+      "after": "0e70474274063528868b99a43eeea6ad6b856de0f1a2a5d2e4eac0a5c393d700",
+      "surface_before": {
+        "declarations": [],
+        "functions": [
+          "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn runtime_arity(self) -> usize",
+          "pub fn signature(self) -> Signature"
+        ],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [],
+        "functions": [
+          "pub fn dependent(self) -> bool",
+          "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn runtime_arity(self) -> usize",
+          "pub fn signature(self) -> Signature"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "before": "c2cc8ab3dea54e33a8e3f0a11fefda827654c2db6ae9359e0d00ac7f5691316a",
+      "after": "e9ec86f24af79c1873a0a39e1b3cbd845617b2456bcb2692e596ceef124fd566",
+      "surface_before": {
+        "declarations": [
+          "Type"
+        ],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "surface_after": {
+        "declarations": [
+          "Type"
+        ],
+        "functions": [
+          "pub fn quantum_basis(&self) -> Option<&Self>"
+        ],
+        "capacity_constants": []
+      }
+    }
+  ],
+  "boundary_before": {
+    "id": "sized-source-proposal",
+    "group": "sized-source",
+    "entry_points": [
+      "ParsedProgram::parse",
+      "ParsedProgram::load",
+      "ParsedProgram::instantiate",
+      "Instantiation::elaborate",
+      "ElaboratedProgram::lower",
+      "HierarchyProposal::validate_initialization_moves",
+      "HierarchyProposal::qpe_binding",
+      "qleisli sized check/run/sample/emit-proposal",
+      "HierarchyProposal::validate_initialization_moves_native",
+      "sized check/run/sample through native-only reports",
+      "ElaboratedProgram::lower_raw",
+      "RawSourceProposal::validate_source_steps",
+      "ElaboratedProgram::hierarchy_eligibility",
+      "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
+    ],
+    "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
+    "request": "Original module bytes, selected public entry and complete natural/operation bindings",
+    "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope.",
+    "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+    "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished.",
+    "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged.",
+    "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
+    "replacement": [
+      "VM-28"
+    ]
+  },
+  "boundary_after": {
+    "id": "sized-source-proposal",
+    "group": "sized-source",
+    "entry_points": [
+      "ParsedProgram::parse",
+      "ParsedProgram::load",
+      "ParsedProgram::instantiate",
+      "Instantiation::elaborate",
+      "ElaboratedProgram::lower",
+      "HierarchyProposal::validate_initialization_moves",
+      "HierarchyProposal::qpe_binding",
+      "qleisli sized check/run/sample/emit-proposal",
+      "HierarchyProposal::validate_initialization_moves_native",
+      "sized check/run/sample through native-only reports",
+      "ElaboratedProgram::lower_raw",
+      "RawSourceProposal::validate_source_steps",
+      "ElaboratedProgram::hierarchy_eligibility",
+      "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
+    ],
+    "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
+    "request": "Original module bytes, selected public entry and complete natural/operation bindings",
+    "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation.",
+    "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+    "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Finite unit/finish and selected coherent lifts are still unsupported, with no implicit profile retry.",
+    "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged.",
+    "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
+    "replacement": [
+      "VM-28"
+    ]
+  }
+}

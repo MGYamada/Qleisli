@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::classical::{empty_bits,prepend_bit};
+unitary fn pack(a:Bit,b:Bit)->Bits<2>{prepend_bit[1](a,prepend_bit[0](b,empty_bits()))}
+use std::quantum::{init0,h,cnot,measure_z}; pub observe fn main()->(Bits<2>,Bits<2>){let q=h(init0());let r=init0();let(q,r)=cnot(q,r);let a=measure_z(q);let b=measure_z(r);let bits=pack(a,b);(bits,bits)}

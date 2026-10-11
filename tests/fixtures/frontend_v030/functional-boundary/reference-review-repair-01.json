@@ -1,0 +1,9 @@
+{
+  "format": "qleisli.functional-boundary-reference-review-repair",
+  "version": 1,
+  "before": {
+    "path": "tests/fixtures/frontend_v030/functional-boundary/reference-before-review-01.md.txt",
+    "sha256": "172e275972d3e73673b7e7f167355f7620d7ec9a29433e2800415537875c9399"
+  },
+  "reason": "Clarify that the constructor table gives common-source interface rules, retaining distinct finite explicit-specialization refusal and selected eligibility; say local runtime value because locally bound static Op formals remain intentionally callable. These qualifiers preserve existing contracts and limits. Earlier mdBook/input captures retain their original source binding."
+}

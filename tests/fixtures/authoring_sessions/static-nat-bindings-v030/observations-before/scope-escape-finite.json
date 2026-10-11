@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/static-nat-bindings-v030/attempt-01/scope-escape",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T09:34:09.213036+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `(`, found `static`",
+        "primary": {
+          "path": "main.qli",
+          "start": 118,
+          "end": 124,
+          "line": 2,
+          "column": 45
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "compiler_sha256": "85b93af82cfc7a384aafc3b7a5893c2705af7ac6c5fc06bafab48ae47e1f11d1"
+}

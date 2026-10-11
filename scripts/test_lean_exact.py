@@ -3,7 +3,7 @@
 
 Temporary harnesses receive raw inputs only. No Rust result, success flag or
 reference summary is passed to Lean. No production protocol or seal is added.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

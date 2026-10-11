@@ -10,12 +10,37 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+import run_native_ci
 
 sys.dont_write_bytecode = True
-from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, source_binding, verify_coverage
+from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, select_tasks, source_binding, verify_coverage
 
 
 class NativeCI(unittest.TestCase):
+    def test_preflight_failure_records_failure_without_building_or_overwriting(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'run'
+            with (patch.object(sys, 'argv', ['run_native_ci.py', '--output', str(output)]),
+                  patch.object(run_native_ci, 'source_binding', side_effect=ValueError('dirty source')),
+                  patch.object(run_native_ci.native_harness, 'prepare') as build):
+                self.assertEqual(run_native_ci.main(), 1)
+                build.assert_not_called()
+                report = (output / 'results.json').read_bytes()
+                self.assertEqual(json.loads(report)['status'], 'failed')
+                self.assertIn('dirty source', json.loads(report)['error'])
+                self.assertTrue(all(row['status'] == 'not-run' for row in json.loads(report)['tasks']))
+                self.assertEqual(run_native_ci.main(), 1)
+                self.assertEqual((output / 'results.json').read_bytes(), report)
+
+    def test_local_reproduction_uses_the_hosted_manifest_without_relaxing_hosted_coverage(self):
+        tasks = load_tasks(MANIFEST)
+        ids = ["lean-observation", "lean-streamed-instrument", "verification-baseline", "native-acceptance"]
+        self.assertEqual({task['id'] for task in select_tasks(tasks, ids)}, set(ids))
+        self.assertEqual(select_tasks(tasks, [], True), tasks)
+        for requested, hosted in [(["missing"], False), ([ids[0], ids[0]], False), (ids, True)]:
+            with self.assertRaises(ValueError):
+                select_tasks(tasks, requested, hosted)
+
     def test_native_cargo_uses_only_the_already_checked_toolchain_pin(self):
         self.assertEqual(launch_command(["cargo", "+1.98.1", "test"]), ["cargo", "test"])
         for version in ["+1.85.0", "+stable", "+nightly"]:
@@ -26,14 +51,16 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 67)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 77)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 91)
         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]
                                 if command not in (["python3", "scripts/test_hierarchical_finite_binding.py"],
                                     ["python3", "scripts/test_verification_decoders.py", "--record", "{record}"],
-                                    ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"])]
+                                    ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"],
+                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"],
+                                    ["python3", "scripts/test_sized_local_resolution.py"])]
         digest = hashlib.sha256(json.dumps(inventory, sort_keys=True).encode()).hexdigest()
         # v0.2.6 workflow commands, replacing only isolated --record paths.
         self.assertEqual(digest, "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e")
@@ -66,10 +93,30 @@ class NativeCI(unittest.TestCase):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-qpe-instrument')
         self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])
 
+    def test_sized_local_resolution_has_a_required_ci_command(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'sized-corpus')
+        self.assertEqual(task['commands'][0], ['python3', 'scripts/test_sized_local_resolution.py'])
+
+    def test_dynamic_component_version_checks_are_required(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-preparation')
+        self.assertIn(['python3', 'scripts/test_instrument_transport.py', '--record', '{record}'], task['commands'])
+
     def test_native_handles_and_original_input_replay_are_required(self):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'native-acceptance')
         self.assertEqual(task['commands'], [
             ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'test', '--test', 'native_roundtrip', '--', '--nocapture'],
+            ['cargo', '+1.98.1', 'test', '--test', 'predicate_domain'],
+            ['cargo', '+1.98.1', 'test', '--test', 'ordinary_types'],
+            ['cargo', '+1.98.1', 'test', '--test', 'unit_patterns'],
+            ['cargo', '+1.98.1', 'test', '--test', 'quantum_unit_source'],
+            ['cargo', '+1.98.1', 'test', '--test', 'quantum_unit_maps'],
+            ['cargo', '+1.98.1', 'test', '--test', 'quantum_tuple_unitors'],
+            ['cargo', '+1.98.1', 'test', '--test', 'runtime_parameter_patterns'],
+            ['cargo', '+1.98.1', 'test', '--test', 'ordinary_booleans'],
+            ['cargo', '+1.98.1', 'test', '--test', 'mixed_booleans'],
+            ['cargo', '+1.98.1', 'test', '--test', 'selected_source_cli'],
+            ['cargo', '+1.98.1', 'test', '--lib', 'raw_source_replay'],
             ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--example', 'native_acceptance'],
             ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
         ])
@@ -78,19 +125,21 @@ class NativeCI(unittest.TestCase):
     def test_workflow_separates_full_proofs_from_native_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         kernel = workflow.split("  check-lean-kernel:\n")[1].split("  check-distribution:\n")[0]
-        for command in ("check_lean_kernel.py", "Audit.lean", "Tests.lean", "kernel-refactoring-equivalence.lean",
+        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "kernel-refactoring-equivalence.lean",
                         "leanchecker --fresh QleisliKernel", "leanchecker --fresh Main", "test_check_lean_kernel.py --compiled"):
             self.assertLess(kernel.index(command), kernel.index("run_native_ci.py"))
         model = workflow.split("  check-lean:\n")[1].split("  check-lean-kernel:\n")[0]
         self.assertIn("python3 scripts/check_schema_registry.py", model)
         self.assertIn("use-github-cache: 'false'", model)
         self.assertIn("options: ['4', '2', '1']", workflow)
-        self.assertIn("python3 scripts/test_run_native_ci.py", workflow)
+        from ci_source_checks import plan
+        self.assertIn(['python3', 'scripts/test_run_native_ci.py'], plan('ci-preflight'))
+        self.assertIn('--checks ci-preflight --output', workflow)
         self.assertIn("options: [full, tests]", workflow)
         for name in ["Replay retained proof reductions", "Replay the compiled project definitions"]:
             step = kernel.split(f"- name: {name}")[1].split("      - ")[0]
             self.assertIn("if: needs.changes.outputs.proof_lane == 'full'", step)
-        audit = kernel.split("- name: Audit axioms")[1].split("      - ")[0]
+        audit = kernel.split("- name: Prepare the required native acceptance runtime")[1].split("      - ")[0]
         native = kernel.split("- name: Run all retained native comparisons")[1].split("      - ")[0]
         self.assertNotIn("if:", audit)
         self.assertNotIn("if:", native)
@@ -167,9 +216,28 @@ class NativeCI(unittest.TestCase):
         passed = [sys.executable, "-c", "print('still checked')"]
         tasks, report = self.run_tasks([[fail, passed], [timeout], [passed]], timeout=0.2)
         self.assertEqual([row["status"] for row in report["tasks"]], ["failed", "failed", "passed"])
-        self.assertEqual(len(report["tasks"][0]["commands"]), 1)
+        self.assertEqual([row['status'] for row in report['tasks'][0]['commands']], ['failed', 'not-run'])
+        self.assertEqual(report['tasks'][1]['commands'][0]['status'], 'timed-out')
+        self.assertLess(report['tasks'][1]['commands'][0]['exit_code'], 0)
         with self.assertRaises(ValueError):
             verify_coverage(report, tasks, {"head": "a"}, "hash")
+
+    def test_runner_reclaims_child_scratch_after_success_failure_and_timeout(self):
+        for ending, expected in [("pass", "passed"), ("raise SystemExit(2)", "failed"),
+                                 ("time.sleep(30)", "timed-out")]:
+            with self.subTest(ending=ending), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                marker = root / "created-path"
+                script = ("import pathlib,tempfile,time,sys; "
+                          "p=pathlib.Path(tempfile.mkdtemp(prefix='child-')); "
+                          "(p/'generated').write_text('bounded regression'); "
+                          "pathlib.Path(sys.argv[1]).write_text(str(p)); " + ending)
+                result = run_native_ci.run_task(dict(id='scratch', commands=[
+                    [sys.executable, '-c', script, str(marker)]]), root, root / 'report',
+                    2, execution_environment())
+                self.assertEqual(result['commands'][0]['status'], expected)
+                self.assertFalse(Path(marker.read_text()).exists())
+                self.assertEqual(list((root / 'report').iterdir()), [root / 'report/command.log'])
 
     def test_invalid_worker_count_and_existing_task_directory_fail(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -216,6 +284,9 @@ class NativeCI(unittest.TestCase):
         with patch.dict(os.environ, poison):
             env = execution_environment()
             self.assertEqual(env["RUSTUP_TOOLCHAIN"], "1.98.1")
+            self.assertEqual(env["CARGO_PROFILE_DEV_DEBUG"], "0")
+            self.assertEqual(env["CARGO_PROFILE_TEST_DEBUG"], "0")
+            self.assertEqual(env["CARGO_INCREMENTAL"], "0")
             for name in poison.keys() - {"RUSTUP_TOOLCHAIN"}:
                 self.assertNotIn(name, env)
             code = ("import os,subprocess,sys; "

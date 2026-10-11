@@ -3,7 +3,7 @@ import Qleisli.HierarchicalRoot
 /-! Independent meaning binding for a selected provider in one freshly checked
 artifact. The fresh proof cache permits reuse without checking a second artifact
 or resetting its budget. Full exact finite equations remain explicit premises.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.HierarchicalProvider
 open QleisliKernel.Hierarchical
 open Artifact HierarchicalFiniteEvaluation HierarchicalOperators HierarchicalTyping

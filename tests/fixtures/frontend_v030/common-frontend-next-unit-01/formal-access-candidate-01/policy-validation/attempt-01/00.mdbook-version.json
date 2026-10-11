@@ -1,0 +1,23 @@
+{
+  "id": "00.mdbook-version",
+  "argv": [
+    "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+    "--version"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:19.794414+00:00",
+  "elapsed_seconds": 0.011025749961845577,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "00.mdbook-version.stdout.txt",
+    "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+    "bytes": 14
+  },
+  "stderr": {
+    "path": "00.mdbook-version.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

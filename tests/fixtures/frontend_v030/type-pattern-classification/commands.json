@@ -1,0 +1,204 @@
+[
+  {
+    "toolchain": "latest",
+    "command": [
+      "rustc",
+      "--version"
+    ],
+    "exit": 0,
+    "seconds": 0.5637712920433842,
+    "stdout": "latest-0.stdout.txt",
+    "stderr": "latest-0.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "formerly_silent_reassociation_now_rejects",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.5569513329537585,
+    "stdout": "latest-1.stdout.txt",
+    "stderr": "latest-1.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "explicit_layout_is_exact_and_preserves_an_entangled_reference",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.5403162500006147,
+    "stdout": "latest-2.stdout.txt",
+    "stderr": "latest-2.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "same_shape_wrong_permutation_does_not_pass_identity_evidence",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 0.4144551670178771,
+    "stdout": "latest-3.stdout.txt",
+    "stderr": "latest-3.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "function_evidence",
+      "attachment_requires_the_exact_expected_basis_tree",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 0.7677339999936521,
+    "stdout": "latest-4.stdout.txt",
+    "stderr": "latest-4.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "operation_parameters",
+      "meanings_reject_wrong_phase_wrong_tree_and_nonpermutations",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.278553165961057,
+    "stdout": "latest-5.stdout.txt",
+    "stderr": "latest-5.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "rustc",
+      "--version"
+    ],
+    "exit": 0,
+    "seconds": 0.5287025410216302,
+    "stdout": "msrv-0.stdout.txt",
+    "stderr": "msrv-0.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "formerly_silent_reassociation_now_rejects",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.0502790830214508,
+    "stdout": "msrv-1.stdout.txt",
+    "stderr": "msrv-1.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "explicit_layout_is_exact_and_preserves_an_entangled_reference",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.3715121249551885,
+    "stdout": "msrv-2.stdout.txt",
+    "stderr": "msrv-2.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "tuple_shapes",
+      "same_shape_wrong_permutation_does_not_pass_identity_evidence",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 0.2477775840088725,
+    "stdout": "msrv-3.stdout.txt",
+    "stderr": "msrv-3.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "function_evidence",
+      "attachment_requires_the_exact_expected_basis_tree",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 0.6657997079892084,
+    "stdout": "msrv-4.stdout.txt",
+    "stderr": "msrv-4.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "operation_parameters",
+      "meanings_reject_wrong_phase_wrong_tree_and_nonpermutations",
+      "--",
+      "--exact"
+    ],
+    "exit": 0,
+    "seconds": 1.146601999993436,
+    "stdout": "msrv-5.stdout.txt",
+    "stderr": "msrv-5.stderr.txt"
+  }
+]
