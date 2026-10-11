@@ -141,6 +141,7 @@ pub(super) enum ExprKind {
         Vec<Option<AxisSelection>>,
     ),
     Apply(Argument, Box<Expr>),
+    ApplyContract(Reference, Reference, Box<Expr>),
     Adjoint(Argument, Box<Expr>),
     Controlled(Argument, Vec<Expr>),
     If(Predicate, Block, Block),

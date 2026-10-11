@@ -1619,6 +1619,63 @@ impl Replay<'_, '_> {
                 self.partition_register(partition, step, &inputs, site)?
             } else if let Some(kind) = step.primitive_kind() {
                 self.primitive(kind, step, &inputs, site)?
+            } else if let Some(key) = step.contract() {
+                let required = source
+                    .contracts
+                    .get(&key)
+                    .ok_or_else(|| site.invalid("source contract has no checked original pair"))?;
+                let [argument] = inputs.as_slice() else {
+                    return Err(site.invalid("contract changes its unary owner interface"));
+                };
+                let [Atom::Quantum(token, wires)] = argument.atoms.as_slice() else {
+                    return Err(site.invalid("contract input is not one quantum owner"));
+                };
+                if argument.ty != step.output().ty()
+                    || argument
+                        .ty
+                        .quantum_basis()
+                        .and_then(super::finite_basis)
+                        .as_ref()
+                        != Some(required.receipt.signature())
+                    || step_effect != Effect::Unitary
+                {
+                    return Err(site.invalid("contract changes its exact type or principal effect"));
+                }
+                let Some(RawOp::ApplyUnitary {
+                    input,
+                    output,
+                    steps,
+                }) = self.raw.operations.get(self.cursor)
+                else {
+                    return Err(site.invalid("Raw program omits the source contract application"));
+                };
+                let [actual] = steps.as_slice() else {
+                    return Err(site.invalid("source contract has a different circuit interval"));
+                };
+                let CircuitAction::Contract {
+                    indices,
+                    evidence,
+                    adjoint,
+                } = &actual.action
+                else {
+                    return Err(site.invalid("source contract receipt was replaced"));
+                };
+                if input != token
+                    || !actual.controls.is_empty()
+                    || *adjoint
+                    || indices.iter().copied().ne(0..wires.len())
+                {
+                    return Err(site.invalid("source contract changes its original owner, phase/axis action or direction"));
+                }
+                evidence.check_binding(required.receipt.signature(), required.receipt.identity(), required.receipt.implementation(), required.receipt.specification())
+                    .map_err(|_| site.invalid("source contract substitutes its original implementation, independent request or dependencies"))?;
+                let output = *output;
+                if self.live.remove(token).as_ref() != Some(wires) {
+                    return Err(site.invalid("contract consumes an unavailable owner"));
+                }
+                let output = self.introduce_owner(output, wires, false, site)?;
+                self.cursor += 1;
+                vec![output]
             } else if let Some(child) = step.called_definition() {
                 let callee = source
                     .definitions()

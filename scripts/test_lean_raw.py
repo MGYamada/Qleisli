@@ -457,7 +457,9 @@ def rust_program(p, receipts='receipts'):
             fields.append(k+':'+value)
         commands.append('RawOp::'+tags[o['tag']]+'{'+','.join(fields)+'}')
     inputs=','.join(f'QuantumPort{{token:{token(v["token"])},wires:vec![{",".join(wire(w) for w in v["wires"])}],shape:BasisShape{{bits:{v["shape"]["bits"]}}}}}' for v in p['quantum_inputs'])
-    return f'RawProgram{{quantum_inputs:vec![{inputs}],classical_inputs:vec![{",".join("ClassicalId("+str(i)+")" for i in p["classical_inputs"])}],operations:vec![{",".join(commands)}],quantum_outputs:vec![{",".join(token(t) for t in p["quantum_outputs"])}],classical_outputs:vec![],declared_effect:Effect::{p["declared_effect"].capitalize()}}}'
+    # Wire tags retain their historical spelling; public Rust names can differ.
+    effect = {'unitary': 'Unitary', 'iso': 'Isometry', 'observe': 'Observe'}[p['declared_effect']]
+    return f'RawProgram{{quantum_inputs:vec![{inputs}],classical_inputs:vec![{",".join("ClassicalId("+str(i)+")" for i in p["classical_inputs"])}],operations:vec![{",".join(commands)}],quantum_outputs:vec![{",".join(token(t) for t in p["quantum_outputs"])}],classical_outputs:vec![],declared_effect:Effect::{effect}}}'
 
 
 def native(all_cases, log):

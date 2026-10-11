@@ -23,12 +23,59 @@ in `tests/function_evidence.rs` additionally compares the retained result with
 the literal matrix `[s,s;s,-s]`, where `s = 1/sqrt(2)`, and rejects swapped axes.
 Its native equation compares separately supplied Raw programs; the literal
 matrix is an independent host assertion, not a new native request. Its first
-test source was frozen before running on Rust 1.99.0 and MSRV 1.85.0. Each full
-function-evidence target passed 21 tests and retained one historical ignored
-maximum-stress test. That host test predates this source session.
+test source was frozen before two runs originally labeled Rust 1.99.0 and
+MSRV 1.85.0. Each full function-evidence target passed 21 tests and retained
+one historical ignored maximum-stress test. Later tool discovery found that
+Cargo could select Homebrew's Rust compiler through PATH despite the Rustup
+toolchain label. Those original records remain unchanged and do not attest
+either compiler version. Compiler-path-bound validation is recorded separately.
+That host test predates this source session.
 
 This study separates an unadopted syntax candidate, functioning ordinary
 contracts and a selected-source adapter gap. It does not unify those paths,
 extend general matrix/composite hierarchy equality, prove source preservation,
 complete #46 or admit a guarantee. General arrows and rectangular Meaning
 remain deferred beyond v0.3.0. QFT and large cases are outside this study.
+
+## Unused generic contract counterexample
+
+During the adapter repair, two further source probes were saved before their
+actual checks. Their later session transcription is explicit in `source_records`;
+the original context and six observations above are unchanged. The reports name
+the actual working CLI digest rather than claiming a clean-commit build.
+
+The [first probe](counterexamples/unused-nat/main.qli) uses an unused static Nat
+parameter. Its [actual refusal](counterexamples/unused-nat/before.json) is the
+ordinary profile's Nat restriction, so it does not test equality enforcement.
+The [repaired probe](counterexamples/unused-operation/main.qli) uses an admitted
+unused Op parameter. Its [actual pre-fix result](counterexamples/unused-operation/before.json)
+wrongly accepts an identity implementation against independently written H in
+the unused generic body. Merely rejecting the Nat probe would have hidden this
+defect. The `unused_generic_body_keeps_its_closed_function_contract_in_both_adapters` regression
+in `tests/selected_function_contracts.rs` requires concrete contract rejection
+through both adapters.
+
+The later ordinary [after report](counterexamples/unused-operation/after.json)
+and selected [corrected invocation](observations/unused-operation-selected-corrected-after.json)
+reject that unchanged counterexample at its actual contract. The unchanged HHH
+control [now passes selected Raw checking](observations/contract-hhh-selected-corrected-after.json).
+The first two after-capture commands incorrectly combined a positional project
+with `--ir-profile`; their usage errors remain in the session and are not
+semantic checks. Corrected commands use an explicit module and entry, with no
+source repair. These results cover the existing-contract adapter changes;
+the subsequently adopted `reference(f)` syntax remains a separate implementation.
+
+## Local validation of the existing-contract repair
+
+The [compiler-bound validation record](validation.json) identifies the actual
+Rust 1.99.0 and MSRV 1.85.0 executables, source snapshots and log digests. Each
+run passed 343 tests and all-target Clippy, retaining seven existing ignores.
+Both runs executed all 4,000 ownership differential cases through both public
+paths. The ignored decoder audit was separately executed by the decoder check.
+
+Raw, observing and streamed-instrument comparisons passed with independent
+small-system oracles; the actual-reader decoder comparison passed 392 cases
+covering all 21 Raw constructors. Earlier failed checks and unattested compiler
+labels remain disclosed. These local results do not constitute a full CI,
+release, source-preservation or constitutional-discharge receipt. The recorded
+times include concurrent execution and are not a performance comparison.

@@ -72,6 +72,20 @@ This does not implement the general rectangular, nonmonomial/reference or
 instrument Meanings proposed below, complete native extensional equality,
 prove source-to-request preservation or close #46/#83.
 
+**Adopted reference form (2026-10-11; implementation pending):** the maintainer
+[adopted](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6103631623)
+`meaning M: A = reference(f);` for a closed ordinary principal-Unitary
+`Q<A> -> Q<A>` function identifier. The
+[concrete contract](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6103615741)
+requires a retained target-expression graph, ordered mixed monomial/reference
+compose and tensor, original source/dependency binding, fresh native evidence
+in both adapters, and rejection of indirect cycles and unused invalid targets.
+It preserves the six-bit exact profile and explicitly monomial-only public
+`FiniteMeaning` API. This ordinary language decision does not adopt the other
+candidate forms below, general arrows, a constitutional interpretation or a
+proof discharge. The existing `apply_contract` adapter repair is its first
+integration unit; reference syntax and mixed-target implementation remain next.
+
 ### Implementation constraints exposed by the current checker
 
 The generalization must change the shared original-source judgment and both

@@ -498,9 +498,30 @@ obligation binding both exact original DefIds, interface/category/effect and
 source span. Meaning/provider identity binding is not matrix equality,
 injectivity, all-input clean return, provider correspondence or source
 preservation. Those properties remain pending until the existing independent
-concrete evidence gates discharge them. A selected projection of a declared
-Meaning as a runtime function remains explicitly unsupported; checking the
-original source never substitutes another specification or route.
+concrete evidence gates discharge them. Both concrete adapters compare the
+implementation with the independently selected function or Meaning through
+fresh native evidence. A declared Meaning supplies the request; it is never
+projected as a runtime function.
+
+For selected compilation, `ElaboratedProgram::check_function_contracts(kernel,
+budget)` returns an immutable preparation containing checked receipts for every
+original FunctionEquality obligation, including unused callers and zero-count
+bodies. The receipts retain the exact implementation, specification and source
+dependencies. One shared exact-work budget covers these checks and their
+dependency checks; existing depth and aggregate artifact-byte limits apply.
+Unchecked Raw and hierarchy lowering reject outstanding function contracts.
+`lower_raw_with_kernel` performs the checks before emission, and the CLI checks
+them before selecting its concrete IR profile.
+
+Raw emission carries the receipt in its actual Contract step; independent
+source replay checks its original pair, owner, direction and ordered axes.
+Hierarchy emission embeds the complete receipt-bearing wrapper bytes in a
+checked finite leaf, including its dependency evidence. Initialization replay
+checks that wrapper and its surrounding coordinate renaming. Both emitted
+artifacts still require fresh native acceptance. An equal-matrix replacement
+with different implementation or specification bytes cannot substitute for the
+original source-bound receipt. These bounded checks are not a general
+source-preservation proof.
 
 Selected preparation additionally evaluates every declared finite Meaning from
 its original classical body and resolved dependencies, including unused targets.

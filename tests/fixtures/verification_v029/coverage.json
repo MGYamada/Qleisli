@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "f76fc5d1be09cff7d3748b56ddb5af6e18aaf4fd5e644c40065169f73781c603",
+  "surface_sha256": "50e52463c819fe7d86e48e3ada9ce7c305cb58605a5c943dfb5701ce8ed32459",
   "groups": [
     {
       "id": "raw-core",
@@ -1891,6 +1891,13 @@
           ]
         },
         {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "fn function_contract_evidence(",
+            "FunctionEvidence::check_retained_with_kernel"
+          ]
+        },
+        {
           "path": "src/bin/qleisli/source_plan.rs",
           "markers": [
             "fn raw_execute(",
@@ -1941,6 +1948,14 @@
         {
           "path": "tests/function_evidence.rs",
           "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "unused_generic_body_keeps_its_closed_function_contract_in_both_adapters"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "declared_finite_meaning_keeps_its_request_on_both_adapters"
         },
         {
           "path": "scripts/test_source_kernel.py",
@@ -3125,6 +3140,16 @@
       ],
       "source_bindings": [
         {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "markers": [
+            "ObligationKind::FunctionEquality",
+            "FunctionEvidence::check_retained_with_kernel",
+            "MeaningEvidence::check_retained_with_kernel",
+            "RetainedIdentity::shared",
+            "finite_leaf::check_with_kernel"
+          ]
+        },
+        {
           "path": "src/frontend/specialize/raw.rs",
           "markers": [
             "pub struct SourceMeaningCheck",
@@ -3187,7 +3212,10 @@
             "pub fn check_operation_meanings",
             "pub(super) fn require_unrefined",
             "pub(super) fn require_control_evidence",
-            "checked.obligations.iter().find"
+            "checked.obligations.iter().find",
+            "pub fn check_function_contracts(",
+            "pub fn has_function_contracts(",
+            "fn require_function_contracts("
           ]
         },
         {
@@ -3208,6 +3236,26 @@
         {
           "path": "src/frontend/specialize/raw.rs",
           "test": "control_audit_collects_new_meanings_in_the_expanded_original_graph"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "first_hhh_source_runs_unchanged_through_both_adapters_and_cli"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "identity_and_negative_h_fail_exact_equations_in_both_adapters"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "unused_and_zero_count_contracts_are_not_erased"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "absent_kernel_exhausted_budget_and_wrong_tree_fail_closed"
+        },
+        {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "test": "source_contract_replay_rejects_same_matrix_different_native_pair"
         },
         {
           "path": "src/frontend/specialize/raw.rs",

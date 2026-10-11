@@ -1239,6 +1239,22 @@ impl Lower<'_> {
         }
     }
     fn pure_step(&mut self, step: &SourceStep, before: Vec<Port>) -> Result<(usize, Vec<Port>)> {
+        if let Some(key) = step.contract() {
+            let checked = self
+                .source
+                .contracts
+                .get(&key)
+                .ok_or_else(|| fail("original function contract has not been checked"))?
+                .clone();
+            let child = self.native_operation(&checked.leaf)?;
+            let (node, ports) = self.bind_operation(child, before)?;
+            let after = self.output_ports(
+                step.output(),
+                ports.iter().map(|p| p.axes.clone()).collect(),
+            )?;
+            let rename = self.graph.rename(ports, after.clone())?;
+            return Ok((self.graph.sequence(vec![node, rename])?, after));
+        }
         if let Some(id) = step.called_definition() {
             let child = self.pure_definition(id)?;
             let first = self.graph.nodes[child].before.clone();
@@ -1976,6 +1992,7 @@ fn lower_inner<'a>(
     source: &'a ElaboratedProgram,
     native_operations: &'a [NativeOperation<'a>],
 ) -> Result<HierarchyProposal> {
+    source.require_function_contracts()?;
     check_profile(source)?;
     let mut lower = Lower {
         source,

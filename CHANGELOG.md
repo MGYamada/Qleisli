@@ -6,6 +6,18 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Repair native comparison generators after the isometry vocabulary migration:
+  map preserved wire effect tags explicitly to Rust variants and check the
+  decoder's exact constructor set, including quantum Unit packing. Resolve
+  compiler-version-specific Clippy findings without changing checking behavior.
+
+- Connect existing `apply_contract` calls to selected Raw and hierarchy
+  lowering, retaining original function pairs, source dependencies and fresh
+  native receipts. Check unused and zero-count obligations before emission;
+  replay receipt-bearing instructions and hierarchy initialization events
+  against the source.
+  Both concrete adapters now accept a declared finite Meaning specification.
+
 - Defer remaining general operation arrows and rectangular Meaning beyond all
   of v0.3.0, with no future release target assigned. Keep existing bounded
   support and ordinary function-return syntax. #83 remains open outside the

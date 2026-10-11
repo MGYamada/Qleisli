@@ -30,87 +30,37 @@ impl Lowerer<'_, '_> {
             ));
         }
         let implementation_key = self.contract_function(module, implementation, &basis, env)?;
-        let specification_key = self.contract_function(module, specification, &basis, env)?;
-        let cache_key = (implementation_key, specification_key);
-        let evidence = if let Some(evidence) = self.compiler.function_evidence.get(&cache_key) {
-            // Only this compiler populates the cache, using the exact resolved
-            // keys and independently checked raw functions below. The loaded
-            // project and those dependencies cannot change during compilation.
-            // Reuse therefore needs neither a digest nor repeated source/raw
-            // comparisons. External evidence still uses check_binding.
-            Arc::clone(evidence)
-        } else {
-            let implementation_name = self.compiler.resolution.path(implementation_key);
-            let specification_name = self.compiler.resolution.path(specification_key);
-            let sources = self.compiler.retained_sources(module, span)?;
-            let snapshot_size = total_size(
-                [&implementation_key, &specification_key]
-                    .into_iter()
-                    .filter_map(|key| self.compiler.checked.get(key))
-                    .map(|program| representation_size(program.program())),
-            );
-            let snapshot_work = snapshot_size
-                .saturating_add(implementation_name.len())
-                .saturating_add(specification_name.len());
-            // Raw snapshots and pair names remain private to each distinct
-            // pair. Source bytes were retained and charged once for the project.
-            self.compiler.charge(module, span, snapshot_work).map_err(|mut error| {
-                error.message.push_str(&format!(
-                    "; retaining a new function-contract pair snapshot ({snapshot_size} raw representation units, plus pair names); source bytes use the shared project snapshot"
-                ));
-                error
-            })?;
-            let identity =
-                RetainedIdentity::shared(implementation_name, specification_name, sources);
-            let raw = |key: &Key| {
-                self.compiler
-                    .checked
-                    .get(key)
-                    .map(|program| program.program().clone())
-                    .ok_or_else(|| {
-                        self.error(
-                            module,
-                            span,
-                            ErrorCode::InvalidIr,
-                            "contract dependency has not been independently checked",
-                        )
-                    })
+        let declared_meaning = self.compiler.meaning_key(module, specification).ok();
+        let specification_key =
+            if let Some(key) = declared_meaning {
+                if self
+                    .compiler
+                    .locals
+                    .local_key(specification)
+                    .is_some_and(|key| env.contains_key(key))
+                    || self.bound_operation(specification).is_some()
+                {
+                    return Err(self.error(module, specification.span, ErrorCode::TypeMismatch,
+                    "apply_contract requires global specification declarations, not local values"));
+                }
+                if self.compiler.meanings[&key].basis != basis {
+                    return Err(self.error(
+                        module,
+                        specification.span,
+                        ErrorCode::TypeMismatch,
+                        "contract implementation and Meaning basis trees differ",
+                    ));
+                }
+                key
+            } else {
+                self.contract_function(module, specification, &basis, env)?
             };
-            let implementation = raw(&implementation_key)?;
-            let specification = raw(&specification_key)?;
-            let signature = contract_basis(&basis);
-            let budget = &mut self.compiler.exact_work;
-            let evidence = FunctionEvidence::check_retained_with_kernel(
-                &self.compiler.kernel,
-                signature,
-                implementation,
-                specification,
-                identity,
-                budget,
-            )
-            .map_err(|error| {
-                self.error(
-                    module,
-                    span,
-                    if error.error.is_capacity() {
-                        ErrorCode::Limit
-                    } else if matches!(error.error, crate::contract::ContractError::InvalidCircuit(_) | crate::contract::ContractError::EvidenceMismatch) {
-                        ErrorCode::InvalidIr
-                    } else {
-                        ErrorCode::Contract
-                    },
-                    format!("function semantic contract: {error}{}", if matches!(error.error,
-                        crate::contract::ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)) {
-                        " (bounded i128 coefficients or dyadic denominator exponent above 126); no approximate fallback is used"
-                    } else { "" }),
-                )
-            })?;
-            let evidence = Arc::new(evidence);
-            self.compiler
-                .function_evidence
-                .insert(cache_key, Arc::clone(&evidence));
-            evidence
-        };
+        let evidence = self.compiler.function_contract_evidence(
+            module,
+            span,
+            implementation_key,
+            specification_key,
+        )?;
         self.apply_circuit(
             slot,
             vec![CircuitStep {
@@ -183,6 +133,145 @@ impl Lowerer<'_, '_> {
             ));
         }
         Ok(key)
+    }
+}
+
+impl Compiler<'_> {
+    pub(in crate::frontend::compile) fn function_contract_evidence(
+        &mut self,
+        module: &str,
+        span: Span,
+        implementation_key: Key,
+        specification_key: Key,
+    ) -> Result<Arc<FunctionEvidence>, CompileError> {
+        let (params, result) = self.signature(&implementation_key)?;
+        let Kind::Q(basis) = &result.kind else {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "contract function requires Q<A> output",
+            ));
+        };
+        if params != [result.clone()]
+            || !self.declarations[&implementation_key]
+                .static_params
+                .is_empty()
+            || self.effects[&implementation_key].inferred() != Effect::Unitary
+        {
+            return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract implementation must be a closed principal-Unitary exact quantum endomorphism"));
+        }
+        let declared_meaning = self
+            .meanings
+            .contains_key(&specification_key)
+            .then_some(specification_key);
+        if let Some(key) = declared_meaning {
+            if self.meanings[&key].basis != **basis {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "contract implementation and Meaning basis trees differ",
+                ));
+            }
+        } else {
+            let (specified_params, specified_result) = self.signature(&specification_key)?;
+            if specified_params != params
+                || specified_result != result
+                || !self.declarations[&specification_key]
+                    .static_params
+                    .is_empty()
+                || self.effects[&specification_key].inferred() != Effect::Unitary
+            {
+                return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract specification must have the same closed principal-Unitary exact quantum interface"));
+            }
+        }
+        let cache_key = (implementation_key, specification_key);
+        let evidence = if let Some(evidence) = self.function_evidence.get(&cache_key) {
+            // Only this compiler populates the cache, using the exact resolved
+            // keys and independently checked raw functions below. The loaded
+            // project and those dependencies cannot change during compilation.
+            // Reuse therefore needs neither a digest nor repeated source/raw
+            // comparisons. External evidence still uses check_binding.
+            Arc::clone(evidence)
+        } else {
+            let implementation_name = self.resolution.path(implementation_key);
+            let specification_name = self.resolution.path(specification_key);
+            let sources = self.retained_sources(module, span)?;
+            let snapshot_size = total_size(
+                [&implementation_key, &specification_key]
+                    .into_iter()
+                    .filter_map(|key| self.checked.get(key))
+                    .map(|program| representation_size(program.program())),
+            );
+            let snapshot_work = snapshot_size
+                .saturating_add(implementation_name.len())
+                .saturating_add(specification_name.len());
+            // Raw snapshots and pair names remain private to each distinct
+            // pair. Source bytes were retained and charged once for the project.
+            self.charge(module, span, snapshot_work).map_err(|mut error| {
+                error.message.push_str(&format!(
+                    "; retaining a new function-contract pair snapshot ({snapshot_size} raw representation units, plus pair names); source bytes use the shared project snapshot"
+                ));
+                error
+            })?;
+            let identity =
+                RetainedIdentity::shared(implementation_name, specification_name, sources);
+            let raw = |key: &Key| {
+                self.checked
+                    .get(key)
+                    .map(|program| program.program().clone())
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            span,
+                            ErrorCode::InvalidIr,
+                            "contract dependency has not been independently checked",
+                        )
+                    })
+            };
+            let implementation = raw(&implementation_key)?;
+            let signature = contract_basis(basis);
+            let specification = if let Some(key) = declared_meaning {
+                self.meanings[&key]
+                    .target
+                    .target_ir()
+                    .map_err(|e| self.error(module, span, ErrorCode::Contract, e.to_string()))?
+            } else {
+                raw(&specification_key)?
+            };
+            let budget = &mut self.exact_work;
+            let evidence = FunctionEvidence::check_retained_with_kernel(
+                &self.kernel,
+                signature,
+                implementation,
+                specification,
+                identity,
+                budget,
+            )
+            .map_err(|error| {
+                self.error(
+                    module,
+                    span,
+                    if error.error.is_capacity() {
+                        ErrorCode::Limit
+                    } else if matches!(error.error, crate::contract::ContractError::InvalidCircuit(_) | crate::contract::ContractError::EvidenceMismatch) {
+                        ErrorCode::InvalidIr
+                    } else {
+                        ErrorCode::Contract
+                    },
+                    format!("function semantic contract: {error}{}", if matches!(error.error,
+                        crate::contract::ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)) {
+                        " (bounded i128 coefficients or dyadic denominator exponent above 126); no approximate fallback is used"
+                    } else { "" }),
+                )
+            })?;
+            let evidence = Arc::new(evidence);
+            self.function_evidence
+                .insert(cache_key, Arc::clone(&evidence));
+            evidence
+        };
+        Ok(evidence)
     }
 }
 

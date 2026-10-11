@@ -3067,7 +3067,7 @@
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "4f86f2c1abf908ca31007bc50d3200c14ac2c901dc717274e9512dfd8d6a6256",
+      "sha256": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
       "group": "raw-core",
       "surface": null
     },
@@ -3163,7 +3163,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "cfa3fcf0b95212501ea8458e81a09225d258af80d9f9b852418123ef2c4fc169",
+      "sha256": "feea6ac06fba6d6cf967832dfab4b2e87e7a6a255bf8eb27a6133b5349e47c23",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3409,7 +3409,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "70787d0ee3266ffc7565618dd4240d334be051431fb8fdebb8aa1d9f1fb52a79",
+      "sha256": "606fbbfc52ac2b96b16c2667944fa8c71f858f94a17d994d38efd8efc44d302c",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3528,7 +3528,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "23c981c87f2fb4028a76d6410b39aa0e839bafe1d0cc88162a952de99df49082",
+      "sha256": "ae92c3c0b7f60dc30a9b25a3fdb753d971722cf7e84b000e15329638fc070356",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3598,7 +3598,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "85fa152dade597670036154108d77b269cc99753384c122bf947f64c08c72ea9",
+      "sha256": "2e7079e70cb5db81d0859494904b2b0d695aab2c16e8780420cea175e9ea6b24",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4038,7 +4038,7 @@
     },
     {
       "path": "src/frontend/specialize/ast.rs",
-      "sha256": "1f6a2c84a42d0bb2abd152beaea92fcb20cd319921ee7084a754a707b68b8538",
+      "sha256": "a7c78742a1a92ce68e76fc44a39b8c03397a962aa4273cbcad4b50926475c660",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4065,7 +4065,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "30c9c8409e10dda8aa0c760c7cef955df41a08a7ef0f793c5be0e6d1f879d840",
+      "sha256": "2c372530e361bd82c7df906eb41e65cb0d905b005c84050f7214b78e1cb49d58",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4082,6 +4082,7 @@
           "pub fn boolean_operator(&self) -> Option<&'static str>",
           "pub fn call_instances(&self) -> usize",
           "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_function_contracts( &self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<Self>",
           "pub fn check_lowering_profile(&self) -> Result<()>",
           "pub fn check_operation_meanings<'a>( &'a self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<super::CheckedSourceMeanings<'a>>",
           "pub fn child(&self) -> Option<&Self>",
@@ -4093,6 +4094,7 @@
           "pub fn fields(&self) -> &[SourceValue]",
           "pub fn fold_iterations(&self) -> usize",
           "pub fn has_control_obligations(&self) -> bool",
+          "pub fn has_function_contracts(&self) -> bool",
           "pub fn has_operation_meanings(&self) -> bool",
           "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
           "pub fn identity(&self) -> Option<u32>",
@@ -4176,7 +4178,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "5180d7c2b7d83dc8b8af8e4b10444aadb4f8ae8825de2e57f97b5f7092d190bd",
+      "sha256": "eb41a0029f7a1de07b70323f5f3ffd150ec94ca62ee66c84de839f379091c58a",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4199,7 +4201,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "a6a3a172a09cc05e135a578c58564a326a6e078f12f88ebdca73d86686f0edba",
+      "sha256": "d72a14671ef8b1902a90ca48849ce583e2eca1affb88a11033349b882bef2464",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4253,7 +4255,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "41a1c87bf4af53ea4982ce5db49aeca6d74a8b60392affae5e05f6ba0f5ab46c",
+      "sha256": "7a053ddd6223a5e72034c47e175c057665324d3461a32f4f6a5c939744fceb84",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4294,7 +4296,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "c9fb373a660d707b32f4cec37735db1ca7364083afa8153c7490059ce2f7aa37",
+      "sha256": "ba5b0aa996a9d718d0fecca5575df2c176dcbdf22dd11c8caeecb0ac777ec41f",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4343,8 +4345,18 @@
       }
     },
     {
+      "path": "src/frontend/specialize/raw/contracts.rs",
+      "sha256": "6364a16fbb01751a30e24a39bd2bb88b49f0e6c5dbe9fb112dc432b0cb691a43",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "6ed016cd3d86848c72e5fb25e58ff91921de68d89ae1941ead56d56dd7b586cb",
+      "sha256": "451d8ef3e494643b6c0d6b024cda6eb671344b1fd81b9bbdac609df94bd161f2",
       "group": "sized-source",
       "surface": {
         "declarations": [],

@@ -411,6 +411,15 @@ impl Projection<'_, '_> {
             source::ExprKind::ApplyStatic { operation, input } => {
                 ExprKind::Apply(self.argument(operation)?, Box::new(self.expr(input)?))
             }
+            source::ExprKind::ApplyContract {
+                implementation,
+                specification,
+                input,
+            } => ExprKind::ApplyContract(
+                self.ident(implementation)?,
+                self.ident(specification)?,
+                Box::new(self.expr(input)?),
+            ),
             source::ExprKind::Adjoint { operation, input } => {
                 ExprKind::Adjoint(self.argument(operation)?, Box::new(self.expr(input)?))
             }

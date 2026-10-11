@@ -59,7 +59,17 @@ def qirf_cases():
                 profile='finite-v0' if version == 1 else 'finite-meaning-v1', sources=[],
                 programs=[program], evidence=[], root=0, root_interface=None)
             cases.append((case['name'] + f'-v{version}', artifact))
-    assert len(seen) == 19, seen
+    expected_constructors = {
+        'apply_unitary', 'certified_compute', 'classical_and', 'classical_branch',
+        'classical_const', 'classical_not', 'classical_xor', 'cnot',
+        'compute_use_uncompute', 'discard', 'gate', 'init0', 'join', 'lift_basis',
+        'measure_z', 'pack_unit', 'quantum_if', 'reset', 'split', 'toffoli',
+        'unpack_unit',
+    }
+    assert seen == expected_constructors, {
+        'missing': sorted(expected_constructors - seen),
+        'unexpected': sorted(seen - expected_constructors),
+    }
     fixture = ROOT / 'tests/fixtures/verification_v022/finite'
     for path in sorted(fixture.glob('*.qirf')):
         cases.append((path.name, json.loads(path.read_bytes())))
@@ -157,6 +167,9 @@ def main():
     args = parser.parse_args()
     log = []
     cases, constructors = qirf_cases()
+    # Faults below mutate a quantum input and an operation. The first corpus
+    # case may instead be a valid closed Unit preparation with no inputs.
+    input_example = dict(cases)['pure_gate_h-v1']
     requests = [dict(kind='qirf', text=json.dumps(value, separators=(',', ':'))) for _, value in cases]
     expected = [qirf_view(value) for _, value in cases]
     names = [name for name, _ in cases]
@@ -169,9 +182,9 @@ def main():
     for name, change in [('u32-owner', lambda p:p['quantum_inputs'][0].update(token=2**32)),
                          ('u8-shape', lambda p:p['quantum_inputs'][0]['shape'].update(bits=256)),
                          ('unknown-operation-field', lambda p:p['operations'][0].update(future=True))]:
-        value = copy.deepcopy(cases[0][1]); change(value['programs'][0])
+        value = copy.deepcopy(input_example); change(value['programs'][0])
         requests.append(dict(kind='qirf', text=json.dumps(value))); expected.append(None); names.append(name)
-    example = copy.deepcopy(cases[0][1])
+    example = copy.deepcopy(input_example)
     def raw_fault(name, operation):
         value = copy.deepcopy(example); value['programs'][0]['operations'] = [operation]
         requests.append(dict(kind='qirf', text=json.dumps(value))); expected.append(None); names.append(name)
@@ -258,7 +271,7 @@ def main():
             binary_sha256=digest(binary), input_sha256=hashlib.sha256(payload.encode()).hexdigest(),
             output_sha256=hashlib.sha256(result.stdout.encode()).hexdigest(), commands=log)
         if args.record: args.record.write_text(json.dumps(report, indent=2)+'\n')
-    print(f'Passed {len(expected)} lossless decoder cases; all 19 raw and selected hierarchy variants.')
+    print(f'Passed {len(expected)} lossless decoder cases; all {len(constructors)} raw and selected hierarchy variants.')
 
 
 if __name__ == '__main__':

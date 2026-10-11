@@ -728,7 +728,7 @@ fn process_loaded_project_details(
         .collect();
     // These are located pending concrete obligations, not proof discharges.
     // Concrete lowering/evidence gates remain responsible when instantiated.
-    let _obligations = source.obligations;
+    let obligations = source.obligations;
     for (id, declaration) in &declarations {
         if declaration.kind == FnKind::Static {
             continue;
@@ -839,6 +839,29 @@ fn process_loaded_project_details(
                 main = Some(program.clone());
             }
             compiler.checked.insert(*key, program);
+        }
+    }
+    // FunctionEquality names closed pairs even inside an unused generic body
+    // or a zero-count branch. Source checking is not their semantic discharge.
+    for obligation in obligations {
+        if let check::ObligationKind::FunctionEquality {
+            implementation,
+            specification,
+        } = obligation.kind
+        {
+            compiler.checking = Some(obligation.definition);
+            let module = compiler
+                .resolution
+                .declaration(obligation.definition)
+                .name
+                .0
+                .clone();
+            compiler.function_contract_evidence(
+                &module,
+                obligation.span,
+                implementation,
+                specification,
+            )?;
         }
     }
     let effects = compiler

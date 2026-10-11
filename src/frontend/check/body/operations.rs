@@ -1230,12 +1230,10 @@ impl Checker<'_, '_> {
                 };
                 let basis = if tensor {
                     Ty::pair(a.basis, b.basis)
+                } else if conjugate {
+                    self.program.budget.copy_ty(op.span, a.output())?
                 } else {
-                    if conjugate {
-                        self.program.budget.copy_ty(op.span, a.output())?
-                    } else {
-                        a.basis
-                    }
+                    a.basis
                 };
                 self.program.budget.ty(op.span, &basis)?;
                 if let Some(codomain) = &codomain {

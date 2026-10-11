@@ -280,6 +280,16 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             operations,
         )?
         .elaborate()?;
+    let mut source_budget =
+        qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK);
+    let source = if source.has_function_contracts() {
+        source.check_function_contracts(
+            &native::Kernel::new(kernel_path(options)?),
+            &mut source_budget,
+        )?
+    } else {
+        source
+    };
     let hierarchy = if options.request.is_some() || options.provider.is_some() {
         // Parsing rejects explicit Raw conflicts. Caller intent is never weakened
         // into a request-free native validity check.
@@ -318,18 +328,16 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
         // Full Raw capability checking is mandatory. A failure is final.
         let proposal = if source.has_operation_meanings() {
             let kernel = native::Kernel::new(kernel_path(options)?);
-            let mut budget =
-                qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK);
             source
-                .check_operation_meanings(&kernel, &mut budget)?
-                .lower_raw(&kernel, &mut budget)?
+                .check_operation_meanings(&kernel, &mut source_budget)?
+                .lower_raw(&kernel, &mut source_budget)?
         } else if options.command == "emit-proposal" || !source.has_control_obligations() {
             // Untrusted emission cannot request or imply native sector evidence.
             source.lower_raw()?
         } else {
             source.lower_raw_with_kernel(
                 &native::Kernel::new(kernel_path(options)?),
-                &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+                &mut source_budget,
             )?
         };
         return Ok(PreparedIr::Raw(Box::new(proposal)));
@@ -365,7 +373,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
         source
             .check_operation_meanings(
                 &native::Kernel::new(kernel_path(options)?),
-                &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+                &mut source_budget,
             )?
             .lower_hierarchy()?
     } else {

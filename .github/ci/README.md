@@ -330,6 +330,11 @@ compiler, rustdoc and Clippy binaries. `source-semantics` preserves the seeded
 differential and frozen-artifact comparisons, and `book` checks mdBook's exact
 version before building and checking rendered links.
 
+For individual MSRV commands, use `python3 scripts/run_msrv.py` followed by the
+Cargo arguments. It fixes PATH, rustc, rustdoc and Clippy together. A separately
+queried Rustup version does not establish which compiler Cargo finds on PATH;
+local validation records must identify the tools that actually execute.
+
 The repository-integrity group retains
 all 34 static checks formerly written in the documentation job. Its tools are
 Python 3.11+ and Git, with full history for the historical archive check; no

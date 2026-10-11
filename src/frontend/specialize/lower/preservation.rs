@@ -728,6 +728,22 @@ impl Replay<'_> {
         }
     }
     fn event(&mut self, e: &SourceEvent, step: &SourceStep) -> Result<()> {
+        if let Some(key) = step.contract() {
+            let expected = self
+                .proposal
+                .source
+                .contracts
+                .get(&key)
+                .ok_or_else(|| invalid("source contract has no original native receipt"))?;
+            let root = e
+                .node
+                .ok_or_else(|| invalid("contract event omits its actual finite node"))?;
+            if contract_node(self.definitions, root, expected.leaf.payload(), 0)? != 1 {
+                return Err(invalid(
+                    "contract event does not contain exactly its original wrapper",
+                ));
+            }
+        }
         self.event_contract(e, step.primitive_kind(), step.effect())
     }
     // Overrides originate only in replay of the retained constructor tree,
@@ -933,6 +949,72 @@ impl Replay<'_> {
         }
         self.current = expected;
         Ok(())
+    }
+}
+
+// Independently inspect the actual serialized interval. Only identity coordinate
+// renaming may surround the one source-bound, receipt-bearing finite wrapper.
+fn contract_node(defs: &[Value], id: usize, expected: &[u8], depth: usize) -> Result<usize> {
+    if depth > 16 {
+        return Err(invalid("contract interval exceeds its structural depth"));
+    }
+    let d = definition(defs, id)?;
+    let (before, after) = endpoints(d)?;
+    let body = field(d, "body")?;
+    match tag(body)? {
+        "leaf" => {
+            if text(field(body, "program")?)?.as_bytes() != expected {
+                return Err(invalid(
+                    "contract event substitutes its original wrapper bytes or evidence dependencies",
+                ));
+            }
+            Ok(1)
+        }
+        "rewire" => {
+            let p = field(body, "permutation")?;
+            if before.len() != after.len()
+                || before.iter().zip(&after).any(|(a, b)| a.basis != b.basis)
+                || indices(field(p, "owners")?)?
+                    .into_iter()
+                    .ne(0..before.len())
+                || indices(field(p, "axes")?)?
+                    .into_iter()
+                    .ne(0..wires(&before).len())
+                || !array(field(p, "classical")?)?.is_empty()
+            {
+                return Err(invalid(
+                    "contract interval changes its source coordinate ordering",
+                ));
+            }
+            Ok(0)
+        }
+        "sequence" => {
+            let children = indices(field(body, "children")?)?;
+            if children.is_empty() || children.len() > 16 {
+                return Err(invalid("contract interval has an invalid sequence"));
+            }
+            let mut current = before;
+            let mut leaves = 0;
+            for child in children {
+                if child >= id {
+                    return Err(invalid("contract interval has a cyclic dependency"));
+                }
+                let (first, last) = endpoints(definition(defs, child)?)?;
+                if first != current {
+                    return Err(invalid("contract interval frames do not compose"));
+                }
+                current = last;
+                leaves += contract_node(defs, child, expected, depth + 1)?;
+                if leaves > 1 {
+                    return Err(invalid("contract interval repeats its function"));
+                }
+            }
+            if current != after {
+                return Err(invalid("contract interval changes its output frame"));
+            }
+            Ok(leaves)
+        }
+        _ => Err(invalid("contract interval contains a different action")),
     }
 }
 
@@ -1271,6 +1353,86 @@ mod tests {
         change(graph);
         p.graph = json::encode(graph).unwrap();
         p.payload = json::encode(&actual).unwrap();
+    }
+    #[test]
+    fn contract_initialization_replay_binds_the_actual_native_wrapper() {
+        use crate::contract::{DEFAULT_EXACT_WORK, FunctionEvidence, exact::Budget};
+        use crate::interchange::{RootInterface, Version, hierarchical, native};
+        use crate::ir::{CircuitAction, RawOp};
+        use std::sync::Arc;
+        let source = "use std::quantum::{h,init0};
+            fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
+            fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
+            pub isometry fn main(q:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=apply_contract(implementation,specified,q);(q,init0())}";
+        let path = std::env::var_os("QLEISLI_KERNEL").unwrap();
+        let kernel = native::Kernel::new(&path);
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let checked = source.contracts.values().next().unwrap();
+        let receipt = &checked.receipt;
+        let replacement = FunctionEvidence::check(
+            receipt.signature().clone(),
+            receipt.specification().clone(),
+            receipt.specification().clone(),
+            receipt.identity().clone(),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        assert_eq!(receipt.meaning(), replacement.meaning());
+        let mut raw = checked.leaf.program().raw().clone();
+        let RawOp::ApplyUnitary { steps, .. } = &mut raw.operations[0] else {
+            panic!("contract wrapper");
+        };
+        let CircuitAction::Contract { evidence, .. } = &mut steps[0].action else {
+            panic!("contract receipt");
+        };
+        *evidence = Arc::new(replacement);
+        let interface = RootInterface {
+            input: receipt.signature().clone(),
+            output: receipt.signature().clone(),
+        };
+        let replacement =
+            native::Proposal::from_raw(&raw, Some(&interface), Version::V2, None).unwrap();
+        let original = std::str::from_utf8(checked.leaf.payload()).unwrap();
+        let replacement = std::str::from_utf8(replacement.artifact()).unwrap();
+        let mut proposal = source.lower().unwrap();
+        assert_eq!(validate(&proposal).unwrap().movements, 1);
+        hierarchical::Kernel::new(&path)
+            .check_instrument_native(proposal.payload(), proposal.comparison_request())
+            .unwrap();
+        let mut replaced = 0;
+        graph_mutation(&mut proposal, |graph| {
+            let Value::Array(definitions) = object_mut(graph).get_mut("definitions").unwrap()
+            else {
+                panic!("definitions");
+            };
+            for definition in definitions {
+                let body = object_mut(definition).get_mut("body").unwrap();
+                if let Some(Value::String(program)) = object_mut(body).get_mut("program") {
+                    if program == original {
+                        *program = replacement.into();
+                        replaced += 1;
+                    }
+                }
+            }
+        });
+        assert_eq!(replaced, 1);
+        hierarchical::Kernel::new(&path)
+            .check_instrument_native(proposal.payload(), proposal.comparison_request())
+            .unwrap();
+        let error = validate(&proposal).unwrap_err();
+        assert!(
+            error
+                .message()
+                .contains("original wrapper bytes or evidence dependencies"),
+            "{error}"
+        );
     }
     #[test]
     fn tensor_initialization_replay_rejects_wrong_tree_paths_and_structural_nodes() {

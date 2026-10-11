@@ -379,6 +379,7 @@ enum StepKind {
         operations: BTreeMap<String, SourceOperation>,
     },
     Apply(SourceOperation),
+    Contract(DefId, DefId),
     Adjoint(SourceOperation),
     Controlled(SourceOperation),
 }
@@ -444,6 +445,7 @@ impl SourceStep {
             StepKind::Primitive(..) => "primitive",
             StepKind::Call { .. } => "call",
             StepKind::Apply(_) => "apply",
+            StepKind::Contract(..) => "contract",
             StepKind::Adjoint(_) => "adjoint",
             StepKind::Controlled(_) => "controlled",
         }
@@ -498,6 +500,14 @@ impl SourceStep {
     pub fn operation(&self) -> Option<&SourceOperation> {
         match &self.kind {
             StepKind::Apply(op) | StepKind::Adjoint(op) | StepKind::Controlled(op) => Some(op),
+            _ => None,
+        }
+    }
+    pub(super) fn contract(&self) -> Option<(DefId, DefId)> {
+        match self.kind {
+            StepKind::Contract(implementation, specification) => {
+                Some((implementation, specification))
+            }
             _ => None,
         }
     }
@@ -583,6 +593,7 @@ pub struct ElaboratedProgram {
     root: usize,
     calls: usize,
     folds: usize,
+    pub(super) contracts: BTreeMap<(DefId, DefId), Arc<super::raw::contracts::CheckedContract>>,
 }
 
 /// Preflight admission to the hierarchical transport profile, not acceptance
@@ -595,6 +606,59 @@ pub enum HierarchyEligibility {
 }
 
 impl ElaboratedProgram {
+    /// Original equality obligations, including those absent from the selected body.
+    pub fn has_function_contracts(&self) -> bool {
+        self.instance
+            .program
+            .checked
+            .obligations
+            .iter()
+            .any(|obligation| {
+                matches!(
+                    obligation.kind,
+                    crate::frontend::check::ObligationKind::FunctionEquality { .. }
+                )
+            })
+    }
+    /// Bind every original closed pair to fresh native evidence in this immutable preparation.
+    pub fn check_function_contracts(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+        budget: &mut crate::contract::exact::Budget,
+    ) -> Result<Self> {
+        super::raw::contracts::check(self, kernel, budget)
+    }
+    pub(super) fn require_function_contracts(&self) -> Result<()> {
+        for obligation in &self.instance.program.checked.obligations {
+            if let crate::frontend::check::ObligationKind::FunctionEquality {
+                implementation,
+                specification,
+            } = obligation.kind
+            {
+                if !self
+                    .contracts
+                    .contains_key(&(implementation, specification))
+                {
+                    return Err(error(
+                        "contract",
+                        obligation.span,
+                        "original function contracts require fresh native checking before lowering",
+                    )
+                    .in_module(
+                        &self
+                            .instance
+                            .program
+                            .checked
+                            .resolution
+                            .declaration(obligation.definition)
+                            .name
+                            .0,
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
     /// Whether any retained actual specialization has an original Meaning
     /// obligation, including unused operation bindings.
     pub fn has_operation_meanings(&self) -> bool {
@@ -627,6 +691,7 @@ impl ElaboratedProgram {
         })
     }
     pub(super) fn require_unrefined(&self) -> Result<()> {
+        self.require_function_contracts()?;
         if self.has_operation_meanings() {
             return Err(error(
                 "meaning",
@@ -933,6 +998,34 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
     for &id in extra_roots {
         builder.function(id, BTreeMap::new(), BTreeMap::new(), BTreeMap::new(), 0)?;
     }
+    // Equality targets are closed by the common judgment. Keep them even when
+    // their caller is unused, generic, or erased by a zero-count specialization.
+    for obligation in &instance.program.checked.obligations {
+        if let crate::frontend::check::ObligationKind::FunctionEquality {
+            implementation,
+            specification,
+        } = obligation.kind
+        {
+            builder.function(
+                implementation,
+                BTreeMap::new(),
+                BTreeMap::new(),
+                BTreeMap::new(),
+                0,
+            )?;
+            if instance.program.checked.interface(specification).kind
+                != crate::frontend::ast::FnKind::Meaning
+            {
+                builder.function(
+                    specification,
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    0,
+                )?;
+            }
+        }
+    }
     let work = builder.cells + builder.steps + builder.calls + builder.folds;
     Ok((
         ElaboratedProgram {
@@ -941,6 +1034,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             root,
             calls: builder.calls,
             folds: builder.folds,
+            contracts: BTreeMap::new(),
         },
         work,
     ))
@@ -2410,6 +2504,50 @@ impl Builder<'_> {
                 let op = self.operation(argument, scope, frame, depth, span)?;
                 let value = self.expr(input, scope, frame, depth)?;
                 self.operation_step(StepKind::Apply(op), vec![value], frame, span)
+            }
+            ExprKind::ApplyContract(implementation, specification, input) => {
+                let value = self.expr(input, scope, frame, depth)?;
+                let resolve = |reference: &Reference| match reference.target(&frame.lexical) {
+                    ResolvedUse::Global(Target::Declaration(id)) => Ok(id),
+                    _ => Err(error(
+                        "type",
+                        span,
+                        "apply_contract requires original global declarations",
+                    )),
+                };
+                let implementation = resolve(implementation)?;
+                let specification = resolve(specification)?;
+                let id = self.function(
+                    implementation,
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    depth + 1,
+                )?;
+                let definition = &self.definitions[id];
+                if definition.effect != Effect::Unitary
+                    || definition.inputs.len() != 1
+                    || definition.inputs[0].ty != definition.output.ty
+                    || definition.output.ty.quantum_basis().is_none()
+                {
+                    return Err(error(
+                        "type",
+                        span,
+                        "function contracts require a closed principal-Unitary exact quantum endomorphism",
+                    ));
+                }
+                let ty = definition.output.ty.clone();
+                let peak = definition.peak_quantum;
+                self.step(
+                    StepKind::Contract(implementation, specification),
+                    vec![ty.clone()],
+                    ty,
+                    Effect::Unitary,
+                    vec![value],
+                    frame,
+                    span,
+                    peak,
+                )
             }
             ExprKind::Adjoint(argument, input) => {
                 let op = self.operation(argument, scope, frame, depth, span)?;

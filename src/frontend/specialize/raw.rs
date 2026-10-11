@@ -14,6 +14,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 mod circuit;
+pub(super) mod contracts;
 mod preservation;
 
 const MAX_OPERATIONS: usize = 10_000;
@@ -134,6 +135,16 @@ pub(super) fn check_operation_meanings<'a>(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<CheckedSourceMeanings<'a>> {
+    source.require_function_contracts()?;
+    check_operation_meanings_selected(source, kernel, budget, None)
+}
+
+fn check_operation_meanings_selected<'a>(
+    source: &'a ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+    selected: Option<&BTreeSet<usize>>,
+) -> Result<CheckedSourceMeanings<'a>> {
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
             "limit",
@@ -150,6 +161,9 @@ pub(super) fn check_operation_meanings<'a>(
         bytes: 0,
     };
     for (caller, definition) in source.definitions().iter().enumerate() {
+        if selected.is_some_and(|selected| !selected.contains(&caller)) {
+            continue;
+        }
         for formal in &program.checked.interface(definition.original).statics {
             let crate::frontend::check::StaticKind::Operation { meaning, .. } = &formal.kind else {
                 continue;
@@ -594,6 +608,7 @@ fn check_profile(
                 continue;
             }
             if step.called_definition().is_some()
+                || step.contract().is_some()
                 || (matches!(step.kind(), "apply" | "adjoint" | "controlled")
                     && step.operation().is_some())
             {
@@ -1405,6 +1420,42 @@ impl Emitter<'_> {
                         )]
                     } else if let Some(partition) = step.partition() {
                         self.partition_register(partition, step, &inputs)?
+                    } else if let Some(key) = step.contract() {
+                        let checked = self.source.contracts.get(&key).ok_or_else(|| {
+                            invalid(span, "source contract has no freshly checked original pair")
+                        })?;
+                        let [input] = inputs.as_slice() else {
+                            return Err(invalid(span, "contract requires one owner"));
+                        };
+                        let slot = quantum(input, span)?;
+                        let register = &self.raw.registers[&slot];
+                        if finite_basis(&register.basis).as_ref()
+                            != Some(checked.receipt.signature())
+                        {
+                            return Err(invalid(span, "contract changes its exact quantum basis"));
+                        }
+                        let input = register.token;
+                        let bits = register.wires.len();
+                        self.reserve_operations(1, span)?;
+                        let output = self.raw.token();
+                        self.raw.operations.push(crate::ir::RawOp::ApplyUnitary {
+                            input,
+                            output,
+                            steps: vec![crate::ir::CircuitStep {
+                                controls: vec![],
+                                action: crate::ir::CircuitAction::Contract {
+                                    indices: (0..bits).collect(),
+                                    evidence: checked.receipt.clone(),
+                                    adjoint: false,
+                                },
+                            }],
+                        });
+                        self.raw
+                            .registers
+                            .get_mut(&slot)
+                            .expect("retained contract owner")
+                            .token = output;
+                        vec![Atom::Quantum(slot)]
                     } else if let Some(child) = step.called_definition() {
                         self.invoke(child, inputs, depth + 1, span)?
                     } else if let Some(operation) = step.operation() {
@@ -1647,6 +1698,14 @@ pub(super) fn lower_with_kernel(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<RawSourceProposal> {
+    let checked;
+    let source = if source.has_function_contracts() && source.require_function_contracts().is_err()
+    {
+        checked = source.check_function_contracts(kernel, budget)?;
+        &checked
+    } else {
+        source
+    };
     source.require_unrefined()?;
     if !source.has_control_obligations() {
         return lower(source);
@@ -1668,7 +1727,13 @@ fn lower_refined_with_control(
         ));
     }
     let audited = super::elaborate::with_control_roots(source, budget)?;
-    let source = audited.as_ref().unwrap_or(source);
+    let checked;
+    let source = if let Some(audited) = audited.as_ref() {
+        checked = audited.check_function_contracts(kernel, budget)?;
+        &checked
+    } else {
+        source
+    };
     // Audit roots can add concrete bindings absent from the selected graph.
     // Check all original requests again in this exact expanded graph; earlier
     // leaf keys are not transplanted across re-elaboration or reused as acceptance.
@@ -1773,6 +1838,7 @@ pub(super) fn lower_operation(
     caller_id: usize,
     name: &str,
 ) -> Result<RawSourceProposal> {
+    source.require_function_contracts()?;
     lower_operation_site(
         source,
         OperationSite::Binding(caller_id, name.into()),
