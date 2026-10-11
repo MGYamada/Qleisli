@@ -152,11 +152,13 @@ The finite source route supports its existing closed observing entry. The
 selected hierarchy route supports its existing pure input/output entry for
 these refined operations; a readout entry outside its existing profile still
 rejects. No readout/instrument rule is broadened by Meaning composition.
-Rectangular arrows, nonmonomial/reference/instrument Meanings and general
-matrix-versus-composite equality remain unfinished under
-[#46](https://github.com/MGYamada/Qleisli/issues/46) and
-[#83](https://github.com/MGYamada/Qleisli/issues/83). These bounded constructors
-do not complete those Issues or establish source-to-request preservation.
+General arrows and rectangular Meanings are deferred beyond all of v0.3.0
+under [#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release
+target assigned. Endomorphic nonmonomial/reference Meaning, instrument Meaning
+and same-basis matrix-versus-composite equality remain unfinished under
+[#46](https://github.com/MGYamada/Qleisli/issues/46). These bounded constructors
+do not complete that Issue or establish source-to-request preservation; its
+remaining work must not reintroduce deferred general-arrow support.
 
 ## Migration and evidence identity
 

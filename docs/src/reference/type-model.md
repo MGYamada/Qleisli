@@ -381,11 +381,13 @@ generic assumption is not evidence for an arbitrary external provider.
 
 ### General pure operation arrows
 
-Further general-arrow implementation is outside the current goal and
-v0.3.0-alpha implementation scope under the
-[maintainer's scope decision](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6103225809).
+General-arrow completion is deferred beyond all of v0.3.0 and outside the
+current goal under the
+[maintainer's scope decision](https://github.com/MGYamada/Qleisli/issues/83).
+The future release target is unassigned.
 The following records the existing bounded support and its limitations;
-ordinary-project integration is not an active completion requirement. The
+ordinary differing-port project integration and rectangular Meaning are not
+v0.3.0 completion requirements. The
 decision does not remove existing syntax or change ordinary function returns.
 
 `Op<A -> B>` retains separate exact input and output basis trees. `Op<A>`

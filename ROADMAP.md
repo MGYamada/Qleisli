@@ -45,14 +45,23 @@ were subsequently admitted after proof review and explicit human approval; the
 [guarantee record](docs/src/design/initial-guarantees.md) states their exact
 scope and assumptions. The three broader obligations remain pending. The
 [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
-tracks the 111 selected issues, including the exactness interpretation in #311,
+tracks 109 active Issues from the original 111 selected Issues, including the exactness interpretation in #311,
 ordinary-body effect inference in #315 and semantic stdlib namespaces in #317.
+#39 and #83 are outside the current goal. The historical release inventory
+retains all 111 entries and records approved deferrals separately.
+The maintainer has deferred general operation arrows beyond all of v0.3.0,
+including remaining differing-port project integration and rectangular Meaning.
+[#83](https://github.com/MGYamada/Qleisli/issues/83) stays open without a future
+release target; no completion credit is awarded. Already committed bounded
+support, ordinary function-return syntax and regression evidence remain.
+Endomorphic/reference and instrument Meaning work under #46 retains its
+remaining scope; it must not reintroduce deferred general-arrow requirements.
 The maintainer has excluded QFT implementation completion, generic QFT public
 integration and fixed/generic QFT equivalence from v0.3.0 and the current
 development goal. No future target is selected. #317 retains its namespace and
 admission work; existing fixed-QFT code, proofs and regression records remain.
 The current scope override is recorded in #317 and #142. It earns no completion
-credit and does not change the selected 111-Issue count.
+credit and does not itself change the Issue count.
 Trial code and historical experiment archives are retained only under
 experimental/qft; this directory does not expose a canonical stdlib API.
 Edition 2026 identifies the constitutional

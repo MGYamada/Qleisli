@@ -9,6 +9,13 @@ Guardian ruling, or discharge a guarantee. Examples below are desired
 as compiled. The [authority hierarchy](../reference/authority.md) and
 [production boundary](../reference/production-boundary.md) govern the work.
 
+**Scope update (2026-10-11):** general operation arrows and rectangular Meaning
+are deferred beyond all of v0.3.0 under
+[#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release target
+assigned. Related candidate examples and requirements below are later work,
+not v0.3.0 prerequisites. Existing bounded support and ordinary function-return
+syntax remain; the current Reference records their actual contracts.
+
 **Naming update (2026-10-08):** [Issue #45](https://github.com/MGYamada/Qleisli/issues/45) selects `Applicable`, `Adjointable` and `Controllable`, with `adjoint(U)` as the general constructor. The older `Apply`/`Adjoint`/`Controlled` and `inverse(U)` candidate notation below is superseded by this naming decision; it is not current executable syntax. The [static-language Reference](../reference/static-language.md#operation-repetition-and-access) specifies the bounded implementation. A future two-sided inverse API requires its own law; this update grants no general isometry adjoint or new provider access.
 
 The [target type contract](../reference/type-model.md) now selects the ordinary

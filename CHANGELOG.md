@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Defer remaining general operation arrows and rectangular Meaning beyond all
+  of v0.3.0, with no future release target assigned. Keep existing bounded
+  support and ordinary function-return syntax. #83 remains open outside the
+  active goal; #46 retains its independent endomorphic and instrument work.
+
 - Add canonical Lean `Effect.isometry` aliases in Raw semantics, hierarchy
   artifacts and the retained bounded QFT graph. Preserve historical `iso`
   constructor identity, cases, reflection and versioned transport tags. Document

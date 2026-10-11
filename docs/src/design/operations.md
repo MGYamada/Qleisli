@@ -8,13 +8,15 @@ admit a guarantee, change the adopted QS/PR/RS interpretations, or close an
 Issue. The [authority hierarchy](../reference/authority.md) still applies.
 
 **Scope update (2026-10-11):** the maintainer has
-[excluded further `Op<A -> B>` implementation](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6103225809)
-from the current goal and v0.3.0-alpha implementation work. The remaining
+[deferred general operation arrows beyond all of v0.3.0](https://github.com/MGYamada/Qleisli/issues/83)
+and removed that remaining work from the current goal. The remaining
 ordinary-project integration and proposed rectangular `pure-leaf` native gate
-are not active prerequisites. Already committed bounded support and its
-regressions remain; no rollback or future target is specified. The candidate
-requirements below must not reintroduce this excluded work. #83 stays open;
-exclusion is not implementation or proof completion.
+are not v0.3.0 prerequisites, including through #46. Already committed bounded
+support and its regressions remain; no rollback or future release target is
+specified. The candidate requirements below must not reintroduce this deferred
+work. #83 stays open outside the v0.3.0 milestone and active goal count;
+deferral is not implementation or proof completion. Endomorphic/reference and
+instrument Meaning work under #46 remains active within its recorded scope.
 
 **Naming update (2026-10-08):** [Issue #45](https://github.com/MGYamada/Qleisli/issues/45) selects `Applicable`, `Adjointable` and `Controllable`, with `adjoint(U)` as the general constructor. The older `Apply`/`Adjoint`/`Controlled` and `inverse(U)` candidate notation below is superseded by this naming decision; it is not current executable syntax. The [static-language Reference](../reference/static-language.md#operation-repetition-and-access) specifies the bounded implementation. A future two-sided inverse API requires its own law; this update grants no general isometry adjoint or new provider access.
 
@@ -549,8 +551,10 @@ Implementation is complete only after the common AST/type/effect/owner checker,
 static constructors, exact requested-meaning evaluator, actual native binding,
 relevant executable-definition proofs and the small positive/negative packet
 all agree. Keep capacity/unsupported failures explicit while implementing;
-the selected rectangular, QFT2/QFT3 and bounded instrument routes remain 0.3.0
-acceptance work. No new maximum-size quantum experiments are needed. This
+the general-arrow/rectangular routes are deferred beyond v0.3.0. The QFT2/QFT3
+exact-specification and bounded instrument requirements under #46 remain
+separate from deferred general arrows and excluded QFT implementation.
+No new maximum-size quantum experiments are needed. This
 candidate was reviewed against source and current Issue text only; no new
 Rust/Lean execution, proof result, release readiness or guarantee discharge is
 claimed here.
