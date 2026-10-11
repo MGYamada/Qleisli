@@ -1,0 +1,9 @@
+use std::quantum::h;
+use std::observe::measure_z;
+
+observe fn readout_z(q: Q<Bit>) -> Bit { measure_z(q) }
+observe fn implementation(q: Q<Bit>) -> Bit { measure_z(h(h(q))) }
+
+pub observe fn main(q: Q<Bit>) -> Bit {
+    apply_contract(implementation, readout_z, q)
+}

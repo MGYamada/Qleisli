@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Freeze existing observing boundaries and desired exact instrument contracts for #46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "cd03856e7e316f64c9796fe3ac95b31260c3ce73",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve an existing observing control, an invalid pure Meaning reference, and two unadopted observing apply_contract calls before any check or production change.",
+      "sha256": {
+        "contract-readout/main.qli": "28caba392b0ac37d893ca5eba280cf07a46d04df6862ed42412f7b5b695592de",
+        "contract-residual/main.qli": "711342e7e4bea3b8b41d8454179ea7362ae5c928e7b0be567773779ee7e2e1e8",
+        "control/main.qli": "3dd2ccc6ae8ff6a0e0a98602219dadcb70f3fafc6fdf1b6785e9c754a48a0f2c",
+        "pure-reference/main.qli": "9dfedf3a38c350e1274cda36a1e1fc6dfd7d9be86b37dfc9aae73e4dbf7a2efd"
+      },
+      "manifest_sha256": {
+        "contract-readout/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-residual/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "control/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "pure-reference/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/control-raw.json",
+        "observations/pure-reference-raw.json",
+        "observations/contract-readout-raw.json",
+        "observations/contract-residual-raw.json"
+      ]
+    }
+  ]
+}
