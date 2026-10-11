@@ -25,7 +25,10 @@ freshly compiled against Lean 4.30.0; no maximum-size case or Rust acceptance
 result is generated or reused.
 
 The [experimental packet](../../../../experimental/instrument-meaning/proposal.md)
-is a candidate, not an adopted API. This study changes no public behavior,
+was a candidate when these observations were captured. The human maintainer
+[subsequently adopted its exact design](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6104666552);
+the packet's historical notice is preserved. Its API is not yet implemented.
+This study changes no public behavior,
 schema, dependency version, protected record or proof status. Pure Meaning
 retains exact operator phase. Native history reconstruction, experimental CP
 comparison, source preservation and human specification adequacy remain

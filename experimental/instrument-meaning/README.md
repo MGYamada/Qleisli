@@ -1,7 +1,11 @@
 # Exact instrument contract experiment
 
-This bounded #46 study investigates an **unadopted** observing overload of
-`apply_contract`. The [concrete packet](proposal.md) states its scope, expected
+This bounded #46 study investigates the observing overload of `apply_contract`
+**adopted by the human maintainer on 2026-10-11** in the
+[separate decision record](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6104666552).
+The [reviewed packet](proposal.md) retains its original candidate notice and
+SHA-256 `5bd33aa0c2064a61b195ab4f692e5bd15d31af7c44bf2807dfdb1cc1e0f80052`.
+It states its scope, expected
 programs, native boundary, equality limits and remaining proof obligations.
 It is ordinary language design under the existing adopted interpretations.
 
@@ -18,5 +22,15 @@ experiment record. Native compilation uses the existing shared harness; its
 temporary driver is removed on exit. No results or acceptance decisions are
 cached. The CP comparison here is untrusted experimental Python, not a new
 production semantic gate or constitutional discharge.
+
+[ReferenceEquality.lean](ReferenceEquality.lean) independently defines the
+complete hidden-history channel and its Choi coefficients. Its checked theorem
+derives equality of each public outcome map on arbitrary joint input/reference
+matrices, even with different hidden-history counts. The
+[proof record](proof-validation.json) retains the actual Lean 4.30.0 compilation
+and axiom output; only `propext`, `Classical.choice` and `Quot.sound` occur.
+This mathematical foundation is not yet connected to a production native
+instrument-comparison gate. Source, decoder/native/runtime and realization
+correspondence remain separate obligations; no ledger entry is created.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

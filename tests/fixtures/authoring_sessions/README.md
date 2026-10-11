@@ -8,8 +8,8 @@ refusal and the three bounded phase/entanglement distributions.
 The [observing-contract boundary study](instrument-contract-v030/README.md)
 preserves four first projects and their actual selected Raw results. A separate
 bounded experiment matches thirteen native histories with an independent exact
-oracle and compares eight outcome-indexed CP-map pairs. The observing contract
-extension remains a candidate; pure Meaning and source-proof limits are unchanged.
+oracle and compares eight outcome-indexed CP-map pairs. Its observing contract
+design was subsequently adopted; implementation and source proofs remain pending.
 
 The [endomorphic reference-Meaning study](reference-meaning-v030/README.md)
 preserves an unadopted syntax candidate and three existing function-contract
