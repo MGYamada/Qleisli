@@ -69,6 +69,28 @@ pub(super) enum Value {
 }
 
 impl Value {
+    pub(super) fn outputs(
+        &self,
+        registers: &BTreeMap<Slot, Register>,
+        quantum: &mut Vec<crate::ir::TokenId>,
+        classical: &mut Vec<ClassicalId>,
+    ) {
+        match self {
+            Self::Quantum(slot, _) => quantum.push(registers[slot].token),
+            Self::Classical(id) => classical.push(*id),
+            Self::Pair(a, b) => {
+                a.outputs(registers, quantum, classical);
+                b.outputs(registers, quantum, classical);
+            }
+            Self::Tuple(fields) => {
+                for field in fields {
+                    field.outputs(registers, quantum, classical);
+                }
+            }
+            Self::Unit => {}
+        }
+    }
+
     pub(super) fn tree_size(&self) -> TreeSize {
         let mut size = TreeSize::default();
         let mut pending = vec![(self, 1)];

@@ -37,7 +37,10 @@ CONTRACT_PROOF = {
         'For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, '
         'complete Kraus sums, untruncated dimensions and requested complete signature equality to exact '
         'unnormalized public outcome maps on every joint matrix and finite external reference. '
-        'The private Rust paired handle and observing source call-boundary integration remain open.'
+        'A private Rust paired handle retains original accepted artifacts, complete types and source identity. '
+        'Ordinary concrete observing calls freshly check actual emitted intervals and retain private '
+        'pair/call sidecars without changing whole-root request disclosure. Explicit specialization '
+        'and independent observing source replay remain open.'
     ),
     'gaps': (
         'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
@@ -107,7 +110,13 @@ PATHS = {
         ('tests/exclusive_access.rs', 'finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls'),
         ('tests/exclusive_access.rs', 'finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
-        ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
+        ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', 'fn check_instrument(', '"--qirf-contract"']),
+        ('src/contract/instrument.rs', ['struct InstrumentEvidence ', 'struct InstrumentCall ', 'fn check_call(',
+         'implementation.artifact()', 'specification.artifact()']),
+        ('src/frontend/instrument.rs', ['fn signature<N>', 'ResultAtom::Quantum', 'signature.validate(budget)']),
+        ('src/frontend/compile/lower/function_contract.rs', ['fn apply_instrument_contract(',
+         'self.raw.operations[first..].to_vec()', '.check_call(', 'fn instrument_contract_evidence(']),
+        ('src/interchange/native.rs', ['source_instruments:', 'source_instrument_calls:', 'fn retain_instruments(', 'fn retain_instrument_calls(']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
         ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'QleisliKernel.Qirf.checkContract',
          'QleisliKernel.Qirf.check ', 'structure Acceptance ', 'structure LeafAcceptance ',
@@ -137,7 +146,12 @@ PATHS = {
     ], [('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'),
         ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes'),
         ('scripts/test_native_verification.py', 'test_control_requests'),
-        ('scripts/test_native_verification.py', 'test_instrument_requests')]),
+        ('scripts/test_native_verification.py', 'test_instrument_requests'),
+        ('src/contract/instrument.rs', 'instrument_receipts_bind_original_bytes_and_fresh_call_decisions'),
+        ('src/contract/instrument.rs', 'instrument_signature_preflights_frontiers_depth_and_zero_width_types'),
+        ('tests/function_contracts.rs', 'observing_contracts_compare_complete_instruments_on_the_emitted_call'),
+        ('tests/function_contracts.rs', 'observing_contracts_reject_public_relabeling_and_wrong_residual_channels'),
+        ('tests/function_contracts.rs', 'observing_contracts_check_nested_calls_branches_and_hidden_discard_histories')]),
     'source-documentation': path_rule('documentation', 'source', '', [
         ('src/bin/qleisli.rs', ['if options.command == "doc"', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),

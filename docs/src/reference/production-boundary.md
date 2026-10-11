@@ -216,9 +216,16 @@ outcome maps on any joint matrix with a finite external reference. The independe
 reference in `Qleisli.Semantics.InstrumentEquality` sums all hidden histories;
 neither their count nor their labels are public outcomes.
 
-This native request does not yet implement the observing source overload of
-`apply_contract`. Its private Rust paired handle and call-boundary integration
-in both adapters remain open. It grants no observing Meaning, coherent control
+The private Rust instrument handle retains both original accepted artifacts,
+the complete signature, source identity and fresh paired native decision.
+Ordinary concrete `apply_contract` executes only the implementation and checks
+its actual emitted interval again against the immutable reference. Its private
+call sidecar retains original ports, instructions, result IDs and source span;
+the enclosing root has its separate ordinary acceptance. Unused original
+closed obligations are also checked. These sidecars do not change QIRF or set a
+request-free root's `request_checked` or `source_meaning_verified` to true.
+Explicit specialization and independent source replay of the observing
+overload remain open; that route rejects pending obligations. This grants no observing Meaning, coherent control
 or adjoint access. Pure Meaning retains its exact phase rule. Request-free
 whole-root inspection still reports no independent requested meaning. Source,
 decoder, native compilation/runtime and emitted-artifact preservation remain

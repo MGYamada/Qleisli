@@ -27,8 +27,12 @@ result is generated or reused.
 The [experimental packet](../../../../experimental/instrument-meaning/proposal.md)
 was a candidate when these observations were captured. The human maintainer
 [subsequently adopted its exact design](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6104666552);
-the packet's historical notice is preserved. Its API is not yet implemented.
-This study changes no public behavior,
+the packet's historical notice is preserved. The separate
+[ordinary source integration record](../../../../experimental/instrument-meaning/finite-source-validation.json)
+now covers private original-artifact evidence and fresh concrete call checks.
+Explicit specialization and its source replay remain pending. The original
+observations above describe the earlier selected Raw boundary and are unchanged.
+This first study changes no public behavior,
 schema, dependency version, protected record or proof status. Pure Meaning
 retains exact operator phase. Native history reconstruction, experimental CP
 comparison, source preservation and human specification adequacy remain

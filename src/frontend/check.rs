@@ -625,7 +625,49 @@ impl<'a> Program<'a> {
                     implementation,
                     specification,
                 } => {
+                    let actual = &self.interfaces[implementation];
+                    let effect = effects.get(implementation).map(|fact| fact.inferred());
+                    if effect == Some(crate::ir::Effect::Observe) {
+                        let expected = &self.interfaces[specification];
+                        if matches!(actual.kind, FnKind::Classical | FnKind::Meaning)
+                            || matches!(expected.kind, FnKind::Classical | FnKind::Meaning)
+                            || !actual.statics.is_empty()
+                            || !expected.statics.is_empty()
+                            || actual.params.len() != 1
+                            || expected.params.len() != 1
+                            || !actual.params[0].is_quantum_owner()
+                            || !expected.params[0].is_quantum_owner()
+                            || effects.get(specification).map(|fact| fact.inferred()) != effect
+                        {
+                            return Err(SourceError::new("effect", span,
+                                "observing contracts require two closed ordinary functions with principal Observe effects and the same complete interface")
+                                .in_module(&interface.module));
+                        }
+                        // Actual substituted type equality was checked at the
+                        // original call. Native instrument evidence is still
+                        // required, even for unused/zero-count obligations.
+                        continue;
+                    }
+                    if effect != Some(crate::ir::Effect::Unitary) {
+                        return Err(SourceError::new("effect", span,
+                            "function contracts require principal Unitary endomorphisms or two principal Observe functions")
+                            .in_module(&interface.module));
+                    }
                     provider(*implementation, crate::ir::Effect::Unitary)?;
+                    let endomorphism = |id: DefId| -> Result<()> {
+                        let target = &self.interfaces[&id];
+                        if !target.params[0].equivalent_by_budgeted(
+                            &target.result,
+                            &mut |a, b| Ok(a == b),
+                            &mut |cells| self.budget.charge(span, cells),
+                        )? {
+                            return Err(SourceError::new("type", span,
+                                "pure function contracts require one Q<A> input and the same exact Q<A> output")
+                                .in_module(&interface.module));
+                        }
+                        Ok(())
+                    };
+                    endomorphism(*implementation)?;
                     self.budget.charge(span, 1)?;
                     if !self.interfaces[implementation].statics.is_empty() {
                         return Err(failure().in_module(&interface.module));
@@ -634,6 +676,7 @@ impl<'a> Program<'a> {
                         meaning(*specification)?;
                     } else {
                         provider(*specification, crate::ir::Effect::Unitary)?;
+                        endomorphism(*specification)?;
                         self.budget.charge(span, 1)?;
                         if !self.interfaces[specification].statics.is_empty() {
                             return Err(failure().in_module(&interface.module));

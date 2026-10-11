@@ -3234,7 +3234,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "d4b1a4fd8bc25f86fc012e0e098a8d2c91803abc74dfbf043ea3b741567ba080",
+      "sha256": "6682668286a75f43fb8ffec51e6ff4517af26b250c35c408ca2443bdbd2842ff",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -3290,7 +3290,7 @@
     },
     {
       "path": "src/contract/mod.rs",
-      "sha256": "ebff335ba64c8a26235fbca33b59f57985a1644e1e6e3bd09bfff84a9abe4511",
+      "sha256": "e75ac9d3684aea6ba1216be24db6ff6502cdcef154098b03e8354a487f655969",
       "group": "finite-contract",
       "surface": {
         "declarations": [
@@ -3391,7 +3391,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "79e54ea7b2bee0ab230992ad9f937e388842c005340f82e6bc3a4be74976c988",
+      "sha256": "c9347d58f15776ffd8428d0872675d815b149e02b76e707b0fc27fe0402dfd6f",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3429,7 +3429,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "5ef410fd47e232a71a820d8c2e576dd38b5bae1c5c1677eb13b7fef33e0d7032",
+      "sha256": "cdd84f01a9a4dfbc193571de789ca8ad202aa2a39ddf7e778287c699ec29f1eb",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3518,7 +3518,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "150bbe4011de2210c134a997b70bb2cf06b6c36e5763fd8bc03a3b0d1c46e7db",
+      "sha256": "e24d2040312abb6ffb10e7b3cac364988789fe4ae85c84f8968dd18b8cbca7a7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3538,7 +3538,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "15a6393a10256e07856959a069b31147d5e8b2db3ac6951b0318db68ee89f435",
+      "sha256": "bb586e7023b9e7cc5c1c883b307077ecc2936536cb9c8a2b1d57c273b4a78a79",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3548,7 +3548,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "d647e3d47414a2c6245e5704c55a9d83558fa1435305282c2145c0d001c83040",
+      "sha256": "383846975c23aa103c3e8b1763be262e09b5f1d8c74e6816f8bb58b8958ba6f8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3598,7 +3598,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "5b6db4005beffeb1818ef6bbac976fcaee8526cc806a44b7cceb95433e69e3c8",
+      "sha256": "5fe243278e0d7f7fb06ef9bb241f0cb350dce5d9a25e79c93e6238861c34a84d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3608,7 +3608,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "48a3b08fba3c18c01e4e379ddae6448b40334b3c9ceec65c19a1cb5acc256d50",
+      "sha256": "a1a941234b6e009d3ee15a251651cfe174234fdc19214d138bfb292c1259292b",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3782,7 +3782,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "0217e2e36230b516646fcae1e8f80dbfdc247e2a0511fa523458e58318013b17",
+      "sha256": "114ef681c244cf03fcaa4594f79661ac176301a78dd8de641ea604ff0507bb3b",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4075,7 +4075,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "368e920c6f88a180df10fc196c3722490ddca680b58b488e9be7122fb8119de6",
+      "sha256": "b484455e000f9b6fa67d193fd57ea7385c92d7bfa2c28d4cede1e8c7985a5aee",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4356,7 +4356,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "9d3688bec16d09f61a9fcb3c5964ba7a8a8c1e72fa328425cbbe327531bafa0a",
+      "sha256": "47e3af0d013724041c1f7e69f7fc00f1028d5fe06611c5f25ecd652bf225910a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4740,7 +4740,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+      "sha256": "be278d2ca440eded4f8d61417b7c23a9259ae5a6b7ac2c5c533497625547918f",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4791,7 +4791,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "bbada3f6335e308eb56acb01a451a8919afb9389673f9e97d0a410f709f3ec4b",
+      "sha256": "6b2a9b3183a5b76c832446eb766928673bc6d197f58784340a5061f53a40b5bd",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -5184,6 +5184,29 @@
       "sha256": "2a4d227228186d25d0edd316fb37df4f7496b05e1536236120aa17fbd71bea70",
       "group": "raw-core",
       "surface": null
+    },
+    {
+      "path": "src/contract/instrument.rs",
+      "sha256": "7513db51c51ba9c9d76f52f35779c758261fc1a8974d4b4867cc84518f1237cb",
+      "group": "function-evidence",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_NODES: usize = 4096;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/instrument.rs",
+      "sha256": "3fe4e9889870ee47a08cf14a85d52d87fc4b2ece8e53beb28b6e7db4becf1dec",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [

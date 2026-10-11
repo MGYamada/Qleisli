@@ -107,6 +107,8 @@ impl Kernel {
                 interface: root_interface.clone(),
                 derived_effect,
                 output_ports,
+                source_instruments: Arc::from([]),
+                source_instrument_calls: Arc::from([]),
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -307,6 +309,10 @@ pub struct AcceptedProgram {
     interface: Option<RootInterface>,
     derived_effect: crate::ir::Effect,
     output_ports: Vec<crate::ir::QuantumPort>,
+    // Source equations are private sidecars. They do not add a whole-root
+    // request, change QIRF bytes or authorize decoding another artifact.
+    source_instruments: Arc<[Arc<crate::contract::instrument::InstrumentEvidence>]>,
+    source_instrument_calls: Arc<[crate::contract::instrument::InstrumentCall]>,
 }
 impl AcceptedProgram {
     pub fn artifact(&self) -> &[u8] {
@@ -338,6 +344,20 @@ impl AcceptedProgram {
     }
     pub(crate) fn kernel(&self) -> Kernel {
         Kernel::new(self.checker())
+    }
+    pub(crate) fn retain_instruments(
+        mut self,
+        pairs: Vec<Arc<crate::contract::instrument::InstrumentEvidence>>,
+    ) -> Self {
+        self.source_instruments = pairs.into();
+        self
+    }
+    pub(crate) fn retain_instrument_calls(
+        mut self,
+        calls: Vec<crate::contract::instrument::InstrumentCall>,
+    ) -> Self {
+        self.source_instrument_calls = calls.into();
+        self
     }
 }
 impl Kernel {

@@ -105,6 +105,7 @@ struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
     raw: RawState<std::convert::Infallible>,
     operation_sources: OperationSources,
+    instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
@@ -1323,6 +1324,7 @@ impl Lowerer<'_, '_> {
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
+            instrument_calls: Vec::new(),
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
@@ -1594,6 +1596,7 @@ fn lower_function_inner(
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
+        instrument_calls: Vec::new(),
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,
@@ -1625,29 +1628,7 @@ fn lower_function_inner(
     let result = lower.call_user(key, args, None)?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
-    fn outputs(
-        value: &Value,
-        registers: &BTreeMap<Slot, Register>,
-        quantum: &mut Vec<TokenId>,
-        classical: &mut Vec<ClassicalId>,
-    ) {
-        match value {
-            Value::Quantum(slot, _) => quantum.push(registers[slot].token),
-            Value::Classical(id) => classical.push(*id),
-            Value::Pair(a, b) => {
-                outputs(a, registers, quantum, classical);
-                outputs(b, registers, quantum, classical);
-            }
-            Value::Tuple(fields) => {
-                for field in fields {
-                    outputs(field, registers, quantum, classical);
-                }
-            }
-            Value::Unit => {}
-        }
-    }
-    outputs(
-        &result,
+    result.outputs(
         &lower.raw.registers,
         &mut quantum_outputs,
         &mut classical_outputs,
@@ -1664,6 +1645,7 @@ fn lower_function_inner(
         .compiler
         .kernel
         .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
+        .map(|program| program.retain_instrument_calls(lower.instrument_calls))
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(

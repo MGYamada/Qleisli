@@ -52,6 +52,37 @@ fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal, Error> {
     source.lower_raw_with_kernel(&kernel(), &mut work())
 }
 
+#[test]
+fn observing_specialization_refuses_calls_and_retains_unused_obligations() {
+    let definitions = "use std::quantum::init0; use std::observe::measure_z;
+        fn reference(q: Q<Bit>) -> Bit { measure_z(q) }
+        fn implementation(q: Q<Bit>) -> Bit { measure_z(q) }";
+    let called = format!(
+        "{definitions}
+        pub fn main() -> Bit {{ apply_contract(implementation,reference,init0()) }}"
+    );
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), called)])).unwrap();
+    let error = parsed
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(
+        error
+            .to_string()
+            .contains("observing contract call boundaries")
+    );
+    let source = elaborate(&format!("{definitions}
+        fn unused[const U: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(implementation,reference,q) }}
+        pub fn main() -> Bit {{ measure_z(init0()) }}"));
+    assert!(source.has_function_contracts());
+    let error = check(&source).unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.to_string().contains("observing contract obligations"));
+    assert!(lower(&source).is_err());
+}
+
 fn retained(evidence: &FunctionEvidence, module: &str, original: &str) -> bool {
     evidence
         .identity()

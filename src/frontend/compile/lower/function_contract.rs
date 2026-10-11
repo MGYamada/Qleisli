@@ -2,6 +2,7 @@
 
 use super::super::operations::contract_basis;
 use super::*;
+use crate::contract::instrument::InstrumentEvidence;
 use crate::contract::{FunctionEvidence, MAX_CONTRACT_BITS, function::RetainedIdentity};
 use std::sync::Arc;
 
@@ -16,6 +17,19 @@ impl Lowerer<'_, '_> {
         input: Value,
         env: &Env,
     ) -> Result<Value, CompileError> {
+        if let Callee::User(key) = self.compiler.resolve(module, implementation)? {
+            if self.compiler.effects.get(&key).map(|fact| fact.inferred()) == Some(Effect::Observe)
+            {
+                return self.apply_instrument_contract(
+                    module,
+                    span,
+                    implementation,
+                    specification,
+                    input,
+                    env,
+                );
+            }
+        }
         let slot = self.quantum(module, span, &input, false)?;
         self.compiler
             .charge(module, span, self.raw.registers[&slot].size())?;
@@ -73,6 +87,119 @@ impl Lowerer<'_, '_> {
             }],
         );
         Ok(input)
+    }
+
+    fn apply_instrument_contract(
+        &mut self,
+        module: &str,
+        span: Span,
+        implementation: &Ident,
+        specification: &Ident,
+        input: Value,
+        env: &Env,
+    ) -> Result<Value, CompileError> {
+        let mut keys = Vec::new();
+        for name in [implementation, specification] {
+            if self
+                .compiler
+                .locals
+                .local_key(name)
+                .is_some_and(|key| env.contains_key(key))
+                || self.bound_operation(name).is_some()
+            {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::TypeMismatch,
+                    "apply_contract requires global ordinary function names, not local values",
+                ));
+            }
+            let Callee::User(key) = self.compiler.resolve(module, name)? else {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::TypeMismatch,
+                    "observing contracts require ordinary function names",
+                ));
+            };
+            keys.push(key);
+        }
+        let slot = self.quantum(module, span, &input, false)?;
+        self.compiler
+            .charge(module, span, self.raw.registers[&slot].size())?;
+        let register = &self.raw.registers[&slot];
+        let port = QuantumPort {
+            token: register.token,
+            wires: register.wires.clone(),
+            shape: BasisShape {
+                bits: register.wires.len() as u8,
+            },
+        };
+        let (parameters, result_type) = self.compiler.signature(&keys[0])?;
+        if parameters != [input.ty()] {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "observing contract input changes the complete quantum basis tree",
+            ));
+        }
+        let signature = crate::frontend::instrument::signature(
+            &parameters,
+            &result_type,
+            |n| match *n {},
+            &mut self.compiler.exact_work,
+        )
+        .map_err(|error| self.compiler.instrument_error(module, span, error))?;
+        let evidence = self
+            .compiler
+            .instrument_contract_evidence(module, span, keys[0], keys[1])?;
+        let first = self.raw.operations.len();
+        // Ordinary inlining consumes the live input once and executes only the
+        // implementation. The independently selected reference is not called.
+        let result = self.call_user(&keys[0], vec![input], None)?;
+        if result.ty() != result_type {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "observing contract result changes its complete declared type",
+            ));
+        }
+        self.compiler.charge(
+            module,
+            span,
+            operations_size(&self.raw.operations[first..])
+                + result.tree_size().nodes
+                + module.len()
+                + 3,
+        )?;
+        let mut quantum_outputs = Vec::new();
+        let mut classical_outputs = Vec::new();
+        result.outputs(
+            &self.raw.registers,
+            &mut quantum_outputs,
+            &mut classical_outputs,
+        );
+        let call = RawProgram {
+            quantum_inputs: vec![port],
+            classical_inputs: vec![],
+            operations: self.raw.operations[first..].to_vec(),
+            quantum_outputs,
+            classical_outputs,
+            declared_effect: Effect::Observe,
+        };
+        let checked = evidence
+            .check_call(
+                &self.compiler.kernel,
+                &signature,
+                &call,
+                (module.into(), span.start, span.end),
+                &mut self.compiler.exact_work,
+            )
+            .map_err(|error| self.compiler.instrument_error(module, span, error))?;
+        self.instrument_calls.push(checked);
+        Ok(result)
     }
 
     fn contract_function(
@@ -137,6 +264,116 @@ impl Lowerer<'_, '_> {
 }
 
 impl Compiler<'_> {
+    pub(in crate::frontend::compile) fn instrument_error(
+        &self,
+        module: &str,
+        span: Span,
+        error: crate::contract::ContractError,
+    ) -> CompileError {
+        self.error(
+            module,
+            span,
+            if error.is_capacity() {
+                ErrorCode::Limit
+            } else if matches!(
+                error,
+                crate::contract::ContractError::InvalidCircuit(_)
+                    | crate::contract::ContractError::EvidenceMismatch
+            ) {
+                ErrorCode::InvalidIr
+            } else {
+                ErrorCode::Contract
+            },
+            format!("observing function semantic contract: {error}"),
+        )
+    }
+
+    pub(in crate::frontend::compile) fn instrument_contract_evidence(
+        &mut self,
+        module: &str,
+        span: Span,
+        implementation: Key,
+        specification: Key,
+    ) -> Result<Arc<InstrumentEvidence>, CompileError> {
+        for key in [implementation, specification] {
+            if matches!(
+                self.declarations[&key].kind,
+                FnKind::Classical | FnKind::Meaning
+            ) || !self.declarations[&key].static_params.is_empty()
+                || self.effects[&key].inferred() != Effect::Observe
+            {
+                return Err(self.error(module, span, ErrorCode::Effect,
+                    "observing contracts require two closed ordinary functions with principal Observe effects"));
+            }
+        }
+        let (parameters, result) = self.signature(&implementation)?;
+        let (expected_parameters, expected_result) = self.signature(&specification)?;
+        if parameters != expected_parameters || result != expected_result {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "observing contract functions must have the same complete input/result types",
+            ));
+        }
+        let signature = crate::frontend::instrument::signature(
+            &parameters,
+            &result,
+            |n| match *n {},
+            &mut self.exact_work,
+        )
+        .map_err(|error| self.instrument_error(module, span, error))?;
+        let expected_signature = crate::frontend::instrument::signature(
+            &expected_parameters,
+            &expected_result,
+            |n| match *n {},
+            &mut self.exact_work,
+        )
+        .map_err(|error| self.instrument_error(module, span, error))?;
+        let key = (implementation, specification);
+        if let Some(evidence) = self.instrument_evidence.get(&key) {
+            // Immutable selected source preparation only. Every emitted call
+            // below still obtains its own fresh original-artifact decision.
+            return Ok(Arc::clone(evidence));
+        }
+        let sources = self.retained_sources(module, span)?;
+        let identity = RetainedIdentity::shared(
+            self.resolution.path(implementation),
+            self.resolution.path(specification),
+            sources,
+        );
+        let implementation = self.checked.get(&implementation).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "instrument implementation has not been independently checked",
+            )
+        })?;
+        let specification = self.checked.get(&specification).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "instrument specification has not been independently checked",
+            )
+        })?;
+        let evidence = Arc::new(
+            InstrumentEvidence::check(
+                &self.kernel,
+                signature,
+                expected_signature,
+                implementation,
+                specification,
+                identity,
+                &mut self.exact_work,
+            )
+            .map_err(|error| self.instrument_error(module, span, error))?,
+        );
+        self.instrument_evidence.insert(key, Arc::clone(&evidence));
+        Ok(evidence)
+    }
+
     pub(in crate::frontend::compile) fn function_contract_evidence(
         &mut self,
         module: &str,
@@ -280,7 +517,12 @@ fn representation_size(program: &RawProgram) -> usize {
     for input in &program.quantum_inputs {
         size = size.saturating_add(input.wires.len() + 3);
     }
-    let mut pending = vec![program.operations.as_slice()];
+    size.saturating_add(operations_size(&program.operations))
+}
+
+fn operations_size(operations: &[RawOp]) -> usize {
+    let mut size = 0usize;
+    let mut pending = vec![operations];
     while let Some(operations) = pending.pop() {
         for operation in operations {
             size = size.saturating_add(8);

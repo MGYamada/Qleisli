@@ -12,6 +12,7 @@ pub mod documentation;
 pub mod effects;
 mod error;
 mod formals;
+mod instrument;
 pub mod lexer;
 mod linear;
 mod meaning;

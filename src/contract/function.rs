@@ -377,7 +377,7 @@ fn expanded_steps(circuit: &Circuit) -> Result<usize, ContractError> {
     Ok(total.max(1))
 }
 
-fn validate_identity(
+pub(crate) fn validate_identity(
     identity: &RetainedIdentity,
     budget: &mut Budget,
 ) -> Result<(), ContractError> {

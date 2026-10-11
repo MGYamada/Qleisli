@@ -29,6 +29,162 @@ fn probability(actual: &BTreeMap<Vec<bool>, f64>, outcome: &[bool], expected: f6
     );
 }
 
+#[test]
+fn observing_contracts_compare_complete_instruments_on_the_emitted_call() {
+    for implementation in ["measure_z(h(h(q)))", "measure_z(t(q))"] {
+        let source = format!(
+            "{IMPORTS}
+            fn reference(q: Q<Bit>) -> Bit {{ measure_z(q) }}
+            fn implementation(q: Q<Bit>) -> Bit {{ {implementation} }}
+            observe fn main() -> Bit {{ apply_contract(implementation,reference,x(init0())) }}"
+        );
+        let root = SourceRoot::new(&source);
+        let accepted = compile_project(&root.0).unwrap_or_else(|error| panic!("{source}\n{error}"));
+        assert!(
+            accepted.request().is_none(),
+            "a call is not a whole-root request"
+        );
+        assert!(
+            evidence(accepted.program().operations.as_slice()).is_empty(),
+            "Observe does not become a pure circuit action"
+        );
+        probability(
+            &run_closed(&accepted, SimulationLimits::default()).unwrap(),
+            &[true],
+            1.0,
+        );
+        assert!(format!("{accepted:?}").contains("InstrumentCall"));
+    }
+}
+
+#[test]
+fn observing_contracts_reject_public_relabeling_and_wrong_residual_channels() {
+    rejects(
+        &format!(
+            "{IMPORTS}
+        fn reference(q: Q<Bit>) -> Bit {{ measure_z(q) }}
+        fn implementation(q: Q<Bit>) -> Bit {{ not(measure_z(q)) }}
+        observe fn main() -> Bit {{ apply_contract(implementation,reference,init0()) }}"
+        ),
+        ErrorCode::Contract,
+    );
+    // Both public probabilities agree for every input. The outcome-one
+    // residual differs, which an off-diagonal-capable instrument gate detects.
+    rejects(
+        &format!(
+            "{IMPORTS}
+        fn reference(q: Q<Bit>) -> (Bit,Q<Bit>) {{
+            let (q,copy)=cnot(q,init0()); (measure_z(copy),q)
+        }}
+        fn implementation(q: Q<Bit>) -> (Bit,Q<Bit>) {{ (measure_z(q),init0()) }}
+        fn unused(q: Q<Bit>) -> (Bit,Q<Bit>) {{ apply_contract(implementation,reference,q) }}"
+        ),
+        ErrorCode::Contract,
+    );
+}
+
+#[test]
+fn observing_contracts_keep_zero_owners_nested_results_and_external_references() {
+    let result = run(&format!("{IMPORTS}
+        fn reference(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) {{ let (q,empty)=split(basis q as value {{ (value,()) }}); ((),(measure_z(q),empty)) }}
+        fn implementation(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) {{ let (q,empty)=split(basis q as value {{ (value,()) }}); ((),(measure_z(h(h(q))),empty)) }}
+        fn main() -> (Bit,Bit) {{
+            let (r,q)=cnot(h(init0()),init0());
+            let (u,(b,empty))=apply_contract(implementation,reference,q);
+            discard(empty); (measure_z(r),b)
+        }}"));
+    probability(&result, &[false, false], 0.5);
+    probability(&result, &[true, true], 0.5);
+    assert_eq!(result.len(), 2);
+}
+
+#[test]
+fn observing_contracts_preserve_unused_false_obligations_and_principal_effects() {
+    rejects(
+        &format!(
+            "{IMPORTS}
+        observe fn reference(q: Q<Bit>) -> Q<Bit> {{ q }}
+        fn implementation(q: Q<Bit>) -> Q<Bit> {{ let b=measure_z(init0()); q }}
+        fn unused(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,reference,q) }}"
+        ),
+        ErrorCode::Effect,
+    );
+    rejects(
+        &format!(
+            "{IMPORTS}
+        fn reference(q: Q<Bit>) -> (Bit,Unit) {{ (measure_z(q),()) }}
+        fn implementation(q: Q<Bit>) -> (Unit,Bit) {{ ((),measure_z(q)) }}
+        fn unused(q: Q<Bit>) -> (Unit,Bit) {{ apply_contract(implementation,reference,q) }}"
+        ),
+        ErrorCode::TypeMismatch,
+    );
+    rejects(&format!("{IMPORTS}
+        fn reference(q: Q<Bit>) -> Bit {{ measure_z(q) }}
+        fn implementation(q: Q<Bit>) -> Bit {{ not(measure_z(q)) }}
+        fn unused[const o: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(implementation,reference,q) }}"), ErrorCode::Contract);
+}
+
+#[test]
+fn observing_contracts_check_nested_calls_branches_and_hidden_discard_histories() {
+    let result = run(&format!(
+        "{IMPORTS}
+        fn reference(q: Q<Bit>) -> Bit {{ measure_z(q) }}
+        fn inner(q: Q<Bit>) -> Bit {{ apply_contract(reference,reference,q) }}
+        fn implementation(q: Q<Bit>) -> Bit {{ discard(h(init0())); inner(q) }}
+        fn main() -> (Bit,Bit) {{
+            let flag=measure_z(h(init0()));
+            let q=x(init0());
+            let value=if flag {{ apply_contract(implementation,reference,q) }}
+                       else {{ apply_contract(inner,reference,q) }};
+            (flag,value)
+        }}"
+    ));
+    probability(&result, &[false, true], 0.5);
+    probability(&result, &[true, true], 0.5);
+}
+
+#[test]
+fn observing_reference_source_replacement_requires_a_fresh_equation() {
+    let root = SourceRoot::new(&format!(
+        "{IMPORTS}
+        use reference::readout;
+        fn implementation(q: Q<Bit>) -> Bit {{ measure_z(h(h(q))) }}
+        fn main() -> Bit {{ apply_contract(implementation,readout,x(init0())) }}"
+    ));
+    root.write(
+        "reference.qli",
+        "use std::observe::measure_z; pub fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
+    );
+    let original = compile_project(&root.0).unwrap();
+    root.write(
+        "reference.qli",
+        "use std::observe::measure_z; pub fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
+    );
+    assert_eq!(
+        compile_project(&root.0).unwrap_err().code,
+        ErrorCode::Contract
+    );
+    probability(
+        &run_closed(&original, SimulationLimits::default()).unwrap(),
+        &[true],
+        1.0,
+    );
+}
+
+#[test]
+fn pure_contracts_still_reject_equal_width_non_endomorphic_basis_trees() {
+    let source = "fn reshape(q: Q<Bit>) -> Q<(Bit,Unit)> { basis q as value { (value,()) } }
+        fn unused(q: Q<Bit>) -> Q<(Bit,Unit)> { apply_contract(reshape,reshape,q) }";
+    let error = qleisli::frontend::compile::ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        source.into(),
+    )]))
+    .unwrap_err();
+    assert_eq!(error.code(), "type");
+    assert!(error.to_string().contains("same exact Q<A> output"));
+    rejects(source, ErrorCode::TypeMismatch);
+}
+
 fn run(source: &str) -> BTreeMap<Vec<bool>, f64> {
     let root = SourceRoot::new(source);
     let ir = compile_project(&root.0).unwrap_or_else(|error| panic!("{source}\n{error}"));

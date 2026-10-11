@@ -470,10 +470,20 @@ impl Checker<'_, '_> {
         let basis = ty.quantum_basis().ok_or_else(|| {
             SourceError::new("type", input.span, "apply_contract requires one Q<A> owner")
         })?;
-        let implementation_id = self.contract_function(implementation, basis, scope)?;
+        let (implementation_id, result) = self.contract_function(implementation, basis, scope)?;
+        self.effects.call(implementation_id, implementation.span);
         let specification_target = self.resolve(specification)?;
         let specification_id = match specification_target {
             Target::Declaration(meaning) if self.program.decl(meaning).kind == FnKind::Meaning => {
+                normalize::expect(
+                    &result,
+                    &ty,
+                    &scope.context,
+                    implementation.span,
+                    &self.program.budget,
+                )?;
+                self.effects
+                    .require_unitary(implementation_id, implementation.span);
                 self.edge(meaning, specification.span)?;
                 normalize::expect(
                     basis,
@@ -484,7 +494,17 @@ impl Checker<'_, '_> {
                 )?;
                 meaning
             }
-            _ => self.contract_function(specification, basis, scope)?,
+            _ => {
+                let (id, specified) = self.contract_function(specification, basis, scope)?;
+                normalize::expect(
+                    &specified,
+                    &result,
+                    &scope.context,
+                    specification.span,
+                    &self.program.budget,
+                )?;
+                id
+            }
         };
         self.obligation(
             span,
@@ -493,9 +513,14 @@ impl Checker<'_, '_> {
                 specification: specification_id,
             },
         )?;
-        Ok(ty)
+        Ok(result)
     }
-    fn contract_function(&mut self, name: &Ident, basis: &Ty, scope: &Scope) -> Result<DefId> {
+    fn contract_function(
+        &mut self,
+        name: &Ident,
+        basis: &Ty,
+        scope: &Scope,
+    ) -> Result<(DefId, Ty)> {
         if self.local(name).is_some() {
             return Err(SourceError::new(
                 "type",
@@ -527,16 +552,30 @@ impl Checker<'_, '_> {
                 "contract functions must be closed",
             ));
         }
-        let operation = self.named_operation(name, &[], scope, false)?;
-        access(&operation, Access::Apply, name.span)?;
+        self.edge(id, name.span)?;
+        let (parameters, result, _) = self.specialize(id, &[], scope, name.span, false)?;
+        let [parameter] = parameters.as_slice() else {
+            return Err(SourceError::new(
+                "type",
+                name.span,
+                "contract functions require one Q<A> argument",
+            ));
+        };
+        let input = parameter.quantum_basis().ok_or_else(|| {
+            SourceError::new(
+                "type",
+                name.span,
+                "contract functions require one Q<A> argument",
+            )
+        })?;
         normalize::expect(
-            &operation.basis,
+            input,
             basis,
             &scope.context,
             name.span,
             &self.program.budget,
         )?;
-        Ok(id)
+        Ok((id, result))
     }
     #[allow(clippy::too_many_arguments)]
     pub(super) fn computed(

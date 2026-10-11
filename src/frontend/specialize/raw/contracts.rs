@@ -248,6 +248,13 @@ impl Collector<'_> {
         let (implementation_id, specification_id) = key;
         let id = self.definition(implementation_id, span)?;
         let definition = &self.source.definitions()[id];
+        if definition.effect() == "observe" {
+            return Err(Error::new(
+                "unsupported",
+                span,
+                "observing contract obligations are not supported in this specialization profile",
+            ));
+        }
         let [input] = definition.inputs() else {
             return Err(invalid(span, "contract function is not unary"));
         };

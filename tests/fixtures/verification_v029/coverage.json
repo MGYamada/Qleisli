@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "0c66ba9676937f7f26aef9029899d9dc48ba3a4a9a8ea011bd643afb132ce57b",
+  "surface_sha256": "55f3d94d0745af549e31a187c551b65c67c83d11520ba042461d65943ebaca5c",
   "groups": [
     {
       "id": "raw-core",
@@ -2071,7 +2071,44 @@
           "markers": [
             "fn check_encoded(",
             "fn check_leaf(",
+            "fn check_instrument(",
             "\"--qirf-contract\""
+          ]
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "markers": [
+            "struct InstrumentEvidence ",
+            "struct InstrumentCall ",
+            "fn check_call(",
+            "implementation.artifact()",
+            "specification.artifact()"
+          ]
+        },
+        {
+          "path": "src/frontend/instrument.rs",
+          "markers": [
+            "fn signature<N>",
+            "ResultAtom::Quantum",
+            "signature.validate(budget)"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "fn apply_instrument_contract(",
+            "self.raw.operations[first..].to_vec()",
+            ".check_call(",
+            "fn instrument_contract_evidence("
+          ]
+        },
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "source_instruments:",
+            "source_instrument_calls:",
+            "fn retain_instruments(",
+            "fn retain_instrument_calls("
           ]
         },
         {
@@ -2195,12 +2232,32 @@
         {
           "path": "scripts/test_native_verification.py",
           "test": "test_instrument_requests"
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "test": "instrument_receipts_bind_original_bytes_and_fresh_call_decisions"
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "test": "instrument_signature_preflights_frontiers_depth_and_zero_width_types"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_compare_complete_instruments_on_the_emitted_call"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_reject_public_relabeling_and_wrong_residual_channels"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_check_nested_calls_branches_and_hidden_discard_histories"
         }
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
       "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity",
       "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check; instrument -> Protocol.InstrumentContract.check -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
-      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. The private Rust paired handle and observing source call-boundary integration remain open.",
+      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Ordinary concrete observing calls freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Explicit specialization and independent observing source replay remain open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {

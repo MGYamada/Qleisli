@@ -490,8 +490,8 @@ The direct-group distinction is recorded in the
 [ordinary #32 clarification](https://github.com/MGYamada/Qleisli/issues/32#issuecomment-6005081767).
 Concrete transform/evidence and native checking remain separate obligations.
 
-`apply_contract` evaluates its input first and retains one exact quantum owner.
-Its implementation and ordinary specification are closed principal-Unitary
+`apply_contract` evaluates its input first and consumes one exact quantum owner.
+In its pure overload, the implementation and ordinary specification are closed principal-Unitary
 `Q<A> -> Q<A>` declarations; a declared finite Meaning may supply the
 specification instead. The common checker records a located FunctionEquality
 obligation binding both exact original DefIds, interface/category/effect and
@@ -503,7 +503,20 @@ implementation with the independently selected function or Meaning through
 fresh native evidence. A declared Meaning supplies the request; it is never
 projected as a runtime function.
 
-For selected compilation, `ElaboratedProgram::check_function_contracts(kernel,
+The adopted observing overload compares two closed ordinary functions with
+principal Observe effects, one `Q<A>` argument and the same complete finite
+result type. Ordinary concrete compilation now obtains a private native
+instrument equation for the two original accepted artifacts. It executes only
+the implementation and freshly compares the actual emitted call interval with
+the selected original reference. Complete result nesting, ordered quantum and
+classical projections, zero-width owners, hidden histories and residual states
+remain significant. The private pair and call receipts retain source identity
+and stay separate from a whole-root request. This does not admit observing
+`Meaning`, inverse or coherent control access. Explicit specialization of this
+overload is still unsupported; it rejects instead of erasing an obligation.
+Its integration and source replay remain unfinished work under #46.
+
+For pure selected compilation, `ElaboratedProgram::check_function_contracts(kernel,
 budget)` returns an immutable preparation containing checked receipts for every
 original FunctionEquality obligation, including unused callers and zero-count
 bodies. The receipts retain the exact implementation, specification and source

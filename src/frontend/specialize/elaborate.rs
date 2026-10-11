@@ -2547,6 +2547,13 @@ impl Builder<'_> {
                     depth + 1,
                 )?;
                 let definition = &self.definitions[id];
+                if definition.effect == Effect::Observe {
+                    return Err(error(
+                        "unsupported",
+                        span,
+                        "observing contract call boundaries are not supported in this specialization profile",
+                    ));
+                }
                 if definition.effect != Effect::Unitary
                     || definition.inputs.len() != 1
                     || definition.inputs[0].ty != definition.output.ty

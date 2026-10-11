@@ -16,7 +16,11 @@ development milestones from the scope of their evidence.
   Prove its original instrument/reference comparison and complete Kraus sum;
   connect strict native `kind = "instrument"` byte acceptance to both original
   meanings and exact outcome maps on arbitrary finite external references.
-  The private paired handle and source call-boundary integration remain open.
+  Add a private paired Rust handle retaining both original artifacts, complete
+  signature and source identity. Ordinary concrete compilation executes only
+  the implementation and freshly checks its emitted call interval against the
+  reference; retain private pair/call sidecars without changing whole-root
+  request disclosure. Explicit specialization and source replay remain open.
 
 - Add the adopted bounded `meaning M: A = reference(f)` form for closed
   principal-Unitary endomorphisms. Mix reference and monomial targets through

@@ -98,10 +98,16 @@ The [native-wire record](native-wire-validation.json) retains 381 process checks
 the unchanged 799 original decisions, fresh production proofs and audits,
 both toolchains' focused native tests and the two existing guarantee checks.
 
-The private paired Rust handle and source call-boundary integration in both
-adapters remain unimplemented. Complete source type preservation remains an
-open proof obligation. Rust suites, hosted completion CI, packaging and full
-release checks were not rerun for this native-only unit. Source, decoder/native/runtime and realization
+The private paired Rust handle now retains the exact original accepted
+implementation/reference artifacts, complete signature and source identity.
+Ordinary concrete compilation executes only the implementation, rechecks its
+actual call interval through a fresh native request, and retains that call
+alongside the original pair. Whole-root request disclosure stays unchanged.
+The [focused Rust integration record](finite-source-validation.json) describes
+this bounded unit and its limitations. Explicit specialization and its source
+replay remain unimplemented; this does not complete both adapters or #46.
+Complete source type preservation remains an open proof obligation. Hosted
+completion CI, packaging and full release checks were not rerun. Source, decoder/native/runtime and realization
 correspondence remain separate obligations. Issue #46 stays open.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

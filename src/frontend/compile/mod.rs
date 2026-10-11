@@ -167,6 +167,7 @@ struct Compiler<'a> {
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
+    instrument_evidence: BTreeMap<(Key, Key), Arc<crate::contract::instrument::InstrumentEvidence>>,
     // One immutable, full-project snapshot. It is copied only when evidence is
     // first needed and charged before allocation. Individual receipts share it.
     function_sources: Option<Arc<Vec<(String, String)>>>,
@@ -766,6 +767,7 @@ fn process_loaded_project_details(
         checked: BTreeMap::new(),
         effects: source.effects,
         function_evidence: BTreeMap::new(),
+        instrument_evidence: BTreeMap::new(),
         function_sources: None,
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
@@ -854,12 +856,21 @@ fn process_loaded_project_details(
                 .name
                 .0
                 .clone();
-            compiler.function_contract_evidence(
-                &module,
-                obligation.span,
-                implementation,
-                specification,
-            )?;
+            if compiler.effects[&implementation].inferred() == crate::ir::Effect::Observe {
+                compiler.instrument_contract_evidence(
+                    &module,
+                    obligation.span,
+                    implementation,
+                    specification,
+                )?;
+            } else {
+                compiler.function_contract_evidence(
+                    &module,
+                    obligation.span,
+                    implementation,
+                    specification,
+                )?;
+            }
         }
     }
     let effects = compiler
@@ -867,8 +878,11 @@ fn process_loaded_project_details(
         .iter()
         .map(|(key, fact)| (compiler.resolution.path(*key), *fact))
         .collect();
+    compiler.charge("main", Span::default(), compiler.instrument_evidence.len())?;
     Ok(ProjectResult {
-        entry: main,
+        entry: main.map(|program| {
+            program.retain_instruments(compiler.instrument_evidence.into_values().collect())
+        }),
         effects,
     })
 }
@@ -954,6 +968,7 @@ mod snapshot_tests {
             checked: BTreeMap::new(),
             effects: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
+            instrument_evidence: BTreeMap::new(),
             function_sources: None,
             meanings: BTreeMap::new(),
             providers: BTreeMap::new(),
