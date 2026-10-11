@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Stop native checker descendants before reaping their process-group leader;
+  disarm cleanup after reaping so a recycled group number cannot be signalled
+  (#366). Unix targets lacking a non-reaping wait reject before launching.
+
 - Update the Python build backend to setuptools 83.0.0. Build the installed
   interop test package in isolation using its declared build requirements,
   so CI tests the backend selected by dependency updates.
