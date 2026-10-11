@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Clarify that AcceptedProgram's private instrument pair/call sidecars are
+  currently inert retention for a future source-to-artifact replay/audit
+  consumer (#365). Actual equations are checked before attachment; no
+  downstream replay, execution or export consumer reads the retained sidecars.
+
 - Update the Python build backend to setuptools 83.0.0. Build the installed
   interop test package in isolation using its declared build requirements,
   so CI tests the backend selected by dependency updates.
@@ -77,8 +82,9 @@ incompatible source/API changes from 0.2.9.
   Add a private paired Rust handle retaining both original artifacts, complete
   signature and source identity. Ordinary concrete compilation executes only
   the implementation and freshly checks its emitted call interval against the
-  reference; retain private pair/call sidecars without changing whole-root
-  request disclosure. Connect explicit Raw specialization with independent
+  reference; retain private pair/call sidecars as currently inert data, without
+  a downstream consumer or change to whole-root request disclosure. Connect
+  explicit Raw specialization with independent
   source replay, fresh actual-call equations, nested/unused/zero-count obligations
   and ordered result checks. Reject hierarchy/checker-free lowering of observing
   contracts. Preserve pure contracts and their exact phase rule.

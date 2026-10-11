@@ -4740,7 +4740,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "fea23e5b0a73d427375d7f771aa752ad0b340964ad6d7e5804cc7d6647288047",
+      "sha256": "cf2afeb9c67c9beaea82e9054fbfbf65831bf233278918938979a15d4067217a",
       "group": "transport",
       "surface": {
         "declarations": [
