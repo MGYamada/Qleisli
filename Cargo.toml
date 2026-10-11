@@ -11,6 +11,22 @@ readme = "README.crates.md"
 documentation = "https://docs.rs/qleisli"
 keywords = ["quantum", "compiler", "verification", "openqasm", "qir"]
 categories = ["compilers", "science", "command-line-utilities"]
+# Historical validation records remain in the complete GitHub source archive.
+# Retain executable fixture sources, migration maps and frozen native inputs.
+exclude = [
+    "/assets/logo-concepts/**",
+    "/experimental/**",
+    "/tests/fixtures/**/*.gz",
+    "/tests/fixtures/**/*.rs",
+    "/tests/fixtures/**/*.lean",
+    "/tests/fixtures/**/*.py",
+    "/tests/fixtures/**/*.log",
+    "/tests/fixtures/**/*.stderr",
+    "/tests/fixtures/**/*.stdout",
+    "/tests/fixtures/**/*.json",
+    "!/tests/fixtures/**/*source-map.json",
+    "!/tests/fixtures/verification_v022/hierarchy/**",
+]
 
 [lib]
 name = "qleisli"

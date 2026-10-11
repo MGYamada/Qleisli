@@ -22,6 +22,8 @@ import tarfile
 import tempfile
 import time
 
+MAX_CRATE_BYTES = 10_000_000
+
 
 class DistributionError(ValueError):
     pass
@@ -393,6 +395,10 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
         except OSError as error:
             record_preservation_failure(error)
             raise
+        report["crate"] = {**crate_record, "cargo_verification": "passed"}
+        crate_size = crate_copy.stat().st_size
+        require(crate_size <= MAX_CRATE_BYTES,
+                f"crate exceeds publication size limit: {crate_size} > {MAX_CRATE_BYTES} bytes")
         contents = read_archive(crate_copy, prefix=prefix)
         report["package_attribution"] = check_package(contents, tracked, listed, candidate)
         packaged_source = work / "packaged-source"
@@ -409,6 +415,7 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
                     and (packaged_source / name).stat().st_mode & 0o777 == file.mode
                     for name, file in contents.items()), "packaged files changed during validation")
         report["crate"] = {**crate_record,
+                           "size_bytes": crate_size, "max_size_bytes": MAX_CRATE_BYTES,
                            "file_count": len(contents), "cargo_verification": "passed",
                            "extracted_metadata_and_lock": "validated offline with --locked"}
         # Exercise the distribution's documentation and actual installed binary,

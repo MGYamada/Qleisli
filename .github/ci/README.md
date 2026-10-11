@@ -514,6 +514,15 @@ readiness result; the existing ordinary `required` contexts remain test gates.
 
 ## Local distribution work directories
 
+The crates.io package excludes historical fixture records, archived snapshots
+and experimental material, while retaining production sources, executable
+fixture inputs, migration maps and notices. All tracked records and experimental
+sources remain in the complete GitHub source archive, whose full tests and
+proof checks remain required. The distribution gate rejects a compressed crate
+over 10,000,000 bytes; registry packaging does not change repository size budgets.
+Use the complete source archive to reproduce historical validation and proof
+maintenance, rather than the reduced registry package.
+
 `scripts/check_distribution.py --report PATH` retains the report, command logs,
 crate and source archive beside the report. Extracted sources, the temporary
 installation and default Cargo targets live in a separate owned work directory

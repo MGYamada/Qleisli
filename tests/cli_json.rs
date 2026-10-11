@@ -231,12 +231,21 @@ fn json_command_identity_is_independent_of_leading_options() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    // Preserve the historical golden; only the retired command leaves current help.
+    // Preserve the historical golden; apply the reviewed current help changes.
     let historical = include_str!("fixtures/frontend_v030/basis-polymorphism/current-usage.txt");
     let retired = "  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n";
     assert_eq!(historical.matches(retired).count(), 1);
+    let retired_documentation = concat!(
+        "  Canonical contract: docs/src/reference/discovery.md\n",
+        "  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n"
+    );
+    assert_eq!(historical.matches(retired_documentation).count(), 1);
     let usage = historical
         .replace(retired, "")
+        .replace(
+            retired_documentation,
+            "  Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md\n",
+        )
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [

@@ -36,6 +36,8 @@ commit, run/attempt and checksums.
 
 Qleisli Project Contributors. Apache-2.0; historical and third-party notices
 remain in LICENSE, NOTICE and the source archive.
+The registry crate omits historical validation records and experimental
+material; the attached complete source archive preserves them for reproduction.
 
 Qleisli and its tools are independent projects and are not affiliated with,
 endorsed by, or sponsored by the Rust Project or the Rust Foundation. Rust and

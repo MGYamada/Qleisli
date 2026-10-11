@@ -18,6 +18,10 @@ incompatible source/API changes from 0.2.9.
   preserving all full validation, replay, artifact and same-attempt receipt
   requirements. Other release versions retain the complete-feature gate.
 
+- Exclude historical validation records and experimental material from registry
+  packaging, retaining them in the complete source archive. Enforce the crate
+  publication size limit and preserve all production targets and fixture sources.
+
 - Run CI on all branch pushes and normal pull-request events, retaining release
   tag and manual checks. Keep independent runs, conservative change selection,
   size gates and representative `--quick` corpus validation.

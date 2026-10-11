@@ -592,6 +592,15 @@ class ScratchTests(unittest.TestCase):
                          b"synthetic test failure\n")
         self.assert_durable_evidence(report)
 
+    def test_oversized_crate_is_rejected_with_bytes_retained(self):
+        with patch.object(check_distribution, "MAX_CRATE_BYTES", 1):
+            report, driver = self.run_validation()
+        self.assertEqual(report["status"], "failed")
+        self.assertIn("crate exceeds publication size limit", report["error"])
+        self.assertEqual(report["work"]["status"], "removed")
+        self.assertEqual(Path(report["crate"]["path"]).read_bytes(), driver.crate_bytes)
+        self.assert_durable_evidence(report)
+
     def test_failed_package_preserves_unverified_crate_before_cleanup(self):
         report, driver = self.run_validation(fail_package=True)
         self.assertEqual(report["status"], "failed")
