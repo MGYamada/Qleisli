@@ -186,7 +186,7 @@ use the shared lexer; semantic category resolution follows parsing.
 Module       ::= Use* Declaration*
 Function     ::= [pub] Effect fn Ident [StaticParams] (Params) -> Type
                  [requires Requirements] Block
-Effect       ::= unitary | iso | observe
+Effect       ::= unitary | isometry | observe
 StaticParams ::= [ static Ident : Kind (, static Ident : Kind)* [,] ]
 Params       ::= empty | Pattern : Type (, Pattern : Type)* [,]
 Pattern      ::= Ident | _ | () | (Pattern, Pattern (, Pattern)* [,])
@@ -368,7 +368,7 @@ claiming #22 complete; do not infer it from the shared AST.
 ## Effects, owners and failure behavior
 
 Ownership and effects are checked separately. The current implementation has
-`Unitary`, `Iso`, `Observe` with composition by the corresponding effect join;
+`Unitary`, `Isometry`, `Observe` with composition by the corresponding effect join;
 the common representation must retain the declared annotation and computed body
 effect rather than deriving one from the presence of `Q`. An annotation cannot
 downgrade a body. Changes to the effect classes themselves belong to the effect

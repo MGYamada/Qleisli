@@ -20,8 +20,7 @@ development milestones from the scope of their evidence.
 - Retire the temporary `iso fn` source prefix with a located migration error
   directing authors to `isometry fn`. Migrate active tests and source selection
   without rewriting historical inputs or versioned `"iso"` transport tags.
-  Keep inference, effect assertions and native acceptance unchanged. Lean-side
-  vocabulary compatibility work under #57 remains pending.
+  Keep inference, effect assertions and native acceptance unchanged.
 
 - Reverse both exact ports for direct adjoints of opaque general operation
   parameters. Reuse the checked inverse constructor in selected lowering,
@@ -50,14 +49,12 @@ development milestones from the scope of their evidence.
 - Rename the public Rust effect, function-kind and token-kind variants from
   `Iso` to `Isometry`, including body-effect diagnostics. Callers migrate their
   variant references; no Rust alias is added. Keep the effect order, all checking
-  rules and explicit versioned/checked-graph transport tags unchanged. Legacy
-  source-prefix retirement and remaining source migration under #57 are open.
+  rules and explicit versioned/checked-graph transport tags unchanged.
 
 - Connect the adopted `isometry fn` spelling to the common source judgment,
   actual inferred effects, both concrete consumers and fresh native checking.
-  Migrate current examples without changing versioned QIRF `"iso"` tags. Legacy
-  source-prefix retirement and public effect-name migration remain unfinished
-  under #57; the temporary old prefix grants no different semantics or access.
+  Migrate current examples without changing versioned QIRF `"iso"` tags. The
+  canonical spelling grants no additional semantics or access.
 
 - Extend the independent rational Raw and Kraus oracles to structural Unit
   maps, with literal phase, reference-axis and readout-history regressions and
@@ -681,7 +678,7 @@ development milestones from the scope of their evidence.
 - Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
   Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
   or acceptance evidence; preserve all earlier targets and historical records.
-- Lower principal Iso selected-source roots through the existing fresh-zero,
+- Lower principal Isometry selected-source roots through the existing fresh-zero,
   unitary hierarchy and zero-measurement readout transport, retaining quantum
   result trees, Unit-owner phase and complete caller frames. Return the single
   unnormalized coefficient vector from `run`; require a principal Observe

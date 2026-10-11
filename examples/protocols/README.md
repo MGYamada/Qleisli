@@ -12,7 +12,7 @@ Distinct owners may be entangled. Types and effects are written in the source.
 
 | Module / public functions | Contract and evidence scope |
 | --- | --- |
-| [bell](bell.qli): `prepare`, `measure` | `prepare` is an `Iso` returning two fresh owners in the positive Bell state. `measure` is `Observe`, consumes both owners, and returns **(phase, parity)** after CNOT and H. |
+| [bell](bell.qli): `prepare`, `measure` | `prepare` is an `Isometry` returning two fresh owners in the positive Bell state. `measure` is `Observe`, consumes both owners, and returns **(phase, parity)** after CNOT and H. |
 | [corrections](corrections.qli): `pauli` | `Unitary`; consumes a target and returns Z^phase X^parity applied to it, with ordinary classical control. Classical inputs are reusable. |
 | [teleportation](teleportation.qli): `teleport` | `Observe`; consumes input and newly allocated Alice wire, returns `((phase,parity),bob)`. For any joint input density matrix ρ on input and reference, each corrected branch is ρ/4, identifying the input interface with Bob. This is the intended ideal instrument, not a theorem supplied by its type. |
 | [dense_coding](dense_coding.qli): `round_trip` | `Observe`; encodes two classical `Bit` inputs into one half of a fresh Bell pair, consumes the pair and returns the same two bits in the same order. |

@@ -12,7 +12,7 @@ L=language, B=sealed built-in, D=ordinary-definition candidate; unresolved class
 | R02 | Static operation descriptions capture no owners; bind actual body, full signature, phase and dependencies. Matrix values grant no gate access. |
 | R03 | Adjoint/control/powers need separate capabilities; retain all owners/phase, count actual repeated uses. |
 | R04 | Finite carry/axis helpers return complete interfaces; check even zero bodies, partitions/reassembly/nonaliasing. Lifetime is not cleanup. |
-| R05 | Derived fresh initialization Iso; consuming measure/discard Observe with every outcome/reference/residual owner. |
+| R05 | Derived fresh initialization Isometry; consuming measure/discard Observe with every outcome/reference/residual owner. |
 | R06 | Total predicates and reversible synthesis; actual compute/use/uncompute with exact reference-stable zero return, without whole-space tables. |
 | R07 | Fix 2Π-I versus I-2Π and exp(iφ(2Π-I)); require actual preparation/inverse or certified synthesis. |
 | R08 | QFT/rotations fix domain, sign, order, error metric and synthesis/composition budget; approximate target does not relax cleanup. |

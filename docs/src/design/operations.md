@@ -37,7 +37,7 @@ through the selected hierarchy path. These checks report producer consistency,
 establish independent expected-meaning equality or general static arrows.
 The unchanged quantum-capturing closure now rejects at the resolved owner's
 use with an ownership diagnostic, rather than a parser failure. A false
-`unitary` assertion on preparation still rejects with inferred Iso effect and
+`unitary` assertion on preparation still rejects with inferred Isometry effect and
 the explicit unsupported-external-unitarity explanation. No historical source
 or observation has been rewritten. The older comma-form domain/codomain syntax,
 rectangular Meaning evidence and complete instrument requests below remain
@@ -85,7 +85,7 @@ Before changing the normative contract, implement these candidate rules:
   `Op<A>` still abbreviates precisely `A -> A`; the equal-dimensional unitor
   negative remains invalid for that endomorphic formal.
 - Track the pure law separately from executable access. A general applicable
-  arrow supplies an isometry law and has an Iso upper effect bound. An
+  arrow supplies an isometry law and has an Isometry upper effect bound. An
   endomorphism can retain the current Unitary inference by the finite-space
   isometry law. A differing-tree arrow can have Unitary effect only with checked
   equal-dimension/two-sided laws; identical physical width is insufficient to
@@ -97,7 +97,7 @@ Before changing the normative contract, implement these candidate rules:
   a zero repetition count. Composition matches the exact middle tree, and
   ordered tensoring constructs both interface trees independently. Observe
   providers never enter this pure-arrow category.
-- Preserve the existing Iso transport's explicit empty-readout mapping where
+- Preserve the existing isometry transport's explicit empty-readout mapping where
   it is used. An instrument-shaped transport is not an Observe effect, an
   arbitrary instrument Meaning or a general adjoint API. Every proposed new
   static-provider route still needs fresh native acceptance of its actual
@@ -245,10 +245,10 @@ They do not assume that separate logical owners are separable.
 
 `unitary` permits different exact input/output trees only when their finite
 dimensions agree and the two-sided laws hold. Equal width never supplies the
-source conversion or implementation. `iso` permits dimension increase with the
+source conversion or implementation. `isometry` permits dimension increase with the
 one-sided law. A declaration/effect label alone proves neither equation.
 Applying a pure arrow has its checked pure effect; it cannot perform measurement,
-implicit discard or unresolved allocation/cleanup. Preparation has Iso effect.
+implicit discard or unresolved allocation/cleanup. Preparation has Isometry effect.
 Explicit measurement/discard has Observe effect and cannot inhabit `Op`.
 
 A pure operation consumes its input owner and produces its output owner once.
