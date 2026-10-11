@@ -442,8 +442,8 @@ QS/PR/RS obligations as an intrinsic pre-v1 release prohibition.
 
 The human/workflow caller supplies an exact trusted base commit through the
 manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
-tag. There is no fallback to candidate HEAD. Before using this gate for a real
-release, review and commit `release/requirements.json` at that base: the exact
+tag. There is no fallback to candidate HEAD. For complete feature releases,
+review and commit `release/requirements.json` at that base: the exact
 13 groups/111 IDs (including #311, #315 and #317), complete applicable criteria,
 immutable Issue snapshot references and an explicit review record. The checker
 reads these from Git blobs at the base. A candidate `release/acceptance.json` supplies evidence for
@@ -451,6 +451,17 @@ exactly those criteria. GitHub remains the only decisions/progress ledger;
 these files are verification indices, not another backlog. There is currently
 no real completed index. Missing reviewed requirements or acceptance evidence
 is an actionable failure, not a request to auto-generate completion records.
+
+The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)
+and [human approval](../../release/alpha-scope-approval.json), recorded in
+[Issue #351](https://github.com/MGYamada/Qleisli/issues/351), apply only to
+`0.3.0-alpha`. Their exact approved bytes must exist at the caller's trusted
+base and remain identical in the candidate. `release/alpha-acceptance.json`
+binds that approval, the registry and all admitted/pending proof disclosures;
+it makes no feature-completion claim. Every producer, full proof/replay lane,
+same-attempt receipt and distribution check below remains required. Other
+versions still use the complete-feature requirements gate. Hashes preserve
+the recorded approval; they do not independently authenticate its human author.
 
 The requirements schema is `qleisli.release-requirements`, integer version 1,
 with `release_line`, `identities`, `groups`, `review`, and `issues`. Each Issue

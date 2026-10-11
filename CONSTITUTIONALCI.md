@@ -223,6 +223,17 @@ reviewed requirements can mark a criterion `explicit-later-version`; a
 candidate cannot reduce scope. GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
 
+For `0.3.0-alpha` alone, the maintainer separately approved the
+[development-snapshot scope](release/alpha-scope-proposal.md), with the
+[affirmative human record](release/alpha-scope-approval.json) tracked in
+[Issue #351](https://github.com/MGYamada/Qleisli/issues/351). The gate binds both
+exact records to the trusted base and candidate, and uses
+`release/alpha-acceptance.json` to bind approval, identities and proof status.
+This snapshot need not complete the feature goal. It still requires every
+producer, full proof/replay lane, same-attempt receipt and artifact check below.
+Other versions retain the complete-feature gate. This ordinary release-scope
+decision adopts no constitutional interpretation or discharged guarantee.
+
 The proof-scope disclosure must say `scoped-pre-v1` and bind the exact checked
 ledger digest, sorted admitted IDs and all sorted pending IDs, including
 EXACT-2026-01. Pre-v1 pending broader obligations are disclosed, not silently

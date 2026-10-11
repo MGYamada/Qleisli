@@ -24,6 +24,12 @@ from maintain_release import version_plan
 
 REQUIREMENTS = "release/requirements.json"
 ACCEPTANCE = "release/acceptance.json"
+ALPHA_ACCEPTANCE = "release/alpha-acceptance.json"
+# Exact, separately approved ordinary release scope; not a guarantee admission.
+ALPHA_RECORDS = {
+    "release/alpha-scope-proposal.md": "52cd027ccd181563760ef00ca53f44d21518fb4cea3e1412d3bbf5ab6ad24d99",
+    "release/alpha-scope-approval.json": "3d186f683833161f9c1a09472d74c9a6e19409553d73211c67cd01a4178d5032",
+}
 LEDGER = "governance/guarantees.json"
 GROUPS = {
     "G01": [129, 134, 137, 138, 149],
@@ -161,9 +167,32 @@ def proof_disclosures(ledger):
     return {"admitted": sorted(admitted), "pending": sorted(pending)}
 
 
-def requirements(root, base, snapshot):
+def alpha_requirements(root, base, snapshot):
+    records = {}
+    for path, sha in ALPHA_RECORDS.items():
+        raw = git(root, "show", f"{base}:{path}")
+        require(digest(raw) == sha, "alpha scope lacks the exact reviewed approval packet")
+        require(snapshot.read(root, path) == raw, "alpha scope differs from the trusted base")
+        records[path] = raw
+    path = "release/alpha-scope-approval.json"
+    approval = json_object(records[path], path)
+    require(approval["format"] == "qleisli.alpha-release-approval"
+            and approval["product_version"] == "0.3.0-alpha"
+            and approval["decision"] == "approved-alpha-snapshot-scope",
+            "alpha scope is not approved for this version")
+    return approval, records[path]
+
+
+def requirements(root, base, snapshot, *, product_version=None):
     require(type(base) is str and COMMIT.fullmatch(base), "require caller-selected exact trusted base commit")
     require(git(root, "rev-parse", base + "^{commit}").decode().strip() == base, "trusted base is not a commit")
+    if product_version == "0.3.0-alpha":
+        try:
+            git(root, "cat-file", "-e", f"{base}:release/alpha-scope-approval.json")
+        except PacketError:
+            pass  # No alpha approval: retain the original complete-feature gate.
+        else:
+            return alpha_requirements(root, base, snapshot)
     # Do not let the candidate select a ref or replace the reviewed criterion list.
     try:
         raw = git(root, "show", f"{base}:{REQUIREMENTS}")
@@ -211,6 +240,18 @@ def requirements(root, base, snapshot):
 
 
 def acceptance(root, expected, raw_requirements, snapshot, ledger):
+    if expected["format"] == "qleisli.alpha-release-approval":
+        data = json_object(snapshot.read(root, ALPHA_ACCEPTANCE), ALPHA_ACCEPTANCE)
+        envelope(data, "alpha-release-acceptance", {
+            "requirements_sha256", "product_version", "identities", "schema_registry", "proof_scope"})
+        require(data["product_version"] == "0.3.0-alpha", "alpha scope cannot authorize another version")
+        require(data["requirements_sha256"] == digest(raw_requirements), "alpha approval snapshot changed")
+        require(data["identities"] == IDENTITIES and type(data["identities"]["qrate_schema"]) is int,
+                "edition/release/schema coordinates differ")
+        snapshot.ref(root, data["schema_registry"])
+        require(data["schema_registry"]["path"] == "lean/schema-registry.json", "wrong schema registry")
+        accepted_proof_scope(root, data, snapshot, ledger)
+        return data
     data = json_object(snapshot.read(root, ACCEPTANCE), ACCEPTANCE)
     envelope(data, "release-acceptance", {"requirements_sha256", "identities", "issues", "proof_scope", "schema_registry"})
     require(data["requirements_sha256"] == digest(raw_requirements), "acceptance criterion snapshot changed")
@@ -234,6 +275,11 @@ def acceptance(root, expected, raw_requirements, snapshot, ledger):
                     f"Issue {number}: missing/unknown evidence roles")
             for ref in record["evidence"].values():
                 snapshot.ref(root, ref)
+    accepted_proof_scope(root, data, snapshot, ledger)
+    return data
+
+
+def accepted_proof_scope(root, data, snapshot, ledger):
     scope = data["proof_scope"]
     exact_keys(scope, {"claim", "ledger_sha256", "admitted", "pending"}, "proof scope")
     require(scope["claim"] == "scoped-pre-v1", "this gate cannot establish full constitutional conformance")
@@ -241,7 +287,6 @@ def acceptance(root, expected, raw_requirements, snapshot, ledger):
     for field, identifiers in proof_disclosures(ledger).items():
         require(type(scope[field]) is list and scope[field] == identifiers,
                 f"proof scope {field}: removed guarantee, fabricated discharge or hidden pending duty")
-    return data
 
 
 def hosted_context(root, env):
@@ -412,9 +457,9 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     root = Path(root).resolve()
     context = hosted_context(root, env)
     snapshot = Snapshot()
-    expected, raw = requirements(root, base_ref, snapshot)
     version = tomllib.loads(snapshot.read(root, "Cargo.toml").decode())["package"]["version"]
     require(re.fullmatch(r"0\.3\.0(?:-(?:alpha|beta|rc)(?:\.[1-9][0-9]*)?)?", version), "gate supports only scoped 0.3.0 product releases")
+    expected, raw = requirements(root, base_ref, snapshot, product_version=version)
     if context["event"] == "push":
         require(env["GITHUB_REF"] == f"refs/tags/v{version}", "release tag and product version differ")
     require(not version_plan(root, version), "product versions are not synchronized")
@@ -443,6 +488,8 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     require(hosted_context(root, env) == context, "candidate changed during readiness verification")
     return dict(format="qleisli.release-readiness", version=1, context=context, product_version=version,
                 identities=IDENTITIES, status="ready-scoped-candidate", publication="not-authorized-or-performed",
+                release_scope="alpha-development-snapshot" if expected["format"] == "qleisli.alpha-release-approval"
+                else "complete-reviewed-feature-requirements",
                 admitted=result["admitted_guarantees"], pending=len(accepted["proof_scope"]["pending"]))
 
 

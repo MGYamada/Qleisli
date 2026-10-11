@@ -6,6 +6,18 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+## 0.3.0-alpha — 2026-10-11
+
+Development snapshot under the explicitly approved alpha scope (#351), not
+completion of the v0.3.0 feature goal. Edition 2026 and the two admitted scoped
+QLV1 guarantees remain in force; broader QS, PR, quantitative RS and exactness
+proof/enforcement obligations remain pending. This MINOR prerelease includes
+incompatible source/API changes from 0.2.9.
+
+- Bind alpha-only release readiness to its exact human-approved scope while
+  preserving all full validation, replay, artifact and same-attempt receipt
+  requirements. Other release versions retain the complete-feature gate.
+
 - Run CI on all branch pushes and normal pull-request events, retaining release
   tag and manual checks. Keep independent runs, conservative change selection,
   size gates and representative `--quick` corpus validation.

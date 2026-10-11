@@ -181,6 +181,71 @@ class SyntheticRelease(unittest.TestCase):
         self.assertEqual((result['admitted'], result['pending']), (2,3))
         self.assertEqual(result['publication'], 'not-authorized-or-performed')
 
+    def use_approved_alpha_scope(self):
+        # Copy the actual approved packet into the disposable repo; no synthetic
+        # human act is admitted. The proof/build services remain mocked above.
+        for path in checker.ALPHA_RECORDS:
+            self.write(path, (ROOT / path).read_bytes())
+        (self.root / checker.REQUIREMENTS).unlink()
+        self.base = self.commit()
+        self.alpha_acceptance = dict(
+            format='qleisli.alpha-release-acceptance', version=1,
+            product_version='0.3.0-alpha',
+            requirements_sha256=self.ref('release/alpha-scope-approval.json')['sha256'],
+            identities=checker.IDENTITIES, schema_registry=self.ref('lean/schema-registry.json'),
+            proof_scope=copy.deepcopy(self.acceptance['proof_scope']))
+        self.write(checker.ALPHA_ACCEPTANCE, encoded(self.alpha_acceptance))
+        self.head = self.commit()
+        self.refresh_receipts()
+
+    def test_approved_alpha_snapshot_retains_pending_obligations_and_all_receipts(self):
+        self.add_exactness_supplement()
+        self.use_approved_alpha_scope()
+        result = self.check()
+        self.assertEqual(result['release_scope'], 'alpha-development-snapshot')
+        self.assertEqual((result['admitted'], result['pending']), (2, 4))
+        self.assertEqual(result['publication'], 'not-authorized-or-performed')
+
+    def test_alpha_approval_does_not_authorize_any_other_release_version(self):
+        self.use_approved_alpha_scope()
+        for version in ['0.3.0', '0.3.0-alpha.1', '0.3.0-beta', '0.3.0-rc']:
+            with self.subTest(version=version), self.assertRaisesRegex(PacketError, 'missing reviewed'):
+                checker.requirements(self.root, self.base, checker.Snapshot(), product_version=version)
+
+    def test_alpha_packet_must_match_both_reviewed_base_and_approved_bytes(self):
+        self.use_approved_alpha_scope()
+        for path in checker.ALPHA_RECORDS:
+            with self.subTest(path=path):
+                original = (self.root / path).read_bytes()
+                self.write(path, original + b'\n')
+                with self.assertRaisesRegex(PacketError, 'differs from the trusted base'):
+                    checker.requirements(self.root, self.base, checker.Snapshot(), product_version='0.3.0-alpha')
+                bad_base = self.commit()
+                with self.assertRaisesRegex(PacketError, 'exact reviewed approval'):
+                    checker.requirements(self.root, bad_base, checker.Snapshot(), product_version='0.3.0-alpha')
+                self.write(path, original)
+
+    def test_alpha_scope_cannot_hide_a_missing_producer_or_stale_attempt(self):
+        self.use_approved_alpha_scope()
+        original = self.needs.copy()
+        del self.needs['check-rust-msrv']
+        self.env['RELEASE_NEEDS_JSON'] = json.dumps(self.needs)
+        self.reject('missing|unexpected')
+        self.needs = original
+        self.refresh_job('check-rust-msrv', context={**self.context, 'attempt': '1'})
+        self.reject('context|attempt|stale')
+
+    def test_alpha_scope_cannot_hide_pending_proofs_or_invent_conformance(self):
+        self.use_approved_alpha_scope()
+        for field, value in [('claim', 'full-conformance'), ('pending', [])]:
+            with self.subTest(field=field):
+                modified = copy.deepcopy(self.alpha_acceptance)
+                modified['proof_scope'][field] = value
+                self.write(checker.ALPHA_ACCEPTANCE, encoded(modified))
+                self.head = self.commit()
+                self.refresh_receipts()
+                self.reject('full constitutional|proof scope pending')
+
     def add_exactness_supplement(self):
         # Synthetic references intentionally point to labelled synthetic review
         # bytes. The constitutional service is mocked here, never human authority.
