@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [endomorphic reference-Meaning study](reference-meaning-v030/README.md)
+preserves an unadopted syntax candidate and three existing function-contract
+controls. Six actual CLI observations distinguish exact H/phase comparison
+from the selected Raw adapter's unsupported `apply_contract` boundary. The
+independent host matrix and axis regression is separate evidence.
+
 The [isometry-prefix retirement study](isometry-retirement-v030/README.md)
 preserves both spellings before the cutover and eight actual CLI observations.
 The old prefix gains a located migration refusal; the canonical program keeps

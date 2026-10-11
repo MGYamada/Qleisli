@@ -1,0 +1,12 @@
+use std::quantum::h;
+
+unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { h(h(h(q))) }
+meaning Expected: Bit = reference(reference_h);
+
+fn invoke[const U: Op<Bit, Expected>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U) { U(q) }
+
+pub unitary fn main(q: Q<Bit>) -> Q<Bit> {
+    invoke[checked_op(implementation, Expected)](q)
+}

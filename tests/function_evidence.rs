@@ -177,6 +177,77 @@ fn checks_two_raw_functions_and_retains_their_full_snapshots() {
 }
 
 #[test]
+fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
+    let implementation = raw(
+        1,
+        vec![
+            gate(SingleGate::H, 0, 1),
+            gate(SingleGate::H, 1, 2),
+            gate(SingleGate::H, 2, 3),
+        ],
+        3,
+    );
+    let reference = raw(1, vec![gate(SingleGate::H, 0, 1)], 1);
+    let receipt = check(1, implementation, reference.clone());
+    let s = Exact::inv_sqrt2();
+    let entries = [s, s, s, s.neg().unwrap()];
+    assert_eq!(
+        receipt.meaning(),
+        &Matrix::new(2, 2, entries.to_vec()).unwrap()
+    );
+
+    // H and -H have identical probabilities for every basis input. The
+    // native equation must still distinguish their exact coefficients.
+    for entry in entries {
+        let negative = entry.neg().unwrap();
+        assert_eq!(
+            entry.mul(entry.conjugate().unwrap()).unwrap(),
+            negative.mul(negative.conjugate().unwrap()).unwrap()
+        );
+    }
+    let negative_h = raw(
+        1,
+        vec![
+            gate(SingleGate::H, 0, 1),
+            RawOp::ApplyUnitary {
+                input: t(1),
+                output: t(2),
+                steps: vec![monomial(&[], &[0], &[4])],
+            },
+        ],
+        2,
+    );
+    for candidate in [raw(1, vec![], 0), negative_h] {
+        assert_eq!(
+            FunctionEvidence::check(
+                BasisType::Bit,
+                candidate,
+                reference.clone(),
+                identity(),
+                &mut work(),
+            )
+            .unwrap_err(),
+            ContractError::EquationMismatch
+        );
+    }
+
+    let on_axis = |target| {
+        flat(
+            2,
+            vec![CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Hadamard { target },
+            }],
+        )
+    };
+    assert_eq!(
+        FunctionEvidence::check(basis(2), on_axis(1), on_axis(0), identity(), &mut work())
+            .unwrap_err(),
+        ContractError::EquationMismatch
+    );
+}
+
+#[test]
 fn attachment_requires_the_exact_expected_basis_tree() {
     let cases = [
         (

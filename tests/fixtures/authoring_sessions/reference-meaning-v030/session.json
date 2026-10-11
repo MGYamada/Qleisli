@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Compare an endomorphic reference-Meaning candidate with existing independent function contracts under #46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "6558e7691102e880a1db75345ab8b13769c62e49",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze unadopted reference-Meaning syntax and separate existing-API positive/exact-phase controls before checking or production changes.",
+      "sha256": {
+        "candidate/main.qli": "6758a1fc807a8061d505009f73b3d0d5aa489d40cd2ec626ed255a561542c926",
+        "contract-hhh/main.qli": "e690b03f88bf55ffdc60db1a50d72bb184ca360764f19897ee5c9145d255a0fa",
+        "contract-identity/main.qli": "6a8e416e1fb55c635274cdca71bff012d78ea3fc5df40ed16339da1ab7eb6f49",
+        "contract-negative-h/main.qli": "a45b53c7813808002c90caa0039a9e69f64f5a58b29e92b5df0d538745ee36d1"
+      },
+      "manifest_sha256": {
+        "candidate/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-hhh/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-identity/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "contract-negative-h/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/candidate-project-check.json",
+        "observations/contract-hhh-project-check.json",
+        "observations/contract-hhh-project-run.json",
+        "observations/contract-identity-project-check.json",
+        "observations/contract-negative-h-project-check.json",
+        "observations/contract-hhh-selected-check.json"
+      ]
+    }
+  ]
+}
