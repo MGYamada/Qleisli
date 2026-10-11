@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFourier
 import QleisliKernel.Hierarchical.FourierStage
 
 /-! Coefficients of inspected actual five-node Fourier stages.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The remaining H, controlled-gradient and recursive-child equations refer to
 actual physical evaluations at the bound indices. There is no whole-graph
 semantic environment, probability-only equality or producer matrix premise. -/

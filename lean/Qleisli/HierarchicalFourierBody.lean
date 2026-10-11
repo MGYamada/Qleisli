@@ -4,7 +4,7 @@ import Qleisli.HierarchicalFourierControl
 import QleisliKernel.Hierarchical.FourierBody
 
 /-! Complete actual recursive Fourier body under only bound finite H equations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Recursive-child and controlled-gradient matrices are derived, never assumed.
 Final outer reversal/request binding and native/finite-reader correspondence
 are separate obligations; this theorem does not issue production evidence. -/

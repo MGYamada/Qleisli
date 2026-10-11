@@ -262,5 +262,5 @@ amplitudes and the phase/layout checker's weighted basis transitions. The
 [QFT proof](../lean/Qleisli/Qft.lean) establishes the matched circuit's positive
 normalized Fourier coefficients and their extension to arbitrary references.
 
-Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0; see
+Copyright 2026 Qleisli Project Contributors. Licensed under Apache-2.0; see
 [LICENSE](../LICENSE) and [NOTICE](../NOTICE).

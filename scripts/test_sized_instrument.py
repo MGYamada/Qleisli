@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Ordinary initialization/readout and measured QPE/client source experiments.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Component validity and numerical algorithm tests do not issue a named receipt.
 """
 import argparse

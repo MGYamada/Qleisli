@@ -4,7 +4,7 @@ import Qleisli.Semantics.ObservingFunction
 
 /-! Actual retained classical-branch functions refine independent full original
 body semantics. A checked prefix is reconstructed from no trusted receipts.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.BranchFunction
 open QleisliKernel.Semantics.ObservingFunction QleisliKernel.Semantics.Observation
 open QleisliKernel.Semantics.Exact QleisliKernel.Raw.BranchFunction QleisliKernel.Finite

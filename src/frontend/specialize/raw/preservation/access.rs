@@ -1,6 +1,6 @@
 //! Independent symbolic replay of original pure source access paths.
 //! This reads source identities and logical axes, not the produced Raw trace.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{
     ElaboratedProgram, Kind, MAX_CALLS, MAX_CELLS, MAX_DEPTH, MAX_STEPS, Primitive, Result, Site,
     SourceOperation, SourceType, SourceValue, quantum_width,

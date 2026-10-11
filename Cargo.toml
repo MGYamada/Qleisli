@@ -1,6 +1,7 @@
 [package]
 name = "qleisli"
 version = "0.3.0-alpha"
+authors = ["Qleisli Project Contributors"]
 license = "Apache-2.0"
 repository = "https://github.com/MGYamada/Qleisli"
 edition = "2024"

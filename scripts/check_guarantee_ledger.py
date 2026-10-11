@@ -4,7 +4,7 @@
 Registration is reviewed checker code, not authority supplied by a candidate
 ledger. Hashes bind recorded human decisions; they do not authenticate humans.
 This module executes no command, module, or verifier named by record contents.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 from dataclasses import dataclass

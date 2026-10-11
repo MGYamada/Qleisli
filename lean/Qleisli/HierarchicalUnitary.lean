@@ -1,7 +1,7 @@
 import Qleisli.HierarchicalEvaluation
 
 /-! Whole-space unitary laws for the hierarchy's actual complex operators.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 These are mathematical matrix laws, never a matrix-based runtime checker.
 The connection to accepted full-profile derivations is a separate theorem. -/
 

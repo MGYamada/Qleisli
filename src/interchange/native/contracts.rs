@@ -1,5 +1,5 @@
 //! Untrusted serialization of encoded equations and complete finite-leaf requests.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::contract::exact::Matrix;
 use crate::contract::function::{RetainedIdentity, validate_identity};

@@ -1,6 +1,6 @@
 """Isolated LLVM reader for the declared QIR Base terminal subset.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No input module is executed. LLVM parses/verifies before profile inspection.
 """
 import importlib.metadata

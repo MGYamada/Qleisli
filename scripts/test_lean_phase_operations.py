@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent integer oracles for sparse controlled phase powers.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This invokes compiled pure definitions, not a new acceptance/schema endpoint.
 """
 import argparse

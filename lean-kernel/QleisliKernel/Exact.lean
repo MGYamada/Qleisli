@@ -2,7 +2,7 @@ import QleisliKernel.Semantics.Exact
 
 /-! Actual bounded arithmetic for the existing finite R8 coefficient domain.
 No float equality, new coefficient domain or production evidence seal.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Exact
 open Semantics.Exact

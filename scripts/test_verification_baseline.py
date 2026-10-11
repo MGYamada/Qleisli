@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """VM-22 bounded comparison: Rust, independent complex oracle, Lean word slice.
 No oracle below issues evidence. Full Lean finite verification starts at VM-23.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import cmath

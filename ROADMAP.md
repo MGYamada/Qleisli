@@ -67,9 +67,8 @@ experimental/qft; this directory does not expose a canonical stdlib API.
 Edition 2026 identifies the constitutional
 regime and remains unchanged by the syntax, type-system and CLI migration.
 
-**Documentation cleanup completed for v0.3.0-alpha:** `docs/` retains the entire
-`imaginary-v1/` tree and
-[lean-backend-plan-v0.3.md](docs/src/lean-backend-plan-v0.3.md). The temporary
+**Documentation cleanup completed for v0.3.0-alpha:** the maintained book
+sources live in `docs/src/`, including the `imaginary-v1/` tree. The temporary
 `docs-old/` tree is deleted, with no redirects or replacement copies of retired
 prose. Executable source, proofs, counterexamples, validation artifacts and
 notices remain in their source/fixture locations. Write new documentation in
@@ -88,18 +87,6 @@ Current development version is `0.3.0-alpha`; selecting it and completing the
 documentation cleanup do not complete the type-system specification or its
 implementation/proof gates.
 
-## v0.3.1–v0.3.9: proposed accelerated Lean backend expansion
-
-The [backend plan](docs/src/lean-backend-plan-v0.3.md) targets earlier retirement of
-Rust transformations, hierarchy construction, target lowering, emitters and
-duplicate execution dispatch. Each stage requires a checked input/output
-relation, independent bounded validation and an explicit Rust deletion list;
-full Soundness remains the separate v0.5.0 milestone. The small acceptance
-kernel policy stays fixed while the Mathlib-free backend package grows.
-This advances the proposed backend portion of #273/#132; update their staged
-scope before implementation. It does not silently adopt new source syntax,
-move QLT/QDB/QCP earlier or permit PATCH API breaks.
-
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
 **Adopted target, 2026-09-29:** prove the **Qleisli Soundness Theorem** in Lean
@@ -115,20 +102,20 @@ composition feed this milestone. During 0.4.x, prepare contributor
 onboarding, review responsibilities and maintenance/release procedures.
 **From v0.5 onward, expand individual development into a full-scale,
 community-oriented open-source project** on that verified foundation.
-Bounded backend translation validation is proposed for v0.3.1–v0.3.9 under the
-plan above, advancing that part of the former blanket v0.6.0 schedule. Broader
-source/optimizer preservation remains a target from v0.6.0. Apache-2.0 licensing is already in
+Broader source/optimizer preservation remains a target from v0.6.0, separately
+from the implementation language of those passes. Apache-2.0 licensing is already in
 place. This selects a future milestone, not a release date or a version bump.
 
 By v1, also prove the
 Physical Realizability Theorem
-with a substantive Lean backend: derive CPTP semantics as a soundness corollary,
+for admitted realizations: derive CPTP semantics as a soundness corollary,
 construct an isometric dilation and prove its synthesis over the declared gate
 set. K4 must connect the actual emitted circuit to the checked meaning, with
 explicit exact/approximate contracts and remaining device assumptions. The
-longer-term direction extends Lean implementation beyond the frontend; backend
-proofs are required for the intended end-to-end Lean guarantee. This adds
-PR-C1–C4 to the v1 gates without changing M0–M5's algorithm dependencies.
+implementation language of a producer does not discharge these requirements;
+the actual accepted realization and emitted artifact must have the required
+checked correspondence. PR-C1–C4 remain v1 gates without changing M0–M5's
+algorithm dependencies.
 
 The **2026-09-30 amendment** adds the
 Resource Safety Theorem
@@ -138,6 +125,30 @@ actual lowering, optimization and emission. Develop
 resource semantics alongside types, meanings and
 effects. Current ownership checks, work limits and cost reports do not prove
 this target; the trusted/untrusted partition remains unchanged.
+
+## Long-term goal: backend implementation in Lean 4
+
+[Decision #350](https://github.com/MGYamada/Qleisli/issues/350) retires the
+v0.3.x non-verifier backend migration commitment. A broader backend implemented
+in Lean 4, with proofs checked by its kernel, remains a long-term goal with no
+selected release or completion date. It is not a v0.3.x release prerequisite.
+
+The Mathlib-free Lean production verifier remains required under
+[#276](https://github.com/MGYamada/Qleisli/issues/276). Rust can continue to
+implement source preparation, untrusted candidate/evidence generation,
+transformations, simulation and experimental output adapters. Moving those
+implementations into Lean is not required for v0.3.x. Implementing a pass in
+Lean does not itself prove preservation; each claimed checked transformation
+or realization still needs its actual input/output and artifact correspondence.
+The QS, PR, quantitative RS and EXACT obligations and the two admitted scoped
+QLV1 guarantees retain their adopted meanings, premises and proof status.
+
+The separate generic-contract integration in
+[#273](https://github.com/MGYamada/Qleisli/issues/273) and checked realization
+experiment in [#132](https://github.com/MGYamada/Qleisli/issues/132) retain their
+own scope. They do not impose a blanket rewrite of backend producers in Lean.
+Existing executable components, proofs, audits, independent oracles and
+historical evidence remain in place.
 
 <a id="採用したリリース到達条件2026-09-27"></a>
 
@@ -150,7 +161,7 @@ this target; the trusted/untrusted partition remains unchanged.
 | 2. Typed IR | Rust proposals; native Lean acceptance for IR and evidence. |
 | 3. Frontend | Finite source and bounded experimental sized source; independent IR checking. |
 | 4. Execution | Small ideal reference tests and fresh-shot clients; no hardware guarantee. |
-| 5. Backends | Bounded foreign-format adapters; full proved backend remains a v1 target. |
+| 5. Backends | Experimental foreign-format test adapters; v1 realization proof obligations remain separate from long-term Lean implementation. |
 
 Future QLT, QDB and QCP work is tracked in Issues
 [#50](https://github.com/MGYamada/Qleisli/issues/50),

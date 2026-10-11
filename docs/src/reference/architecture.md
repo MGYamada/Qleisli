@@ -119,19 +119,13 @@ reading an implementation cannot reconstruct or authorize a different meaning.
 The [primitive inventory and current limitations](primitive-boundary.md) separate
 this policy from the unfinished complete stdlib migration.
 
-QLT, QDB and QCP are Qleisli-native discovery targets, rather than concepts a
-reader should guess from a classical name. They and qargo, qlidoc and other
-tools remain subordinate interfaces: they may expose programs, facts, diagnostics
+QLT — Qleisli Testsuite, QDB — Qleisli Debugger and QCP — Qleisli Circuit
+Profiler are planned Qleisli tools. They and qargo, qlidoc and other tools
+remain subordinate interfaces: they may expose programs, facts, diagnostics
 or evidence, but cannot adopt interpretations, waive proof, create a parallel
 acceptance path or weaken accepted meaning. Their implementation is later work;
 this chapter installs none of those tools. mdBook is the separate documentation
 build environment and creates no language or API-introspection authority.
-
-The [canonical discovery contract](discovery.md) under
-[#253](https://github.com/MGYamada/Qleisli/issues/253) defines discovery and
-correction paths. This principle
-alone is not evidence that those paths or a zero-prior authoring benchmark are
-complete.
 
 ## Required review of future designs
 
@@ -160,4 +154,4 @@ Related decisions: [Constitution #129](https://github.com/MGYamada/Qleisli/issue
 [diagnostic harness #225](https://github.com/MGYamada/Qleisli/issues/225),
 and [inference/discovery #253](https://github.com/MGYamada/Qleisli/issues/253).
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

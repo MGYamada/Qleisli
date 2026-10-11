@@ -2,7 +2,7 @@ import QleisliKernel.Qirf.Validity
 
 /-! Native encoded-contract binding reuses the existing raw, finite and exact
 checkers. No host matrix is substituted for reconstruction of the actual root.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf
 open Semantics.Exact Semantics.Finite Finite
 

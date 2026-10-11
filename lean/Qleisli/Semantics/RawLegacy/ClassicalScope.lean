@@ -6,7 +6,7 @@ Extracted from `lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean` at `bb2
 (SHA-256 `de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0`). Only imports, namespaces and
 references to shared unchanged definitions differ. There is no checker here.
 Stable payloads/states/rules are shared; their historical identity must still be checked.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.RawLegacy.ClassicalScope
 open QleisliKernel.Semantics.Observation QleisliKernel.Semantics.ClassicalScope
 open Observation

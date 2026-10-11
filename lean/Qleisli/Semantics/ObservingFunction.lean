@@ -5,7 +5,7 @@ import Mathlib.Data.Matrix.Mul
 
 /-! Independent full original closed-branch function meaning. The graph fixes
 original attachments and complete phase-sensitive operators, never receipts.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.ObservingFunction
 open QleisliKernel.Semantics.ObservingFunction QleisliKernel.Semantics.Finite
 open scoped Matrix

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Native derivation closure, independent recursive rules and exact monomial oracle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This does not claim full quantum soundness or external artifact acceptance.
 """
 import argparse

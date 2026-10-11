@@ -4,7 +4,7 @@
 Existing independent-oracle suites provide inputs and expected decisions. This
 optional compatibility check also compares stdout, stderr, exit status and all
 reported work counters. It never refreshes the original fixtures.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

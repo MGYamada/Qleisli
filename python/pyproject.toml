@@ -9,7 +9,7 @@ description = "Python host connections to the independently checked Qleisli fini
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-authors = [{name = "Masahiko G. Yamada"}]
+authors = [{name = "Qleisli Project Contributors"}]
 readme = "README.md"
 
 [project.optional-dependencies]

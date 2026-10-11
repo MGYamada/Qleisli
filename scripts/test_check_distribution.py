@@ -2,7 +2,7 @@
 """Adversarial checks for release artifact identity and safe extraction.
 
 These tests create local throwaway Git repositories; they do not run Cargo.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import io
 import json
@@ -22,7 +22,49 @@ from check_distribution import (
     digest, extract_checked, license_inventory, read_archive, tracked_files, validate,
     SOURCE_ROOTS, check_source_roots,
 )
-from check_installation import check_registry_links
+from check_installation import check_documentation, check_registry_links
+
+
+class QuickstartDocumentationTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.package = dict(name="qleisli", version="0.3.0-alpha", readme="README.crates.md")
+        self.source = "observe fn main() -> Bit { 0 }\n"
+        self.manifest = 'schema-version = 2\n[qrate]\nedition = "2026"\n'
+        example = ("<!-- quickstart:bell -->\n```qli\n" + self.source
+                   + "```\n<!-- /quickstart:bell -->\n"
+                   + "<!-- quickstart:manifest -->\n```toml\n" + self.manifest
+                   + "```\n<!-- /quickstart:manifest -->\n")
+        self.documents = {
+            "README.md": "Development version: 0.3.0-alpha\n" + example,
+            "README.crates.md": "Package version: **0.3.0-alpha**\n" + example,
+        }
+        for name, text in self.documents.items():
+            (self.root / name).write_text(text)
+
+    def test_example_validation_does_not_require_installation_instructions(self):
+        self.assertEqual(check_documentation(self.root, self.package),
+                         (self.source, self.manifest, []))
+
+    def test_missing_stale_duplicate_versions_and_changed_examples_reject(self):
+        for name, text in self.documents.items():
+            for changed in [
+                text.replace("0.3.0-alpha", "0.2.9"),
+                text.split("\n", 1)[1],
+                text.split("\n", 1)[0] + "\n" + text,
+                text.replace("-> Bit { 0 }", "-> Bit { 1 }"),
+                text.replace('edition = "2026"', 'edition = "2027"'),
+            ]:
+                with self.subTest(name=name, changed=changed):
+                    path = self.root / name
+                    path.write_text(changed)
+                    try:
+                        with self.assertRaises(ValueError):
+                            check_documentation(self.root, self.package)
+                    finally:
+                        path.write_text(text)
 
 
 class CommandDiagnosticsTests(unittest.TestCase):
@@ -151,9 +193,12 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(check_registry_links(self.root,
             f"[current]({prefix}v0.2.8/README.md)", "0.2.8"), [])
         (self.root / "docs/src").mkdir(parents=True)
-        (self.root / "docs/src/lean-backend-plan-v0.3.md").write_text("requested plan")
+        (self.root / "docs/src/building.md").write_text("current build guide")
         self.assertEqual(check_registry_links(self.root,
-            f"[plan]({prefix}v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md)", "0.3.0-alpha"), [])
+            f"[build]({prefix}v0.3.0-alpha/docs/src/building.md)", "0.3.0-alpha"), [])
+        with self.assertRaisesRegex(ValueError, "missing registry link target"):
+            check_registry_links(self.root,
+                f"[retired]({prefix}v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md)", "0.3.0-alpha")
         (self.root / "docs/new-guide.md").write_text("derived from current code")
         self.assertEqual(check_registry_links(self.root,
             f"[guide]({prefix}v0.3.0-alpha/docs/new-guide.md)", "0.3.0-alpha"), [])

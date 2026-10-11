@@ -6,7 +6,7 @@ Quantum owners are exclusive operation rights, not separable quantum states.
 Ownership safety belongs to QS. Exact clean-workspace discharge is a separate
 QS obligation (https://github.com/MGYamada/Qleisli/issues/157); quantitative
 resource bounds belong to RS (https://github.com/MGYamada/Qleisli/issues/280).
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Ownership
 open Raw Observation
 

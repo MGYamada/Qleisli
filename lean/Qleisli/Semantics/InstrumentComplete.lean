@@ -5,7 +5,7 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 These are finite matrix laws. The actual checker bridge must establish the
 unitary, injective zero-input embedding and complete outcome/residual indexing.
 No acceptance code or proposed proof metadata is imported here.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Semantics.Instrument
 open scoped BigOperators Matrix

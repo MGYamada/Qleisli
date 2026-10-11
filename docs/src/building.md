@@ -3,10 +3,8 @@
 Contributors should begin with the [architecture principle](reference/architecture.md)
 and [authority hierarchy](reference/authority.md). Major language/tooling designs
 must record how they preserve that architecture before implementation.
-The [inference/discovery contract](reference/discovery.md) classifies intended
-roles, availability and correction paths for language and tooling.
 
-[The Qleisli Programming Language](introduction.md) is the new book's
+[Qleisli Programming Language](introduction.md) is the new book's
 starting point. [book.toml](https://github.com/MGYamada/Qleisli/blob/main/docs/book.toml) configures its source, metadata and HTML
 output; [src/SUMMARY.md](https://github.com/MGYamada/Qleisli/blob/main/docs/src/SUMMARY.md) defines the chapter order.
 
@@ -66,15 +64,14 @@ compatibility together. Such tools remain in this documentation environment.
 Use `qli` fences for Qleisli examples; mdBook's Rust playground is disabled,
 and an HTML build does not execute or verify Qleisli programs.
 
-The retained [imaginary-v1 drafts](imaginary-v1/index.md) and
-[Lean backend plan](lean-backend-plan-v0.3.md) are embedded in the book with their
-existing status. New chapters derive from adopted decisions, current code and
+The retained [imaginary-v1 drafts](imaginary-v1/index.md) are part of the book
+with their existing status. New chapters derive from adopted decisions, current code and
 proofs. Book links to repository material outside its chapters use repository
 URLs so they also work in the rendered HTML.
 
 ## Maintaining the book
 
-The existing build guide, backend plan, imaginary-v1 index and requirements
+The existing build guide, imaginary-v1 index and requirements
 now live directly in `docs/src/`. These chapters are the only maintained copies;
 their former locations have been removed. Edit the chapter files directly.
 The book builds with mdBook's default preprocessors, without include wrappers

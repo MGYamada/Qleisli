@@ -4,7 +4,7 @@ import Qleisli.HierarchicalFiniteUnitary
 import QleisliKernel.Hierarchical.FourierRoot
 
 /-! Actual outer Fourier coefficients under the bound finite H equations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 P0 actual-entry/request binding; P1 reusable routing/composition lemmas.
 Complete resource typing and native/finite-reader correspondence are separate
 obligations. No producer whole-circuit matrix or routing summary is assumed. -/

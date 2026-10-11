@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Small public foreign/Python paths with a freshly invoked selected Lean gate.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 from dataclasses import replace

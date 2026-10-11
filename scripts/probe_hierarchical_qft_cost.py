@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Measure existing QFT checker costs without raising any acceptance limit.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Per-node diagnostic checks are not a whole-artifact acceptance result.
 """
 import argparse

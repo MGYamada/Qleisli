@@ -1,7 +1,7 @@
 //! Shared finite-label evaluation of the original ordinary expression tree.
 //! Contexts retain type/identity checks and charge before copying or allocation.
 //! A computed label or table is untrusted data, never native acceptance evidence.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::Boolean;
 use crate::frontend::ast::{BasisExpr, BasisExprKind, Ident, Span};
 

@@ -184,4 +184,4 @@ RS or EXACT proof obligation and admits no new constitutional guarantee.
 Validation of the current source migration is recorded separately; this chapter
 does not report a completed same-commit release gate.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

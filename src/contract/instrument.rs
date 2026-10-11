@@ -1,5 +1,5 @@
 //! Private original-artifact instrument equations, separate from pure Meaning.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 use std::fmt;
 use std::sync::Arc;

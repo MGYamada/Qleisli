@@ -1,5 +1,5 @@
 //! Documentation discovery must never become execution or native acceptance.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use std::process::{Command, Output};
 
 fn run(args: &[&str]) -> Output {
@@ -31,18 +31,28 @@ fn standalone_help_discovers_native_tools_without_project_or_checker() {
 }
 
 #[test]
-fn ecosystem_help_is_the_single_canonical_chapter() {
+fn ecosystem_help_explains_independent_tools_and_unavailable_analysis() {
     let output = run(&["help", "ecosystem"]);
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
-    assert_eq!(
-        output.stdout,
-        std::fs::read(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/docs/src/reference/discovery.md"
-        ))
-        .unwrap()
-    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    for name in [
+        "qargo",
+        "qlippy",
+        "qlifmt",
+        "qlidoc",
+        "qleisliup",
+        "qleisliup-init",
+        "QLT — Qleisli Testsuite",
+        "QDB — Qleisli Debugger",
+        "QCP — Qleisli Circuit Profiler",
+    ] {
+        assert!(text.contains(name), "{name}: {text}");
+    }
+    assert!(text.contains("independent projects"));
+    assert!(text.contains("not affiliated with"));
+    assert!(text.contains("planned, not executable commands"));
+    assert!(text.contains("documentation only"));
 }
 
 #[test]

@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.List
 Projectors act on the full joint amplitude with an arbitrary reference index.
 Phase kickback and correlations are retained; no separability premise occurs.
 This is not source-place preservation, scheduling or a new ledger guarantee.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.ControlAccess
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.ControlAccess Qleisli.Semantics.Exact

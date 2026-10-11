@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFourierRoot
 import QleisliKernel.Hierarchical.RoutedPower
 
 /-! Constructed semantics of actual controlled provider powers through renames.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The provider premise concerns evaluation of its actual definition. Independent
 provider/request equality, unitarity and full artifact acceptance remain separate;
 no whole-stage interpretation or producer-controlled semantic environment is assumed. -/

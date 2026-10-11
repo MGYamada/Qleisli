@@ -4,7 +4,7 @@ import Qleisli.Semantics.InstrumentCoordinates
 /-! Exact branch columns of the actual accepted initialization/circuit/readout.
 The finite-leaf correspondence premises remain explicit. No named QPE meaning,
 source preservation or native/transport correspondence is asserted here.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.HierarchicalInstrument
 open QleisliKernel.Hierarchical

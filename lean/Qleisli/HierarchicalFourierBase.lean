@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFourierStage
 import QleisliKernel.Hierarchical.FourierBase
 
 /-! Constructed semantics of the actual one-bit recursive Fourier base.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The empty register remains an owner. Inserting a mathematical identity into
 the coefficient proof does not insert a node into the checked artifact. -/
 

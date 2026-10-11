@@ -312,4 +312,4 @@ no-kernel proposal test in `tests/sized_cli.rs`. The separate `doc` regression
 is in `tests/cli.rs`. Their bounded observations do not replace S05 proofs or
 human review of the intended semantics.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

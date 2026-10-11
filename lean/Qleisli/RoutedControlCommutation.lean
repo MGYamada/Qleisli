@@ -5,7 +5,7 @@ The original definition records, typed interfaces, fresh wiring summaries,
 computed inverse permutations and original provider evaluations stay explicit.
 Literal coordinate decompositions contain no proposed operator equations.
 No source-access contract, optimizer, acceptance rule or guarantee is added.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.RoutedControlCommutation
 open QleisliKernel.Hierarchical

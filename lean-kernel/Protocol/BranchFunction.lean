@@ -2,7 +2,7 @@ import Protocol.Observation
 import QleisliKernel.Raw.BranchFunction
 
 /-! Experimental full original branch-function attachments and requests.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.BranchFunction
 open Lean Semantics.ObservingFunction
 

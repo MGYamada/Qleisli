@@ -5,7 +5,7 @@ import QleisliKernel.Raw.Unit
 blocks. The input matrix is arbitrary; existing scalar phase is not replaced
 by an identity matrix. Public Raw decoding/dispatch and original-program
 preservation are still separate integration obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RawUnit
 open QleisliKernel QleisliKernel.Semantics.Exact
 

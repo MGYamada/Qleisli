@@ -5,7 +5,7 @@ import QleisliKernel.Semantics.RawUnit
 original-operation ownership/trace proofs and historical semantic transport
 connect their structural rules; these local results alone do not establish
 source, decoder or runtime preservation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Unit
 open Semantics.Raw Finite
 

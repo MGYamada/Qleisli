@@ -2,7 +2,7 @@ import Qleisli.HierarchicalOperators
 import Qleisli.CoordinateOperators
 
 /-! Actual tensor coefficients in ordered finite coordinates.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.HierarchicalTensorCoordinates
 open QleisliKernel.Hierarchical

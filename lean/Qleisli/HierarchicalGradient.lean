@@ -2,7 +2,7 @@ import Qleisli.HierarchicalDiagonal
 import QleisliKernel.Hierarchical.Gradient
 
 /-! Actual recursive phase-gradient inspection implies exact complex semantics.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No whole-graph interpretation or producer matrix is assumed. This component
 is not yet the complete named Fourier schema or a production authority gate. -/
 

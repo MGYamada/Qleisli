@@ -2,7 +2,7 @@ import QleisliKernel.Layout
 import QleisliKernel.Hierarchical.Graph
 
 /-! Typed data and dependency/endpoint preparation for the selected hierarchy.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Preparation is NOT semantic verification. Finite payloads, node typing,
 derivations and external requests still require their independent checkers. -/
 

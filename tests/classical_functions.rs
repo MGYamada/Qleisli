@@ -1,6 +1,6 @@
 //! Independent bounded contracts for ordinary/coherent reuse of classical functions.
 //! These checks do not establish source preservation or a new guarantee.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
 use common::SourceRoot;

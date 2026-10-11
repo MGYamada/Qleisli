@@ -1,32 +1,38 @@
 # CI scheduling and evidence
 
-Develop and validate locally using the shared check groups below. Hosted CI
-runs at Issue-completion checkpoints, rather than after each implementation
-commit or PR update. Record the candidate Issues, their acceptance evidence,
-remaining obligations and exact commit in the PR before requesting that check.
-Several related Issues may share one checkpoint; do not close an Issue until
-its own criteria and the selected checks succeed. Unrun, cancelled or skipped
-required work is not success, and new source changes invalidate an old result.
+The canonical [constitutional CI specification](../../CONSTITUTIONALCI.md)
+defines record continuity, fixed proof verification, scoped release evidence
+and their limits. This file supplies the shared execution and scheduling procedure.
+`CONSTITUTIONALCI.md` is ordinary maintained documentation with an explicit
+docs-only classification; it has no protected-text hash or separate approval gate.
 
-For PR completion, manually run the workflow on the candidate PR branch with
+Develop and validate locally using the shared check groups below. Hosted CI
+runs on every branch push, on pull requests when opened, updated or reopened,
+and on `v*` tag pushes. Manual Issue-completion and release checks remain
+available. Record candidate Issues, their acceptance evidence, remaining
+obligations and exact commit in the PR when verifying completion. Several
+related Issues may share one checkpoint; do not close an Issue until its own
+criteria and the selected checks succeed. Unrun, cancelled or skipped required
+work is not success, and new source changes invalidate an old result.
+
+For an explicit manual PR-completion checkpoint, run on the candidate branch with
 `completion_pr` and `completion_issues`. The size gates fetch read-only GitHub
 PR metadata, require its actual head to equal the workflow's exact checkout,
 and count the cumulative Git diff against its base. A changed head or missing
 metadata fails closed. No API diff summary or last-commit comparison supplies
-the counts. Fixture growth and stable required contexts remain enforced;
-branch protection can wait for this explicit checkpoint. No label or routine
-push/PR event starts a run.
+the counts. Automatic PR checks also retain the cumulative PR diff and exact
+event identity. Fixture growth and stable required contexts remain enforced.
 
 Manual Issue checks on `main` require `completion_issues` as comma-separated
 positive numbers (for example `29,69`) and an exact reviewed `release_base`.
-The selected cumulative comparison base also reaches the constitutional
-continuity check; moving to manual dispatch does not drop that check.
-The Issue field records intended completion,
+The selected comparison base also reaches the constitutional continuity check
+for push, PR and manual runs. The Issue field records intended completion,
 not an automatic close or proof of criteria. Release-tag checks and explicit
 scoped release-readiness validation remain available, with their existing full
 proof, package, installation and exact-commit gates. Neither this scheduling
-policy nor a green run authorizes merging, tagging or publication. Completion
-runs use unique concurrency groups and are not cancelled by later pushes.
+policy nor a green run authorizes merging, tagging or publication. Each run
+uses a unique concurrency group; push and PR runs both execute, and later
+events do not cancel existing runs.
 
 `profiles.json` selects docs-only versus executable validation conservatively.
 Executable, proof, normative and unknown changes still run every selected suite.
@@ -45,7 +51,7 @@ Binary records are reported separately; this is not a file-byte limit. The
 first `changes` check binds repository/PR number, merge ref and both merge
 parents to the workflow context, rejects missing/malformed/shallow data, and
 runs before suite selection. Failure of `changes` fails the existing required
-contexts. Non-PR tag/manual runs report the PR rule as not applicable;
+contexts. Non-PR push/manual runs report the PR rule as not applicable;
 manual PR completion retains the API-bound exact base/head and cumulative gate.
 No claim is made that local JSON authenticates GitHub or that this installs
 branch protection; enforcement-code changes still require review.
@@ -78,8 +84,9 @@ reject without fetching external payloads. Stored archive bytes are counted;
 expanded archive contents and external payloads are not measured. PR additions
 use the event's exact base/head and unique merge base with no rename detection;
 moves into a fixture path count as additions. Binary changes are reported
-separately, and deletion counts cannot offset additions. Tag/manual runs still
-check committed totals. The existing required contexts reject gate failure.
+separately, and deletion counts cannot offset additions. Non-PR push/manual
+runs still check committed totals. The existing required contexts reject gate
+failure.
 
 Agents must run `python3 scripts/check_fixture_budget.py` before committing
 fixture generation. This local preflight counts **every** working fixture file,

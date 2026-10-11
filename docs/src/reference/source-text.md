@@ -559,4 +559,4 @@ state. [Coherent basis maps](coherent-basis.md) specifies the semantics,
 diagnostics and concrete-profile limits. Both finite and selected source use
 this one parser; a profile cannot retain the retired notation as an alias.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

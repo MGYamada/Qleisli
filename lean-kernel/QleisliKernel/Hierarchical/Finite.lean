@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Rule
 
 /-! Bind finite unitary reconstruction requests to the actual artifact.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Pending requests are data, never evidence. The transitional Rust adapter must
 reconstruct their complete bytes and independently check their exact equation. -/
 

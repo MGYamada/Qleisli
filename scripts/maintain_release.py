@@ -2,7 +2,7 @@
 """Plan/synchronize product versions and review exact-source binding updates.
 
 No dependency versions, public surfaces, theorem types or proof gates are inferred.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import difflib
@@ -76,17 +76,11 @@ def version_plan(root, version):
         if count != 1:
             raise ValueError('expected one native product version')
         changes[name] = text
-    # Only current installation/version slots; never rewrite release history or
+    # Only current version slots; never rewrite release history or
     # published versions. The source-doc URLs are an exact version-only edit.
     patterns = {
-        'README.md': [(r'(Development version: )' + VERSION_SLOT, r'\g<1>' + version),
-                      (r'(Compiler version `)' + VERSION_SLOT, r'\g<1>' + version),
-                      (r'(Once )' + VERSION_SLOT + r'( is published)', r'\g<1>' + version + r'\g<2>'),
-                      (r'(cargo install qleisli --version )' + VERSION_SLOT, r'\g<1>' + version)],
-        'README.crates.md': [(r'(Package version: \*\*)' + VERSION_SLOT, r'\g<1>' + version),
-                             (r'(cargo install qleisli --version )' + VERSION_SLOT, r'\g<1>' + version),
-                             (r'(?m)^(qleisli\s*=\s*")' + VERSION_SLOT + r'(")$', r'\g<1>' + version + r'\g<2>'),
-                             (r'(Current documentation links target `v)' + VERSION_SLOT, r'\g<1>' + version)],
+        'README.md': [(r'(Development version: )' + VERSION_SLOT, r'\g<1>' + version)],
+        'README.crates.md': [(r'(Package version: \*\*)' + VERSION_SLOT, r'\g<1>' + version)],
         'python/README.md': [(r'(separately installed Qleisli )' + VERSION_SLOT + r'( Rust)', r'\g<1>' + version + r'\g<2>')],
         'src/lib.rs': [],
     }

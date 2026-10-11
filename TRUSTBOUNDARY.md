@@ -113,9 +113,21 @@ realization contracts before use. Neither the oracle nor all Lean program code
 is added to the trusted assumptions. This applies the de Bruijn criterion per
 pass without requiring every search algorithm to migrate.
 
-A substantive proved Lean backend remains required. The
-backend execution policy
-forbids project `unsafe def`, `@[implemented_by]`, `@[extern]` and `partial def`,
-with source and compiled-declaration CI in addition to axiom auditing. Private
-and generated helpers are included. External search is not an exemption for
-backend implementation or a substitute for its actual-transformation proofs.
+### Non-verifier backend implementation scope (2026-10-11)
+
+[Decision #350](https://github.com/MGYamada/Qleisli/issues/350) retires the
+v0.3.x non-verifier backend migration schedule. A broader backend implemented
+in Lean 4, with proofs checked by its kernel, is a long-term goal with no
+selected release. Rust may continue to implement untrusted transformations,
+candidate/evidence generation, simulation and experimental output adapters.
+The Mathlib-free Lean production verifier remains required; producer language
+does not confer acceptance authority or discharge an input/output preservation
+or target-realization obligation. Existing QS, PR, quantitative RS and EXACT
+requirements and admitted guarantees remain in force.
+
+The Lean execution policy continues to forbid project `unsafe def`,
+`@[implemented_by]`, `@[extern]` and `partial def`, with source and
+compiled-declaration CI in addition to axiom auditing. Private and generated
+helpers are included. These restrictions apply to current verification and
+proof code and any future Lean backend. External search is not a substitute
+for checking an actual claimed transformation or realization.

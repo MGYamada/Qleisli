@@ -1,7 +1,7 @@
 //! Non-authoritative execution metadata decoded from a native-accepted body.
 //! This maps token coordinates; it does not check liveness, freshness, effects,
 //! equations, separability, controls or basis-table injectivity.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{Error, Result};
 use crate::ir::*;
 use std::collections::BTreeMap;

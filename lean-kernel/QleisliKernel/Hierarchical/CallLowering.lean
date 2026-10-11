@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.NodeTyping
 
 /-! Untrusted call expansion into existing rewire and sequence nodes.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This producer issues no evidence and adds no acceptance rule. Its output must
 pass the ordinary independent checker; input-call typing remains an explicit
 premise of translation preservation. The child is referenced, never copied. -/

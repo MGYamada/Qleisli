@@ -10,21 +10,6 @@ meaning without changing it.
 ecosystem**. The spelling is **Q + Kleisli**. The initial **Q** denotes quantum:
 it changes the semantic world indicated by the spelling, not the pronunciation.
 
-## The ecosystem naming principle
-
-The same classical-to-quantum naming principle appears in:
-
-| Classical ecosystem | Qleisli ecosystem |
-| --- | --- |
-| `cargo` | `qargo` |
-| `crates` | `qrates` |
-
-The `c` to `q` transition is intentional. Mature classical software-engineering
-structures are retained where appropriate and lifted across the
-classical/quantum boundary, rather than reinvented merely for novelty.
-This naming relationship does not establish feature parity or the availability
-of a tool or command; those require their own documented contracts and status.
-
 ## Metaphor and formal semantics
 
 “Kleisli-style lift” is the name's origin and a design metaphor. It does not
@@ -36,4 +21,4 @@ The name itself changes no language acceptance rule or proof obligation.
 
 **The Q changes the world, not the pronunciation.**
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

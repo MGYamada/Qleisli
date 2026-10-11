@@ -1,4 +1,4 @@
-# Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 using Test
 using Cyclotomics
 using LinearAlgebra

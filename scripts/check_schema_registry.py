@@ -4,7 +4,7 @@
 The manifest is a repository artifact, never an input supplied by an IR producer.
 --write deliberately refreshes it after all builds and audits; --source-only
 checks packaging/source identity, not theorem validity or compiled correspondence.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

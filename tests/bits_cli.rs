@@ -1,5 +1,5 @@
 //! Bounded CLI checks of atomic Bits interfaces and false Meaning annotations.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use std::process::Command;
 mod common;
 fn command() -> Command {

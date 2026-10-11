@@ -5,7 +5,7 @@ import Protocol.Qirf
 
 /-! Unproved decoding adapter for fresh VM-27 independent finite requests.
 No Rust matrix, equality decision or producer receipt crosses this boundary.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Protocol.HierarchicalFinite
 open QleisliKernel.Hierarchical

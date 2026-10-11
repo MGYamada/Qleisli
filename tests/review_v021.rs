@@ -1,5 +1,5 @@
 //! User review of published 0.2.1, addressed in the 0.2.2 working tree.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 mod common;
 use common::SourceRoot;
 use qleisli::frontend::compile::{check_project, compile_project};

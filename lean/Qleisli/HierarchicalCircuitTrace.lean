@@ -5,7 +5,7 @@ import Qleisli.HierarchicalTensorCoordinates
 import QleisliKernel.Hierarchical.CircuitTrace
 
 /-! Exact phase-sensitive interpretation of constructed circuit traces.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The atom environment must be bound to evaluations of the requested actual
 indices. It is not a submitted whole-circuit interpretation or QPE certificate.
 -/

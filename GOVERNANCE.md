@@ -5,8 +5,9 @@
 records adoption of the exact constitutional and governance candidates and the
 initial Guardian appointment. The
 [approved governance candidate](tests/fixtures/constitution_v030/governance-candidate.txt)
-is preserved unchanged; this file updates its status and conditional wording
-to reflect that event. The [ratification record and process](docs/src/design/ratification.md)
+is preserved unchanged; this file records the resulting current arrangements
+and the project-attribution transition authorized on 2026-10-11. The
+[ratification record and process](docs/src/design/ratification.md)
 explain the separate acts. Adoption does not create a binding QS, PR or RS
 interpretation or discharge a proof obligation.
 
@@ -31,18 +32,20 @@ The holder's identity belongs in governance records, outside the entrenched
 constitutional text. The adoption record must identify the responsible human,
 the adopted candidate and the effective date of the appointment.
 
-## Existing ordinary maintenance
+## Ordinary maintenance
 
-Masahiko G. Yamada currently maintains the repository and makes its ordinary
-project and operational decisions. That existing role continues after
-constitutional ratification. It does not derive from the Guardian appointment.
+The project is attributed to **Qleisli Project Contributors**. Ordinary
+project and operational decisions belong to repository maintainers, separately
+from membership in the Constitution Guardian Office. The collective attribution
+is a project name, not a human holder of constitutional authority.
 
-Ordinary maintainer authority remains distinct from Guardian
-authority. Until the maintainer framework in
-[Issue #150](https://github.com/MGYamada/Qleisli/issues/150) takes effect,
-Masahiko G. Yamada remains the ordinary repository maintainer. Later delegation
-or succession follows the adopted maintainer framework. Historical authorship
-or use of the title *Founder* grants no additional governing authority.
+The attribution transition does not appoint or remove maintainers or transfer
+repository and registry permissions. The existing operational arrangements
+continue until delegation or succession under the maintainer framework in
+[Issue #150](https://github.com/MGYamada/Qleisli/issues/150). That framework
+remains future work. Historical authorship or use of the title *Founder* grants
+no additional governing authority; the Guardian appointment grants no privileged
+ordinary technical authority.
 
 ## Constitutional interpretation and proof
 
@@ -115,11 +118,20 @@ governance process.
 
 ## Project identity and attribution
 
-The proposed direction is to move project-level identity toward **Qleisli
-Project Contributors** early after v0.3.0, and for Masahiko G. Yamada to cease
-using *Founder* as a current project title. Present authority derives from
+On 2026-10-11, the human project maintainer explicitly directed that current
+project authorship, mdBook authorship and first-party copyright/license displays
+use **Qleisli Project Contributors** instead of a personal name. This
+implements the previously declared contributor-identity direction before
+v0.3.0. *Founder* is not a current project title. Present authority derives from
 documented roles; historical origin grants no continuing office.
 
-That transition is future work. Existing copyright notices, licenses,
-third-party attribution, authorship records and Git provenance remain intact.
-This document does not rename their authors or change their terms.
+The natural-human identity of the Constitution Guardian Office holder remains
+in appointment, interpretation and guarantee-admission records. Collective
+project attribution does not replace those responsible-human identities.
+
+Current first-party package metadata, documentation and source notices use the
+collective name. Historical authoring sessions, source snapshots, approved
+constitutional packets and Git provenance retain their original names and
+bytes. Third-party authors and notices are preserved. The Apache-2.0 license
+terms remain unchanged; this attribution update does not claim a transfer of
+third-party rights or change the constitutional text, powers or guarantees.

@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.Protected
 
 /-! Evaluate original protected uses on source-selected local amplitudes.
 No auxiliary matrix or recursively expanded dependency circuit is constructed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.ProtectedEvaluation
 open Semantics.Exact Semantics.Finite Semantics.Raw Finite
 

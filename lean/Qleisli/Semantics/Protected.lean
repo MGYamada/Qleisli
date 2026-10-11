@@ -5,7 +5,7 @@ import Mathlib.Data.Nat.Bitwise
 /-! Non-dense complex semantics of original protected compute/use/uncompute.
 Source, auxiliary and target coordinates stay separate. Arbitrary reference
 coordinates allow correlated inputs. No checker, capacity or receipt is imported.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.Protected
 open QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.Protected Qleisli.Semantics.Finite

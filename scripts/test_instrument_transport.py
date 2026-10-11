@@ -3,7 +3,7 @@
 
 Only one physical qubit is used; component checks are not whole-instrument
 acceptance or a source-preservation proof.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Untrusted initializing/observing source proposal, sharing the sized pure core.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No result here is verification evidence.
 """
 import copy

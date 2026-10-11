@@ -1,4 +1,4 @@
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 //! Bounded, untrusted Fourier factoring from complete actual-body traces.
 //! Original nodes and source remain retained. Fresh native Fourier checking is
 //! still required; this producer comparison does not issue semantic evidence.

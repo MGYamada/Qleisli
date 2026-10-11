@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.Observation
 /-! Independent classical SSA and lexical-scope rules for original raw programs.
 The judgment neither imports a verifier nor assumes a supplied verification
 result. Every phi operand is resolved before any phi destination is introduced.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.ClassicalScope
 open Observation
 

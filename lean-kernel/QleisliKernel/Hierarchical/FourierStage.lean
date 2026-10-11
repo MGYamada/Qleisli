@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Gradient
 
 /-! Bind a recursive Fourier stage to its actual ordered definition children.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This is a pending component inspection, not a Fourier acceptance rule. The H,
 controlled gradient, recursive child and finite-leaf equations remain explicit
 obligations. Whole-artifact typing must precede production use. -/

@@ -6,7 +6,7 @@ import Mathlib.Algebra.BigOperators.Fin
 
 /-! Actual VM-24 acceptance to phase-sensitive encoded/reference semantics.
 Raw-IR extraction, source preservation and native transport remain separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Finite
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Finite
 open Qleisli.Semantics.Exact

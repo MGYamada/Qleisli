@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Function
 
 /-! Unproved, bounded VM-25 raw-component transport. RawProgram fields retain
 QIRF spellings; this envelope is experimental, not the complete QIRF decoder.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Raw
 open Lean QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite
 

@@ -3,7 +3,7 @@ import QleisliKernel.Raw.Structure
 /-! Actual raw extraction refines the independent original-operation reader.
 All constructor proofs concern the executable dispatch, not an assumed Rust
 trace or a proposition defined by checker success.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Raw Semantics.Finite
 

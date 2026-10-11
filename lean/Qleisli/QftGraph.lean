@@ -2,7 +2,7 @@ import Qleisli.Qft
 import QleisliKernel.QftGraph
 
 /-! Fourier semantics of the actual accepted typed shared circuit projection.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.QftGraph
 open QleisliKernel QleisliKernel.Interference QleisliKernel.PathSum

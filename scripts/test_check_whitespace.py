@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Exercise Git whitespace checks on committed, staged and working sources.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 from pathlib import Path
 import subprocess

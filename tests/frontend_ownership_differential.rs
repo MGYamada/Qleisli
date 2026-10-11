@@ -2,7 +2,7 @@
 //!
 //! This deterministic regression compares source acceptance, not lowering profiles,
 //! diagnostic ordering, algorithm correctness, or model-authoring performance.
-// Copyright 2026 Masahiko G. Yamada
+// Copyright 2026 Qleisli Project Contributors
 // SPDX-License-Identifier: Apache-2.0
 
 mod common;

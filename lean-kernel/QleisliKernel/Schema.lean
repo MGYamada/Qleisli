@@ -1,7 +1,7 @@
 import QleisliKernel.Qpe
 
 /-! Closed component-schema dispatch with independently supplied requests.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This validates internal witnesses, not external IR projection or finite-provider
 evidence. No production wire profile is enabled by this module alone. -/
 

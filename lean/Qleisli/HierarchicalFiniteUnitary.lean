@@ -1,7 +1,7 @@
 import Qleisli.HierarchicalFiniteEvaluation
 
 /-! Propagate bound finite-leaf unitarity through actual conditional derivations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Only reconstructed leaves remain premises. No whole-graph unitary environment
 or producer receipt is assumed. Rust/decoder correspondence remains explicit. -/
 

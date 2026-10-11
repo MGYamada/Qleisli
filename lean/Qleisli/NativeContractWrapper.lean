@@ -6,7 +6,7 @@ import Mathlib.Data.List.Forall2
 Only proofs are added: arithmetic, circuit execution, reference meanings and
 acceptance conditions are unchanged. In particular, zero suppression, axis
 order and scalar Unit phases are accounted for in the executable result.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.NativeContract.Wrapper
 open QleisliKernel.Semantics.Finite
 

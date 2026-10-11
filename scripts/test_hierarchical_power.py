@@ -3,7 +3,7 @@
 
 This is not semantic acceptance: a projected provider equation must subsequently
 be independently checked. No external schema is enabled by these tests.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

@@ -4,7 +4,7 @@ import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.Mul
 
 /-! Independent retained-graph meanings, exact attachment data and capacities.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Function
 open scoped Matrix
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw

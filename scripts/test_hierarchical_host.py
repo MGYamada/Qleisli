@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fresh hierarchy/finite host checks and independent binary-boundary faults.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This validates reconstruction, not an independently requested production root.
 """
 import argparse

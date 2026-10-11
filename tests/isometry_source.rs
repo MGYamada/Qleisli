@@ -1,6 +1,6 @@
 //! Bounded public-source preparation checks and independent amplitude expectations.
 //! Native IR acceptance and these observations are not a source-preservation theorem.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 mod common;
 
 use common::SourceRoot;

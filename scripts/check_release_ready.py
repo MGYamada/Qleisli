@@ -3,7 +3,7 @@
 
 GitHub remains the work ledger. Reviewed requirements come from a caller-trusted
 Git base; receipts come from same-run producer outputs, not candidate assertions.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

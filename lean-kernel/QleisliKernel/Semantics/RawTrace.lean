@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Raw
 interfaces and literal action data, with no acceptance predicates, freshness
 policy, budgets, cached meanings or producer receipts. Missing operands have no
 trace. Full complex interpretation and clean-release validity are separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.RawTrace
 open Raw Finite
 

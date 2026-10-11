@@ -5,7 +5,7 @@ import QleisliKernel.Semantics.Function
 The finite function profile follows the published capacities; general raw
 structural checking retains twelve-bit owners. Source attachments are identity
 data, not a claim of source-to-IR preservation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Function
 open Semantics.Exact Semantics.Finite Semantics.Raw Semantics.Function Finite
 

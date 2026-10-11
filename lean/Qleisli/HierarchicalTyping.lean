@@ -1,7 +1,7 @@
 import Qleisli.HierarchicalUnitary
 
 /-! Bind operator laws to the hierarchy's actual structural typing predicates.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 These mathematical lemmas add no executable acceptance rule. -/
 
 namespace Qleisli.HierarchicalTyping

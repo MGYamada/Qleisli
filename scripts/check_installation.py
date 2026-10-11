@@ -3,7 +3,7 @@
 
 Runs outside the checkout with no helper tools on the child's PATH. Does not
 download, install or publish anything. Python 3.11+ is a development dependency.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse
@@ -59,21 +59,30 @@ def check_registry_links(root, landing, version):
     return historical
 
 
-def check(root, binary):
-    package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
+def check_documentation(root, package):
+    """Bind the example and declared versions without prescribing installation."""
     registry = root / package["readme"]
     readme, source = quickstart(root / "README.md")
     landing, landing_source = quickstart(registry)
     require(source == landing_source, "repository and registry quickstarts differ")
     manifest = quickstart_manifest(readme)
     require(manifest == quickstart_manifest(landing), "quickstart edition manifests differ")
-    install = f'cargo install {package["name"]} --version {package["version"]} --locked'
-    for text in [readme, landing]:
-        require(install in text, "quickstart install command differs from manifest")
+    for name, text, pattern in [
+        ("README.md", readme, r"Development version: ([^\s*]+)"),
+        (package["readme"], landing, r"Package version: \*\*([^\s*]+)\*\*"),
+    ]:
+        require(re.findall(pattern, text) == [package["version"]],
+                f"{name}: documented version differs from manifest or is missing/duplicated")
     # The registry page must not depend on relative repository links or MathJax.
     historical = check_registry_links(root, landing, package["version"])
     require("```math" not in landing and "$$" not in landing,
             "registry README requires a math renderer")
+    return source, manifest, historical
+
+
+def check(root, binary):
+    package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
+    source, manifest, historical = check_documentation(root, package)
 
     with tempfile.TemporaryDirectory(prefix="qleisli-installed-") as directory:
         work = Path(directory)

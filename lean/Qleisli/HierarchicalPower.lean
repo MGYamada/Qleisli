@@ -2,7 +2,7 @@ import Qleisli.ControlledPowers
 import QleisliKernel.Hierarchical.Power
 
 /-! Actual hierarchical control/repeat binding to coherent operator equations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Provider interpretations/equations must come from independent evidence. The
 pending projection does not validate them or enable an external schema. -/
 

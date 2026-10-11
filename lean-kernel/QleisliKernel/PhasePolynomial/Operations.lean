@@ -1,7 +1,7 @@
 import QleisliKernel.PhasePolynomial
 
 /-! Sparse phase scaling and coherent positive controls.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 These total operations issue no acceptance evidence. Callers must validate
 axis scopes, ownership and budgets before admitting their results. -/
 

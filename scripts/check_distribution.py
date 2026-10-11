@@ -5,7 +5,7 @@ Archives, logs and the JSON report are retained outside the checkout. Owned
 build work is removed unless --keep-work is requested; an explicit --target-dir
 remains caller-owned. Uses installed Git, Cargo/Rust and Python only; Cargo runs
 offline. This gate does not replace MSRV, Lean or exact-commit CI checks.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 from dataclasses import dataclass

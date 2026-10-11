@@ -4,7 +4,7 @@ import QleisliKernel.Qirf.InstrumentContract
 /-! Original-QIRF gate refinement for exact observing contracts.
 All premises below are actual executions, not supplied matrices or receipts.
 No source/type-lowering, decoder, runtime or constitutional discharge is claimed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Qirf.InstrumentContract
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Observation QleisliKernel.Finite
 open Qleisli.Semantics.Exact QleisliKernel.Qirf.InstrumentContract

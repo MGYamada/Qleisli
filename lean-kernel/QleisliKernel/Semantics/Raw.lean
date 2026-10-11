@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.Finite
 /-! Original straight-line pure RawProgram data. This module contains no checker,
 producer receipt, capacity policy or transport. Classical control and observing
 constructors are deliberately a separate VM-26 packet.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Raw
 open Finite
 

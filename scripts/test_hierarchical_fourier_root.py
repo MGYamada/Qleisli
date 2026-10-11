@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Native complete outer Fourier request binding and independent complex action.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Finite H requests remain explicit; no production semantic seal is issued here.
 """
 import argparse

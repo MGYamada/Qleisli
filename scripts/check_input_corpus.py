@@ -3,7 +3,7 @@
 
 No upstream frameworks are imported or executed. Reference states are computed
 from mathematical contracts, independently of QLI lowering, IR and simulation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import cmath
@@ -247,6 +247,8 @@ def check_manifest(corpus=CORPUS):
         local_sources.add(path)
         require(sha256(path) == case["sha256"], "local composition hash mismatch")
         text = path.read_text()
+        # Frozen compositions retain their original personal attribution and
+        # recorded bytes; current project attribution is in corpus/NOTICE.
         require("SPDX-License-Identifier: Apache-2.0" in text and
                 "Copyright 2026 Masahiko G. Yamada" in text, "missing local composition attribution")
     for case in compositions:

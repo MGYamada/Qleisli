@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFiniteUnitary
 import QleisliKernel.Hierarchical.Root
 
 /-! Actual graph pairing binds a checked operator to an independent request.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Only actual finite implementation and finite-description equations remain
 premises; no whole-graph semantic environment or supplied conclusion is assumed. -/
 

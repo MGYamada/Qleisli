@@ -3,7 +3,7 @@ import Std
 /-! Independent finite R8 data and interpretation interfaces.
 No normalization, acceptance, capacities or proposed summaries occur here.
 Complex denotation is defined separately in Qleisli.Semantics.Exact.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Semantics.Exact
 

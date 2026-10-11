@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.ControlAccess
 /-! Internal bounded control-sector obligation for the original QIRF root.
 No protocol/CLI/source access path is added by this component. Its caller must
 still establish original source places, lifetimes, locality and resource links.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.ControlAccess
 open Semantics.Exact Semantics.Finite Semantics.ControlAccess Finite
 

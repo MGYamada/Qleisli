@@ -3,7 +3,7 @@ import Qleisli.Semantics.InstrumentPartitions
 
 /-! Independent bit-coordinate identities for an initialized phase register
 and ordered computational-basis readout. No acceptance module is imported.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.QpeFrames
 open CoordinateOperators
 

@@ -1,6 +1,6 @@
 """Regressions for rendered-book links, independent of mdBook installation.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 from contextlib import redirect_stderr, redirect_stdout

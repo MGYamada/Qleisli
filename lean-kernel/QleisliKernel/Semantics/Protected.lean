@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.RawTrace
 auxiliary labels select target actions or diagonal phases; this module contains
 no acceptance, capacities or evidence receipts. Non-dense complex action is
 specified separately in the Mathlib model.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Protected
 open Raw Finite
 

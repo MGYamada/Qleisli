@@ -1,7 +1,7 @@
 import QleisliKernel.Qft
 
 /-! Typed shared circuit projection for the bounded QFT theorem.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This is not an external hierarchy decoder or an enabled schema registry. -/
 
 namespace QleisliKernel.QftGraph

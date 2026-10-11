@@ -4,7 +4,7 @@
 Unlike `rustup run VERSION cargo clippy`, this also selects cargo-clippy,
 clippy-driver, rustc and rustdoc ahead of unrelated PATH installations.
 It never installs a toolchain. Pass ordinary Cargo arguments after this script.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import os
 from pathlib import Path

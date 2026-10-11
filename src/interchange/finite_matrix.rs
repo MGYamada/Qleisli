@@ -1,5 +1,5 @@
 //! Exact mathematical descriptions for bound finite leaves. Decoding is not
-//! semantic verification. Copyright 2026 Masahiko G. Yamada, Apache-2.0.
+//! semantic verification. Copyright 2026 Qleisli Project Contributors, Apache-2.0.
 
 use super::json::{self, Value};
 use super::{Error, Result, contract_error};

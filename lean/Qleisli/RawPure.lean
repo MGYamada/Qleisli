@@ -7,7 +7,7 @@ import Qleisli.Semantics.RawPure
 /-! Complete straight-line pure extraction, fresh evidence and scope semantics.
 This boundary preserves the literal complex action of all original events.
 The general source soundness/production authority gates remain separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Pure
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Semantics.Function QleisliKernel.Raw QleisliKernel.Raw.Pure QleisliKernel.Finite

@@ -1,7 +1,7 @@
 import QleisliKernel
 import QleisliKernel.Qirf.ControlAccess
 
-/-! Pure kernel regressions. Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
+/-! Pure kernel regressions. Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
 open QleisliKernel
 

@@ -3,7 +3,7 @@
 
 The original source graph and candidate are compared independently with the DFT.
 This checks the bounded producer translation; it is not a general frontend proof.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import hashlib

@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Ports
 
 /-! Explicit ownership-structure conversions, with checked basis bijections.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 These nodes change types/owner counts explicitly. They never authorize an
 implicit coercion, an arbitrary gate equation or an external evidence handle. -/
 

@@ -1,5 +1,5 @@
 //! Fresh exact equations for actual transformed substeps and source boundaries.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{MAX_CELLS, Result, Site, access::Interval};
 use crate::contract::{
     BasisType,

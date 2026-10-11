@@ -1,6 +1,6 @@
 //! Ordered static place formation and updated-parent reconstruction proposals.
 //! No native acceptance or source-preservation theorem is issued here.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 
 struct Parent {

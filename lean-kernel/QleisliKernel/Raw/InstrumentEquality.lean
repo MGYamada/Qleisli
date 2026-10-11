@@ -4,7 +4,7 @@ import QleisliKernel.Raw.Instrument
 Callers must reconstruct both original bodies and bind their complete source
 signatures/effects/dependencies separately. This module creates no accepted
 handle, decoder, public request mode or source-preservation claim.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.InstrumentEquality
 open Semantics.Exact Finite
 

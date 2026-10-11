@@ -5,7 +5,7 @@ Hashes cannot independently authenticate a human transcript. This limited check
 does not implement full constitutional CI (#141), prove a guarantee, approve a
 release, or authorize a constitutional interpretation. A caller-supplied trusted
 Git base additionally prevents replacement of already recorded identities.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse

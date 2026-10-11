@@ -3,7 +3,7 @@
 
 Success here means prepared data, never verified quantum meaning. In particular,
 the deliberate phase mutation still needs the subsequent derivation checker.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

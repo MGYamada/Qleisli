@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Finite
 This reference definition imports data only, not acceptance or reconstruction.
 Zero coefficients retain their exact meaning regardless of denominator spelling.
 It makes no ownership, separability, unchanged-state or scheduling claim.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.ControlAccess
 open Exact Finite
 

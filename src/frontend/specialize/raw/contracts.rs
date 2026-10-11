@@ -1,5 +1,5 @@
 //! Exact source-bound function pairs. Native receipts remain the sole authority.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::contract::{FunctionEvidence, function::RetainedIdentity, meaning::MeaningEvidence};
 use crate::frontend::{ast::FnKind, check::ObligationKind, resolve::DefId};

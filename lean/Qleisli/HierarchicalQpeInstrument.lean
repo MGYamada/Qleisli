@@ -9,7 +9,7 @@ import QleisliKernel.Hierarchical.QpeInstrument
 QPE instrument. Coordinate frames, provider phase and classical measurement
 order are retained explicitly. Source preservation and executable finite-reader
 correspondence remain separate obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.HierarchicalQpeInstrument
 open QleisliKernel.Hierarchical
 open Artifact HierarchicalOperators HierarchicalFiniteEvaluation

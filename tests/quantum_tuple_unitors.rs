@@ -1,6 +1,6 @@
 //! Independent exact packaged-product equations, ownership and reference tests.
 //! Bounded native requests are not a general source-preservation theorem.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 mod common;
 use common::SourceRoot;

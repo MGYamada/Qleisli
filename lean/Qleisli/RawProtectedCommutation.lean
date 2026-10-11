@@ -3,7 +3,7 @@ import Qleisli.RawProtectedEvaluation
 /-! A first bounded proof component for issue #303: adjacent literal phase uses
 commute in the existing protected semantics. This defines no ctrl/borrow access
 contract, grants no optimizer permission and admits no new guarantee.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.ProtectedCommutation
 open QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Exact
 open Qleisli.Semantics.Protected Qleisli.Semantics.Exact

@@ -5,7 +5,7 @@ No executable receives another checker decision or an oracle matrix. Quantum
 states are compared as complete unnormalized operators, including hidden reset/
 discard histories and surviving reference correlations. Semantic cases use at
 most three qubits. Metadata capacities are separate from corpus execution.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

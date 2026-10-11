@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check filesystem editions and exact retained historical experiment inputs.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import hashlib

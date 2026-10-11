@@ -6,7 +6,7 @@ import Qleisli.CoordinateOperators
 The three component equations are explicit premises here; the actual IR
 inspector must establish them. No projected plan, algorithm name or provider
 flag supplies an equation. All coefficients retain global and relative phase.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.HierarchicalQpeCircuit
 open scoped BigOperators Matrix

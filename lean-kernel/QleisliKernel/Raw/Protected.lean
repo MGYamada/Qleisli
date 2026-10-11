@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.Protected
 
 /-! Actual protected dispatch exposes the clean-return checking obligation.
 No finite expansion or assumed producer validity is used in these theorems.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Raw Semantics.Finite
 

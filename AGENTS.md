@@ -4,7 +4,7 @@
 
 Keep AGENTS.md and CLAUDE.md identical: **100 lines / 6,000 UTF-8 bytes** each.
 `scripts/check_docs.py` checks limits and equality. Keep rules/links here,
-specs in docs, decisions in Issues, results beside fixtures, history
+specs in docs, decisions in Issues, fixture results, history
 in Git. No release/publication histories. Shorten rules; only explicit user instruction may raise limits.
 
 ## Start from the design
@@ -47,7 +47,7 @@ Lean alone issues new accepted handles; remove legacy paths after replacement
 checks. Full Soundness remains v0.5.0; external schemas await binding gates.
 
 Pin Lean/Mathlib 4.30.0 and development Python 3.11+. Validate locally via
-[shared checks](.github/ci/README.md); hosted CI only for Issue completion/release.
+[shared checks](.github/ci/README.md); CI runs on push, PRs and completion/release.
 Build/audit native checkers, run independent tests and compile changed proofs;
 full replay for releases, full checks and policy risks. Reject project axioms, unsafe/
 partial definitions and runtime overrides, including private/generated helpers.
@@ -71,12 +71,12 @@ does not complete feature/R14/H1–H5 or theorem gates.
 
 ## Documentation after the v0.3.0 cleanup
 
-Keep book sources in `docs/src/`, including the [backend plan](docs/src/lean-backend-plan-v0.3.md).
+Keep book sources in `docs/src/`; Lean backend migration is [long-term](ROADMAP.md).
 Write new chapters from adopted decisions, actual code and proofs;
 migration decisions live in Issues. The retired `docs-old/` tree is deleted.
 Do not restore it, its links (including pinned web links), redirects, replacement
 copies of retired prose or active build/check dependencies; use Git history.
-Keep executable source, proofs, counterexamples, validation artifacts and
+Keep source, proofs, counterexamples, validation artifacts and
 notices outside retired docs. Regenerate corpus counts with
 `python3 scripts/check_docs.py --write-corpus`; do not hand-edit generated views.
 
@@ -89,10 +89,11 @@ before implementation. Compatible changes use PATCH, breaks MINOR, except the
 explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritative; synchronize
 Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
 `scripts/maintain_release.py`; inspect its plan and source-review requirements. Synchronization must not change dependency versions. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
-Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
-Record performed/skipped checks accurately. For releases
-validate source, packages, installation and full CI; tag the exact checked commit.
-Selection, tagging, pushing and publication are distinct; published artifacts
+Qargo.toml. Update [CHANGELOG](CHANGELOG.md); no per-task bumps.
+Record performed/skipped checks. For releases
+check source, packages, installation and full CI; tag the checked commit.
+Tagging, pushing and publication are distinct; published artifacts
 are immutable. Docs-only work need not rerun Rust/Lean tests.
-Preserve Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution
-and Masahiko G. Yamada's copyright; public Rust packages declare Apache-2.0.
+Keep Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution
+and historical provenance. Use Qleisli Project Contributors for current
+attribution; retain human CGO records. Public Rust packages declare Apache-2.0.

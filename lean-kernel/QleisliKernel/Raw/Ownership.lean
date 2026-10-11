@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.Ownership
 /-! Structural checking refines independent linear ownership rules.
 Only original raw data occurs in the conclusion; no checker decision is a
 premise of the reference judgments.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Ownership
 open Semantics.Raw Semantics.Finite Finite
 

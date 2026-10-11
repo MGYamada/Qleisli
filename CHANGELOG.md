@@ -6,6 +6,40 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Run CI on all branch pushes and normal pull-request events, retaining release
+  tag and manual checks. Keep independent runs, conservative change selection,
+  size gates and representative `--quick` corpus validation.
+
+- Retire the v0.3.x non-verifier Lean backend migration plan and its staged
+  Rust-retirement commitments (#350). Keep broader backend implementation in
+  Lean 4 as a long-term goal without a selected release. Preserve Lean-only
+  verifier authority, independent checking and the existing constitutional
+  obligations and admitted guarantees.
+
+- Remove the ecosystem naming comparison and discovery chapter from the Book;
+  retain concise standalone ecosystem help without embedding that chapter.
+  Use Qleisli Testsuite for QLT and clarify independent project identity.
+  Name the Book Qleisli Programming Language.
+
+- Shorten the repository and registry READMEs while retaining edition 2026 and
+  the checked Bell example. State that macOS distribution is under consideration
+  and remove concrete installation instructions. Mark OpenQASM 3 / QIR adapters
+  as experimental test features unsuitable for, and not recommended on, real
+  quantum hardware. Bind installation tests to declared versions and matching
+  examples without requiring a documented installation command.
+
+- Fix the constitutional CI operational specification in `CONSTITUTIONALCI.md`,
+  separating recorded human authority, current proof verification and scoped
+  release evidence. State rejection requirements, change control and remaining
+  coverage limits without changing the Constitution or admitting a guarantee.
+  Keep this specification as ordinary documentation with docs-only selection,
+  without a protected-text hash, ledger entry or dedicated approval gate.
+
+- Attribute current first-party source notices, packages and the Book to
+  Qleisli Project Contributors. Keep the natural-human Constitution Guardian
+  Office identity, approved packets, historical evidence and third-party notices.
+  Preserve the Apache-2.0 license terms and existing operational permissions.
+
 - Use representative corpus validation for every CI profile, including release
   and manual full validation. Remove automatic exhaustive corpus execution;
   retain selected-probe and omitted-fault reporting and fresh native acceptance.

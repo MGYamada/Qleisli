@@ -65,6 +65,6 @@ compiled images or generated output; the local ignore file covers optional
 `.julia/` and `output/` directories. Julia normally stores its dependency
 cache in the user's existing depot outside the repository.
 
-Experiment sources: Copyright 2026 Masahiko G. Yamada, Apache-2.0; see
+Experiment sources: Copyright 2026 Qleisli Project Contributors, Apache-2.0; see
 [LICENSE](../LICENSE). Cyclotomics.jl is a third-party dependency under its
 [MIT license](https://github.com/kalmarek/Cyclotomics.jl/blob/master/LICENSE).

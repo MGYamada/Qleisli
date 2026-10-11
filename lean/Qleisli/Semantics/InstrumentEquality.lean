@@ -4,7 +4,7 @@ import Qleisli.Semantics.Instrument
 design. No acceptance checker, source adapter or evidence producer is imported.
 This reference is independent of executable comparison. Source preservation
 and constitutional discharge remain separate obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.InstrumentEquality
 open scoped BigOperators
 open Qleisli.Semantics.Instrument

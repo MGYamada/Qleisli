@@ -2,7 +2,7 @@ import Qleisli.QpeComplete
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-! Whole-space unitarity of the actual accepted QFT graph coefficients.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.QftGraph
 open scoped BigOperators Matrix

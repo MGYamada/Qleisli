@@ -3,7 +3,7 @@ import Qleisli.HierarchicalCircuitTrace
 /-! Actual artifact evaluation for freshly constructed circuit traces.
 Only evaluations of independently requested actual atoms are premises. The
 remaining circuit is reconstructed from its real bodies and dependencies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.HierarchicalCircuitTrace
 open QleisliKernel.Hierarchical

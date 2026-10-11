@@ -3,7 +3,7 @@ import QleisliKernel.Raw.ProtectedEvaluation
 /-! Exact original-event action on coefficient functions. No global matrix or
 auxiliary vector is constructed. Summation retains every basis coefficient and
 uses shared charged arithmetic; exponential enumeration is not a scaling claim.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Coefficient
 open Semantics.Exact Semantics.Finite Semantics.Raw Finite
 abbrev State := ProtectedEvaluation.State

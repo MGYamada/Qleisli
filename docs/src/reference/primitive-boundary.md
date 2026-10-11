@@ -20,10 +20,6 @@ in the [Qleisli repository](https://github.com/MGYamada/Qleisli).
 
 ## Meaning, spelling and implementation
 
-The [discovery and inspectability contract](discovery.md) explains recovery
-through signatures and checked derived source, and when sealed/external meaning
-requires specification and evidence.
-
 | Category | Authority and obligation |
 | --- | --- |
 | Semantic primitive or irreducible semantic rule | Defines an operation, instrument, ownership transition or effect rule at the semantic/checking boundary. Its independent intended meaning, premises and actual acceptance rule require review. Writing it in Lean, another package or a backend does not remove that obligation. |
@@ -375,4 +371,4 @@ retain their actual scopes; they do not mechanically judge specification intent
 or irreducibility, authenticate a human ruling, or complete every #154 gate.
 Listing a regression here does not report a new test run.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

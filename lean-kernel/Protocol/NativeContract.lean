@@ -4,7 +4,7 @@ import QleisliKernel.Qirf.ControlAccess
 import Protocol.InstrumentContract
 
 /-! Strict bounded request decoding; acceptance is delegated to the pure kernel.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.NativeContract
 open Lean QleisliKernel.Finite
 

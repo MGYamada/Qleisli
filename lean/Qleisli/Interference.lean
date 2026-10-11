@@ -4,7 +4,7 @@ import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic
 
 /-! Complex interpretation of the actual Mathlib-free interference definitions.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Interference
 open QleisliKernel.Interference

@@ -2,7 +2,7 @@ import Qleisli.HierarchicalFiniteEvaluation
 import QleisliKernel.Hierarchical.Wiring
 
 /-! Exact coefficients for computed, phase-free hierarchical wiring.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 P0 actual-body binding supported by P1 reusable routing algebra. The finite
 matrix sums here are proof-only; the executable inspector computes axis lists. -/
 

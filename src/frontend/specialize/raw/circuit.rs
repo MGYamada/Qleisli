@@ -1,5 +1,5 @@
 //! Untrusted flattening of a produced pure Raw trace for access transforms.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{Error, MAX_CELLS, MAX_OPERATIONS, Result, Span};
 use crate::ir::{BitControl, CircuitAction, CircuitStep, RawOp, SingleGate, TokenId, WireId};
 use std::collections::BTreeMap;

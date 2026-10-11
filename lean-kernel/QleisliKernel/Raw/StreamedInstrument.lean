@@ -5,7 +5,7 @@ import QleisliKernel.Raw.BranchFunction
 all hidden histories are exact; the complete Gram sum is checked entry by entry.
 There is no global six-bit cap or global dense matrix. Work remains exponential
 and budgeted; this is not scalable hierarchy or production integration.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.StreamedInstrument
 open Semantics.Exact Semantics.Finite Semantics.Observation Finite
 

@@ -1,7 +1,7 @@
 import Qleisli.HierarchicalTyping
 
 /-! Unitarity of constructed denotations for the accepted internal hierarchy.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Unsupported full-profile bodies still have no denotation in this evaluator.
 This adds no production acceptance rule or assumed semantic environment. -/
 

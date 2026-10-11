@@ -4,7 +4,7 @@ import QleisliKernel.Qirf.InstrumentContract
 /-! Strict observing request data and original expected-artifact bytes.
 The native gate reconstructs both graphs; no matrix or success receipt is read.
 Decoder/source/native-runtime correspondence remain separate proof obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.InstrumentContract
 open Lean Finite Semantics.InstrumentContract
 

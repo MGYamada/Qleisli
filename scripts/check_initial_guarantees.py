@@ -9,7 +9,7 @@ constitutional guarantee. --verify-lean also checks the recorded
 type/axiom output and the fixed identity or checked Basis transport against the
 already-built Lean environment; it does not build
 or independently certify that environment. Run the normal builds/audits first.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse

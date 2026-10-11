@@ -3,7 +3,7 @@
 
 Build a temporary test executable importing the actual kernel definitions.
 There is no new public checker protocol and numerical results issue no evidence.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

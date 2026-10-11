@@ -6,7 +6,7 @@ import QleisliKernel.Qpe
 import Mathlib.Algebra.BigOperators.Fin
 
 /-! QPE branch operators from actual preparation, controlled powers and QFT.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 External IR binding, provider unitarity and completeness are separate obligations. -/
 
 namespace Qleisli.Qpe

@@ -2,7 +2,7 @@ import Qleisli.Semantics.InstrumentCoordinates
 import Qleisli.Semantics.InstrumentComplete
 
 /-! Independent coordinate partitions for complete projective instruments.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This module has no checker imports. A later acceptance theorem must derive the
 distinctness, disjointness and complete coverage premises from actual IR. -/
 

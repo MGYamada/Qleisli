@@ -7,7 +7,7 @@ current environment. The explicit Basis extension also requires a fixed typed
 representation transport proof and unchanged independent meanings/subject types.
 Historical proof bodies are not compared; the closed types
 still refer directly to the actual current checker and original-byte witness.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import gzip
@@ -191,14 +191,14 @@ def compare_protected_projection(output, reviewed):
 
 BASIS_FORMAT = "qleisli.current-artifact-basis-transport"
 TRANSPORT_SOURCE = "lean/Qleisli/FiniteBasisTransport.lean"
-TRANSPORT_SHA256 = "15759fd1b7ba69728b663b42523fb6d5b941deb36b2ccc79f47aad49386cf845"
+TRANSPORT_SHA256 = "3d234023de811671edf63cc1aeaf739e7dd3a8658d9de3c3a82dcf5aac6d89e9"
 TRANSPORT_REVIEW = f"{FIXTURE}/BasisTransportReview.lean"
 TRANSPORT_REVIEW_SHA256 = "fa907a0e7f43c2d507cae261eac81c8c97705e10e96a22decfb8d4a742bed95f"
 TRANSPORT_STDOUT = f"{FIXTURE}/basis-transport.stdout.txt"
 TRANSPORT_STDOUT_SHA256 = "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336"
 TRANSPORT_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{TRANSPORT_REVIEW}"]
 QIRF_SEMANTICS = "lean-kernel/QleisliKernel/Semantics/Qirf.lean"
-QIRF_SEMANTICS_SHA256 = "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86"
+QIRF_SEMANTICS_SHA256 = "1ea57e0728752984c35e51db44b4136374f50c1c6be9d6f47b0143556bacff60"
 
 
 def validate(root, binding, revision, archive):
@@ -308,12 +308,12 @@ RAW_REVIEW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_REV
 RAW_STDOUT = f"{FIXTURE}/raw-transport.stdout.txt"
 RAW_STDOUT_SHA256 = "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4"
 RAW_SOURCES = {
-    "lean/Qleisli/RawRepresentationTransport.lean": "c7302a56de91e66302776e51b2bbf244f2a6b1977c5a636f398708a7f45e1848",
-    "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "96f8b25c5a63bfccf14872125bc0574b058114ea5c5910b3ea05a8167617af6c",
-    "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "24820273afe49a3c5a52486045782ce7442d1e7e47cc88cf928c7cd1351be8ef",
-    "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "eecee63208af37966f04add90209e67ce667a76b1fe78cdae85b2bce82f18567",
-    "lean/Qleisli/Semantics/RawLegacy/Ownership.lean": "737c8d37a9e9e68341d4e0b891abe29346c68be59837373c8581c286d73b34d1",
-    "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean": "95bf2280528b2dc85023f70e27be6c088dc9a5afb15701a9bec6d39bebdb5ec4",
+    "lean/Qleisli/RawRepresentationTransport.lean": "6daf4e9bf20c46c298f2dd880c4a855c327e12ab9db8d4ee48a5dfdf7eecf692",
+    "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "c239dd4a33b3741f05b79412933038cb619a2b9505ff30dace0d72ca0fa6506b",
+    "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "ad7425e103c35afd9012ad54a8b4b964c98c0195d7129b8125cc32c0059ba419",
+    "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "8e46dd0b075a5dec495e8b3cd0c5475282c384410d7dc77d21ff3795c67f0b7c",
+    "lean/Qleisli/Semantics/RawLegacy/Ownership.lean": "f4fa8a81779f00efab88ecd20553e712fc8fd5176f7c498e5b70357cf1cf8dde",
+    "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean": "910243bc1d616869eb3e9085ddbbbbea1c9e36d8b3b8f41537e0e65abed4c375",
 }
 RAW_PREFIXES = {
     "Raw": ("Op", "Program"),

@@ -1,7 +1,7 @@
 import QleisliKernel.PhaseWord
 
 /-! Phase-sensitive composition over the actual executable summaries.
-Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
+Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
 namespace QleisliKernel
 

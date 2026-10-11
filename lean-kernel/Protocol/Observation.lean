@@ -2,7 +2,7 @@ import Protocol.Raw
 import QleisliKernel.Raw.Instrument
 
 /-! Strict experimental VM-26 transport; not production QIRF authority.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Observation
 open Lean QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Observation
 

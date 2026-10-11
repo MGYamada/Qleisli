@@ -4,7 +4,7 @@
 Expected decisions and oracle annotations stay outside native inputs. The
 independent required operator is supplied explicitly; neither executable
 receives the other's decision. Production acceptance belongs to native Lean.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

@@ -4,7 +4,7 @@ import QleisliKernel.Raw.Protected
 /-! Pure raw checking without a global dense matrix. Only broad certified scopes
 use the existing local six-bit equation checker. Protected scopes retain the
 twelve-bit structural profile and their original uses.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Pure
 open Semantics.Exact Semantics.Finite Semantics.Raw Semantics.Function Finite
 

@@ -2,7 +2,7 @@
 //!
 //! These are untrusted frontend facts. They authorize neither native acceptance
 //! nor source preservation, exact cleanup, provider correspondence or a guarantee.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 mod body;
 mod declarations;

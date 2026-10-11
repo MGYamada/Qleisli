@@ -3,7 +3,7 @@ import QleisliKernel.Qirf
 
 /-! Unproved strict QIRF1/2 adapter. The native kernel checks actual table
 edges and original bodies independently of the proposed scheduling order.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Qirf
 open Lean QleisliKernel.Semantics.Finite
 

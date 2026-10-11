@@ -22,8 +22,7 @@ pub(super) const USAGE: &str =
 discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
   These analysis tools are planned, not executable commands in this alpha.
-  Canonical contract: docs/src/reference/discovery.md
-  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md";
+  Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md";
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) enum IrProfile {

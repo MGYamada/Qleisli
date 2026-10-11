@@ -2,7 +2,7 @@ import QleisliKernel.Finite
 
 /-! Exact independent-request equality at the VM-27 boundary.
 The decoder is an unproved adapter; this decision uses actual exact matrices.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Hierarchical.FiniteBinding
 open Semantics.Exact

@@ -202,4 +202,4 @@ messages. Pending diagnostics and release evidence remain part of
 [#120](https://github.com/MGYamada/Qleisli/issues/120) and
 [#127](https://github.com/MGYamada/Qleisli/issues/127).
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

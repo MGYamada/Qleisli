@@ -3,7 +3,7 @@ import Qleisli.Semantics.ObservingFunction
 
 /-! Independent finite QIRF request meaning. No checker, work budget, transport
 reader or success predicate occurs in the mathematical contract.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.Qirf
 open QleisliKernel.Semantics Qleisli.Semantics.ObservingFunction
 open scoped Matrix

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual readout nodes versus an independent small branch/bit-order oracle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This checks the readout component, not a QPE receipt or production integration.
 """
 import argparse

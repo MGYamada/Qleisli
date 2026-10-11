@@ -26,6 +26,8 @@
 
 The [Constitution](../CONSTITUTION.md) is the sole entrenched text.
 [Governance](../GOVERNANCE.md) records the current human holder and arrangements.
+The [constitutional CI specification](../CONSTITUTIONALCI.md) fixes the
+subordinate operational checks, evidence boundaries, limitations and change rules.
 The [authority Reference](../docs/src/reference/authority.md) explains the hierarchy;
 [initial interpretations](../docs/src/design/initial-interpretations.md) render the
 adopted requirements with updated status. GitHub Issues remain the work tracker;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Small-system shared AddK/Equals sources and phase-fixed arithmetic oracles.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No maximum-size checks. Native inspection is separate from algorithm tests.
 """
 import argparse

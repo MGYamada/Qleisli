@@ -5,7 +5,7 @@ import Qleisli.Semantics.ObservingAction
 
 /-! Actual matrix-free exact coefficients refine independent unbounded complex
 actions, including the original physical C/W/C body and protected zero image.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Coefficient
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Raw.Coefficient QleisliKernel.Finite Qleisli.Semantics.Exact

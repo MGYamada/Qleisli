@@ -4,7 +4,7 @@
 Hosted context, successful build receipts and release acceptance are simulated
 in disposable repositories. Actual constitutional proof verification has its own
 live tests; this suite neither fabricates human admission nor runs Lean builds.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import copy
 import io

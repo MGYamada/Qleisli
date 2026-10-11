@@ -5,7 +5,7 @@ import QleisliKernel.Raw.InstrumentEquality
 /-! Original QIRF graph and exact observing-instrument comparison stages.
 Complete signatures are requested type data, not inferred from equal widths.
 Source preservation and the public byte decoder/accepted handle remain separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.InstrumentContract
 open Semantics.Exact Semantics.Finite Semantics.InstrumentContract Finite
 

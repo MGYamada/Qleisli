@@ -2,6 +2,27 @@ use qleisli::frontend::project::SourcePolicy;
 use std::ffi::OsString;
 use std::path::PathBuf;
 
+pub(super) const ECOSYSTEM_HELP: &str = "Qleisli tools
+
+Qleisli and its tools are independent projects. They are not affiliated with,
+endorsed by, or sponsored by the Rust Project or the Rust Foundation.
+
+qargo: project and package orchestration.
+qlippy: Qleisli linting.
+qlifmt: Qleisli source formatting.
+qlidoc: Qleisli API documentation.
+qleisliup and qleisliup-init: installation and toolchain selection.
+These tools are distributed separately; consult their own documentation.
+
+QLT — Qleisli Testsuite: mathematical tests.
+QDB — Qleisli Debugger: failure/obligation navigation.
+QCP — Qleisli Circuit Profiler: circuit/resource profiling.
+These analysis tools are planned, not executable commands in this alpha.
+
+This help is documentation only; it does not check programs or issue accepted handles.
+Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md
+";
+
 /// Shared by text and machine-readable usage diagnostics.
 pub(super) const USAGE: &str = "usage:
   qleisli --help | qleisli help
@@ -36,8 +57,7 @@ discovery: qleisli help ecosystem introduces language/tools without a project/ke
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
   These analysis tools are planned, not executable commands in this alpha.
   qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
-  Canonical contract: docs/src/reference/discovery.md
-  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md
+  Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md
   Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";
 
 pub(super) struct Options {

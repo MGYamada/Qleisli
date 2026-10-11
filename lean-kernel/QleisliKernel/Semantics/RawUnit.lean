@@ -4,7 +4,7 @@ import QleisliKernel.Semantics.RawTrace
 interface actions with no physical event: the exact coefficient is +1, so no
 preceding scalar or external-reference action is erased. These interface maps
 describe the packUnit/unpackUnit cases of the independent Raw reader.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.RawUnit
 open Raw RawTrace
 

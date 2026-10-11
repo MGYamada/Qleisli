@@ -4,7 +4,7 @@ import Qleisli.Semantics.Raw
 /-! Complete complex denotation of the actual bounded pure raw checker. Every
 event, clean physical body, dependency action and final output permutation is
 read from the original raw operations. No Rust checking/extraction is assumed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open QleisliKernel.Raw QleisliKernel.Finite Qleisli.Semantics.Exact Qleisli.Semantics.Raw

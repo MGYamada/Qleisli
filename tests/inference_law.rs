@@ -1,6 +1,6 @@
 //! Static choices stay explicit; diagnostics identify unresolved bindings.
 //! Small native action checks do not establish a source-preservation theorem.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use qleisli::frontend::compile::{Error, OperationBinding, ParsedProgram};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;

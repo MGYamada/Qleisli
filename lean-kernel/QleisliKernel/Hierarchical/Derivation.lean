@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Rule
 
 /-! Check actual proof dependencies starting with an empty internal cache.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The theorem establishes closure of the supported derivation language. Complex
 interpretation of all rules, finite reconstruction and external acceptance are
 separate obligations; this module does not issue a production semantic seal. -/

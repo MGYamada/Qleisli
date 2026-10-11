@@ -2,7 +2,7 @@
 //!
 //! Ordinary checked source, not compiler intrinsics. General register SWAP
 //! and arbitrary permutation witnesses are not implemented by these functions.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use std::quantum::cnot;
 use std::quantum::split;
 use std::quantum::join;

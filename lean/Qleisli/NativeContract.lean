@@ -8,7 +8,7 @@ import Protocol.NativeContract
 root semantics and bounded encoded/leaf instrument semantics. These are QS components:
 source/compiler preservation, emitted target correctness and quantitative RS
 are separate obligations. No guarantee admission follows from these lemmas.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.NativeContract
 open QleisliKernel QleisliKernel.Protocol.NativeContract
 open QleisliKernel.Semantics.Finite QleisliKernel.Semantics.ObservingFunction

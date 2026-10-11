@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Limits
 
 /-! Bounded scheduling of the full hierarchy's combined dependency graph.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 An untrusted adapter proposes an order; this pass checks it against actual edges.
 It establishes dependency safety only, never an IR equation or a schema receipt. -/
 

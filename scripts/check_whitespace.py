@@ -3,7 +3,7 @@
 
 The default includes working changes and non-ignored untracked inputs, so the
 same check can run before a commit and in a clean hosted checkout.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import os

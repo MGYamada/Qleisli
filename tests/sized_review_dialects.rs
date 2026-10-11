@@ -1,6 +1,6 @@
 //! Small source-level comparisons of the generic Rust frontend and the
 //! experimental concrete Python oracle. Neither result supplies IR evidence.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 mod common;
 
 use qleisli::frontend::compile::ParsedProgram;

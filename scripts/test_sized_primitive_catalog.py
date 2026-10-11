@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Calibrate exhaustive primitive handling with a compile-time omission fault.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import json

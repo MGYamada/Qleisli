@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Explicit hierarchical ownership conversions and independent basis routing.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 This is an internal conversion test, not external artifact semantic acceptance.
 """
 import argparse

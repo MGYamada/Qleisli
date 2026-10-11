@@ -5,7 +5,7 @@ This checks HTML files and assets, not CSS imports, JavaScript-generated links,
 or the contents of external URLs. The first <base href> controls relative URLs,
 including fragment-only references. Scheme URLs (including data/javascript)
 and network-path URLs are outside this local-link check and are never executed.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse

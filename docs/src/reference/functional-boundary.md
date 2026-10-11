@@ -377,4 +377,4 @@ they are not enlarged into a guarantee of functional source abstraction.
 This ordinary boundary decision changes neither those statuses nor edition
 2026, and creates no release approval or proof discharge.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

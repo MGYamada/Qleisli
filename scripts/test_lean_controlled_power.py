@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Native coherent powers against exact independent Gaussian-integer matrices.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Internal component checking; external hierarchical evidence binding is separate.
 """
 import argparse

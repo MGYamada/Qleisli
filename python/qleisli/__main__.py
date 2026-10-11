@@ -1,4 +1,4 @@
-"""JSON host CLI. Copyright 2026 Masahiko G. Yamada; Apache-2.0."""
+"""JSON host CLI. Copyright 2026 Qleisli Project Contributors; Apache-2.0."""
 import argparse
 import json
 from pathlib import Path

@@ -3,7 +3,7 @@
 
 No simulator, extractor or numpy code is imported. This is a bounded regression
 exercise, not the reviewer's unprovided 6000-case harness or a soundness proof.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import cmath

@@ -6,7 +6,7 @@ import QleisliKernel.Hierarchical.Root
 and readout, under one work budget. Finite implementation/meaning obligations
 remain those of the exact same Root.Checked value; this is a pending result,
 not an external schema receipt or source-preservation proof.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Hierarchical.Instrument
 open Artifact

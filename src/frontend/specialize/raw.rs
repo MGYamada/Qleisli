@@ -1,5 +1,5 @@
 //! Source-bound finite proposals. This adapter supplies no acceptance decision.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::ast::OperationConstructor;
 use super::elaborate::operation_signature;
 use super::primitive::Primitive;

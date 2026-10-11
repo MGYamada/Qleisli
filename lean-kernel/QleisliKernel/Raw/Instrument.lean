@@ -3,7 +3,7 @@ import QleisliKernel.Raw.Observation
 /-! Exact finite instruments from independently read original raw programs.
 Every hidden erasure outcome and unnormalized residual operator is retained.
 No producer matrix, Rust acceptance flag or classical probability is trusted.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Instrument
 open Semantics.Exact Semantics.Finite Semantics.Observation Finite
 

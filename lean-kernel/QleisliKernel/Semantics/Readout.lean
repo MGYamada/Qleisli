@@ -3,7 +3,7 @@ import Std
 /-! Reference semantics for projective readout and little-endian classical bits.
 This module does not import a checker. Coefficients may be complex and the
 reference type is arbitrary; no tensor-product input assumption is made.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Semantics.Readout
 

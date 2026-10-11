@@ -1,6 +1,6 @@
 //! Bounded Q<Unit> owner, exact scalar, request and reference regressions.
 //! Native request checking and numeric execution are distinct from source proofs.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
 use common::SourceRoot;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Untrusted local normalization of source-produced pure graph proposals.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The output still requires fresh native and exact finite checking. This pass
 does not consume external evidence or issue source-preservation evidence.
 """

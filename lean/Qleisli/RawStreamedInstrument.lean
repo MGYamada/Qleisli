@@ -8,7 +8,7 @@ import Qleisli.Semantics.InstrumentComplete
 /-! Matrix-free actual instrument refinement and complete positivity on every
 finite reference system. Complete trace equations come from the executable
 streamed Gram check, without a producer matrix or an isometry premise.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.StreamedInstrument
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Observation
 open QleisliKernel.Raw.StreamedInstrument QleisliKernel.Finite Qleisli.Semantics.Exact

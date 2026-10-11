@@ -4,7 +4,7 @@
 //! not allow source files to declare or replace primitives. `A` and `B` below
 //! are specification metavariables, not new generic source syntax.
 //!
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 use super::ast::FnKind;
 

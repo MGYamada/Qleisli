@@ -3,7 +3,7 @@ import QuantumInfo.Measurements.POVM
 import Lean.Util.CollectAxioms
 
 /-!
-Copyright 2026 Masahiko G. Yamada. Released under Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. Released under Apache-2.0.
 
 Preserved optional probe for the formerly pinned Physlib v4.30.0 environment.
 Not part of the current Lean dependency graph, default build, or CI.

@@ -603,4 +603,4 @@ subject to the separately reviewed 0.4.0 policy in #197.
 Likewise, #196's illustrative `CBit` occurrence is superseded by adopted #22/#27.
 Neither stale example warrants reopening the unmarked ordinary type boundary.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

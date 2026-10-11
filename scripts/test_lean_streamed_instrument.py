@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Original matrix-free instrument: independent native, Rust and exact R8.
 Only small post-acceptance operators are materialized for comparison.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy

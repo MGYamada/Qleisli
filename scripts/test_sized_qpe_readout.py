@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Connect the real coherent QPE source graph to checked structural readout.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The composite is an integration experiment, not a production QPE receipt.
 """
 import argparse

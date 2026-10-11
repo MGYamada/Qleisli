@@ -7,7 +7,7 @@ import Mathlib.Data.List.Basic
 All literal operands and both branch arms survive. Stable owner/scope states
 are shared; their independent historical identity remains a separate gate.
 No acceptance, source preservation or constitutional admission is inferred.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RawRepresentationTransport
 open QleisliKernel.Semantics
 

@@ -3,7 +3,7 @@ import Qleisli.ControlledPowers
 import QleisliKernel.Schema
 
 /-! Semantic consequences of the actual closed component dispatcher.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 External IR projection, provider evidence and transport remain separate. -/
 
 namespace Qleisli.Schema

@@ -7,7 +7,7 @@ import QleisliKernel.Raw.ObservationScope
 /-! Composition from production QIRF acceptance to original-body semantics.
 Ordinary roots have independent linear OwnershipSafe and lexical ScopeSafe; the finite contract and
 full production EffectSound/hierarchical theorems remain distinct.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Qirf.Validity
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Qirf.Validity
 open QleisliKernel.Semantics.Finite QleisliKernel.Semantics.ObservingFunction

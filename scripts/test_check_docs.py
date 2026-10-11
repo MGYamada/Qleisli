@@ -8,6 +8,7 @@ import unittest
 
 sys.dont_write_bytecode = True
 from check_docs import check_source_doc_references, check_python_readme_version, check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_project_metadata, check_docs_layout, check_retired_doc_links, markdown_anchors, markdown_paths
+from check_docs import check_project_attribution
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -23,7 +24,7 @@ class DocumentationReferences(unittest.TestCase):
         return path
 
     def book_sources(self):
-        for name in ("building.md", "lean-backend-plan-v0.3.md",
+        for name in ("building.md",
                      "imaginary-v1/index.md", "imaginary-v1/requirements.md"):
             self.write("docs/src/" + name, "Current chapter source.")
 
@@ -153,6 +154,45 @@ class DocumentationReferences(unittest.TestCase):
         self.assertFalse((self.root / "docs").exists())
         self.assertFalse((self.root / "docs-old").exists())
 
+    def attribution_fixture(self):
+        name = "Qleisli Project Contributors"
+        self.write("Cargo.toml", f'[package]\nauthors = ["{name}"]\n')
+        self.write("docs/book.toml", f'[book]\nauthors = ["{name}"]\n')
+        self.write("python/pyproject.toml", f'[project]\nauthors = [{{name = "{name}"}}]\n')
+        for path in ("LICENSE", "NOTICE", "python/LICENSE", "python/NOTICE", "corpus/NOTICE"):
+            self.write(path, f"Copyright 2026 {name}\n")
+
+    def test_project_attribution_keeps_human_and_historical_records(self):
+        self.attribution_fixture()
+        records = [self.write(path, "Masahiko G. Yamada\n") for path in (
+            "GOVERNANCE.md", "governance/ratification-2026.json",
+            "tests/fixtures/original/NOTICE", "corpus/upstream/example/LICENSE")]
+        self.assertEqual(check_project_attribution(self.root), [])
+        for path in records:
+            self.assertEqual(path.read_text(), "Masahiko G. Yamada\n")
+
+    def test_project_attribution_rejects_personal_or_absent_package_authors(self):
+        for path, content in (
+            ("Cargo.toml", '[package]\nauthors = ["Masahiko G. Yamada"]\n'),
+            ("docs/book.toml", '[book]\nauthors = ["Masahiko G. Yamada"]\n'),
+            ("python/pyproject.toml", '[project]\nauthors = [{name = "Masahiko G. Yamada"}]\n'),
+            ("Cargo.toml", "[package]\n"),
+        ):
+            with self.subTest(path=path, content=content):
+                self.attribution_fixture()
+                self.write(path, content)
+                errors = check_project_attribution(self.root)
+                self.assertEqual(len(errors), 1)
+                self.assertTrue(errors[0].startswith(path + ":"))
+
+    def test_project_attribution_rejects_missing_current_notice(self):
+        for path in ("LICENSE", "NOTICE", "python/LICENSE", "python/NOTICE", "corpus/NOTICE"):
+            with self.subTest(path=path):
+                self.attribution_fixture()
+                self.write(path, "Copyright 2026 Masahiko G. Yamada\n")
+                self.assertEqual(check_project_attribution(self.root),
+                                 [f"{path}: missing current project copyright attribution"])
+
     def test_metadata_still_checks_versions_runtime_and_notices(self):
         for name, text, diagnostic in [
             ("lean/lakefile.toml", 'version = "0.2.8"', "versions differ"),
@@ -167,13 +207,23 @@ class DocumentationReferences(unittest.TestCase):
                 self.write(name, text)
                 self.assertIn(diagnostic, check_project_metadata(self.root)[0])
 
-    def test_docs_layout_retains_drafts_and_requested_backend_plan(self):
+    def test_docs_layout_retains_current_book_sources(self):
         self.assertTrue(check_docs_layout(self.root))
         self.book_sources()
         self.write("docs/src/imaginary-v1/nested/draft.md", "draft")
         self.assertEqual(check_docs_layout(self.root), [])
         self.write("docs/current-guide.md", "New documentation derived from current source and proofs.")
         self.assertEqual(check_docs_layout(self.root), [])
+
+    def test_docs_layout_rejects_retired_backend_plan(self):
+        self.book_sources()
+        plan = self.write("docs/src/lean-backend-plan-v0.3.md", "Retired plan.")
+        self.assertTrue(any("retired backend plan must remain deleted" in error
+                            for error in check_docs_layout(self.root)))
+        plan.unlink()
+        plan.symlink_to(self.root / "missing-plan.md")
+        self.assertTrue(any("retired backend plan must remain deleted" in error
+                            for error in check_docs_layout(self.root)))
 
     def test_docs_layout_rejects_resurrected_retired_tree(self):
         self.book_sources()
@@ -202,8 +252,11 @@ class DocumentationReferences(unittest.TestCase):
         for target in ["docs-old/design.md", "docs/type-system.md", "docs/verification-migration-v0.2.md",
                        "docs/lean-backend-plan-v0.3-copy.md",
                        "docs/README.md", "docs/lean-backend-plan-v0.3.md",
+                       "docs/src/lean-backend-plan-v0.3.md",
                        "docs/imaginary-v1/README.md", "docs/imaginary-v1/requirements.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs/README.md",
+                       "https://github.com/MGYamada/Qleisli/blob/main/docs/src/lean-backend-plan-v0.3.md",
+                       "https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs/imaginary-v1/README.md",
                        "docs/%2e%2e/docs-old/design.md",
                        "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/type-system.md",
@@ -213,9 +266,7 @@ class DocumentationReferences(unittest.TestCase):
         self.book_sources()
         path = self.write("README.md", "[decision](https://github.com/MGYamada/Qleisli/issues/276) "
                           "[draft](docs/src/imaginary-v1/index.md) "
-                          "[plan](docs/src/lean-backend-plan-v0.3.md) "
                           "[build](docs/src/building.md) "
-                          "[plan online](https://github.com/MGYamada/Qleisli/blob/main/docs/src/lean-backend-plan-v0.3.md) "
                           "[upstream](https://github.com/example/repo/blob/main/docs/types.md)")
         self.assertEqual(check_retired_doc_links(self.root, [path]), [])
 

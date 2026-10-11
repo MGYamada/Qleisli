@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fresh VM-26 full classical-branch function graphs, independent Rust and R8.
 Every checker receives original bodies/identities and separate bindings only.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

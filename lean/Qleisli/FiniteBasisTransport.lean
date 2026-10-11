@@ -6,7 +6,7 @@ import Mathlib.Data.List.Basic
 /-! Transport for the pre-Bits Unit/Bit/product prefix representation.
 This preserves the old domain; it neither equates Bits with equal-width trees
 nor claims source preservation, decoder correspondence or guarantee admission.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.FiniteBasisTransport
 open QleisliKernel.Semantics.Finite
 

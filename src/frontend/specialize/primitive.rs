@@ -1,5 +1,5 @@
 //! Existing selected concrete emitter signatures; these supply no IR evidence.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 //! Concrete capacity limits and lowering/translation checks remain separate.
 use super::ast::Effect;
 use super::{Error, Result, Span};

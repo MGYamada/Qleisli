@@ -1,6 +1,6 @@
 """Integrity and non-admission tests for the two proposed scoped QS records.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import copy

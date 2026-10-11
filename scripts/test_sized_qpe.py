@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Shared coherent QPE source and independent full-column/reference diagnostics.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Remaining validation uses small qubit systems by the 2026-09-30 user decision.
 The measured Bits API remains open.
 """

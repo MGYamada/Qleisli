@@ -1,6 +1,6 @@
 //! Default spelling never manufactures live quantum ownership or hides effects.
 //! Bounded source/native controls do not establish a general trait theorem.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
 use common::SourceRoot;

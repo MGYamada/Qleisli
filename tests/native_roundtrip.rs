@@ -8,7 +8,7 @@
 //! circuit that Lean actually compared against the specification.
 //! QIRF2 `meaning` entries are built explicitly because neither the retained
 //! 799-pair comparison inputs nor the compiled corpus contain one.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod common;
 

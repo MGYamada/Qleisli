@@ -1,6 +1,6 @@
 """Select explicitly migrated source fixtures without rewriting historical inputs.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import hashlib
 import json

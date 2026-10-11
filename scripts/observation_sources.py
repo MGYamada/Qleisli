@@ -4,7 +4,7 @@ This adapter grants no acceptance. The Rust/native comparison separately checks
 the complete original bytes. Component checks receive original bodies, type
 trees and source identities, with only dependency indices topologically renamed.
 Unsupported evidence fails explicitly rather than dropping a dependency.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import copy
 

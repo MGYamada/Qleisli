@@ -1,6 +1,6 @@
 //! Independent exact Unit introduction/elimination equations and owner regressions.
 //! Native request checks and bounded execution do not prove source preservation.
-//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
 use qleisli::contract::BasisType;

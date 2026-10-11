@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual one-bit Fourier bases and native-bound fresh finite H reconstruction.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 All requests remain conditional components, not production Fourier evidence.
 """
 import argparse

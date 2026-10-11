@@ -2,7 +2,7 @@
 """Small private named-QPE framing and exact finite/H/provider reconstruction.
 Provider graph layouts freeze mutation fixtures; numeric/full named semantics
 and source preservation are separate obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy

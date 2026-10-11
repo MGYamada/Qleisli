@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Gradient
 
 /-! Actual positive control and precision-scaled shared Fourier gradient.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 All child inspection uses the same remaining budget. Repetitions are checked
 as literal counts and never expanded. Whole-artifact typing remains required. -/
 

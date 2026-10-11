@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Artifact
 
 /-! Complete typed side maps, used by hierarchical calls and rewires.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 These checks establish coordinate permutations, not a circuit's meaning or the
 fresh renaming relationship between both sides of a call. -/
 

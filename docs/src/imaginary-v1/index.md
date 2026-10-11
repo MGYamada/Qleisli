@@ -1,8 +1,7 @@
 # Initial imaginary-v1 draft index
 
-The `docs/src/imaginary-v1/` tree and
-[lean-backend-plan-v0.3.md](../lean-backend-plan-v0.3.md) are the two documents/trees
-retained by the v0.3.0-alpha cleanup and moved into the book's source tree.
+The `docs/src/imaginary-v1/` tree was retained by the v0.3.0-alpha cleanup
+and moved into the book's source tree.
 Retired prose is available in Git history; new chapters follow adopted decisions,
 actual code and proofs.
 

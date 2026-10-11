@@ -8,7 +8,7 @@ import Mathlib.Logic.Equiv.Fin.Basic
 This reference algebra has no circuit/checker imports. Ordered positions select
 the local matrix coordinates; all other bits are retained by an exact delta.
 Actual artifact typing must establish the positions' bounds and distinctness.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.CoordinateOperators
 open scoped BigOperators Matrix

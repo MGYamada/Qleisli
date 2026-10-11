@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent root-request framing, graph-proposal and contract mutations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The handwritten transport never invokes the Rust proposal producer.
 """
 import argparse

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Native QPE plan checks and independent full branch/reference oracles.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Numerical comparisons do not issue evidence or prove runtime correspondence.
 """
 import native_harness

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """VM-27 lossless decoder correspondence across original fields and constructors.
 Test-only views run the actual Lean readers, independently of acceptance.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy

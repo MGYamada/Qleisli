@@ -1,6 +1,6 @@
 """Untrusted private transport for the initialization/readout component checks.
 No Boolean result from this adapter is a whole-instrument evidence handle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import struct
 import subprocess

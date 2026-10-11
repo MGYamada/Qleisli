@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fresh named Fourier host requests, coordinated faults and binary framing.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No producer receipt or numerical matrix is accepted by the host API.
 """
 import argparse

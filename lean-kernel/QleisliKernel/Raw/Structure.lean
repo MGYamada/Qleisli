@@ -5,7 +5,7 @@ import QleisliKernel.Finite
 /-! VM-25 straight-line pure ownership/typing and actual-body extraction.
 This checker receives original operations. Its dependency argument consists of
 signatures only; semantic callers are reconstructed separately from raw bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw
 open Semantics.Raw Semantics.Finite
 

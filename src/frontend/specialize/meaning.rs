@@ -1,7 +1,7 @@
 //! Exact finite Meaning preparation from checked original source occurrences.
 //! This checks every declared target, including unused ones. Tables are
 //! untrusted mathematical requests, not provider equality or native evidence.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use crate::frontend::ast::{BasisExpr, Decl, FnBody, FnKind, Ident, Pattern, PatternKind, Span};
 use crate::frontend::check::{self, Budget, Interface, Result, SourceError};
 use crate::frontend::ordinary::{Boolean, finite};

@@ -4,7 +4,7 @@ import QleisliKernel.ExactMatrix
 /-! Fresh bounded reconstruction and encoded equations for VM-24.
 Inputs are original finite data, never Rust decisions or computed matrices.
 This component is not raw-IR extraction or production authority.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Finite
 open Semantics.Exact Semantics.Finite
 

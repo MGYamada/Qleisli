@@ -2,7 +2,7 @@ import QleisliKernel.Hierarchical.ContractTyping
 import QleisliKernel.Schema
 
 /-! Bind a controlled-power component to actual four-table artifact data.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The result retains a required provider proof, not a semantic evidence seal.
 Finite reconstruction and generic derivation checking remain separate. -/
 

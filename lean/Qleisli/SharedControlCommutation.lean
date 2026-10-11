@@ -4,7 +4,7 @@ import Qleisli.HierarchicalTensorCoordinates
 /-! A bounded proof component for issue #303: shared coherent control of
 disjoint ordered target factors, connected to the actual hierarchy operators.
 No ctrl/borrow access rule, owner identity claim or artifact acceptance is added.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.SharedControlCommutation
 open Qleisli.CoordinateOperators Qleisli.HierarchicalOperators
 open QleisliKernel.Hierarchical.Artifact

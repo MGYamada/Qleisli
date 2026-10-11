@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent symbolic-path and Fourier checks for the actual native kernel.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The internal matcher is not an enabled external QFT schema.
 """
 import native_harness

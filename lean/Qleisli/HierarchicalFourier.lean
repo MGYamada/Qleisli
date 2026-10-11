@@ -1,7 +1,7 @@
 import Qleisli.HierarchicalGradient
 
 /-! Fourier coefficients of the hierarchy's actual recursive QFT stages.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 The target is defined independently from little-endian integer labels. Matrix
 identities are proof-only and retain all phases and reference amplitudes. -/
 

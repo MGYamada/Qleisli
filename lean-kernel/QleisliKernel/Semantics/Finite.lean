@@ -2,7 +2,7 @@ import QleisliKernel.Semantics.Exact
 
 /-! Data for the existing finite circuit/encoding contract. No acceptance,
 arithmetic, producer receipt or work policy occurs in this reference module.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Finite
 open Exact
 

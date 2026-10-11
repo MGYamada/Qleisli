@@ -7,7 +7,7 @@ read by RawTrace, and each event has literal coefficients or a complete literal
 circuit trace. Clean scopes retain both their original physical body and their
 requested logical action. No acceptance, arithmetic, budgets or transport is
 imported here.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.Raw
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.Raw Qleisli.Semantics.Exact

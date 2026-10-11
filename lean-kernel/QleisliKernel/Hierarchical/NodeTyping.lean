@@ -1,7 +1,7 @@
 import QleisliKernel.Hierarchical.Structural
 
 /-! Local typing of actual hierarchical definition bodies.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Finite leaves and compute/uncompute equations remain explicit obligations of
 the semantic pass. This module issues no semantic evidence. -/
 

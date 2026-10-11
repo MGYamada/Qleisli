@@ -1,7 +1,7 @@
 """Fixed source migration for the operation names adopted in Issue #45.
 
 This checks migration provenance only; it is not an acceptance rule or oracle.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import re
 

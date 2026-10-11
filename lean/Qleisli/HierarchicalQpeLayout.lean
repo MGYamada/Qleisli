@@ -4,7 +4,7 @@ import QleisliKernel.Hierarchical.QpeSchedule
 /-! Physical coordinate and exact-event consequences of the actual QPE layout
 check. The request's ordered phase/target arrays determine the canonical input
 permutation; the separately checked output route is retained verbatim.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.HierarchicalQpeLayout
 open QleisliKernel.Hierarchical
 open HierarchicalQpeCoordinates

@@ -43,6 +43,31 @@ def check_agents_budget(root: Path) -> list[str]:
     return errors
 
 
+def check_project_attribution(root: Path) -> list[str]:
+    """Check current displays without rewriting human or historical records."""
+    name = "Qleisli Project Contributors"
+    errors = []
+    for path, section, expected in (
+        ("Cargo.toml", "package", [name]),
+        ("docs/book.toml", "book", [name]),
+        ("python/pyproject.toml", "project", [{"name": name}]),
+    ):
+        try:
+            authors = tomllib.loads((root / path).read_text())[section]["authors"]
+            if authors != expected:
+                errors.append(f"{path}: authors must be {name}")
+        except (OSError, ValueError, KeyError) as failure:
+            errors.append(f"{path}: project attribution: {failure}")
+    for path in ("LICENSE", "NOTICE", "python/LICENSE", "python/NOTICE", "corpus/NOTICE"):
+        try:
+            text = (root / path).read_text()
+            if f"Copyright 2026 {name}" not in text:
+                errors.append(f"{path}: missing current project copyright attribution")
+        except (OSError, UnicodeError) as failure:
+            errors.append(f"{path}: project attribution: {failure}")
+    return errors
+
+
 def markdown_prose(text: str) -> str:
     """Ignore fenced examples and HTML comments, retaining diagnostic lines."""
     lines = []
@@ -304,8 +329,8 @@ HISTORICAL_DRAFTS = {
 
 
 def relocated_doc(relative: str) -> bool:
-    """The old locations must not become a second source of the book chapters."""
-    return relative in {"README.md", "lean-backend-plan-v0.3.md", "imaginary-v1"} or relative.startswith("imaginary-v1/")
+    """These locations must not host maintained book documents."""
+    return relative in {"README.md", "lean-backend-plan-v0.3.md", "src/lean-backend-plan-v0.3.md", "imaginary-v1"} or relative.startswith("imaginary-v1/")
 
 
 def current_doc(root: Path, relative: str) -> bool:
@@ -320,7 +345,7 @@ def current_doc(root: Path, relative: str) -> bool:
 def check_docs_layout(root: Path) -> list[str]:
     """Require the single chapter sources and reject retired or duplicate roots."""
     errors = []
-    for name in ("docs/src/building.md", "docs/src/lean-backend-plan-v0.3.md",
+    for name in ("docs/src/building.md",
                  "docs/src/imaginary-v1/index.md", "docs/src/imaginary-v1/requirements.md"):
         if not (root / name).is_file():
             errors.append(f"missing retained document: {name}")
@@ -328,6 +353,9 @@ def check_docs_layout(root: Path) -> list[str]:
         path = root / name
         if path.is_symlink() or path.is_file() or path.is_dir() and any(path.iterdir()):
             errors.append(f"{name}: relocated originals must remain deleted; use docs/src chapters")
+    plan = root / "docs/src/lean-backend-plan-v0.3.md"
+    if plan.exists() or plan.is_symlink():
+        errors.append("docs/src/lean-backend-plan-v0.3.md: retired backend plan must remain deleted; use ROADMAP.md for long-term goals")
     retired = root / "docs-old"
     if retired.exists() or retired.is_symlink():
         errors.append("docs-old: retired documentation tree must remain deleted; use Git history")
@@ -459,6 +487,7 @@ def main() -> int:
         return 2
     errors, counts = check_links(ROOT, markdown_paths(ROOT))
     errors.extend(check_agents_budget(ROOT))
+    errors.extend(check_project_attribution(ROOT))
     errors.extend(check_project_metadata(ROOT))
     errors.extend(check_docs_layout(ROOT))
     errors.extend(check_retired_doc_links(ROOT, markdown_paths(ROOT) + list((ROOT / "src").rglob("*.rs"))))

@@ -3,7 +3,7 @@ import QleisliKernel.Semantics.ClassicalScope
 
 /-! The actual original-operation verifier establishes lexical classical SSA.
 Both exclusive arms are checked and share the global issued-name history.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Observation
 open Semantics.Raw Semantics.Observation Semantics.Finite Finite
 namespace Scope

@@ -2,7 +2,7 @@ import Qleisli.Semantics.Raw
 import Qleisli.Semantics.Protected
 
 /-! Independent original physical clean-scope obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.Pure
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Raw
 open Qleisli.Semantics.Protected Qleisli.Semantics.Raw

@@ -1,6 +1,6 @@
 //! Provisional first-order Nat helpers, checked on the complete original AST.
 //! These untrusted affine templates grant no runtime or native authority.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::super::ast::{FnBody, NatKind, Requirement, StaticParamKind, TypeKind};
 use super::super::resolve::Target;
 use super::super::resolve::locals::ResolvedUse;

@@ -3,7 +3,7 @@ import QleisliKernel.Raw.ObservationOwnership
 
 /-! Ordinary QIRF roots satisfy independent linear ownership, whether or not
 the caller additionally requests a finite algorithm contract.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.Validity
 
 theorem check_ownershipSafe (artifact : Qirf.Artifact) (order : Array Nat)

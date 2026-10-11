@@ -3,7 +3,7 @@
 
 Original data and independently selected bindings go to both native checkers.
 Semantic matrices remain at three qubits; wide cases inspect metadata only.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
 import argparse

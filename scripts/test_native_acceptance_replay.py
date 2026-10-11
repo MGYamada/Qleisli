@@ -4,7 +4,7 @@
 No new corpus generation or legacy verifier invocation. A successful process
 must have created the new native handle; crashes/transport failures never count
 as semantic rejection. The original files and decisions remain immutable.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import base64

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual Fourier-stage binding and independent complex/reference diagnostics.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Pending stage inspection does not discharge H, gradient or recursive equations.
 """
 import argparse

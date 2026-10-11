@@ -53,10 +53,7 @@ fn main() -> ExitCode {
         return write_stdout(format!("{}\n", options::USAGE).as_bytes(), "help");
     }
     if args.len() == 2 && args[0] == "help" && args[1] == "ecosystem" {
-        return write_stdout(
-            include_str!("../../docs/src/reference/discovery.md").as_bytes(),
-            "ecosystem introduction",
-        );
+        return write_stdout(options::ECOSYSTEM_HELP.as_bytes(), "ecosystem introduction");
     }
     if args
         .iter()

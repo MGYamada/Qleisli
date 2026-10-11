@@ -4,7 +4,7 @@ import Qleisli.Semantics.Exact
 /-! Independent literal finite-circuit reference. Gate amplitudes, ordered axes
 and encoded composition are mathematical definitions, not acceptance summaries.
 No arithmetic, checker, cache validity or transport module is imported.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.Finite
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open Qleisli.Semantics.Exact

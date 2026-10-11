@@ -6,7 +6,7 @@ Extracted from `lean-kernel/QleisliKernel/Semantics/RawTrace.lean` at `bb2860859
 (SHA-256 `56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab`). Only imports, namespaces and
 references to shared unchanged definitions differ. There is no checker here.
 Stable payloads/states/rules are shared; their historical identity must still be checked.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.RawLegacy.RawTrace
 open QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite QleisliKernel.Semantics.RawTrace
 open Raw

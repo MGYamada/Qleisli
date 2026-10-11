@@ -5,7 +5,7 @@ import Mathlib.NumberTheory.Real.Irrational
 
 /-! Proofs about actual VM-23 executable definitions. Scalar arithmetic is proved
 against independent complex meaning; general matrix soundness remains open.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.Exact
 open QleisliKernel.Semantics.Exact

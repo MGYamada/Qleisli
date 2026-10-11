@@ -2,7 +2,7 @@ import QleisliKernel.LayoutDag
 import QleisliKernel.PhasePolynomial
 
 /-! Typed shared diagonal-phase circuits, with no global dense representation.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.PhaseLayout
 open Layout PhasePolynomial

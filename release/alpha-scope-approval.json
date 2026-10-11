@@ -1,0 +1,27 @@
+{
+  "format": "qleisli.alpha-release-approval",
+  "version": 1,
+  "product_version": "0.3.0-alpha",
+  "proposal": {
+    "path": "release/alpha-scope-proposal.md",
+    "sha256": "52cd027ccd181563760ef00ca53f44d21518fb4cea3e1412d3bbf5ab6ad24d99"
+  },
+  "decision": "approved-alpha-snapshot-scope",
+  "approver": {
+    "name": "Masahiko G. Yamada",
+    "capacity": "natural-human project maintainer; ordinary release-scope decision"
+  },
+  "issue": "https://github.com/MGYamada/Qleisli/issues/351",
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "question_item_id": "[\"request_user_input_async\",\"call_icVYgwlwF7PTTgkbPJJCpj24\",0]",
+    "question": "[#351](https://github.com/MGYamada/Qleisli/issues/351)の[alpha公開条件案](/Users/masa/git/Qleisli/release/alpha-scope-proposal.md)（SHA-256: 52cd027ccd181563760ef00ca53f44d21518fb4cea3e1412d3bbf5ab6ad24d99）を承認しますか？ `0.3.0-alpha`だけを未完了機能を明示した開発snapshotとして扱い、全Issue完了は要求せず、同一commit・同一attemptの全必須CI、証明・配布検査、既存保証は維持します。正式版などの完了条件は変更しません。",
+    "answer": "提示されたalpha公開条件を承認する"
+  },
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The direct affirmative human answer approves the exact alpha scope; the assistant only transcribes that act.",
+    "authentication_limit": "This transcript is reviewable provenance, not a cryptographic signature or independent authentication of the human identity. It grants no constitutional interpretation, guarantee admission or permission to waive a failed check."
+  }
+}

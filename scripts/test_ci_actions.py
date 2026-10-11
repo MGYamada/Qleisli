@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Check shared workflow wiring and execute its actual shell adapters locally.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import json
 import os
@@ -27,18 +27,18 @@ def job(name):
 
 
 class CIActions(unittest.TestCase):
-    def test_hosted_validation_is_explicit_completion_or_release_only(self):
+    def test_hosted_validation_covers_push_pr_completion_and_release(self):
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
         trigger = workflow.split('on:\n')[1].split('\nconcurrency:')[0]
-        self.assertNotIn('branches:', trigger)
-        self.assertIn("tags: ['v*']", trigger)
-        self.assertNotIn('pull_request:', trigger)
-        self.assertNotIn('synchronize', trigger)
+        self.assertIn("  push:\n    branches: ['**']\n    tags: ['v*']\n", trigger)
+        # Default PR events include opened, synchronize and reopened.
+        self.assertIn('\n  pull_request:\n  workflow_dispatch:\n', trigger)
         self.assertIn('completion_issues:', trigger)
         self.assertIn('completion_pr:', trigger)
         self.assertIn('base: ${{ steps.select.outputs.base }}', job('changes'))
         self.assertIn('CONSTITUTION_BASE: ${{ needs.changes.outputs.base || inputs.release_base ||', job('check-docs'))
         self.assertIn('if: always()', job('required'))
+        self.assertIn('group: ${{ github.workflow }}-${{ github.run_id }}', workflow)
         self.assertIn('cancel-in-progress: false', workflow)
         self.assertIn('--report "$RUNNER_TEMP/pr-size.json"', job('changes'))
         self.assertIn('--hosted --report "$RUNNER_TEMP/fixture-budget.json"', job('changes'))

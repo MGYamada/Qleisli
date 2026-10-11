@@ -44,8 +44,8 @@ criteria and resolution. The legacy backlog is retired; use Issues for new work.
 ## Documentation cleanup
 
 Follow the [documentation policy](AGENTS.md#documentation-after-the-v030-cleanup).
-The v0.3.0-alpha cleanup retains the imaginary-v1 drafts and Lean backend plan
-in `docs/src/` and deletes `docs-old/`. Write new book chapters in `docs/src/` from
+The v0.3.0-alpha cleanup retains the imaginary-v1 drafts in `docs/src/`
+and deletes `docs-old/`. Write new book chapters in `docs/src/` from
 adopted decisions, actual code and proofs. Preserve executable source, proofs,
 validation artifacts and notices in their source/fixture locations; consult Git
 history for retired prose.
@@ -87,9 +87,9 @@ update the English specification and relevant acceptance/rejection evidence
 in the same change.
 
 Run the checks appropriate to the affected files and record actual results.
-CI validates PRs once, cancels superseded ordinary PR runs and keeps the existing
-required check names. [Input profiles](.github/ci/profiles.json) permit only listed
-descriptive documents/result records to use the docs path; specifications,
+CI runs on branch pushes and pull requests, retains earlier runs and keeps the
+existing required check names. [Input profiles](.github/ci/profiles.json) permit
+only listed descriptive documents/result records to use the docs path; specifications,
 protected/unknown inputs, missing diffs, tags and manual runs require full checks.
 Every required context rejects missing/failed selected suites. Cargo caches contain
 dependency archives only; project binaries/Lean definitions are rebuilt, audited
@@ -133,8 +133,10 @@ run replaces a stale success before starting validation.
 
 ## Executable verification kernel
 
-The Lean migration keeps the Rust frontend and
-moves acceptance logic in bounded, proved steps to [lean-kernel](lean-kernel/README.md).
+Production acceptance belongs to the Mathlib-free
+[lean-kernel](lean-kernel/README.md); Rust retains frontend and untrusted
+backend work. Broader backend migration to Lean 4 is a long-term goal without
+a selected release, as recorded in [ROADMAP.md](ROADMAP.md#long-term-goal-backend-implementation-in-lean-4).
 That executable package depends on Lean 4.30.0 Init/Std only; Mathlib remains in
 the separate proof/model package. Follow the package's build, compiled audit,
 proof replay and native differential checks when changing its code. Development

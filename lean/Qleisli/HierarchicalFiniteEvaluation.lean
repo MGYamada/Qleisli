@@ -2,7 +2,7 @@ import Qleisli.HierarchicalAcceptance
 import QleisliKernel.Hierarchical.Conditional
 
 /-! Constructed denotations conditional on actual finite-leaf equations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Leaf readers consume actual bytes and interfaces, independently on each side.
 Their equations remain explicit until the transitional Rust correspondence is
 established. This mathematical evaluator is not the reference runtime. -/

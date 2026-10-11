@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Complete recursive Fourier-body inspection and bound exact-H obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Outer reversal/request integration and finite-reader correspondence remain explicit.
 """
 import argparse

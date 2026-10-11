@@ -1,5 +1,5 @@
 //! Independent small-system checks for explicit quantum-owner folds.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use qleisli::frontend::compile::ParsedProgram;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;

@@ -6,7 +6,7 @@ Extracted from `lean-kernel/QleisliKernel/Semantics/Observation.lean` at `bb2860
 (SHA-256 `5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e`). Only imports, namespaces and
 references to shared unchanged definitions differ. There is no checker here.
 Stable payloads/states/rules are shared; their historical identity must still be checked.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Semantics.RawLegacy.Observation
 open QleisliKernel.Semantics.Raw QleisliKernel.Semantics.Finite QleisliKernel.Semantics.Observation
 

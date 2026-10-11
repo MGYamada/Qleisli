@@ -1,6 +1,6 @@
 # Qleisli Python connections
 
-Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. Licensed under Apache-2.0.
 
 This development host package calls the separately installed Qleisli 0.3.0-alpha Rust
 executable built from the same checkout. The version denotes this development

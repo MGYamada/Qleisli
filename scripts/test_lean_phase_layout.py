@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent native typed phase/layout graph oracles and rejection tests.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Complex amplitudes are an external test oracle, never acceptance evidence.
 """
 import argparse

@@ -2,7 +2,7 @@ import QleisliKernel.Dag
 
 /-! Bounded phase DAG integration. One quantum owner is retained even at width zero.
 This is a CD-3 composition slice, not the qpe-dyadic8-v1 hierarchy profile.
-Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
+Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
 namespace QleisliKernel.Hierarchy
 open Dag

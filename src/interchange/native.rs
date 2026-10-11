@@ -1,7 +1,7 @@
 //! One native acceptance boundary for immutable QIRF proposals.
 //! Rust decodes the exact accepted bytes for execution; it issues no ownership,
 //! equation or isometry decision. Decoder/runtime correspondence remains explicit.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod runtime;
 

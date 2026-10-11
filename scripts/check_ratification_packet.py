@@ -4,7 +4,7 @@
 This is not constitutional CI, a ratification mechanism, or verification of any
 guarantee. The frozen candidate's pending status describes its historical state;
 the later human event is checked separately by check_constitution.py.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse

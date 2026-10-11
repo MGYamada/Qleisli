@@ -49,14 +49,11 @@ class ReleaseMaintenance(unittest.TestCase):
     def test_prerelease_updates_exact_product_slots_and_is_repeatable(self):
         self.write('lean-kernel/Protocol/Product.lean', 'def productVersion : String := "0.2.8"\n')
         self.write('README.md', 'Development version: 0.2.8 (unpublished). Latest published version: 0.2.7.\n'
-                   'Compiler version `0.2.8`\nOnce 0.2.8 is published\n'
-                   'cargo install qleisli --version 0.2.8 --locked\n')
+                   'macOS distribution is under consideration.\n')
         source_url = 'https://github.com/MGYamada/Qleisli/blob/v0.2.8/README.md'
         history_url = 'https://github.com/MGYamada/Qleisli/releases/tag/v0.2.7'
         self.write('README.crates.md', 'Package version: **0.2.8**\n'
-                   'cargo install qleisli --version 0.2.8 --locked\n'
-                   'qleisli = "0.2.8"\n'
-                   'Current documentation links target `v0.2.8`\n' + source_url + '\n' + history_url + '\n')
+                   'macOS distribution is under consideration.\n' + source_url + '\n' + history_url + '\n')
         self.write('python/README.md', 'separately installed Qleisli 0.2.8 Rust executable\n')
         self.write('src/lib.rs', '//! [Source](' + source_url + ')\n')
         self.write('CHANGELOG.md', '## 0.2.8\nPreviously selected version.\n')
@@ -76,13 +73,15 @@ class ReleaseMaintenance(unittest.TestCase):
                 self.assertEqual(changes['lean-kernel/Protocol/Product.lean'],
                                  'def productVersion : String := "' + version + '"\n')
                 self.assertIn('Latest published version: 0.2.7.', changes['README.md'])
-                self.assertIn('Once ' + version + ' is published', changes['README.md'])
-                self.assertIn('cargo install qleisli --version ' + version + ' --locked', changes['README.md'])
+                self.assertIn('Development version: ' + version, changes['README.md'])
+                self.assertIn('Package version: **' + version + '**', changes['README.crates.md'])
+                for name in ['README.md', 'README.crates.md']:
+                    self.assertIn('macOS distribution is under consideration.', changes[name])
+                    self.assertNotIn('cargo install', changes[name])
                 self.assertIn('separately installed Qleisli ' + version + ' Rust', changes['python/README.md'])
                 for name in ['README.crates.md', 'src/lib.rs']:
                     self.assertIn(source_url.replace('v0.2.8/', 'v' + version + '/'), changes[name])
                 self.assertIn(history_url, changes['README.crates.md'])
-                self.assertIn('qleisli = "' + version + '"', changes['README.crates.md'])
                 self.assertNotIn('CHANGELOG.md', changes)
                 for name, text in changes.items():
                     self.write(name, text)

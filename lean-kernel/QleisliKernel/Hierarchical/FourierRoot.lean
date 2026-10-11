@@ -3,7 +3,7 @@ import QleisliKernel.Hierarchical.Wiring
 import QleisliKernel.Hierarchical.Conditional
 
 /-! Bind the actual outer QFT circuit to an independently requested Fourier width
-and complete interface. Copyright 2026 Masahiko G. Yamada.
+and complete interface. Copyright 2026 Qleisli Project Contributors.
 SPDX-License-Identifier: Apache-2.0
 P0 acceptance component. Complete artifact typing and the returned full-byte H
 obligations remain mandatory; this inspector alone does not issue evidence. -/

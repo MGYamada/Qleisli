@@ -2,7 +2,9 @@ name: Specification and implementation checks
 
 on:
   push:
+    branches: ['**']
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
     inputs:
       completion_issues:
@@ -37,8 +39,8 @@ on:
         options: ['4', '2', '1']
         default: '4'
 
-# Completion/release checks are explicit and retain their exact-source results.
-# Ordinary pushes and PR updates do not start or cancel hosted validation.
+# Push and PR checks retain independent exact-source results.
+# Later events do not cancel earlier validation, including manual/release runs.
 concurrency:
   group: ${{ github.workflow }}-${{ github.run_id }}
   cancel-in-progress: false

@@ -422,4 +422,4 @@ action/instrument, phase, axis, provider and reference tests. These bounded
 comparisons are migration evidence, not universal source preservation, complete
 QS/PR/RS, generic QFT implementation or release approval.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

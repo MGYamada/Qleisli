@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Small coherent order/amplitude clients of the same shared QPE source.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 Local integration material, not a fourth external corpus or measured Bits API.
 """
 import argparse

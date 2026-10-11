@@ -1,6 +1,6 @@
 //! Independent comparison of a retained source-step graph with Raw IR.
 //! This untrusted check issues neither native acceptance nor a source theorem.
-// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 use crate::frontend::ordinary::Boolean;
 use crate::frontend::specialize::primitive::Primitive;

@@ -4,7 +4,7 @@ import QleisliKernel.Raw.Ownership
 /-! Actual observing verification establishes independent linear OwnershipSafe
 for every original operation and both arms, with no Rust/checker premise in
 that judgment. Effect/instrument soundness and quantitative costs are separate.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Observation
 open Semantics.Raw Semantics.Observation Semantics.Finite Finite
 open Raw.Ownership (view)

@@ -5,7 +5,7 @@ import QleisliKernel.Hierarchical.Instrument
 /-! Complete branch binding for actual initialize/unitary/readout packets.
 The only semantic premises are the same actual finite-byte equations required
 by Root; no source or independently named QPE formula is assumed proved.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.HierarchicalInstrument
 open QleisliKernel.Hierarchical

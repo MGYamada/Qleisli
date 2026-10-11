@@ -2,7 +2,7 @@ import QleisliKernel.Qirf
 
 /-! Typed stages of actual QIRF acceptance, retaining the original root and equation.
 No host result or producer success flag is an input.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.Validity
 open Semantics.Exact Semantics.Finite Semantics.Observation Finite
 

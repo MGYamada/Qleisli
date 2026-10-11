@@ -936,4 +936,4 @@ JSON object. Existing protocol/schema and machine profile identifiers remain
 unchanged. Historical validation commands describe their original revisions;
 they are not current CLI instructions.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

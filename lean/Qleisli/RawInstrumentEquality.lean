@@ -7,7 +7,7 @@ import Qleisli.Semantics.InstrumentEquality
 independent complex meaning. Original-byte acceptance is connected in
 Qleisli.NativeContract; source preservation and constitutional discharge remain
 separate obligations.
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Raw.InstrumentEquality
 open QleisliKernel.Semantics.Exact QleisliKernel.Finite
 open QleisliKernel.Raw.InstrumentEquality

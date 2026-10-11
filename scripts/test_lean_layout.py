@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent process, layout and reference-amplitude tests for the Lean component.
 
-Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 No source compiler or upstream corpus framework is used as the semantic oracle.
 """
 import argparse
