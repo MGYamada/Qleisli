@@ -29,17 +29,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--record', type=Path, required=True)
     args = parser.parse_args()
-    paths = [SOURCE / name for name in ('ReferenceEquality.lean', 'NativeCoefficient.lean', 'ComponentChecks.lean', 'check_proof.py')]
+    paths = [SOURCE / name for name in ('ReferenceEquality.lean', 'NativeCoefficient.lean', 'OriginalGate.lean', 'ComponentChecks.lean', 'check_proof.py')]
     paths += [ROOT / name for name in ('lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean',
         'lean/Qleisli/Exact.lean', 'lean/Qleisli/Semantics/Exact.lean',
         'lean/Qleisli/RawInstrumentDenotation.lean', 'lean/Qleisli/Semantics/RawInstrument.lean',
+        'lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean',
+        'lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean',
+        'lean-kernel/QleisliKernel/Raw/Instrument.lean',
         'lean/Qleisli/Semantics/Instrument.lean', 'lean/lean-toolchain', 'lean/lake-manifest.json')]
     def identities():
         return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     before = identities()
     report = dict(format=1, status='running', recorded_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         source_sha256=before, commands=[],
-        scope='Actual streamed native coefficient comparison refines the independent complex instrument on arbitrary finite external references. No source/artifact/type gate, guarantee admission or full QS/PR/RS proof.')
+        scope='Actual streamed coefficient comparison and unwired original-QIRF gate refine independent complex instruments on arbitrary finite external references. Fresh reconstruction denotes the original body and has complete Kraus sum. No public wire/handle, source preservation, guarantee admission or full QS/PR/RS proof.')
     def run(command):
         started = time.monotonic()
         result = subprocess.run(command, cwd=ROOT / 'lean', capture_output=True, text=True, timeout=180)
@@ -53,19 +56,21 @@ def main():
         run(['lake', 'build', 'Qleisli.Exact', 'Qleisli.RawInstrumentDenotation'])
         with tempfile.TemporaryDirectory(prefix='qleisli-instrument-proofs-') as directory:
             project = Path(directory)
-            for name in ('ReferenceEquality', 'NativeCoefficient'):
+            for name in ('ReferenceEquality', 'NativeCoefficient', 'OriginalGate'):
                 run(['lake', 'env', sys.executable, '-c', WRAPPER, directory, 'lean',
                     '-DwarningAsError=true', '--root='+str(SOURCE),
                     '-o', str(project / (name+'.olean')), str(SOURCE / (name+'.lean'))])
             audit = project / 'Audit.lean'
-            audit.write_text('import NativeCoefficient\n'+''.join(
+            audit.write_text('import OriginalGate\n'+''.join(
                 '#print axioms Qleisli.Experiments.InstrumentCoefficient.'+name+'\n'
-                for name in ('prepare_reference', 'coefficient_meaning', 'compare_meaning', 'compare_instrument')))
+                for name in ('prepare_reference', 'coefficient_meaning', 'compare_meaning', 'compare_instrument'))+''.join(
+                '#print axioms Qleisli.Experiments.OriginalInstrumentGate.'+name+'\n'
+                for name in ('reconstruct_denotes', 'reconstruct_kraus_complete', 'prepare_projected', 'check_dimensions', 'check_instrument')))
             axioms = run(['lake', 'env', sys.executable, '-c', WRAPPER, directory, 'lean',
                 '-DwarningAsError=true', '--root='+directory, str(audit)])
             report['axiom_output'] = axioms
             lists = re.findall(r'depends on axioms: \[(.*?)\]', axioms, re.S)
-            assert len(lists) == 4, 'missing theorem axiom output'
+            assert len(lists) == 9, 'missing theorem axiom output'
             allowed = {'propext', 'Classical.choice', 'Quot.sound'}
             assert all({name.strip() for name in names.split(',')} <= allowed for names in lists), 'unexpected axiom'
             run(['lake', 'env', 'lean', '-DwarningAsError=true', str(SOURCE / 'ComponentChecks.lean')])

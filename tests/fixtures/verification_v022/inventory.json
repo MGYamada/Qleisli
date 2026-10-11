@@ -2297,7 +2297,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "0abb6f68771e2a9c132f94acb2ca773ae4d28cf58f9b46872a13f7834fdb6557",
+      "sha256": "bc5da95118cb887a4a728d65f116a95cb8d208cdde37303b9e5fa3b61c2371b7",
       "group": "hierarchy",
       "surface": null
     },
@@ -2669,7 +2669,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Instrument.lean",
-      "sha256": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+      "sha256": "4b57e49765ad0cfcc021125683c052e7825dad5f5fd2fcf6851ea15903fb8849",
       "group": "raw-core",
       "surface": null
     },
@@ -5166,6 +5166,18 @@
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean",
+      "sha256": "5f04a81ac57a832f8a3f3b746475f1596c1ab390d95bfb511776aafe324b58f5",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean",
+      "sha256": "2ed860b6ce2288823f9b8b00726826e343ca2d3bfefd0d63ebbeeb10c486af39",
+      "group": "raw-core",
+      "surface": null
     }
   ],
   "boundaries": [

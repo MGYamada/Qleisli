@@ -114,7 +114,7 @@ theorem coefficient_meaning (histories : List History) (outcome : List Bool)
         (arithmetic_success _ _ (lift_success _ _ _ _ ha).1)
       simp_all [contribution, entry]
 
-private theorem forM_member {A : Type} (xs : List A) (step : A → WorkM Unit)
+theorem forM_member {A : Type} (xs : List A) (step : A → WorkM Unit)
     (work left : Nat) (ok : (xs.forM step).run work = (.ok (),left))
     (a : A) (member : a ∈ xs) :
     ∃ before after, (step a).run before = (.ok (),after) := by
