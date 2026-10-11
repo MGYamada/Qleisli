@@ -377,6 +377,7 @@ enum StepKind {
     Call {
         definition: usize,
         operations: BTreeMap<String, SourceOperation>,
+        instrument: Option<(DefId, DefId)>,
     },
     Apply(SourceOperation),
     Contract(DefId, DefId),
@@ -503,6 +504,12 @@ impl SourceStep {
             _ => None,
         }
     }
+    pub(super) fn instrument_contract(&self) -> Option<(DefId, DefId)> {
+        match self.kind {
+            StepKind::Call { instrument, .. } => instrument,
+            _ => None,
+        }
+    }
     pub(super) fn contract(&self) -> Option<(DefId, DefId)> {
         match self.kind {
             StepKind::Contract(implementation, specification) => {
@@ -594,6 +601,8 @@ pub struct ElaboratedProgram {
     calls: usize,
     folds: usize,
     pub(super) contracts: BTreeMap<(DefId, DefId), Arc<super::raw::contracts::CheckedContract>>,
+    pub(super) instruments:
+        BTreeMap<(DefId, DefId), Arc<crate::contract::instrument::InstrumentEvidence>>,
     pub(super) meaning_artifacts: BTreeMap<DefId, Arc<super::raw::contracts::CheckedTarget>>,
 }
 
@@ -654,6 +663,9 @@ impl ElaboratedProgram {
                 if !self
                     .contracts
                     .contains_key(&(implementation, specification))
+                    && !self
+                        .instruments
+                        .contains_key(&(implementation, specification))
                 {
                     return Err(error(
                         "contract",
@@ -1056,6 +1068,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             calls: builder.calls,
             folds: builder.folds,
             contracts: BTreeMap::new(),
+            instruments: BTreeMap::new(),
             meaning_artifacts: BTreeMap::new(),
         },
         work,
@@ -2267,13 +2280,29 @@ impl Builder<'_> {
         let target = self.resolve(name, scope, frame, span)?;
         if let Target::Primitive(_) = target {
             let path = self.program.checked.resolution.target_path(target);
-            let kind = Primitive::lookup(&path).ok_or_else(|| {
-                error(
-                    "unsupported",
+            // Existing named phase gates use the same exact dyadic operation.
+            let phase_alias = match path.as_str() {
+                "std::quantum::s" => Some(2),
+                "std::quantum::t" => Some(3),
+                _ => None,
+            };
+            if phase_alias.is_some() && !arguments.is_empty() {
+                return Err(error(
+                    "static",
                     span,
-                    format!("selected concrete preparation does not support {path}"),
-                )
-            })?;
+                    "named phase gates take no static arguments",
+                ));
+            }
+            let kind = phase_alias
+                .map(|_| Primitive::Phase)
+                .or_else(|| Primitive::lookup(&path))
+                .ok_or_else(|| {
+                    error(
+                        "unsupported",
+                        span,
+                        format!("selected concrete preparation does not support {path}"),
+                    )
+                })?;
             let signature = kind.signature();
             // These contracts reject arity before evaluating the sole
             // argument; its complete work is then retained exactly once.
@@ -2302,6 +2331,7 @@ impl Builder<'_> {
                     natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
                 })
                 .collect::<Result<Vec<_>>>()?;
+            let naturals = phase_alias.map_or(naturals, |denominator| vec![1, denominator]);
             let values = inputs.evaluate(self, scope, frame, depth)?;
             let (types, output, effect) = primitive(
                 kind,
@@ -2336,6 +2366,7 @@ impl Builder<'_> {
                 StepKind::Call {
                     definition: id,
                     operations,
+                    instrument: None,
                 },
                 types,
                 output,
@@ -2548,11 +2579,23 @@ impl Builder<'_> {
                 )?;
                 let definition = &self.definitions[id];
                 if definition.effect == Effect::Observe {
-                    return Err(error(
-                        "unsupported",
+                    let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
+                    let ty = definition.output.ty.clone();
+                    let peak = definition.peak_quantum;
+                    return self.step(
+                        StepKind::Call {
+                            definition: id,
+                            operations: BTreeMap::new(),
+                            instrument: Some((implementation, specification)),
+                        },
+                        types,
+                        ty,
+                        Effect::Observe,
+                        vec![value],
+                        frame,
                         span,
-                        "observing contract call boundaries are not supported in this specialization profile",
-                    ));
+                        peak,
+                    );
                 }
                 if definition.effect != Effect::Unitary
                     || definition.inputs.len() != 1

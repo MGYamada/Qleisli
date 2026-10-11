@@ -248,6 +248,7 @@ impl InstrumentEvidence {
 
 /// Retains the checked pair, exact call ports/instructions/results and original
 /// source position. The enclosing root still needs its own ordinary decision.
+#[derive(Clone)]
 pub(crate) struct InstrumentCall {
     pair: Arc<InstrumentEvidence>,
     native: NativeChecked,

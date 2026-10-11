@@ -3173,7 +3173,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "feea6ac06fba6d6cf967832dfab4b2e87e7a6a255bf8eb27a6133b5349e47c23",
+      "sha256": "8bee921d3a97e022359541d1e65eee43330ed96665595f879bc5cda7d2af9b0a",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3498,7 +3498,7 @@
     },
     {
       "path": "src/frontend/compile/circuit.rs",
-      "sha256": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
+      "sha256": "f32846624f203b38dfc2b45fcc2eef53362dc55d6fd61cf0e814b4d7fdf11c0f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3538,7 +3538,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "bb586e7023b9e7cc5c1c883b307077ecc2936536cb9c8a2b1d57c273b4a78a79",
+      "sha256": "214cc2304bb72db7741cd6950c78e744256bd6749a05fe6aa815229f9010ead8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3925,7 +3925,7 @@
     },
     {
       "path": "src/frontend/raw_state.rs",
-      "sha256": "3082fe6ad3acbed6f3df3587d7effa40341eb0cb16e84cb0246dfa534f2d3c1f",
+      "sha256": "66f38403087c69e09013fd6500bc7ee06b3a43d1180fefada5588a569672ce66",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4075,7 +4075,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "b484455e000f9b6fa67d193fd57ea7385c92d7bfa2c28d4cede1e8c7985a5aee",
+      "sha256": "74766c764a04d18298e2053415665da7c945538a16312eb27cffc229deef6055",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4188,7 +4188,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "b4d6844043add97171a4690924dac2e88b42483c6eb4b2f67615b7759d0b0668",
+      "sha256": "4a7205f7fe4e6a84e6c4b402667a875f5c988c7609313a4458bd0cf924da4dc5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4306,7 +4306,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "7d2496dc4407da60d1c80b1ecf29f2c949c46b0db2d5c40cfbfdd65aacef4fd1",
+      "sha256": "56180b507ac5296b8ff8697c317f39863697e153aa64c3b2060b9335578d86d4",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4356,7 +4356,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "47e3af0d013724041c1f7e69f7fc00f1028d5fe06611c5f25ecd652bf225910a",
+      "sha256": "b5fbf8f83ec8e5bb5db0ed69d1be44303e036aaca2d73f7d44312339906a9a79",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4366,7 +4366,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "be7875ee6735e4b31fc2476228c92457fb98ed2a0d94733f9e6a3aa9679e7010",
+      "sha256": "2549f92beb96abde44b681a5c75f7b7ce15686cc206eb68933a7e8bf9860b1b3",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5187,7 +5187,7 @@
     },
     {
       "path": "src/contract/instrument.rs",
-      "sha256": "7513db51c51ba9c9d76f52f35779c758261fc1a8974d4b4867cc84518f1237cb",
+      "sha256": "98d14ea1b91a70939fe93f65d4b540e37fb5036fef16124318d7f3dfab0e882c",
       "group": "function-evidence",
       "surface": {
         "declarations": [],

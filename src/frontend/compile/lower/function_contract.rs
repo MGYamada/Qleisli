@@ -4,6 +4,7 @@ use super::super::operations::contract_basis;
 use super::*;
 use crate::contract::instrument::InstrumentEvidence;
 use crate::contract::{FunctionEvidence, MAX_CONTRACT_BITS, function::RetainedIdentity};
+use crate::frontend::raw_state::operations_size;
 use std::sync::Arc;
 
 impl Lowerer<'_, '_> {
@@ -518,69 +519,4 @@ fn representation_size(program: &RawProgram) -> usize {
         size = size.saturating_add(input.wires.len() + 3);
     }
     size.saturating_add(operations_size(&program.operations))
-}
-
-fn operations_size(operations: &[RawOp]) -> usize {
-    let mut size = 0usize;
-    let mut pending = vec![operations];
-    while let Some(operations) = pending.pop() {
-        for operation in operations {
-            size = size.saturating_add(8);
-            let extra = match operation {
-                RawOp::ApplyUnitary { steps, .. } => {
-                    total_size(steps.iter().map(super::super::circuit::size))
-                }
-                RawOp::CertifiedCompute {
-                    ancilla_wires,
-                    function,
-                    use_steps,
-                    logical_steps,
-                    ..
-                } => total_size([
-                    ancilla_wires.len(),
-                    function.len(),
-                    total_size(use_steps.iter().map(super::super::circuit::size)),
-                    total_size(logical_steps.iter().map(super::super::circuit::size)),
-                ]),
-                RawOp::LiftBasis {
-                    output_wires,
-                    table,
-                    ..
-                } => output_wires.len() + table.len(),
-                RawOp::QuantumIf {
-                    zero_ops, one_ops, ..
-                } => 4 * (zero_ops.len() + one_ops.len()),
-                RawOp::ClassicalBranch {
-                    then_ops,
-                    else_ops,
-                    quantum_phis,
-                    classical_phis,
-                    ..
-                } => {
-                    pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
-                    total_size(quantum_phis.iter().map(|phi| phi.output_wires.len() + 3))
-                        .saturating_add(classical_phis.len().saturating_mul(3))
-                }
-                RawOp::ComputeUseUncompute {
-                    targets,
-                    ancilla_wires,
-                    function,
-                    use_ops,
-                    ..
-                } => total_size([
-                    targets.len().saturating_mul(2),
-                    ancilla_wires.len(),
-                    function.len(),
-                    total_size(use_ops.iter().map(|usage| match usage {
-                        ProtectedUse::ProtectedGate { .. } => 3,
-                        ProtectedUse::ControlledTargetGate { controls, .. }
-                        | ProtectedUse::ControlledPhase { controls, .. } => 3 + controls.len() * 3,
-                    })),
-                ]),
-                _ => 0,
-            };
-            size = size.saturating_add(extra);
-        }
-    }
-    size
 }

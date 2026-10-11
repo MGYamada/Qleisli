@@ -53,34 +53,151 @@ fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal, Error> {
 }
 
 #[test]
-fn observing_specialization_refuses_calls_and_retains_unused_obligations() {
-    let definitions = "use std::quantum::init0; use std::observe::measure_z;
+fn observing_specialization_checks_calls_and_unused_original_obligations() {
+    let definitions = "use std::quantum::{init0,h,phase}; use std::observe::measure_z;
         fn reference(q: Q<Bit>) -> Bit { measure_z(q) }
-        fn implementation(q: Q<Bit>) -> Bit { measure_z(q) }";
+        fn implementation(q: Q<Bit>) -> Bit { measure_z(phase[1,3](h(h(q)))) }";
     let called = format!(
         "{definitions}
         pub fn main() -> Bit {{ apply_contract(implementation,reference,init0()) }}"
     );
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), called)])).unwrap();
-    let error = parsed
-        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert!(
-        error
-            .to_string()
-            .contains("observing contract call boundaries")
-    );
+    selected_zero(&called);
     let source = elaborate(&format!("{definitions}
         fn unused[const U: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(implementation,reference,q) }}
         pub fn main() -> Bit {{ measure_z(init0()) }}"));
     assert!(source.has_function_contracts());
-    let error = check(&source).unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert!(error.to_string().contains("observing contract obligations"));
-    assert!(lower(&source).is_err());
+    assert!(source.lower_raw().is_err());
+    check(&source).unwrap();
+    lower(&source).unwrap();
+    let wrong = called.replace("measure_z(phase[1,3](h(h(q))))", "not(measure_z(q))");
+    assert_eq!(lower(&elaborate(&wrong)).unwrap_err().code(), "contract");
+    let unused = format!(
+        "{definitions}
+        fn wrong(q: Q<Bit>) -> Bit {{ not(measure_z(q)) }}
+        fn unused[const U: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(wrong,reference,q) }}
+        pub fn main() -> Bit {{ measure_z(init0()) }}"
+    );
+    assert_eq!(lower(&elaborate(&unused)).unwrap_err().code(), "contract");
+    let zero = format!(
+        "{definitions}
+        fn wrong(q:Q<Bit>)->Bit{{not(measure_z(q))}}
+        pub fn main()->Bit{{let q=init0();
+            let q=qfor static i in 0..0 carry q=q {{
+                let b=apply_contract(wrong,reference,q); yield init0();
+            }}; measure_z(q)}}"
+    );
+    assert_eq!(check(&elaborate(&zero)).unwrap_err().code(), "contract");
+}
+
+#[test]
+fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_changes() {
+    let positive = include_str!(
+        "fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-readout/main.qli"
+    );
+    let negative = include_str!(
+        "fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-residual/main.qli"
+    );
+    let proposal = lower(&elaborate(positive)).unwrap();
+    let accepted = kernel().accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    assert!(accepted.request().is_none());
+    assert!(receipts(accepted.raw()).is_empty());
+    assert_eq!(lower(&elaborate(negative)).unwrap_err().code(), "contract");
+    let root = SourceRoot::new(positive);
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args([
+            "check",
+            "--format=json",
+            "--entry=main::main",
+            "--ir-profile=raw",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .output()
+        .unwrap();
+    assert!(output.status.success(), "{output:?}");
+    let json = String::from_utf8(output.stdout).unwrap();
+    assert!(json.contains("\"source_meaning_verified\":false"), "{json}");
+}
+
+#[test]
+fn observing_specialization_keeps_nested_equations_empty_values_and_references() {
+    let source = "use std::quantum::{init0,h,cnot,unit,finish}; use std::observe::measure_z;
+        fn reference(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) {
+            let empty=unit(()); ((),(measure_z(q),empty))
+        }
+        fn inner(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) { apply_contract(reference,reference,q) }
+        fn implementation(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) { let hidden=measure_z(h(init0())); inner(h(h(q))) }
+        pub fn main() -> (Bit,Bit) {
+            let (r,q)=cnot(h(init0()),init0());
+            let (u,(b,empty))=apply_contract(implementation,reference,q);
+            finish(empty); (measure_z(r),b)
+        }";
+    let proposal = lower(&elaborate(source)).unwrap();
+    let accepted = kernel().accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    let result = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert!((result[&vec![false, false]] - 0.5).abs() < 1e-12);
+    assert!((result[&vec![true, true]] - 0.5).abs() < 1e-12);
+    assert_eq!(result.len(), 2);
+    assert!(format!("{proposal:?}").contains("InstrumentCall"));
+}
+
+#[test]
+fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
+    let source = "use std::classical::{empty_bits,prepend_bit}; use std::quantum::init0;
+        use std::observe::measure_z;
+        fn reference(q:Q<Bit>)->(Bits<0>,Bits<2>){let b=measure_z(q); (empty_bits(),prepend_bit[1](b,prepend_bit[0](not(b),empty_bits())))}
+        fn candidate(q:Q<Bit>)->(Bits<0>,Bits<2>){reference(q)}
+        pub fn main()->(Bits<0>,Bits<2>){apply_contract(candidate,reference,init0())}";
+    let source = elaborate(source);
+    let checked = check(&source).unwrap();
+    assert!(checked.lower_raw().is_err());
+    assert!(matches!(
+        checked.hierarchy_eligibility().unwrap(),
+        qleisli::frontend::compile::HierarchyEligibility::Ineligible(_)
+    ));
+    let missing = Kernel::new("/nonexistent-qleisli-instrument-checker");
+    assert!(
+        checked
+            .lower_raw_with_kernel(&missing, &mut work())
+            .is_err()
+    );
+    assert!(
+        source
+            .check_function_contracts(&kernel(), &mut Budget::new(0))
+            .is_err()
+    );
+    let proposal = lower(&checked).unwrap();
+    let accepted = kernel().accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    let result = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert_eq!(result[&vec![false, true]], 1.0);
+}
+
+#[test]
+fn observing_specialization_rechecks_changed_reference_dependencies_and_output_order() {
+    let main = "use dependency::reference; use std::quantum::init0; use std::observe::measure_z;
+        fn implementation(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}
+        pub fn main()->(Bit,Bit){apply_contract(implementation,reference,init0())}";
+    let dependency = "use std::observe::measure_z;
+        pub fn reference(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}";
+    let make = |dep: &str| {
+        modules(BTreeMap::from([
+            ("main".into(), main.into()),
+            ("dependency".into(), dep.into()),
+        ]))
+    };
+    let source = make(dependency);
+    let original = lower(&source).unwrap();
+    let accepted = kernel().accept(original.proposal()).unwrap();
+    original.validate_source_steps(&accepted).unwrap();
+    let changed = dependency.replace("(b,not(b))", "(not(b),b)");
+    assert_eq!(check(&make(&changed)).unwrap_err().code(), "contract");
+    // The earlier preparation never authorizes a newly selected dependency.
+    original.validate_source_steps(&accepted).unwrap();
 }
 
 fn retained(evidence: &FunctionEvidence, module: &str, original: &str) -> bool {

@@ -218,3 +218,86 @@ impl<N> RawState<N> {
         Ok(output)
     }
 }
+
+pub(crate) fn circuit_size(step: &CircuitStep) -> usize {
+    1 + step.controls.len()
+        + match &step.action {
+            CircuitAction::Contract { indices, .. } => indices.len() + 1,
+            CircuitAction::Hadamard { .. } => 1,
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
+            } => indices.len() + permutation.len() + phases.len(),
+        }
+}
+
+// Shared host-copy accounting; this grants no semantic acceptance authority.
+fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
+    sizes.into_iter().fold(0, usize::saturating_add)
+}
+
+pub(crate) fn operations_size(operations: &[RawOp]) -> usize {
+    let mut size = 0usize;
+    let mut pending = vec![operations];
+    while let Some(operations) = pending.pop() {
+        for operation in operations {
+            size = size.saturating_add(8);
+            let extra = match operation {
+                RawOp::ApplyUnitary { steps, .. } => total_size(steps.iter().map(circuit_size)),
+                RawOp::CertifiedCompute {
+                    ancilla_wires,
+                    function,
+                    use_steps,
+                    logical_steps,
+                    ..
+                } => total_size([
+                    ancilla_wires.len(),
+                    function.len(),
+                    total_size(use_steps.iter().map(circuit_size)),
+                    total_size(logical_steps.iter().map(circuit_size)),
+                ]),
+                RawOp::LiftBasis {
+                    output_wires,
+                    table,
+                    ..
+                } => output_wires.len() + table.len(),
+                RawOp::QuantumIf {
+                    zero_ops, one_ops, ..
+                } => 4 * (zero_ops.len() + one_ops.len()),
+                RawOp::ClassicalBranch {
+                    then_ops,
+                    else_ops,
+                    quantum_phis,
+                    classical_phis,
+                    ..
+                } => {
+                    pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
+                    total_size(quantum_phis.iter().map(|phi| phi.output_wires.len() + 3))
+                        .saturating_add(classical_phis.len().saturating_mul(3))
+                }
+                RawOp::ComputeUseUncompute {
+                    targets,
+                    ancilla_wires,
+                    function,
+                    use_ops,
+                    ..
+                } => total_size([
+                    targets.len().saturating_mul(2),
+                    ancilla_wires.len(),
+                    function.len(),
+                    total_size(use_ops.iter().map(|usage| match usage {
+                        crate::ir::ProtectedUse::ProtectedGate { .. } => 3,
+                        crate::ir::ProtectedUse::ControlledTargetGate { controls, .. }
+                        | crate::ir::ProtectedUse::ControlledPhase { controls, .. } => {
+                            3 + controls.len() * 3
+                        }
+                    })),
+                ]),
+                _ => 0,
+            };
+            size = size.saturating_add(extra);
+        }
+    }
+    size
+}

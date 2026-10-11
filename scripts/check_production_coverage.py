@@ -38,9 +38,10 @@ CONTRACT_PROOF = {
         'complete Kraus sums, untruncated dimensions and requested complete signature equality to exact '
         'unnormalized public outcome maps on every joint matrix and finite external reference. '
         'A private Rust paired handle retains original accepted artifacts, complete types and source identity. '
-        'Ordinary concrete observing calls freshly check actual emitted intervals and retain private '
-        'pair/call sidecars without changing whole-root request disclosure. Explicit specialization '
-        'and independent observing source replay remain open.'
+        'Both concrete observing adapters freshly check actual emitted intervals and retain private '
+        'pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks '
+        'the original implementation, input owner and ordered result before a fresh native equation; '
+        'hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.'
     ),
     'gaps': (
         'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
@@ -116,6 +117,11 @@ PATHS = {
         ('src/frontend/instrument.rs', ['fn signature<N>', 'ResultAtom::Quantum', 'signature.validate(budget)']),
         ('src/frontend/compile/lower/function_contract.rs', ['fn apply_instrument_contract(',
          'self.raw.operations[first..].to_vec()', '.check_call(', 'fn instrument_contract_evidence(']),
+        ('src/frontend/specialize/raw/contracts.rs', ['fn instrument_pair(', 'fn provider_accepted(',
+         'InstrumentEvidence::check(', 'retain_instrument_calls(']),
+        ('src/frontend/specialize/raw/preservation.rs', ['fn instrument_call(', '.check_call(',
+         'self.raw.operations[first..self.cursor].to_vec()', 'fn check_subject_with_meanings(']),
+        ('src/frontend/specialize/raw.rs', ['instrument_calls:', 'preservation::check_subject_with_meanings(']),
         ('src/interchange/native.rs', ['source_instruments:', 'source_instrument_calls:', 'fn retain_instruments(', 'fn retain_instrument_calls(']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
         ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'QleisliKernel.Qirf.checkContract',
@@ -151,7 +157,12 @@ PATHS = {
         ('src/contract/instrument.rs', 'instrument_signature_preflights_frontiers_depth_and_zero_width_types'),
         ('tests/function_contracts.rs', 'observing_contracts_compare_complete_instruments_on_the_emitted_call'),
         ('tests/function_contracts.rs', 'observing_contracts_reject_public_relabeling_and_wrong_residual_channels'),
-        ('tests/function_contracts.rs', 'observing_contracts_check_nested_calls_branches_and_hidden_discard_histories')]),
+        ('tests/function_contracts.rs', 'observing_contracts_check_nested_calls_branches_and_hidden_discard_histories'),
+        ('tests/selected_function_contracts.rs', 'observing_specialization_checks_calls_and_unused_original_obligations'),
+        ('tests/selected_function_contracts.rs', 'observing_specialization_keeps_nested_equations_empty_values_and_references'),
+        ('tests/selected_function_contracts.rs', 'observing_specialization_rechecks_changed_reference_dependencies_and_output_order'),
+        ('src/frontend/specialize/raw/preservation.rs', 'observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls'),
+        ('tests/reference_meanings.rs', 'fixed_fourier_reference_meanings_match_independent_exact_coefficients')]),
     'source-documentation': path_rule('documentation', 'source', '', [
         ('src/bin/qleisli.rs', ['if options.command == "doc"', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),

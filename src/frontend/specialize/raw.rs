@@ -329,6 +329,7 @@ pub struct RawSourceProposal {
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
     meanings: Option<Arc<Vec<CheckedMeaning>>>,
+    instrument_calls: Arc<[crate::contract::instrument::InstrumentCall]>,
 }
 
 /// A fresh native finite equation with replay of these retained source steps.
@@ -1772,6 +1773,22 @@ pub(super) fn lower_with_kernel(
     };
     source.require_unrefined()?;
     if !source.has_control_obligations() {
+        if !source.instruments.is_empty() {
+            if budget.remaining() > DEFAULT_EXACT_WORK {
+                return Err(Error::new(
+                    "limit",
+                    Span::default(),
+                    "instrument replay budget exceeds the shared exact-work ceiling",
+                ));
+            }
+            return lower_inner(
+                source,
+                source.root(),
+                None,
+                None,
+                Some((kernel, budget, &[])),
+            );
+        }
         return lower(source);
     }
     lower_refined_with_control(source, kernel, budget)
@@ -2181,6 +2198,7 @@ fn lower_inner(
     });
     let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
         .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
+    let mut instrument_calls = Vec::new();
     if let Some((kernel, budget, meanings)) = checking {
         // These checks bind the original source roles to decoded, freshly
         // accepted bytes. A valid whole body alone is not sector evidence.
@@ -2193,7 +2211,7 @@ fn lower_inner(
         budget
             .charge(accepted.native_exact_work())
             .map_err(|e| Error::new("limit", root.span(), e.to_string()))?;
-        preservation::validate_subject_with_meanings(
+        instrument_calls = preservation::check_subject_with_meanings(
             source,
             subject,
             operation,
@@ -2249,6 +2267,7 @@ fn lower_inner(
         proposal,
         finite_boundary,
         meanings: None,
+        instrument_calls: Arc::from(instrument_calls),
     })
 }
 

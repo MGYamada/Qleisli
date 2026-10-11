@@ -10,7 +10,7 @@ development milestones from the scope of their evidence.
   adopted observing `apply_contract` design. Stream complete outcome-indexed
   Choi coefficients under existing limits; prove its complex/reference meaning
   and ordered projection. Preserve existing request variants and pure Meaning
-  phase rules; source integration remains unfinished.
+  phase rules.
   Add the paired original-QIRF gate with complete requested signatures,
   principal Observe checks, retained zero-width owners and fresh graph evidence.
   Prove its original instrument/reference comparison and complete Kraus sum;
@@ -20,7 +20,13 @@ development milestones from the scope of their evidence.
   signature and source identity. Ordinary concrete compilation executes only
   the implementation and freshly checks its emitted call interval against the
   reference; retain private pair/call sidecars without changing whole-root
-  request disclosure. Explicit specialization and source replay remain open.
+  request disclosure. Connect explicit Raw specialization with independent
+  source replay, fresh actual-call equations, nested/unused/zero-count obligations
+  and ordered result checks. Reject hierarchy/checker-free lowering of observing
+  contracts. Preserve pure contracts and their exact phase rule.
+  Check fixed QFT2/QFT3 reference specifications against independent Fourier
+  coefficients on both adapters; lower existing named S/T calls to their exact
+  phase operations in selected preparation. This adds no generic QFT implementation.
 
 - Add the adopted bounded `meaning M: A = reference(f)` form for closed
   principal-Unitary endomorphisms. Mix reference and monomial targets through

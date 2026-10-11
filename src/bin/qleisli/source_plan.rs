@@ -331,7 +331,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             source
                 .check_operation_meanings(&kernel, &mut source_budget)?
                 .lower_raw(&kernel, &mut source_budget)?
-        } else if options.command == "emit-proposal" || !source.has_control_obligations() {
+        } else if options.command == "emit-proposal" {
             // Untrusted emission cannot request or imply native sector evidence.
             source.lower_raw()?
         } else {

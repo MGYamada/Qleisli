@@ -3,16 +3,7 @@ use super::*;
 use crate::ir::*;
 
 pub(super) fn size(step: &CircuitStep) -> usize {
-    1 + step.controls.len()
-        + match &step.action {
-            CircuitAction::Contract { indices, .. } => indices.len() + 1,
-            CircuitAction::Hadamard { .. } => 1,
-            CircuitAction::Monomial {
-                indices,
-                permutation,
-                phases,
-            } => indices.len() + permutation.len() + phases.len(),
-        }
+    crate::frontend::raw_state::circuit_size(step)
 }
 
 pub(super) fn gate(gate: SingleGate, target: usize) -> CircuitStep {

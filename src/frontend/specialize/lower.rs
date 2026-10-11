@@ -1888,6 +1888,16 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                 .map_or(root.path(), |(module, _)| module),
         )
     };
+    if source
+        .definitions()
+        .iter()
+        .flat_map(|definition| definition.steps())
+        .any(|step| step.instrument_contract().is_some())
+    {
+        return Ok(HierarchyEligibility::Ineligible(unsupported(
+            "observing function contracts require the finite Raw profile and fresh native source replay",
+        )));
+    }
     if root
         .inputs()
         .iter()

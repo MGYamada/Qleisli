@@ -478,7 +478,7 @@ provider correspondence or a source-preservation proof.
 This runtime-group rule does not widen an opaque `Op<A>`, static/host provider,
 Meaning refinement, certified logical operation or FunctionEquality contract.
 Opaque `Op<A>`, static/host provider and certified logical-operation interfaces
-keep one input `Q<A> -> Q<A>`. FunctionEquality keeps that interface for its
+keep one input `Q<A> -> Q<A>`. Pure FunctionEquality keeps that interface for its
 checked implementation and any ordinary specification function. A declared
 Meaning remains a semantic object, not a runtime function. `tensor_op` describes
 a packed quantum basis.
@@ -505,18 +505,20 @@ projected as a runtime function.
 
 The adopted observing overload compares two closed ordinary functions with
 principal Observe effects, one `Q<A>` argument and the same complete finite
-result type. Ordinary concrete compilation now obtains a private native
-instrument equation for the two original accepted artifacts. It executes only
-the implementation and freshly compares the actual emitted call interval with
+result type. Both concrete adapters obtain a private native instrument
+equation for the two original accepted artifacts. Each executes only the
+implementation and freshly compares the actual emitted call interval with
 the selected original reference. Complete result nesting, ordered quantum and
 classical projections, zero-width owners, hidden histories and residual states
 remain significant. The private pair and call receipts retain source identity
 and stay separate from a whole-root request. This does not admit observing
-`Meaning`, inverse or coherent control access. Explicit specialization of this
-overload is still unsupported; it rejects instead of erasing an obligation.
-Its integration and source replay remain unfinished work under #46.
+`Meaning`, inverse or coherent control access. Selected compilation uses the
+finite Raw profile: its separate source replay checks the original call and
+ordered result before checking that actual interval through a fresh native
+equation. Hierarchy lowering and checker-free emission reject this overload;
+unsupported result/lowering shapes reject explicitly.
 
-For pure selected compilation, `ElaboratedProgram::check_function_contracts(kernel,
+For selected compilation, `ElaboratedProgram::check_function_contracts(kernel,
 budget)` returns an immutable preparation containing checked receipts for every
 original FunctionEquality obligation, including unused callers and zero-count
 bodies. The receipts retain the exact implementation, specification and source
@@ -526,7 +528,7 @@ Unchecked Raw and hierarchy lowering reject outstanding function contracts.
 `lower_raw_with_kernel` performs the checks before emission, and the CLI checks
 them before selecting its concrete IR profile.
 
-Raw emission carries the receipt in its actual Contract step; independent
+Pure Raw emission carries the receipt in its actual Contract step; independent
 source replay checks its original pair, owner, direction and ordered axes.
 Hierarchy emission embeds the complete receipt-bearing wrapper bytes in a
 checked finite leaf, including its dependency evidence. Initialization replay

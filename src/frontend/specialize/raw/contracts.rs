@@ -34,6 +34,7 @@ pub(in crate::frontend::specialize) fn check(
     let mut source = source.clone();
     // Each public check is fresh, including its dependency receipts.
     source.contracts.clear();
+    source.instruments.clear();
     source.meaning_artifacts.clear();
     let requests = source
         .instantiation()
@@ -235,7 +236,7 @@ impl Collector<'_> {
     }
     fn pair(&mut self, key: Key, span: Span) -> Result<()> {
         self.charge(1, span)?;
-        if self.source.contracts.contains_key(&key) {
+        if self.source.contracts.contains_key(&key) || self.source.instruments.contains_key(&key) {
             return Ok(());
         }
         if self.active.len() >= MAX_DEPTH || !self.active.insert(key) {
@@ -249,11 +250,9 @@ impl Collector<'_> {
         let id = self.definition(implementation_id, span)?;
         let definition = &self.source.definitions()[id];
         if definition.effect() == "observe" {
-            return Err(Error::new(
-                "unsupported",
-                span,
-                "observing contract obligations are not supported in this specialization profile",
-            ));
+            self.instrument_pair(key, id, span)?;
+            self.active.remove(&key);
+            return Ok(());
         }
         let [input] = definition.inputs() else {
             return Err(invalid(span, "contract function is not unary"));
@@ -413,6 +412,64 @@ impl Collector<'_> {
         self.active.remove(&key);
         Ok(())
     }
+    fn instrument_pair(&mut self, key: Key, implementation: usize, span: Span) -> Result<()> {
+        let specification = self.definition(key.1, span)?;
+        let signature = |id: usize, budget: &mut Budget| {
+            let definition = &self.source.definitions()[id];
+            if definition.effect() != "observe" {
+                return Err(invalid(
+                    span,
+                    "instrument functions require principal Observe",
+                ));
+            }
+            let params = definition
+                .inputs()
+                .iter()
+                .map(|input| input.ty().clone())
+                .collect::<Vec<_>>();
+            crate::frontend::instrument::signature(
+                &params,
+                definition.output().ty(),
+                |n| Some(*n),
+                budget,
+            )
+            .map_err(|e| {
+                Error::new(
+                    if e.is_capacity() { "limit" } else { "contract" },
+                    span,
+                    e.to_string(),
+                )
+            })
+        };
+        let actual = signature(implementation, self.budget)?;
+        let expected = signature(specification, self.budget)?;
+        let reference = self.provider_accepted(specification, span)?;
+        let candidate = self.provider_accepted(implementation, span)?;
+        let checked = &self.source.instantiation().program.checked;
+        let identity = RetainedIdentity::shared(
+            checked.resolution.path(key.0),
+            checked.resolution.path(key.1),
+            self.sources.clone(),
+        );
+        let pair = crate::contract::instrument::InstrumentEvidence::check(
+            self.kernel,
+            actual,
+            expected,
+            &candidate,
+            &reference,
+            identity,
+            self.budget,
+        )
+        .map_err(|e| {
+            Error::new(
+                if e.is_capacity() { "limit" } else { "contract" },
+                span,
+                e.to_string(),
+            )
+        })?;
+        self.source.instruments.insert(key, Arc::new(pair));
+        Ok(())
+    }
     fn account(&mut self, bytes: usize, span: Span) -> Result<()> {
         self.bytes = self
             .bytes
@@ -428,6 +485,9 @@ impl Collector<'_> {
         self.charge(bytes, span)
     }
     fn provider(&mut self, subject: usize, span: Span) -> Result<RawProgram> {
+        Ok(self.provider_accepted(subject, span)?.raw().clone())
+    }
+    fn provider_accepted(&mut self, subject: usize, span: Span) -> Result<native::AcceptedProgram> {
         let selected = dependencies(self.source, subject, span)?;
         self.charge(selected.len(), span)?;
         let mut targets = BTreeSet::new();
@@ -478,7 +538,11 @@ impl Collector<'_> {
         let requests = selected
             .iter()
             .flat_map(|id| self.source.definitions()[*id].steps())
-            .filter_map(|step| step.contract().map(|key| (key, step.span())))
+            .filter_map(|step| {
+                step.contract()
+                    .or_else(|| step.instrument_contract())
+                    .map(|key| (key, step.span()))
+            })
             .collect::<Vec<_>>();
         for (key, at) in requests {
             self.pair(key, at)?;
@@ -504,7 +568,7 @@ impl Collector<'_> {
             .accept(proposal.proposal())
             .map_err(|e| Error::new(e.code, span, e.to_string()))?;
         self.charge(accepted.native_exact_work(), span)?;
-        Ok(accepted.raw().clone())
+        Ok(accepted.retain_instrument_calls(proposal.instrument_calls.iter().cloned().collect()))
     }
 }
 

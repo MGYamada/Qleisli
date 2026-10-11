@@ -191,9 +191,112 @@ struct Replay<'a, 'b> {
     wires: BTreeSet<WireId>,
     live: BTreeMap<TokenId, Arc<[WireId]>>,
     meanings: &'a [super::CheckedMeaning],
+    instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
 }
 
 impl Replay<'_, '_> {
+    fn instrument_call(
+        &mut self,
+        step: &SourceStep,
+        inputs: &[Argument<'_>],
+        outputs: &[Atom],
+        first: usize,
+        site: Site<'_>,
+    ) -> Result<()> {
+        let Some(key) = step.instrument_contract() else {
+            return Ok(());
+        };
+        let pair = self
+            .source
+            .instruments
+            .get(&key)
+            .ok_or_else(|| site.invalid("instrument call has no checked original pair"))?
+            .clone();
+        let child = step
+            .called_definition()
+            .and_then(|id| self.source.definitions().get(id))
+            .ok_or_else(|| site.invalid("instrument call loses its original implementation"))?;
+        if child.original != key.0 || step.effect() != "observe" {
+            return Err(site.invalid("instrument call changes its implementation or effect"));
+        }
+        let [argument] = inputs else {
+            return Err(site.invalid("instrument call requires one argument"));
+        };
+        let [Atom::Quantum(token, wires)] = argument.atoms.as_slice() else {
+            return Err(site.invalid("instrument call requires one quantum owner"));
+        };
+        let kernel = self.kernel.ok_or_else(|| {
+            site.error(
+                "unsupported",
+                "instrument source replay requires a fresh native equation",
+            )
+        })?;
+        self.charge(self.cursor - first + wires.len() + outputs.len(), site)?;
+        let signature = crate::frontend::instrument::signature(
+            std::slice::from_ref(argument.ty),
+            step.output().ty(),
+            |n| Some(*n),
+            self.control_work,
+        )
+        .map_err(|e| {
+            site.error(
+                if e.is_capacity() { "limit" } else { "contract" },
+                e.to_string(),
+            )
+        })?;
+        let mut quantum_outputs = Vec::new();
+        let mut classical_outputs = Vec::new();
+        for output in outputs {
+            match output {
+                Atom::Quantum(token, _) => quantum_outputs.push(*token),
+                Atom::Classical(id) => classical_outputs.push(*id),
+                Atom::Register(ids) => classical_outputs.extend(ids.iter().copied()),
+            }
+        }
+        // Only the interval already consumed by independent replay is checked.
+        // The reference is the separately retained original accepted artifact.
+        self.control_work
+            .charge(
+                crate::frontend::raw_state::operations_size(
+                    &self.raw.operations[first..self.cursor],
+                )
+                .saturating_add(wires.len())
+                .saturating_add(classical_outputs.len())
+                .saturating_add(quantum_outputs.len()),
+            )
+            .map_err(|e| site.error("limit", e.to_string()))?;
+        let call = RawProgram {
+            quantum_inputs: vec![crate::ir::QuantumPort {
+                token: *token,
+                wires: wires.to_vec(),
+                shape: crate::ir::BasisShape {
+                    bits: wires.len() as u8,
+                },
+            }],
+            classical_inputs: vec![],
+            operations: self.raw.operations[first..self.cursor].to_vec(),
+            quantum_outputs,
+            classical_outputs,
+            declared_effect: Effect::Observe,
+        };
+        let receipt = pair
+            .check_call(
+                kernel,
+                &signature,
+                &call,
+                (site.module.into(), site.span.start, site.span.end),
+                self.control_work,
+            )
+            .map_err(|e| {
+                site.error(
+                    if e.is_capacity() { "limit" } else { "contract" },
+                    e.to_string(),
+                )
+            })?;
+        self.instrument_calls.push(receipt);
+        Ok(())
+    }
+
     fn control_call(
         &mut self,
         step: &SourceStep,
@@ -1849,6 +1952,7 @@ impl Replay<'_, '_> {
                     "Raw replay does not support this source operation capability",
                 ));
             };
+            self.instrument_call(step, &inputs, &output, first_instruction, site)?;
             self.control_call(step, &inputs, &output, first_instruction, site)?;
             self.bind(step.output(), &output, &mut environment, site)?;
         }
@@ -1925,6 +2029,27 @@ pub(super) fn validate_subject_with_meanings(
     control_work: &mut crate::contract::exact::Budget,
     meanings: &[super::CheckedMeaning],
 ) -> Result<()> {
+    check_subject_with_meanings(
+        source,
+        subject,
+        operation,
+        raw,
+        kernel,
+        control_work,
+        meanings,
+    )
+    .map(|_| ())
+}
+
+pub(super) fn check_subject_with_meanings(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&SourceOperation>,
+    raw: &RawProgram,
+    kernel: Option<&crate::interchange::native::Kernel>,
+    control_work: &mut crate::contract::exact::Budget,
+    meanings: &[super::CheckedMeaning],
+) -> Result<Vec<crate::contract::instrument::InstrumentCall>> {
     let definition = source
         .definitions()
         .get(subject)
@@ -1978,6 +2103,7 @@ pub(super) fn validate_subject_with_meanings(
         wires: BTreeSet::new(),
         live: BTreeMap::new(),
         meanings,
+        instrument_calls: Vec::new(),
     };
     replay.charge(raw.classical_inputs.len(), site)?;
     for id in &raw.classical_inputs {
@@ -2068,11 +2194,84 @@ pub(super) fn validate_subject_with_meanings(
     if classical != raw.classical_outputs || quantum != raw.quantum_outputs {
         return Err(site.invalid("Raw outputs differ from the source's ordered result"));
     }
-    Ok(())
+    Ok(replay.instrument_calls)
 }
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls() {
+        let source = elaborate(
+            "use std::quantum::h; use std::observe::measure_z;
+            fn reference(q:Q<Bit>)->Bit{measure_z(q)}
+            fn implementation(q:Q<Bit>)->Bit{measure_z(h(h(q)))}
+            pub fn main(q:Q<Bit>)->Bit{apply_contract(implementation,reference,q)}",
+            "main::main",
+        );
+        let source = source
+            .check_function_contracts(
+                &kernel(),
+                &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+            )
+            .unwrap();
+        let proposal = source
+            .lower_raw_with_kernel(
+                &kernel(),
+                &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+            )
+            .unwrap();
+        let accepted = kernel().accept(proposal.proposal()).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
+        validate_subject_with_kernel(
+            &source,
+            source.root(),
+            None,
+            accepted.raw(),
+            Some(&kernel()),
+        )
+        .unwrap();
+        let mut wrong = accepted.raw().clone();
+        let RawOp::Gate { gate, .. } = &mut wrong.operations[0] else {
+            panic!("original H");
+        };
+        *gate = SingleGate::X;
+        let wrong = kernel().accept_raw(wrong).unwrap();
+        assert!(
+            validate_subject_with_kernel(
+                &source,
+                source.root(),
+                None,
+                wrong.raw(),
+                Some(&kernel())
+            )
+            .is_err()
+        );
+        // An equal instrument with a different original instruction sequence
+        // still cannot replace the retained implementation's source replay.
+        let raw = RawProgram {
+            quantum_inputs: accepted.raw().quantum_inputs.clone(),
+            classical_inputs: vec![],
+            operations: vec![RawOp::MeasureZ {
+                input: accepted.raw().quantum_inputs[0].token,
+                output: ClassicalId(0),
+            }],
+            quantum_outputs: vec![],
+            classical_outputs: vec![ClassicalId(0)],
+            declared_effect: Effect::Observe,
+        };
+        let replacement = kernel().accept_raw(raw).unwrap();
+        assert!(
+            validate_subject_with_kernel(
+                &source,
+                source.root(),
+                None,
+                replacement.raw(),
+                Some(&kernel())
+            )
+            .is_err()
+        );
+    }
+
     #[test]
     fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
         for body in ["h(phase[1,3](q))", "helper[then_op(twist,had)](q)"] {

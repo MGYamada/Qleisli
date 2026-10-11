@@ -466,3 +466,61 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
         "contract"
     );
 }
+
+#[test]
+fn fixed_fourier_reference_meanings_match_independent_exact_coefficients() {
+    // Fixed 2/3-qubit specifications only; no generic QFT implementation.
+    let prefix = "use std::quantum::{h,s,t,split,join,init0}; use std::observe::measure_z;
+        fn ident(q:Q<Bit>)->Q<Bit>{q}
+        fn quarter(q:Q<Bit>)->Q<Bit>{s(q)}
+        fn eighth(q:Q<Bit>)->Q<Bit>{t(q)}";
+    for (width, basis, body, init, readout) in [
+        (
+            2,
+            "(Bit,Bit)",
+            "let (a,b)=split(q);let b=h(b);let (a,b)=controlled(quarter)(a,b);let a=h(a);join(b,a)",
+            "join(init0(),init0())",
+            "let (a,b)=split(q);(measure_z(a),measure_z(b))",
+        ),
+        (
+            3,
+            "((Bit,Bit),Bit)",
+            "let (ab,c)=split(q);let (a,b)=split(ab);let c=h(c);let (b,c)=controlled(quarter)(b,c);let (a,c)=controlled(eighth)(a,c);let b=h(b);let (a,b)=controlled(quarter)(a,b);let a=h(a);join(join(c,b),a)",
+            "join(join(init0(),init0()),init0())",
+            "let (ab,c)=split(q);let (a,b)=split(ab);(measure_z(a),(measure_z(b),measure_z(c)))",
+        ),
+    ] {
+        let output = if width == 2 {
+            "(Bit,Bit)"
+        } else {
+            "(Bit,(Bit,Bit))"
+        };
+        let source = format!("{prefix}
+            fn fourier(q:Q<{basis}>)->Q<{basis}>{{{body}}}
+            meaning Fourier:{basis}=reference(fourier);
+            fn implementation(q:Q<{basis}>)->Q<{basis}>{{fourier(q)}}
+            pub fn main()->{output}{{let q=apply_contract(implementation,Fourier,{init});{readout}}}");
+        let actual = matrix(&source);
+        let dimension = 1usize << width;
+        let scale = if width == 2 {
+            Exact::new([1, 0, 0, 0], 1)
+        } else {
+            Exact::new([0, 1, 0, 0], 2)
+        }
+        .unwrap();
+        for y in 0..dimension {
+            for x in 0..dimension {
+                // Direct positive Fourier equation, independently of source
+                // decomposition, output reversal and native circuit evaluation.
+                let expected = scale
+                    .mul(Exact::phase((8 * x * y / dimension) as i32))
+                    .unwrap();
+                assert_eq!(
+                    actual.get(y, x),
+                    Some(expected),
+                    "F{dimension} row {y} column {x}"
+                );
+            }
+        }
+    }
+}

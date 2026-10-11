@@ -104,10 +104,17 @@ Ordinary concrete compilation executes only the implementation, rechecks its
 actual call interval through a fresh native request, and retains that call
 alongside the original pair. Whole-root request disclosure stays unchanged.
 The [focused Rust integration record](finite-source-validation.json) describes
-this bounded unit and its limitations. Explicit specialization and its source
-replay remain unimplemented; this does not complete both adapters or #46.
-Complete source type preservation remains an open proof obligation. Hosted
-completion CI, packaging and full release checks were not rerun. Source, decoder/native/runtime and realization
-correspondence remain separate obligations. Issue #46 stays open.
+that historical partial unit and its limitations. The selected Raw adapter now
+also checks both original artifacts, retains private pair/call sidecars and
+independently replays each emitted call before a fresh native instrument check.
+The [selected integration record](selected-source-validation.json) and
+[actual failed integration attempts](integration-observations.json) retain the
+local evidence. Its regressions cover nested equations, hidden histories, entangled references,
+Unit/zero-width owners, ordered Bits results, changed dependencies, unused and
+zero-count obligations, native-valid replacement and missing/exhausted checkers.
+Hierarchy lowering explicitly refuses these calls. Complete source type
+preservation, decoder/native/runtime and realization correspondence remain
+separate proof obligations. Local completion evidence and hosted CI are recorded
+in Issue #46; the earlier partial records are not rewritten as later success.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

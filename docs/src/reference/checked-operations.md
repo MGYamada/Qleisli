@@ -203,11 +203,51 @@ these refined operations; a readout entry outside its existing profile still
 rejects. No readout/instrument rule is broadened by Meaning composition.
 General arrows and rectangular Meanings are deferred beyond all of v0.3.0
 under [#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release
-target assigned. Instrument Meaning and general same-basis
-matrix-versus-composite hierarchy equality remain unfinished under
-[#46](https://github.com/MGYamada/Qleisli/issues/46). These bounded constructors
-do not complete that Issue or establish source-to-request preservation; its
-remaining work must not reintroduce deferred general-arrow support.
+target assigned. Observing contracts use the separately adopted
+[function instrument overload](type-model.md#direct-runtime-transforms-and-opaque-operations), rather
+than a pure Meaning constructor. General symbolic equality and arbitrary
+matrix-versus-composite hierarchy requests are outside this bounded profile;
+unsupported comparisons reject. These checks do not establish general
+source-to-request preservation.
+
+### Fixed Fourier specifications
+
+The following closed reference functions specify the positive Fourier matrices
+on two and three qubits in the existing exact carrier. They are fixed examples,
+not a generic QFT implementation or a new `Fourier` constructor.
+
+```qli
+use std::quantum::{h,s,t,split,join};
+
+fn quarter(q: Q<Bit>) -> Q<Bit> { s(q) }
+fn eighth(q: Q<Bit>) -> Q<Bit> { t(q) }
+fn fourier2(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b)=split(q);
+    let b=h(b);
+    let (a,b)=controlled(quarter)(a,b);
+    let a=h(a);
+    join(b,a)
+}
+fn fourier3(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    let (ab,c)=split(q);
+    let (a,b)=split(ab);
+    let c=h(c);
+    let (b,c)=controlled(quarter)(b,c);
+    let (a,c)=controlled(eighth)(a,c);
+    let b=h(b);
+    let (a,b)=controlled(quarter)(a,b);
+    let a=h(a);
+    join(join(c,b),a)
+}
+meaning F4: (Bit,Bit) = reference(fourier2);
+meaning F8: ((Bit,Bit),Bit) = reference(fourier3);
+```
+
+With low-order axes first, the independent equation is
+`F_N[y,x] = exp(2*pi*i*x*y/N) / sqrt(N)` for `N = 4, 8`.
+The fixed reference regressions check every coefficient on both concrete
+adapters, including the output reversal and exact phase. A consumer can use
+these targets in `apply_contract` or `Op<A,M>` under the same evidence rules.
 
 ## Migration and evidence identity
 
