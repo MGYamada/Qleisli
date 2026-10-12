@@ -5,7 +5,7 @@ use crate::contract::{
     BasisType,
     exact::{Budget, Exact, MAX_MATRIX_DIMENSION, Matrix},
 };
-use crate::interchange::{RootInterface, Version, finite_leaf, native};
+use crate::interchange::{RootInterface, Version, native, pure_leaf};
 use crate::ir::{
     BasisShape, BitControl, CircuitAction, CircuitStep, Effect, QuantumPort, RawOp, RawProgram,
     TokenId, WireId,
@@ -66,8 +66,7 @@ pub(super) fn check(
             || input.len() != output.len()
             || input.iter().copied().collect::<BTreeSet<_>>() != output.iter().copied().collect()
             || leaf
-                .boundary()
-                .signature()
+                .domain()
                 .bits()
                 .map_err(|e| site.invalid(e.to_string()))?
                 != interval.input.len()
@@ -158,9 +157,17 @@ pub(super) fn check(
         } else {
             leaf.meaning().clone()
         };
-        let mut signature = leaf.boundary().signature().clone();
+        let (mut signature, mut codomain) = if interval.adjoint {
+            (leaf.codomain().clone(), leaf.domain().clone())
+        } else {
+            (leaf.domain().clone(), leaf.codomain().clone())
+        };
+        if !interval.controls.is_empty() && signature != codomain {
+            return Err(site.invalid("controlled Meaning requires identical input/output types"));
+        }
         for _ in &interval.controls {
             signature = BasisType::Pair(Box::new(BasisType::Bit), Box::new(signature));
+            codomain = BasisType::Pair(Box::new(BasisType::Bit), Box::new(codomain));
         }
         let controls = interval.controls.len();
         let dim = 1usize << input.len();
@@ -208,22 +215,22 @@ pub(super) fn check(
         };
         let interface = RootInterface {
             input: signature.clone(),
-            output: signature.clone(),
+            output: codomain.clone(),
         };
         let proposal = native::Proposal::from_raw(&raw, Some(&interface), Version::V2, None)
             .map_err(|e| site.invalid(e.to_string()))?;
         budget
             .charge(proposal.artifact().len())
             .map_err(|e| site.error("limit", e.to_string()))?;
-        let boundary = finite_leaf::UnitaryBoundary::new(signature, port(0), port(1))
+        let boundary = pure_leaf::PureBoundary::new(signature, codomain, port(0), port(1))
             .map_err(|e| site.invalid(e.to_string()))?;
-        finite_leaf::check_with_kernel(kernel, proposal.artifact(), &boundary, &required, budget)
+        pure_leaf::check_with_kernel(kernel, proposal.artifact(), &boundary, &required, budget)
             .map_err(|e| {
-            site.error(
-                e.code,
-                format!("actual transformed Raw substeps violate original Meaning: {e}"),
-            )
-        })?;
+                site.error(
+                    e.code,
+                    format!("actual transformed Raw substeps violate original Meaning: {e}"),
+                )
+            })?;
     }
     Ok(())
 }

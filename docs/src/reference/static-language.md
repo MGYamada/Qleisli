@@ -1,6 +1,6 @@
 # Static values, constraints and bounded specialization
 
-This chapter specifies the implemented static fragment in 0.3.0-alpha, under
+This chapter specifies the implemented static fragment in 0.3.0-beta, under
 the [type boundary](type-model.md) and [authority hierarchy](authority.md).
 It records the existing rules tracked by
 [#28](https://github.com/MGYamada/Qleisli/issues/28),
@@ -263,17 +263,19 @@ paths, not proofs of mathematical unitarity or native acceptance. An opaque
 operation formal has exactly the paths declared in its `requires` premises;
 neither its `Op<A>` type nor a Meaning refinement adds a path.
 
-The current endomorphic constructor rules are:
+Write `U: A -> B` and `V: C -> D`, with each letter an exact basis tree.
+The general constructor rules below also apply to the `Op<A>` abbreviation
+where both ports are A:
 
-| Description | Basis | Derived paths `(Applicable, Adjointable, Controllable)` |
+| Description | Input → output and required equalities | Derived paths `(Applicable, Adjointable, Controllable)` |
 | --- | --- | --- |
-| `adjoint(U)` | U's exact basis | `(J_U, A_U, C_U)`; constructing it additionally requires `J_U`, even if unused |
-| `controlled(U)` | `(Bit, U's basis)` | `(C_U, C_U, C_U)` |
-| `power(U,n)` | U's exact basis | `(A_U, J_U, C_U)`, including `n = 0` |
-| `then_op(U,V)` | The same exact basis for U and V | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
-| `tensor_op(U,V)` | Ordered pair of U's and V's bases | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
-| `conjugate_op(U,V)` | The same exact basis for U and V | `(A_U ∧ J_U ∧ A_V, A_U ∧ J_U ∧ J_V, A_U ∧ J_U ∧ C_V)` |
-| `checked_op(U,M)` | U's exact basis, matching M | U's paths unchanged; retain the separate exact Meaning-equality obligation |
+| `adjoint(U)` | `B -> A` | `(J_U, A_U, C_U)`; constructing it additionally requires `J_U`, even if unused |
+| `controlled(U)` | `(Bit,A) -> (Bit,A)`, requiring `A = B` | `(C_U, C_U, C_U)` |
+| `power(U,n)` | `A -> A`, requiring `A = B` | `(A_U, J_U, C_U)`, including `n = 0` |
+| `then_op(U,V)` | `A -> D`, requiring `B = C` | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
+| `tensor_op(U,V)` | `(A,C) -> (B,D)` in that axis order | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
+| `conjugate_op(U,V)` | `B -> B`, requiring `C = D = A` | `(A_U ∧ J_U ∧ A_V, A_U ∧ J_U ∧ J_V, A_U ∧ J_U ∧ C_V)` |
+| `checked_op(U,M)` | `A -> B`, matching both M ports | U's paths unchanged; retain the separate exact Meaning-equality obligation |
 
 Every operand and count is checked before using these rules. There is no
 short circuit that erases a missing provider, invalid count, false Meaning or
@@ -291,12 +293,14 @@ path uses U's forward/adjoint paths around V's controlled path; it does not
 require a controlled U. Exact phase and the inactive-branch identity are
 retained, rather than inferred from channel equality.
 
-A transparent ordinary source provider must have the exact quantum interface,
-a principal Unitary body and all its instantiated premises checked. For a
-specialized source provider with operation actuals `U_i`, the conservative
+A transparent ordinary source provider must have the exact quantum interface
+and all its instantiated premises checked. General pure application permits
+a principal Isometry body. Reverse access additionally requires principal
+Unitary and usable inverse evidence; control additionally requires equal exact
+ports. For a specialized principal-Unitary source provider with operation actuals `U_i`, the conservative
 common rule is `(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))`. This includes
 unused operation actuals and makes no claim of maximal inference. With no such
-actuals it gives all three source paths. The provider's own declared premises
+actuals it gives forward/reverse paths, plus control for equal ports. The provider's own declared premises
 still apply before this rule; `true` cannot bypass a missing required path.
 
 Sealed gates use their existing exact interface and materializable circuit
@@ -310,8 +314,8 @@ and fresh native evidence; unsupported external providers reject.
 These rules do not enlarge a concrete projection's support. Finite and selected
 lowering retain their separate capacities and explicit unsupported results.
 An inferred path, a successful original-source judgment or a named Meaning is
-never an executable receipt. General arrows and additional Meaning forms in
-the [operations candidate](../design/operations.md) remain proposed.
+never an executable receipt. The admitted [general arrow rules](type-model.md#general-pure-operation-arrows)
+do not admit other forms in the [operations candidate](../design/operations.md).
 
 ### Application and repetition profiles
 

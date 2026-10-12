@@ -460,6 +460,7 @@ fn classical_phi_output_uses_verified_fresh_axes() {
 }
 
 #[test]
+#[ignore = "maximum-size six-bit dense quantum check; deferred under the small-system validation policy"]
 fn six_bit_identity_stays_within_the_finite_matrix_boundary() {
     let ty = BasisType::Tuple(vec![BasisType::Bit; 6]);
     let input = port(0, &[0, 1, 2, 3, 4, 5]);

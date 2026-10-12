@@ -6,6 +6,11 @@ Status: the design principles are fixed. Goal 1: a quantum language for the AI e
 
 This is the English development plan. Current targets and implementation boundaries do not adopt future syntax or imply completed proofs. The verification migration plan and fixture records distinguish bounded checks from pending guarantees; source validation, tagging and publication remain separate.
 
+The current development version is `0.3.0-beta`, selected on 2026-10-12.
+This unpublished version retains the unfinished feature and proof gates,
+including the public-effect boundary in [#355](https://github.com/MGYamada/Qleisli/issues/355).
+The alpha-only release approval does not authorize a beta publication.
+
 ## Selected v0.3.0-alpha: prerelease preparation and documentation cleanup
 
 Selected 2026-10-04: synchronize the product versions to `0.3.0-alpha` and
@@ -45,17 +50,18 @@ were subsequently admitted after proof review and explicit human approval; the
 [guarantee record](docs/src/design/initial-guarantees.md) states their exact
 scope and assumptions. The three broader obligations remain pending. The
 [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
-tracks 109 active Issues from the original 111 selected Issues, including the exactness interpretation in #311,
-ordinary-body effect inference in #315 and semantic stdlib namespaces in #317.
-#39 and #83 are outside the current goal. The historical release inventory
-retains all 111 entries and records approved deferrals separately.
-The maintainer has deferred general operation arrows beyond all of v0.3.0,
-including remaining differing-port project integration and rectangular Meaning.
-[#83](https://github.com/MGYamada/Qleisli/issues/83) stays open without a future
-release target; no completion credit is awarded. Already committed bounded
-support, ordinary function-return syntax and regression evidence remain.
-Endomorphic/reference and instrument Meaning work under #46 retains its
-remaining scope; it must not reintroduce deferred general-arrow requirements.
+fixes the user-approved beta scope at **127 Issues**, including the original
+111 and 16 additions. At the 2026-10-12 checkpoint, 81 were open and 46 closed;
+every acceptance criterion and evidence binding must be audited, including
+closed Issues. GitHub status is not completion evidence.
+The maintainer resumed #39 and [#83](https://github.com/MGYamada/Qleisli/issues/83)
+for beta, superseding their alpha exclusions. #83 comes first: separate
+operation/Meaning ports, ordinary project integration and independently checked
+rectangular pure equations. The remaining ordered work and exact candidate
+evidence live in #142; no separate backlog is maintained here.
+Historical alpha approval and the original 111-entry inventory remain historical
+records and cannot authorize beta readiness. Selecting beta supplies no
+completion credit for unfinished implementation, proof or validation criteria.
 The maintainer has excluded QFT implementation completion, generic QFT public
 integration and fixed/generic QFT equivalence from v0.3.0 and the current
 development goal. No future target is selected. #317 retains its namespace and
@@ -83,7 +89,7 @@ current finite contract remains in force. This target
 builds on the migrated checker and requires corresponding rule/proof updates
 before adoption.
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development version is `0.3.0-alpha`; selecting it and completing the
+Current development version is `0.3.0-beta`; selecting it and completing the
 documentation cleanup do not complete the type-system specification or its
 implementation/proof gates.
 

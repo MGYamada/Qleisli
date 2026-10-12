@@ -1,6 +1,6 @@
 # Source text and lexical boundary
 
-These rules govern the current `0.3.0-alpha` source scanner and parser in
+These rules govern the current `0.3.0-beta` source scanner and parser in
 constitutional edition 2026. Both finite project loading and sized explicit
 module loading use one scanner, token stream, parser and source `Module`/`Span`
 representation under the

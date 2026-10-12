@@ -20,12 +20,12 @@ contain the checked operation without changing their own rules.
 
 The common judgment can resolve an in-scope abstract operation formal and
 record its pending Meaning-equality obligation. Finite materialization retains
-the separate requirement for closed, principal-Unitary source declarations;
+the separate requirement for closed pure source declarations;
 it rejects an abstract formal as this constructor's provider. Attaching a
 Meaning in the common judgment does not create evidence that bypasses that
-downstream refusal. A general `Op<A -> B, M>` formal checks both ports against
-the declared basis of the existing endomorphic Meaning; a rectangular arrow
-cannot acquire Meaning evidence by dropping its output type. General pure
+downstream refusal. A general `Op<A -> B, M>` formal checks both exact ports against M's declared
+domain and codomain. An endomorphic Meaning still requires both ports to equal
+its single basis tree. General pure
 arrow typing and the current materialization limits are specified in the
 [type model](type-model.md#general-pure-operation-arrows).
 
@@ -99,7 +99,8 @@ independent evidence gates.
 
 ## Bounded exact Meaning composition
 
-A finite endomorphic Meaning declaration has one of these bodies:
+A finite Meaning declares `meaning M: A -> B = ...;`; `meaning M: A = ...;`
+abbreviates equal input and output trees. It has one of these bodies:
 
 ```text
 MeaningBody ::= permutation_by ( Identifier )
@@ -116,7 +117,9 @@ function as described below. Forward references are allowed, while dependency
 cycles reject. Every declared Meaning is checked, including unused declarations.
 A runtime value or classical function name is not a Meaning operand.
 
-If `First` and `Second` both have the exact basis tree `A`,
+For `First: A -> B` and `Second: B -> C`, composition has type `A -> C`
+and requires the exact intermediate tree B. In the endomorphic monomial case,
+if `First` and `Second` both have the exact basis tree `A`,
 `meaning M: A = compose(First, Second);` applies First and then Second.
 Writing their actions as
 `First|x> = zeta_8^a[x] |p[x]>` and
@@ -124,7 +127,8 @@ Writing their actions as
 with phase `(a[x] + b[p[x]]) mod 8`. Composition requires identical trees;
 equal physical dimension does not admit an implicit conversion.
 
-If `Left` has basis `A` and `Right` has basis `B`,
+For `Left: A -> B` and `Right: C -> D`, tensor has type `(A,C) -> (B,D)`.
+In the endomorphic monomial case, if `Left` has basis `A` and `Right` has basis `B`,
 `meaning T: (A, B) = tensor(Left, Right);` requires that exact ordered pair.
 The first field occupies the low-order axes. For dimensions `dA` and `dB`,
 column `x + dA*y` goes to `p[x] + dA*q[y]` with phase
@@ -154,8 +158,10 @@ request, with original source/dependency and provider identities retained.
 
 `meaning H: Bit = reference(reference_h);` names one closed ordinary function
 whose principal effect is Unitary and whose exact interface is
-`Q<Bit> -> Q<Bit>`. The general rule uses the same exact basis `A` on both
-sides. The argument is a single resolved function identifier; static arguments,
+`Q<Bit> -> Q<Bit>`. A rectangular declaration
+`meaning M: A -> B = reference(f);` instead requires `f: Q<A> -> Q<B>`
+with independently inferred effect at most Isometry. The equal-tree shorthand
+retains its Unitary provider requirement. The argument is a single resolved function identifier; static arguments,
 constructed operations, classical/static functions and other Meaning names
 are not accepted. Visibility and all-declaration dependency-cycle checks apply,
 including cycles through `apply_contract` and `checked_op`. A declared effect
@@ -171,8 +177,10 @@ meaning HH: Bit = compose(H, H);
 
 The reference contributes its independently checked original Raw artifact and
 dependencies. A fresh native exact equation compares the implementation with
-that request. In both concrete adapters, emitted contract receipts retain both
-artifacts, their dependencies and the original source snapshot. A matching
+that request. For endomorphic functions, emitted contract receipts retain both artifacts,
+their dependencies and the original source snapshot. Rectangular provider and
+reference bodies receive separate exact native equations, and actual Raw call
+intervals are rechecked against the requested matrix. A matching
 matrix, function name or source annotation cannot substitute another receipt.
 Unused targets, unused generic equality obligations and zero-repeat child
 requests are checked before emission. This remains bounded implementation and
@@ -201,9 +209,14 @@ The finite source route supports its existing closed observing entry. The
 selected hierarchy route supports its existing pure input/output entry for
 these refined operations; a readout entry outside its existing profile still
 rejects. No readout/instrument rule is broadened by Meaning composition.
-General arrows and rectangular Meanings are deferred beyond all of v0.3.0
-under [#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release
-target assigned. Observing contracts use the separately adopted
+General arrows and rectangular Meanings are resumed for 0.3.0-beta under
+[#83](https://github.com/MGYamada/Qleisli/issues/83). The ordinary project and
+selected Raw adapters validate original pure bodies and their dependencies
+against exact two-port `pure-leaf` requests. Native checking reconstructs the
+actual matrix, checks `V†V = I`, and retains exact phase and ordered ports.
+Raw alpha-renaming and composition produce untrusted candidates that need
+fresh checking. The existing hierarchy finite-leaf profile remains square.
+Observing contracts use the separately adopted
 [function instrument overload](type-model.md#direct-runtime-transforms-and-opaque-operations), rather
 than a pure Meaning constructor. General symbolic equality and arbitrary
 matrix-versus-composite hierarchy requests are outside this bounded profile;

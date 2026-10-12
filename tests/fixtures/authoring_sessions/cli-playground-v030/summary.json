@@ -1,0 +1,337 @@
+{
+  "scope": "Small analytical/numerical playground observations; no general proof or source preservation claim",
+  "observations": [
+    {
+      "name": "bell",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.46
+    },
+    {
+      "name": "bell",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.417,
+      "distribution": {
+        "00": 0.5000000000000001,
+        "11": 0.5000000000000001
+      },
+      "expected": {
+        "00": 0.5,
+        "11": 0.5
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "bell",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.442,
+      "shots": 128,
+      "counts": {
+        "00": 60,
+        "11": 68
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "independent",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.482
+    },
+    {
+      "name": "independent",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.404,
+      "distribution": {
+        "00": 0.2500000000000001,
+        "01": 0.2500000000000001,
+        "10": 0.2500000000000001,
+        "11": 0.2500000000000001
+      },
+      "expected": {
+        "00": 0.25,
+        "01": 0.25,
+        "10": 0.25,
+        "11": 0.25
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "independent",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.443,
+      "shots": 128,
+      "counts": {
+        "00": 27,
+        "01": 33,
+        "10": 30,
+        "11": 38
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "ghz",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.438
+    },
+    {
+      "name": "ghz",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.444,
+      "distribution": {
+        "000": 0.5000000000000001,
+        "111": 0.5000000000000001
+      },
+      "expected": {
+        "000": 0.5,
+        "111": 0.5
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "ghz",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.432,
+      "shots": 32,
+      "counts": {
+        "000": 16,
+        "111": 16
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "phase-plus",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.423
+    },
+    {
+      "name": "phase-plus",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.428,
+      "distribution": {
+        "0": 1
+      },
+      "expected": {
+        "0": 1.0
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "phase-minus",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.41
+    },
+    {
+      "name": "phase-minus",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.5,
+      "distribution": {
+        "1": 1
+      },
+      "expected": {
+        "1": 1.0
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "teleport",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.443
+    },
+    {
+      "name": "teleport",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.45,
+      "distribution": {
+        "001": 0.2500000000000001,
+        "011": 0.2500000000000001,
+        "101": 0.2500000000000001,
+        "111": 0.2500000000000001
+      },
+      "expected": {
+        "001": 0.25,
+        "011": 0.25,
+        "101": 0.25,
+        "111": 0.25
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "teleport",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.427,
+      "shots": 32,
+      "counts": {
+        "001": 8,
+        "011": 8,
+        "101": 7,
+        "111": 9
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "teleport-no-z",
+      "command": "check",
+      "exit_code": 0,
+      "seconds": 0.455
+    },
+    {
+      "name": "teleport-no-z",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.433,
+      "distribution": {
+        "001": 0.2500000000000001,
+        "011": 0.2500000000000001,
+        "100": 0.2500000000000001,
+        "110": 0.2500000000000001
+      },
+      "expected": {
+        "001": 0.25,
+        "011": 0.25,
+        "100": 0.25,
+        "110": 0.25
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "double-measure",
+      "command": "check",
+      "exit_code": 1,
+      "seconds": 0.006,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 292,
+            "end": 293,
+            "line": 10,
+            "column": 30
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "name": "implicit-discard",
+      "command": "check",
+      "exit_code": 1,
+      "seconds": 0.004,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "local quantum ownership `unused` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.",
+          "primary": {
+            "path": "main.qli",
+            "start": 240,
+            "end": 246,
+            "line": 9,
+            "column": 9
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "name": "grover",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.509,
+      "distribution": {
+        "11": 1
+      },
+      "expected": {
+        "11": 1.0
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "grover",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.498,
+      "shots": 16,
+      "counts": {
+        "11": 16
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "bernstein_vazirani",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.456,
+      "distribution": {
+        "10": 1
+      },
+      "expected": {
+        "10": 1.0
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "bernstein_vazirani",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.485,
+      "shots": 16,
+      "counts": {
+        "10": 16
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    },
+    {
+      "name": "feedback",
+      "command": "run",
+      "exit_code": 0,
+      "seconds": 0.442,
+      "distribution": {
+        "00": 0.5000000000000001,
+        "10": 0.5000000000000001
+      },
+      "expected": {
+        "00": 0.5,
+        "10": 0.5
+      },
+      "matches_analytic_expectation": true
+    },
+    {
+      "name": "feedback",
+      "command": "sample",
+      "exit_code": 0,
+      "seconds": 0.438,
+      "shots": 16,
+      "counts": {
+        "00": 8,
+        "10": 8
+      },
+      "seed": "42",
+      "observed_support_matches": true
+    }
+  ],
+  "executables_unchanged": true
+}

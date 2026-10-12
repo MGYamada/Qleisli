@@ -6,6 +6,7 @@ pub mod finite_matrix;
 pub mod hierarchical;
 pub(crate) mod json;
 pub mod native;
+pub mod pure_leaf;
 
 use codec::Codec;
 use json::Value;
@@ -689,7 +690,7 @@ fn type_bits(ty: &BasisType) -> Result<usize> {
 
 fn check_interface(program: &AcceptedProgram, interface: &RootInterface) -> Result<()> {
     let raw = program.raw();
-    if raw.declared_effect != Effect::Unitary
+    if raw.declared_effect > Effect::Isometry
         || raw.quantum_inputs.len() != 1
         || raw.quantum_outputs.len() != 1
         || !raw.classical_inputs.is_empty()
@@ -697,14 +698,19 @@ fn check_interface(program: &AcceptedProgram, interface: &RootInterface) -> Resu
     {
         return Err(Error::new(
             "invalid_ir",
-            "root interface requires a unary unitary with no classical ports",
+            "root interface requires a unary pure function with no classical ports",
         ));
     }
-    let width = usize::from(raw.quantum_inputs[0].shape.bits);
-    // The finite verifier established conservation of dimension and complete
-    // ownership. With one input and one output, the output has this same width;
-    // its ordered wires remain those bound in the complete raw program.
-    if type_bits(&interface.input)? != width || type_bits(&interface.output)? != width {
+    let [output] = program.output_ports() else {
+        return Err(Error::new(
+            "invalid_ir",
+            "root interface requires exactly one live output owner",
+        ));
+    };
+    if type_bits(&interface.input)? != usize::from(raw.quantum_inputs[0].shape.bits)
+        || type_bits(&interface.output)? != usize::from(output.shape.bits)
+        || raw.quantum_outputs != [output.token]
+    {
         return Err(Error::new(
             "invalid_ir",
             "root type width does not match its verified port",

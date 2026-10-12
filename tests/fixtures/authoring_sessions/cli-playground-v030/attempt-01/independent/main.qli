@@ -1,0 +1,12 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+observe fn main() -> (Bit, Bit) {
+    let a = h(init0());
+    let b = h(init0());
+    (measure_z(a), measure_z(b))
+}

@@ -425,7 +425,7 @@ pub(super) fn instantiate(
                     else {
                         unreachable!("quantum provider checked above")
                     };
-                    if **basis != target.basis
+                    if **basis != target.codomain
                         || provider_closed.parameters[0].quantum_basis() != Some(&target.basis)
                     {
                         return Err(Error::new(

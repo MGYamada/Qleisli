@@ -10,7 +10,7 @@ contracts. Its Rust frontend produces IR checked independently by a native
 Lean verifier. Human-written and AI-generated programs use the same checks.
 Qleisli is pronounced exactly like Kleisli.
 
-**Development version: 0.3.0-alpha** (unpublished prerelease).
+**Development version: 0.3.0-beta** (unpublished prerelease).
 
 ## Edition
 

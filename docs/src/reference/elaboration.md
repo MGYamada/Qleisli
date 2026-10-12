@@ -1,6 +1,6 @@
 # Surface-to-core elaboration
 
-This chapter specifies permitted convenience elaborations in `0.3.0-alpha`,
+This chapter specifies permitted convenience elaborations in `0.3.0-beta`,
 edition 2026, under the [authority hierarchy](authority.md). It consolidates
 adopted source contracts tracked by
 [#34](https://github.com/MGYamada/Qleisli/issues/34). It introduces no syntax,

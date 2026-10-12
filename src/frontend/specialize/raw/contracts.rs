@@ -15,6 +15,7 @@ pub(in crate::frontend::specialize) struct CheckedContract {
 
 #[derive(Debug)]
 pub(in crate::frontend::specialize) struct CheckedTarget {
+    pub matrix: crate::contract::exact::Matrix,
     pub raw: RawProgram,
     pub sources: Arc<Vec<(String, String)>>,
 }
@@ -189,21 +190,17 @@ impl Collector<'_> {
             })?;
         // Validate even an unused reference target. This fresh decision checks
         // its exact original artifact/dependencies; no matrix assertion is cached.
-        let receipt = FunctionEvidence::check_retained_with_kernel(
+        let receipt = crate::frontend::pure::check(
             self.kernel,
-            target.signature().clone(),
-            raw.clone(),
-            raw.clone(),
-            identity(),
+            &raw,
+            target.signature(),
+            target.codomain(),
+            None,
             self.budget,
         )
         .map_err(|e| {
             Error::new(
-                if e.error.is_capacity() {
-                    "limit"
-                } else {
-                    "meaning"
-                },
+                if e.is_capacity() { "limit" } else { "meaning" },
                 span,
                 e.to_string(),
             )
@@ -211,10 +208,10 @@ impl Collector<'_> {
         let proposal = native::Proposal::from_raw(&raw, None, Version::V2, None)
             .map_err(|e| invalid(span, &e.to_string()))?;
         self.account(proposal.artifact().len(), span)?;
-        debug_assert_eq!(receipt.signature(), target.signature());
         self.source.meaning_artifacts.insert(
             id,
             Arc::new(CheckedTarget {
+                matrix: receipt.meaning().clone(),
                 raw,
                 sources: self.sources.clone(),
             }),

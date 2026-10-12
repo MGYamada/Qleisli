@@ -1,7 +1,7 @@
 # Coherent basis maps
 
 This chapter specifies the coherent basis-map expression adopted for
-`0.3.0-alpha` in constitutional edition 2026 through
+`0.3.0-beta` in constitutional edition 2026 through
 [Issue #81](https://github.com/MGYamada/Qleisli/issues/81). It is subordinate to
 the [authority hierarchy](authority.md) and uses the existing
 [ordinary types and quantum-owner rules](type-model.md). The syntax changes;

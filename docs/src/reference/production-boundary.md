@@ -20,8 +20,8 @@ Version **0.2.9 was published and verified**. Its immutable record is
 `tests/fixtures/releases/v0.2.9/publication.json`, binding source commit
 `a77e68f4d3942cd75cb4c4710350aab9a99f8c8b`, the full CI run, registry and
 GitHub distribution checks, native bundles and fresh installation evidence.
-The selected development version **0.3.0-alpha is unpublished**. The historical
-release record does not certify the changed alpha tree or its future packages.
+The selected development version **0.3.0-beta is unpublished**. The historical
+release record does not certify the changed beta tree or its future packages.
 The earlier VM29 first-slice, comparison and cutover records remain historical
 evidence with their original scopes and results.
 
@@ -46,6 +46,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Source/project/qrate checks and compilation; raw IR; function/meaning evidence; QIRF import, export, conversion and `verify-ir`; foreign/Python imports | Original QLV1 packet containing QIRF and an optional finite request. Source, evidence and foreign adapters produce these bytes. | `native::Kernel` → `--qirf-native` → `Cli.runValidity` → `Protocol.Validity.check` → `Qirf.Validity.inspect` | `Qleisli.NativeValidity.check_sound` binds success to `VerifiedMeaning`; `check_scopeSafe` covers classical scope. Full ordinary EffectSound/CPTP, source/foreign translation, emitted-output and runtime preservation remain separate. |
 | `CheckedContract::check`, its checked compositions, and `check_computed` | QIRF root and `qleisli.native-contract` encoded equation | `Kernel::check_encoded` → `--qirf-contract` → `Protocol.NativeContract.check` → `Qirf.checkContract` | `Protocol.NativeContract.check_acceptance` binds the original bytes, decoded request and actual checking states. `Qleisli.NativeContract.check_encoded_sound` / `encoded_meaning` connect success to original-root `BodyMeaning`, the exact Basis interface and requested encoded equation. `Wrapper.circuitMatrix_entries` proves the actual wrapper's coefficient equality with the original matrix; `encoded_reference` extends the equation to any reference amplitude function. Source/compiler, compiled I/O, runtime/export, clean-release and quantitative resource claims remain separate; these theorems are not ledger admissions. |
 | `finite_leaf::{check_unitary,check_serialized_unitary}` | QIRF root, signature, ordered input/output ports and exact matrix request | `Kernel::check_leaf` → `--qirf-contract` → `Protocol.NativeContract.check` → `Validity.checkRoot` and `Qirf.check` | `Qleisli.NativeContract.check_sound` / `leaf_meaning` compose native byte acceptance to original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix, signature and ordered ports. The output port is tied to an actual verification. `leaf_reference_laws` extends both whole-space inverse laws to every finite reference. Source/runtime and broader effect/clean-release claims remain separate. |
+| `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `Protocol.NativeContract.check` → `Qirf.PureLeaf.check` | `pure_leaf_meaning` binds fresh graph/root checking to the original body and exact Gram identity. `pure_leaf_reference` preserves inner products for arbitrary joint reference amplitudes. This grants neither inverse nor control access, source/runtime correspondence, target realization or quantitative resource evidence. |
 | `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition remains open. |
 | `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
 | The same methods' Fourier branch | Hierarchy payload and Fourier request, including Hadamard obligations | `--hierarchy-fourier-pending` → `FourierRoot.checkAll`, `checkLeaves` and `checkHadamards` | `NativeHierarchy.hadamard_semantics` and `checkHadamards_semantics` establish finite obligations; complete analytic/source/runtime composition remains open. |
@@ -76,6 +77,46 @@ the original root's `BodyMeaning`, complete Basis interface and checked encoded
 equation through `EncodedMeaning`, `encoded_meaning` and `check_encoded_sound`.
 Those bounded original-root results do not establish source, deployed-binary
 or host execution correspondence.
+
+### Rectangular pure-leaf requests
+
+The version-paired native gate accepts `qleisli.native-contract` version 1
+with `kind: "pure-leaf"`. Its complete fields are `format`, `version`, `kind`,
+`domain`, `codomain`, `input`, `output`, and `matrix`. Both types use exact QIRF
+basis trees; the ports retain token, ordered wires and bit shape. Unknown fields,
+unknown versions and producer acceptance flags reject. The existing square
+`kind: "leaf"` protocol and its two-sided unitary conditions remain available.
+
+The original QIRF root interface now describes a unary pure function with
+independent input and output types. Its structural check requires a Unitary or
+Isometry effect, no classical ports, one input and one actual live output owner,
+and the corresponding input/output widths. The literal original-body reader
+finds the output owner; the input width does not stand for the output width.
+Ordinary validity alone still does not establish an external matrix equation.
+
+`PureLeaf.check` freshly checks the original dependency graph and body, binds
+both exact type trees and both ordered ports, reconstructs every input column,
+and checks exact equality to the requested matrix and `V†V = I`. Reconstruction
+retains the original effect checks, complete classical branches and hidden
+observation histories. Measurement, reset and discard cannot be relabeled pure
+or erased from the equation. Zero-width owners, exact phase and axis order remain
+part of the obligation. Both endpoint dimensions retain the existing six-bit
+dense bound and shared exact-work accounting; no unbounded matrix API is added.
+
+`CheckedPureLeaf` is a private-construction receipt over immutable original
+artifact/request bytes. Rust boundary construction and matrix serialization
+validate untrusted data shape only. Fresh native acceptance is required for
+every receipt, including one using previously checked dependency data.
+
+The ordinary frontend retains `SourcePureEquation` sidecars on its accepted
+entry: independently checked implementation and reference leaves, their exact
+matching domain/codomain and matrix, resolved names and original source text.
+Constructor lowering rechecks actual renamed Raw fragments against the derived
+matrix. Selected Raw lowering retains its original Meaning requests and checks
+actual instruction intervals. The hierarchy's refined finite-leaf path remains
+square and refuses rectangular Meaning obligations. Source snapshots provide
+provenance; neither sidecar is a general source-preservation proof, an arbitrary
+whole-entry functional specification, or a new constitutional guarantee.
 
 ### Original-artifact control-sector requests
 

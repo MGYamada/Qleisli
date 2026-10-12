@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "4ab8cdd6a03a8f865c98ef2880e7a7f90e3974a3795483468c3c8c6083c5d9ef",
+  "surface_sha256": "47307aa34e4102892dec7831c224d6a748b46ac8f9bf24397e6ab325765411f3",
   "groups": [
     {
       "id": "raw-core",
@@ -147,7 +147,9 @@
       "evidence": [
         "tests/finite_leaf.rs",
         "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
-        "lean-kernel/Tests.lean"
+        "lean-kernel/Tests.lean",
+        "tests/pure_leaf.rs",
+        "tests/rectangular_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -177,7 +179,9 @@
         "tests/rust_boundary_diagnostics.rs",
         "tests/selected_source_cli.rs",
         "tests/fixtures/authoring_sessions/closure-capture-v030/README.md",
-        "tests/reference_meanings.rs"
+        "tests/reference_meanings.rs",
+        "tests/pure_leaf.rs",
+        "tests/rectangular_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -781,7 +785,9 @@
         "tests/sized_source.rs",
         "tests/ordinary_booleans.rs",
         "tests/basis_polymorphism.rs",
-        "tests/reference_meanings.rs"
+        "tests/reference_meanings.rs",
+        "tests/pure_leaf.rs",
+        "tests/rectangular_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1081,12 +1087,18 @@
       "entry_points": [
         "UnitaryBoundary::new",
         "finite_matrix::{encode,decode}",
-        "finite_leaf::{check_unitary,check_serialized_unitary}"
+        "finite_leaf::{check_unitary,check_serialized_unitary}",
+        "PureBoundary::new",
+        "pure_leaf::check_pure",
+        "AcceptedProgram::source_pure_equations"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
-        "tests/finite_leaf.rs"
+        "tests/finite_leaf.rs",
+        "tests/pure_leaf.rs",
+        "tests/rectangular_meanings.rs",
+        "lean/Qleisli/NativePureLeaf.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1758,7 +1770,7 @@
       "source_commit": "a77e68f4d3942cd75cb4c4710350aab9a99f8c8b"
     },
     "current_development": {
-      "version": "0.3.0-alpha",
+      "version": "0.3.0-beta",
       "status": "unpublished",
       "validation": "separate current-tree checks; no inherited release certification"
     },
@@ -1826,6 +1838,12 @@
           "path": "src/interchange/finite_leaf.rs",
           "markers": [
             "pub struct UnitaryBoundary"
+          ]
+        },
+        {
+          "path": "src/interchange/pure_leaf.rs",
+          "markers": [
+            "pub struct PureBoundary"
           ]
         },
         {
@@ -2071,8 +2089,57 @@
           "markers": [
             "fn check_encoded(",
             "fn check_leaf(",
+            "fn check_pure_leaf(",
             "fn check_instrument(",
             "\"--qirf-contract\""
+          ]
+        },
+        {
+          "path": "src/interchange/pure_leaf.rs",
+          "markers": [
+            "pub struct CheckedPureLeaf",
+            "pub fn check_pure(",
+            "pub struct SourcePureEquation",
+            "kernel.check_pure_leaf(payload, boundary, meaning)?"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/operations/pure.rs",
+          "markers": [
+            "fn pure_provider(",
+            "SourcePureEquation::bind(",
+            "crate::frontend::pure::check("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/operations.rs",
+          "markers": [
+            "fn apply_operation(",
+            "self.raw.operations[start..].to_vec()",
+            "crate::frontend::pure::check("
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "markers": [
+            "fn meaning_interval(",
+            "pure_leaf::check_with_kernel("
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/PureLeaf.lean",
+          "markers": [
+            "def check ",
+            "Raw.BranchFunction.reconstruct",
+            "Exact.Matrix.isometryWork actual",
+            "theorem check_postcondition"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativePureLeaf.lean",
+          "markers": [
+            "theorem pure_leaf_meaning",
+            "theorem pure_leaf_reference"
           ]
         },
         {
@@ -2251,6 +2318,26 @@
           "test": "reconstruct_hadamard_in_both_formats_and_bind_complete_bytes"
         },
         {
+          "path": "tests/pure_leaf.rs",
+          "test": "original_preparation_and_complete_receipt_binding"
+        },
+        {
+          "path": "tests/pure_leaf.rs",
+          "test": "observation_cannot_be_hidden_behind_pure_effects_or_unreturned_results"
+        },
+        {
+          "path": "tests/pure_leaf.rs",
+          "test": "fresh_dependency_body_check_rejects_substitution_and_stale_evidence"
+        },
+        {
+          "path": "tests/rectangular_meanings.rs",
+          "test": "rectangular_composition_preserves_an_entangled_caller"
+        },
+        {
+          "path": "tests/rectangular_meanings.rs",
+          "test": "ordinary_project_equal_width_distinct_trees_and_inverse"
+        },
+        {
           "path": "scripts/test_native_verification.py",
           "test": "test_control_requests"
         },
@@ -2302,7 +2389,7 @@
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
       "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity",
       "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check; instrument -> Protocol.InstrumentContract.check -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
-      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
+      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {

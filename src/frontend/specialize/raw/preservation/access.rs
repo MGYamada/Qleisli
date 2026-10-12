@@ -259,13 +259,23 @@ impl Trace<'_, '_, '_> {
                 .quantum_basis()
                 .and_then(super::super::finite_basis)
                 .ok_or_else(|| self.site.invalid("Meaning access loses its exact basis"))?;
-            if ports.input != ports.output || effect != crate::ir::Effect::Unitary {
+            let codomain = ports
+                .output
+                .quantum_basis()
+                .and_then(super::super::finite_basis)
+                .ok_or_else(|| {
+                    self.site
+                        .invalid("Meaning access loses its exact output basis")
+                })?;
+            if effect != crate::ir::Effect::Unitary {
                 return Err(self
                     .site
                     .invalid("Meaning access changes its exact interface or effect"));
             }
             for leaf in leaves {
-                if &basis != self.meanings[leaf].1.boundary().signature() {
+                if &basis != self.meanings[leaf].1.domain()
+                    || &codomain != self.meanings[leaf].1.codomain()
+                {
                     return Err(self
                         .site
                         .invalid("Meaning access substitutes the original type tree"));
