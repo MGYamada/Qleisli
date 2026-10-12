@@ -143,17 +143,9 @@ structure Retained where
   order : Array Nat
   request : RequestRetained
 
-def checkRetained (bytes : ByteArray) : WorkM Retained := do
-  let (body,request) ← adapt (Validity.packet bytes)
-  let some request := request | throw .request
-  let some text := String.fromUTF8? request | throw .invalid
-  let value ← adapt (FiniteCodec.parseWithDepth text 128)
-  let kind ← adapt ((← adapt (value.getObjVal? "kind")).getStr?)
-  let format ← adapt ((← adapt (value.getObjVal? "format")).getStr?)
-  let version ← adapt ((← adapt (value.getObjVal? "version")).getNat?)
-  guard (format == "qleisli.native-contract" && version == 1) .request
-  let (artifact,order) ← Qirf.read body
-  let result : RequestRetained ← if kind == "encoded" then do
+private def checkRequestRetained (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) (kind : String) : WorkM RequestRetained :=
+  if kind == "encoded" then do
     adapt (fields value ["format","version","kind","contract"])
     let required ← FiniteCodec.readContract (← adapt (value.getObjVal? "contract"))
     pure (.encoded required (← QleisliKernel.Qirf.checkContractRetained artifact order required))
@@ -175,6 +167,18 @@ def checkRetained (bytes : ByteArray) : WorkM Retained := do
   else if kind == "pure-leaf" then do
     pure (.pureLeaf (← checkPureLeafRetained artifact order value))
   else throw .request
+
+def checkRetained (bytes : ByteArray) : WorkM Retained := do
+  let (body,request) ← adapt (Validity.packet bytes)
+  let some request := request | throw .request
+  let some text := String.fromUTF8? request | throw .invalid
+  let value ← adapt (FiniteCodec.parseWithDepth text 128)
+  let kind ← adapt ((← adapt (value.getObjVal? "kind")).getStr?)
+  let format ← adapt ((← adapt (value.getObjVal? "format")).getStr?)
+  let version ← adapt ((← adapt (value.getObjVal? "version")).getNat?)
+  guard (format == "qleisli.native-contract" && version == 1) .request
+  let (artifact,order) ← Qirf.read body
+  let result ← checkRequestRetained artifact order value kind
   return ⟨body,request,text,value,artifact,order,result⟩
 
 
@@ -225,7 +229,7 @@ theorem check_projection (bytes : ByteArray) : check bytes = (do
     pure ()
   else throw .request
   return true) := by
-  unfold check checkRetained
+  unfold check checkRetained checkRequestRetained
   simp only [bind_assoc]
   apply congrArg (fun next => adapt (Validity.packet bytes) >>= next)
   funext input
@@ -437,6 +441,57 @@ private theorem adapt_bind_success {α β : Type} (input : Except String α)
   obtain ⟨value,middle,first,rest⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨bound,same⟩ := adapt_success _ _ _ _ first
   exact ⟨value,bound,same ▸ rest⟩
+
+/-- Every field of the returned record comes from the original packet and this
+checker execution. The request stage is the existing six-kind dispatch; its
+result is the very value retained, rather than an unrelated existential witness.
+This binding is not an execution-view comparison or a semantic specification. -/
+structure RetainedBinding (bytes : ByteArray) (checked : Retained) (work left : Nat) where
+  kind : String
+  afterArtifact : Nat
+  packetBound : Validity.packet bytes = .ok (checked.body,some checked.requestBytes)
+  utf8Bound : String.fromUTF8? checked.requestBytes = some checked.text
+  requestBound : FiniteCodec.parseWithDepth checked.text 128 = .ok checked.value
+  kindBound : (checked.value.getObjVal? "kind" >>= Json.getStr?) = .ok kind
+  formatBound : (checked.value.getObjVal? "format" >>= Json.getStr?) = .ok "qleisli.native-contract"
+  versionBound : (checked.value.getObjVal? "version" >>= Json.getNat?) = .ok 1
+  artifactBound : (Qirf.read checked.body).run work =
+    (.ok (checked.artifact,checked.order),afterArtifact)
+  requestAccepted : (checkRequestRetained checked.artifact checked.order checked.value kind).run
+    afterArtifact = (.ok checked.request,left)
+
+theorem checkRetained_bound (bytes : ByteArray) (checked : Retained) (work left : Nat)
+    (ok : (checkRetained bytes).run work = (.ok checked,left)) :
+    Nonempty (RetainedBinding bytes checked work left) := by
+  unfold checkRetained at ok
+  obtain ⟨⟨body,request⟩,packet,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  cases request with
+  | none => cases h
+  | some request =>
+    cases utf8 : String.fromUTF8? request with
+    | none => simp only [utf8] at h; cases h
+    | some text =>
+      simp only [utf8] at h
+      obtain ⟨value,parsed,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kindJson,kj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kind,k,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨formatJson,fj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨format,f,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨versionJson,vj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨version,v,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨_,middle,hguard,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨profile,sameWork⟩ := guard_success _ _ _ _ hguard
+      have hguarded := sameWork ▸ h
+      simp only [Bool.and_eq_true,beq_iff_eq] at profile
+      obtain ⟨⟨artifact,order⟩,afterArtifact,hread,h⟩ := bind_success _ _ _ _ _ hguarded
+      obtain ⟨result,afterRequest,hrequest,h⟩ := bind_success _ _ _ _ _ h
+      have final := pure_success _ _ _ _ h
+      cases final.1
+      cases final.2
+      refine ⟨⟨kind,afterArtifact,packet,utf8,parsed,?_,?_,?_,hread,hrequest⟩⟩
+      · simp [kj,bind,Except.bind,k]
+      · simp [fj,bind,Except.bind,f,profile.1]
+      · simp [vj,bind,Except.bind,v,profile.2]
 
 private theorem checkControl_binding (artifact : QleisliKernel.Qirf.Artifact)
     (order : Array Nat) (value : Json) (work left : Nat)

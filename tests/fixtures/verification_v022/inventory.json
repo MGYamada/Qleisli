@@ -2310,7 +2310,7 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "04db5fc9c9092e1bffdd2c705fb83bc627d9f3c5b356f88cf2b91a9a6bbfa5f5",
+      "sha256": "4be18feace681f3d94a5c6c3dd58238d90ff910fb2086feedb953ba81274e377",
       "group": "finite-contract",
       "surface": null
     },

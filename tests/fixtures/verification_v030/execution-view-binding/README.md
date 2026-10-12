@@ -71,8 +71,12 @@ and fresh core results for encoded, leaf, control, control-owners, instrument
 and pure-leaf requests. Universal projection equalities preserve the original
 adapter computation, including errors and remaining work. The encoded/control
 and instrument stage theorems bind the actual retained root/action or expected
-graph. Production contract-view comparison is still pending; these records do
-not authorize execution and do not complete #362.
+graph. The adapter's `checkRetained_bound` also identifies every actual returned
+field with the original packet, UTF-8/JSON and artifact decoding, and the exact
+request-stage result with continuous work states. Its older existential
+acceptance theorem alone does not supply that output-field identity.
+Production contract-view comparison is still pending; these records do not
+authorize execution and do not complete #362.
 
 [Contract walker vectors](contract-walker-vectors.json) supply nine hand-specified
 descriptions: seven valid original native requests cover all six obligation

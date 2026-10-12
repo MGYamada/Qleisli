@@ -187,6 +187,14 @@ binding theorems identify the retained core results. The leaf path retains its
 existing validation sequence. No additional acceptance rule, native mode or
 execution handle is introduced.
 
+`NativeContract.checkRetained_bound` additionally ties every returned field to
+the original packet body/request, UTF-8 text, parsed JSON, decoded artifact/order
+and the exact returned request-stage result. Its work state runs continuously
+from artifact decoding to the existing six-kind dispatch. This output-field
+binding is separate from `checkRetained_acceptance`, whose original existential
+acceptance witness does not by itself identify every field of the returned record.
+Neither theorem establishes an execution-view match or runtime preservation.
+
 The typed obligation walkers read these retained stages in Lean and the actual
 typed contract/boundary/signature values in Rust. Their records are:
 
