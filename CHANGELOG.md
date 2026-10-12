@@ -24,6 +24,10 @@ and exactness obligations retain their recorded scopes and status.
   retaining the alpha removal of the ecosystem naming comparison.
 - State the inference/discovery boundary in the existing architecture Reference
   (#253), with current help/source paths and tool availability.
+- Align the functional-boundary Reference with implemented general arrows,
+  rectangular Raw Meaning checks and selected ordinary Bits transport (#80).
+  Record the maintainer's external-qlippy exclusion while retaining core
+  compiler diagnostics and Cargo Clippy checks.
 - Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
   native rectangular pure-leaf component for #83: separate interface ports,
   exact original-body matrix equality and isometry/reference proofs. Preserve
