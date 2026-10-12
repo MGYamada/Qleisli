@@ -492,13 +492,18 @@ impl View<'_> {
     }
 }
 
-pub(super) fn raw(program: &RawProgram, dependencies: &[Arc<FunctionEvidence>]) -> Result<Vec<u8>> {
+fn dependency_indices(dependencies: &[Arc<FunctionEvidence>]) -> Result<BTreeMap<usize, usize>> {
     let mut indices = BTreeMap::new();
     for (i, evidence) in dependencies.iter().enumerate() {
         if indices.insert(Arc::as_ptr(evidence) as usize, i).is_some() {
             return Err(Error::format("ambiguous execution-view evidence index"));
         }
     }
+    Ok(indices)
+}
+
+pub(super) fn raw(program: &RawProgram, dependencies: &[Arc<FunctionEvidence>]) -> Result<Vec<u8>> {
+    let indices = dependency_indices(dependencies)?;
     let mut view = View {
         writer: Writer {
             bytes: b"QDV1".to_vec(),
@@ -508,6 +513,47 @@ pub(super) fn raw(program: &RawProgram, dependencies: &[Arc<FunctionEvidence>]) 
         dependencies: &indices,
     };
     view.program(program)?;
+    Ok(view.writer.bytes)
+}
+
+pub(in crate::interchange) fn graph(
+    graph: &crate::interchange::DecodedGraph,
+    actual_root: &RawProgram,
+    actual_interface: Option<&crate::interchange::RootInterface>,
+    derived_effect: Effect,
+    output_ports: &[QuantumPort],
+) -> Result<Vec<u8>> {
+    let indices = dependency_indices(&graph.evidence)?;
+    let mut view = View {
+        writer: Writer {
+            bytes: b"QDV1".to_vec(),
+            limit: MAX_BYTES,
+            depth: 0,
+        },
+        dependencies: &indices,
+    };
+    view.record("finite-graph", 8, |w| {
+        w.n(graph.root)?;
+        if let Some(interface) = actual_interface {
+            w.record("root-interface", 2, |w| {
+                w.basis(&interface.input)?;
+                w.basis(&interface.output)
+            })?;
+        } else {
+            w.writer.append(&[0])?;
+        }
+        w.list(&graph.sources, |w, (path, text)| {
+            w.record("source", 2, |w| {
+                w.writer.text(path)?;
+                w.writer.text(text)
+            })
+        })?;
+        w.list(&graph.programs, |w, program| w.program(program))?;
+        w.list(&graph.evidence, |w, evidence| w.evidence(evidence))?;
+        w.program(actual_root)?;
+        w.effect(derived_effect)?;
+        w.list(output_ports, View::port)
+    })?;
     Ok(view.writer.bytes)
 }
 

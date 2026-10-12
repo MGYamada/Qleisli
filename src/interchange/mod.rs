@@ -804,8 +804,28 @@ fn envelope(value: &Value) -> Result<(Version, &[Value], &[Value], usize)> {
     Ok((version, programs, entries, root))
 }
 
-type RootParts = (RawProgram, Option<RootInterface>, Vec<(String, String)>);
-fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<RootParts> {
+/// The actual decoded graph in original table order. Retaining it lets the
+/// native comparison cover every cached dependency and the same root Arc used
+/// by execution. This data type carries no independent acceptance authority.
+struct DecodedGraph {
+    programs: Vec<Arc<RawProgram>>,
+    evidence: Vec<Arc<FunctionEvidence>>,
+    root: usize,
+    interface: Option<RootInterface>,
+    sources: Vec<(String, String)>,
+}
+impl std::fmt::Debug for DecodedGraph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DecodedGraph")
+            .field("program_count", &self.programs.len())
+            .field("evidence_count", &self.evidence.len())
+            .field("root", &self.root)
+            .field("interface", &self.interface)
+            .field("source_count", &self.sources.len())
+            .finish_non_exhaustive()
+    }
+}
+fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<DecodedGraph> {
     let value = json::parse(native.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
@@ -879,7 +899,6 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
     if used.len() != snapshot.len() {
         return Err(Error::format("unused source entry").at("/sources"));
     }
-    let program = checked[root].take().expect("root checked");
     let interface = match value.field("root_interface")? {
         Value::Null => None,
         i => {
@@ -892,7 +911,25 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
             Some(interface)
         }
     };
-    Ok((program, interface, snapshot))
+    let programs = checked
+        .into_iter()
+        .map(|program| {
+            program
+                .map(Arc::new)
+                .ok_or_else(|| Error::format("incomplete decoded program graph"))
+        })
+        .collect::<Result<_>>()?;
+    let evidence = receipts
+        .into_iter()
+        .map(|receipt| receipt.ok_or_else(|| Error::format("incomplete decoded evidence graph")))
+        .collect::<Result<_>>()?;
+    Ok(DecodedGraph {
+        programs,
+        evidence,
+        root,
+        interface,
+        sources: snapshot,
+    })
 }
 
 /// Checked format migration preserves exact root metadata and source ordering.

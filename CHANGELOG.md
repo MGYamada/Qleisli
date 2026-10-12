@@ -19,6 +19,10 @@ and exactness obligations retain their recorded scopes and status.
   finite data walkers for #362, retaining first sources and real diagnostics.
   Derive retained function circuit views independently in Lean and compare
   exact caches with ten shared function vectors, including composed branch routes.
+  Retain the complete actual finite graph and fresh Lean root receipts; compare
+  seven independent graph vectors covering original dependency indices and
+  ordered derived metadata. Prove the original inspection projection preserves
+  successes, failures and remaining work.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

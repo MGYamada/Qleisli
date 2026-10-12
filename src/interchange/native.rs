@@ -98,12 +98,14 @@ impl Kernel {
 
     fn decode_checked(native: NativeChecked) -> Result<Checked> {
         let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
-        let (program, root_interface, _) = super::decode_native(&native, &mut budget)?;
-        let (derived_effect, output_ports) = view::metadata(&program)?;
+        let decoded = Arc::new(super::decode_native(&native, &mut budget)?);
+        let program = &decoded.programs[decoded.root];
+        let root_interface = decoded.interface.clone();
+        let (derived_effect, output_ports) = view::metadata(program)?;
         let imported = Imported {
             program: AcceptedProgram {
                 native: Arc::new(native.clone()),
-                program: Arc::new(program),
+                decoded,
                 interface: root_interface.clone(),
                 derived_effect,
                 output_ports,
@@ -306,7 +308,9 @@ impl Proposal {
 #[derive(Clone, Debug)]
 pub struct AcceptedProgram {
     native: Arc<NativeChecked>,
-    program: Arc<RawProgram>,
+    // Retain the complete actual graph for #362's native comparison. Execution
+    // reads the root Arc in this graph; it is never decoded again to run.
+    decoded: Arc<super::DecodedGraph>,
     interface: Option<RootInterface>,
     derived_effect: crate::ir::Effect,
     output_ports: Vec<crate::ir::QuantumPort>,
@@ -328,7 +332,7 @@ impl AcceptedProgram {
         self.native.request()
     }
     pub fn raw(&self) -> &RawProgram {
-        &self.program
+        &self.decoded.programs[self.decoded.root]
     }
     pub fn program(&self) -> &RawProgram {
         self.raw()
@@ -347,6 +351,16 @@ impl AcceptedProgram {
     }
     pub fn output_ports(&self) -> &[crate::ir::QuantumPort] {
         &self.output_ports
+    }
+    #[cfg(test)]
+    pub(super) fn execution_view_description(&self) -> Result<Vec<u8>> {
+        super::execution_view::finite::graph(
+            &self.decoded,
+            self.raw(),
+            self.interface.as_ref(),
+            self.derived_effect,
+            &self.output_ports,
+        )
     }
     /// Source-associated equations retain original bodies and requests. They
     /// do not establish a whole-program source or runtime preservation theorem.

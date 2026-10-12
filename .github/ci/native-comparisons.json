@@ -15,7 +15,8 @@
           "tests/execution_view_vectors.lean",
           "tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json",
           "tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json",
-          "tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json"
+          "tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json",
+          "tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json"
         ]
       ]
     },

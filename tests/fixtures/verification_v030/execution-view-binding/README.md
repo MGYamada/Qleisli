@@ -49,4 +49,13 @@ circuit/matrix caches. The last row's dependency zero means the first corpus
 entry. Rust maps the actual reconstructed Arc to that explicit corpus index;
 this is not a claim about the enclosing native packet's entry ordering.
 
+`finite-graph-vectors.json` gives seven complete retained-graph expectations.
+Three reuse the original observing sentinels. The others distinguish Unit
+interfaces, output order with a zero-width owner, declared versus derived
+effects, and original evidence-table indices in a non-topological table.
+Rust describes the actual graph retained by its execution handle. Lean
+retains the fresh receipts from its common root check and independently
+describes them; its original inspection projection preserves results, failures
+and remaining work. Native comparison and the protocol cutover remain pending.
+
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

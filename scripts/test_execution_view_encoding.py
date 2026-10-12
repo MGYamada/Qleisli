@@ -12,6 +12,7 @@ BASELINE = 'tests/fixtures/verification_v030/execution-view-binding/baseline.jso
 VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json'
 FINITE_VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json'
 FUNCTION_VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json'
+GRAPH_VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json'
 
 
 class ExecutionViewEncodingTests(unittest.TestCase):
@@ -95,6 +96,27 @@ class ExecutionViewEncodingTests(unittest.TestCase):
         dependency = cases['original-index-adjoint-dependency']['view']
         self.assertEqual(dependency[5][2], [['step', [], ['contract', [0], 0, True]]])
         self.assertEqual(dependency[7:], [2, 1])
+
+    def test_graph_vectors_bind_original_indices_and_metadata_distinctions(self):
+        rows = json.loads((ROOT / GRAPH_VECTORS).read_text())
+        self.assertEqual(len(rows), 7)
+        cases = {row['name']: row for row in rows}
+        self.assertEqual(len(cases), len(rows))
+        unit = cases['unit-interface']['view']
+        self.assertEqual(unit[2], ['root-interface', [['unit']], [['unit']]])
+        self.assertEqual(unit[-1], [['port', 7, [], 0]])
+        order = cases['output-order-with-unit']['view']
+        self.assertEqual(order[-1], [['port', 9, [4], 1], ['port', 7, [], 0]])
+        conservative = cases['conservative-observe']['view']
+        self.assertEqual(conservative[6][-1], 2)
+        self.assertEqual(conservative[-2], 0)
+        dependency = cases['non-topological-evidence-indices']
+        self.assertEqual(dependency['artifact']['root'], 4)
+        self.assertEqual(dependency['artifact']['evidence'][0]['implementation'], 2)
+        self.assertEqual(dependency['view'][5][0][5][2],
+                         [['step', [], ['contract', [0], 1, True]]])
+        self.assertEqual(dependency['view'][6][3][0][3],
+                         [['step', [], ['contract', [0], 0, False]]])
 
 
 if __name__ == '__main__':

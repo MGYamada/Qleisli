@@ -144,6 +144,32 @@ cache view. Dependency zero in the last row identifies the first corpus entry;
 the test remaps actual retained Arc references to that explicit corpus index.
 This test indexing is not the eventual production artifact graph mapping.
 
+## Retained finite graph
+
+The `finite-graph` record contains, in order: the original root program index,
+the actual root interface or null, the ordered source records, all decoded
+programs in original table order, all fresh function-evidence records in
+original table order, the actual execution root, its derived effect, and its
+ordered output ports. A present interface is
+`root-interface(input-basis, output-basis)`. The root is described separately
+from the program table so that a different runtime root cannot borrow the
+table's comparison. Output ports follow the program's return order, including
+zero-width owners; the live-store insertion order is not their order.
+
+Lean derives the effect from its checked observation state: observing if any
+observing operation occurred, otherwise isometry if allocation or a width
+change required it, otherwise unitary. A conservative declared `observe`
+effect may therefore have derived unitary effect. Both fields remain bound.
+Full-graph dependency references use original artifact indices, including
+when the successful checking order differs from table order. The walker reads
+fresh graph receipts produced by the common checker, never submitted receipts.
+
+The [graph vectors](../../../tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json)
+retain three original observing sentinels and add Unit interfaces, ordered
+mixed-width output ports, conservative effects and an evidence table whose
+first entry depends on its second. These remain bounded transport comparisons;
+native gate and protocol integration are required before execution binding.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

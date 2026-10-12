@@ -102,7 +102,7 @@ fn encode_with_limit(value: &Value, limit: usize) -> Result<Vec<u8>> {
     Ok(writer.bytes)
 }
 
-mod finite;
+pub(super) mod finite;
 
 #[cfg(test)]
 mod tests {

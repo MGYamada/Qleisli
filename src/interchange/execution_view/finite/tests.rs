@@ -314,3 +314,80 @@ fn actual_retained_function_views_match_independent_cache_vectors() {
         before.push(Some(receipt));
     }
 }
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
+    use crate::interchange::native::Kernel;
+    let rows = json::parse(include_bytes!(
+        "../../../../tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json"
+    )).unwrap();
+    let kernel = Kernel::selected().unwrap();
+    for row in rows.array().unwrap() {
+        let artifact = json::encode(row.field("artifact").unwrap()).unwrap();
+        let native = kernel.inspect(&artifact, None).unwrap();
+        let decoded = crate::interchange::decode_native(
+            &native,
+            &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        let root = &decoded.programs[decoded.root];
+        let accepted = kernel.check(&artifact, None).unwrap().into_program();
+        let accepted_view = accepted.execution_view_description().unwrap();
+        let effect = accepted.derived_effect();
+        let ports = accepted.output_ports().to_vec();
+        let actual = graph(&decoded, root, decoded.interface.as_ref(), effect, &ports).unwrap();
+        let expected = super::super::encode(&super::super::tests::vector_value(
+            row.field("view").unwrap(),
+        ))
+        .unwrap();
+        assert_eq!(accepted_view, expected);
+        assert_eq!(
+            actual,
+            expected,
+            "{}",
+            row.field("name").unwrap().text().unwrap()
+        );
+        let mut wrong_ports = ports.clone();
+        if wrong_ports.len() > 1 {
+            wrong_ports.reverse();
+        } else {
+            wrong_ports.push(QuantumPort {
+                token: TokenId(999),
+                wires: vec![],
+                shape: BasisShape { bits: 0 },
+            });
+        }
+        assert_ne!(
+            graph(
+                &decoded,
+                root,
+                decoded.interface.as_ref(),
+                effect,
+                &wrong_ports
+            )
+            .unwrap(),
+            actual
+        );
+        let wrong_effect = if effect == Effect::Observe {
+            Effect::Unitary
+        } else {
+            Effect::Observe
+        };
+        assert_ne!(
+            graph(
+                &decoded,
+                root,
+                decoded.interface.as_ref(),
+                wrong_effect,
+                &ports
+            )
+            .unwrap(),
+            actual
+        );
+        assert_eq!(accepted.raw().quantum_outputs, root.quantum_outputs);
+    }
+}

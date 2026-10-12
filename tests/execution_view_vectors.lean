@@ -1,5 +1,5 @@
 import Lean
-import Protocol.ExecutionView.Finite
+import Protocol.ExecutionView.Graph
 import Protocol.Qirf
 
 /-! Shared QDV1 encoding vectors. This runner checks transport bytes only.
@@ -75,7 +75,7 @@ private def checked {α : Type} (work : QleisliKernel.Finite.WorkM α) : IO α :
   | (.error error,_) => throw (IO.userError ("native derivation refused: " ++ reprStr error))
 
 def main (args : List String) : IO Unit := do
-  let [path,finitePath,functionPath] := args | throw (IO.userError "expected primitive, finite and function vector files")
+  let [path,finitePath,functionPath,graphPath] := args | throw (IO.userError "expected primitive, finite, function and graph vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   for row in rows do
@@ -112,3 +112,14 @@ def main (args : List String) : IO Unit := do
       throw (IO.userError ("retained function cache mismatch: " ++ name))
     before := before ++ [receipt]
   IO.println ("retained function caches: " ++ toString functions.size ++ " shared vectors passed; no production binding claim")
+  let graphs ← IO.ofExcept (Json.parse (← IO.FS.readFile graphPath) >>= Json.getArr?)
+  for row in graphs do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let input ← IO.ofExcept (row.getObjVal? "artifact")
+    let (artifact,order) ← checked (QleisliKernel.Protocol.Qirf.read input.compress.toUTF8)
+    let retained ← checked (QleisliKernel.Qirf.Validity.checkRoot artifact order)
+    let actual ← IO.ofExcept (encode (← checked (FiniteView.graph artifact retained)))
+    let expected ← IO.ofExcept ((row.getObjVal? "view") >>= value 129 >>= encode)
+    unless actual == expected do
+      throw (IO.userError ("retained finite graph mismatch: " ++ name))
+  IO.println ("retained finite graphs: " ++ toString graphs.size ++ " shared vectors passed; no production binding claim")
