@@ -63,6 +63,9 @@ pub struct Decl {
     pub static_params: Vec<StaticParam>,
     pub requires: Vec<Requirement>,
     pub params: Vec<Param>,
+    /// Explicit domain of a Meaning arrow; omission means its codomain.
+    /// Ordinary functions retain their runtime parameter list instead.
+    pub meaning_domain: Option<Type>,
     pub return_type: Type,
     pub body: FnBody,
     pub span: Span,

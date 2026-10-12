@@ -1,6 +1,6 @@
 # Standard-library semantic namespaces
 
-This chapter is normative for the edition-2026 `0.3.0-alpha` mathematical
+This chapter is normative for the edition-2026 `0.3.0-beta` mathematical
 stdlib namespaces, their admission rules and the path migration adopted in
 [#317](https://github.com/MGYamada/Qleisli/issues/317). It is subordinate to the
 [authority hierarchy](authority.md) and [primitive boundary](primitive-boundary.md).

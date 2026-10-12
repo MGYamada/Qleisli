@@ -109,19 +109,17 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
                         )
                         .in_module(&interface.module));
                     }
-                    if let Some(codomain) = codomain {
-                        normalize::expect(
-                            codomain,
-                            &target.result,
-                            &interface.premises,
-                            declaration.span,
-                            &p.budget,
-                        )
-                        .map_err(|e| e.in_module(&interface.module))?;
-                    }
+                    normalize::expect(
+                        codomain.as_ref().unwrap_or(basis),
+                        &target.result,
+                        &interface.premises,
+                        declaration.span,
+                        &p.budget,
+                    )
+                    .map_err(|e| e.in_module(&interface.module))?;
                     normalize::expect(
                         basis,
-                        &target.result,
+                        target.meaning_input(),
                         &interface.premises,
                         declaration.span,
                         &p.budget,
@@ -138,6 +136,13 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
     let decl = p.decl(id);
     let index = &p.indices[&id];
     let budget = &p.budget;
+    if decl.kind != FnKind::Meaning && decl.meaning_domain.is_some() {
+        return Err(SourceError::new(
+            "type",
+            decl.span,
+            "only Meaning declarations have a Meaning domain",
+        ));
+    }
     if !matches!(
         (decl.kind, &decl.body),
         (FnKind::Classical, ast::FnBody::Basis(_))
@@ -378,6 +383,11 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         None,
         budget,
     )?;
+    let meaning_domain = decl
+        .meaning_domain
+        .as_ref()
+        .map(|domain| normalize::ty(domain, index, &scope, Stage::Basis, None, budget))
+        .transpose()?;
     let resolved = p.resolution.declaration(id);
     budget.charge(decl.span, resolved.name.0.len() + 1)?;
     Ok(Interface {
@@ -386,6 +396,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         kind: decl.kind,
         statics,
         params,
+        meaning_domain,
         result,
         premises: scope.context,
     })

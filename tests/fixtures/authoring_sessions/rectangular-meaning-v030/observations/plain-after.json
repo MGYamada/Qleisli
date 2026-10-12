@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rectangular-meaning-v030/attempt-01/plain",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "recorded_utc": "2026-10-12T00:17:52.343072+00:00",
+  "cli_sha256_before": "1b885ada4b708ca25b28c7a580e40663b89fa776b9477ced512ef15b8ce55764",
+  "kernel_sha256_before": "804e7ceb48176be26243cc84a42bfd3eca68aa38df0ddeed95c223e7d2742020",
+  "exit_code": 1,
+  "seconds": 0.6174155829939991,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "invalid_entry",
+        "severity": "error",
+        "message": "main must be an ordinary fn main() with a closed classical result",
+        "primary": {
+          "path": "main.qli",
+          "start": 279,
+          "end": 344,
+          "line": 6,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "cli_sha256_after": "1b885ada4b708ca25b28c7a580e40663b89fa776b9477ced512ef15b8ce55764",
+  "kernel_sha256_after": "804e7ceb48176be26243cc84a42bfd3eca68aa38df0ddeed95c223e7d2742020"
+}

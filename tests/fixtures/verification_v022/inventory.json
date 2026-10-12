@@ -120,9 +120,9 @@
     {
       "id": "finite-leaf",
       "producer": "Untrusted QIRF payload and separate exact finite-matrix request",
-      "consumer": "check_unitary/check_serialized_unitary; hierarchy host finite reconstruction",
-      "obligation": "Whole-space unary Unitary, exact legacy tree, complete input/output owner/wire identity and order; same immutable payload and description with one shared work budget",
-      "reference": "docs/machine-interface-spec.md",
+      "consumer": "Native square check_unitary/check_serialized_unitary and rectangular check_pure; hierarchy retains the square gate",
+      "obligation": "Original-body equality with complete exact type trees, phase, ordered owner/wire ports and dependencies; square two-sided unitarity or pure rectangular Gram identity, with one shared budget and no implicit inverse/control grant",
+      "reference": "docs/src/reference/production-boundary.md",
       "replacement": [
         "VM-24",
         "VM-25"
@@ -2255,7 +2255,7 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "40bc67fd21ce0eb588a85dd59d91dde9b772e2c46085f0014f81c36b3a4ab406",
+      "sha256": "3d1f9be6a262ee055bf6d1a45129706f17412144e0d46711a1119ab09d26d331",
       "group": "finite-contract",
       "surface": null
     },
@@ -2267,7 +2267,7 @@
     },
     {
       "path": "lean-kernel/Protocol/Product.lean",
-      "sha256": "de0fb9c84bbb5dd53f64db35b28cf50041dff6326c7efb6b8dc2d8d53df64257",
+      "sha256": "9e84a1fbc1ed5b13c961bb7134092146b660b86cd30d26a5d713e981da5ec5cf",
       "group": "transport",
       "surface": null
     },
@@ -2615,7 +2615,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
-      "sha256": "5d5e6fbcbafe64663d5b469bc1e687ac27667e8f85575722eb503fa12dbea5a8",
+      "sha256": "e43540ae7400aa2c3f161fbaf148739e21f1e0e6a16bad3001cad2f96eec2951",
       "group": "hierarchy",
       "surface": null
     },
@@ -2633,7 +2633,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
-      "sha256": "bb347bbefdd12db50a0d64b7facafe68137734ee6f89c5c81469dc3e47e2e7d6",
+      "sha256": "7d46cf395eabd90b80f4065f186cc28e6fb89ffe89c670be7149b386d705390b",
       "group": "hierarchy",
       "surface": null
     },
@@ -2867,7 +2867,7 @@
     },
     {
       "path": "lean/Qleisli/NativeContract.lean",
-      "sha256": "41446591d1af04b844333dd58220752203a01fb83237dc8240d230e332dc4106",
+      "sha256": "5e8f2b132b098cefb3a8e581ce3fe48017fe3ef77acd56b6c86deade147bc031",
       "group": "finite-contract",
       "surface": null
     },
@@ -2891,7 +2891,7 @@
     },
     {
       "path": "lean/Qleisli/QirfValidity.lean",
-      "sha256": "6c690a977a27f160073b869b407bcecef285b181015c89e29453cdd0b01eb566",
+      "sha256": "11987ce8ade295334c622c859d73b10c677a7c2efd53df9574e8e09e9df37062",
       "group": "hierarchy",
       "surface": null
     },
@@ -3041,7 +3041,7 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "bc53002ba36969d062008490ae30ce76db25a365d2261383888d5b8eb863f107",
+      "sha256": "2a1a0658f8f86c83b1df26c808790177fb63d1955951170761926143d3c30ac2",
       "group": "foreign",
       "surface": null
     },
@@ -3234,7 +3234,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "6682668286a75f43fb8ffec51e6ff4517af26b250c35c408ca2443bdbd2842ff",
+      "sha256": "93e33355216b00ccf9acd5acf0c863230a5e9e64db3806e31671064cd9e9a9c8",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -3342,7 +3342,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "64867002103b64537366b9d474d6603f8f6c5bdff6ca0a55bff3a93da892b072",
+      "sha256": "ce817a22179958dbc34a489809978bb5a50715575ab48bd64fb072f5bc02e052",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3391,7 +3391,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "3096d423f26bcc5ea7f93d141d3b440fc0be1f3d3e0ed8806395f1ec7d1f397f",
+      "sha256": "30c0a088dcc6190eb98a528618b31973041ebff94182f32e1ec3bcd25f4d8e72",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3409,7 +3409,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "ab3c60b8a8e2093b981604032074419623583a63cc35e8a852ceb0ac836585c3",
+      "sha256": "e04386549580927f627454bb54734bf13ac1047d0ede74f2f1f22d9870ba7599",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3419,7 +3419,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "606fbbfc52ac2b96b16c2667944fa8c71f858f94a17d994d38efd8efc44d302c",
+      "sha256": "42cdbb9515b809d82c99847f5a956622bb5b11336413289489e4fe6b572f4f8b",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3429,7 +3429,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "cdd84f01a9a4dfbc193571de789ca8ad202aa2a39ddf7e778287c699ec29f1eb",
+      "sha256": "fdcb5bbb5ce50ffe8c8d84292e38a20b2f4b776df09763b17551936f67ff0746",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3439,7 +3439,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "592354b281833e171ded7003db5703c15d1e0b2a6a06e40d2b5490447a0d86d1",
+      "sha256": "a3ec4e263960c9110ee77e40ebe4cec77c7d6b17f4f8d7e7ad121ed0a2a6ad43",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3548,7 +3548,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "383846975c23aa103c3e8b1763be262e09b5f1d8c74e6816f8bb58b8958ba6f8",
+      "sha256": "5f59133016c448a50f39b936f5b809451382b5fcd94484bdcc0ebb4afe32ce67",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3558,7 +3558,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "6b7deb61bc0f51c0eb28f6fa1a8ba63e2ee838a1a5d9f0c2aba11718ccb92d32",
+      "sha256": "c66cee6e8b49cd0b34d271cc27031da324679cc8b03f465f75087e3797d2833a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3608,7 +3608,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "a1a941234b6e009d3ee15a251651cfe174234fdc19214d138bfb292c1259292b",
+      "sha256": "e6661cd7222270fecad13ed140eb311de9487b2e4d07306ddf026f9e4ab29439",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3644,7 +3644,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "bd48bb0fa042a524d175c7612875630c3b7c7d59da216a21211c8524a30294ea",
+      "sha256": "c8a80c2f694150445e68c23262b5078c259afa6ccd585f6aa713c04734aeac05",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3654,7 +3654,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "467899cc118ce1ba921d13396f6762098cc82bfee61ad154401ffb9c691cc54d",
+      "sha256": "8ebc2e509acb4542b35c2ddfbf297ff6940e53b1a3f126cfc7b0d462e15a35e5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3782,7 +3782,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "114ef681c244cf03fcaa4594f79661ac176301a78dd8de641ea604ff0507bb3b",
+      "sha256": "9639774bd57b7e54b795833cdd31978ce5d0a2900603541d4e676a47be3005b2",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3822,7 +3822,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "2b45b2e6520329112a4672deb9f7d3f4788c9ab15166076fade1323d1ab56672",
+      "sha256": "b4d157542fe57d67eeb7b06c61e6d6c08869f79178982ff8d8eab73812af1de3",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3963,7 +3963,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "e2e274cc224b82364fa9f790eb538d89e6821a0c2157eb217569a9f409a62d0c",
+      "sha256": "51a4389da693edcfcf60a929e22547532fcbec90c5455302174914267a59225d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4063,7 +4063,7 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "cc52f8f61a427037d36040d2cb1413585d0b810d90b3c31d88368aec11d03ae2",
+      "sha256": "eb6bd18bd2ea61c71be019c32318efa74b0cb592fc71bd618b7f787225dd28a7",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4075,7 +4075,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "74766c764a04d18298e2053415665da7c945538a16312eb27cffc229deef6055",
+      "sha256": "e79b6227513280cb6495c4c301b88063ec1cdd7dfa16d15820a95970173fe87f",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4188,7 +4188,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "4a7205f7fe4e6a84e6c4b402667a875f5c988c7609313a4458bd0cf924da4dc5",
+      "sha256": "b8745c8c31e7b528b226ca21326ca2495eb1ff2f303b14137e2ffa7b9042caa4",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4255,7 +4255,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "7b5f18f0ac3117f030a31935bb2eb9d7de78a13c2ce8bbcc2618b89e47bb90a9",
+      "sha256": "827f07959e82f7a3e722604f70aebe2c869be7dee0af7eac4e2a4e71392e115f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4306,7 +4306,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "7493a62d3d0c1935c041f7428b27d0640a1c1f279862a8fa342d9b6961adecc0",
+      "sha256": "534fe7fb4fd28cf28c321e9f780712eb9af69c73b8ccce35c842b1917c406e91",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4356,7 +4356,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "7dd880e0c236adb3b09a44497ed70edd77f7338f8c48fa0be4ea084bd6016cb0",
+      "sha256": "edec6c432e8f4b04d729f3d17f052c9d24dfc568430d39b95d59763aec2a2a86",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4366,7 +4366,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "fc98030c17312b7564332d41e2449b407371464087a876d909744fd16a39b021",
+      "sha256": "49371eb594e42156338330c84479ea991d6c9818d37a597abce9a1cc5dac886c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4382,7 +4382,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "efe1ba3a18a34308a94bf14afbde74e9872c66a6eba8ce4085380de5ddf3644a",
+      "sha256": "1abfb76068a6482bcbe4ae9823c1ced035a57235bf291d0d7ff178f0068b9485",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4392,7 +4392,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access_meaning.rs",
-      "sha256": "b82cd109fd8e96a10f3fd69f8ffb96064911682a22813542e6d82b2146da68cf",
+      "sha256": "becb7389d91f64dd1cae1eba7ef8e73fe0201d7f54045b9e1006d2632d1acc4e",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4712,7 +4712,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "781303e7ee553e28993f1fcecd421cc9f1cf05635926c0334f83dd04ac215773",
+      "sha256": "d154b95f5c685f409f8a936300d898ae62a79ec876cb0361aed53061c8209463",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4723,7 +4723,8 @@
           "finite_leaf",
           "finite_matrix",
           "hierarchical",
-          "native"
+          "native",
+          "pure_leaf"
         ],
         "functions": [
           "pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>>",
@@ -4740,7 +4741,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "fea23e5b0a73d427375d7f771aa752ad0b340964ad6d7e5804cc7d6647288047",
+      "sha256": "a4795302d89db398085e58756155454844343b65fb05b6cea7ee75e5fa5a801c",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4784,6 +4785,7 @@
           "pub fn request(&self) -> Option<&[u8]>",
           "pub fn root_interface(&self) -> Option<&RootInterface>",
           "pub fn selected() -> Result<Self>",
+          "pub fn source_pure_equations(&self) -> &[Arc<super::pure_leaf::SourcePureEquation>]",
           "pub fn verify(&self, program: &RawProgram) -> Result<Checked>"
         ],
         "capacity_constants": []
@@ -4791,7 +4793,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "abdd7d794efb010d86fda2fa23e67f047f9aa72fc229acc346c2eed887e1ff7d",
+      "sha256": "c2d30de86138a8f2b07fbce27753adac57de0e72fd53b84d55fa1a8794622518",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -4945,7 +4947,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
+      "sha256": "c59863e479e700376e5d5a87d664757cbd9f0d26094fd0b6c47c7bae1ad7a05c",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -5159,7 +5161,7 @@
     },
     {
       "path": "src/frontend/meaning.rs",
-      "sha256": "cfe5bda4d43bd73713c6db63546a2e095bc7cb811c6e969d4541890821b64e09",
+      "sha256": "109f05c04c826dc333b6e7867448844ffd7fd99cf625eebbef09259847aa388c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5202,6 +5204,99 @@
       "path": "src/frontend/instrument.rs",
       "sha256": "e728105bdce34a25eb7b74a0e9962db73eddf79d11bd5daf4a802eec5d82e594",
       "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/pure_leaf.rs",
+      "sha256": "0ff4d549de4a28c8b33badb142498b758b8b1f1d07f4726f9dba61e911fcf91a",
+      "group": "finite-leaf",
+      "surface": {
+        "declarations": [
+          "CheckedPureLeaf",
+          "PureBoundary",
+          "SourcePureEquation"
+        ],
+        "functions": [
+          "pub fn boundary(&self) -> &PureBoundary",
+          "pub fn check_pure( payload: &[u8], boundary: &PureBoundary, meaning: &Matrix, budget: &mut Budget, ) -> Result<CheckedPureLeaf>",
+          "pub fn codomain(&self) -> &BasisType",
+          "pub fn domain(&self) -> &BasisType",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn implementation(&self) -> &CheckedPureLeaf",
+          "pub fn input(&self) -> &QuantumPort",
+          "pub fn matches(&self, payload: &[u8], boundary: &PureBoundary, meaning: &Matrix) -> bool",
+          "pub fn meaning(&self) -> &Matrix",
+          "pub fn names(&self) -> (&str, &str)",
+          "pub fn new( domain: BasisType, codomain: BasisType, input: QuantumPort, output: QuantumPort, ) -> Result<Self>",
+          "pub fn output(&self) -> &QuantumPort",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn program(&self) -> &AcceptedProgram",
+          "pub fn sources(&self) -> &[(String, String)]",
+          "pub fn specification(&self) -> &CheckedPureLeaf"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/PureLeaf.lean",
+      "sha256": "f8bf88c1f5449e756ecc2f193ca079377a40bd72f3a111caa07019bee65481e5",
+      "group": "finite-leaf",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativePureLeaf.lean",
+      "sha256": "6bcd84a090215fe91653a240a99652418c4bf352289d5b53a8907648ad746a92",
+      "group": "finite-leaf",
+      "surface": null
+    },
+    {
+      "path": "src/frontend/check/rectangular_meaning_tests.rs",
+      "sha256": "c5e8ab47ebd85c9f66af6639a5faa813cec463681078fa23d3866eb60f487877",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations/pure.rs",
+      "sha256": "0d3e8f110e241006bd54d3dc70127a87efdd16f7990b9b9f2f0f9fdeef6a2ab5",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/pure.rs",
+      "sha256": "f6b01c48e1432b556e9afd552c3511d0b86a02d90af16dd8be591ca62057b4a9",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/raw_splice.rs",
+      "sha256": "9a05211cf81940a75cc870e31aa8c8c846e670d6752aff4244c63842af9f765c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/meanings.rs",
+      "sha256": "2d4ee3aded4b6e08f52ebcaed11819d51991e549c437176923a5b4107a325943",
+      "group": "sized-source",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5299,15 +5394,18 @@
       "entry_points": [
         "UnitaryBoundary::new",
         "finite_matrix::{encode,decode}",
-        "finite_leaf::{check_unitary,check_serialized_unitary}"
+        "finite_leaf::{check_unitary,check_serialized_unitary}",
+        "PureBoundary::new",
+        "pure_leaf::check_pure",
+        "AcceptedProgram::source_pure_equations"
       ],
       "status": "native-only production implementation; full Soundness remains pending",
-      "request": "Separate required Matrix/finite-matrix bytes AND exact type/input-output port boundary; never derive expected from actual payload",
-      "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
-      "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
+      "request": "Independent exact Matrix and both exact type trees and ordered owner ports; square leaf requires equal trees, pure-leaf retains separate domain/codomain",
+      "binding": "Fresh native check of immutable original QIRF/dependency bytes and request. Square leaf retains two-sided unitarity; pure-leaf reconstructs the original body and exact Gram identity. Private source sidecars retain separately checked reference/implementation leaves and source provenance, without a source-preservation or inverse-access claim.",
+      "encoding": "Exact trees and ordered quantum ports, including zero-width owners; pure-leaf accepts Unit -> A preparation and different input/output widths",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
       "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
-      "failure": "Reject shape/domain/phase/request/identity mismatch and capacity; no Lean seal or production hierarchy value",
+      "failure": "Reject shape, effect, hidden observation, phase, request, dependency or identity mismatch and exceeded capacity; no receipt or fallback",
       "replacement": [
         "VM-23",
         "VM-24",

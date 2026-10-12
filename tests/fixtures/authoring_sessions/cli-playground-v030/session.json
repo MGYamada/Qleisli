@@ -1,0 +1,130 @@
+{
+  "format": 1,
+  "task": "User-requested installed CLI playground",
+  "kind": "informed_first_attempt",
+  "baseline_commit": "54fa33a34c3d2fcd13f0d8e42fc20a9412b9f183",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex assistant; exact deployed model identifier and sampling settings unavailable",
+  "context": "context.md",
+  "executables": {
+    "cli": {
+      "path": "/Users/masa/.cargo/bin/qleisli",
+      "sha256": "837e1acb97aa6c55f8f3d39942a9eabd6b80a8fe8dff7267ff1555507a5432bb"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "98b8a224a35ab83e7017fc34534f1f32e91ff59bc1db34029710dec7932951dc"
+    }
+  },
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First complete informed playground sources; teleport is an exact copy of the inline existing example",
+      "sha256": {
+        "bell/main.qli": "f011d64f5273d2f55604e546c80896caddd363075cc68bacf6cf9d97a7d87192",
+        "ghz/main.qli": "26d58018f2cf2c5200593908dde1f890b6420715d4273bc9996569be70798832",
+        "independent/main.qli": "48d2bb49be195b5b79d43162b575f4fcf0ec1556819ef58f6242afb14ec30c41",
+        "phase-minus/main.qli": "22d09cd36b9b87638350196c9d72f66d77059880b496a07f61f41c011e7ded6a",
+        "phase-plus/main.qli": "39d2d77e68a589aedea96e9d63cfd8bf7f93c598f4ef01988a62ad3fdcfbb59b",
+        "teleport/main.qli": "b356d1436a9c0373dc16cd42ae3cafdeb7e1129a89351cab3de330de1b47ba65"
+      },
+      "manifest_sha256": {
+        "bell/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "ghz/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "independent/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "phase-minus/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "phase-plus/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "teleport/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "bell-check.json",
+        "bell-run.json",
+        "bell-sample.json",
+        "independent-check.json",
+        "independent-run.json",
+        "independent-sample.json",
+        "ghz-check.json",
+        "ghz-run.json",
+        "ghz-sample.json",
+        "phase-plus-check.json",
+        "phase-plus-run.json",
+        "phase-minus-check.json",
+        "phase-minus-run.json",
+        "teleport-check.json",
+        "teleport-run.json",
+        "teleport-sample.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "teleport-no-z",
+      "reason": "Deliberate counterexample outside the repair sequence",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/cli-playground-v030/counterexamples/teleport-no-z/main.qli": "721774aec721b34a34baf48393f3a16c984fe1e2d0b717abf56f7e4cf56e48b9"
+      },
+      "reports": [
+        "teleport-no-z-check.json",
+        "teleport-no-z-run.json"
+      ]
+    },
+    {
+      "id": "double-measure",
+      "reason": "Deliberate counterexample outside the repair sequence",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/cli-playground-v030/counterexamples/double-measure/main.qli": "7a7df931dff3f6eb65eaceb9cb873d23b93728fc772e84de3ba48e22454fef20"
+      },
+      "reports": [
+        "double-measure-check.json"
+      ]
+    },
+    {
+      "id": "implicit-discard",
+      "reason": "Deliberate counterexample outside the repair sequence",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/cli-playground-v030/counterexamples/implicit-discard/main.qli": "645873da479590e8679f95eb82d06d39dcbe8f76bfd15ae88aa500a353ad8438"
+      },
+      "reports": [
+        "implicit-discard-check.json"
+      ]
+    },
+    {
+      "id": "existing-grover",
+      "reason": "Curated replay of the unchanged existing project",
+      "sha256": {
+        "examples/grover/main.qli": "97c950b95f1a6b771bc35cd04b564ddb6314e267c4bb314b0a48a2e345637297",
+        "examples/grover/oracle.qli": "b5a3b7925eb6d7b792d89a326fef1ae8f8ef0187bf6322c763347c37a6709a5c",
+        "examples/grover/search.qli": "3123f5b9ce146ee3948f1857f1af061fa89830f9b1e3e35d4a4d9ead79a282b5"
+      },
+      "reports": [
+        "grover-run.json",
+        "grover-sample.json"
+      ]
+    },
+    {
+      "id": "existing-bernstein_vazirani",
+      "reason": "Curated replay of the unchanged existing project",
+      "sha256": {
+        "examples/bernstein_vazirani/interference.qli": "b3067ef1cdb63932ecfd945717d7210ce99c4a54bf09b32a9b39434d52124528",
+        "examples/bernstein_vazirani/main.qli": "a01bca887bb713335058bf0551712e7214f1f0ca676e792daab96df33e8f32a9",
+        "examples/bernstein_vazirani/oracle.qli": "683b49e830b975108a7eeb1aa25bd722553360322ca0b8ecbe78b7dc8ec56094"
+      },
+      "reports": [
+        "bernstein_vazirani-run.json",
+        "bernstein_vazirani-sample.json"
+      ]
+    },
+    {
+      "id": "existing-feedback",
+      "reason": "Curated replay of the unchanged existing project",
+      "sha256": {
+        "examples/feedback/control.qli": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6",
+        "examples/feedback/main.qli": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9"
+      },
+      "reports": [
+        "feedback-run.json",
+        "feedback-sample.json"
+      ]
+    }
+  ]
+}

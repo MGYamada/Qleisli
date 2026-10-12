@@ -248,7 +248,12 @@ impl Parser {
         if self.consume(&TokenKind::Meaning).is_some() {
             let name = self.ident()?;
             self.expect(&TokenKind::Colon)?;
-            let return_type = self.basis_type()?;
+            let first_type = self.basis_type()?;
+            let (meaning_domain, return_type) = if self.consume(&TokenKind::Arrow).is_some() {
+                (Some(first_type), self.basis_type()?)
+            } else {
+                (None, first_type)
+            };
             self.expect(&TokenKind::Equals)?;
             let body = if self.word("reference") {
                 self.bump();
@@ -295,6 +300,7 @@ impl Parser {
                 static_params: vec![],
                 requires: vec![],
                 params: vec![],
+                meaning_domain,
                 return_type,
                 body,
                 span: Span::new(start, end),
@@ -494,6 +500,7 @@ impl Parser {
             static_params,
             requires,
             params,
+            meaning_domain: None,
             return_type,
             body,
             span: Span::new(start, end),

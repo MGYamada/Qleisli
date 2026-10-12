@@ -1395,10 +1395,10 @@ impl Replay<'_, '_> {
         arguments: &[Argument<'_>],
         outputs: &[Atom],
         first: usize,
-        leaf: &crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+        leaf: &super::meanings::Leaf,
         site: Site<'_>,
     ) -> Result<()> {
-        use crate::interchange::{RootInterface, Version, finite_leaf, native};
+        use crate::interchange::{RootInterface, Version, native, pure_leaf};
         let kernel = self
             .kernel
             .ok_or_else(|| site.invalid("Meaning replay needs a native checker"))?;
@@ -1409,9 +1409,14 @@ impl Replay<'_, '_> {
             .quantum_basis()
             .and_then(super::finite_basis)
             .ok_or_else(|| site.invalid("Meaning interval loses its exact input basis"))?;
-        if ports.input != ports.output
-            || principal != Effect::Unitary
-            || &signature != leaf.boundary().signature()
+        let codomain = ports
+            .output
+            .quantum_basis()
+            .and_then(super::finite_basis)
+            .ok_or_else(|| site.invalid("Meaning interval loses its exact output basis"))?;
+        if principal > Effect::Isometry
+            || &signature != leaf.domain()
+            || &codomain != leaf.codomain()
         {
             return Err(
                 site.invalid("Meaning interval changes its original exact interface or effect")
@@ -1433,8 +1438,9 @@ impl Replay<'_, '_> {
                 bits: wires.len() as u8,
             },
         };
-        let boundary = finite_leaf::UnitaryBoundary::new(
+        let boundary = pure_leaf::PureBoundary::new(
             signature.clone(),
+            codomain.clone(),
             port(*input, wires),
             port(*output, returned),
         )
@@ -1449,18 +1455,18 @@ impl Replay<'_, '_> {
             operations: self.raw.operations[first..self.cursor].to_vec(),
             quantum_outputs: vec![*output],
             classical_outputs: vec![],
-            declared_effect: Effect::Unitary,
+            declared_effect: principal,
         };
         let interface = RootInterface {
             input: signature.clone(),
-            output: signature,
+            output: codomain,
         };
         let proposal = native::Proposal::from_raw(&raw, Some(&interface), Version::V2, None)
             .map_err(|error| site.invalid(error.to_string()))?;
         self.control_work
             .charge(proposal.artifact().len())
             .map_err(|error| site.error("limit", error.to_string()))?;
-        finite_leaf::check_with_kernel(
+        pure_leaf::check_with_kernel(
             kernel,
             proposal.artifact(),
             &boundary,

@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+import tomllib
 import unittest
 from unittest.mock import patch
 import check_production_coverage as coverage
@@ -23,7 +24,8 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['production_paths'], 22)
         self.assertEqual(result['native_modes'], 9)
         self.assertEqual(result['published_baseline'], '0.2.9')
-        self.assertEqual(result['development_version'], '0.3.0-alpha')
+        product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
+        self.assertEqual(result['development_version'], product['version'])
         self.assertEqual(result['development_status'], 'unpublished')
         raw = next(row for row in self.inventory['enums'] if row['name'] == 'RawOp')
         self.assertEqual(

@@ -22,7 +22,7 @@ structure RootMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Na
   observation : QleisliKernel.Raw.Observation.Postcondition root.program root.checked
   resources : QleisliKernel.Semantics.Ownership.OwnershipSafe root.program
   scopes : QleisliKernel.Semantics.ClassicalScope.ScopeSafe root.program
-  interface : interfaceValid artifact root.program = true
+  interface : portInterfaceValid artifact root.program = true
   sources : sourcesUsed artifact = true
 
 structure RequestMeaning (artifact : QleisliKernel.Qirf.Artifact) (root : Root)

@@ -1990,11 +1990,15 @@ pub(super) fn lower_with_checked_meanings(
     let operations = check
         .leaves
         .iter()
-        .map(|(key, leaf, _)| NativeOperation {
-            key: key.clone(),
-            leaf,
+        .map(|(key, leaf, _)| {
+            Ok(NativeOperation {
+                key: key.clone(),
+                leaf: leaf
+                    .unitary()
+                    .ok_or_else(|| fail("rectangular Meaning requires the Raw lowering profile"))?,
+            })
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>>>()?;
     lower_inner(check.source(), &operations)
 }
 

@@ -1,4 +1,5 @@
 import Qleisli.QirfValidity
+import Qleisli.NativePureLeaf
 import Qleisli.NativeContractWrapper
 import Qleisli.ControlAccess
 import Qleisli.QirfInstrumentContract
@@ -34,6 +35,12 @@ theorem acceptance_root_meaning {bytes : ByteArray} {answer : Bool} {work left :
     exact ⟨request.root,request.afterMatrix,request.afterRoot,request.rootAccepted,
       Qleisli.Qirf.Validity.root_meaning _ _ _ _
         (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ request.rootAccepted)⟩
+  | pureLeaf request =>
+    have facts := QleisliKernel.Qirf.PureLeaf.check_postcondition _ _ _ _ _ _ _ _ _ _ request.accepted
+    obtain ⟨after,accepted⟩ := facts.root
+    exact ⟨request.checked.root,request.afterMatrix,after,accepted,
+      Qleisli.Qirf.Validity.root_meaning _ _ _ _
+        (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted)⟩
   | control request =>
     obtain ⟨root,a,_,_,accepted,_,_,_,_,_,_⟩ :=
       QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ request.accepted
@@ -235,12 +242,14 @@ theorem check_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
       | .controlOwners request => ∃ root,
           Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
             request.signatures request.axes request.actual
+      | .pureLeaf request => PureLeafMeaning binding.artifact binding.order request
       | .instrument request => InstrumentMeaning binding.artifact binding.order request := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,acceptance_root_meaning binding,?_⟩
   cases binding.request with
   | encoded request => trivial
   | leaf request => exact leaf_meaning request
+  | pureLeaf request => exact pure_leaf_meaning request
   | control request => exact control_meaning request
   | controlOwners request => exact control_owners_meaning request
   | instrument request => exact instrument_meaning request
@@ -304,6 +313,7 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
       | .controlOwners request => ∃ root,
           Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
             request.signatures request.axes request.actual
+      | .pureLeaf request => PureLeafMeaning binding.artifact binding.order request
       | .instrument request => InstrumentMeaning binding.artifact binding.order request := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,?_⟩
@@ -312,6 +322,7 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
     obtain ⟨root,actual,_,_,_,_,_,_,_,_,meaning⟩ := encoded_meaning request
     exact ⟨root,actual,meaning⟩
   | leaf request => exact leaf_meaning request
+  | pureLeaf request => exact pure_leaf_meaning request
   | control request => exact control_meaning request
   | controlOwners request => exact control_owners_meaning request
   | instrument request => exact instrument_meaning request

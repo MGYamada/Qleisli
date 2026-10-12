@@ -62,8 +62,8 @@
 //! verifier and its handles. Version 0.3.0 uses ordinary `Unit`, `Bit`, `Bits<n>`
 //! and `0`/`1`; their retired classical spellings reject. General basis
 //! polymorphism and common-checker convergence remain unfinished.
-//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md),
-//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
+//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/tests/fixtures/quick_reference/README.md),
+//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/TRUSTBOUNDARY.md)
 //! and versioning policy.
 
 pub mod contract;

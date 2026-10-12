@@ -1,6 +1,6 @@
 [package]
 name = "qleisli-semantic-kernel-prototype"
-version = "0.3.0-alpha"
+version = "0.3.0-beta"
 edition = "2024"
 rust-version = "1.85"
 license = "Apache-2.0"

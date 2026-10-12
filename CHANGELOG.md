@@ -4,7 +4,30 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
-## Unreleased
+## 0.3.0-beta — 2026-10-12
+
+Unpublished development snapshot. Selecting beta does not complete the v0.3.0
+feature or proof gates and does not extend the alpha-only release approval.
+Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
+and exactness obligations retain their recorded scopes and status.
+
+- Synchronize product metadata, the native checker and Python runtime to
+  `0.3.0-beta` without changing dependency versions. Python wheel metadata
+  normalizes this prerelease to `0.3.0b0`.
+- Ignore repository-root `/bin` outputs.
+- Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
+  native rectangular pure-leaf component for #83: separate interface ports,
+  exact original-body matrix equality and isometry/reference proofs. Preserve
+  square unitary checking. Integrate `Op<A -> B>` and `meaning M: A -> B`
+  into ordinary projects and selected Raw lowering, with exact composition,
+  ordered tensor, retained original provider/reference equations and separate
+  inverse capabilities. Rectangular refined hierarchy lowering remains unsupported.
+- The public-effect boundary in [#355](https://github.com/MGYamada/Qleisli/issues/355)
+  remains pending; this version selection does not implement it.
+
+- Retain small installed-CLI playground sources, analytical expectations and
+  actual simulation/ownership diagnostics, including a deliberately omitted
+  teleportation correction. These observations do not establish a general proof.
 
 - Stop native checker descendants before reaping their process-group leader;
   disarm cleanup after reaping so a recycled group number cannot be signalled

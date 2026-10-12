@@ -17,6 +17,7 @@ type Environment = BTreeMap<BinderKey, Value>;
 #[derive(Debug)]
 pub(super) struct TargetTable {
     pub basis: Ty,
+    pub codomain: Ty,
     pub rows: Rows,
 }
 
@@ -259,7 +260,11 @@ impl TargetTable {
         use crate::contract::meaning::FiniteMeaning;
         let basis = Self::signature(&self.basis, span)?;
         let requested = match &self.rows {
-            Rows::General(target) if target.signature() == &basis => target.finite().cloned(),
+            Rows::General(target)
+                if target.signature() == &basis && self.basis == self.codomain =>
+            {
+                target.finite().cloned()
+            }
             Rows::General(_) => {
                 return Err(super::Error::new(
                     "meaning",
@@ -483,7 +488,9 @@ impl<'a> Context<'a, '_> {
             FnBody::MeaningTensor { left, right } => (left, right, true),
             _ => unreachable!("checked composite Meaning"),
         };
-        let basis = self.closed(&self.interfaces[&self.definition].result, declaration.span)?;
+        let interface = &self.interfaces[&self.definition];
+        let basis = self.closed(interface.meaning_input(), declaration.span)?;
+        let codomain = self.closed(&interface.result, declaration.span)?;
         let width = self.width(&basis, declaration.span)?;
         if width > crate::contract::MAX_CONTRACT_BITS {
             return Err(SourceError::new(
@@ -526,6 +533,7 @@ impl<'a> Context<'a, '_> {
             self.budget.charge(declaration.span, target.cells())?;
             return Ok(TargetTable {
                 basis,
+                codomain,
                 rows: Rows::General(target),
             });
         }
@@ -548,6 +556,7 @@ impl<'a> Context<'a, '_> {
         )?;
         Ok(TargetTable {
             basis,
+            codomain,
             rows: Rows::Monomial {
                 permutation: target.permutation_table().to_vec(),
                 phases: target.phase_table().to_vec(),
@@ -556,16 +565,22 @@ impl<'a> Context<'a, '_> {
     }
     fn target(&self) -> Result<TargetTable> {
         let declaration = self.declaration();
+        let interface = &self.interfaces[&self.definition];
         if let FnBody::MeaningReference { function } = &declaration.body {
-            let basis = self.closed(&self.interfaces[&self.definition].result, declaration.span)?;
+            let basis = self.closed(interface.meaning_input(), declaration.span)?;
+            let codomain = self.closed(&interface.result, declaration.span)?;
             let signature =
                 TargetTable::signature(&basis, declaration.span).map_err(SourceError::from)?;
-            let target =
-                crate::frontend::meaning::Target::reference(signature, self.global(function)?)
-                    .map_err(|e| self.error(function.span, e.to_string()))?;
+            let target = crate::frontend::meaning::Target::reference(
+                signature,
+                TargetTable::signature(&codomain, declaration.span).map_err(SourceError::from)?,
+                self.global(function)?,
+            )
+            .map_err(|e| self.error(function.span, e.to_string()))?;
             self.budget.charge(declaration.span, target.cells())?;
             return Ok(TargetTable {
                 basis,
+                codomain,
                 rows: Rows::General(target),
             });
         }
@@ -576,7 +591,9 @@ impl<'a> Context<'a, '_> {
         else {
             unreachable!("checked Meaning declaration")
         };
-        let basis = self.closed(&self.interfaces[&self.definition].result, declaration.span)?;
+        let interface = &self.interfaces[&self.definition];
+        let basis = self.closed(interface.meaning_input(), declaration.span)?;
+        let codomain = self.closed(&interface.result, declaration.span)?;
         let width = self.width(&basis, declaration.span)?;
         if width > crate::contract::MAX_CONTRACT_BITS {
             return Err(SourceError::new(
@@ -656,6 +673,7 @@ impl<'a> Context<'a, '_> {
         }
         Ok(TargetTable {
             basis,
+            codomain,
             rows: if *permutation {
                 Rows::Permutation(table)
             } else {

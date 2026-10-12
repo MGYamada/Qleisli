@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/Users/masa/.cargo/bin/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/cli-playground-v030/counterexamples/implicit-discard",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-11T19:36:03.622545+00:00",
+  "elapsed_seconds": 0.004458833020180464,
+  "exit_code": 1,
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"local quantum ownership `unused` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.\",\"primary\":{\"path\":\"main.qli\",\"start\":240,\"end\":246,\"line\":9,\"column\":9},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "local quantum ownership `unused` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.",
+        "primary": {
+          "path": "main.qli",
+          "start": 240,
+          "end": 246,
+          "line": 9,
+          "column": 9
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -84,10 +84,10 @@ fn retained_first_sources_reach_native_checking_and_complex_execution() {
         expected[basis] = [1.0, 0.0];
         amplitudes(&selected(&unitor, "run", basis), &expected);
     }
-    // A valid common judgment must not silently erase the codomain in the
-    // finite adapter, whose general-arrow lowering remains unsupported.
+    // General-arrow lowering now succeeds; this preserved library-style
+    // source still has a quantum argument, outside the closed project entry.
     let finite = check_project(&SourceRoot::new(&preparation).0).unwrap_err();
-    assert_eq!(finite.code, ErrorCode::Unsupported);
+    assert_eq!(finite.code, ErrorCode::InvalidEntry);
 }
 
 #[test]

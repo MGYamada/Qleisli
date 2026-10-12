@@ -2,6 +2,7 @@ import Protocol.Validity
 import QleisliKernel.Qirf.Contract
 import QleisliKernel.Qirf.ControlAccess
 import Protocol.InstrumentContract
+import QleisliKernel.Qirf.PureLeaf
 
 /-! Strict bounded request decoding; acceptance is delegated to the pure kernel.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -47,6 +48,16 @@ private def checkControlOwners (artifact : QleisliKernel.Qirf.Artifact) (order :
   let _ ← QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes
   pure ()
 
+private def checkPureLeaf (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM QleisliKernel.Qirf.PureLeaf.Checked := do
+  adapt (fields value ["format","version","kind","domain","codomain","input","output","matrix"])
+  let domain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "domain")))
+  let codomain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "codomain")))
+  let input ← adapt (port (← adapt (value.getObjVal? "input")))
+  let output ← adapt (port (← adapt (value.getObjVal? "output")))
+  let matrix ← FiniteCodec.readMatrixValue (← adapt (value.getObjVal? "matrix"))
+  QleisliKernel.Qirf.PureLeaf.check artifact order domain codomain input output matrix
+
 def check (bytes : ByteArray) : WorkM Bool := do
   let (body,request) ← adapt (Validity.packet bytes)
   let some request := request | throw .request
@@ -76,6 +87,9 @@ def check (bytes : ByteArray) : WorkM Bool := do
     checkControlOwners artifact order value
   else if kind == "instrument" then do
     let _ ← InstrumentContract.check artifact order value
+    pure ()
+  else if kind == "pure-leaf" then do
+    let _ ← checkPureLeaf artifact order value
     pure ()
   else throw .request
   return true
@@ -208,10 +222,41 @@ structure InstrumentAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order :
   kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "instrument"
   binding : InstrumentContract.Acceptance artifact order value checked work left
 
+/-- Both exact type trees, original ports, matrix request and the actual
+rectangular check are retained. This record is never supplied by a producer. -/
+structure PureLeafAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  domainJson : Json
+  codomainJson : Json
+  inputJson : Json
+  outputJson : Json
+  matrixJson : Json
+  domain : Semantics.Finite.Basis
+  codomain : Semantics.Finite.Basis
+  input : Semantics.Raw.Port
+  output : Semantics.Raw.Port
+  matrix : Semantics.Exact.Matrix
+  checked : QleisliKernel.Qirf.PureLeaf.Checked
+  afterMatrix : Nat
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "pure-leaf"
+  domainBound : value.getObjVal? "domain" = .ok domainJson
+  domainDecoded : Qirf.basis 129 domainJson = .ok domain
+  codomainBound : value.getObjVal? "codomain" = .ok codomainJson
+  codomainDecoded : Qirf.basis 129 codomainJson = .ok codomain
+  inputBound : value.getObjVal? "input" = .ok inputJson
+  inputDecoded : PortBinding inputJson input
+  outputBound : value.getObjVal? "output" = .ok outputJson
+  outputDecoded : PortBinding outputJson output
+  matrixBound : value.getObjVal? "matrix" = .ok matrixJson
+  matrixDecoded : (FiniteCodec.readMatrixValue matrixJson).run work = (.ok matrix,afterMatrix)
+  accepted : (QleisliKernel.Qirf.PureLeaf.check artifact order domain codomain input output matrix).run
+    afterMatrix = (.ok checked,left)
+
 inductive RequestAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
     (value : Json) (work left : Nat) where
   | encoded (binding : EncodedAcceptance artifact order value work left)
   | leaf (binding : LeafAcceptance artifact order value work left)
+  | pureLeaf (binding : PureLeafAcceptance artifact order value work left)
   | control (binding : ControlAcceptance artifact order value work left)
   | controlOwners (binding : ControlOwnersAcceptance artifact order value work left)
   | instrument (binding : InstrumentAcceptance artifact order value work left)
@@ -275,6 +320,28 @@ private theorem checkControlOwners_binding (artifact : QleisliKernel.Qirf.Artifa
   have final := pure_success _ _ _ _ h
   exact ⟨⟨signaturesJson,axesJson,signatures,axes,actual,kindBound,sj,s,aj,a,
     final.2.symm ▸ accepted⟩⟩
+
+private theorem checkPureLeaf_binding (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) (checked : QleisliKernel.Qirf.PureLeaf.Checked)
+    (work left : Nat)
+    (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "pure-leaf")
+    (ok : (checkPureLeaf artifact order value).run work = (.ok checked,left)) :
+    Nonempty (PureLeafAcceptance artifact order value work left) := by
+  unfold checkPureLeaf at ok
+  obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  obtain ⟨domainJson,dj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨domain,dom,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨codomainJson,cj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨codomain,cod,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨inputJson,ij,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨input,i,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨outputJson,oj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨output,o,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨matrixJson,mj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨matrix,afterMatrix,hm,h⟩ := bind_success _ _ _ _ _ h
+  exact ⟨⟨domainJson,codomainJson,inputJson,outputJson,matrixJson,
+    domain,codomain,input,output,matrix,checked,afterMatrix,kindBound,dj,dom,cj,cod,
+    ij,port_binding _ _ i,oj,port_binding _ _ o,mj,hm,h⟩⟩
 
 theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
@@ -375,6 +442,19 @@ theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
                 obtain ⟨binding⟩ := InstrumentContract.check_acceptance artifact order value checked w₉ left
                   (last ▸ accepted)
                 exact ⟨⟨.instrument ⟨checked,kindBound,binding⟩⟩,final.1⟩
-              · cases h
+              · split at h
+                · rename_i isPureLeaf
+                  obtain ⟨checked,middle,accepted,h⟩ := bind_success _ _ _ _ _ h
+                  obtain ⟨_,after,unit,hreturn⟩ := bind_success _ _ _ _ _ h
+                  have final := pure_success _ _ _ _ hreturn
+                  have same := pure_success _ _ _ _ unit
+                  have last : middle = left := (final.2.trans same.2).symm
+                  have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "pure-leaf" := by
+                    simp only [beq_iff_eq] at isPureLeaf
+                    simp [kj,bind,Except.bind,k,isPureLeaf]
+                  obtain ⟨binding⟩ := checkPureLeaf_binding artifact order value checked w₉ left kindBound
+                    (last ▸ accepted)
+                  exact ⟨⟨.pureLeaf binding⟩,final.1⟩
+                · cases h
 
 end QleisliKernel.Protocol.NativeContract

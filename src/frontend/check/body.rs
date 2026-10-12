@@ -238,6 +238,14 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
     let expected = p
         .budget
         .copy_ty(declaration.return_type.span, &interface.result)?;
+    let meaning_domain = if declaration.kind == FnKind::Meaning {
+        Some(
+            p.budget
+                .copy_ty(declaration.span, interface.meaning_input())?,
+        )
+    } else {
+        None
+    };
     let mut checker = Checker {
         program: p,
         definition: id,
@@ -272,16 +280,38 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         FnBody::Meaning {
             permutation,
             function,
-        } => checker.meaning(*permutation, function, &expected, &scope)?,
-        FnBody::MeaningReference { function } => {
-            checker.meaning_reference(function, &expected, &scope)?
+        } => {
+            normalize::expect(
+                meaning_domain.as_ref().expect("Meaning domain"),
+                &expected,
+                &scope.context,
+                declaration.span,
+                &checker.program.budget,
+            )?;
+            checker.meaning(*permutation, function, &expected, &scope)?;
         }
-        FnBody::MeaningCompose { first, second } => {
-            checker.meaning_binary(first, second, false, &expected, &scope)?
-        }
-        FnBody::MeaningTensor { left, right } => {
-            checker.meaning_binary(left, right, true, &expected, &scope)?
-        }
+        FnBody::MeaningReference { function } => checker.meaning_reference(
+            function,
+            meaning_domain.as_ref().expect("Meaning domain"),
+            &expected,
+            &scope,
+        )?,
+        FnBody::MeaningCompose { first, second } => checker.meaning_binary(
+            first,
+            second,
+            false,
+            meaning_domain.as_ref().expect("Meaning domain"),
+            &expected,
+            &scope,
+        )?,
+        FnBody::MeaningTensor { left, right } => checker.meaning_binary(
+            left,
+            right,
+            true,
+            meaning_domain.as_ref().expect("Meaning domain"),
+            &expected,
+            &scope,
+        )?,
         FnBody::Quantum(body) => {
             checker.block(body, &mut scope, Some(&expected))?;
             if let Some(key) = checker.live_owner(&scope, body.span)? {

@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Ordinary general arrows and rectangular reference Meaning for resumed #83",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "54fa33a34c3d2fcd13f0d8e42fc20a9412b9f183",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze approved rectangular syntax and an ordinary general-arrow control before production changes.",
+      "sha256": {
+        "plain/main.qli": "6406bde06bff7a7bd63d91094d72b948c3ce4e503fca715dfa899a210ffa0bb7",
+        "reference/main.qli": "47ef7418236ea5848c9b132ba8328c3d7a7807385f82bdfdf8fc252c72af06b9"
+      },
+      "manifest_sha256": {
+        "plain/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "reference/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/plain-before.json",
+        "observations/reference-before.json",
+        "observations/plain-after.json",
+        "observations/reference-after.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Preserve the first library-style entries unchanged; add explicit Unit-owner preparation and classical readout so the ordinary closed-project entry contract is satisfied. Quantum bodies and requested Plus meaning are unchanged.",
+      "sha256": {
+        "plain/main.qli": "403e40a79faf969b87068399696e7ff270e5bfb633cbbfa5dabbf719598224e0",
+        "reference/main.qli": "f92a47d31ee093e35e8c210ec7cdacef9092f4a119d2cb339f133d2a14edbc87"
+      },
+      "manifest_sha256": {
+        "plain/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "reference/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/plain-closed-check.json",
+        "observations/plain-closed-run.json",
+        "observations/reference-closed-check.json",
+        "observations/reference-closed-run.json"
+      ]
+    }
+  ]
+}

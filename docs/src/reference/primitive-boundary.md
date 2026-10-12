@@ -10,7 +10,7 @@ or discharged guarantee. The remaining decisions in
 [#131](https://github.com/MGYamada/Qleisli/issues/131) remain in those Issues;
 this inventory does not adopt every proposal in them.
 
-The current implementation is `0.3.0-alpha`, in constitutional edition 2026.
+The current implementation is `0.3.0-beta`, in constitutional edition 2026.
 The common original-source judgment uses canonical ordinary `Unit`, `Bit` and
 `Bits<n>` types and one typed sealed catalog. The tables below distinguish the
 existing concrete finite and selected lowering subsets, whose emitter support
