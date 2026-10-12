@@ -145,14 +145,15 @@ impl Checker<'_, '_> {
     pub(super) fn meaning_reference(
         &mut self,
         function: &Ident,
-        basis: &Ty,
+        domain: &Ty,
+        codomain: &Ty,
         scope: &Scope,
     ) -> Result<()> {
         let Target::Declaration(id) = self.resolve(function)? else {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "reference requires a closed ordinary principal-Unitary function",
+                "reference requires a closed ordinary pure function with the declared ports",
             ));
         };
         if matches!(
@@ -162,7 +163,7 @@ impl Checker<'_, '_> {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "reference requires a closed ordinary principal-Unitary function",
+                "reference requires a closed ordinary pure function with the declared ports",
             ));
         }
         let interface = &self.program.interfaces[&id];
@@ -170,10 +171,10 @@ impl Checker<'_, '_> {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "reference requires a closed ordinary principal-Unitary function with one Q<A> input",
+                "reference requires a closed ordinary pure function with one Q<A> input",
             ));
         }
-        let expected = Ty::quantum(self.program.budget.copy_ty(function.span, basis)?);
+        let expected = Ty::quantum(self.program.budget.copy_ty(function.span, domain)?);
         self.program.budget.ty(function.span, &expected)?;
         normalize::expect(
             &interface.params[0],
@@ -184,14 +185,22 @@ impl Checker<'_, '_> {
         )?;
         normalize::expect(
             &interface.result,
-            &expected,
+            &Ty::quantum(self.program.budget.copy_ty(function.span, codomain)?),
             &scope.context,
             function.span,
             &self.program.budget,
         )?;
         // Formation owns no live quantum state and grants no operation access.
         // The dependency edge still participates in all-declaration cycle checks.
-        self.effects.require_unitary(id, function.span);
+        self.effects.require_effect(
+            id,
+            if domain == codomain {
+                Effect::Unitary
+            } else {
+                Effect::Isometry
+            },
+            function.span,
+        );
         self.edge(id, function.span)
     }
     pub(super) fn meaning_binary(
@@ -199,7 +208,8 @@ impl Checker<'_, '_> {
         first: &Ident,
         second: &Ident,
         tensor: bool,
-        basis: &Ty,
+        domain: &Ty,
+        codomain: &Ty,
         scope: &Scope,
     ) -> Result<()> {
         let left =
@@ -209,24 +219,49 @@ impl Checker<'_, '_> {
         self.program.budget.charge(first.span, 2)?;
         self.edges.push((left, first.span));
         self.edges.push((right, second.span));
-        let a = &self.program.interfaces[&left].result;
-        let b = &self.program.interfaces[&right].result;
+        let a = &self.program.interfaces[&left];
+        let b = &self.program.interfaces[&right];
         if tensor {
-            let product = Ty::pair(
-                self.program.budget.copy_ty(first.span, a)?,
-                self.program.budget.copy_ty(second.span, b)?,
-            );
-            self.program.budget.ty(first.span, &product)?;
+            for (left, right, target) in [
+                (a.meaning_input(), b.meaning_input(), domain),
+                (&a.result, &b.result, codomain),
+            ] {
+                let product = Ty::pair(
+                    self.program.budget.copy_ty(first.span, left)?,
+                    self.program.budget.copy_ty(second.span, right)?,
+                );
+                self.program.budget.ty(first.span, &product)?;
+                normalize::expect(
+                    &product,
+                    target,
+                    &scope.context,
+                    first.span,
+                    &self.program.budget,
+                )?;
+            }
+            Ok(())
+        } else {
             normalize::expect(
-                &product,
-                basis,
+                a.meaning_input(),
+                domain,
                 &scope.context,
                 first.span,
                 &self.program.budget,
+            )?;
+            normalize::expect(
+                &a.result,
+                b.meaning_input(),
+                &scope.context,
+                second.span,
+                &self.program.budget,
+            )?;
+            normalize::expect(
+                &b.result,
+                codomain,
+                &scope.context,
+                second.span,
+                &self.program.budget,
             )
-        } else {
-            normalize::expect(a, basis, &scope.context, first.span, &self.program.budget)?;
-            normalize::expect(b, basis, &scope.context, second.span, &self.program.budget)
         }
     }
     pub(super) fn meaning(
@@ -485,6 +520,13 @@ impl Checker<'_, '_> {
                 self.effects
                     .require_unitary(implementation_id, implementation.span);
                 self.edge(meaning, specification.span)?;
+                normalize::expect(
+                    basis,
+                    self.program.interfaces[&meaning].meaning_input(),
+                    &scope.context,
+                    specification.span,
+                    &self.program.budget,
+                )?;
                 normalize::expect(
                     basis,
                     &self.program.interfaces[&meaning].result,

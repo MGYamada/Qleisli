@@ -5,6 +5,17 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [rectangular Meaning study](rectangular-meaning-v030/README.md) preserves
+first-source profile/parser failures, their later closed-entry refusals and
+explicit readout adapters. Small exact native equations and cross-adapter
+execution remain separate from source/runtime preservation claims.
+
+The [installed CLI playground](cli-playground-v030/README.md) retains small
+Bell/independent/GHZ, phase-interference and teleportation first sources,
+unchanged algorithm replays and deliberate ownership/algorithm counterexamples.
+Analytical expectations, actual outputs and executable identities distinguish
+numerical observations from general proofs and source-preservation claims.
+
 The [observing-contract boundary study](instrument-contract-v030/README.md)
 preserves four first projects and their actual selected Raw results. A separate
 bounded experiment matches thirteen native histories with an independent exact

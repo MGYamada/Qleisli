@@ -1,6 +1,6 @@
 # Functional abstraction and the quantum boundary
 
-This chapter is normative for the current `0.3.0-alpha` callable and abstraction
+This chapter is normative for the current `0.3.0-beta` callable and abstraction
 boundary in constitutional edition 2026. It follows the
 [ordinary decision in #80](https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668)
 and is subordinate to the [authority hierarchy](authority.md). Rust and Haskell

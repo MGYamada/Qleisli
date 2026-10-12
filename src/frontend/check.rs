@@ -8,6 +8,8 @@ mod body;
 mod declarations;
 mod normalize;
 pub(super) mod primitive;
+#[cfg(test)]
+mod rectangular_meaning_tests;
 mod static_helpers;
 
 use super::ast::{self, FnKind, Span};
@@ -309,8 +311,15 @@ pub(super) struct Interface {
     pub kind: FnKind,
     pub statics: Vec<StaticFormal>,
     pub params: Vec<Ty>,
+    pub meaning_domain: Option<Ty>,
     pub result: Ty,
     pub premises: Context,
+}
+
+impl Interface {
+    pub(super) fn meaning_input(&self) -> &Ty {
+        self.meaning_domain.as_ref().unwrap_or(&self.result)
+    }
 }
 
 #[derive(Clone, Debug)]

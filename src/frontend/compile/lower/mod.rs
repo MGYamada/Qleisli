@@ -596,6 +596,32 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
+        if count.is_none() {
+            let op = if let Some(op) = self.bound_operation(function) {
+                Some(op.clone())
+            } else {
+                match self.compiler.resolve(module, function)? {
+                    Callee::User(key) => {
+                        let (params, result) = self.compiler.signature(&key)?;
+                        if crate::frontend::types::UnaryInterface::new(&params, &result)
+                            .is_some_and(|ports| ports.input != ports.output)
+                        {
+                            Some(self.compiler.provider(module, function, None)?)
+                        } else {
+                            // Endomorphic named calls retain their existing
+                            // shared contract steps, including nested evidence.
+                            // Wrapping them in a new provider would change that
+                            // identity across power, inverse and control.
+                            None
+                        }
+                    }
+                    Callee::Sealed(..) => None,
+                }
+            };
+            if let Some(op) = op {
+                return self.apply_operation(module, span, &op, value, Access::Adjoint);
+            }
+        }
         let slot = self.quantum(module, input.span, &value, false)?;
         let basis = self.raw.registers[&slot].basis.clone();
         let access = if count.is_none() {
@@ -864,13 +890,11 @@ impl Lowerer<'_, '_> {
                 ));
             }
             let value = values.into_iter().next().expect("one argument");
-            let slot = self.quantum(module, span, &value, false)?;
-            let basis = self.raw.registers[&slot].basis.clone();
-            let steps = self
-                .operation_steps(module, callee, &basis, env, Access::Apply)?
-                .expect("bound operation");
-            self.apply_circuit(slot, steps);
-            return Ok(value);
+            let op = self
+                .bound_operation(callee)
+                .expect("bound operation")
+                .clone();
+            return self.apply_operation(module, span, &op, value, Access::Apply);
         }
         let site = CallSite {
             module,
@@ -989,21 +1013,8 @@ impl Lowerer<'_, '_> {
                     );
                 }
                 let value = self.expr(module, input, env)?;
-                let slot = self.quantum(module, input.span, &value, false)?;
-                let basis = self.raw.registers[&slot].basis.clone();
                 let op = self.operation(module, operation, env)?;
-                if op.basis != basis {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        "operation and input have different exact basis trees",
-                    ));
-                }
-                let steps = op.steps(module, expr.span, Access::Apply, self.compiler)?;
-                self.check_transformed(module, expr.span, &basis, &steps, op.meaning.as_ref())?;
-                self.apply_circuit(slot, steps);
-                Ok(value)
+                self.apply_operation(module, expr.span, &op, value, Access::Apply)
             }
             ExprKind::Adjoint { operation, input }
                 if !matches!(operation.kind, StaticOpKind::Name(_)) =>

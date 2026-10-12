@@ -3,6 +3,77 @@ use super::super::operations::{Bindings, Operation};
 use super::*;
 
 impl Lowerer<'_, '_> {
+    pub(super) fn apply_operation(
+        &mut self,
+        module: &str,
+        span: Span,
+        op: &Operation,
+        value: Value,
+        access: Access,
+    ) -> Result<Value, CompileError> {
+        let slot = self.quantum(module, span, &value, false)?;
+        let (domain, codomain) = if access == Access::Adjoint {
+            (&op.codomain, &op.basis)
+        } else {
+            (&op.basis, &op.codomain)
+        };
+        if self.raw.registers[&slot].basis != *domain {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "operation and argument have different exact basis trees",
+            ));
+        }
+        if !op.needs_raw() {
+            let steps = op.steps(module, span, access, self.compiler)?;
+            self.apply_circuit(slot, steps);
+            return Ok(value);
+        }
+        let body = op.raw(module, span, access, self.compiler)?;
+        let original = &self.raw.registers[&slot];
+        let input = QuantumPort {
+            token: original.token,
+            wires: original.wires.clone(),
+            shape: body.boundary().input().shape,
+        };
+        let start = self.raw.operations.len();
+        let output = crate::frontend::raw_splice::append(
+            &mut self.raw,
+            body.program(),
+            &input,
+            &mut self.compiler.exact_work,
+        )
+        .map_err(|e| self.compiler.op_error(module, span, e))?;
+        // Check the actual renamed fragment, including its concrete ordered ports.
+        let emitted = RawProgram {
+            quantum_inputs: vec![input],
+            classical_inputs: vec![],
+            operations: self.raw.operations[start..].to_vec(),
+            quantum_outputs: vec![output.token],
+            classical_outputs: vec![],
+            declared_effect: body.program().raw().declared_effect,
+        };
+        crate::frontend::pure::check(
+            &self.compiler.kernel,
+            &emitted,
+            body.boundary().domain(),
+            body.boundary().codomain(),
+            Some(body.meaning()),
+            &mut self.compiler.exact_work,
+        )
+        .map_err(|e| self.compiler.op_error(module, span, e))?;
+        self.add_effect(module, span, emitted.declared_effect);
+        self.raw.registers.insert(
+            slot,
+            Register {
+                token: output.token,
+                wires: output.wires,
+                basis: codomain.clone(),
+            },
+        );
+        Ok(Value::Quantum(slot, Ty::quantum(codomain.clone())))
+    }
     pub(super) fn constructed_inverse(
         &mut self,
         module: &str,
@@ -12,19 +83,8 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
-        let slot = self.quantum(module, input.span, &value, false)?;
         let op = self.operation(module, operation, env)?;
-        if op.basis != self.raw.registers[&slot].basis {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "inverse operation and input have different exact basis trees",
-            ));
-        }
-        let steps = op.steps(module, span, Access::Adjoint, self.compiler)?;
-        self.apply_circuit(slot, steps);
-        Ok(value)
+        self.apply_operation(module, span, &op, value, Access::Adjoint)
     }
 
     pub(super) fn controlled_application(
@@ -179,7 +239,7 @@ impl Lowerer<'_, '_> {
             let actual = self.operation(site.module, arg, env)?;
             let binding = self.compiler.locals.binder(&param.name);
             let required = &expected[self.compiler.locals.key(binding)];
-            if actual.basis != required.basis {
+            if actual.basis != required.basis || actual.codomain != required.codomain {
                 return Err(self.error(
                     site.module,
                     arg.span,
@@ -202,7 +262,11 @@ impl Lowerer<'_, '_> {
             for access in [Access::Apply, Access::Adjoint, Access::Controlled] {
                 if required.access[super::super::operations::access_index(access)] {
                     // Validate requested derived access even for an unused parameter.
-                    actual.steps(site.module, arg.span, access, self.compiler)?;
+                    if actual.needs_raw() {
+                        actual.raw(site.module, arg.span, access, self.compiler)?;
+                    } else {
+                        actual.steps(site.module, arg.span, access, self.compiler)?;
+                    }
                 }
             }
             self.compiler

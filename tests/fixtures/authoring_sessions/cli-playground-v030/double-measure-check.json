@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/Users/masa/.cargo/bin/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/cli-playground-v030/counterexamples/double-measure",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-11T19:36:03.615933+00:00",
+  "elapsed_seconds": 0.006019250024110079,
+  "exit_code": 1,
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` has already been consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":292,\"end\":293,\"line\":10,\"column\":30},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "quantum ownership `q` has already been consumed",
+        "primary": {
+          "path": "main.qli",
+          "start": 292,
+          "end": 293,
+          "line": 10,
+          "column": 30
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

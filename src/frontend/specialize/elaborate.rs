@@ -1510,7 +1510,7 @@ impl Builder<'_> {
                     let (ports, _, _) =
                         operation_signature(operation, &self.definitions, function.span)?;
                     if ports.input.quantum_basis() != Some(&target.basis)
-                        || ports.output.quantum_basis() != Some(&target.basis)
+                        || ports.output.quantum_basis() != Some(&target.codomain)
                     {
                         return Err(error(
                             "type",
@@ -1851,15 +1851,15 @@ impl Builder<'_> {
                     )
                 })?;
                 let (ports, effect, _) = operation_signature(&operation, &self.definitions, *span)?;
-                if effect != Effect::Unitary {
+                if effect > Effect::Isometry {
                     return Err(error(
                         "effect",
                         *span,
-                        "checked_op requires a principal-Unitary provider",
+                        "checked_op requires a pure provider",
                     ));
                 }
                 if ports.input.quantum_basis() != Some(&target.basis)
-                    || ports.output.quantum_basis() != Some(&target.basis)
+                    || ports.output.quantum_basis() != Some(&target.codomain)
                 {
                     return Err(error(
                         "type",
@@ -2626,10 +2626,16 @@ impl Builder<'_> {
                 let formal = matches!(argument, Argument::Natural(Natural {
                     kind: NatKind::Name(name), ..
                 }) if name.get(&scope.operations).is_some());
-                // Opaque arrows exchange their exact ports under adjoint.
-                // Reuse the static inverse constructor and its source replay;
-                // ordinary named runtime groups retain their existing rule.
-                let kind = if formal {
+                // Unary arrows exchange their exact ports under adjoint through
+                // the same inverse constructor and source replay as opaque Ops.
+                // Multi-owner runtime groups retain their endomorphic rule.
+                let unary = op.target().is_none_or(|id| {
+                    let definition = &self.definitions[id];
+                    definition.inputs.len() == 1
+                        && definition.inputs[0].ty.quantum_basis().is_some()
+                        && definition.output.ty.quantum_basis().is_some()
+                });
+                let kind = if formal || unary {
                     let (ports, _, _) = operation_signature(&op, &self.definitions, span)?;
                     if ports.input != ports.output {
                         self.charge_cells(9, span)?;

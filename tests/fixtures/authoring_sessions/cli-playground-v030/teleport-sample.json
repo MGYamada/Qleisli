@@ -1,0 +1,287 @@
+{
+  "command": [
+    "/Users/masa/.cargo/bin/qleisli",
+    "sample",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/cli-playground-v030/attempt-01/teleport",
+    "--shots=32",
+    "--seed=42",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-11T19:36:02.147536+00:00",
+  "elapsed_seconds": 0.4274689999874681,
+  "exit_code": 0,
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"42\",\"shots\":[{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[false,true,true],\"execution_steps\":37},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[false,false,true],\"execution_steps\":36},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[true,true,true],\"execution_steps\":38},{\"bits\":[true,false,true],\"execution_steps\":37},{\"bits\":[true,true,true],\"execution_steps\":38}],\"execution_steps\":1185}}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "sample",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "rng": "splitmix64-v1",
+      "seed": "42",
+      "shots": [
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "execution_steps": 36
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "execution_steps": 37
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true
+          ],
+          "execution_steps": 38
+        }
+      ],
+      "execution_steps": 1185
+    }
+  }
+}

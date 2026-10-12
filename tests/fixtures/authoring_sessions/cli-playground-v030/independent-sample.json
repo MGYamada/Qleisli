@@ -1,0 +1,927 @@
+{
+  "command": [
+    "/Users/masa/.cargo/bin/qleisli",
+    "sample",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/cli-playground-v030/attempt-01/independent",
+    "--shots=128",
+    "--seed=42",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-11T19:35:57.728792+00:00",
+  "elapsed_seconds": 0.4433113751001656,
+  "exit_code": 0,
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"42\",\"shots\":[{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,true],\"execution_steps\":12},{\"bits\":[true,false],\"execution_steps\":12}],\"execution_steps\":1536}}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "sample",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "rng": "splitmix64-v1",
+      "seed": "42",
+      "shots": [
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "execution_steps": 12
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "execution_steps": 12
+        }
+      ],
+      "execution_steps": 1536
+    }
+  }
+}

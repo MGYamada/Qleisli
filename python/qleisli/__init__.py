@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 
-__version__ = "0.3.0-alpha"
+__version__ = "0.3.0-beta"
 __all__ = ["Client", "Program", "QleisliError"]
 
 

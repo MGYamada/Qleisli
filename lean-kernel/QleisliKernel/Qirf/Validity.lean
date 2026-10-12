@@ -44,7 +44,7 @@ theorem inspect_projection (artifact : Qirf.Artifact) (order : Array Nat)
       guard (used.all id)
       let program ← lift (readOption artifact.programs[artifact.root]?)
       let _ ← Raw.Observation.verify dependencies program
-      guard (interfaceValid artifact program) .request
+      guard (portInterfaceValid artifact program) .request
       match request with
       | none => pure ()
       | some request => requested artifact dependencies program request) := by
@@ -59,7 +59,7 @@ structure RootPostcondition (artifact : Qirf.Artifact) (order : Array Nat)
   original : artifact.programs[artifact.root]? = some root.program
   verification : ∃ a b,
     (Raw.Observation.verify root.dependencies root.program).run a = (.ok root.checked,b)
-  interface : interfaceValid artifact root.program = true
+  interface : portInterfaceValid artifact root.program = true
 
 structure EquationPostcondition (artifact : Qirf.Artifact) (dependencies : List Dependency)
     (program : Program) (request : Request) (equation : Equation) : Prop where
@@ -188,7 +188,7 @@ theorem inspect_checked (artifact : Qirf.Artifact) (order : Array Nat)
       (checkGraph artifact order).run work = (.ok dependencies,a) ∧
       artifact.programs[artifact.root]? = some program ∧
       (Raw.Observation.verify dependencies program).run b = (.ok checked,c) ∧
-      interfaceValid artifact program = true ∧
+      portInterfaceValid artifact program = true ∧
       ((match request with | none => pure () | some r => requested artifact dependencies program r) : WorkM Unit).run d =
         (.ok (),left) := by
   rw [inspect_projection] at ok

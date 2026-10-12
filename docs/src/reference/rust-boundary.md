@@ -6,7 +6,7 @@ semantics; use distinct syntax when that intuition would misdescribe a quantum
 operation.** Familiar spelling is not evidence of a physical operation, an
 ownership transition or a checked mathematical law.
 
-This chapter specifies the current `0.3.0-alpha` boundary in edition 2026 under
+This chapter specifies the current `0.3.0-beta` boundary in edition 2026 under
 the [authority hierarchy](authority.md). It applies the ordinary
 [#68 diagnostics decision](https://github.com/MGYamada/Qleisli/issues/68#issuecomment-6009785277),
 the [type model](type-model.md) and the

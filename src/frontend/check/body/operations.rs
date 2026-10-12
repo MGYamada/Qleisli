@@ -136,6 +136,31 @@ impl Checker<'_, '_> {
                     Ty::tuple(inputs)
                 };
                 self.program.budget.ty(name.span, &group)?;
+                if requested == Access::Adjoint
+                    && group != result
+                    && group.quantum_basis().is_some()
+                    && result.quantum_basis().is_some()
+                {
+                    let operation = self.named_operation_with(
+                        name,
+                        arguments,
+                        scope,
+                        false,
+                        OperationMode {
+                            arrows: true,
+                            ..OperationMode::ENDO
+                        },
+                    )?;
+                    access(&operation, requested, span)?;
+                    normalize::expect(
+                        target,
+                        &result,
+                        &scope.context,
+                        target_span,
+                        &self.program.budget,
+                    )?;
+                    return Ok(group);
+                }
                 if !runtime_quantum_group(&group, name.span, &self.program.budget)? {
                     return Err(SourceError::new(
                         "type",
@@ -1093,20 +1118,18 @@ impl Checker<'_, '_> {
                 self.edge(meaning, op.span)?;
                 normalize::expect(
                     &operation.basis,
+                    self.program.interfaces[&meaning].meaning_input(),
+                    &scope.context,
+                    op.span,
+                    &self.program.budget,
+                )?;
+                normalize::expect(
+                    operation.output(),
                     &self.program.interfaces[&meaning].result,
                     &scope.context,
                     op.span,
                     &self.program.budget,
                 )?;
-                if operation.codomain.is_some() {
-                    normalize::expect(
-                        operation.output(),
-                        &self.program.interfaces[&meaning].result,
-                        &scope.context,
-                        op.span,
-                        &self.program.budget,
-                    )?;
-                }
                 self.obligation(
                     op.span,
                     ObligationKind::MeaningEquality {

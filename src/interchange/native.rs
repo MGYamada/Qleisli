@@ -109,6 +109,7 @@ impl Kernel {
                 output_ports,
                 source_instruments: Arc::from([]),
                 source_instrument_calls: Arc::from([]),
+                source_pure_equations: Arc::from([]),
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -310,11 +311,14 @@ pub struct AcceptedProgram {
     derived_effect: crate::ir::Effect,
     output_ports: Vec<crate::ir::QuantumPort>,
     // Inert retention for a future source-to-artifact replay/audit consumer
-    // (#356): no current replay, execution or export path reads these fields.
+    // (#356): no current replay, execution or export path reads these two fields.
     // Equations are checked before attachment; retention grants no authority,
     // adds no whole-root request and does not prove source preservation.
     source_instruments: Arc<[Arc<crate::contract::instrument::InstrumentEvidence>]>,
     source_instrument_calls: Arc<[crate::contract::instrument::InstrumentCall]>,
+    // Separate source-associated pure equations, exposed by the getter below
+    // and inspected by the rectangular Meaning regressions.
+    source_pure_equations: Arc<[Arc<super::pure_leaf::SourcePureEquation>]>,
 }
 impl AcceptedProgram {
     pub fn artifact(&self) -> &[u8] {
@@ -343,6 +347,18 @@ impl AcceptedProgram {
     }
     pub fn output_ports(&self) -> &[crate::ir::QuantumPort] {
         &self.output_ports
+    }
+    /// Source-associated equations retain original bodies and requests. They
+    /// do not establish a whole-program source or runtime preservation theorem.
+    pub fn source_pure_equations(&self) -> &[Arc<super::pure_leaf::SourcePureEquation>] {
+        &self.source_pure_equations
+    }
+    pub(crate) fn retain_pure_equations(
+        mut self,
+        equations: Vec<Arc<super::pure_leaf::SourcePureEquation>>,
+    ) -> Self {
+        self.source_pure_equations = equations.into();
+        self
     }
     pub(crate) fn kernel(&self) -> Kernel {
         Kernel::new(self.checker())
