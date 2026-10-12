@@ -369,6 +369,24 @@ class SyntheticRelease(unittest.TestCase):
                     checker.requirements(self.root, self.base, checker.Snapshot(),
                                          product_version='0.3.0-beta')
 
+    def test_reviewed_issue_63_exclusion_is_retained_without_implementation_credit(self):
+        row = next(row for row in self.requirements['issues'] if row['id'] == 63)
+        row['criteria'][0].update(scope='explicit-later-version', roles=[])
+        self.write(checker.REQUIREMENTS, encoded(self.requirements))
+        self.base = self.commit()
+        self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
+        record = next(row for row in self.acceptance['issues'] if row['id'] == 63)['criteria'][0]
+        record.update(disposition='explicit-later-version', evidence={})
+        self.write(checker.ACCEPTANCE, encoded(self.acceptance))
+        snapshot = checker.Snapshot()
+        expected, raw = checker.requirements(self.root, self.base, snapshot,
+                                              product_version='0.3.0-beta')
+        checker.acceptance(self.root, expected, raw, snapshot, self.ledger)
+        record['disposition'] = 'implemented'
+        self.write(checker.ACCEPTANCE, encoded(self.acceptance))
+        with self.assertRaisesRegex(PacketError, 'unresolved or unauthorized exclusion'):
+            checker.acceptance(self.root, expected, raw, checker.Snapshot(), self.ledger)
+
     def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)
         current_acceptance = copy.deepcopy(self.acceptance)

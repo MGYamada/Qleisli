@@ -455,7 +455,9 @@ The checker retains the historical 111-Issue groups separately and adds exactly
 the sixteen beta-scope Issues. Closed Issues require the same criterion evidence.
 #83 and #39 are resumed: their historical deferrals cannot pass the complete
 feature gate, even when present in an older caller-reviewed requirements base.
-The existing explicitly approved generic-QFT exclusion remains separate.
+The maintainer reaffirmed #63's all-v0.3.0 exclusion on 2026-10-12: audit its
+reviewed exclusion without implementation-completion credit. The existing
+explicitly approved generic-QFT exclusion also remains separate.
 
 The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)
 and [human approval](../../release/alpha-scope-approval.json), recorded in

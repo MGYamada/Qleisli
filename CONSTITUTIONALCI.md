@@ -224,7 +224,10 @@ candidate cannot reduce scope. The complete-feature inventory is the 127 Issues
 in the 2026-10-12 beta plan under #142; the original 111 remain recorded as
 history. #83 and #39 require completion after their explicit resumption, so
 an older reviewed deferral cannot authorize beta readiness. Closed Issues still
-require current evidence. The approved generic-QFT exclusion remains separate.
+require current evidence. The maintainer reaffirmed #63's all-v0.3.0 exclusion:
+127 entries require audit, with 126 subject to applicable completion criteria
+and #63 recorded as an exclusion, never implementation credit. The approved
+generic-QFT exclusion remains separate.
 GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
 
