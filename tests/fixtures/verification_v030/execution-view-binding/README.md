@@ -120,3 +120,24 @@ typed requests and retained runtime graphs, checking the same descriptions and
 missing/unexpected reference rejection with a shared bounded writer. Original
 caller cache/Arc aliases, hierarchy execution and production protocol cutover
 remain pending. This adds no execution authority or #362 completion credit.
+
+## Original caller alias discovery
+
+[Caller recipes](caller-alias-recipes.json) preserve the first three expected
+alias-index sequences, specified before the collector, and a fourth case for
+both branch arms and certified use/logical circuits. Complete descriptions
+were then authored independently of walker/native output. Rust freshly checks
+the actual function receipts and original artifacts, discovers each distinct
+actual Arc, and compares the complete descriptions. Equal independently checked
+parents contain distinct child Arcs that the original encoder's early snapshot
+deduplication does not visit. The collector must retain those children too.
+
+The [first branch refusal](first-caller-branch-refusal.json) preserves the exact
+original artifact string and actual Rust/native diagnostic. Its phi output
+reused wire0; existing global wire freshness requires the corrected wire2.
+The regression freshly rechecks the original `invalid_ir` refusal. This is
+an input-authoring correction, not a new checker acceptance rule or a divergent
+view refusal. Alias index lookup proposes a binding and cannot establish cache
+equality. Independent Lean alias comparison and production integration remain
+pending. The shared node, byte and depth ceilings are unchanged; no maximum
+quantum instance is generated.

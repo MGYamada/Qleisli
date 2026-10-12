@@ -262,6 +262,46 @@ or unexpected reference graphs. These checks do not bind original caller Arc
 aliases/caches or hierarchy execution and do not complete the native CLI or
 protocol cutover. No execution handle or new guarantee is issued by the walker.
 
+## Original caller evidence aliases
+
+The test-only caller collector retains the supplied root program, its optional
+interface and every distinct actual `Arc<FunctionEvidence>` reachable through
+implementation bodies, specification bodies and cached circuit steps. It walks
+both complete classical branch arms and both certified use/logical step lists.
+Repeated references to one Arc retain one entry; distinct Arcs retain separate
+entries even when their snapshot keys are equal. Private addresses identify
+objects during discovery and are never encoded.
+
+The record is `caller-origin(interface-or-null, actual-root-program, aliases)`.
+Each alias is `evidence-alias(original-evidence-index, function-evidence)` with
+the complete actual function description specified above. An index is proposed
+by the original encoder's canonical snapshot map. That lookup is not evidence
+that the actual body, matrix, circuit or descendants equal Lean's fresh result.
+Every alias still requires independent native comparison against its proposed
+original entry before any execution handle can be issued.
+
+This extra traversal is necessary because the artifact encoder returns early
+when it finds an equal snapshot. That encoder registers the directly encountered
+Arc but need not visit that alias's distinct child Arcs. Describing only the
+fresh Rust-decoded artifact or consulting only the encoder's direct pointer map
+would omit actual caller caches. A missing original snapshot mapping refuses;
+the collector cannot manufacture a new evidence-table entry from a cache.
+
+One shared discovery counter charges operations, circuit steps and distinct Arcs
+against the existing 1,000,000-node transport capacity. Description construction
+uses one writer with the existing total-byte and depth limits. These are host
+transport bounds, not quantitative quantum resource certificates.
+
+The [caller recipes](../../../tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json)
+specify four complete descriptions independently of the walkers: repeated Arc,
+separate equal clone, equal independently checked parents with distinct child
+Arcs, and references in an unselected branch's certified use/logical circuits.
+The [original branch refusal](../../../tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json)
+retains the first invalid phi wire and real diagnostic; the regression rechecks
+that native refusal before exercising the corrected fresh-wire case.
+These tests add no acceptance authority. Lean alias comparison, private unbound
+staging, hierarchy execution and the versioned protocol cutover remain required.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

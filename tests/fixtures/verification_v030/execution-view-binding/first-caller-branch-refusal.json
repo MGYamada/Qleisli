@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.execution-view-authoring-refusal",
+  "version": 1,
+  "case": "caller branch phi reuses globally issued wire",
+  "original_artifact_text": "{\"evidence\":[{\"identity\":{\"implementation\":\"leaf\",\"sources\":[],\"specification\":\"flip\"},\"implementation\":1,\"signature\":{\"tag\":\"bit\"},\"specification\":2,\"tag\":\"circuit\"}],\"format\":\"qleisli.finite-ir\",\"profile\":\"finite-meaning-v1\",\"programs\":[{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"output\":0,\"tag\":\"classical_const\",\"value\":true},{\"classical_phis\":[],\"condition\":0,\"else_ops\":[{\"ancilla_wires\":[1],\"function\":[0,0],\"logical_steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}],\"source\":0,\"source_out\":2,\"tag\":\"certified_compute\",\"use_steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}]}],\"quantum_phis\":[{\"else_token\":2,\"output\":3,\"output_wires\":[0],\"then_token\":1}],\"tag\":\"classical_branch\",\"then_ops\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}]}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[3]},{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"indices\":[0],\"permutation\":[1,0],\"phases\":[0,0],\"tag\":\"monomial\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[1]},{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"indices\":[0],\"permutation\":[1,0],\"phases\":[0,0],\"tag\":\"monomial\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[1]}],\"root\":0,\"root_interface\":null,\"sources\":[],\"version\":2}",
+  "observed_command": [
+    "python3",
+    "scripts/run_kernel_tests.py",
+    "--",
+    "cargo",
+    "test",
+    "--offline",
+    "--lib",
+    "interchange::execution_view::finite::caller::tests::aliases_include_children_hidden_by_equal_snapshot_deduplication"
+  ],
+  "observed_environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "observed_exit_code": 101,
+  "observed_diagnostic": "recipe branch-certified: Err(Error { code: \"invalid_ir\", message: \"Lean native checker rejected the artifact/request; no fallback\", json_pointer: \"\" }); original artifact: {\"evidence\":[{\"identity\":{\"implementation\":\"leaf\",\"sources\":[],\"specification\":\"flip\"},\"implementation\":1,\"signature\":{\"tag\":\"bit\"},\"specification\":2,\"tag\":\"circuit\"}],\"format\":\"qleisli.finite-ir\",\"profile\":\"finite-meaning-v1\",\"programs\":[{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"output\":0,\"tag\":\"classical_const\",\"value\":true},{\"classical_phis\":[],\"condition\":0,\"else_ops\":[{\"ancilla_wires\":[1],\"function\":[0,0],\"logical_steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}],\"source\":0,\"source_out\":2,\"tag\":\"certified_compute\",\"use_steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}]}],\"quantum_phis\":[{\"else_token\":2,\"output\":3,\"output_wires\":[0],\"then_token\":1}],\"tag\":\"classical_branch\",\"then_ops\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"adjoint\":false,\"evidence\":0,\"indices\":[0],\"tag\":\"contract\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}]}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[3]},{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"indices\":[0],\"permutation\":[1,0],\"phases\":[0,0],\"tag\":\"monomial\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[1]},{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"input\":0,\"output\":1,\"steps\":[{\"action\":{\"indices\":[0],\"permutation\":[1,0],\"phases\":[0,0],\"tag\":\"monomial\"},\"controls\":[]}],\"tag\":\"apply_unitary\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":0,\"wires\":[0]}],\"quantum_outputs\":[1]}],\"root\":0,\"root_interface\":null,\"sources\":[],\"version\":2}",
+  "native_error_code": "invalid_ir",
+  "correction": {
+    "json_pointer": "/programs/0/operations/1/quantum_phis/0/output_wires/0",
+    "original": 0,
+    "replacement": 2
+  },
+  "scope": "Authoring error: the phi must use a fresh wire identity. The original refuses at existing native validity before any execution-view comparison. No checker acceptance rule is changed."
+}

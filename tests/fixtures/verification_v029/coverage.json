@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "b58433f8dedd2c29cc954a0c24e4cc59c8d4c553bf3ecdb594aa29cf288abe5d",
+  "surface_sha256": "769444b22513c1ee92db4717ecc56f62d4163c374cb259cb747cca2387106ae6",
   "groups": [
     {
       "id": "raw-core",
@@ -935,7 +935,8 @@
       "evidence": [
         "src/interchange/execution_view/finite/tests.rs",
         "tests/execution_view_vectors.lean",
-        "docs/src/reference/execution-view.md"
+        "docs/src/reference/execution-view.md",
+        "src/interchange/execution_view/finite/caller/tests.rs"
       ],
       "proof_gates": [
         "S05-C1",

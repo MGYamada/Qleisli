@@ -34,8 +34,11 @@ and exactness obligations retain their recorded scopes and status.
   to the original packet and continuous decoder/checker execution in Lean.
   Add a pure comparison gate for complete contract data, including both fresh
   observing graphs, with eight shared cases and 1,152 individual data refusals.
-  Rust walks actual retained request/graph data with one bounded writer; original
-  caller cache/Arc aliases and production integration remain pending.
+  Rust walks actual retained request/graph data with one bounded writer.
+  Collect every distinct original caller evidence Arc, including children
+  hidden by snapshot deduplication and references in both branch arms and
+  certified use/logical circuits; exercise four independent complete descriptions.
+  Native alias comparison and production integration remain pending.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

@@ -4799,7 +4799,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "2e6d3d0fac97bbb1e1ed93c129ff8aa57323556f145dffbb770ba61d3439785b",
+      "sha256": "51539d743021059b114439e44a437e45ba8608dc3e13840250a3f5e64ec7eab9",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5422,6 +5422,26 @@
       "sha256": "c4a5676bd6d56b63d33297183ae46e3a9711f0d091c0f4aa37a8145ab10ef19f",
       "group": "execution-view-encoding",
       "surface": null
+    },
+    {
+      "path": "src/interchange/execution_view/finite/caller.rs",
+      "group": "execution-view-encoding",
+      "sha256": "cc88b7eb36f79d1606524e5a174dd1a857b0d17094fc6f077534a7693c714374",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/caller/tests.rs",
+      "group": "execution-view-encoding",
+      "sha256": "faf199b6539f9ef1c4ec762850bc5e4fc84963c4151fc3f8df2c401ce8f1fd5e",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [

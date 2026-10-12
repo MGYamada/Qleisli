@@ -630,6 +630,7 @@ pub(in crate::interchange) fn graph(
     Ok(writer.bytes)
 }
 
+pub(super) mod caller;
 pub(super) mod contracts;
 
 #[cfg(test)]
