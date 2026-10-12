@@ -8,7 +8,7 @@ Qleisli is an experimental language for structured quantum algorithms, with
 linear quantum ownership, explicit measurement effects and exact semantic
 contracts. Its Rust frontend produces IR checked independently by a native
 Lean verifier. Human-written and AI-generated programs use the same checks.
-Qleisli is pronounced exactly like Kleisli.
+Qleisli is [pronounced exactly like Kleisli](docs/src/reference/project-identity.md).
 
 **Development version: 0.3.0-beta** (unpublished prerelease).
 
