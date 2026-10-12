@@ -29,6 +29,10 @@ and exactness obligations retain their recorded scopes and status.
   actual simulation/ownership diagnostics, including a deliberately omitted
   teleportation correction. These observations do not establish a general proof.
 
+- Update the Python build backend to setuptools 83.0.0. Build the installed
+  interop test package in isolation using its declared build requirements,
+  so CI tests the backend selected by dependency updates.
+
 ## 0.3.0-alpha — 2026-10-11
 
 Development snapshot under the explicitly approved alpha scope (#351), not
