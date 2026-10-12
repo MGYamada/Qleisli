@@ -3548,7 +3548,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "e6c004ed3094fde98d710554a79548a552d974bd6001e61fe6bb4224fcf65cad",
+      "sha256": "5f59133016c448a50f39b936f5b809451382b5fcd94484bdcc0ebb4afe32ce67",
       "group": "source",
       "surface": {
         "declarations": [],

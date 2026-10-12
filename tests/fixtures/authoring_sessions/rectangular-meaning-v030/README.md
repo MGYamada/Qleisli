@@ -36,3 +36,14 @@ The retained maximum-size test is now explicitly ignored by default so a normal
 CI invocation does not newly run it; its original body remains unchanged.
 This is not a successful maximum-size check. Final validation and commit/CI
 bindings remain in #83 and #142; this record does not close either Issue.
+
+The first full PR CI run at `0fbc1285dc85661024a03005f0b5b70b9d3e9c6d`
+[failed two existing function-contract tests](https://github.com/MGYamada/Qleisli/actions/runs/38188616226/job/114616660282).
+Both asserted shared `Arc` identity across adjoint, control and repetition;
+the nested case also retained three levels of evidence. The new named-adjoint
+adapter had unnecessarily wrapped endomorphic contract evidence in a new
+provider. Restricting that route to differing input/output types restores the
+existing shared steps. The tests and their source programs remain unchanged.
+The repaired tree passed all 24 function-contract, 19 general-arrow and six
+rectangular-Meaning tests on both the default toolchain and Rust 1.85.0.
+This focused result does not replace the required full CI run on the fix.
