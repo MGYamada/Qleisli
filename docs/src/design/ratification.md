@@ -139,7 +139,8 @@ The remaining [constitutional CI work](https://github.com/MGYamada/Qleisli/issue
 must connect binding interpretations, formal obligations, checked proofs and
 current production/artifact identity. Hash checks alone do not complete it.
 The [release umbrella](https://github.com/MGYamada/Qleisli/issues/142) tracks all
-111 selected issues, including #311, #315 and #317, and the separate
+127 selected issues in the 2026-10-12 beta scope, retaining the historical 111,
+and the separate
 implementation, proof and publication gates.
 The maintainer's later ordinary scope decision excludes QFT implementation
 completion from v0.3.0 and the current goal; #317's namespace work remains.

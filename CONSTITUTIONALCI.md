@@ -220,7 +220,12 @@ immutable Git blobs at that base. Candidate `release/acceptance.json` must bind
 the exact requirements digest, all criterion IDs and required evidence roles,
 the schema registry and separate edition/schema/protocol identities. Only
 reviewed requirements can mark a criterion `explicit-later-version`; a
-candidate cannot reduce scope. GitHub remains the decisions/progress ledger.
+candidate cannot reduce scope. The complete-feature inventory is the 127 Issues
+in the 2026-10-12 beta plan under #142; the original 111 remain recorded as
+history. #83 and #39 require completion after their explicit resumption, so
+an older reviewed deferral cannot authorize beta readiness. Closed Issues still
+require current evidence. The approved generic-QFT exclusion remains separate.
+GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
 
 For `0.3.0-alpha` alone, the maintainer separately approved the
@@ -292,8 +297,9 @@ preservation, general hierarchy semantics, PR or quantitative RS. Ownership
 and floating-point oracle agreement cannot replace an applicable exact duty.
 
 The readiness checker exists, but no completed real requirements/acceptance
-index is present. Its registered historical inventory retains 13 groups/111
-Issue IDs; approved deferrals and the active feature-goal count are separate.
+index is present. Its active inventory contains 13 groups/127 Issue IDs and
+retains the historical 111 separately. Historical alpha exclusions do not
+authorize the beta gate.
 Release use requires a reviewed complete index reflecting the authorized
 criteria, not automatic generation of completion evidence. No release readiness
 is claimed by writing this specification.

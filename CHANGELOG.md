@@ -15,6 +15,9 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Require all 127 selected Issues at the complete-feature release gate, retain
+  the historical 111-Issue inventory, and reject old #83/#39 deferrals. Preserve
+  the exact alpha-only approval; no completion evidence is inferred from scope.
 - Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
   native rectangular pure-leaf component for #83: separate interface ports,
   exact original-body matrix equality and isometry/reference proofs. Preserve

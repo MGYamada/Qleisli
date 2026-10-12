@@ -329,17 +329,45 @@ class SyntheticRelease(unittest.TestCase):
                 self.acceptance=copy.deepcopy(original); self.update_acceptance(change); self.reject('ID')
 
     def test_prior_108_issue_candidate_cannot_omit_exactness_requirement_or_acceptance(self):
-        self.assertEqual(len(checker.ISSUES), 111)
         self.assertIn(311, checker.GROUPS['G02'])
-        self.omitted_issue_packet_rejects({311, 315, 317}, 108)
+        self.omitted_issue_packet_rejects(self.beta_additions() | {311, 315, 317}, 108)
 
     def test_prior_109_issue_candidate_cannot_omit_body_derived_effect_work(self):
         self.assertIn(315, checker.GROUPS['G10'])
-        self.omitted_issue_packet_rejects({315, 317}, 109)
+        self.omitted_issue_packet_rejects(self.beta_additions() | {315, 317}, 109)
 
     def test_prior_110_issue_candidate_cannot_omit_semantic_stdlib_work(self):
         self.assertIn(317, checker.GROUPS['G10'])
-        self.omitted_issue_packet_rejects({317}, 110)
+        self.omitted_issue_packet_rejects(self.beta_additions() | {317}, 110)
+
+    @staticmethod
+    def beta_additions():
+        # Independent, user-selected 2026-10-12 scope; do not derive this oracle
+        # from the production constant whose omissions it must detect.
+        return {14, 38, 78, 342, 343, 350, 352, 355,
+                362, 363, 364, 365, 366, 367, 368, 369}
+
+    def test_beta_inventory_preserves_all_111_and_adds_exactly_sixteen(self):
+        historical = {n for group in checker.HISTORICAL_GROUPS.values() for n in group}
+        self.assertEqual(len(historical), 111)
+        self.assertEqual(len(checker.ISSUES), 127)
+        self.assertEqual(sum(map(len, checker.GROUPS.values())), 127)
+        self.assertEqual(checker.ISSUES, historical | self.beta_additions())
+        self.assertFalse(historical & self.beta_additions())
+        self.omitted_issue_packet_rejects(self.beta_additions(), 111)
+
+    def test_resumed_issues_cannot_use_a_historical_deferral_even_at_reviewed_base(self):
+        original = copy.deepcopy(self.requirements)
+        for number in [39, 83]:
+            with self.subTest(issue=number):
+                self.requirements = copy.deepcopy(original)
+                row = next(row for row in self.requirements['issues'] if row['id'] == number)
+                row['criteria'][0].update(scope='explicit-later-version', roles=[])
+                self.write(checker.REQUIREMENTS, encoded(self.requirements))
+                self.base = self.commit()
+                with self.assertRaisesRegex(PacketError, f'Issue {number}: resumed for beta'):
+                    checker.requirements(self.root, self.base, checker.Snapshot(),
+                                         product_version='0.3.0-beta')
 
     def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)
@@ -347,7 +375,7 @@ class SyntheticRelease(unittest.TestCase):
         previous_ids = checker.ISSUES - omitted
         self.assertEqual(len(previous_ids), previous_count)
         cases = [
-            ('previous groups and criteria', True, True, '13 groups/111 Issues'),
+            ('previous groups and criteria', True, True, '13 groups/127 Issues'),
             ('updated groups without new Issue criteria', False, True,
              'reviewed Issues: missing or unexpected IDs'),
             ('updated requirements without new Issue acceptance', False, False,

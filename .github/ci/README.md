@@ -444,13 +444,18 @@ The human/workflow caller supplies an exact trusted base commit through the
 manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
 tag. There is no fallback to candidate HEAD. For complete feature releases,
 review and commit `release/requirements.json` at that base: the exact
-13 groups/111 IDs (including #311, #315 and #317), complete applicable criteria,
+13 groups/127 IDs fixed by the 2026-10-12 beta plan in #142, complete applicable criteria,
 immutable Issue snapshot references and an explicit review record. The checker
 reads these from Git blobs at the base. A candidate `release/acceptance.json` supplies evidence for
 exactly those criteria. GitHub remains the only decisions/progress ledger;
 these files are verification indices, not another backlog. There is currently
 no real completed index. Missing reviewed requirements or acceptance evidence
 is an actionable failure, not a request to auto-generate completion records.
+The checker retains the historical 111-Issue groups separately and adds exactly
+the sixteen beta-scope Issues. Closed Issues require the same criterion evidence.
+#83 and #39 are resumed: their historical deferrals cannot pass the complete
+feature gate, even when present in an older caller-reviewed requirements base.
+The existing explicitly approved generic-QFT exclusion remains separate.
 
 The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)
 and [human approval](../../release/alpha-scope-approval.json), recorded in
