@@ -134,6 +134,8 @@ test/script reference or transitive manifest reference. Manifest-only cycles
 and self-declared approval are insufficient. The reviewed pre-retention tree
 `22dccc5bdbf62f802f12fe7ce457132ae51e036d` is a historical baseline, not a claim
 that every old file is consumed; new paths are checked on pushes and PRs.
+Additions since the event's exact PR base or previous push are checked too,
+so reintroducing a removed historical path cannot evade the gate.
 No exception allow-list is installed. Dynamic consumers need an explicit,
 reviewed reader rule with regressions; a source project's directory reference
 does not retain unrelated logs. This static check establishes retention

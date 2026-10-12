@@ -26,7 +26,11 @@ LITERALS = re.compile(r'''["']([^"'\n\r\x00]+)["']''')
 
 def rooted_source(name):
     path = PurePosixPath(name)
-    return not name.startswith(PREFIX) and (
+    # This inspector and its graph tests describe synthetic fixture paths;
+    # neither consumes those paths. They cannot grant their own exceptions.
+    synthetic = {"scripts/check_fixture_references.py",
+                 "scripts/test_check_fixture_references.py"}
+    return name not in synthetic and not name.startswith(PREFIX) and (
         (path.parts[0] in {"scripts", "tests", "src", "lean", "lean-kernel"}
          and path.suffix in {".py", ".rs", ".sh", ".lean"})
         or name.startswith(".github/") and path.suffix in {".json", ".yml", ".yaml"}
@@ -212,16 +216,23 @@ def snapshot(root, commit):
     return contents, paths
 
 
-def inspect(root, base, head):
+def inspect(root, base, head, changed_since=None):
     base, head = exact_commit(root, base), exact_commit(root, head)
     if git(root, "merge-base", "--is-ancestor", base, head):
         raise ValueError("unexpected ancestry reply")
     contents, paths = snapshot(root, head)
     old_paths = set(git(root, "ls-tree", "-rz", "--name-only", base).decode().split("\0"))
     added = {p for p in paths - old_paths if p.startswith(PREFIX)}
+    if changed_since is not None:
+        changed_since = exact_commit(root, changed_since)
+        previous = set(git(root, "ls-tree", "-rz", "--name-only", changed_since).decode().split("\0"))
+        # Reintroducing a removed historical path is a new file in this event,
+        # even if its name was present at the grandfathered historical base.
+        added.update(p for p in paths - previous if p.startswith(PREFIX))
     reached = reachability(contents, paths)
     missing = sorted(added - reached)
     return dict(format=1, status="forbidden" if missing else "allowed", base=base, head=head,
+                change_base=changed_since,
                 new_fixtures=len(added), referenced_new_fixtures=len(added & reached),
                 unreferenced=missing,
                 scope="Static rooted retention references; no execution or semantic coverage claim.")
@@ -232,20 +243,30 @@ def main(argv=None):
     parser.add_argument("--hosted", action="store_true")
     parser.add_argument("--base", default=BASELINE)
     parser.add_argument("--head")
+    parser.add_argument("--changed-since", help="also check additions/reintroductions since this exact commit")
     args = parser.parse_args(argv)
     try:
         hosted = args.hosted or os.environ.get("GITHUB_ACTIONS") == "true"
         if hosted:
-            if args.head or args.base != BASELINE:
+            if args.head or args.changed_since or args.base != BASELINE:
                 raise ValueError("local arguments cannot replace hosted fixture reference inspection")
             event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_bytes(), object_pairs_hook=unique_object)
             context = hosted_context(ROOT, os.environ["GITHUB_EVENT_NAME"], event,
                                      os.environ["GITHUB_SHA"], os.environ["GITHUB_REF"],
                                      os.environ["GITHUB_REPOSITORY"])
             head = context["checkout_sha"]
+            changed_since = context.get("merge_base")
+            if changed_since is None and os.environ["GITHUB_EVENT_NAME"] == "push":
+                previous = event.get("before")
+                if not isinstance(previous, str) or not re.fullmatch(r"[0-9a-f]{40}", previous):
+                    raise ValueError("push reference inspection requires the exact previous commit")
+                changed_since = None if previous == "0" * 40 else previous
+            elif changed_since is None and os.environ["GITHUB_EVENT_NAME"] == "workflow_dispatch":
+                changed_since = event.get("inputs", {}).get("release_base") or None
         else:
             head = args.head or git(ROOT, "rev-parse", "HEAD").decode().strip()
-        result = inspect(ROOT, args.base, head)
+            changed_since = args.changed_since
+        result = inspect(ROOT, args.base, head, changed_since)
     except (OSError, ValueError, KeyError, TypeError, AttributeError, UnicodeError,
             subprocess.CalledProcessError) as error:
         result = dict(format=1, status="error", reason=str(error))

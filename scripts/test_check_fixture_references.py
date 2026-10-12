@@ -37,9 +37,13 @@ class ReferenceGraph(unittest.TestCase):
         contents = {"scripts/read.py": 'load("tests/fixtures/probe/{case}.json")'}
         files = {"tests/fixtures/probe/input.json", "tests/fixtures/probe/nested/orphan.json"}
         self.assertEqual(self.missing(contents, files), {"tests/fixtures/probe/nested/orphan.json"})
-        self.assertTrue(check.glob_match("tests/fixtures/probe/nested/input.json",
-                                         "tests/fixtures/**/*.json"))
-        self.assertTrue(check.glob_match("tests/fixtures/input.json", "tests/fixtures/**/*.json"))
+        self.assertTrue(check.glob_match("probe/nested/input.json", "probe/**/*.json"))
+        self.assertTrue(check.glob_match("probe/input.json", "probe/**/*.json"))
+
+    def test_inspector_and_its_synthetic_graph_tests_cannot_grant_references(self):
+        path = "tests/fixtures/probe/orphan.json"
+        for name in ["scripts/check_fixture_references.py", "scripts/test_check_fixture_references.py"]:
+            self.assertEqual(self.missing({name: f'synthetic_path = "{path}"'}, {path}), {path})
 
     def test_reachable_manifest_retains_relative_member_transitively(self):
         manifest = "tests/fixtures/probe/packet.json"
@@ -129,6 +133,28 @@ class GitInspection(unittest.TestCase):
             self.assertEqual(accepted["status"], "allowed")
             self.assertEqual(accepted["new_fixtures"], 1)
             self.assertEqual(check.inspect(root, base, base)["new_fixtures"], 0)
+
+    def test_reintroduced_historical_orphan_is_a_new_event_addition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root, stderr=subprocess.DEVNULL).decode().strip()
+            git("init", "--quiet")
+            git("config", "user.name", "Fixture test")
+            git("config", "user.email", "fixture@example.invalid")
+            fixture = root / "tests/fixtures/probe/old.log"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("historical log")
+            git("add", "."); git("commit", "--quiet", "-m", "historical baseline")
+            base = git("rev-parse", "HEAD")
+            fixture.unlink()
+            git("add", "."); git("commit", "--quiet", "-m", "removed history")
+            previous = git("rev-parse", "HEAD")
+            fixture.write_text("historical log")
+            git("add", "."); git("commit", "--quiet", "-m", "unreferenced reintroduction")
+            result = check.inspect(root, base, git("rev-parse", "HEAD"), previous)
+            self.assertEqual(result["unreferenced"], ["tests/fixtures/probe/old.log"])
+            self.assertEqual(result["change_base"], previous)
 
 
 if __name__ == "__main__":
