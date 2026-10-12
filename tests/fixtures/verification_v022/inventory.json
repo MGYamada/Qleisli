@@ -2226,7 +2226,7 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "bae6d071e9ae278f587edba1e83258d992114cbb06bd4fd3bb75a490db36e721",
+      "sha256": "84a3875bc3fd6419801386e4abdeb613541cfc21bcc39665c1a239741609e013",
       "group": "hierarchy",
       "surface": null
     },
@@ -2256,7 +2256,7 @@
     },
     {
       "path": "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean",
-      "sha256": "d4981aaac46fa617966258d8430dd0f13d2e8283ad49a801056b3633c79383ab",
+      "sha256": "0b574fd1b1e55dbf7b1664423907ffd9b3c9121b160ef9048998fb11fe2f68a1",
       "group": "execution-view-encoding",
       "surface": null
     },
@@ -4799,7 +4799,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "d56ee6209e44b0b3b02ae4700c275e2f81f900afe31592f9fa38e57c7bda0dfc",
+      "sha256": "2e6d3d0fac97bbb1e1ed93c129ff8aa57323556f145dffbb770ba61d3439785b",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4809,7 +4809,7 @@
     {
       "path": "src/interchange/execution_view/finite/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "e73cad6dd3cd79765dafafb3ed52efc1a858ca87e9b44b45c05b10242722a2ea",
+      "sha256": "29dd064fe449ad8e2e70274967092403f39e9f00d06d6cb1d44130c18848f2bb",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5034,7 +5034,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "87c0f7c7d1c009261e74e38d0d56753085bd03ecbb45776b0d0c5d3b343cd58d",
+      "sha256": "8cdd7a0e44936d1c8d0b4d5e48f962b3683026258e6554820893848a833a64a5",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5388,7 +5388,7 @@
     {
       "path": "src/interchange/execution_view/finite/contracts.rs",
       "group": "execution-view-encoding",
-      "sha256": "54a42088ecdc8b700465520c6caf6bee87a2ecad4fadb8259670823814e0c00a",
+      "sha256": "e5f43eb29725f9b3497dd5c7d028d1cd31fffd8b17f596a4a43278462f7a60ed",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5398,7 +5398,7 @@
     {
       "path": "src/interchange/execution_view/finite/contracts/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "c7b84d2c0758558f7f1ccfcdb0992883bd872236c774e65d79e3c5080d3b733b",
+      "sha256": "6c148fc492644a1cf1d642bbaee515c1906625518a5e7410b89a7fe83bc25e12",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5408,7 +5408,19 @@
     {
       "path": "lean-kernel/Protocol/ExecutionView/Contracts.lean",
       "group": "execution-view-encoding",
-      "sha256": "97dc2ef27839704e2dc33735161b737c9cf6f83b4241374db2c118a368e780eb",
+      "sha256": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Gate.lean",
+      "sha256": "205166a2f9f3cab106b2915449ee999917096dd090035cabfc5e42355a0148c7",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedContract.lean",
+      "sha256": "c4a5676bd6d56b63d33297183ae46e3a9711f0d091c0f4aa37a8145ab10ef19f",
+      "group": "execution-view-encoding",
       "surface": null
     }
   ],

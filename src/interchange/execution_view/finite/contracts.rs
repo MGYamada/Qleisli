@@ -18,14 +18,10 @@ pub(in crate::interchange) enum Request<'a> {
     },
 }
 
-pub(in crate::interchange) fn request(value: Request<'_>) -> Result<Vec<u8>> {
+fn write_request(value: Request<'_>, writer: &mut Writer) -> Result<()> {
     let indices = BTreeMap::new();
     let mut view = View {
-        writer: Writer {
-            bytes: b"QDV1".to_vec(),
-            limit: MAX_BYTES,
-            depth: 0,
-        },
+        writer,
         dependencies: &indices,
     };
     match value {
@@ -61,7 +57,51 @@ pub(in crate::interchange) fn request(value: Request<'_>) -> Result<Vec<u8>> {
             w.identity(identity)
         })?,
     }
-    Ok(view.writer.bytes)
+    Ok(())
+}
+
+pub(in crate::interchange) fn request(value: Request<'_>) -> Result<Vec<u8>> {
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
+    write_request(value, &mut writer)?;
+    Ok(writer.bytes)
+}
+
+/// Describe actual request data and both retained runtime graphs with one
+/// bounded writer. Independently checked reference data is mandatory for
+/// instruments, and no reference slot is inferred from the actual graph.
+pub(in crate::interchange) fn complete(
+    value: Request<'_>,
+    actual: Graph<'_>,
+    expected: Option<Graph<'_>>,
+) -> Result<Vec<u8>> {
+    if matches!(value, Request::Instrument { .. }) != expected.is_some() {
+        return Err(Error::format(
+            "instrument execution view requires its own reference graph",
+        ));
+    }
+    let indices = BTreeMap::new();
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
+    let mut view = View {
+        writer: &mut writer,
+        dependencies: &indices,
+    };
+    view.record("native-contract", 3, |w| {
+        write_request(value, w.writer)?;
+        actual.write(w.writer)?;
+        match expected {
+            Some(reference) => reference.write(w.writer),
+            None => w.writer.append(&[0]),
+        }
+    })?;
+    Ok(writer.bytes)
 }
 
 pub(in crate::interchange) fn circuit(
@@ -69,16 +109,17 @@ pub(in crate::interchange) fn circuit(
     dependencies: &[Arc<FunctionEvidence>],
 ) -> Result<Vec<u8>> {
     let indices = dependency_indices(dependencies)?;
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
     let mut view = View {
-        writer: Writer {
-            bytes: b"QDV1".to_vec(),
-            limit: MAX_BYTES,
-            depth: 0,
-        },
+        writer: &mut writer,
         dependencies: &indices,
     };
     view.circuit(value)?;
-    Ok(view.writer.bytes)
+    Ok(writer.bytes)
 }
 
 #[cfg(test)]

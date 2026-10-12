@@ -353,6 +353,16 @@ impl AcceptedProgram {
         &self.output_ports
     }
     #[cfg(test)]
+    pub(super) fn execution_view_graph(&self) -> super::execution_view::finite::Graph<'_> {
+        super::execution_view::finite::Graph {
+            graph: &self.decoded,
+            root: self.raw(),
+            interface: self.interface.as_ref(),
+            effect: self.derived_effect,
+            outputs: &self.output_ports,
+        }
+    }
+    #[cfg(test)]
     pub(super) fn execution_view_description(&self) -> Result<Vec<u8>> {
         super::execution_view::finite::graph(
             &self.decoded,

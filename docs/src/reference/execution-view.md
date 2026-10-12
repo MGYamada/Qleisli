@@ -230,6 +230,38 @@ The [authoring record](../../../tests/fixtures/verification_v030/execution-view-
 describes both preserved refusals and their corrections.
 Actual caller circuit/cache binding and production comparison remain required.
 
+## Pure complete contract comparison
+
+The `native-contract` record has three fields after its tag: the typed request,
+the actual `finite-graph`, and an expected `finite-graph` for instruments or
+`null` for the other profiles. Both graphs include their original program and
+evidence tables, selected runtime root, exact cached function data, ordered
+interfaces, sources and derived metadata. The expected graph is taken from the
+instrument's independently decoded and freshly checked reference, even when
+its owner or wire identities differ from the actual graph.
+
+`CheckedContract.check` invokes the original native-contract checker once,
+then derives this description from that same retained result and compares the
+canonical bytes inside Lean. Its binding theorem retains the exact returned
+record, original-packet field binding, comparison and continuous work states.
+Frame, error and work plumbing is shared with the pure finite gate. Core work
+finishes before describing the view; the added work is not hidden.
+
+Rust's corresponding walker borrows the actual typed obligation and retained
+actual/reference runtime graphs. One bounded writer accounts for nesting and
+total storage across all three fields. Neither side serializes the original
+request JSON as the execution view. Rust still needs private unbound staging
+before this walker can participate in production acceptance.
+
+The [complete-contract vectors](../../../tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json)
+retain eight independently authored graph descriptions covering every current
+contract kind and an observing reference with distinct owner/wire identities.
+The pure Lean gate refuses 1,152 individual scalar, empty-list and array-shape
+mutations over these valid original requests. The Rust tests also refuse missing
+or unexpected reference graphs. These checks do not bind original caller Arc
+aliases/caches or hierarchy execution and do not complete the native CLI or
+protocol cutover. No execution handle or new guarantee is issued by the walker.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

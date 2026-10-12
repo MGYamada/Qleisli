@@ -1,4 +1,4 @@
-import Protocol.ExecutionView.Finite
+import Protocol.ExecutionView.Graph
 import Protocol.NativeContract
 
 /-! Typed contract obligations read from retained native stages. These
@@ -47,5 +47,24 @@ def nativeRequest (value : NativeContract.RequestRetained) : Value :=
       [.array (value.signatures.map basis),.array (value.axes.map Value.natural)]
   | .instrument value => contractRecord "instrument" [instrumentSignature value.decoded.actualSignature,
       instrumentSignature value.decoded.expectedSignature,contractIdentity value.decoded.identity]
+
+/-- Select the actual fresh root retained by the original profile check.
+No root check is repeated or substituted for the result being described. -/
+def nativeRoot : NativeContract.RequestRetained → Qirf.Validity.Root
+  | .encoded _ checked => checked.root
+  | .leaf _ _ _ _ root _ => root
+  | .control value => value.checked.root
+  | .controlOwners value => value.checked.root
+  | .instrument value => value.checked.actual
+  | .pureLeaf value => value.checked.root
+
+/-- Describe both independently checked graphs for an observing request.
+For all other profiles the reference slot is explicitly null. -/
+def nativeContract (value : NativeContract.Retained) : QleisliKernel.Finite.WorkM Value := do
+  let actual ← graph value.artifact (nativeRoot value.request)
+  let expected ← match value.request with
+    | .instrument instrument => graph instrument.expected instrument.checked.expected
+    | _ => pure .null
+  return contractRecord "native-contract" [nativeRequest value.request,actual,expected]
 
 end QleisliKernel.Protocol.ExecutionView.FiniteView

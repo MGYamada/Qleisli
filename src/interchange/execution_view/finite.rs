@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 struct View<'a> {
-    writer: Writer,
+    writer: &'a mut Writer,
     dependencies: &'a BTreeMap<usize, usize>,
 }
 
@@ -552,16 +552,59 @@ fn dependency_indices(dependencies: &[Arc<FunctionEvidence>]) -> Result<BTreeMap
 
 pub(super) fn raw(program: &RawProgram, dependencies: &[Arc<FunctionEvidence>]) -> Result<Vec<u8>> {
     let indices = dependency_indices(dependencies)?;
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
     let mut view = View {
-        writer: Writer {
-            bytes: b"QDV1".to_vec(),
-            limit: MAX_BYTES,
-            depth: 0,
-        },
+        writer: &mut writer,
         dependencies: &indices,
     };
     view.program(program)?;
-    Ok(view.writer.bytes)
+    Ok(writer.bytes)
+}
+
+/// Borrow the exact retained runtime graph and metadata; this is data only.
+#[derive(Clone, Copy)]
+pub(in crate::interchange) struct Graph<'a> {
+    pub(in crate::interchange) graph: &'a crate::interchange::DecodedGraph,
+    pub(in crate::interchange) root: &'a RawProgram,
+    pub(in crate::interchange) interface: Option<&'a crate::interchange::RootInterface>,
+    pub(in crate::interchange) effect: Effect,
+    pub(in crate::interchange) outputs: &'a [QuantumPort],
+}
+
+impl Graph<'_> {
+    fn write(self, writer: &mut Writer) -> Result<()> {
+        let indices = dependency_indices(&self.graph.evidence)?;
+        let mut view = View {
+            writer,
+            dependencies: &indices,
+        };
+        view.record("finite-graph", 8, |w| {
+            w.n(self.graph.root)?;
+            if let Some(interface) = self.interface {
+                w.record("root-interface", 2, |w| {
+                    w.basis(&interface.input)?;
+                    w.basis(&interface.output)
+                })?;
+            } else {
+                w.writer.append(&[0])?;
+            }
+            w.list(&self.graph.sources, |w, (path, text)| {
+                w.record("source", 2, |w| {
+                    w.writer.text(path)?;
+                    w.writer.text(text)
+                })
+            })?;
+            w.list(&self.graph.programs, |w, program| w.program(program))?;
+            w.list(&self.graph.evidence, |w, evidence| w.evidence(evidence))?;
+            w.program(self.root)?;
+            w.effect(self.effect)?;
+            w.list(self.outputs, View::port)
+        })
+    }
 }
 
 pub(in crate::interchange) fn graph(
@@ -571,38 +614,20 @@ pub(in crate::interchange) fn graph(
     derived_effect: Effect,
     output_ports: &[QuantumPort],
 ) -> Result<Vec<u8>> {
-    let indices = dependency_indices(&graph.evidence)?;
-    let mut view = View {
-        writer: Writer {
-            bytes: b"QDV1".to_vec(),
-            limit: MAX_BYTES,
-            depth: 0,
-        },
-        dependencies: &indices,
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
     };
-    view.record("finite-graph", 8, |w| {
-        w.n(graph.root)?;
-        if let Some(interface) = actual_interface {
-            w.record("root-interface", 2, |w| {
-                w.basis(&interface.input)?;
-                w.basis(&interface.output)
-            })?;
-        } else {
-            w.writer.append(&[0])?;
-        }
-        w.list(&graph.sources, |w, (path, text)| {
-            w.record("source", 2, |w| {
-                w.writer.text(path)?;
-                w.writer.text(text)
-            })
-        })?;
-        w.list(&graph.programs, |w, program| w.program(program))?;
-        w.list(&graph.evidence, |w, evidence| w.evidence(evidence))?;
-        w.program(actual_root)?;
-        w.effect(derived_effect)?;
-        w.list(output_ports, View::port)
-    })?;
-    Ok(view.writer.bytes)
+    Graph {
+        graph,
+        root: actual_root,
+        interface: actual_interface,
+        effect: derived_effect,
+        outputs: output_ports,
+    }
+    .write(&mut writer)?;
+    Ok(writer.bytes)
 }
 
 pub(super) mod contracts;

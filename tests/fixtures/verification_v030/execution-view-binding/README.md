@@ -100,3 +100,23 @@ The shared Lean runner reads both records through explicit CI inputs and
 freshly rechecks their distinct native invalid/equation refusals.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+
+## Complete contract comparison
+
+[Eight complete-contract cases](complete-contract-vectors.json) preserve graph
+expectations authored before the new gate/walkers. `source_index` selects an
+original request in `contract-walker-vectors.json`; only the final case replaces
+its expected-artifact string with the explicit alternate reference. That
+reference measures input owner8 on wire3, returns classical4 and packs Unit
+owner9. Its observing meaning equals the original, while its exact decoded
+identities differ. All graphs were specified independently of either walker.
+
+The pure Lean gate describes actual and independently checked reference graphs
+from one retained native-contract result, compares inside Lean, and preserves
+original input/output-field binding. The runner exercises all eight positive
+requests and 1,152 individual data mutations, malformed framing, exhausted work
+and missing/invalid mandatory request controls. Rust independently reads actual
+typed requests and retained runtime graphs, checking the same descriptions and
+missing/unexpected reference rejection with a shared bounded writer. Original
+caller cache/Arc aliases, hierarchy execution and production protocol cutover
+remain pending. This adds no execution authority or #362 completion credit.

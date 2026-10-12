@@ -103,6 +103,10 @@ fn axes(value: &json::Value) -> Vec<usize> {
 }
 
 fn describe(value: &json::Value) -> Vec<u8> {
+    with_request(value, |data| request(data).unwrap())
+}
+
+fn with_request<T>(value: &json::Value, describe: impl FnOnce(Request<'_>) -> T) -> T {
     match value.field("kind").unwrap().text().unwrap() {
         "encoded" => {
             let value = value.field("contract").unwrap();
@@ -113,7 +117,7 @@ fn describe(value: &json::Value) -> Vec<u8> {
                 &mut Budget::new(DEFAULT_EXACT_WORK),
             )
             .unwrap();
-            request(Request::Encoded(&contract)).unwrap()
+            describe(Request::Encoded(&contract))
         }
         "leaf" => {
             let boundary = UnitaryBoundary::new(
@@ -122,11 +126,10 @@ fn describe(value: &json::Value) -> Vec<u8> {
                 port(value.field("output").unwrap()),
             )
             .unwrap();
-            request(Request::Leaf(
+            describe(Request::Leaf(
                 &boundary,
                 &matrix(value.field("matrix").unwrap()),
             ))
-            .unwrap()
         }
         "pure-leaf" => {
             let boundary = PureBoundary::new(
@@ -136,17 +139,15 @@ fn describe(value: &json::Value) -> Vec<u8> {
                 port(value.field("output").unwrap()),
             )
             .unwrap();
-            request(Request::PureLeaf(
+            describe(Request::PureLeaf(
                 &boundary,
                 &matrix(value.field("matrix").unwrap()),
             ))
-            .unwrap()
         }
-        "control" => request(Request::Control(
+        "control" => describe(Request::Control(
             &basis(value.field("signature").unwrap()),
             &axes(value.field("axes").unwrap()),
-        ))
-        .unwrap(),
+        )),
         "control-owners" => {
             let signatures: Vec<_> = value
                 .field("signatures")
@@ -156,11 +157,10 @@ fn describe(value: &json::Value) -> Vec<u8> {
                 .iter()
                 .map(basis)
                 .collect();
-            request(Request::ControlOwners(
+            describe(Request::ControlOwners(
                 &signatures,
                 &axes(value.field("axes").unwrap()),
             ))
-            .unwrap()
         }
         "instrument" => {
             let id = value.field("identity").unwrap();
@@ -177,7 +177,7 @@ fn describe(value: &json::Value) -> Vec<u8> {
                     )
                 })
                 .collect();
-            request(Request::Instrument {
+            describe(Request::Instrument {
                 actual: &signature(value.field("actual_signature").unwrap()),
                 expected: &signature(value.field("expected_signature").unwrap()),
                 identity: (
@@ -186,7 +186,6 @@ fn describe(value: &json::Value) -> Vec<u8> {
                     &sources,
                 ),
             })
-            .unwrap()
         }
         _ => panic!("unknown request kind"),
     }
@@ -393,5 +392,72 @@ fn caller_circuit_reads_actual_dependency_reference_and_literal_steps() {
             .unwrap(),
             bytes
         );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn complete_contract_views_bind_actual_and_independent_reference_graphs() {
+    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let cases = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json"
+    )))
+    .unwrap();
+    let original = vectors();
+    for row in cases.array().unwrap() {
+        let index = row.field("source_index").unwrap().number().unwrap() as usize;
+        let source = &original.array().unwrap()[index];
+        let artifact = json::encode(source.field("artifact").unwrap()).unwrap();
+        let required = source.field("request").unwrap();
+        let expected_text = if let Ok(text) = row.field("expected_artifact") {
+            Some(text.text().unwrap())
+        } else if let Ok(text) = required.field("expected_artifact") {
+            Some(text.text().unwrap())
+        } else {
+            None
+        };
+        let actual = kernel.check(&artifact, None).unwrap().into_program();
+        let reference =
+            expected_text.map(|text| kernel.check(text.as_bytes(), None).unwrap().into_program());
+        let described = with_request(required, |data| {
+            complete(
+                data,
+                actual.execution_view_graph(),
+                reference.as_ref().map(|value| value.execution_view_graph()),
+            )
+            .unwrap()
+        });
+        let expected = execution_view::Value::Array(vec![
+            execution_view::Value::Text("native-contract".into()),
+            execution_view::tests::vector_value(source.field("view").unwrap()),
+            execution_view::tests::vector_value(row.field("actual_graph").unwrap()),
+            execution_view::tests::vector_value(row.field("expected_graph").unwrap()),
+        ]);
+        assert_eq!(
+            described,
+            execution_view::encode(&expected).unwrap(),
+            "{}",
+            row.field("name").unwrap().text().unwrap()
+        );
+        if reference.is_some() {
+            with_request(required, |data| {
+                assert!(complete(data, actual.execution_view_graph(), None).is_err());
+            });
+        } else {
+            with_request(required, |data| {
+                assert!(
+                    complete(
+                        data,
+                        actual.execution_view_graph(),
+                        Some(actual.execution_view_graph())
+                    )
+                    .is_err()
+                );
+            });
+        }
     }
 }

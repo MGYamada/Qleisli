@@ -1,9 +1,9 @@
 import Lean
 import Protocol.ExecutionView.CheckedFinite
-import Protocol.ExecutionView.Contracts
+import Protocol.ExecutionView.CheckedContract
 import Protocol.Qirf
 
-/-! Shared QDV1 encoding vectors. This runner checks transport bytes only.
+/-! Shared QDV1 data and pure comparison-gate regressions. Production cutover is pending.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 open Lean QleisliKernel.Protocol.ExecutionView
 
@@ -206,6 +206,69 @@ private def contractCases (path : System.FilePath) : IO Unit := do
   IO.println ("retained native obligations: " ++ toString requests ++
     "; literal caller circuits: " ++ toString circuits ++ "; shared vectors passed; production binding pending")
 
+private def singleChanges (fuel : Nat) : Value → List Value :=
+  Nat.rec (fun _ => []) (fun _ recurse input => match input with
+    | .null => [.boolean false]
+    | .boolean b => [.boolean (!b)]
+    | .natural n => [.natural (n+1)]
+    | .text text => [.text (text ++ "!")]
+    | .array fields => .array (fields ++ [.null]) ::
+      ((List.range fields.length).flatMap fun index =>
+        match fields[index]? with
+        | none => []
+        | some field => (recurse field).map fun changed => .array (fields.set index changed))) fuel
+
+private def completeContractCases (sourcePath path : System.FilePath) : IO Unit := do
+  let sources ← IO.ofExcept (Json.parse (← IO.FS.readFile sourcePath) >>= Json.getArr?)
+  let rows ← IO.ofExcept (Json.parse (← IO.FS.readFile path) >>= Json.getArr?)
+  let mut refusals := 0
+  for row in rows do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let index ← IO.ofExcept ((row.getObjVal? "source_index") >>= Json.getNat?)
+    let some source := sources[index]? | throw (IO.userError "missing original contract case")
+    let input ← IO.ofExcept (source.getObjVal? "artifact")
+    let required ← IO.ofExcept (source.getObjVal? "request")
+    let required ← match row.getObjVal? "expected_artifact" with
+      | .error _ => pure required
+      | .ok expected => do
+        let fields ← IO.ofExcept required.getObj?
+        pure (Json.mkObj (fields.toList.map fun (key,old) =>
+          (key,if key == "expected_artifact" then expected else old)))
+    let original := packet input.compress.toUTF8 required.compress.toUTF8
+    let retained ← checked (QleisliKernel.Protocol.NativeContract.checkRetained original)
+    let request ← IO.ofExcept ((source.getObjVal? "view") >>= value 129)
+    let actualGraph ← IO.ofExcept ((row.getObjVal? "actual_graph") >>= value 129)
+    let expectedGraph ← IO.ofExcept ((row.getObjVal? "expected_graph") >>= value 129)
+    let description := Value.array [.text "native-contract",request,actualGraph,expectedGraph]
+    let supplied ← IO.ofExcept (encode description)
+    let actual ← checked (FiniteView.nativeContract retained)
+    unless (← IO.ofExcept (encode actual)) == supplied do
+      throw (IO.userError ("complete contract graph mismatch: " ++ name))
+    match (CheckedContract.check original supplied).run 10000000 with
+    | (.ok result,_) =>
+      unless result.body == input.compress.toUTF8 && result.requestBytes == required.compress.toUTF8 do
+        throw (IO.userError ("complete contract gate lost original bytes: " ++ name))
+    | (.error error,_) => throw (IO.userError ("correct complete contract rejected: " ++ name ++ reprStr error))
+    for changed in singleChanges 129 description do
+      match (CheckedContract.check original (← IO.ofExcept (encode changed))).run 10000000 with
+      | (.error .decodedView,_) => refusals := refusals+1
+      | _ => throw (IO.userError ("changed complete contract did not refuse: " ++ name))
+    match (CheckedContract.check original "QDV1".toUTF8).run 10000000 with
+    | (.error .invalidView,_) => pure ()
+    | _ => throw (IO.userError "malformed complete contract view accepted")
+    match (QleisliKernel.Protocol.NativeContract.checkRetained original).run 0 with
+    | (.error error,remaining) =>
+      match (CheckedContract.check original supplied).run 0 with
+      | (.error (.native actual),left) => unless actual == error && left == remaining do
+          throw (IO.userError "complete contract gate changed core work refusal")
+      | _ => throw (IO.userError "complete contract gate hid core refusal")
+    | (.ok _,_) => throw (IO.userError "expected exhausted contract work refusal")
+    match (CheckedContract.check (packet input.compress.toUTF8 "{}".toUTF8) supplied).run 10000000 with
+    | (.error (.native _),_) => pure ()
+    | _ => throw (IO.userError "complete contract gate bypassed mandatory request")
+  IO.println ("pure complete contract gate: " ++ toString rows.size ++
+    " original valid requests; " ++ toString refusals ++ " individual data mutations refused; production cutover pending")
+
 private def refusalCase (path : System.FilePath) (expected : QleisliKernel.Finite.Error) : IO Unit := do
   let record ← IO.ofExcept (Json.parse (← IO.FS.readFile path))
   let row ← IO.ofExcept (record.getObjVal? "original_vector")
@@ -218,8 +281,8 @@ private def refusalCase (path : System.FilePath) (expected : QleisliKernel.Finit
   | (.ok _,_) => throw (IO.userError ("preserved refused contract accepted: " ++ path.toString))
 
 def main (args : List String) : IO Unit := do
-  let [path,finitePath,functionPath,graphPath,contractPath,firstRefusal,secondRefusal] := args |
-    throw (IO.userError "expected primitive, finite, function, graph, contract and two refusal vector files")
+  let [path,finitePath,functionPath,graphPath,contractPath,firstRefusal,secondRefusal,completeContractPath] := args |
+    throw (IO.userError "expected primitive, finite, function, graph, contract, two refusal and complete-contract vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   frameCases
@@ -281,6 +344,7 @@ def main (args : List String) : IO Unit := do
   IO.println ("pure finite view gate: " ++ toString graphs.size ++ " original valid artifacts; " ++
     toString gateRefusals ++ " divergent candidate refusals; CLI/protocol cutover still pending")
   contractCases contractPath
+  completeContractCases contractPath completeContractPath
   refusalCase firstRefusal .invalid
   refusalCase secondRefusal .equation
   IO.println "preserved original contract authoring refusals: 2 rechecked"

@@ -5,16 +5,17 @@ use crate::interchange::{Decoder, codec::Codec, json};
 
 fn write(body: impl FnOnce(&mut View<'_>) -> Result<()>) -> Vec<u8> {
     let dependencies = BTreeMap::new();
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
     let mut view = View {
-        writer: Writer {
-            bytes: b"QDV1".to_vec(),
-            limit: MAX_BYTES,
-            depth: 0,
-        },
+        writer: &mut writer,
         dependencies: &dependencies,
     };
     body(&mut view).unwrap();
-    view.writer.bytes
+    writer.bytes
 }
 
 fn vectors() -> json::Value {
@@ -292,12 +293,13 @@ fn actual_retained_function_views_match_independent_cache_vectors() {
                 dependencies.insert(Arc::as_ptr(evidence) as usize, 0);
             }
         }
+        let mut writer = Writer {
+            bytes: b"QDV1".to_vec(),
+            limit: MAX_BYTES,
+            depth: 0,
+        };
         let mut view = View {
-            writer: Writer {
-                bytes: b"QDV1".to_vec(),
-                limit: MAX_BYTES,
-                depth: 0,
-            },
+            writer: &mut writer,
             dependencies: &dependencies,
         };
         view.evidence(&receipt).unwrap();
@@ -306,7 +308,7 @@ fn actual_retained_function_views_match_independent_cache_vectors() {
         ))
         .unwrap();
         assert_eq!(
-            view.writer.bytes,
+            writer.bytes,
             expected,
             "{}",
             row.field("name").unwrap().text().unwrap()
