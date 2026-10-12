@@ -223,6 +223,15 @@ def inspect(root, base, head, changed_since=None):
     contents, paths = snapshot(root, head)
     old_paths = set(git(root, "ls-tree", "-rz", "--name-only", base).decode().split("\0"))
     added = {p for p in paths - old_paths if p.startswith(PREFIX)}
+    # A new branch/tag has no previous ref commit. Inspect every addition in
+    # the bound head's history after the reviewed ancestor as well as endpoint
+    # differences. This also catches delete/re-add pairs within one push and
+    # reintroductions before the new head's immediate parent.
+    historical_additions = git(root, "log", "--format=", "--name-only", "-z",
+                               "--diff-filter=A", "--no-renames", "--full-history",
+                               "-m", f"{base}..{head}", "--", PREFIX)
+    added.update(p for p in historical_additions.decode("utf-8").split("\0")
+                 if p in paths and p.startswith(PREFIX))
     if changed_since is not None:
         changed_since = exact_commit(root, changed_since)
         previous = set(git(root, "ls-tree", "-rz", "--name-only", changed_since).decode().split("\0"))

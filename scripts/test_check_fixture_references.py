@@ -2,10 +2,14 @@
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 import json
+import contextlib
+import io
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import check_fixture_references as check
 
@@ -155,6 +159,48 @@ class GitInspection(unittest.TestCase):
             result = check.inspect(root, base, git("rev-parse", "HEAD"), previous)
             self.assertEqual(result["unreferenced"], ["tests/fixtures/probe/old.log"])
             self.assertEqual(result["change_base"], previous)
+
+    def test_new_branch_and_tag_check_reintroductions_before_the_head_parent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root,
+                                               stderr=subprocess.DEVNULL).decode().strip()
+            git("init", "--quiet")
+            git("config", "user.name", "Fixture test")
+            git("config", "user.email", "fixture@example.invalid")
+            fixture = root / "tests/fixtures/probe/old.log"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("historical log")
+            git("add", "."); git("commit", "--quiet", "-m", "reviewed baseline")
+            base = git("rev-parse", "HEAD")
+            fixture.unlink()
+            git("add", "."); git("commit", "--quiet", "-m", "removed history")
+            fixture.write_text("historical log")
+            git("add", "."); git("commit", "--quiet", "-m", "reintroduced orphan")
+            (root / "unrelated.txt").write_text("new head is not the reintroduction")
+            git("add", "."); git("commit", "--quiet", "-m", "later unrelated commit")
+            head = git("rev-parse", "HEAD")
+            event = root / "event.json"
+            event.write_text(json.dumps({"before": "0" * 40,
+                                         "repository": {"full_name": "owner/repo"}}))
+            for ref in ("refs/heads/new-branch", "refs/tags/v-test"):
+                with self.subTest(ref=ref):
+                    environment = dict(GITHUB_ACTIONS="true", GITHUB_EVENT_PATH=str(event),
+                                       GITHUB_EVENT_NAME="push", GITHUB_SHA=head,
+                                       GITHUB_REF=ref, GITHUB_REPOSITORY="owner/repo")
+                    output = io.StringIO()
+                    with (patch.object(check, "ROOT", root), patch.object(check, "BASELINE", base),
+                          patch.dict(os.environ, environment), contextlib.redirect_stdout(output)):
+                        self.assertEqual(check.main(["--hosted"]), 1)
+                    report = json.loads(output.getvalue())
+                    self.assertEqual(report["status"], "forbidden")
+                    self.assertEqual(report["unreferenced"], ["tests/fixtures/probe/old.log"])
+            # A real committed consumer repairs the defect on the same history.
+            (root / "scripts").mkdir()
+            (root / "scripts/read.py").write_text('read("tests/fixtures/probe/old.log")\n')
+            git("add", "."); git("commit", "--quiet", "-m", "retained consumer")
+            self.assertEqual(check.inspect(root, base, git("rev-parse", "HEAD"))["status"], "allowed")
 
 
 if __name__ == "__main__":
