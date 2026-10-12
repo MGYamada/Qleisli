@@ -127,6 +127,10 @@ fn call(evidence: Arc<FunctionEvidence>, indices: Vec<usize>, adjoint: bool) -> 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn checks_two_raw_functions_and_retains_their_full_snapshots() {
     let implementation = raw(
@@ -176,6 +180,10 @@ fn checks_two_raw_functions_and_retains_their_full_snapshots() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
     let implementation = raw(
@@ -247,6 +255,10 @@ fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn attachment_requires_the_exact_expected_basis_tree() {
     let cases = [
@@ -290,6 +302,10 @@ fn attachment_requires_the_exact_expected_basis_tree() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn whole_function_comparison_retains_global_phase_including_unit() {
     let negative = flat(0, vec![monomial(&[], &[0], &[4])]);
@@ -308,6 +324,10 @@ fn whole_function_comparison_retains_global_phase_including_unit() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independent_output_reindexing_catches_a_reversed_join() {
     let swapped = raw(
@@ -348,6 +368,10 @@ fn independent_output_reindexing_catches_a_reversed_join() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independent_extraction_handles_lifts_cnot_and_toffoli() {
     let lifted = raw(
@@ -428,6 +452,10 @@ fn independent_extraction_handles_lifts_cnot_and_toffoli() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_if_extracts_both_coherent_arms_with_relative_phase() {
     let implementation = raw(
@@ -492,6 +520,10 @@ fn quantum_if_extracts_both_coherent_arms_with_relative_phase() {
     assert_eq!(theorem.meaning(), &expected);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_width_quantum_if_target_keeps_controlled_scalar_phase() {
     let implementation = raw(
@@ -532,6 +564,10 @@ fn zero_width_quantum_if_target_keeps_controlled_scalar_phase() {
     assert_eq!(theorem.meaning(), &diagonal(&[0, 4]));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn closed_classical_logic_and_both_kinds_of_phi_preserve_meaning() {
     let implementation = raw(
@@ -665,6 +701,10 @@ fn computed(source_bits: u8, function: Vec<u16>, use_ops: Vec<ProtectedUse>) -> 
     )
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn legacy_computed_phase_is_checked_against_asymmetric_direct_oracle() {
     let implementation = computed(
@@ -683,6 +723,10 @@ fn legacy_computed_phase_is_checked_against_asymmetric_direct_oracle() {
     assert_eq!(theorem.meaning(), &diagonal(&[0, 4, 0, 0]));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn legacy_computed_target_gates_can_depend_on_source_and_auxiliary() {
     let a = ProtectedBit {
@@ -771,6 +815,10 @@ fn legacy_computed_target_gates_can_depend_on_source_and_auxiliary() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn certified_computation_reuses_only_its_rechecked_logical_meaning() {
     let x = |index| monomial(&[index], &[1, 0], &[0, 0]);
@@ -811,6 +859,10 @@ fn certified_computation_reuses_only_its_rechecked_logical_meaning() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cached_calls_keep_opaque_dependencies_and_phase_under_control_and_adjoint() {
     let child = Arc::new(check(
@@ -854,6 +906,10 @@ fn cached_calls_keep_opaque_dependencies_and_phase_under_control_and_adjoint() {
     assert!(*adjoint);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cached_dependency_equality_is_identity_based_and_clone_stable() {
     let leaf = check(0, raw(0, vec![], 0), raw(0, vec![], 0));
@@ -874,6 +930,10 @@ fn cached_dependency_equality_is_identity_based_and_clone_stable() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cached_contract_axes_follow_register_layout_and_final_output_order() {
     let leaf_raw = flat(2, vec![monomial(&[0, 1], &[0, 1, 2, 3], &[0, 4, 0, 0])]);
@@ -919,6 +979,10 @@ fn cached_contract_axes_follow_register_layout_and_final_output_order() {
     assert_eq!(indices, &[1, 0]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independent_raw_checks_share_work_across_certified_compute_regions() {
     let region = |input, output, wire| RawOp::CertifiedCompute {
@@ -972,6 +1036,10 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn untrusted_function_trees_reject_without_recursive_cloning() {
     const CHILD: &str = "QLEISLI_TEST_UNTRUSTED_FUNCTION_TREE";
@@ -1041,6 +1109,10 @@ fn untrusted_function_trees_reject_without_recursive_cloning() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_preflight_checks_both_functions_and_inactive_empty_arms() {
     for in_then_arm in [true, false] {
@@ -1223,6 +1295,10 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn rejects_untrusted_capacity_and_exhausted_shared_work() {
     let mut excessive = identity();

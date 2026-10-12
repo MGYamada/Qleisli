@@ -53,6 +53,10 @@ fn assert_distribution(actual: &Distribution, expected: &Distribution) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn iterative_phase3_recovers_all_eighth_roots_and_both_x_eigenstates() {
     for k in 0..8 {
@@ -145,6 +149,10 @@ fn fourier_instrument(reference_basis: char, target_basis: char) -> Distribution
     result
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adaptive_and_coherent_qpe_match_independent_off_grid_branch_tomography() {
     for reference in ['x', 'y', 'z'] {
@@ -163,6 +171,10 @@ fn adaptive_and_coherent_qpe_match_independent_off_grid_branch_tomography() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn degenerate_phase_preserves_reference_coherence() {
     for coherent in [false, true] {
@@ -173,6 +185,10 @@ fn degenerate_phase_preserves_reference_coherence() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn semantic_oracles_detect_compiling_feedback_and_weight_faults() {
     let expected = vec![true, false, false, true];
@@ -187,6 +203,10 @@ fn semantic_oracles_detect_compiling_feedback_and_weight_faults() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_current_derivative_of_first_attempt_and_shipped_example_execute() {
     for directory in [

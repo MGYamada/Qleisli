@@ -264,7 +264,7 @@ def main():
     if args.kernel:
         environment['QLEISLI_HIERARCHY_KERNEL']=str(args.kernel.resolve())
         if args.capture: environment['QLEISLI_VM22_HIERARCHY_CAPTURE']=str(FIXTURES/'hierarchy')
-        output,error=invoke(['cargo','test','--test','hierarchical_host','vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles','--','--ignored','--exact'],env=environment)
+        output,error=invoke(['cargo','test','--test','hierarchical_host','vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles','--','--include-ignored','--exact'],env=environment)
         report['hierarchy']=dict(stdout=output,stderr=error,cases=4,scope='Fresh native structural/request checking plus Rust finite reconstruction; conditional, not production Lean evidence',decisions={'h':'request checked','wrong_phase_request':'contract','wrong_leaf_under_zero_repeat':'contract','cycle':'invalid_ir'})
     else: report['hierarchy']='not run; optional source-built kernel'
     report['binaries']={'rust':hashlib.sha256(args.binary.read_bytes()).hexdigest()}

@@ -146,7 +146,7 @@ def main():
             rows.append(write_case(directory,name,'named',artifact,required,columns(n),n,n,m,oracle))
         (directory/'cases.tsv').write_text(''.join(f"{r['name']}\t{r['kind']}\t{r['reference_dimension']}\t{r['output_qubits']}\t{r['measured_bits']}\n" for r in rows))
         (directory/'sampling.tsv').write_text(''.join(f"{r['name']}\t{r['client']}\t{r['reference_dimension']}\t{r['output_qubits']}\t{r['measured_bits']}\t{r['shots']}\t{r['seed']}\n" for r in sampling_rows))
-        command=['cargo','test','--test','hierarchical_execution','--','--ignored','--nocapture']
+        command=['cargo','test','--test','hierarchical_execution','--','--include-ignored','--nocapture']
         run=subprocess.run(command,cwd=ROOT,env=os.environ|{'QLEISLI_HIERARCHY_KERNEL':str(args.kernel.resolve()),
             'QLEISLI_HIERARCHICAL_EXECUTION':str(directory)},text=True,capture_output=True,timeout=180)
         report=dict(format='qleisli.hierarchical-execution-validation',version=1,

@@ -87,6 +87,10 @@ fn an_actually_consumed_runtime_owner_retains_the_ownership_error() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn declared_effects_survive_arguments_tuples_conditions_and_both_arms() {
     let declarations = r#"
@@ -127,6 +131,10 @@ unitary fn keep(v: Unit) -> Unit { v }
     assert!(program.program().classical_outputs.is_empty());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_local_shadows_expire_but_moved_outer_names_remain_reserved() {
     accepted(
@@ -160,6 +168,10 @@ unitary fn reserved(predicate: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_domains_and_branch_results_preserve_exact_product_trees() {
     let predicate = "classical fn p(((a,u),b): ((Bit,Unit),Bit)) -> Bit { a xor b }";
@@ -193,6 +205,10 @@ fn basis_domains_and_branch_results_preserve_exact_product_trees() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
     let function = "classical fn flip(x: Bit) -> Bit { not x }";
@@ -217,6 +233,10 @@ fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_certificates_preserve_effects_and_outer_name_restrictions() {
     let prefix = r#"
@@ -293,6 +313,10 @@ unitary fn forget(b: Bit) -> Unit { () }
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_basis_and_computed_names_resolve_in_the_declaration_module() {
     let root = SourceRoot::new(

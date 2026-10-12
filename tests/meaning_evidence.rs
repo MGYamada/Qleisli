@@ -20,6 +20,10 @@ fn identity() -> FunctionIdentity {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn complete_target_columns_include_unit_nested_trees_and_low_bit_control() {
     for basis in [
@@ -72,6 +76,10 @@ fn complete_target_columns_include_unit_nested_trees_and_low_bit_control() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn retained_target_rejects_stale_source_raw_axes_phase_and_exact_tree() {
     let target = FiniteMeaning::phase(BasisType::Bit, vec![0, 4]).unwrap();
@@ -154,6 +162,10 @@ fn malformed_meanings_and_budget_exhaustion_cannot_issue_receipts() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
     for width in 0..=2 {
@@ -207,6 +219,10 @@ fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn controlled_bits_zero_phase_is_an_exact_relative_phase() {
     let scalar = FiniteMeaning::phase(BasisType::Bits(0), vec![1]).unwrap();

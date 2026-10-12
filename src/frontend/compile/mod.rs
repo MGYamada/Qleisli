@@ -985,6 +985,10 @@ mod snapshot_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn constructed_ordinary_parameter_patterns_use_runtime_binding_rules() {
         let source = "unitary fn keep(u: Unit) -> Unit { () }";
@@ -1030,6 +1034,10 @@ mod snapshot_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn ir_narrowing_reports_overflow_at_the_original_source_without_wrapping() {
         let project = project(0);
@@ -1053,6 +1061,10 @@ mod snapshot_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn retained_source_bytes_are_charged_once_for_256_receipts() {
         for extra in [0, 25_003] {
@@ -1078,6 +1090,10 @@ mod snapshot_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary() {
         let project = project(25_003);
@@ -1097,6 +1113,10 @@ mod snapshot_tests {
         assert!(rejected.function_sources.is_none());
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn metadata_storage_limits_are_preflighted_before_the_source_copy() {
         for (count, name_bytes, extra_source) in [(127, 4, 0), (1, 4097, 0), (126, 4096, 440_000)] {

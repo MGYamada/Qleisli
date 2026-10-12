@@ -152,6 +152,10 @@ fn check_action(case: &str, signature: BasisType, truth: &[u16]) {
     assert_complete_action(evidence.meaning(), truth);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions() {
     // f(a,b,c) = (a AND NOT b) XOR c; a has weight 1, b 2, c 4.
@@ -163,6 +167,10 @@ fn exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn noninjective_and_and_constant_predicates_remain_legal_in_both_forms() {
     for form in ["restricted", "certified"] {
@@ -230,6 +238,10 @@ fn nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_call_arity_and_meaning_output_tree_keep_their_own_contracts() {
     // Successful predicate programs above call the same ordinary 3-argument
@@ -268,6 +280,10 @@ fn zero_width_does_not_identify_unit_with_a_pair_of_units() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls() {
     let p_one = (1.0 - std::f64::consts::FRAC_1_SQRT_2) / 2.0;

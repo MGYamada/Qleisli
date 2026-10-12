@@ -394,6 +394,10 @@ mod tests {
         ]))
         .unwrap()
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles() {
         let p = source(1, 2, 1);
@@ -427,11 +431,17 @@ mod tests {
             ));
         }
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
-    #[ignore = "requires freshly built native kernel; CI runs explicitly"]
     fn native_named_qpe_commuting_fourier_variants_have_the_same_outcome() {
-        let kernel =
-            Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL")
+                .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+                .expect("kernel path"),
+        );
         let delayed = include_str!(
             "../../../tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
         );
@@ -530,11 +540,17 @@ mod tests {
             assert_eq!(outcomes[0], outcomes[1]);
         }
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
-    #[ignore = "requires freshly built native kernel; CI runs explicitly"]
     fn native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation() {
-        let kernel =
-            Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL")
+                .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+                .expect("kernel path"),
+        );
         for (n, m) in [(1, 1), (1, 2), (2, 2)] {
             let p = source(n, m, 1);
             let provider = frozen_provider(&p);

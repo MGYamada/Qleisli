@@ -12,6 +12,10 @@ fn parsed(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn aliases_normalize_sizes_and_generic_instances_without_runtime_values() {
     let source = "pub unitary fn identity[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
@@ -54,6 +58,10 @@ fn aliases_normalize_sizes_and_generic_instances_without_runtime_values() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fold_bounds_and_per_iteration_aliases_match_independent_parity() {
     let source = "classical fn flip(a:Bit)->Bit{not a}
@@ -87,6 +95,10 @@ fn fold_bounds_and_per_iteration_aliases_match_independent_parity() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn checked_unused_alias_is_erased_without_a_runtime_instruction() {
     let source = "pub observe fn main()->Bit{static let width=2+1;0}";
@@ -136,6 +148,10 @@ fn runtime_capture_scope_escape_dead_body_shadow_and_invalid_arithmetic_reject()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold() {
     let source = "pub unitary fn thread[const n:Nat,const rounds:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{

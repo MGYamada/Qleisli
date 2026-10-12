@@ -136,6 +136,10 @@ fn common_ast_keeps_argument_count_exact_patterns_and_original_spans() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity() {
     for name in [
@@ -197,6 +201,10 @@ fn exact_shape_owner_and_unused_declaration_failures_remain_located() {
     sized_reject(&case("counterexamples", "lost-owner"), "ownership");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sized_inputs_retain_whole_parameter_trees_and_independent_swap_action() {
     let input = [
@@ -247,6 +255,10 @@ fn sized_inputs_retain_whole_parameter_trees_and_independent_swap_action() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sized_nonlinear_wildcards_are_shared_by_parameters_let_and_zero_fold() {
     let input = [[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
@@ -289,6 +301,10 @@ fn sized_wildcards_cannot_erase_nested_or_zero_width_owners_even_in_zero_folds()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn static_substitutions_and_provider_bindings_keep_declaration_and_source_identity() {
     parsed(&case("attempt-01", "static-mixed"))
@@ -351,6 +367,10 @@ fn static_substitutions_and_provider_bindings_keep_declaration_and_source_identi
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase() {
     let control =

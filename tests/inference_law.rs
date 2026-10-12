@@ -186,6 +186,10 @@ fn expected_types_do_not_choose_physics_or_manufacture_access_and_effects() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_identity_and_x_providers_retain_distinct_reference_actions() {
     let program = parsed(&study("operation-choice"));

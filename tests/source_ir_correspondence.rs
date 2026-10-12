@@ -185,6 +185,10 @@ fn computed_tables(program: &AcceptedProgram) -> Vec<&[u16]> {
         .collect()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_factors_and_product_labels_match_every_explicit_basis_image() {
     // Input label is a + 2b + 4c; output is c + 2(a xor b) + 4b.
@@ -226,6 +230,10 @@ observe fn main() -> ((Bit,Bit),Bit) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn growing_lift_matches_joint_pauli_statistics_with_two_reference_wires() {
     // V|a,b> = |a,b,a xor b>. Applying V to two phased Bell halves gives
@@ -269,6 +277,10 @@ observe fn main() -> (((Bit,Bit),Bit),(Bit,Bit)) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     // Up to a common phase, T^3 H T H prepares
@@ -340,6 +352,10 @@ unitary fn oracle(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> {
 unitary fn identity(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> { q }
 ";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs() {
     let predicate = |label: usize| ((label & 1 != 0) && (label & 2 == 0)) ^ (label & 4 != 0);
@@ -472,6 +488,10 @@ unitary fn wrong(q: Q<{wrong_basis}>) -> Q<{wrong_basis}> {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn complete_branch_phi_transports_measured_results_fresh_wires_and_pending_frames() {
     // Two phased Bell pairs enter route. The flag chooses which half to
@@ -553,6 +573,10 @@ observe fn main() -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn verified_ir_does_not_by_itself_establish_source_correspondence() {
     let checked = compile(

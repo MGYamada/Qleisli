@@ -129,6 +129,10 @@ mod tests {
         assert!(QuantumPort::read(&Value::Object(fields), &decoder).is_err());
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn every_frozen_raw_operation_and_action_preserves_its_fields() {
         let target = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();

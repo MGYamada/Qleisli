@@ -138,6 +138,10 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn local_owners_can_shadow_hidden_outer_owners_without_consuming_them() {
     for computed in [
@@ -155,6 +159,10 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn two_argument_body_keeps_its_existing_classical_capture_support() {
     let source = format!(
@@ -166,6 +174,10 @@ unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
     both_source_checks(&source);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn joined_source_data_supports_the_suggested_controlled_gate_repair() {
     let source = format!(

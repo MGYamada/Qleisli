@@ -143,6 +143,10 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
     checked_finite_effects(

@@ -29,6 +29,10 @@ unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 ";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
     use qleisli::contract::exact::{Budget, Matrix};
@@ -79,6 +83,10 @@ fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning() {
     use qleisli::contract::exact::{Budget, Matrix};
@@ -125,6 +133,10 @@ fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meani
     assert!(check_project(&SourceRoot::new(text).0).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_control_finite_keeps_ordered_axes_and_ordinary_names() {
     use qleisli::contract::exact::{Budget, Matrix};
@@ -176,6 +188,10 @@ fn canonical_control_finite_keeps_ordered_axes_and_ordinary_names() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_control_finite_preserves_zero_width_phase_and_owner() {
     use qleisli::contract::exact::{Budget, Matrix};
@@ -242,6 +258,10 @@ fn canonical_control_finite_preserves_zero_width_phase_and_owner() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_control_rejects_alias_arity_type_and_missing_access() {
     for (signature, body) in [
@@ -278,6 +298,10 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
     assert_eq!(error.code, ErrorCode::Contract);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() {
     let text = "use std::quantum::{init0,h,x,cnot};use std::observe::measure_z;
@@ -338,6 +362,10 @@ fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() 
     assert_eq!(measured[1], carried_r);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
     let text = "use std::quantum::{h,init0}; use std::observe::measure_z;
@@ -613,6 +641,10 @@ fn legacy_exact_word_is_rejected_in_identifier_and_constructor_positions() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn comments_and_longer_names_survive_but_the_new_constructor_is_reserved() {
     let source = "/// bind_op(provider, M) is historical prose.\r\n/* bind_op /* checked_op */ */\r\npub unitary fn bind_op2(q:Q<Bit>)->Q<Bit>{q}\r\npub unitary fn checked_op2(q:Q<Bit>)->Q<Bit>{bind_op2(q)}";
@@ -676,6 +708,10 @@ fn loading_checks_retired_words_even_in_an_unused_module() {
     assert_eq!(selected.span(), span);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn text_and_json_preserve_utf8_crlf_migration_locations_in_both_clis() {
     let source = "// 日本語 π\r\npub unitary fn client(q:Q<Bit>)->Q<Bit>{\r\n  apply[bind_op(provider,M)](q)\r\n}";
@@ -755,6 +791,10 @@ fn receipt(operations: &[RawOp]) -> Arc<FunctionEvidence> {
         .expect("a checked source operation retains its receipt")
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn checked_operation_keeps_controlled_phase_and_exact_source_binding() {
     let source = format!("{PRELUDE}
@@ -829,6 +869,10 @@ fn checked_operation_keeps_controlled_phase_and_exact_source_binding() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
     let phase = format!(
@@ -866,6 +910,10 @@ fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn abstract_checked_provider_is_still_refused_by_finite_materialization() {
     let source = format!("{PRELUDE}
@@ -881,6 +929,10 @@ fn abstract_checked_provider_is_still_refused_by_finite_materialization() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
     let source = format!(
@@ -953,6 +1005,10 @@ fn canonical_power_retains_operation_count_and_original_source_spans() {
     assert!(matches!(child.kind, StaticOpKind::Inverse(_)));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
     for (count, expected) in [(0, false), (1, true), (2, false)] {
@@ -1026,6 +1082,10 @@ fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     let text = "use std::quantum::{x,init0}; use std::observe::measure_z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}";

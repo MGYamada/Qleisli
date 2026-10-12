@@ -111,6 +111,10 @@ fn compare(program: &AcceptedProgram, text: &str) -> Result<FunctionEvidence, Co
     )
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
     for (body, gates, reversed) in [
@@ -176,6 +180,10 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
     use qleisli::sim::{SimulationLimits, run_closed};
@@ -198,6 +206,10 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_valid_missing_or_wrong_swap_work_fails_the_independent_equation() {
     for body in ["join(a,b)", "let(a,b)=cnot(a,b);join(a,b)"] {

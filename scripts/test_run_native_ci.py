@@ -52,6 +52,20 @@ class NativeCI(unittest.TestCase):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 67)
         self.assertEqual(sum(len(task["commands"]) for task in tasks), 91)
+        # #367 makes these formerly unconditional native ignores conditional.
+        # include-ignored preserves their execution and includes normal tests;
+        # normalize only these exact reviewed commands for the historical hash.
+        migrated = [
+            ["cargo", "+1.98.1", "test", "--test", target, "--", "--include-ignored"]
+            for target in ("sized_source", "sized_cli", "native_paths")
+        ] + [
+            ["cargo", "+1.98.1", "test", "--test", "sized_review_dialects", "native", "--", "--include-ignored"],
+            ["cargo", "+1.98.1", "test", "--lib", "native_named_qpe", "--", "--include-ignored"],
+        ]
+        actual = [c for task in tasks for c in task["commands"] if "--include-ignored" in c]
+        # native-acceptance already used include-ignored before this migration.
+        actual = [c for c in actual if "native_acceptance" not in c]
+        self.assertEqual(sorted(actual), sorted(migrated))
         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
@@ -61,6 +75,9 @@ class NativeCI(unittest.TestCase):
                                     ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"],
                                     ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"],
                                     ["python3", "scripts/test_sized_local_resolution.py"])]
+            for command in task["commands"]:
+                if command in migrated:
+                    command[command.index("--include-ignored")] = "--ignored"
         digest = hashlib.sha256(json.dumps(inventory, sort_keys=True).encode()).hexdigest()
         # v0.2.6 workflow commands, replacing only isolated --record paths.
         self.assertEqual(digest, "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e")

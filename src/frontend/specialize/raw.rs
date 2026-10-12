@@ -2290,6 +2290,10 @@ mod tests {
     use crate::frontend::compile::ParsedProgram;
     use crate::ir::RawOp;
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn control_audit_collects_new_meanings_in_the_expanded_original_graph() {
         let text = include_str!(
@@ -2318,6 +2322,10 @@ mod tests {
             .unwrap();
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn finite_meaning_replay_charges_control_sectors_to_the_callers_budget() {
         let text = "use std::quantum::z;pub fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
@@ -2354,6 +2362,10 @@ mod tests {
             .unwrap();
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_meaning_intervals_reject_a_fresh_valid_leaf_for_another_action() {
         let elaborate = |text: &str| {
@@ -2409,6 +2421,10 @@ mod tests {
         assert!(error.message().contains("actual Raw operation interval"));
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn transformed_raw_meanings_reject_genuine_identity_evidence_for_other_substeps() {
         let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
@@ -2501,6 +2517,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy() {
         use crate::frontend::compile::{BasisBinding, OperationBinding};
@@ -2656,6 +2676,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
         use crate::frontend::compile::OperationBinding;
@@ -2693,6 +2717,10 @@ mod tests {
         assert_eq!(error.code(), "preservation", "{error}");
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn source_meaning_gate_rejects_a_native_valid_replaced_provider() {
         let source = ParsedProgram::parse(BTreeMap::from([(
@@ -2738,6 +2766,10 @@ mod tests {
         assert_eq!(error.code(), "preservation", "{error}");
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_rejects_noncommuting_gate_reordering() {
         use crate::ir::SingleGate;
@@ -2792,6 +2824,10 @@ mod tests {
         .unwrap()
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_rejects_native_valid_semantic_and_structural_mutations() {
         let source = example();

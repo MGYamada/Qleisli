@@ -103,6 +103,10 @@ fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
     common
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn borrow_resource_spelling_has_no_builtin_or_type_inferred_semantics() {
     for ty in ["Bit", "Q<Bit>", "Q<Unit>", "(Bit,Q<Bits<0>>)"] {
@@ -170,6 +174,10 @@ fn unrestricted_closures_locate_actual_live_captures_before_native_dispatch() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
     for (ty, body) in [
@@ -236,6 +244,10 @@ fn rejected_closure_syntax_keeps_existing_depth_and_parameter_limits() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unsupported_references_explain_control_without_guessing_the_expression_type() {
     for ty in ["Q<Bit>", "Bit"] {
@@ -257,6 +269,10 @@ fn unsupported_references_explain_control_without_guessing_the_expression_type()
     common_and_finite(source);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
     for ty in ["Bit", "Q<Bit>", "(Bit,Q<Unit>)"] {
@@ -339,6 +355,10 @@ fn unresolved_drop_keeps_callee_priority_without_inspecting_its_argument() {
     assert_eq!(message, "unresolved function missing");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn user_helpers_and_local_categories_do_not_acquire_rust_name_privileges() {
     let classical = "unitary fn drop(b:Bit)->Unit{()}
@@ -395,6 +415,10 @@ fn user_helpers_and_local_categories_do_not_acquire_rust_name_privileges() {
     no_rust_name_hint(&message);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear() {
     // Pair each existing loss site with the same ordinary tuple shape. Unit
@@ -447,6 +471,10 @@ fn ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
     let lost = "use std::observe::reset;
@@ -612,6 +640,10 @@ fn forbidden_replacement_is_checked_in_unused_branches_and_empty_folds() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn contextual_mut_name_and_explicit_consuming_rebinding_remain_ordinary_rules() {
     closed_bit("pub fn main()->Bit{let mut=0;mut}", false);

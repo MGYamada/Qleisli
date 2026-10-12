@@ -29,6 +29,10 @@ fn request(signature: &str, tag: &str, table: &str) -> Vec<u8> {
 }
 const BIT: &str = r#"{"tag":"bit"}"#;
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_format_rejections_preserve_envelope_locations_without_granting_authority() {
     use qleisli::interchange::native::{Kernel, Proposal};
@@ -71,6 +75,10 @@ fn interface(ty: BasisType) -> RootInterface {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
     let root = SourceRoot::new("observe fn main()->Unit {()} ");
@@ -130,6 +138,10 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn matching_types_are_required_independently_of_width_and_operator() {
     let program = accept(identity()).unwrap();
@@ -238,6 +250,10 @@ fn shared_meaning() -> (AcceptedProgram, MeaningEvidence) {
     (accept(raw).unwrap(), evidence)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration() {
     let (program, evidence) = shared_meaning();
@@ -282,6 +298,10 @@ fn shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration() {
     interchange::import(changed.as_bytes(), None).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
@@ -351,6 +371,10 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fixed_size_algorithm_and_feedback_artifacts_preserve_distributions() {
     use qleisli::sim::{SimulationLimits, run_closed};
@@ -384,6 +408,10 @@ fn fixed_size_algorithm_and_feedback_artifacts_preserve_distributions() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn malformed_transport_and_declared_root_bindings_are_rejected() {
     let bytes = interchange::export(
@@ -435,6 +463,10 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
     assert!(interchange::import(&[0xff], None).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_bits_wire_atoms_keep_exact_tags_and_reject_malformed_widths() {
     use qleisli::interchange::native::{Kernel, Proposal};

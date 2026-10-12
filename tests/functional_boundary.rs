@@ -49,6 +49,10 @@ fn shared_rejection(
     assert_eq!(location.span, span, "{source}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_calls_are_complete_first_order_calls_in_both_source_paths() {
     let declaration = "unitary fn pair(flag:Bit,q:Q<Bit>)->(Bit,Q<Bit>){(flag,q)}";
@@ -132,6 +136,10 @@ fn nested_quantum_environments_cannot_be_reused_as_callables_or_providers() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner() {
     let source = "

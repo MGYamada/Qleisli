@@ -65,6 +65,10 @@ fn assert_amplitudes(actual: &[[f64; 2]], expected: &[[f64; 2]]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sibling_order_and_module_partition_preserve_phase_and_labelled_axes() {
     // Independent analytic meaning: |a>q|b>r -> i^a |b>first|a>second.
@@ -115,6 +119,10 @@ fn sibling_order_and_module_partition_preserve_phase_and_labelled_axes() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn same_named_providers_keep_distinct_meanings_and_specialization_identity() {
     let program = prepare("providers");
@@ -225,6 +233,10 @@ fn first_invalid_sibling_follows_source_order_not_sorted_definition_identity() {
     assert!(error.span().end < inputs["main"].find("fn a_bad").unwrap());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sibling_and_unused_provider_cycles_do_not_become_self_recursion() {
     for case in [
@@ -291,6 +303,10 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
     let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjointable(U){adjoint(U)(q)} pub fn main()->Unit{()}";

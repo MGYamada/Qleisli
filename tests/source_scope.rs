@@ -29,6 +29,10 @@ fn assert_distribution(source: &str, expected: BTreeMap<Vec<bool>, f64>) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_projection_restores_classical_entries_and_preserves_mixed_pending_ownership() {
     for flag in [false, true] {
@@ -134,6 +138,10 @@ fn equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn local_spent_names_expire_but_entry_spent_names_still_hide_functions() {
     let move_through_local = "

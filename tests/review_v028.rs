@@ -5,6 +5,10 @@ use qleisli::frontend::compile::compile_project;
 use qleisli::interop::{InteropErrorKind, export_openqasm3, export_qir_base};
 use std::{fs, process::Command};
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn tuple_diagnostic_has_a_structured_binding_and_no_host_path() {
     let root = SourceRoot::new(
@@ -26,6 +30,10 @@ fn tuple_diagnostic_has_a_structured_binding_and_no_host_path() {
     assert!(!text.contains(root.0.to_str().unwrap()), "{text}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn byte_limits_identify_the_file_without_embedding_a_host_path() {
     let root = SourceRoot::new("");
@@ -52,6 +60,10 @@ fn byte_limits_identify_the_file_without_embedding_a_host_path() {
 }
 
 #[cfg(unix)]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unreadable_source_identifies_the_failing_file_in_both_transports() {
     use std::os::unix::fs::PermissionsExt;
@@ -105,6 +117,10 @@ fn interop_file_io_uses_the_closed_project_code() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn terminal_export_keeps_allocations_before_observation() {
     for observe in ["let a=measure_z(q);", "discard(q); let a=0;"] {
@@ -127,6 +143,10 @@ fn terminal_export_keeps_allocations_before_observation() {
 }
 
 #[cfg(unix)]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_qrate_rejects_root_and_ancestor_replacement_before_loading() {
     use qleisli::frontend::project::{QrateSource, SourcePolicy};

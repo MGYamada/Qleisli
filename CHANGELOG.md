@@ -15,6 +15,10 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
+  selected (#367), retain ordinary independent tests, and compile the crate
+  example without running it. Native CI rejects any conditional native skip;
+  separate fixture/oracle and deferred stress schedules remain explicit.
 - Restore fixture headroom through nineteen lossless historical archives (#364),
   preserving exact source commits, inventories, bytes and modes. Reject new
   fixtures without rooted static consumer references before CI lane selection;

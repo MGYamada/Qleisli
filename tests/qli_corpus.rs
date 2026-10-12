@@ -101,6 +101,10 @@ fn message_distribution(tail: &[bool]) -> Vec<(Vec<bool>, f64)> {
         .collect()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn inline_and_modular_teleportation_agree_on_every_classical_message() {
     let root = project("protocols");
@@ -112,6 +116,10 @@ fn inline_and_modular_teleportation_agree_on_every_classical_message() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn teleportation_recovers_seven_states_and_an_entangled_reference() {
     let root = project("protocols");
@@ -127,6 +135,10 @@ fn teleportation_recovers_seven_states_and_an_entangled_reference() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn protocol_y_minus_has_the_full_independent_operator_phase() {
     use qleisli::contract::exact::{Budget, Exact, Matrix};
@@ -185,6 +197,10 @@ fn protocol_y_minus_has_the_full_independent_operator_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_components_support_dense_coding_and_entanglement_swapping() {
     let root = project("protocols");
@@ -201,6 +217,10 @@ fn bell_components_support_dense_coding_and_entanglement_swapping() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates() {
     let root = project("operation_algorithms");
@@ -219,6 +239,10 @@ fn phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes() {
     let root = project("operation_algorithms");
@@ -242,6 +266,10 @@ fn canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn phase_estimation_matches_off_grid_probabilities_and_reference_instruments() {
     let root = project("operation_algorithms");
@@ -270,6 +298,10 @@ fn phase_estimation_matches_off_grid_probabilities_and_reference_instruments() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn amplification_handles_all_marked_labels_and_detects_overshoot() {
     let root = project("operation_algorithms");
@@ -285,6 +317,10 @@ fn amplification_handles_all_marked_labels_and_detects_overshoot() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn hadamard_tests_preserve_the_target_and_measure_both_overlap_components() {
     let root = project("operation_algorithms");
@@ -305,6 +341,10 @@ fn hadamard_tests_preserve_the_target_and_measure_both_overlap_components() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn type_correct_protocol_faults_are_detected_by_branch_sensitive_oracles() {
     let root = project("protocols");
@@ -336,6 +376,10 @@ fn type_correct_protocol_faults_are_detected_by_branch_sensitive_oracles() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn type_correct_forward_qft_fault_negates_the_phase_label() {
     let root = project("operation_algorithms");
@@ -346,6 +390,10 @@ fn type_correct_forward_qft_fault_negates_the_phase_label() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
     for &(name, code) in REJECTED {
@@ -403,6 +451,10 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn every_quick_reference_program_compiles_and_executes() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))

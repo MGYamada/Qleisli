@@ -243,6 +243,10 @@ fn names_forward_the_resolved_type_without_width_coercion() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
     let root = common::SourceRoot::new(
@@ -305,6 +309,10 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     let kernel =
@@ -373,6 +381,10 @@ fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};

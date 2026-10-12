@@ -434,7 +434,7 @@
           "--test",
           "sized_source",
           "--",
-          "--ignored"
+          "--include-ignored"
         ]
       ],
       "env": {
@@ -453,7 +453,7 @@
           "sized_review_dialects",
           "native",
           "--",
-          "--ignored"
+          "--include-ignored"
         ]
       ],
       "env": {
@@ -471,7 +471,7 @@
           "--test",
           "sized_cli",
           "--",
-          "--ignored"
+          "--include-ignored"
         ]
       ],
       "env": {
@@ -489,7 +489,7 @@
           "--lib",
           "native_named_qpe",
           "--",
-          "--ignored"
+          "--include-ignored"
         ]
       ],
       "env": {
@@ -749,7 +749,7 @@
           "--test",
           "native_paths",
           "--",
-          "--ignored"
+          "--include-ignored"
         ],
         [
           "python3",

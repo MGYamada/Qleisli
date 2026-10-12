@@ -68,6 +68,10 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
     for prefix in ["", "unitary ", "isometry ", "observe "] {
@@ -94,6 +98,10 @@ fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cli_text_and_json_explain_the_semantic_limit_without_tracker_links() {
     let root = SourceRoot::new(&format!(
@@ -123,6 +131,10 @@ fn cli_text_and_json_explain_the_semantic_limit_without_tracker_links() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn immutable_metadata_and_documentation_use_the_checked_source_bytes() {
     let original = "/// A broader assertion is separate from the inferred fact.\nobserve fn f(q:Q<Bit>)->Q<Bit>{q}";
@@ -182,6 +194,10 @@ fn all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
     for (source, effect) in [
@@ -263,6 +279,10 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
     let root = SourceRoot::new("fn main()->Unit{()}");
@@ -326,6 +346,10 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
     assert!(!documentation.contains("Checked upper-bound assertion:"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn operation_providers_use_principal_effects_and_cannot_hide_measurement() {
     let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)} pub fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
@@ -450,6 +474,10 @@ fn host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
     let declarations = [

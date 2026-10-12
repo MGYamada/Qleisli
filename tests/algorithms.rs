@@ -40,6 +40,10 @@ fn probability(distribution: &BTreeMap<Vec<bool>, f64>, bits: &[bool], expected:
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn documented_structured_algorithms_have_their_expected_results() {
     for (name, outcome) in [
@@ -51,6 +55,10 @@ fn documented_structured_algorithms_have_their_expected_results() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
     let root = SourceRoot::example("grover");
@@ -101,6 +109,10 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bernstein_vazirani_recovers_every_two_bit_secret() {
     let root = SourceRoot::example("bernstein_vazirani");
@@ -140,6 +152,10 @@ fn bell_recovery_source(a: &str, b: &str, c: &str) -> String {
     )
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn single_bit_flip_recovery_preserves_entanglement_with_a_reference() {
     let root = SourceRoot::example("bit_flip_code");
@@ -159,6 +175,10 @@ fn single_bit_flip_recovery_preserves_entanglement_with_a_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors() {
     let root = SourceRoot::example("bit_flip_code");
@@ -168,6 +188,10 @@ fn bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors() {
     probability(&root.run(), &[false, true, false, true, false, false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn parity_measurement_keeps_coherence_within_each_parity_sector() {
     let root = SourceRoot::new("");

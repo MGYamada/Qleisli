@@ -232,6 +232,10 @@ fn compiled_project_discovery_selects_current_sources() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn compiled_programs_reencode_exactly_and_caches_match_implementations() {
     let kernel = kernel();
@@ -495,6 +499,10 @@ fn record_case(name: &str, bytes: &[u8], counts: &BTreeMap<&'static str, usize>)
     println!("ROUNDTRIP_COVERAGE\t{name}\t{counts:?}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn positive_evidence_coverage_reaches_every_retained_path() {
     let kernel = kernel();
@@ -663,6 +671,10 @@ fn positive_evidence_coverage_reaches_every_retained_path() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qirf2_meaning_entries_execute_the_checked_table() {
     use SingleGate::{H, T, X, Z};

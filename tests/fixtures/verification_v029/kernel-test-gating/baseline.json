@@ -1,0 +1,37 @@
+{
+  "source_commit": "09a74a1d0d433b355ea946a7565875416258fc4c",
+  "kind": "informed infrastructure observation, not a semantic oracle or model benchmark",
+  "first_observation": {
+    "path": "tests/fixtures/verification_v029/kernel-test-gating/first-observation.json",
+    "sha256": "40b7f86bf0e48b0c8c00483502af4b047408dfaf8a2b7692ebec55b642632e32"
+  },
+  "logs": [
+    {
+      "path": "tests/fixtures/verification_v029/kernel-test-gating/first-launch.log.gz",
+      "exit_code": 101,
+      "sha256": "357d0c5a3a6a76d126f888907ce5cfbab5ce214a54fb6d693062e7a358a76916",
+      "raw_sha256": "e202f95f83cf4f2a903f8b3218e5737d03b1ce046e1d839fee79783001c51bf5",
+      "raw_bytes": 107
+    },
+    {
+      "path": "tests/fixtures/verification_v029/kernel-test-gating/without-kernel.log.gz",
+      "exit_code": 101,
+      "sha256": "5e3a30c281a1222594d4e11f1fbea23112b3656de113638d9ea4969321d9126e",
+      "raw_sha256": "0c6904608c9aaaebba7b81911b58d49055e8111395078b2727f63ec5c700df80",
+      "raw_bytes": 501894
+    },
+    {
+      "path": "tests/fixtures/verification_v029/kernel-test-gating/independent-process-permission-rerun.log.gz",
+      "exit_code": 0,
+      "sha256": "26b5d838c3935402f7ea191bdd9ffe920228c441981e75c5ed0b12444aa40819",
+      "raw_sha256": "0cade7fc7e21fef8399bedbc329401bfd6ad00bd6e23039d9ea4bcee2eccecd9",
+      "raw_bytes": 369
+    }
+  ],
+  "corrected_harness_totals": {
+    "passed": 474,
+    "failed": 697,
+    "ignored": 53
+  },
+  "scope": "Original launch failure, full unmodified default Cargo test diagnostics, and unchanged checker-independent process test with required host permission. Commands are historical data and must not be replayed from this record."
+}

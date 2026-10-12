@@ -90,6 +90,10 @@ fn scope(text: &str, entry: &str, target: &str) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
     for relative in [
@@ -139,6 +143,10 @@ fn distribution(text: &str, expected: &[(&[bool], f64)]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_mixed_sources_keep_independent_distributions_and_scope() {
     let hth_zero = (2.0 + 2.0_f64.sqrt()) / 4.0;
@@ -171,6 +179,10 @@ fn selected_mixed_sources_keep_independent_distributions_and_scope() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_static_fold_and_fresh_sampling_use_the_requested_instance() {
     for n in 0..=2 {
@@ -252,6 +264,10 @@ impl LoggedKernel {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 #[cfg(unix)]
 fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native() {
@@ -405,6 +421,10 @@ fn selected_module_checking_and_binding_errors_cannot_start_native() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_open_signature_checks_and_proposals_do_not_claim_closed_execution() {
     let files =
@@ -429,6 +449,10 @@ fn selected_open_signature_checks_and_proposals_do_not_claim_closed_execution() 
     assert!(path.is_file());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 #[cfg(unix)]
 fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
@@ -500,6 +524,10 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes() {
     let angle = std::f64::consts::PI / 8.0;
@@ -529,6 +557,10 @@ fn selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 #[cfg(unix)]
 fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() {
@@ -736,6 +768,10 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
     assert!(!String::from_utf8_lossy(&help.stdout).contains("qleisli sized"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
     for call in ["h(&q)", "h(&mut q)", "h(&ctrl q)", "h(ctrl q)"] {
@@ -976,6 +1012,10 @@ fn binding_refusals_precede_native_dispatch_in_text_and_json() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_static_places_choose_raw_before_native_acceptance() {
     for call in [
@@ -1013,6 +1053,10 @@ fn selected_static_places_choose_raw_before_native_acceptance() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_raw_control_checks_without_weakening_emission() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))

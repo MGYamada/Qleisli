@@ -6,6 +6,10 @@ fn command() -> Command {
     Command::new(env!("CARGO_BIN_EXE_qleisli"))
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shared_basis_nat_provider_checks_zero_and_one_bit_registers() {
     let original = common::current_source_text(

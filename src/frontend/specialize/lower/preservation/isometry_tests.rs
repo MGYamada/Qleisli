@@ -435,6 +435,10 @@ fn request(proposal: &HierarchyProposal, name: &str, wrong: bool) -> Vec<u8> {
     .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_roots_match_independently_authored_exact_composition_requests() {
     for name in [
@@ -479,6 +483,10 @@ fn isometry_roots_match_independently_authored_exact_composition_requests() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
     let proposal = lower(
@@ -503,6 +511,10 @@ fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request() {
     let text = "use std::quantum::{finish,init0,h,x};
@@ -549,6 +561,10 @@ fn phase([a, b]: [f64; 2]) -> [f64; 2] {
     [s * (a - b), s * (a + b)]
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_empty_branch_preserves_complex_phase_and_external_reference() {
     for (name, omega) in [
@@ -572,6 +588,10 @@ fn isometry_empty_branch_preserves_complex_phase_and_external_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
     // Reference varies slowest. These are arbitrary unnormalized coefficients,
@@ -599,6 +619,10 @@ fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     let valid = lower(&source("unit-zero"));
@@ -637,6 +661,10 @@ fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_two_moved_initializations_keep_reversed_axes_and_reference() {
     let proposal = lower(&source("multi-init-order"));
@@ -668,6 +696,10 @@ fn isometry_two_moved_initializations_keep_reversed_axes_and_reference() {
     close(&output.branches[0], &expected);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn constructor_sequence_matches_independent_exact_equation_and_rejects_gate_substitution() {
     let source = include_str!("../../../../../tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli")

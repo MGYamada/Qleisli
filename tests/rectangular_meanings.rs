@@ -65,6 +65,10 @@ fn run(source: &str) -> std::collections::BTreeMap<Vec<bool>, f64> {
     expected
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_project_preparation_with_and_without_meaning() {
     for refinement in ["", ",Plus"] {
@@ -82,6 +86,10 @@ fn ordinary_project_preparation_with_and_without_meaning() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_project_composition_and_tensor_preserve_ordered_ports() {
     let result = run(&format!("{PREP}
@@ -100,6 +108,10 @@ fn ordinary_project_composition_and_tensor_preserve_ordered_ports() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn rectangular_composition_preserves_an_entangled_caller() {
     let result = run(&format!("{PREP}
@@ -124,6 +136,10 @@ fn rectangular_composition_preserves_an_entangled_caller() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_project_equal_width_distinct_trees_and_inverse() {
     let result = run(&format!("{PREP}
@@ -137,6 +153,10 @@ fn ordinary_project_equal_width_distinct_trees_and_inverse() {
     assert!((result[&vec![true]] - 1.0).abs() < 1e-12);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_rectangular_basis_lift_binds_every_input_column() {
     // The selected Raw basis-expression profile remains separate (#250).
@@ -169,6 +189,10 @@ fn ordinary_rectangular_basis_lift_binds_every_input_column() {
     assert!((distribution[&vec![true, true]] - 0.5).abs() < 1e-12);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn rectangular_reference_rejects_phase_observation_and_missing_inverse() {
     for extra in [

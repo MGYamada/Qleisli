@@ -66,6 +66,10 @@ use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split; use std::observe::measure_z;
 use std::observe::discard; use std::measurement::measure_x;";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qpe_resolves_all_eighth_turns_in_little_endian_order() {
     let root = Root::qpe();
@@ -79,6 +83,10 @@ fn qpe_resolves_all_eighth_turns_in_little_endian_order() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
     let root = Root::qpe();
@@ -106,6 +114,10 @@ fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
     let root = Root::qpe();
@@ -139,6 +151,10 @@ fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
     probability(&root.run(), &[false; 5], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
     let root = Root::new();
@@ -163,6 +179,10 @@ fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
     probability(&root.run(), &[false, false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn control_preserves_reflection_sign_including_inverse_and_nested_control() {
     let root = Root::new();
@@ -195,6 +215,10 @@ fn control_preserves_reflection_sign_including_inverse_and_nested_control() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_zero_width_phase_survives_inverse_and_control() {
     let root = Root::new();
@@ -219,6 +243,10 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
     probability(&root.run(), &[false, false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn grover_reflection_and_its_negative_are_distinguished_under_control() {
     let root = Root::new();
@@ -237,6 +265,10 @@ fn grover_reflection_and_its_negative_are_distinguished_under_control() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repetition_zero_one_and_many_have_explicit_semantics() {
     let root = Root::new();
@@ -328,6 +360,10 @@ fn static_syntax_has_bounded_numbers_and_precise_failures() {
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_static_expansion_is_bounded_in_work_and_depth() {
     std::thread::Builder::new()
@@ -358,6 +394,10 @@ fn nested_static_expansion_is_bounded_in_work_and_depth() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_finite_circuit_validation_rejects_forged_certificates() {
     let good = CircuitStep {

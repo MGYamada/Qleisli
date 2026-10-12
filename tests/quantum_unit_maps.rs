@@ -369,6 +369,10 @@ fn first_positive_sources_retain_whole_signatures_and_reach_elaboration() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients() {
     for name in [
@@ -440,6 +444,10 @@ fn ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner() {
     assert_eq!(root.steps()[1].primitive(), Some("std::quantum::unit"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_arguments_execute_once_and_finish_does_not_erase_phase() {
     for (name, count, return_owner, factor) in [
@@ -511,6 +519,10 @@ fn scalar_arguments_execute_once_and_finish_does_not_erase_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference() {
     let graph = elaborate(&study("controlled-four"), "main::f");
@@ -533,6 +545,10 @@ fn four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn left_and_right_owner_product_maps_preserve_order_and_entangled_references() {
     for (name, left, entry, introduce) in [
@@ -582,6 +598,10 @@ fn left_and_right_owner_product_maps_preserve_order_and_entangled_references() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_valid_wrong_scalar_and_matching_own_meaning_fail_the_unchanged_request() {
     let k = kernel();
@@ -747,6 +767,10 @@ fn effects_are_not_hidden_by_the_ordinary_unit_argument_or_result() {
     assert_eq!(graph.lower().unwrap_err().code(), "unsupported");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_maps_after_observation_retain_actual_source_events_and_native_action() {
     let graph = elaborate(&source("maps-after-observation"), "main::f");
@@ -834,6 +858,10 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     use qleisli::contract::meaning::FiniteMeaning;
@@ -915,6 +943,10 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     assert!(raw.validate_source_steps(&different).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_unit_maps_preserve_controlled_scalar_interference_in_both_source_paths() {
     use qleisli::frontend::compile::compile_project;

@@ -18,6 +18,10 @@ fn splitmix_words_are_the_specified_unsigned_algorithm() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_draws_follow_the_word_threshold_and_consume_deterministic_words() {
     let p = compile_project(Path::new("examples/bell")).unwrap();
@@ -34,6 +38,10 @@ fn bell_draws_follow_the_word_threshold_and_consume_deterministic_words() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
     let source = SourceRoot::new(
@@ -55,6 +63,10 @@ fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn discarded_entangled_half_is_sampled_and_no_state_is_reused() {
     let source = SourceRoot::new(
@@ -81,6 +93,10 @@ fn discarded_entangled_half_is_sampled_and_no_state_is_reused() {
     assert_eq!(draws, 4);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn failures_are_errors_and_limits_apply_before_draws() {
     let p = compile_project(Path::new("examples/bell")).unwrap();
@@ -130,6 +146,10 @@ fn failures_are_errors_and_limits_apply_before_draws() {
     assert_eq!(words, 0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn projection_copy_limits_precede_visible_and_hidden_random_draws() {
     use qleisli::ir::{ClassicalId, Effect, RawOp, RawProgram, TokenId, WireId};
@@ -208,6 +228,10 @@ fn projection_copy_limits_precede_visible_and_hidden_random_draws() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
     let original = check_project(Path::new(
@@ -249,6 +273,10 @@ fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn interference_probability_matches_an_independent_analytic_value() {
     let root = SourceRoot::new(
@@ -269,6 +297,10 @@ fn interference_probability_matches_an_independent_analytic_value() {
     assert!((zero as f64 / 8192.0 - (2.0 + 2.0_f64.sqrt()) / 4.0).abs() < 0.04);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sampler_rejects_open_interfaces_before_requesting_randomness() {
     use common::accept;

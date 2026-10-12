@@ -1375,12 +1375,18 @@ fn root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the separately built and audited Lean kernel"]
 fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
     use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("select audited kernel"),
+    );
     let limits = ExecutionLimits {
         max_amplitudes: 4096,
         max_steps: 1_000_000,
@@ -1453,12 +1459,18 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the separately built and audited Lean kernel"]
 fn direct_finite_source_gates_preserve_entangled_h_x_references() {
     use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("select audited kernel"),
+    );
     let input = [[0.3, 0.2], [0.4, -0.1], [-0.2, 0.5], [0.1, 0.3]];
     for (body, expected_kind) in [
         ("h(q)", "H"),
@@ -1617,8 +1629,11 @@ fn amplitude_grid_estimate(outcome: usize, bits: usize) -> f64 {
         .powi(2)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the separately built and audited Lean kernel"]
 fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients() {
     use qleisli::{
         interchange::hierarchical::{
@@ -1627,8 +1642,11 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         },
         sim::SplitMix64,
     };
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("select audited kernel"),
+    );
     let limits = ExecutionLimits {
         max_amplitudes: 4096,
         max_steps: 1_000_000,

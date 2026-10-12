@@ -50,6 +50,10 @@ fn forbidden_exits_have_original_locations_and_structured_alternatives() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_names_comments_and_inequality_never_become_runtime_exits() {
     let text = "unitary fn panic(q:Q<Bit>)->Q<Bit>{q}
@@ -194,6 +198,10 @@ fn static_range_arithmetic_and_shape_refuse_before_native_acceptance() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_alternatives_keep_correlated_owners_and_host_limits_stay_separate() {
     use qleisli::frontend::compile::compile_project;

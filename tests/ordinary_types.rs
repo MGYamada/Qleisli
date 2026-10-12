@@ -52,6 +52,10 @@ fn view(ty: &SourceType) -> String {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_bit_values_copy_drop_call_and_use_zero_one_literals() {
     for source in [
@@ -66,6 +70,10 @@ fn finite_bit_values_copy_drop_call_and_use_zero_one_literals() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_boolean_actions_match_an_independent_truth_result() {
     let checked =
@@ -81,6 +89,10 @@ fn finite_boolean_actions_match_an_independent_truth_result() {
     assert_eq!(checked.raw().classical_outputs.len(), 3);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_measurement_and_feedforward_keep_their_correlated_action() {
     let checked = compile_project(&SourceRoot::new(source!("canonical-feedback")).0).unwrap();
@@ -91,6 +103,10 @@ fn finite_measurement_and_feedforward_keep_their_correlated_action() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn source_bearing_native_evidence_retains_the_actual_canonical_source() {
     let source = source!("canonical-retained-source");
@@ -238,6 +254,10 @@ fn sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports() {
     let graph = elaborate(source!("unit-copy"));
@@ -270,6 +290,10 @@ fn sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports() {
     assert_eq!(actual.amplitudes, input);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sized_unit_patterns_consume_only_actual_unit_values() {
     let proposal = elaborate(source!("unit-pattern-consume")).lower().unwrap();
@@ -292,6 +316,10 @@ fn sized_unit_patterns_consume_only_actual_unit_values() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_returning_quantum_consumption_survives_lowering_and_source_event_checks() {
     let proposal = elaborate(source!("unit-drain-readout")).lower().unwrap();
@@ -351,6 +379,10 @@ fn quantum_zero_axis_owners_still_cannot_be_copied_or_dropped() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn existing_execution_profile_limits_remain_explicit() {
     let finite = check_project(&SourceRoot::new(source!("ordinary-word")).0).unwrap_err();

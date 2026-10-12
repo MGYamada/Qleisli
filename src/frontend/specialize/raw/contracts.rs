@@ -682,6 +682,10 @@ mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn reference_operation_replay_rejects_equal_matrix_receipt_substitution() {
         let prefix = "use std::quantum::{h,init0}; use std::observe::measure_z;
@@ -762,6 +766,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn source_contract_replay_rejects_same_matrix_different_native_pair() {
         let text = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z;

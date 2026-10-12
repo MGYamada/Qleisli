@@ -11,6 +11,10 @@ fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn every_two_bit_permutation_retains_phase_under_control_axis_transport_and_adjoint() {
     let pair = BasisType::pair(BasisType::Bit, BasisType::Bit);

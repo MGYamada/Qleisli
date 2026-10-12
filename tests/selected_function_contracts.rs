@@ -52,6 +52,10 @@ fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal, Error> {
     source.lower_raw_with_kernel(&kernel(), &mut work())
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_specialization_checks_calls_and_unused_original_obligations() {
     let definitions = "use std::quantum::{init0,h,phase}; use std::observe::measure_z;
@@ -89,6 +93,10 @@ fn observing_specialization_checks_calls_and_unused_original_obligations() {
     assert_eq!(check(&elaborate(&zero)).unwrap_err().code(), "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_changes() {
     let positive = include_str!(
@@ -122,6 +130,10 @@ fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_
     assert!(json.contains("\"source_meaning_verified\":false"), "{json}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_specialization_keeps_nested_equations_empty_values_and_references() {
     let source = "use std::quantum::{init0,h,cnot,unit,finish}; use std::observe::measure_z;
@@ -145,6 +157,10 @@ fn observing_specialization_keeps_nested_equations_empty_values_and_references()
     assert!(format!("{proposal:?}").contains("InstrumentCall"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
     let source = "use std::classical::{empty_bits,prepend_bit}; use std::quantum::init0;
@@ -177,6 +193,10 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
     assert_eq!(result[&vec![false, true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_specialization_rechecks_changed_reference_dependencies_and_output_order() {
     let main = "use dependency::reference; use std::quantum::init0; use std::observe::measure_z;
@@ -232,6 +252,10 @@ fn selected_zero(source: &str) {
     assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn first_hhh_source_runs_unchanged_through_both_adapters_and_cli() {
     let root = SourceRoot::new(HHH);
@@ -259,6 +283,10 @@ fn first_hhh_source_runs_unchanged_through_both_adapters_and_cli() {
     assert!(json.contains("\"source_meaning_verified\":false"), "{json}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() {
     let observed = elaborate(HHH);
@@ -285,6 +313,10 @@ fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() 
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn identity_and_negative_h_fail_exact_equations_in_both_adapters() {
     for source in [ID, NEGATIVE_H] {
@@ -295,6 +327,10 @@ fn identity_and_negative_h_fail_exact_equations_in_both_adapters() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
     let source = "use std::quantum::{init0,x}; use std::observe::measure_z;
@@ -313,6 +349,10 @@ fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
     assert_eq!(check(&elaborate(&wrong)).unwrap_err().code(), "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_and_zero_count_contracts_are_not_erased() {
     let definitions = "use std::quantum::{init0,h}; use std::observe::measure_z;
@@ -331,6 +371,10 @@ fn unused_and_zero_count_contracts_are_not_erased() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_generic_body_keeps_its_closed_function_contract_in_both_adapters() {
     let source = "use std::quantum::{init0,h}; use std::observe::measure_z;
@@ -351,6 +395,10 @@ fn unused_generic_body_keeps_its_closed_function_contract_in_both_adapters() {
     assert_eq!(check(&selected).unwrap_err().code(), "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_contracts_keep_their_independent_dependencies() {
     let source = HHH.replace("pub observe fn main()", "unitary fn nested(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation,reference_h,q) }\npub observe fn main()")
@@ -361,6 +409,10 @@ fn nested_contracts_keep_their_independent_dependencies() {
     assert_eq!(check(&elaborate(&wrong)).unwrap_err().code(), "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
     let source = elaborate(HHH);
@@ -384,6 +436,10 @@ fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
     assert!(compile_project(&SourceRoot::new(wrong).0).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn changed_reference_dependency_is_rechecked_from_new_sources() {
     let main = HHH.replace(
@@ -410,6 +466,10 @@ fn changed_reference_dependency_is_rechecked_from_new_sources() {
     assert_eq!(check(&make(&changed)).unwrap_err().code(), "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn receipt_sources_and_actual_emitted_step_cannot_be_substituted() {
     let proposal = lower(&elaborate(HHH)).unwrap();
@@ -454,6 +514,10 @@ fn receipt_sources_and_actual_emitted_step_cannot_be_substituted() {
     assert!(proposal.validate_source_steps(&changed).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn equal_matrix_receipt_cannot_replace_the_original_implementation_snapshot() {
     let proposal = lower(&elaborate(HHH)).unwrap();

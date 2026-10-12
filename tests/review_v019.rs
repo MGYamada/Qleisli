@@ -5,6 +5,10 @@ use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::frontend::parser::parse_module;
 use qleisli::sim::{SimulationLimits, run_closed};
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
     for source in [
@@ -49,6 +53,10 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
     assert_eq!(distribution[&vec![true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_static_arguments_share_exact_work_across_calls() {
     let base = common::current_source_text(

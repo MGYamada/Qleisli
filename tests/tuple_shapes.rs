@@ -49,6 +49,10 @@ fn formerly_silent_reassociation_now_rejects() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
     let root = SourceRoot::new(&current_fixture(
@@ -69,6 +73,10 @@ fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn same_shape_wrong_permutation_does_not_pass_identity_evidence() {
     let root = SourceRoot::new(&current_fixture(
@@ -79,6 +87,10 @@ fn same_shape_wrong_permutation_does_not_pass_identity_evidence() {
     assert!(error.message.contains("exact"), "{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nary_static_meanings_retain_shape_and_order() {
     let prefix = "classical fn id((a,b,c):(Bit,Bit,Bit))->(Bit,Bit,Bit){(a,b,c)}
@@ -102,6 +114,10 @@ fn nary_static_meanings_retain_shape_and_order() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nary_owners_include_units_pending_fields_and_branch_frames() {
     let root = SourceRoot::new(
@@ -168,6 +184,10 @@ fn nary_type_capacity_and_rejected_deep_drops_are_bounded() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn flat_arity_and_nested_depth_have_distinct_bounds() {
     use qleisli::frontend::parser::parse_module;
@@ -196,6 +216,10 @@ fn flat_arity_and_nested_depth_have_distinct_bounds() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn documented_type_categories_and_explicit_only_conversions() {
     for source in [

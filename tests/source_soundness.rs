@@ -30,6 +30,10 @@ fn assert_distribution(actual: &BTreeMap<Vec<bool>, f64>, expected: &BTreeMap<Ve
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn hidden_measurement_histories_add_weights_despite_opposite_final_phases() {
     let program = compile(
@@ -58,6 +62,10 @@ observe fn main() -> Bit {
     assert_distribution(&distribution, &BTreeMap::from([(vec![false], 1.0)]));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adaptive_observation_preserves_joint_weights_correlations_and_coarse_graining() {
     let source = r#"
@@ -125,6 +133,10 @@ observe fn main() -> OUTPUT_TYPE {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn injective_growth_keeps_reference_coherence_while_reset_erases_it() {
     for reset in [false, true] {
@@ -186,6 +198,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_probability_histories_do_not_execute_or_normalize_an_inactive_arm() {
     for choice in [false, true] {

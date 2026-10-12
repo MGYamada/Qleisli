@@ -10,6 +10,10 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
         .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_transport_failures_use_the_closed_v1_project_code() {
     let root = SourceRoot::new("observe fn main()->Bit{1}");
@@ -48,6 +52,10 @@ fn native_transport_failures_use_the_closed_v1_project_code() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
     let root = SourceRoot::new(include_str!(
@@ -74,6 +82,10 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn truncated_static_arguments_emit_one_located_json_parse_error() {
     for source in [
@@ -168,6 +180,10 @@ fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
@@ -194,6 +210,10 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn json_command_identity_is_independent_of_leading_options() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
@@ -275,6 +295,10 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn json_runtime_limit_does_not_emit_a_partial_distribution() {
     let mut source = String::from(
@@ -302,6 +326,10 @@ fn json_runtime_limit_does_not_emit_a_partial_distribution() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn json_type_failure_is_located_in_the_original_source() {
     let root = SourceRoot::new("observe fn main() -> Bit { () }");

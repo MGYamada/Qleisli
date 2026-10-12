@@ -44,6 +44,10 @@ fn close(actual: f64, expected: f64) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_branches_reserve_pending_outer_components_and_amplitudes() {
     use qleisli::frontend::compile::compile_project;
@@ -84,6 +88,10 @@ fn nested_branches_reserve_pending_outer_components_and_amplitudes() {
     close(distribution[&vec![true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn classical_projection_copies_share_the_execution_budget() {
     let mut operations: Vec<_> = (0..256)
@@ -139,6 +147,10 @@ fn classical_projection_copies_share_the_execution_budget() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_phi_copies_share_the_ensemble_and_sample_execution_budgets() {
     let mut operations = Vec::new();
@@ -217,6 +229,10 @@ fn branch_phi_copies_share_the_ensemble_and_sample_execution_budgets() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_phi_copies_charge_empty_owners_and_wire_relabeling() {
     let program = closed(
@@ -301,6 +317,10 @@ fn quantum_phi_copies_charge_empty_owners_and_wire_relabeling() {
     assert_eq!(sample.execution_steps, 12);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_t_phase_can_leave_a_tiny_floating_point_outcome() {
     let mut operations = vec![
@@ -337,6 +357,10 @@ fn repeated_t_phase_can_leave_a_tiny_floating_point_outcome() {
     assert!(distribution.get(&vec![true]).copied().unwrap_or(0.0) < 1e-28);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_lift_split_and_measure_has_only_matching_outcomes() {
     let program = closed(
@@ -403,6 +427,10 @@ fn bell_cnot_prefix() -> Vec<RawOp> {
     ]
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_phase_oracle_not_function_interferes_to_one() {
     let program = closed(
@@ -447,6 +475,10 @@ fn computed_phase_oracle_not_function_interferes_to_one() {
     close(distribution[&vec![true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_half_measurement_and_feedback_corrects_other_half() {
     let mut ops = bell_cnot_prefix();
@@ -481,6 +513,10 @@ fn bell_half_measurement_and_feedback_corrects_other_half() {
     close(distribution[&vec![false]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn discarding_entangled_half_keeps_mixed_residual() {
     let mut ops = bell_cnot_prefix();
@@ -502,6 +538,10 @@ fn discarding_entangled_half_keeps_mixed_residual() {
     close(distribution[&vec![true]], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reset_breaks_bell_correlation_and_returns_new_zero_wire() {
     let mut ops = bell_cnot_prefix();
@@ -526,6 +566,10 @@ fn reset_breaks_bell_correlation_and_returns_new_zero_wire() {
     close(distribution[&vec![false, true]], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_phase_survives_even_without_target_wires() {
     let program = closed(
@@ -579,6 +623,10 @@ fn scalar_phase_survives_even_without_target_wires() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_predicate_controls_target_without_measuring_source() {
     let program = closed(
@@ -634,6 +682,10 @@ fn computed_predicate_controls_target_without_measuring_source() {
     close(distribution[&vec![true, true]], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn join_and_permutation_lift_use_register_bit_order() {
     let program = closed(
@@ -679,6 +731,10 @@ fn join_and_permutation_lift_use_register_bit_order() {
     close(distribution[&vec![true, true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn toffoli_and_classical_boolean_ops_execute() {
     let program = closed(
@@ -736,6 +792,10 @@ fn toffoli_and_classical_boolean_ops_execute() {
     close(distribution[&vec![true, false, true]], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nonclosed_input_and_dimension_limit_are_reported() {
     let open = accept(RawProgram {
@@ -803,6 +863,10 @@ fn nonclosed_input_and_dimension_limit_are_reported() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_qif_entangles_control_and_target() {
     let program = closed(
@@ -848,6 +912,10 @@ fn coherent_qif_entangles_control_and_target() {
     close(distribution[&vec![true, true]], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_target_scalar_phase_becomes_relative_control_phase() {
     let program = closed(

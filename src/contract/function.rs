@@ -1264,6 +1264,10 @@ mod snapshot_tests {
         )
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies() {
         let sources = Arc::new(vec![("main".into(), "p".repeat(100_000))]);
@@ -1312,6 +1316,10 @@ mod snapshot_tests {
         assert!(exposed.get().is_none());
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification() {
         for sources in [
@@ -1376,6 +1384,10 @@ mod snapshot_tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn aggregate_budget_charges_each_fresh_native_decision() {
         let sources = Arc::new(vec![("main".into(), "p".repeat(1000))]);

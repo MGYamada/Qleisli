@@ -39,6 +39,10 @@ fn parsed(input: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), input.into())])).unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_named_unit_parameters_and_nested_patterns_are_ordinary_values() {
     for name in [
@@ -121,6 +125,10 @@ fn empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_basis_patterns_keep_exact_unary_function_and_predicate_arity() {
     check_project(&SourceRoot::new(&source("attempt-01", "computed-unit")).0).unwrap();
@@ -128,6 +136,10 @@ fn unit_basis_patterns_keep_exact_unary_function_and_predicate_arity() {
     reject("validation-sources", "basis-nullary-call", ErrorCode::Arity);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn runtime_parameter_pattern_now_uses_the_common_exact_shape_rule() {
     let input = source("desired-unsupported", "runtime-parameter-pattern");
@@ -135,6 +147,10 @@ fn runtime_parameter_pattern_now_uses_the_common_exact_shape_rule() {
     check_project(&SourceRoot::new(&input).0).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn effectful_unit_rhs_is_retained_before_the_empty_result_is_bound() {
     let current =
@@ -167,6 +183,10 @@ fn effectful_unit_rhs_is_retained_before_the_empty_result_is_bound() {
     reject("counterexamples", "unitary-effect", ErrorCode::Effect);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_unit_lift_retains_exact_scalar_and_reference_action() {
     let input = source("validation-sources", "coherent-contract");
@@ -221,6 +241,10 @@ fn coherent_unit_lift_retains_exact_scalar_and_reference_action() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_control_exposes_unit_phase_for_lift_and_computed_pattern() {
     for (name, probability_one) in [
@@ -241,6 +265,10 @@ fn coherent_control_exposes_unit_phase_for_lift_and_computed_pattern() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule() {
     let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));

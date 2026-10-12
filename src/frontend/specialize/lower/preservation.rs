@@ -1354,6 +1354,10 @@ mod tests {
         p.graph = json::encode(graph).unwrap();
         p.payload = json::encode(&actual).unwrap();
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn contract_initialization_replay_binds_the_actual_native_wrapper() {
         use crate::contract::{DEFAULT_EXACT_WORK, FunctionEvidence, exact::Budget};
@@ -1582,6 +1586,10 @@ mod tests {
         rejects(&bad);
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn initialization_certificate_rejects_native_valid_scalar_for_canonical_unit_maps() {
         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
@@ -1795,6 +1803,10 @@ mod tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn initialization_certificate_rejects_native_valid_scalar_for_canonical_product_maps() {
         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};

@@ -51,6 +51,10 @@ fn structured_parse_diagnostics_preserve_unicode_crlf_and_eof_spans() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn structured_load_errors_distinguish_source_spans_from_missing_files() {
     let root = SourceRoot::new("/* 日本語 */ use absent::name;");
@@ -74,6 +78,10 @@ fn structured_load_errors_distinguish_source_spans_from_missing_files() {
     assert!(error.primary.is_none());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn invalid_computed_contract_points_to_its_expression_including_nested_branches() {
     let dirty = "with_computed(q, predicate, identity) { |d,a| (d,x(a)) }";
@@ -107,6 +115,10 @@ fn invalid_computed_contract_points_to_its_expression_including_nested_branches(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn function_contract_mismatch_reports_an_exact_phase_counterexample() {
     let source = format!(
@@ -139,6 +151,10 @@ fn parser_failure_remains_project_category_with_explicit_parse_context() {
     assert!(failure.message.starts_with("parse error:"), "{failure}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn invalid_contract_inside_an_isolated_computed_body_keeps_its_source_span() {
     let dirty = "with_computed(d, predicate, identity) { |e,b| (e,x(b)) }";

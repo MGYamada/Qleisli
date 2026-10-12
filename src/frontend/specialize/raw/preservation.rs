@@ -2205,6 +2205,10 @@ pub(super) fn check_subject_with_meanings(
 
 #[cfg(test)]
 mod tests {
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls() {
         let source = elaborate(
@@ -2278,6 +2282,10 @@ mod tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
         for body in ["h(phase[1,3](q))", "helper[then_op(twist,had)](q)"] {
@@ -2433,6 +2441,10 @@ mod tests {
             .unwrap()
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn ordinary_register_replay_rejects_native_valid_order_and_computation_faults() {
         let source = elaborate(
@@ -2505,6 +2517,10 @@ mod tests {
         accepted
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn rectangular_constructor_subject_keeps_its_own_ports_and_suspended_caller() {
         let source = elaborate(
@@ -2560,6 +2576,10 @@ mod tests {
         root.validate_source_steps(&accepted).unwrap();
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn constructor_replay_rejects_native_valid_gate_and_phase_substitutions() {
         let prefix = "use std::quantum::{x,h,phase};
@@ -2606,6 +2626,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn nested_forward_replay_rejects_native_valid_provider_and_caller_frame_substitutions() {
         let source = elaborate(
@@ -2714,6 +2738,10 @@ mod tests {
         (source, raw)
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions() {
         let source = elaborate(
@@ -2807,6 +2835,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_preserves_zero_width_owners_and_order_through_calls() {
         let source = elaborate(
@@ -2865,6 +2897,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_distinguishes_plain_unit_from_a_zero_width_owner() {
         let source = elaborate("pub unitary fn f(u: Unit) -> Unit { u }", "main::f");
@@ -2884,6 +2920,10 @@ mod tests {
         assert!(validate(&source, accepted.raw()).is_err());
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_rejects_native_valid_scalar_substitutions() {
         for (basis, shape, wires) in [
@@ -2955,6 +2995,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_mixed_preserves_entangled_caller_frame_through_an_ordinary_call() {
         let (source, raw) = closed_pair();
@@ -2967,6 +3011,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_mixed_rejects_native_valid_gate_control_measurement_and_extra_mutations() {
         let (source, raw) = closed_pair();
@@ -3021,6 +3069,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order() {
         let source = elaborate(
@@ -3077,6 +3129,10 @@ mod tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns() {
         let source = elaborate(
@@ -3129,6 +3185,10 @@ mod tests {
             "unsupported"
         );
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn source_z_replay_rejects_native_valid_x_substitution() {
         let source = elaborate(
