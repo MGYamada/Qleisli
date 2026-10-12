@@ -1,6 +1,51 @@
 //! Original-plan retention and independent coordinate controls.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
+use crate::contract::DEFAULT_EXACT_WORK;
+use crate::contract::exact::Budget;
+
+#[test]
+fn retained_plan_matches_independent_shared_hierarchy_descriptions() {
+    use crate::interchange::execution_view::{encode, tests::vector_value};
+    let rows = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
+    )))
+    .unwrap();
+    for row in rows.array().unwrap() {
+        let actual = row.field("actual").unwrap();
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let matrices = row
+            .field("matrices")
+            .unwrap()
+            .array()
+            .unwrap()
+            .iter()
+            .map(|leaf| {
+                (
+                    index(leaf.field("definition").unwrap()).unwrap(),
+                    crate::interchange::finite_matrix::decode(
+                        &json::encode(leaf.field("value").unwrap()).unwrap(),
+                        &mut budget,
+                    )
+                    .unwrap(),
+                )
+            })
+            .collect();
+        let instrument = actual
+            .field("format")
+            .is_ok_and(|f| f.text().is_ok_and(|f| f == "qleisli.instrument-ir"));
+        let plan = Plan::compile(actual, instrument, |_| Ok(matrices)).unwrap();
+        let expected = encode(&vector_value(row.field("value").unwrap())).unwrap();
+        assert_eq!(
+            plan.view().unwrap(),
+            expected,
+            "{}",
+            row.field("name").unwrap().text().unwrap()
+        );
+    }
+}
 
 #[cfg_attr(
     not(qleisli_native_tests),
@@ -28,7 +73,22 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     let mut native = kernel.check_against_native(artifact, request).unwrap();
     let first = native.execute_pure(&input, 2, limits).unwrap();
     let address = native.execution().unwrap() as *const Plan;
+    let description = native.execution().unwrap().view().unwrap();
+    let vectors = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
+    )))
+    .unwrap();
+    let expected = crate::interchange::execution_view::encode(
+        &crate::interchange::execution_view::tests::vector_value(
+            vectors.array().unwrap()[0].field("value").unwrap(),
+        ),
+    )
+    .unwrap();
+    assert_eq!(description, expected);
     assert_eq!(address, native.execution().unwrap() as *const Plan);
+    assert_eq!(description, native.execution().unwrap().view().unwrap());
     // Private fault injection: public reports expose only immutable slices.
     // Poisoning old transport storage catches any subsequent reparse, while
     // the actual execution plan must retain its original exact matrix/nodes.
@@ -38,15 +98,34 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     assert_eq!(first.amplitudes, second.amplitudes);
     assert_eq!(first.steps, second.steps);
     assert_eq!(address, native.execution().unwrap() as *const Plan);
+    assert_eq!(description, native.execution().unwrap().view().unwrap());
 
     let mut compatibility = kernel.check_against(artifact, request).unwrap();
     let first = compatibility.execute(&input, 2, limits).unwrap();
     let address = compatibility.reconstruction.execution().unwrap() as *const Plan;
+    assert_eq!(
+        compatibility
+            .reconstruction
+            .execution()
+            .unwrap()
+            .view()
+            .unwrap(),
+        description
+    );
     compatibility.reconstruction.payload = std::sync::Arc::from(b"not JSON".as_slice());
     compatibility.reconstruction.leaves.clear();
     let second = compatibility.execute(&input, 2, limits).unwrap();
     assert_eq!(first.amplitudes, second.amplitudes);
     assert_eq!(first.steps, second.steps);
+    assert_eq!(
+        description,
+        compatibility
+            .reconstruction
+            .execution()
+            .unwrap()
+            .view()
+            .unwrap()
+    );
     assert_eq!(
         address,
         compatibility.reconstruction.execution().unwrap() as *const Plan

@@ -1,5 +1,19 @@
 # Execution-view binding: original controls and encoding vectors
 
+`hierarchy-plan-vectors.json` freezes four hand-described owned plans. The H
+case uses an unchanged original hierarchy and independently framed bridge;
+both the fresh native Rust report and Lean's original structural/finite checks
+reach its exact matrix. The other three are explicitly untrusted materialization
+controls for every node, literal phase, zero repeat, ordered preparation/readout
+positions, reversed pack and a classical result port. They claim no accepted
+instrument semantics. The first three records were fixed before either walker;
+the classical-port control was appended without changing those originals.
+`tests/hierarchy_execution_view.lean` checks both typed derivation and the pure
+inspection comparison gate: 112 divergent descriptions reject while the original
+H stays valid. Malformed framing and exhausted work also reject. The shared
+native manifest retains the runner; protocol and production integration remain
+pending. See the [record contract](../../../../docs/src/reference/execution-view.md#hierarchy-plan-records).
+
 The `before/` files are exact copies of the external study made against source
 `e1816954b64aaf399dc29aeb69299f14be4815a4`, before #362 implementation. The
 [manifest](baseline.json) binds all 86 original files by SHA-256. The first

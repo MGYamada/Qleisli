@@ -46,6 +46,9 @@ and exactness obligations retain their recorded scopes and status.
   including literal dyadic phase parameters and ordered preparation/readout
   positions. Independent small-system coefficients, work and seeded outcomes
   are unchanged; native comparison of the actual hierarchy plan remains pending.
+  Specify the hierarchy plan records and independently derive them in Rust and
+  Lean, with four shared cases and a pure fresh-inspection gate. Prove binding
+  to its original structural/finite results and reject 112 divergent descriptions.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

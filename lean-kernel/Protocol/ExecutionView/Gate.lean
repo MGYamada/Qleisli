@@ -1,5 +1,6 @@
 import Protocol.ExecutionView.Frame
 import QleisliKernel.Finite
+import QleisliKernel.Hierarchical.Artifact
 
 /-! Shared execution-view transport/error/work plumbing. Semantic acceptance
 remains in each profile's existing core checker.
@@ -8,6 +9,7 @@ namespace QleisliKernel.Protocol.ExecutionView.Gate
 
 inductive Error where
   | packet | invalidView | native (error : Finite.Error) | encoding | decodedView
+  | hierarchy (kind : Hierarchical.Artifact.Error) (atNode : Option Hierarchical.Artifact.Ref)
   deriving BEq, DecidableEq, Repr
 
 abbrev CheckM := ExceptT Error (StateM Nat)

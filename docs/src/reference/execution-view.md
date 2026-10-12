@@ -379,6 +379,59 @@ parameters and nontrivial preparation/readout/reference coordinates. These
 tests establish bounded regression evidence, not native plan comparison,
 source/runtime preservation or a new constitutional guarantee.
 
+## Hierarchy plan records
+
+The hierarchy walker describes the owned plan actually read by execution and
+sampling. It does not call the hierarchy JSON or bridge writer. These records
+reuse the byte grammar and exact `matrix` record above:
+
+| Record | Ordered fields |
+| --- | --- |
+| `hierarchy-plan` | `pure` or `instrument` record |
+| `pure` | `hierarchy-program` |
+| `hierarchy-program` | complete ordered node array, root index, input axes, output axes |
+| `node` | width, operation |
+| `leaf` | complete exact matrix |
+| `sequence` | ordered child indices |
+| `tensor` | left child, right child |
+| `repeat` | child index, count |
+| `inverse` | child index |
+| `control` | child index, polarity |
+| `permutation` | ordered source positions |
+| `phase` | target position, literal numerator j, literal denominator exponent k |
+| `instrument` | program, input axes, fresh axes, input positions, measurements, pack, outcome positions, residual axes, residual positions |
+| `measurement` | actual classical value identity, actual quantum axis |
+
+All definitions participate, including unused and zero-repeat children. A
+structural operation becomes the actual coordinate permutation consumed by the
+runtime. Literal phase parameters are retained before numerical evaluation;
+`j = 9, k = 3` is not replaced by `j = 1, k = 3`. Preparation positions use
+the circuit's input axes; outcome and residual positions use its output axes.
+Measurement order and pack order are separate fields. Classical result ports
+remain in the checked artifact even though the runtime stores its quantum
+residual coordinates separately.
+
+Lean derives this description independently from the typed hierarchy and exact
+finite reconstructions. `HierarchyView.reconstructLeaf_bound` connects each
+returned matrix to the original description decoding and original-body check
+in that computation. `CheckedHierarchy.checkInspect` runs the original
+structural checker once, reconstructs its actual finite obligations, derives
+the view from those same results and compares inside Lean.
+`checkInspect_binding` retains the original bridge, typed artifact, structural
+result, exact matrices, continuous exact-work states and compared bytes.
+
+Four shared cases fix a freshly checked H hierarchy, every runtime node kind,
+reordered preparation/measurement/pack coordinates and a classical result port.
+Three cases are explicitly untrusted materialization controls; they do not
+claim accepted hierarchy or instrument semantics. The valid H original also
+rejects 112 separately mutated, well-framed candidate descriptions, with
+malformed-frame and exhausted-work controls. Rust's native and compatibility
+reports describe the same retained H plan even after private fault injection
+poisons old transport storage. Rust's view walker remains test-only; native
+CLI integration, other hierarchy contract modes and the mandatory protocol
+cutover are still required. These staging helpers confer no production
+execution authority.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

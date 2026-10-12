@@ -2226,7 +2226,7 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "bd73bb2b68cbaf1854b50dd89f6335ac3e1e4c2104708ee603aa5fd431ee3e14",
+      "sha256": "e4be8fa97b378d808d625d13ed7728674fecfe186281b90254ae201ae0c15000",
       "group": "hierarchy",
       "surface": null
     },
@@ -4786,7 +4786,7 @@
     {
       "path": "src/interchange/execution_view.rs",
       "group": "execution-view-encoding",
-      "sha256": "5a0bf86d78c711573e378acbbd8a7672da7d992f63fd5c7bfd08c1070403c0e5",
+      "sha256": "55d67a956b33fb5bd530cb174644a3b57397977dbd7ddd8f0744738ce7d1ae36",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4799,7 +4799,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "51539d743021059b114439e44a437e45ba8608dc3e13840250a3f5e64ec7eab9",
+      "sha256": "92dcfe6515439a12db822f8e84b38d48abc88022a3d11807a472401070c1c10e",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5413,7 +5413,7 @@
     },
     {
       "path": "lean-kernel/Protocol/ExecutionView/Gate.lean",
-      "sha256": "205166a2f9f3cab106b2915449ee999917096dd090035cabfc5e42355a0148c7",
+      "sha256": "e9e181bb20bb7df2faf3abd27126c3338466455c4387fdf172428287f95279b5",
       "group": "execution-view-encoding",
       "surface": null
     },
@@ -5458,7 +5458,7 @@
     {
       "path": "src/interchange/hierarchical/execution/plan.rs",
       "group": "hierarchical-execution",
-      "sha256": "219355a14381b0d941b55b0f432dc4f71898947ebc1e45f3d8d9e134bd2590fa",
+      "sha256": "b59b22698a92b1d22c6e85dd6064f4f673119dbc93cfedc3517fa6644a5cfb1f",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5468,12 +5468,34 @@
     {
       "path": "src/interchange/hierarchical/execution/plan/tests.rs",
       "group": "hierarchical-execution",
-      "sha256": "5699bdfac3bec980ccd17802716b8c725cfc57495b6687a200c7df42b9460776",
+      "sha256": "b37778f81146d7cad428c8bea5a42a1c110dfafbdffb9f02bbb34d80f4786d0c",
       "surface": {
         "declarations": [],
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "src/interchange/hierarchical/execution/plan/view.rs",
+      "group": "hierarchical-execution",
+      "sha256": "8a295090035b0771053a0b000b5c80247c886d916ab81fdcbd3b3c1e3fb1444f",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Hierarchy.lean",
+      "sha256": "a48ffca8d16d73835e24563c07592876d94c37b93a1b6fd76e16f22c9f042105",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+      "sha256": "dfee43aa016249a7071d63faac924181b896f5fc3a96127d66a863cab937f3df",
+      "group": "execution-view-encoding",
+      "surface": null
     }
   ],
   "boundaries": [

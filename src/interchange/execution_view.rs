@@ -105,11 +105,11 @@ fn encode_with_limit(value: &Value, limit: usize) -> Result<Vec<u8>> {
 pub(super) mod finite;
 
 #[cfg(test)]
-mod tests {
+pub(super) mod tests {
     use super::*;
     use std::fmt::Write;
 
-    pub(super) fn vector_value(value: &crate::interchange::json::Value) -> Value {
+    pub(in crate::interchange) fn vector_value(value: &crate::interchange::json::Value) -> Value {
         use crate::interchange::json::Value as Json;
         match value {
             Json::Null => Value::Null,

@@ -9,17 +9,17 @@ use crate::ir::*;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-struct View<'a> {
+pub(in crate::interchange) struct View<'a> {
     writer: &'a mut Writer,
     dependencies: &'a BTreeMap<usize, usize>,
 }
 
 impl View<'_> {
-    fn n(&mut self, n: usize) -> Result<()> {
+    pub(in crate::interchange) fn n(&mut self, n: usize) -> Result<()> {
         self.writer.natural(n)
     }
 
-    fn record(
+    pub(in crate::interchange) fn record(
         &mut self,
         tag: &str,
         fields: usize,
@@ -32,7 +32,7 @@ impl View<'_> {
         result
     }
 
-    fn list<T>(
+    pub(in crate::interchange) fn list<T>(
         &mut self,
         values: &[T],
         mut body: impl FnMut(&mut Self, &T) -> Result<()>,
@@ -56,7 +56,7 @@ impl View<'_> {
         })
     }
 
-    fn axes(&mut self, axes: &[usize]) -> Result<()> {
+    pub(in crate::interchange) fn axes(&mut self, axes: &[usize]) -> Result<()> {
         self.list(axes, |w, n| w.n(*n))
     }
     fn wires(&mut self, wires: &[WireId]) -> Result<()> {
@@ -451,7 +451,7 @@ impl View<'_> {
         })
     }
 
-    fn matrix(&mut self, matrix: &Matrix) -> Result<()> {
+    pub(in crate::interchange) fn matrix(&mut self, matrix: &Matrix) -> Result<()> {
         self.record("matrix", 3, |w| {
             w.n(matrix.rows())?;
             w.n(matrix.cols())?;
@@ -464,6 +464,10 @@ impl View<'_> {
                 })
             })
         })
+    }
+
+    pub(in crate::interchange) fn boolean(&mut self, value: bool) -> Result<()> {
+        self.writer.append(&[if value { 2 } else { 1 }])
     }
 
     fn circuit(&mut self, circuit: &Circuit) -> Result<()> {
@@ -632,6 +636,23 @@ pub(in crate::interchange) fn graph(
 
 pub(super) mod caller;
 pub(super) mod contracts;
+
+/// Reuse the one bounded QDV1 writer and exact-matrix vocabulary for a view
+/// that contains no finite dependency references.
+pub(in crate::interchange) fn without_dependencies(
+    body: impl FnOnce(&mut View<'_>) -> Result<()>,
+) -> Result<Vec<u8>> {
+    let mut writer = Writer {
+        bytes: b"QDV1".to_vec(),
+        limit: MAX_BYTES,
+        depth: 0,
+    };
+    body(&mut View {
+        writer: &mut writer,
+        dependencies: &BTreeMap::new(),
+    })?;
+    Ok(writer.bytes)
+}
 
 #[cfg(test)]
 mod tests;

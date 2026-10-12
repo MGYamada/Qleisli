@@ -51,7 +51,7 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 68)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 92)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 93)
         added = next(task for task in tasks if task['id'] == 'execution-view-encoding')
         self.assertEqual(added['commands'], [[
             'lake', '-d', 'lean-kernel', 'env', 'lean', '--run',
@@ -66,6 +66,10 @@ class NativeCI(unittest.TestCase):
             'tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json',
             'tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json',
             'tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json',
+        ], [
+            'lake', '-d', 'lean-kernel', 'env', 'lean', '-DwarningAsError=true', '--run',
+            'tests/hierarchy_execution_view.lean',
+            'tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json',
         ]])
         # #367 makes these formerly unconditional native ignores conditional.
         # include-ignored preserves their execution and includes normal tests;

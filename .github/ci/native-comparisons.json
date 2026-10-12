@@ -23,6 +23,17 @@
           "tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json",
           "tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json",
           "tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json"
+        ],
+        [
+          "lake",
+          "-d",
+          "lean-kernel",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--run",
+          "tests/hierarchy_execution_view.lean",
+          "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
         ]
       ]
     },
