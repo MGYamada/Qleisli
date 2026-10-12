@@ -6,6 +6,8 @@ stdlib namespaces, their admission rules and the path migration adopted in
 [authority hierarchy](authority.md) and [primitive boundary](primitive-boundary.md).
 It specifies intended contracts; a namespace, source comment or successful
 source check is not a proof of its mathematical implementation.
+The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
+specifies how unfamiliar derived abstractions lead to their contracts and ordinary source.
 
 ## Names follow mathematical meaning
 

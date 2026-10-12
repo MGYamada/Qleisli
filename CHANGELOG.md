@@ -22,6 +22,8 @@ and exactness obligations retain their recorded scopes and status.
   the static Reference with that explicit exclusion without crediting implementation.
 - Restore the README link to the canonical project-name explanation (#234),
   retaining the alpha removal of the ecosystem naming comparison.
+- State the inference/discovery boundary in the existing architecture Reference
+  (#253), with current help/source paths and tool availability.
 - Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
   native rectangular pure-leaf component for #83: separate interface ports,
   exact original-body matrix equality and isometry/reference proofs. Preserve
