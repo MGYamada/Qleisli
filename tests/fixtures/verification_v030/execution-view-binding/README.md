@@ -58,4 +58,12 @@ retains the fresh receipts from its common root check and independently
 describes them; its original inspection projection preserves results, failures
 and remaining work. Native comparison and the protocol cutover remain pending.
 
+The shared Lean runner now exercises the pure finite comparison gate on these
+seven independently valid originals, rejecting 71 changed candidate graph/cache
+descriptions. It also checks malformed QDV1 framing, native work refusal and
+original optional-request binding. Its success proof retains the original
+packet and decoded root, and transports ownership/classical-scope facts from
+the common checker. This gate is not yet connected to the native CLI or Rust
+execution; no production protocol change or Issue completion is claimed.
+
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

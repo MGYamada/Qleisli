@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "8e0e125859ca95111765c98884a5147580bb1626a905dd62be521e9a9c30663f",
+    "sha256": "51581ed200d05461dee32d42dbb6a53bad731394122303f2bb60b063b5a2a4dd",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -127,10 +127,12 @@
       "lean-kernel/Cli/Finite.lean": "c513812b72f9752033159059fc145a246c30f59583ca24bee57481566b66b427",
       "lean-kernel/Cli/Hierarchical.lean": "cc776268f9d08d54ca1eaac900766d6ddb9678f73c17e2c54ee2863e57add378",
       "lean-kernel/Cli/Validity.lean": "ed997410d7bf6c815288605e543cae81ded5274155f631fcfc7b54b1dbd4bd18",
-      "lean-kernel/Main.lean": "72109babf3693f4851971abf16e247960527ed825715db943e4751253cec8311",
+      "lean-kernel/Main.lean": "95bf845f83037426dbbe9a7e476b50fa6be0c29b8f0e21b1ce63b746ee76be12",
       "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
       "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
+      "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean": "d4981aaac46fa617966258d8430dd0f13d2e8283ad49a801056b3633c79383ab",
       "lean-kernel/Protocol/ExecutionView/Finite.lean": "5cb5e88c6d0d5096d615beb2b82042ace509757d934770dc3fc0951d701ceb91",
+      "lean-kernel/Protocol/ExecutionView/Frame.lean": "b0d8b858f033d5401e4be5077898815d583d634e6d44b95e704802b1d6baca6b",
       "lean-kernel/Protocol/ExecutionView/Graph.lean": "29114cfeca63e1d888b33876c45560c4b846d644c21b38085bf3221dbf36a5d9",
       "lean-kernel/Protocol/ExecutionView.lean": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
       "lean-kernel/Protocol/FiniteCodec.lean": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",

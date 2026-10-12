@@ -738,8 +738,8 @@
     {
       "id": "execution-view-encoding",
       "producer": "Actual typed Rust finite data and independent Lean decoded data",
-      "consumer": "QDV1 encoding and typed finite walker tests only; production gate not connected",
-      "obligation": "Keep type, phase, axis order, both branch arms, owners, identities and actual caches in the decoded description; no acceptance or preservation claim",
+      "consumer": "QDV1 encoding, typed walkers and pure Lean finite comparison tests; native CLI gate not connected",
+      "obligation": "Keep type, phase, axis order, both branch arms, owners, identities and actual caches; bind the pure finite gate to original bytes/root and checked comparison; no production execution or runtime-preservation claim",
       "reference": "docs/src/reference/execution-view.md",
       "replacement": [
         "VM-28",
@@ -2226,7 +2226,7 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "72109babf3693f4851971abf16e247960527ed825715db943e4751253cec8311",
+      "sha256": "95bf845f83037426dbbe9a7e476b50fa6be0c29b8f0e21b1ce63b746ee76be12",
       "group": "hierarchy",
       "surface": null
     },
@@ -2255,9 +2255,21 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean",
+      "sha256": "d4981aaac46fa617966258d8430dd0f13d2e8283ad49a801056b3633c79383ab",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/Finite.lean",
       "group": "execution-view-encoding",
       "sha256": "5cb5e88c6d0d5096d615beb2b82042ace509757d934770dc3fc0951d701ceb91",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Frame.lean",
+      "sha256": "b0d8b858f033d5401e4be5077898815d583d634e6d44b95e704802b1d6baca6b",
+      "group": "execution-view-encoding",
       "surface": null
     },
     {

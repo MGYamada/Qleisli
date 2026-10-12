@@ -5,11 +5,11 @@ This is the implementation contract for
 data; it is separate from the QIRF artifact version and the native request/reply
 version. Encoding a description grants no acceptance authority.
 
-The current foundation implements the byte encoding and the typed finite
-walkers below. Rust exercises these walkers only in tests. Native comparison,
-complete retained execution profiles, the protocol cutover and its preservation
-proofs are still required. The existing production protocol has not changed.
-The foundation must not be reported as a bound execution view.
+The current foundation implements the byte encoding, the typed finite walkers
+and a pure Lean finite comparison gate below. Rust exercises these walkers only
+in tests. Native CLI comparison, complete retained execution profiles and the
+protocol cutover remain required. The existing production protocol has not
+changed. The foundation must not be reported as a bound production execution view.
 
 ## Byte grammar
 
@@ -204,6 +204,31 @@ execution API may claim QDV1 comparison or use this foundation as a fallback.
 
 ## Acceptance and remaining assumptions
 
+`ExecutionView.CheckedFinite.check` is a pure staging gate over an original
+packet and a mandatory candidate view. It checks QDV1 framing, decodes the
+original artifact/request, runs the common typed QIRF check once, derives the
+view from that same fresh result, encodes it and compares exact byte arrays
+inside Lean. It distinguishes `invalidView`, packet errors, native checker
+errors, encoding failures and `decodedView`. The framing reader checks exactly
+one bounded value, UTF-8, lengths, depth and EOF without allocating a list from
+an untrusted array count. Neither framing nor encoding is semantic acceptance.
+
+`check_binding` retains the original packet/body/request, the actual decoded
+graph and checking computations, and equality of the candidate with the exact
+encoding of that result's view. `Binding.original` transports that success to
+the existing ordinary packet acceptance witness before view derivation.
+`check_ownershipSafe` and `check_scopeSafe` concern the same original selected
+root. View derivation has a separate remaining-work value; these proofs do not
+claim unchanged whole-gate work or serializer/runtime correctness. This is
+technical preservation support, not a new admitted constitutional guarantee.
+
+The shared runner checks seven independently valid original artifacts against
+their correct views and 71 divergent candidates, including every graph field
+and retained evidence-cache fields. It separately covers malformed frames,
+native work refusal and an original optional request. These are tests of the
+pure staging gate. No native CLI mode or Rust execution handle uses it yet;
+all execution profiles and the mandatory versioned protocol remain open.
+
 The intended production gate compares the submitted actual-view encoding with
 Lean's own decoded/derived view inside Lean. A well-framed mismatch rejects
 with `decoded_view`. Missing or malformed data and unsupported protocol
@@ -219,9 +244,9 @@ Faithfulness of Rust view serialization/materialization, native compilation,
 IO and runtime, numerical interpretation and source lowering remain explicit
 proof duties. Hierarchy bridge comparison alone does not prove correspondence
 to the original external JSON or source. Current ordinary ownership and
-classical-scope guarantees must remain connected to the actual new acceptance
-entry point by checked proofs; retaining old theorem names or hashes is
-insufficient. QDV1 introduces no reference meaning, constitutional
+classical-scope guarantees must remain connected through the pure gate to the
+actual new native protocol entry point by checked proofs; retaining old theorem
+names or hashes is insufficient. QDV1 introduces no reference meaning, constitutional
 interpretation, guarantee admission, full QS/PR/RS/EXACT discharge or release
 approval.
 

@@ -23,6 +23,9 @@ and exactness obligations retain their recorded scopes and status.
   seven independent graph vectors covering original dependency indices and
   ordered derived metadata. Prove the original inspection projection preserves
   successes, failures and remaining work.
+  Add the pure finite comparison gate with original-packet/root binding and
+  ownership/scope proofs; reject 71 mutated candidates over seven valid
+  originals, with bounded framing and independent-request controls.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
