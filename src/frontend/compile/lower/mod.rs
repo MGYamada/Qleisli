@@ -601,7 +601,20 @@ impl Lowerer<'_, '_> {
                 Some(op.clone())
             } else {
                 match self.compiler.resolve(module, function)? {
-                    Callee::User(_) => Some(self.compiler.provider(module, function, None)?),
+                    Callee::User(key) => {
+                        let (params, result) = self.compiler.signature(&key)?;
+                        if crate::frontend::types::UnaryInterface::new(&params, &result)
+                            .is_some_and(|ports| ports.input != ports.output)
+                        {
+                            Some(self.compiler.provider(module, function, None)?)
+                        } else {
+                            // Endomorphic named calls retain their existing
+                            // shared contract steps, including nested evidence.
+                            // Wrapping them in a new provider would change that
+                            // identity across power, inverse and control.
+                            None
+                        }
+                    }
                     Callee::Sealed(..) => None,
                 }
             };
