@@ -92,5 +92,7 @@ the subsequent invalid coefficient coordinates and independent equation
 refusal. The corrected plus state uses `b = 1/2` in the existing
 `a+b*sqrt(2)+i*(c+d*sqrt(2))` carrier. Neither correction changes a decoder or
 acceptance rule; the original refused data remains available.
+The shared Lean runner reads both records through explicit CI inputs and
+freshly rechecks their distinct native invalid/equation refusals.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

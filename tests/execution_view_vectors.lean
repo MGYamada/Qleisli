@@ -206,8 +206,20 @@ private def contractCases (path : System.FilePath) : IO Unit := do
   IO.println ("retained native obligations: " ++ toString requests ++
     "; literal caller circuits: " ++ toString circuits ++ "; shared vectors passed; production binding pending")
 
+private def refusalCase (path : System.FilePath) (expected : QleisliKernel.Finite.Error) : IO Unit := do
+  let record ← IO.ofExcept (Json.parse (← IO.FS.readFile path))
+  let row ← IO.ofExcept (record.getObjVal? "original_vector")
+  let artifact ← IO.ofExcept (row.getObjVal? "artifact")
+  let request ← IO.ofExcept (row.getObjVal? "request")
+  let original := packet artifact.compress.toUTF8 request.compress.toUTF8
+  match (QleisliKernel.Protocol.NativeContract.checkRetained original).run 10000000 with
+  | (.error actual,_) => unless actual == expected do
+      throw (IO.userError ("preserved authoring refusal changed: " ++ path.toString))
+  | (.ok _,_) => throw (IO.userError ("preserved refused contract accepted: " ++ path.toString))
+
 def main (args : List String) : IO Unit := do
-  let [path,finitePath,functionPath,graphPath,contractPath] := args | throw (IO.userError "expected primitive, finite, function, graph and contract vector files")
+  let [path,finitePath,functionPath,graphPath,contractPath,firstRefusal,secondRefusal] := args |
+    throw (IO.userError "expected primitive, finite, function, graph, contract and two refusal vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   frameCases
@@ -269,3 +281,6 @@ def main (args : List String) : IO Unit := do
   IO.println ("pure finite view gate: " ++ toString graphs.size ++ " original valid artifacts; " ++
     toString gateRefusals ++ " divergent candidate refusals; CLI/protocol cutover still pending")
   contractCases contractPath
+  refusalCase firstRefusal .invalid
+  refusalCase secondRefusal .equation
+  IO.println "preserved original contract authoring refusals: 2 rechecked"

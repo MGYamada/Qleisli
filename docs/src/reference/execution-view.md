@@ -218,6 +218,8 @@ check all six obligation kinds and two literal caller circuits. Lean freshly
 checks each original native request before walking its retained obligation;
 Rust describes independently constructed typed values. Data mutations distinguish
 encodings, phase, both ports, equal-width type trees, source identity and axes.
+The [authoring record](../../../tests/fixtures/verification_v030/execution-view-binding/README.md)
+describes both preserved refusals and their corrections.
 Actual caller circuit/cache binding and production comparison remain required.
 
 ## Required production profiles
