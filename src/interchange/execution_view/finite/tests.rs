@@ -234,3 +234,83 @@ fn retained_evidence_caches_and_original_dependency_indices_are_read() {
         "format"
     );
 }
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn actual_retained_function_views_match_independent_cache_vectors() {
+    use crate::contract::{DEFAULT_EXACT_WORK, FunctionIdentity, exact::Budget};
+    let rows = json::parse(include_bytes!(
+        "../../../../tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json"
+    )).unwrap();
+    let mut before: Vec<Option<Arc<FunctionEvidence>>> = vec![];
+    for row in rows.array().unwrap() {
+        let decoder = Decoder { evidence: &before };
+        let signature = BasisType::read(row.field("signature").unwrap(), &decoder).unwrap();
+        let implementation =
+            RawProgram::read(row.field("implementation").unwrap(), &decoder).unwrap();
+        let specification =
+            RawProgram::read(row.field("specification").unwrap(), &decoder).unwrap();
+        let data = row.field("identity").unwrap();
+        let identity = FunctionIdentity {
+            implementation: data.field("implementation").unwrap().text().unwrap().into(),
+            specification: data.field("specification").unwrap().text().unwrap().into(),
+            sources: data
+                .field("sources")
+                .unwrap()
+                .array()
+                .unwrap()
+                .iter()
+                .map(|pair| {
+                    let pair = pair.array().unwrap();
+                    (
+                        pair[0].text().unwrap().into(),
+                        pair[1].text().unwrap().into(),
+                    )
+                })
+                .collect(),
+        };
+        let receipt = Arc::new(
+            FunctionEvidence::check(
+                signature,
+                implementation,
+                specification,
+                identity,
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .unwrap(),
+        );
+        // Inspect the ACTUAL retained Arc references; native reconstruction may
+        // replace the caller's receipts. This corpus has one direct dependency
+        // in the final row, whose original index is explicitly zero.
+        let mut dependencies = BTreeMap::new();
+        for step in receipt.circuit().steps() {
+            if let CircuitAction::Contract { evidence, .. } = &step.action {
+                assert_eq!(evidence.identity().implementation, "x-dependency");
+                dependencies.insert(Arc::as_ptr(evidence) as usize, 0);
+            }
+        }
+        let mut view = View {
+            writer: Writer {
+                bytes: b"QDV1".to_vec(),
+                limit: MAX_BYTES,
+                depth: 0,
+            },
+            dependencies: &dependencies,
+        };
+        view.evidence(&receipt).unwrap();
+        let expected = super::super::encode(&super::super::tests::vector_value(
+            row.field("view").unwrap(),
+        ))
+        .unwrap();
+        assert_eq!(
+            view.writer.bytes,
+            expected,
+            "{}",
+            row.field("name").unwrap().text().unwrap()
+        );
+        before.push(Some(receipt));
+    }
+}

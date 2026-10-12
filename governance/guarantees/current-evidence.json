@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "a0909e9afebdf1723eece8f7f08563ac52a5506647e24e42fab459e8c5f6d25e",
+      "sha256": "41eced4ab279f7d5b77dba295161282733cde45e7c7db041381b21a03139fa4f",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -143,7 +143,7 @@
         "lean-kernel/Main.lean": "0b29cba3546eaf6805a827bb153736ef416ac86bade454309b333ecee373726e",
         "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
         "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
-        "lean-kernel/Protocol/ExecutionView/Finite.lean": "a2712273f179386fc4d84565ead41629f8c8f5cc5d93b536021ffe3bd26b9240",
+        "lean-kernel/Protocol/ExecutionView/Finite.lean": "5cb5e88c6d0d5096d615beb2b82042ace509757d934770dc3fc0951d701ceb91",
         "lean-kernel/Protocol/ExecutionView.lean": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
         "lean-kernel/Protocol/FiniteCodec.lean": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",
         "lean-kernel/Protocol/Hierarchical.lean": "a098e44ed67362fe3ab388b19fb3abd7fc8d1381f9a38a000e93e9efe9cc59a3",
@@ -267,12 +267,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "170f9ae39fff36e81bb78a0613c6cf55fa16c13a49146cfe45138a2c14803982",
+      "lean/schema-registry.json": "975ca48ed5ee7d3b748b32787121d11b10e49fba20c1d5003b93ee714198665b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "e0745c2973687a3c0b6b14a39e933c8f930ec7a521f3e5201df67ab5814cd5a0"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "02560f2c931424a9cb77f5c8757d60bc9f29a8f8dea4dc4d148ff3ab070130a3"
     },
     "commands": [
       {
@@ -285,7 +285,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 21.476231707958505,
+        "seconds": 25.744132874999195,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -299,7 +299,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 61.35456104099285,
+        "seconds": 62.48180887498893,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -342,7 +342,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 20.12721833307296,
+      "seconds": 21.243324124952778,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -358,7 +358,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "a0909e9afebdf1723eece8f7f08563ac52a5506647e24e42fab459e8c5f6d25e",
+    "source_revision_sha256": "41eced4ab279f7d5b77dba295161282733cde45e7c7db041381b21a03139fa4f",
     "command": {
       "argv": [
         "lake",

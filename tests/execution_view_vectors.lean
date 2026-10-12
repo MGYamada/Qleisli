@@ -56,8 +56,26 @@ private def finite (directory : System.FilePath) (row : Json) : IO Value := do
   | "matrix" => return FiniteView.matrix (← IO.ofExcept ((row.getObjVal? "matrix") >>= matrix))
   | _ => throw (IO.userError "unknown finite vector kind")
 
+private def functionInput (row : Json) : Except String QleisliKernel.Semantics.ObservingFunction.Input := do
+  let signature ← (← row.getObjVal? "signature") |> QleisliKernel.Protocol.Qirf.basis 129
+  let implementation ← (← row.getObjVal? "implementation") |> QleisliKernel.Protocol.Observation.program
+  let specification ← (← row.getObjVal? "specification") |> QleisliKernel.Protocol.Observation.program
+  let identity ← row.getObjVal? "identity"
+  let sources ← (← (← identity.getObjVal? "sources").getArr?).toList.mapM fun source => do
+    let pair ← source.getArr?
+    if pair.size != 2 then throw "expected source pair"
+    return (← pair[0]!.getStr?,← pair[1]!.getStr?)
+  return ⟨signature,implementation,specification,
+    ⟨← (← identity.getObjVal? "implementation").getStr?,
+      ← (← identity.getObjVal? "specification").getStr?,sources⟩⟩
+
+private def checked {α : Type} (work : QleisliKernel.Finite.WorkM α) : IO α := do
+  match work.run 10000000 with
+  | (.ok result,_) => return result
+  | (.error error,_) => throw (IO.userError ("native derivation refused: " ++ reprStr error))
+
 def main (args : List String) : IO Unit := do
-  let [path,finitePath] := args | throw (IO.userError "expected primitive and finite vector files")
+  let [path,finitePath,functionPath] := args | throw (IO.userError "expected primitive, finite and function vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   for row in rows do
@@ -82,3 +100,15 @@ def main (args : List String) : IO Unit := do
     unless actual == expected do
       throw (IO.userError ("typed finite vector mismatch: " ++ name))
   IO.println ("typed finite data: " ++ toString cases.size ++ " shared vectors passed; no acceptance claim")
+  let functions ← IO.ofExcept (Json.parse (← IO.FS.readFile functionPath) >>= Json.getArr?)
+  let mut before := []
+  for row in functions do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let input ← IO.ofExcept (functionInput row)
+    let receipt ← checked (QleisliKernel.Raw.BranchFunction.checkEntry before input input)
+    let actual ← IO.ofExcept (encode (← checked (FiniteView.functionEvidence receipt)))
+    let expected ← IO.ofExcept ((row.getObjVal? "view") >>= value 129 >>= encode)
+    unless actual == expected do
+      throw (IO.userError ("retained function cache mismatch: " ++ name))
+    before := before ++ [receipt]
+  IO.println ("retained function caches: " ++ toString functions.size ++ " shared vectors passed; no production binding claim")

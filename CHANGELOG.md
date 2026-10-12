@@ -17,6 +17,8 @@ and exactness obligations retain their recorded scopes and status.
 - Ignore repository-root `/bin` outputs.
 - Specify and independently exercise QDV1 execution-view encoding and typed
   finite data walkers for #362, retaining first sources and real diagnostics.
+  Derive retained function circuit views independently in Lean and compare
+  exact caches with ten shared function vectors, including composed branch routes.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

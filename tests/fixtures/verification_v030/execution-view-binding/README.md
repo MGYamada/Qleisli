@@ -40,4 +40,13 @@ not claimed to form an accepted program. Rust and Lean independently read
 typed data and compare their encodings to these descriptions. The production
 native protocol and acceptance authority are unchanged at this stage.
 
+`function-cache-vectors.json` gives ten independent full function-view
+expectations, including exact H–T–H coefficients, a zero-width Unit owner,
+branch routes that compose or cancel, protected/certified ancilla phase,
+quantum conditional phase and an adjoint dependency. Lean checks each body
+freshly and derives the expected circuit; Rust checks its actual retained
+circuit/matrix caches. The last row's dependency zero means the first corpus
+entry. Rust maps the actual reconstructed Arc to that explicit corpus index;
+this is not a claim about the enclosing native packet's entry ordering.
+
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

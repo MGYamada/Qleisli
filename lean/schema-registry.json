@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "a0909e9afebdf1723eece8f7f08563ac52a5506647e24e42fab459e8c5f6d25e",
+    "sha256": "41eced4ab279f7d5b77dba295161282733cde45e7c7db041381b21a03139fa4f",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -130,7 +130,7 @@
       "lean-kernel/Main.lean": "0b29cba3546eaf6805a827bb153736ef416ac86bade454309b333ecee373726e",
       "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
       "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
-      "lean-kernel/Protocol/ExecutionView/Finite.lean": "a2712273f179386fc4d84565ead41629f8c8f5cc5d93b536021ffe3bd26b9240",
+      "lean-kernel/Protocol/ExecutionView/Finite.lean": "5cb5e88c6d0d5096d615beb2b82042ace509757d934770dc3fc0951d701ceb91",
       "lean-kernel/Protocol/ExecutionView.lean": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
       "lean-kernel/Protocol/FiniteCodec.lean": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",
       "lean-kernel/Protocol/Hierarchical.lean": "a098e44ed67362fe3ab388b19fb3abd7fc8d1381f9a38a000e93e9efe9cc59a3",

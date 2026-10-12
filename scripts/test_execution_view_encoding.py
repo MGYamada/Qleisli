@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BASELINE = 'tests/fixtures/verification_v030/execution-view-binding/baseline.json'
 VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json'
 FINITE_VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json'
+FUNCTION_VECTORS = 'tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json'
 
 
 class ExecutionViewEncodingTests(unittest.TestCase):
@@ -76,6 +77,24 @@ class ExecutionViewEncodingTests(unittest.TestCase):
         self.assertTrue(branch['then_ops'] and branch['else_ops'])
         self.assertEqual(branch['quantum_phis'][1]['output_wires'], [])
         self.assertEqual(transport['program']['quantum_inputs'][1]['shape']['bits'], 0)
+
+    def test_function_vectors_retain_independent_cache_expectations(self):
+        rows = json.loads((ROOT / FUNCTION_VECTORS).read_text())
+        self.assertEqual(len(rows), 10)
+        cases = {row['name']: row for row in rows}
+        self.assertEqual(len(cases), len(rows))
+        unit = cases['unit-owner']['view']
+        self.assertEqual(unit[1], [['unit']])
+        self.assertEqual(unit[5], ['circuit', [['unit']], []])
+        self.assertEqual(unit[7:], [1, 1])
+        cancel = cases['branch-routes-cancel']['view']
+        self.assertEqual(cancel[5][2], [])
+        routed = cases['branch-route-then-h']['view'][5][2]
+        self.assertEqual(routed[0], ['step', [], ['hadamard', 1]])
+        self.assertEqual(routed[1][2][2], [0, 2, 1, 3])
+        dependency = cases['original-index-adjoint-dependency']['view']
+        self.assertEqual(dependency[5][2], [['step', [], ['contract', [0], 0, True]]])
+        self.assertEqual(dependency[7:], [2, 1])
 
 
 if __name__ == '__main__':

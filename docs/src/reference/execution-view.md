@@ -118,8 +118,13 @@ meaning, depth, expanded-steps)`. The identity is
 `source(path, text)` records. The circuit is `circuit(basis, steps)`. Dependency
 indices identify original graph entries; process addresses serve only as
 private lookup keys and are never encoded. Missing or ambiguous mappings fail
-before any bytes are returned. Lean derivation of the complete expected
-retained-evidence view remains an integration obligation.
+before any bytes are returned. Lean independently derives the execution
+circuit from its literal implementation events and uses a fresh native receipt
+for the checked exact matrix, depth and expanded-step count. Closed classical
+branches select events only after both arms have been checked. Frame reorderings
+rename later axes; only the final composite permutation is materialized.
+Connecting these walkers to the complete retained graph and native comparison
+remains an integration obligation.
 
 The [finite vectors](../../../tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json)
 include three retained observing source roots, all 21 Raw constructors, both
@@ -128,6 +133,16 @@ The combined all-constructors row is intentionally transport data, not an
 accepted quantum program. Rust and Lean read their own typed data and compare
 against these independently specified descriptions. This checks the walkers,
 not execution binding or a source/runtime preservation theorem.
+
+The [function-cache vectors](../../../tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json)
+add ten independently specified full retained-evidence descriptions. They
+cover Unit ownership, H–T–H exact coefficients, output permutations, branch
+routes that compose or cancel, certified/protected ancilla phases, quantum
+conditional phase and a dependency with an adjoint. Rust checks actual retained
+function data; Lean freshly checks the original bodies and derives its own
+cache view. Dependency zero in the last row identifies the first corpus entry;
+the test remaps actual retained Arc references to that explicit corpus index.
+This test indexing is not the eventual production artifact graph mapping.
 
 ## Required production profiles
 
