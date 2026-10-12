@@ -227,11 +227,19 @@ def inspect(root, base, head, changed_since=None):
     # the bound head's history after the reviewed ancestor as well as endpoint
     # differences. This also catches delete/re-add pairs within one push and
     # reintroductions before the new head's immediate parent.
-    historical_additions = git(root, "log", "--format=", "--name-only", "-z",
-                               "--diff-filter=A", "--no-renames", "--full-history",
-                               "-m", f"{base}..{head}", "--", PREFIX)
-    added.update(p for p in historical_additions.decode("utf-8").split("\0")
-                 if p in paths and p.startswith(PREFIX))
+    history = [row.split() for row in git(root, "rev-list", "--ancestry-path", "--parents",
+                                         f"{base}..{head}").decode("ascii").splitlines()]
+    descendants = {base, *(row[0] for row in history)}
+    for commit, *parents in history:
+        additions = None
+        # Only edges descending from the reviewed ancestor are relevant. A
+        # merge may inherit an unchanged old file from either eligible parent;
+        # absence on an older side branch does not make that file new.
+        for parent in (p for p in parents if p in descendants):
+            delta = set(git(root, "diff", "--name-only", "-z", "--diff-filter=A",
+                            "--no-renames", parent, commit, "--", PREFIX).decode("utf-8").split("\0"))
+            additions = delta if additions is None else additions & delta
+        added.update(p for p in additions or () if p in paths and p.startswith(PREFIX))
     if changed_since is not None:
         changed_since = exact_commit(root, changed_since)
         previous = set(git(root, "ls-tree", "-rz", "--name-only", changed_since).decode().split("\0"))

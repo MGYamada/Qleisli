@@ -202,6 +202,34 @@ class GitInspection(unittest.TestCase):
             git("add", "."); git("commit", "--quiet", "-m", "retained consumer")
             self.assertEqual(check.inspect(root, base, git("rev-parse", "HEAD"))["status"], "allowed")
 
+    def test_merge_does_not_reclassify_unchanged_baseline_files_as_additions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root,
+                                               stderr=subprocess.DEVNULL).decode().strip()
+            git("init", "--quiet")
+            git("config", "user.name", "Fixture test")
+            git("config", "user.email", "fixture@example.invalid")
+            (root / "initial.txt").write_text("initial")
+            git("add", "."); git("commit", "--quiet", "-m", "initial")
+            main = git("branch", "--show-current")
+            git("checkout", "--quiet", "-b", "side")
+            (root / "side.txt").write_text("unrelated side change")
+            git("add", "."); git("commit", "--quiet", "-m", "side")
+            git("checkout", "--quiet", main)
+            fixture = root / "tests/fixtures/probe/old.log"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("reviewed historical record")
+            git("add", "."); git("commit", "--quiet", "-m", "reviewed baseline")
+            base = git("rev-parse", "HEAD")
+            # The reviewed base is reached through the second merge parent.
+            git("checkout", "--quiet", "side")
+            git("merge", "--quiet", "--no-ff", main, "-m", "integrate reviewed main")
+            report = check.inspect(root, base, git("rev-parse", "HEAD"))
+            self.assertEqual(report["status"], "allowed")
+            self.assertEqual(report["new_fixtures"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
