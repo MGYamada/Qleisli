@@ -170,6 +170,24 @@ mixed-width output ports, conservative effects and an evidence table whose
 first entry depends on its second. These remain bounded transport comparisons;
 native gate and protocol integration are required before execution binding.
 
+## Retained contract stages
+
+The common native-contract adapter now retains its decoded original artifact,
+request bytes and typed obligation for all six existing profiles. Encoded
+contracts retain the freshly checked root, reconstructed action and finite
+wrapper result. Leaf requests retain the original ports and exact matrix;
+pure leaves retain both domain/codomain trees and their checked root/action.
+Control requests retain the exact signature or owner forest and ordered axes.
+Instrument requests retain the independently decoded expected artifact and
+its order, signatures and source identity, with both fresh checked roots.
+
+The old adapter results are projections of these same computations. Universal
+Lean equalities preserve successes, errors and remaining work, and stage
+binding theorems identify the retained core results. The leaf path retains its
+existing validation sequence. No additional acceptance rule, native mode or
+execution handle is introduced. Canonical contract walkers, actual caller
+circuit/cache binding and production comparison remain required.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

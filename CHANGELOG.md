@@ -26,6 +26,8 @@ and exactness obligations retain their recorded scopes and status.
   Add the pure finite comparison gate with original-packet/root binding and
   ownership/scope proofs; reject 71 mutated candidates over seven valid
   originals, with bounded framing and independent-request controls.
+  Retain all six native contract profiles' typed requests and fresh core
+  results, with universal computation projections and core-stage binding proofs.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

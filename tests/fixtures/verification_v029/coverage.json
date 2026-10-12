@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "c450274ebefde13570548cc5b628570b2d9181f65e427caa721ed79c2dbffc41",
+  "surface_sha256": "71e14c60b7e8ffa487e21a71683b93f233677687d57208487dc0e04aaefe2d5a",
   "groups": [
     {
       "id": "raw-core",
@@ -2237,7 +2237,11 @@
           "path": "lean-kernel/Protocol/NativeContract.lean",
           "markers": [
             "def check ",
-            "QleisliKernel.Qirf.checkContract",
+            "def checkRetained ",
+            "inductive RequestRetained ",
+            "theorem check_projection",
+            "theorem checkRetained_acceptance",
+            "QleisliKernel.Qirf.checkContractRetained",
             "QleisliKernel.Qirf.check ",
             "structure Acceptance ",
             "structure LeafAcceptance ",
@@ -2251,6 +2255,10 @@
           "markers": [
             "def decode ",
             "def check ",
+            "def checkRetained ",
+            "structure Retained ",
+            "theorem check_projection",
+            "theorem checkRetained_bound",
             "structure Acceptance ",
             "expectedText.toUTF8",
             "theorem check_acceptance"
@@ -2270,7 +2278,21 @@
         {
           "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
           "markers": [
+            "def checkContractRetained ",
+            "theorem checkContract_projection",
+            "theorem checkContractRetained_bound",
             "theorem checkContract_bound"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
+          "markers": [
+            "def checkRetained ",
+            "def checkOwnersRetained ",
+            "theorem check_projection",
+            "theorem checkOwners_projection",
+            "theorem checkRetained_bound",
+            "theorem checkOwnersRetained_bound"
           ]
         },
         {
@@ -2412,7 +2434,7 @@
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
       "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity",
-      "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check; instrument -> Protocol.InstrumentContract.check -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
+      "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> checkRetained (original result projection); instrument -> Protocol.InstrumentContract.check -> checkRetained -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
       "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },

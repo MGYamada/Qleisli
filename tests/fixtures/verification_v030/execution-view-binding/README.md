@@ -66,4 +66,12 @@ packet and decoded root, and transports ownership/classical-scope facts from
 the common checker. This gate is not yet connected to the native CLI or Rust
 execution; no production protocol change or Issue completion is claimed.
 
+The native contract adapter separately retains the typed original obligations
+and fresh core results for encoded, leaf, control, control-owners, instrument
+and pure-leaf requests. Universal projection equalities preserve the original
+adapter computation, including errors and remaining work. The encoded/control
+and instrument stage theorems bind the actual retained root/action or expected
+graph. Production contract-view comparison is still pending; these records do
+not authorize execution and do not complete #362.
+
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

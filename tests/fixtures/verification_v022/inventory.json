@@ -2298,7 +2298,7 @@
     },
     {
       "path": "lean-kernel/Protocol/InstrumentContract.lean",
-      "sha256": "58cc76d2f1d91dcbe558219e3bd50fad0099613b2822354ab515c588d675325c",
+      "sha256": "f04dc1ed0a7ea2ad1922a3db3250e08511e30594eeed5b821099cdf0cdc54f5b",
       "group": "raw-core",
       "surface": null
     },
@@ -2310,7 +2310,7 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "3d1f9be6a262ee055bf6d1a45129706f17412144e0d46711a1119ab09d26d331",
+      "sha256": "04db5fc9c9092e1bffdd2c705fb83bc627d9f3c5b356f88cf2b91a9a6bbfa5f5",
       "group": "finite-contract",
       "surface": null
     },
@@ -2676,13 +2676,13 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
-      "sha256": "639ccf22dc8aeb24453533f54d3509f69ddbc7c164d8a9c639a990c3ea0027c9",
+      "sha256": "31014223cc07df15d9dc0c84d4e1bc99d68f649c731779df65963fe8ddc771fe",
       "group": "finite-contract",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
-      "sha256": "c046b942a031b2837296c3fe44bcdd1c7fb08be27341d11be9e5f6c651c7b262",
+      "sha256": "11d580f08b6e9dcd1aa4f6393255d2a6acd3f51a04eb3a5062e1ab772ad827b8",
       "group": "finite-leaf",
       "surface": null
     },
