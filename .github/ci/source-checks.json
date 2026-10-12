@@ -31,6 +31,10 @@
         ],
         [
           "python3",
+          "scripts/test_check_fixture_references.py"
+        ],
+        [
+          "python3",
           "scripts/test_ci_profiles.py"
         ],
         [

@@ -105,3 +105,14 @@ trusted compilation. Existing Lean semantics and native acceptance were not
 edited by this independent test task.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [before inventory](before.archive.json) (97 original files).
+- [after inventory](after.archive.json) (129 original files).

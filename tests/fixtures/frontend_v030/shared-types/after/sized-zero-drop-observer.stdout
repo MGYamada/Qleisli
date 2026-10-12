@@ -1,2 +1,0 @@
-finite: ok declarations=1
-sized: error ownership 41..47 function leaves live quantum arguments unconsumed

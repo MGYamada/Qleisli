@@ -15,6 +15,10 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Restore fixture headroom through nineteen lossless historical archives (#364),
+  preserving exact source commits, inventories, bytes and modes. Reject new
+  fixtures without rooted static consumer references before CI lane selection;
+  retain the existing size caps and separate reference reachability from execution.
 - Require all 127 selected Issues at the complete-feature release gate, retain
   the historical 111-Issue inventory, and reject old #83/#39 deferrals. Preserve
   the exact alpha-only approval; no completion evidence is inferred from scope.

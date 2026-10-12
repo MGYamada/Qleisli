@@ -119,6 +119,30 @@ sources, counterexamples and changed-result evidence instead of copying complete
 logs or source inventories for each toolchain. Consolidating another historical
 group requires checking its current consumers and exact original inventory.
 
+Fixture retention separates live test inputs/expected outputs and their source
+maps from historical validation/provenance. Keep authoring first sources and
+observations, active inputs, protected constitutional records and notices. A
+reviewed historical log group may use the existing lossless archive format:
+retain every original byte and mode, the complete inventory, exact source commit
+and SHA-256, and run `check_fixture_archives.py --git-baseline`. An archive is
+inert evidence; it never supplies a passing test or proof. Do not archive an
+active consumer's inputs or execute archived commands.
+
+`check_fixture_references.py --hosted` runs before lane selection. It reads the
+exact event checkout's Git blobs and rejects new fixture paths with no rooted
+test/script reference or transitive manifest reference. Manifest-only cycles
+and self-declared approval are insufficient. The reviewed pre-retention tree
+`22dccc5bdbf62f802f12fe7ce457132ae51e036d` is a historical baseline, not a claim
+that every old file is consumed; new paths are checked on pushes and PRs.
+Additions since the event's exact PR base or previous push are checked too,
+so reintroducing a removed historical path cannot evade the gate.
+No exception allow-list is installed. Dynamic consumers need an explicit,
+reviewed reader rule with regressions; a source project's directory reference
+does not retain unrelated logs. This static check establishes retention
+reachability, not actual execution, assertion coverage or semantic authority.
+Keep both size ceilings unchanged and run the ordinary immutable-tree budget
+gate after reviewed consolidation.
+
 `--base BASE_SHA --head HEAD_SHA` gives a committed local fixture preflight,
 with complete history, exact hashes and no PR-growth exception. Whole-PR
 preflight remains a separate required check. Put new `--report` output outside

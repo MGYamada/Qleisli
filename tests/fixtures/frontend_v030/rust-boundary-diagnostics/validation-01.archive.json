@@ -1,0 +1,260 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01",
+  "archive": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01.tar.gz",
+  "archive_sha256": "7588e41c8875d54097715aeb27ccffc3ffe735aafb033ed6c9a30dcb53cc481f",
+  "entries": {
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/authoring-01.json": {
+      "bytes": 907,
+      "sha256": "a0275a79dabb02e7503731176d76d2a765665a4323e89081c01b4318ff81c3a1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/authoring-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/authoring-01.stdout.txt": {
+      "bytes": 95,
+      "sha256": "7061835ebf0c2e9a477cb55a20275f9678b6cd2dcfbc886ae1b8c72e2e7fcd21",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-01.json": {
+      "bytes": 982,
+      "sha256": "9b332a45a1c0e075f37bc5ae7f545b31345b1853bb9510ff5e2fb6da2ed01538",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-01.stderr.txt": {
+      "bytes": 132,
+      "sha256": "e8294f71703cad710e30362d25062ac963b6b0a5ff1bcda815514d3dacda5487",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-corrected-02.json": {
+      "bytes": 1002,
+      "sha256": "96aa3c79579ce8bc72cb6aa95036cab9a311a9434f5f5af8f40b0c4698bb39a0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-corrected-02.stderr.txt": {
+      "bytes": 132,
+      "sha256": "e8294f71703cad710e30362d25062ac963b6b0a5ff1bcda815514d3dacda5487",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-corrected-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-01.json": {
+      "bytes": 957,
+      "sha256": "4f2fc8b534b523c8458fed69b8fc963e576055994058c82f6f790955c4f0f4f2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-01.stdout.txt": {
+      "bytes": 68,
+      "sha256": "c085cd62b07f4b8383f6828e0a94854c391c9c0a142ff6d4edd1134439271f31",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-corrected-02.json": {
+      "bytes": 977,
+      "sha256": "0288a6a6edce08293186678e42b6a6399dcee21a7574523225c362ddb46a9341",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-corrected-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/book-links-corrected-02.stdout.txt": {
+      "bytes": 68,
+      "sha256": "c085cd62b07f4b8383f6828e0a94854c391c9c0a142ff6d4edd1134439271f31",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/cli-build-01.json": {
+      "bytes": 977,
+      "sha256": "e04401b9c764e085f0e1e70613102d7b9ed82d2d241df8a55357c4bcf01cb3ee",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/cli-build-01.stderr.txt": {
+      "bytes": 60,
+      "sha256": "9ddcb7a97f3589835ba8f354c41d25b0a805bd5f85ddbccaff009e6f6dc7236c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/cli-build-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/continuity-01.json": {
+      "bytes": 969,
+      "sha256": "a694526bbcd0729473fb850e488ad373a2662e0dbcfd99012ff3e56800996d29",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/continuity-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/continuity-01.stdout.txt": {
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/docs-seal-01.json": {
+      "bytes": 893,
+      "sha256": "c3ce14f6fe638ea682c343aa30a571f09dcbb54b7fff3b1fc3783a0a705128bc",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/docs-seal-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/docs-seal-01.stdout.txt": {
+      "bytes": 109,
+      "sha256": "599ce0e55209164dbf74ecb342ad66cc4992ddbf9cc029de7ed7be9b0c49f03b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/editions-01.json": {
+      "bytes": 894,
+      "sha256": "81d1d8eb3399a5be2c0dbad002b635a196f81dd2aba441d912870ea75233080b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/editions-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/editions-01.stdout.txt": {
+      "bytes": 236,
+      "sha256": "f01b56b2bddb1fd0e4c42684063679d6bfc031ca9ece649b00c46495bc322307",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/fmt-01.json": {
+      "bytes": 894,
+      "sha256": "131b7a421f1798359e09d8e726008203a49a8c7ad6194fc01c469250f25bf485",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/fmt-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/fmt-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/inventory-01.json": {
+      "bytes": 911,
+      "sha256": "6cc0fdea2c99301e927d68fbb10ed314990de82fe1424af827f85316e6666b50",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/inventory-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/inventory-01.stdout.txt": {
+      "bytes": 126,
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-clippy-01.json": {
+      "bytes": 1014,
+      "sha256": "996e4e3935c186344e32297a67a7502ea6cbf7454130de9e0a3d8eeb62f46281",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-clippy-01.stderr.txt": {
+      "bytes": 120,
+      "sha256": "21cb3586c71ece6a4e588e1bd2469225e39648f6d1df50c72d7bca90dff006b5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-clippy-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-diagnostics-01.json": {
+      "bytes": 1156,
+      "sha256": "a4d215b69bfe9c37c493e873c75e21079c68aea30f4dad4a7f9c8e392460c2d7",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-diagnostics-01.stderr.txt": {
+      "bytes": 661,
+      "sha256": "a8a70bddd7458736758618f9e69c7b5a9883c1df1164d3bacc1c8823cb42ecf5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/latest-diagnostics-01.stdout.txt": {
+      "bytes": 2335,
+      "sha256": "f65c33000fa0324892abbc3564a918c984056f4fb37f00ce5b32e2b7a2617145",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/local-validation-01.json": {
+      "bytes": 8466,
+      "sha256": "bd2e061331515badaf99b8055a81f5205a52927911a6a32226698e6a8a65f306",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-clippy-01.json": {
+      "bytes": 1033,
+      "sha256": "81d2bb41db95dfe121abf86bac183d6b44f39c1adeb0b1893e873748f14a55f9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-clippy-01.stderr.txt": {
+      "bytes": 120,
+      "sha256": "a54374ce9a6c3caa61367afbb5d72019d298813d718ee47de9cf722719ceeb69",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-clippy-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-diagnostics-01.json": {
+      "bytes": 1174,
+      "sha256": "c2d5ddba491a307da82087301f945e439ca29184c7e7c7c6fd57484e4a783647",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-diagnostics-01.stderr.txt": {
+      "bytes": 669,
+      "sha256": "8bc5ce74d855b873e22ef519aef881fbe002d6632c81e39b276ef6e7b2fc3b10",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/msrv-diagnostics-01.stdout.txt": {
+      "bytes": 2335,
+      "sha256": "efc026a2679603b8570a771601bf0c0620eead4f7c60089702992f642ffec721",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/production-01.json": {
+      "bytes": 911,
+      "sha256": "8b8bea6e7408a7deeb3fe8c9077cdefa7d88387656d54ef397b33cd941f36b8d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/production-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/production-01.stdout.txt": {
+      "bytes": 464,
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/record_validation.py": {
+      "bytes": 1699,
+      "sha256": "618dbd44229f7140fba1790f6a8b359fa0e5e8c464c3ca1e7851595d702a58b2",
+      "mode": "100644"
+    }
+  }
+}

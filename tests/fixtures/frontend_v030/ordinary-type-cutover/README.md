@@ -97,3 +97,16 @@ when resuming MSRV checks. The later `types.rs` introduction change is comment
 only; root-owned `src/lib.rs` documentation is tracked separately from the
 frozen observed build. No maximum-size quantum cases were newly generated or
 checked in this unit.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [client-tests-first inventory](client-tests-first.archive.json) (55 original files).
+
+The `client-before/` snapshots remain loose files because the current source
+integrity checker consumes their exact bytes. They are not consolidated.

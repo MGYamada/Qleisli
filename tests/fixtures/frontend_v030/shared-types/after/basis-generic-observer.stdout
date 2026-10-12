@@ -1,2 +1,0 @@
-finite: error 30..35 expected `Op`, found identifier
-sized: error parse 30..35 expected `Op`, found identifier

@@ -44,7 +44,7 @@ examples and Cargo Clippy remain in scope. The exclusion is not an integration
 claim. Full QS, PR, quantitative RS, source/runtime correspondence and release
 gates retain their separate obligations. GitHub remains the work tracker.
 
-The final [integration record](implementation-01/integration-validation-01.json)
+The final [integration record](implementation-01.archive.json)
 binds the changed sources to completed bounded checks. It preserves the first
 Rust assertion failure, authored-oracle omission and their separate repairs,
 and states skipped checks and retained concrete-profile limits. The two
@@ -52,3 +52,13 @@ independent finite corpus oracles use the unchanged mathematical runner and
 its stated floating-point tolerance; their reports are not exact proofs.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [implementation-01 inventory](implementation-01.archive.json) (119 original files).

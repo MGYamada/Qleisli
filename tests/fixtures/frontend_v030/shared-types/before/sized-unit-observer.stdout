@@ -1,2 +1,0 @@
-finite: ok declarations=1
-sized: error unsupported 23..27 sized preparation profile: unsupported runtime type

@@ -116,3 +116,13 @@ unchanged; this study does not silently replay their old arity as current syntax
 Independent review covered the shared `Compiler::check_predicate_domain` and both
 call sites, ordinary basis evaluation, Meaning signature/evidence paths, and the
 separate native table/cleanup conditions. There is no outstanding concrete finding.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [after inventory](after.archive.json) (191 original files).

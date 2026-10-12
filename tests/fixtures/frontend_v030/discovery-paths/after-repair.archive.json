@@ -1,0 +1,290 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/discovery-paths/after-repair",
+  "archive": "tests/fixtures/frontend_v030/discovery-paths/after-repair.tar.gz",
+  "archive_sha256": "9fbb8f14eb68369f5dc2b8343d35f1c2d55b91cfd1fea6e360dc181c4bdcc012",
+  "entries": {
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/0.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/0.stderr.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/0.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/1.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/1.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/1.stdout.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/10.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/10.stderr.txt": {
+      "bytes": 825,
+      "sha256": "05f2ab1c2a3492c09ae34d3a7fa8700620bcc72c1fe09e70d57b8cfc8c83616a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/10.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/11.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/11.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/11.stdout.txt": {
+      "bytes": 3039,
+      "sha256": "6c8b86e055c8c4b3090c48b07d3f8af0f76221fba639057cdf98406364b91894",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/12.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/12.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/12.stdout.txt": {
+      "bytes": 3035,
+      "sha256": "a9f02c0f927ebd69377c5549e2266489228723f0f171878719e297ef75e3b2fc",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/13.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/13.stderr.txt": {
+      "bytes": 825,
+      "sha256": "05f2ab1c2a3492c09ae34d3a7fa8700620bcc72c1fe09e70d57b8cfc8c83616a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/13.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/14.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/14.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/14.stdout.txt": {
+      "bytes": 1065,
+      "sha256": "353f8e12807ba67e3b7eb218d22168041e2a5aaa25d597c7f938dc2499f9e927",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/15.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/15.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/15.stdout.txt": {
+      "bytes": 444,
+      "sha256": "0c03b5a2a019c89159995f1df6807ef625d9d2f0eb27b3170504b8291cfd8798",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/16.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/16.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/16.stdout.txt": {
+      "bytes": 450,
+      "sha256": "5fbf387d15ee1d139599b05b8e8fa92dfa02689b056d95a9646fc66eab25212c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/17.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/17.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/17.stdout.txt": {
+      "bytes": 422,
+      "sha256": "f2cdb0d089c85f28665f40acac9800ad57afb02bcdb0549c0fc2e1715ab6b83d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/2.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/2.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/2.stdout.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/3.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/3.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/3.stdout.txt": {
+      "bytes": 10576,
+      "sha256": "6fa9fbb49d9f7b26a4812549220a2eee798ac36e9f3cf279e53435fe33f147ab",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/4.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/4.stderr.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/4.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/5.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/5.stderr.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/5.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/6.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/6.stderr.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/6.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/7.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/7.stderr.txt": {
+      "bytes": 2688,
+      "sha256": "d799cbfd1e269229a02af0af9225e2211abab53c50babfd514b822eeeea14e8c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/7.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/8.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/8.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/8.stdout.txt": {
+      "bytes": 3038,
+      "sha256": "fcd49052f8ec666b7fa969f62f4914539bb146295c04eddbad9f1292b521ca4b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/9.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/9.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/9.stdout.txt": {
+      "bytes": 3046,
+      "sha256": "2966b76d9b3b3358c472f0fffee731ab3f0d65a58453d0e0475506ce8af59319",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/driver.py.txt": {
+      "bytes": 2910,
+      "sha256": "d97e52f55334de673452357154846ce84fd38d7b879e7b53ab1105d3f0a66d9e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/after-repair/result.json": {
+      "bytes": 11003,
+      "sha256": "02615ddf1418cae308591a1d3f0727dd5c9ea12e44d35213027c775d777670df",
+      "mode": "100644"
+    }
+  }
+}

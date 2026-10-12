@@ -45,7 +45,7 @@ selected elaboration, and explicitly asserts the finite unsupported category,
 message and original span. No finite capability is added to satisfy the test.
 Both original failed streams remain unchanged. A prior incorrect absolute
 rustup path never started Cargo; the separate
-[launch observation](validation-01/msrv-launch-error-01.json) records the
+[launch observation](validation-01.archive.json) records the
 operator error and original empty streams. It is no compiler/test failure.
 
 ## Actual validation and scope
@@ -75,7 +75,7 @@ operator error and original empty streams. It is no compiler/test failure.
 
 The [independent advisory review](independent-review-01.json) distinguishes
 root/observer results from its own read-only work. Command argv, actual exits,
-timings, environments and raw stream hashes remain in [validation](validation-01/).
+timings, environments and raw stream hashes remain in [validation](validation-01.archive.json).
 Original source/test predictions are not rewritten as successful results.
 The fixed after CLI is identified in [its local byte record](after-cli-01.json);
 it is not an authenticated complete build closure.
@@ -96,3 +96,13 @@ inner logs under investigation. This local unit does not establish full CI,
 package/install/bundle readiness, release approval or publication.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [validation-01 inventory](validation-01.archive.json) (62 original files).

@@ -67,6 +67,8 @@ jobs:
         run: python3 scripts/check_pr_size.py --report "$RUNNER_TEMP/pr-size.json"
       - name: Bound fixture totals and PR growth before scheduling validation
         run: python3 scripts/check_fixture_budget.py --hosted --report "$RUNNER_TEMP/fixture-budget.json"
+      - name: Reject new fixtures without rooted consumer references
+        run: python3 scripts/check_fixture_references.py --hosted
       - name: Run shared CI preflight before scheduling validation
         id: ci-preflight
         run: python3 scripts/ci_profiles.py --checks ci-preflight --output "$RUNNER_TEMP/ci-preflight"

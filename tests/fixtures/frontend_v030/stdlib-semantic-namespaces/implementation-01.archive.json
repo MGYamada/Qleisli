@@ -1,0 +1,950 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01",
+  "archive": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01.tar.gz",
+  "archive_sha256": "0ad8889c84ee77f3bf9172e89fe866cd04b230344bdd4254944191a1f6703478",
+  "entries": {
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/README.md": {
+      "bytes": 7520,
+      "sha256": "7f82be2bd38e4bf58097fa2384c9e5849b4e08fd92df842ad21729797a2c24c4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-01.stdout.txt": {
+      "bytes": 95,
+      "sha256": "57f90eaa56a57d26db5762c5cdea7cc7f1f07b77f52425fde1f486454b90ab29",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-final-04.stdout.txt": {
+      "bytes": 95,
+      "sha256": "57f90eaa56a57d26db5762c5cdea7cc7f1f07b77f52425fde1f486454b90ab29",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/authoring-final-05.stdout.txt": {
+      "bytes": 95,
+      "sha256": "57f90eaa56a57d26db5762c5cdea7cc7f1f07b77f52425fde1f486454b90ab29",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-build-01.stderr.txt": {
+      "bytes": 128,
+      "sha256": "5988244e3fb67d04e7eb992579d284c56f43d3ec58d0df4acb4b47a0de4344f2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-build-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-links-01.stderr.txt": {
+      "bytes": 122,
+      "sha256": "bfd631c98ef30dd83f3b57c73b55ada45531fdf53e93ff9df4cef3fbc1d7d1f3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-links-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-links-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-links-02.stdout.txt": {
+      "bytes": 67,
+      "sha256": "b1b7eef54b33d0532739fe61395d46cac81a7d0d78e0f2c0a6a1ee1119f3de8b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-validation-01.json": {
+      "bytes": 1284,
+      "sha256": "78b7790c8a3fcb0e79944847656d45cd8317153db03e8ea25ac3f5a772d816fb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-validation-02.json": {
+      "bytes": 486,
+      "sha256": "937e7a677988b7097b239fe0a6a62d828501110137a8837273cd770d455b650d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-version-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/book-version-01.stdout.txt": {
+      "bytes": 14,
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/ci-profiles-01.stderr.txt": {
+      "bytes": 104,
+      "sha256": "20c3121bbe1ceafe607a38fac2c11f18683a9fa68ddafc9ab410bd36490bcfcd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/ci-profiles-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/cli-build-01.json": {
+      "bytes": 12556,
+      "sha256": "0417e137f29ef0c74c081bedd3c70b035f6077d7881d2e48b849456a2258f911",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/cli-build-01.stderr.txt": {
+      "bytes": 120,
+      "sha256": "5f1b350483fb9dee9b61ed97a525f142115034bd82ba54339ae5ecfa31111b47",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/cli-build-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/cli-build-03.stderr.txt": {
+      "bytes": 120,
+      "sha256": "c71eeef6b9c2fe365fce3b3f2356369b95c460cbae99469d7f3fb78506eede3c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/cli-build-03.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/comment-correction-01.json": {
+      "bytes": 1125,
+      "sha256": "a9717092dbb1a545762ce804948838ab8d3a528e9b41d81124a341451d436799",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-01.stdout.txt": {
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-final-05.stdout.txt": {
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-regressions-01.stderr.txt": {
+      "bytes": 164,
+      "sha256": "808acdcabfcd8715828f80dc7a822f2c6dcc9c079bbeeeca4410030e3b949d06",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/constitution-regressions-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-after-01.json": {
+      "bytes": 3394,
+      "sha256": "cf10b37e9ffdd38e4df62915112fcc33a0900be7b11ac16bfd8f4b15759b086b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-after-01.stderr.txt": {
+      "bytes": 379,
+      "sha256": "8030ef8eb0a1cb0180ba1d6126f21a300d737335807ba493bdf062c6e62b69e5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-after-01.stdout.txt": {
+      "bytes": 678,
+      "sha256": "5d5fe005c573b3a6930e342456c037656b8c4b37e2a6618128e18ad82e743125",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-format.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-format.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-latest-clippy.stderr.txt": {
+      "bytes": 539,
+      "sha256": "23958cd330fbd8f86ec413044a49609b1ee48021f6edb007af8bff938d3d2e77",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-latest-clippy.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-msrv-clippy.stderr.txt": {
+      "bytes": 389,
+      "sha256": "9fc830140f8548eebcb03f70c554d16529eb988d49cc12e91e602e35d4afed1d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01-msrv-clippy.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-consumers-selection-final-01.json": {
+      "bytes": 4891,
+      "sha256": "8dd932872bdcca03053d83fc914b4ce6c2766e1b4bca0d0fa685c03988d3688e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-01.stdout.txt": {
+      "bytes": 90,
+      "sha256": "cfbe0271cffb327fd9755e367e4a8ce516de78e619692ebaf7a7369167ae80d8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-final-04.stdout.txt": {
+      "bytes": 90,
+      "sha256": "cfbe0271cffb327fd9755e367e4a8ce516de78e619692ebaf7a7369167ae80d8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-metadata-final-05.stdout.txt": {
+      "bytes": 90,
+      "sha256": "cfbe0271cffb327fd9755e367e4a8ce516de78e619692ebaf7a7369167ae80d8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-oracles-01.json": {
+      "bytes": 5720,
+      "sha256": "c61f8419f48532013338fd2effa8a58013a680e5e0a6d339f8b84ccf5345e1ee",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-oracles-guard-failure.json": {
+      "bytes": 394,
+      "sha256": "11094c91b32e72e94bc3921d71a0884df3f96e8cd37b4465f494f741eeb155e5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-regressions-01.stderr.txt": {
+      "bytes": 406,
+      "sha256": "6c9d39c47b644d0d0841dda1928f66774a0b8a692a07a53df7187ab231d84f3a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-regressions-01.stdout.txt": {
+      "bytes": 133,
+      "sha256": "0c03f48e0cfd1e201c66f21525d40caf06c96c3146f9d3a0dc7942e4849ad086",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-regressions-02.stderr.txt": {
+      "bytes": 407,
+      "sha256": "039e05f76445df7bb86249097bfa6287604661eaaa2890c193e983b00833bccb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/corpus-regressions-02.stdout.txt": {
+      "bytes": 133,
+      "sha256": "0c03f48e0cfd1e201c66f21525d40caf06c96c3146f9d3a0dc7942e4849ad086",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-01.stdout.txt": {
+      "bytes": 464,
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-final-05.stdout.txt": {
+      "bytes": 464,
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-regressions-01.stderr.txt": {
+      "bytes": 113,
+      "sha256": "14a45f405244f1737685db1a2f993f25e34ed085d4ab003817df975c6af40aa5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/coverage-regressions-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/demo-local-arithmetic-post-comment-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/demo-local-arithmetic-post-comment-03.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/dirty_auxiliary-negative-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/dirty_auxiliary-negative-02.stdout.txt": {
+      "bytes": 567,
+      "sha256": "931bb91cbcbe3bea0f5cff9ea8c9798e64ae43f6689f5f28a59cdb58a1510b26",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/dirty_auxiliary-negative-selected-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/dirty_auxiliary-negative-selected-04.stdout.txt": {
+      "bytes": 567,
+      "sha256": "931bb91cbcbe3bea0f5cff9ea8c9798e64ae43f6689f5f28a59cdb58a1510b26",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-01.stdout.txt": {
+      "bytes": 109,
+      "sha256": "d8d420a3d1569d49245aa322b5e090461a7483405037be1ceead022840040cbf",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-final-04.stdout.txt": {
+      "bytes": 109,
+      "sha256": "120b136159649f9050fdf4f22a905c0749c38dd7c50933ad747bad9a38ef54d3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/docs-final-05.stdout.txt": {
+      "bytes": 109,
+      "sha256": "120b136159649f9050fdf4f22a905c0749c38dd7c50933ad747bad9a38ef54d3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/documentation-03.stderr.txt": {
+      "bytes": 248,
+      "sha256": "541d3cb6255aacf506961403e506ae56e9e016f2ea85534f5d334afd8eb99c60",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/documentation-03.stdout.txt": {
+      "bytes": 969,
+      "sha256": "8a6212e8eafe039ecc1092de96dc68818ff9595c1c1c9b0dfac0172bb19be2b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-02.stdout.txt": {
+      "bytes": 292,
+      "sha256": "0b6e427714810d7fb7277715810dc4f0607b6ccf5f7eff3c9248063c32a54468",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-final-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-final-03.stdout.txt": {
+      "bytes": 259,
+      "sha256": "ea6a156031c5238e445f17522f31586a913ad876d1f0bacf1007fb782e2294fa",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-selected-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/duplicate_owner-negative-selected-04.stdout.txt": {
+      "bytes": 292,
+      "sha256": "0b6e427714810d7fb7277715810dc4f0607b6ccf5f7eff3c9248063c32a54468",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-01.stdout.txt": {
+      "bytes": 236,
+      "sha256": "e87ff6fae178b62a0495d29e8bc355d02cb51a7af31c7c06411cf5627a14deca",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-final-04.stdout.txt": {
+      "bytes": 236,
+      "sha256": "e87ff6fae178b62a0495d29e8bc355d02cb51a7af31c7c06411cf5627a14deca",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/editions-final-05.stdout.txt": {
+      "bytes": 236,
+      "sha256": "e87ff6fae178b62a0495d29e8bc355d02cb51a7af31c7c06411cf5627a14deca",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/final-policy-validation-04.json": {
+      "bytes": 3074,
+      "sha256": "fc82b62466367a662ad58a8f0e4ccab0b391bd9dd58985e3172a65b8eeadeb12",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/final-policy-validation-05.json": {
+      "bytes": 4142,
+      "sha256": "d945d41f6be3b94118e1b70eb62744ee6a0e0df022119a7b84407125af2e3ca8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixed-source-client-01.json": {
+      "bytes": 2128,
+      "sha256": "a76bfcaa3c437c36a1243f49dc998bb5a8b866c2d06048ed0c4f8905faf3750a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixed-source-client-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixed-source-client-01.stdout.txt": {
+      "bytes": 58,
+      "sha256": "e6af49b1f1b65850d175efdde38562f160f853af8a6b6ea6f51e7c1795714770",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixed-source-client-command-01.json": {
+      "bytes": 612,
+      "sha256": "1c95b4afd4c27a583997afccfc08052dd497b9fe089984410273c741c3157bac",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixture-regressions-01.stderr.txt": {
+      "bytes": 119,
+      "sha256": "0998878cd9c3badf5c972bd7b0e35a25aa4eafc87c9e545399b6674ae3c38072",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixture-regressions-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixture-regressions-02.stderr.txt": {
+      "bytes": 120,
+      "sha256": "663ae11db746b8ec1ca01487085adec076d8ea2f482e9c0116050776c626d2dd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/fixture-regressions-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-final-04.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/format-final-05.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/frontend-types-validation-01.json": {
+      "bytes": 1190,
+      "sha256": "f751454ebf07aefc4a1806fb5ead53fc8731038b53097c5667dacab006e04a64",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-completion-review-01.json": {
+      "bytes": 24024,
+      "sha256": "1ff4d88a36e8a701578b68a9f3fdfeb6345d49737527e96021dc41896fe62c80",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-completion-review-02.json": {
+      "bytes": 12188,
+      "sha256": "799f7b4ec6914b785f2fbc8d12774848cc1d74db0c4d988f904eddbb1790e9fc",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-library-review-01.json": {
+      "bytes": 10823,
+      "sha256": "84deaf80f14deab9a0f5e341c08fb5349b2b6a797ec6d1e640d58bd352a0d385",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-selector-review-01.json": {
+      "bytes": 7118,
+      "sha256": "705058d9f11ab8b68093d60536417f40397715e01f5069aded80239efe2ab6d7",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-selector-review-02.json": {
+      "bytes": 4973,
+      "sha256": "c78987260f3726ef230083d88034ba05bfcd2b47d4a7c3eaeddbeea8abbf1680",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-01.stdout.txt": {
+      "bytes": 126,
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-final-04.stderr.txt": {
+      "bytes": 55,
+      "sha256": "d75b973c227917e768323cddd75989bf4af210b7651f4ce6955226c44c82892c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-final-04.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/inventory-final-05.stdout.txt": {
+      "bytes": 126,
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-clippy-02.stderr.txt": {
+      "bytes": 539,
+      "sha256": "48e6a1fe018ef6e4bd6d9ded69b854f1e68baef9ea78e90e5b9622229e79b2d9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-clippy-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-frontend-types-01.stderr.txt": {
+      "bytes": 671,
+      "sha256": "cb5681c14d91eb4bb65fc926fc82ab859ac2f05aaf97dcc54bb520ca813f3ee2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-frontend-types-01.stdout.txt": {
+      "bytes": 366,
+      "sha256": "dab3f178c96e47f1bc3b878e43ff8e45f45b7e3fb4176d6bd338964d9d44f469",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-targets-02.stderr.txt": {
+      "bytes": 2206,
+      "sha256": "42b1120beaf49b5eaf10f912c2f8e1e536bce296a9b972478434be9bb119d09d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-targets-02.stdout.txt": {
+      "bytes": 11346,
+      "sha256": "2d0403507b3826a7cfe1eb5725a38c1919d5ec69c9eac8da41bc2e58ba3e59c9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-version-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/latest-version-02.stdout.txt": {
+      "bytes": 47,
+      "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measured_owner-negative-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measured_owner-negative-02.stdout.txt": {
+      "bytes": 292,
+      "sha256": "f4a81cf1fe1bf62e8845c1d55cccf31d1cd8a7f358eb6ef7cdeda0d855ea3a9c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measured_owner-negative-selected-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measured_owner-negative-selected-04.stdout.txt": {
+      "bytes": 292,
+      "sha256": "f4a81cf1fe1bf62e8845c1d55cccf31d1cd8a7f358eb6ef7cdeda0d855ea3a9c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement-post-comment-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement-post-comment-03.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement_adjoint-negative-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement_adjoint-negative-02.stdout.txt": {
+      "bytes": 314,
+      "sha256": "e2b27704bac4feaef38ad490f699020e4a7ea4b3fde283c44aacf9db1453413c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement_adjoint-negative-selected-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/measurement_adjoint-negative-selected-04.stdout.txt": {
+      "bytes": 314,
+      "sha256": "e2b27704bac4feaef38ad490f699020e4a7ea4b3fde283c44aacf9db1453413c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/metadata-update-01.json": {
+      "bytes": 2168,
+      "sha256": "b387f65facdf9b8d747f933e4bac127d8e420d602d4f23906aa730ad7069b6cb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-clippy-02.stderr.txt": {
+      "bytes": 539,
+      "sha256": "87efe6415ed98b49c8624347176c33f5ee7ebafc52ae2255be95201d6bdbaa96",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-clippy-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-frontend-types-01.stderr.txt": {
+      "bytes": 672,
+      "sha256": "512e8d5e71eedea330c910ad514eb5726c4f38676e127cc8ad46bcb8040e35e1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-frontend-types-01.stdout.txt": {
+      "bytes": 366,
+      "sha256": "dab3f178c96e47f1bc3b878e43ff8e45f45b7e3fb4176d6bd338964d9d44f469",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-review-repaired-02.stderr.txt": {
+      "bytes": 246,
+      "sha256": "f98f85421889fde7aea0aff7eadc3e6b4ceb35bb7a0c2086d418bac642572c1f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-review-repaired-02.stdout.txt": {
+      "bytes": 715,
+      "sha256": "de16b4312bc47fb8fef3e082b0fa063d47e8008924039ec504942cdec5353521",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-targets-01.stderr.txt": {
+      "bytes": 2310,
+      "sha256": "d7c0724e54e8bd639d6b110fc41f367a4eb5f2b46698dfe0ffcc5cdbe3c27aa4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-targets-01.stdout.txt": {
+      "bytes": 11929,
+      "sha256": "d347c9c062b9bb50ae5ca26a45571062a12a2fbc0a3f842f9c50b2815b33c99d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-version-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/msrv-version-01.stdout.txt": {
+      "bytes": 36,
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-01.json": {
+      "bytes": 2367,
+      "sha256": "9e5a4957ae09d0cc35f4d4029d9eba159326e3d83106ce6855428bff5c517eb3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-01.stderr.txt": {
+      "bytes": 107,
+      "sha256": "e202f95f83cf4f2a903f8b3218e5737d03b1ce046e1d839fee79783001c51bf5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-02.json": {
+      "bytes": 2517,
+      "sha256": "245edf81842ef8067c8d19c5308d7afca0c84c73794a5fcb116774bb2b694a27",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-02.stderr.txt": {
+      "bytes": 776,
+      "sha256": "077424d3c35944f795703f6e9508622b4cc03985f3dfe90b1eb317c778582b14",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-02.stdout.txt": {
+      "bytes": 295,
+      "sha256": "cbc58e0fd9f2ec3a277b1c69fa1577324e5ae95e91fe9859ad94294f571ea971",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/after-command.json": {
+      "bytes": 1804,
+      "sha256": "463eea0769b49f8132791aaf8d62fc7b8937dcbf654d8c05eaa40022dd66f128",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/after-native/native-validation.json": {
+      "bytes": 170285,
+      "sha256": "414d553d4a58023d775e59b9ae43562a512111ae7f2e2b93729380df7b5c2034",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/after.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/after.stdout.txt": {
+      "bytes": 79,
+      "sha256": "74fa9710147ff6704a69d1ab6196b529a3272bcd0f200f5344da0b700a0b6804",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/before-command.json": {
+      "bytes": 1525,
+      "sha256": "1c687303c520a007081ec7b6367c1977c0241bfe27291ec1b756a7def5a0fd4e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/before-native/native-validation.json": {
+      "bytes": 73991,
+      "sha256": "6737408c9d2e76d7f63e42535f3f036b24a0e9629849d6d1cee64e55895006be",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/before-script.py": {
+      "bytes": 10234,
+      "sha256": "aa2b482b181ae89c21596886a2bdcef667bc9c80754ff199c2fca47374413e8d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/before.stderr.txt": {
+      "bytes": 1066,
+      "sha256": "e1390d3cd34d2c484538198e7fa4c5a3f8fbb661a57950e0c0458a3d6b9fb97d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/before.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/benchmark-selection-validation.json": {
+      "bytes": 3947,
+      "sha256": "9f381f85b0186249a7e4744d9c422a20425e9b18ccd0a43f2326d011488759bd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/summary.json": {
+      "bytes": 4636,
+      "sha256": "0aa56008021a2b27c5e14af2ba56ff46df72cf04701123899863f6dd83c84af6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-derivative-03.json": {
+      "bytes": 2106,
+      "sha256": "df6428f67cc061623eb997fd3b6d80a3ea411bfd928def8a7eff51629691ff64",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-diagnostic-review-01.json": {
+      "bytes": 1275,
+      "sha256": "d66b34f7a7a0500f0e2a6eedd3377e052fe9a8ec696a4bdee45aeaa888be37fd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-manifest-before.json": {
+      "bytes": 1157,
+      "sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-selection-driver-failure-03.json": {
+      "bytes": 591,
+      "sha256": "9f697680a837924ebdf13b57b96adbe1c8c0db1d631acf38b618676e272ec1f6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-selection-validation-04.json": {
+      "bytes": 4236,
+      "sha256": "ccdd2e3ae45e7f6a529f55acea6c7097baefccf6e3d254f5f6391f89fa8a949f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-selector-regressions-03.json": {
+      "bytes": 1101,
+      "sha256": "da095b7409145f22194c857cff6505b4ef539ff10f5e51c0e8fdc24c428d6f09",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/negative-validation-02.json": {
+      "bytes": 2366,
+      "sha256": "f1ac2c9ffc4e0ca30959dde41ecd4d10fd06d771c3564cc4ff5a3af63e30b97b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/policy-validation-01.json": {
+      "bytes": 3213,
+      "sha256": "c913960cd13c7616cbfdb1889d2b0af92f75b8859b0d5636c94c14f11ae270b1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/post-comment-validation-03.json": {
+      "bytes": 15081,
+      "sha256": "d6e72241141b0f6b2aab3bc9461d1b48bcf4a162fd96a81b96e1e310fb520fb8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/python-regressions-01.json": {
+      "bytes": 731,
+      "sha256": "7f075ff39c15fdfa3bd99cea74a2620092b2e178fca887476b325f78801682c9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/python-regressions-02.json": {
+      "bytes": 1241,
+      "sha256": "0f99074f8356aeb01dd9b8c5dee06b8e910c4fcd2e4259210a94f4cdef043169",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/python-regressions-first-failure.json": {
+      "bytes": 858,
+      "sha256": "e2f34826a3343aea9b8a3f74f867d9cedd9e8ac1795e30bca7490866aab52769",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/qpe-source-clients-01.json": {
+      "bytes": 5407,
+      "sha256": "5f66631be66500ff0685240949346ff272d496b33d9db2d56fb1704a5604767a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/qpe-source-clients-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/qpe-source-clients-01.stdout.txt": {
+      "bytes": 66,
+      "sha256": "1d6567884304198068bcc5c85f00763a965c4d4324a4f514f7e4fc3489547c1f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/qpe-source-clients-command-01.json": {
+      "bytes": 615,
+      "sha256": "1c2628c057feff23ac0fad68e9542f71509af400f5d6ab656737e10f3c6ebb3a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/quickstart-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/quickstart-01.stdout.txt": {
+      "bytes": 560,
+      "sha256": "dfd7cb82d185ddc77b2b9e489b25b1dcad73eff5b28916242644425bfe732dd1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/quickstart-validation-01.json": {
+      "bytes": 532,
+      "sha256": "322a8d0b80fd615f6676fce4738bcb61ea2370467d1b5e1dae8a8f1cf7a17cf5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/reflection-post-comment-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/reflection-post-comment-03.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/reporting-correction-01.json": {
+      "bytes": 2100,
+      "sha256": "98381b124e9507cf033a754e82e12db7eaceffe0845c26b7b337a654e1bc8d7d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/rust-validation-01.json": {
+      "bytes": 24410,
+      "sha256": "40e901b16ca409490e29150f129a5e83e436b1f9290bdea9e4d4b517c5be774e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/rust-validation-02.json": {
+      "bytes": 26103,
+      "sha256": "80ef86701e4a1b2767e236639dc2cdc402bce027df3b5a0f0e4bc83a4e6989ed",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/source-migration.json": {
+      "bytes": 4529,
+      "sha256": "a80e4f44da81d70c05e6d10131b9dd11b9d36003ede021db6f2ff27128adbe73",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/transform-post-comment-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/transform-post-comment-03.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/validation-overview-02.json": {
+      "bytes": 26845,
+      "sha256": "3bd02d9a22bf2f442c0262a6d5fed2e0210adfe62923bddab3c8292684499226",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/validation-overview.json": {
+      "bytes": 22696,
+      "sha256": "ee2d822a05829ea244a458388588d6c64b0cf98004756bd386d808630471b0c7",
+      "mode": "100644"
+    }
+  }
+}

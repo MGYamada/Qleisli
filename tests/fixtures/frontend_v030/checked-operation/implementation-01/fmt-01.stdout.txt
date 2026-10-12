@@ -1,8 +1,0 @@
-Diff in /Users/masa/git/Qleisli/tests/checked_operations.rs:271:
-     }
- }
- 
--
- fn receipt(operations: &[RawOp]) -> Arc<FunctionEvidence> {
-     operations
-         .iter()

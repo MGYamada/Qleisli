@@ -7,7 +7,7 @@ description calculus. The [criterion map](criterion-map-01.json) preserves all
 14 original criteria. Broader builders, arrows, ADTs, traits and linear closures
 remain separate feature work; this boundary introduces none of them.
 
-The [integration manifest](validation-01/integration-validation-01.json) binds
+The [integration manifest](validation-01.archive.json) binds
 performed commands and exact streams, declared source identities, independent
 [Reference review](reference-review-01.json) and the
 [first-source study](../../authoring_sessions/functional-boundary-v030/README.md).
@@ -53,3 +53,13 @@ fresh Lean build/audit/replay, full same-commit CI/distribution/installation or
 release approval is claimed. QFT and new maximum-system generation are excluded.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [validation-01 inventory](validation-01.archive.json) (79 original files).
