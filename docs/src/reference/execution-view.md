@@ -345,6 +345,40 @@ with all objects actually consumed by execution remains a separate production
 integration and runtime-preservation duty. This does not complete #362 or admit
 a constitutional guarantee.
 
+## Retained hierarchy runtime plan
+
+The Rust hierarchy runtime now materializes one owned execution plan per report.
+Both native-only and finite-reconstructed reports retain that plan, or its
+explicit materialization failure, in a private once-initialized cell. Inspection
+still makes the original native decision; unsupported execution cannot acquire
+a replacement plan or change that decision. Public payload/request access is
+immutable. Production QDV1 integration must initialize and compare this same
+plan before granting execution authority; the present retention change alone
+does not perform that comparison.
+
+Pure plans retain original node order, child indices, width, root and ordered
+input/output axes. Finite leaves own their exact matrices. A phase node retains
+the literal target position and integer `j`/`k`; conversion to numerical sine
+and cosine occurs only during interpretation. Phase normalization and numerical
+values are not substituted for those exact parameters in the retained plan.
+
+Instrument plans additionally retain input and fresh axes, preparation input
+positions, measurement value/axis pairs in order, pack order, outcome positions
+and residual axes/positions. Execution borrows this plan and creates fresh state
+and work buffers. Every sampling shot borrows that same plan and starts from the
+same normalized joint input/reference state. It does not reparse the JSON,
+recompile nodes, reuse collapsed state or cache an earlier branch execution.
+
+The independent small-system harness compares 19 original cases and 912 complex
+coefficients, plus 768 seeded outcomes from three clients. Before/after records
+retain identical original artifacts/requests and source hashes; coefficient
+errors, work counts and outcome counts are unchanged. Private fault injection
+also checks that execution retains its original plan after old transport/leaf
+storage is poisoned. Hand-authored controls separately retain literal phase
+parameters and nontrivial preparation/readout/reference coordinates. These
+tests establish bounded regression evidence, not native plan comparison,
+source/runtime preservation or a new constitutional guarantee.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

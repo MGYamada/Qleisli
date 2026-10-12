@@ -8,7 +8,7 @@ use runtime::Mode;
 pub mod execution;
 
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use super::finite_leaf::{
     CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_with_kernel,
@@ -35,6 +35,7 @@ pub struct Reconstructed {
     structural_work: usize,
     exact_work: usize,
     native_exact_work: usize,
+    execution: OnceLock<Result<execution::Plan>>,
 }
 
 impl Reconstructed {
@@ -51,6 +52,7 @@ impl Reconstructed {
             structural_work,
             exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
             native_exact_work,
+            execution: OnceLock::new(),
         }
     }
 
@@ -72,6 +74,13 @@ impl Reconstructed {
     /// it is not work performed by a second Rust acceptance implementation.
     pub fn native_exact_work(&self) -> usize {
         self.native_exact_work
+    }
+
+    fn execution(&self) -> Result<&execution::Plan> {
+        self.execution
+            .get_or_init(|| execution::Plan::retained(self))
+            .as_ref()
+            .map_err(Clone::clone)
     }
 }
 
@@ -123,6 +132,7 @@ pub struct NativeChecked {
     instrument: bool,
     structural_work: usize,
     exact_work: usize,
+    execution: OnceLock<Result<execution::Plan>>,
 }
 
 impl NativeChecked {
@@ -141,6 +151,7 @@ impl NativeChecked {
             instrument,
             structural_work: response.work,
             exact_work: response.exact_work,
+            execution: OnceLock::new(),
         }
     }
     pub fn payload(&self) -> &[u8] {
@@ -161,6 +172,13 @@ impl NativeChecked {
     }
     pub fn exact_work(&self) -> usize {
         self.exact_work
+    }
+
+    fn execution(&self) -> Result<&execution::Plan> {
+        self.execution
+            .get_or_init(|| execution::Plan::native(self))
+            .as_ref()
+            .map_err(Clone::clone)
     }
 }
 

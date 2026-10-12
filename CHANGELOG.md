@@ -42,6 +42,10 @@ and exactness obligations retain their recorded scopes and status.
   result, with original receipt-slot and continuous-work binding proofs.
   Bound repeated alias descriptions before accumulating them. Production
   alias integration, hierarchy execution and protocol cutover remain pending.
+  Retain one owned exact hierarchy runtime plan for execution and fresh shots,
+  including literal dyadic phase parameters and ordered preparation/readout
+  positions. Independent small-system coefficients, work and seeded outcomes
+  are unchanged; native comparison of the actual hierarchy plan remains pending.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

@@ -4862,7 +4862,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "16389e8055c6beb1ede9ef9c24fb7745eaf94168e01fd7e2cfdfcf02148ecb3b",
+      "sha256": "715c5f1cd33aff0efe1915091adbb56e268c6a7005d621e633864dfb17127221",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4948,7 +4948,7 @@
     },
     {
       "path": "src/interchange/hierarchical/execution.rs",
-      "sha256": "b02a4451e4b42cbde024fb6d5897244f5a0d2d6b2ad8f4574a8456bede971e5f",
+      "sha256": "52f6ed1e1197d7b677bc4b838f9cd4d4bea2f2b148e60e361479b59099fc21f0",
       "group": "hierarchical-execution",
       "surface": {
         "declarations": [
@@ -5454,6 +5454,26 @@
       "sha256": "6e6f051dec9ae1853840dd0774219720f9ee2a89e49986a66db4b54246f3a9e6",
       "group": "execution-view-encoding",
       "surface": null
+    },
+    {
+      "path": "src/interchange/hierarchical/execution/plan.rs",
+      "group": "hierarchical-execution",
+      "sha256": "219355a14381b0d941b55b0f432dc4f71898947ebc1e45f3d8d9e134bd2590fa",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/hierarchical/execution/plan/tests.rs",
+      "group": "hierarchical-execution",
+      "sha256": "5699bdfac3bec980ccd17802716b8c725cfc57495b6687a200c7df42b9460776",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [

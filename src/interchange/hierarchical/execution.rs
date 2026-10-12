@@ -205,32 +205,15 @@ impl Work {
     }
 }
 
-enum Op<'a> {
-    Leaf(&'a Matrix),
-    Sequence(Vec<usize>),
-    Tensor(usize, usize),
-    Repeat(usize, usize),
-    Inverse(usize),
-    Control(usize, bool),
-    Permutation(Vec<usize>),
-    Phase(usize, [f64; 2]),
-}
-struct Node<'a> {
-    width: usize,
-    op: Op<'a>,
-}
-struct Program<'a> {
-    nodes: Vec<Node<'a>>,
-    root: usize,
-    inputs: Vec<usize>,
-    outputs: Vec<usize>,
-}
+mod plan;
+#[cfg(test)]
+use plan::Node;
+pub(super) use plan::Plan;
+use plan::{InstrumentPlan, Op, Program};
+
 // Compatibility reports retain the old public leaf handles. Their bound
 // matrices are an execution view, not new acceptance or a second equation.
-fn retained_matrices<'a>(
-    actual: &Value,
-    checked: &'a Reconstructed,
-) -> Result<BTreeMap<usize, &'a Matrix>> {
+fn retained_matrices(actual: &Value, checked: &Reconstructed) -> Result<BTreeMap<usize, Matrix>> {
     let proofs = actual.field("proofs")?.array()?;
     let definitions = actual.field("definitions")?.array()?;
     let mut matrices = BTreeMap::new();
@@ -256,7 +239,7 @@ fn retained_matrices<'a>(
                 "finite matrix no longer matches its actual definition",
             ));
         }
-        matrices.insert(implementation, checked_leaf.leaf().meaning());
+        matrices.insert(implementation, checked_leaf.leaf().meaning().clone());
     }
     Ok(matrices)
 }
@@ -303,89 +286,7 @@ fn native_matrices(actual: &Value, checked: &NativeChecked) -> Result<BTreeMap<u
     Ok(matrices)
 }
 
-impl<'a> Program<'a> {
-    fn compile(actual: &Value, matrices: BTreeMap<usize, &'a Matrix>) -> Result<Self> {
-        let definitions = actual.field("definitions")?.array()?;
-        let mut nodes = Vec::with_capacity(definitions.len());
-        // The accepted artifact may retain non-root definitions. Rejecting an
-        // unsupported one is explicit, and includes every zero-repeat child.
-        for (i, definition) in definitions.iter().enumerate() {
-            let header = definition.field("interface")?;
-            let inputs = header.field("inputs")?;
-            let outputs = header.field("outputs")?;
-            quantum_only(inputs)?;
-            quantum_only(outputs)?;
-            let a = wires(inputs)?;
-            let b = wires(outputs)?;
-            if a.len() != b.len() || definition.field("effect")?.text()? != "unitary" {
-                return Err(unsupported(
-                    "pure execution requires width-preserving unitary definitions",
-                ));
-            }
-            let body = definition.field("body")?;
-            let child = |field| -> Result<usize> {
-                let n = index(body.field(field)?)?;
-                if n >= definitions.len() {
-                    return Err(invalid("actual child index outside definition table"));
-                }
-                Ok(n)
-            };
-            let op = match body.field("tag")?.text()? {
-                "leaf" => Op::Leaf(*matrices.get(&i).ok_or_else(|| {
-                    unsupported("actual finite leaf lacks retained reconstruction")
-                })?),
-                "sequence" => Op::Sequence(
-                    body.field("children")?
-                        .array()?
-                        .iter()
-                        .map(index)
-                        .collect::<Result<_>>()?,
-                ),
-                "tensor" => Op::Tensor(child("left")?, child("right")?),
-                "repeat" => Op::Repeat(child("definition")?, index(body.field("count")?)?),
-                "inverse" => Op::Inverse(child("definition")?),
-                "control" => Op::Control(child("definition")?, body.field("polarity")?.boolean()?),
-                "rewire" => Op::Permutation(permutation(
-                    body.field("permutation")?
-                        .field("axes")?
-                        .array()?
-                        .iter()
-                        .map(index)
-                        .collect::<Result<_>>()?,
-                    a.len(),
-                )?),
-                "structural" => Op::Permutation(permutation(positions(&a, &b)?, a.len())?),
-                "dyadic_phase" => {
-                    let target = owner_axis(inputs, index(body.field("target")?)?)?;
-                    let j = index(body.field("j")?)?;
-                    let k = index(body.field("k")?)?;
-                    let denominator = width_dimension(k)?;
-                    let angle =
-                        std::f64::consts::TAU * (j % denominator) as f64 / denominator as f64;
-                    let (im, re) = angle.sin_cos();
-                    Op::Phase(target, [re, im])
-                }
-                tag => {
-                    return Err(unsupported(format!(
-                        "reference execution does not support actual {tag} nodes"
-                    )));
-                }
-            };
-            nodes.push(Node { width: a.len(), op });
-        }
-        let root = index(actual.field("entry")?.field("implementation")?)?;
-        let header = definitions
-            .get(root)
-            .ok_or_else(|| invalid("missing actual entry"))?
-            .field("interface")?;
-        Ok(Self {
-            nodes,
-            root,
-            inputs: wires(header.field("inputs")?)?,
-            outputs: wires(header.field("outputs")?)?,
-        })
-    }
-
+impl Program {
     fn apply(&self, state: &mut Vec<[f64; 2]>, work: &mut Work) -> Result<()> {
         let mut scratch = zeroes(state.len())?;
         let mut stack = Vec::new();
@@ -497,9 +398,13 @@ impl<'a> Program<'a> {
                     }
                     std::mem::swap(state, &mut scratch);
                 }
-                Op::Phase(target, phase) => {
+                Op::Phase { target, j, k } => {
                     work.charge(state.len())?;
-                    let phase = [phase[0], if task.inverse { -phase[1] } else { phase[1] }];
+                    let denominator = width_dimension(*k)?;
+                    let angle =
+                        std::f64::consts::TAU * (j % denominator) as f64 / denominator as f64;
+                    let (im, re) = angle.sin_cos();
+                    let phase = [re, if task.inverse { -im } else { im }];
                     for (i, amplitude) in state.iter_mut().enumerate() {
                         if task.active(i) && i & width_dimension(task.offset + target)? != 0 {
                             *amplitude = multiply(*amplitude, phase);
@@ -670,15 +575,17 @@ impl CheckedRequest {
         reference_dimension: usize,
         limits: ExecutionLimits,
     ) -> Result<StateVector> {
-        let actual = json::parse(self.reconstruction().payload())?;
-        let program =
-            Program::compile(&actual, retained_matrices(&actual, self.reconstruction())?)?;
-        execute_pure(program, input, reference_dimension, limits)
+        execute_pure(
+            self.reconstruction().execution()?.pure()?,
+            input,
+            reference_dimension,
+            limits,
+        )
     }
 }
 
 fn execute_pure(
-    program: Program<'_>,
+    program: &Program,
     input: &[[f64; 2]],
     reference_dimension: usize,
     limits: ExecutionLimits,
@@ -697,50 +604,25 @@ fn execute_pure(
 }
 
 fn execute_instrument(
-    actual: &Value,
-    program: Program<'_>,
+    plan: &InstrumentPlan,
     input: &[[f64; 2]],
     reference_dimension: usize,
     limits: ExecutionLimits,
 ) -> Result<InstrumentBranches> {
-    let preparation = actual.field("preparation")?;
-    let initializations = preparation.field("initializations")?.array()?;
-    let input_side = instrument_input_side(actual)?;
-    quantum_only(input_side)?;
-    let input_axes = wires(input_side)?;
+    let program = &plan.program;
     let mut work = Work { limits, spent: 0 };
-    input_check(input, input_axes.len(), reference_dimension, &work)?;
+    input_check(input, plan.input_axes.len(), reference_dimension, &work)?;
     let dimensions = width_dimension(program.inputs.len())?;
     let cells = product(dimensions, reference_dimension)?;
     work.cells(product(cells, 2)?)?;
-    let input_positions = positions(&program.inputs, &input_axes)?;
-    let mut fresh = Vec::new();
-    for init in initializations {
-        work.charge(1)?;
-        let body = init.field("body")?;
-        if body.field("tag")?.text()? != "init0" {
-            return Err(unsupported("initialization must be actual init0"));
-        }
-        let side = init.field("interface")?.field("outputs")?;
-        let axes = wires(side)?;
-        fresh.push(axes[owner_axis(side, index(body.field("output")?)?)?]);
-    }
-    let mut expected_axes = input_axes.clone();
-    expected_axes.extend(fresh);
-    expected_axes.sort_unstable();
-    let mut prepared_axes = program.inputs.clone();
-    prepared_axes.sort_unstable();
-    if expected_axes != prepared_axes {
-        return Err(invalid(
-            "actual preparation does not cover the circuit inputs",
-        ));
-    }
+    work.charge(plan.fresh_axes.len())?;
     work.charge(cells)?;
     let mut state = zeroes(cells)?;
-    let input_dimension = width_dimension(input_axes.len())?;
+    let input_dimension = width_dimension(plan.input_axes.len())?;
     for (i, coefficient) in input.iter().enumerate() {
         let basis = i % input_dimension;
-        let prepared = input_positions
+        let prepared = plan
+            .input_positions
             .iter()
             .enumerate()
             .fold(0, |out, (j, position)| {
@@ -749,41 +631,10 @@ fn execute_instrument(
         state[(i / input_dimension) * dimensions + prepared] = *coefficient;
     }
     program.apply(&mut state, &mut work)?;
-    let readout = actual.field("readout")?;
-    let mut measured = BTreeMap::new();
-    for measurement in readout.field("measurements")?.array()? {
-        work.charge(1)?;
-        let body = measurement.field("body")?;
-        if body.field("tag")?.text()? != "observe_z" {
-            return Err(unsupported("readout must be actual observe_z"));
-        }
-        let before = measurement.field("interface")?.field("inputs")?;
-        let axes = wires(before)?;
-        let axis = axes[owner_axis(before, index(body.field("input")?)?)?];
-        measured.insert(index(body.field("output")?)?, axis);
-    }
-    let pack = readout.field("pack")?.array()?;
-    let measured_axes = pack
-        .iter()
-        .map(|value| {
-            measured
-                .get(&index(value)?)
-                .copied()
-                .ok_or_else(|| invalid("actual pack references an unmeasured value"))
-        })
-        .collect::<Result<Vec<_>>>()?;
-    if pack.len() != measured.len() {
-        return Err(unsupported("readout must retain every measured result"));
-    }
-    let residual_axes = wires(readout.field("outputs")?)?;
-    let outcome_positions = positions(&program.outputs, &measured_axes)?;
-    let residual_positions = positions(&program.outputs, &residual_axes)?;
-    let outcome_count = width_dimension(pack.len())?;
-    let residual_dimension = width_dimension(residual_axes.len())?;
+    work.charge(plan.measurements.len())?;
+    let outcome_count = width_dimension(plan.pack.len())?;
+    let residual_dimension = width_dimension(plan.residual_axes.len())?;
     let branch_cells = product(residual_dimension, reference_dimension)?;
-    if product(outcome_count, branch_cells)? != cells {
-        return Err(invalid("readout axes do not partition the output state"));
-    }
     work.charge(cells)?;
     let mut branches = Vec::new();
     branches
@@ -799,14 +650,14 @@ fn execute_instrument(
                 .enumerate()
                 .fold(0, |out, (j, position)| out | (((i >> position) & 1) << j))
         };
-        let outcome = select(&outcome_positions);
-        let residual = select(&residual_positions);
+        let outcome = select(&plan.outcome_positions);
+        let residual = select(&plan.residual_positions);
         branches[outcome][(i / dimensions) * residual_dimension + residual] = coefficient;
     }
     Ok(InstrumentBranches {
         branches,
-        measured_bits: pack.len(),
-        residual_quantum_bits: residual_axes.len(),
+        measured_bits: plan.pack.len(),
+        residual_quantum_bits: plan.residual_axes.len(),
         reference_dimension,
         steps: work.spent,
     })
@@ -821,16 +672,18 @@ impl CheckedInstrument {
         reference_dimension: usize,
         limits: ExecutionLimits,
     ) -> Result<InstrumentBranches> {
-        let actual = json::parse(self.reconstruction().payload())?;
-        let circuit = actual.field("circuit")?;
-        let program =
-            Program::compile(circuit, retained_matrices(circuit, self.reconstruction())?)?;
-        execute_instrument(&actual, program, input, reference_dimension, limits)
+        execute_instrument(
+            self.reconstruction().execution()?.instrument()?,
+            input,
+            reference_dimension,
+            limits,
+        )
     }
 
     /// Explicitly normalize a finite positive-norm input, then execute each shot
-    /// afresh from that same joint input/reference state. No collapsed state or
-    /// cached branch execution is reused. The original norm is returned.
+    /// afresh from that same joint input/reference state using one retained
+    /// immutable plan. No collapsed state or cached branch execution is reused.
+    /// The original norm is returned.
     ///
     /// On success, one RNG word is consumed per outcome (even deterministic
     /// outcomes); its high 53 bits select from the full actual branch weights.
@@ -851,7 +704,7 @@ impl CheckedInstrument {
         limits: SamplingLimits,
     ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>> {
         sample_instrument(
-            self.reconstruction().payload(),
+            self.reconstruction().execution()?.instrument()?,
             input,
             reference_dimension,
             shots,
@@ -863,7 +716,7 @@ impl CheckedInstrument {
 }
 
 fn sample_instrument<R: RandomSource>(
-    payload: &[u8],
+    plan: &InstrumentPlan,
     input: &[[f64; 2]],
     reference_dimension: usize,
     shots: usize,
@@ -877,13 +730,9 @@ fn sample_instrument<R: RandomSource>(
     if shots > limits.max_shots {
         return Err(Error::limit("sampling shot limit exceeded").into());
     }
-    let actual = json::parse(payload)?;
-    let input_side = instrument_input_side(&actual)?;
-    quantum_only(input_side)?;
-    let input_width = wires(input_side)?.len();
-    let readout = actual.field("readout")?;
-    let output_width = wires(readout.field("outputs")?)?.len();
-    let measured_bits = readout.field("pack")?.array()?.len();
+    let input_width = plan.input_axes.len();
+    let output_width = plan.residual_axes.len();
+    let measured_bits = plan.pack.len();
     let branch_cells = product(width_dimension(output_width)?, reference_dimension)?;
     let mut work = Work {
         limits: limits.execution,
@@ -979,8 +828,11 @@ fn sample_instrument<R: RandomSource>(
 impl NativeChecked {
     /// Execute the actual pure hierarchy accepted by the selected native kernel.
     /// Finite matrices come only from this retained artifact's native-checked
-    /// original QIRF equations. Rust performs bounded decoding and simulation;
-    /// it does not rerun the migrated IR/equality/isometry acceptance paths.
+    /// original QIRF equations. One owned plan retains exact matrices and
+    /// literal dyadic phase parameters; execution borrows that same plan.
+    /// Rust performs bounded decoding and simulation; it does not rerun the
+    /// migrated IR/equality/isometry acceptance paths. Native comparison of the
+    /// actual plan remains pending under #362.
     pub fn execute_pure(
         &self,
         input: &[[f64; 2]],
@@ -992,10 +844,12 @@ impl NativeChecked {
                 "instrument report requires instrument execution",
             ));
         }
-        let actual = json::parse(self.payload())?;
-        let matrices = native_matrices(&actual, self)?;
-        let program = Program::compile(&actual, matrices.iter().map(|(&i, m)| (i, m)).collect())?;
-        execute_pure(program, input, reference_dimension, limits)
+        execute_pure(
+            self.execution()?.pure()?,
+            input,
+            reference_dimension,
+            limits,
+        )
     }
 
     /// Execute native-checked preparation, actual hierarchy and ordered readout.
@@ -1010,11 +864,12 @@ impl NativeChecked {
         if !self.instrument {
             return Err(unsupported("pure report has no checked instrument"));
         }
-        let actual = json::parse(self.payload())?;
-        let circuit = actual.field("circuit")?;
-        let matrices = native_matrices(circuit, self)?;
-        let program = Program::compile(circuit, matrices.iter().map(|(&i, m)| (i, m)).collect())?;
-        execute_instrument(&actual, program, input, reference_dimension, limits)
+        execute_instrument(
+            self.execution()?.instrument()?,
+            input,
+            reference_dimension,
+            limits,
+        )
     }
 
     /// Normalize explicitly and execute every native-checked instrument shot
@@ -1031,7 +886,7 @@ impl NativeChecked {
             return Err(unsupported("pure report has no checked instrument").into());
         }
         sample_instrument(
-            self.payload(),
+            self.execution()?.instrument()?,
             input,
             reference_dimension,
             shots,
@@ -1053,7 +908,7 @@ mod tests {
             max_steps: 100_000,
         }
     }
-    fn run(nodes: Vec<Node<'_>>, input: &[[f64; 2]]) -> (Vec<[f64; 2]>, usize) {
+    fn run(nodes: Vec<Node>, input: &[[f64; 2]]) -> (Vec<[f64; 2]>, usize) {
         let root = nodes.len() - 1;
         let width = nodes[root].width;
         let program = Program {
@@ -1116,11 +971,15 @@ mod tests {
         let nodes = vec![
             Node {
                 width: 1,
-                op: Op::Leaf(&h),
+                op: Op::Leaf(h.clone()),
             },
             Node {
                 width: 1,
-                op: Op::Phase(0, [0.0, 1.0]),
+                op: Op::Phase {
+                    target: 0,
+                    j: 1,
+                    k: 2,
+                },
             },
             Node {
                 width: 1,
@@ -1157,11 +1016,11 @@ mod tests {
             vec![
                 Node {
                     width: 1,
-                    op: Op::Leaf(&h),
+                    op: Op::Leaf(h.clone()),
                 },
                 Node {
                     width: 1,
-                    op: Op::Leaf(&negative),
+                    op: Op::Leaf(negative.clone()),
                 },
                 Node {
                     width: 2,
@@ -1206,7 +1065,7 @@ mod tests {
             vec![
                 Node {
                     width: 0,
-                    op: Op::Leaf(&scalar),
+                    op: Op::Leaf(scalar.clone()),
                 },
                 Node {
                     width: 1,
@@ -1264,7 +1123,11 @@ mod tests {
             let nodes = vec![
                 Node {
                     width: 1,
-                    op: Op::Phase(0, [0.0, 1.0]),
+                    op: Op::Phase {
+                        target: 0,
+                        j: 1,
+                        k: 2,
+                    },
                 },
                 Node {
                     width: 1,
@@ -1283,7 +1146,11 @@ mod tests {
             nodes: vec![
                 Node {
                     width: 1,
-                    op: Op::Phase(0, [0.0, 1.0]),
+                    op: Op::Phase {
+                        target: 0,
+                        j: 1,
+                        k: 2,
+                    },
                 },
                 Node {
                     width: 1,
@@ -1357,6 +1224,7 @@ mod tests {
         // No fake report can enter the public execution API outside this module.
         let report = Reconstructed {
             native_exact_work: 0,
+            execution: std::sync::OnceLock::new(),
             payload: std::sync::Arc::from([]),
             leaves: vec![],
             structural_work: 0,
@@ -1428,7 +1296,7 @@ mod tests {
         let p = Program {
             nodes: vec![Node {
                 width: 1,
-                op: Op::Leaf(&h),
+                op: Op::Leaf(h.clone()),
             }],
             root: 0,
             inputs: vec![0],
