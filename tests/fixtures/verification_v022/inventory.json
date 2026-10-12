@@ -5436,7 +5436,7 @@
     {
       "path": "src/interchange/execution_view/finite/caller/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "faf199b6539f9ef1c4ec762850bc5e4fc84963c4151fc3f8df2c401ce8f1fd5e",
+      "sha256": "393d0d49bb9546788206c6d2dea5c55d11871a8e6ea44f9a1f5bad294f3d37f3",
       "surface": {
         "declarations": [],
         "functions": [],

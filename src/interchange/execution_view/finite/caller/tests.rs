@@ -99,7 +99,8 @@ fn checked(implementation: RawProgram, name: &str) -> Arc<FunctionEvidence> {
 fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
     let refusal = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json"
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json"
     )))
     .unwrap();
     let original = refusal
@@ -117,7 +118,8 @@ fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
     );
     let recipes = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json"
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json"
     )))
     .unwrap();
     let target = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0])
