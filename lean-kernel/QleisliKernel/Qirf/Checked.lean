@@ -20,6 +20,8 @@ def rootBasis (basis : Basis) : Bool :=
       if n < 3 || n > 4096 then none else some (List.replicate n (depth+1) ++ rest))
       (some [1]) == some []
 
+/-- Historical square-interface predicate retained for the fixed Basis
+representation transport. It is not the production interface gate. -/
 def interfaceValid (artifact : Qirf.Artifact) (program : Program) : Bool :=
   match artifact.rootInterface with
   | none => true
@@ -29,6 +31,24 @@ def interfaceValid (artifact : Qirf.Artifact) (program : Program) : Bool :=
     program.inputs.length == 1 && program.outputs.length == 1 &&
     ((program.inputs[0]?).map fun port =>
       port.bits == width input && port.bits == width output).getD false
+
+/-- Current structural gate binds the two ports independently. Original-body
+ownership and scope still come from the same independent verification. -/
+def portInterfaceValid (artifact : Qirf.Artifact) (program : Program) : Bool :=
+  match artifact.rootInterface with
+  | none => true
+  | some (input,output) =>
+    rootBasis input && rootBasis output &&
+    (program.effect == .unitary || program.effect == .iso) &&
+    program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty &&
+    program.inputs.length == 1 && program.outputs.length == 1 &&
+    ((program.inputs[0]?).map (fun port => port.bits == width input)).getD false &&
+    -- The literal reader retains the actual output owner, including Unit.
+    -- Equal input/output widths cannot describe a rectangular interface.
+    ((Semantics.Observation.read program).map fun prepared =>
+      match prepared.state.live with
+      | [port] => program.outputs == [port.token] && port.bits == width output
+      | _ => false).getD false
 
 structure Request where
   signature : Basis
@@ -63,7 +83,7 @@ def checkRoot (artifact : Qirf.Artifact) (order : Array Nat) : WorkM Root := do
   guard (sourcesUsed artifact)
   let program ← lift (readOption artifact.programs[artifact.root]?)
   let checked ← Raw.Observation.verify dependencies program
-  guard (interfaceValid artifact program) .request
+  guard (portInterfaceValid artifact program) .request
   return ⟨dependencies,program,checked⟩
 
 /-- Retain both original requested semantics and the reconstructed operator.

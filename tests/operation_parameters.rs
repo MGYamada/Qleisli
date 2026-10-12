@@ -744,8 +744,8 @@ fn explicit_project_arrows_keep_meaning_and_exact_codomain_rejections() {
             assert_eq!(result.unwrap_err().code, ErrorCode::Contract);
         }
     }
-    // Identical width is not exact-tree equality; unused declarations still
-    // retain their general-arrow profile requirement before native checking.
+    // General arrows are now admitted even in unused declarations. Their
+    // result type must still be the exact codomain, not an equal-width tree.
     for (input, output) in [("(Unit,Bit)", "Bit"), ("Unit", "Bit")] {
         let source = format!(
             "{PRELUDE}
@@ -753,11 +753,10 @@ fn explicit_project_arrows_keep_meaning_and_exact_codomain_rejections() {
                 requires Applicable(U){{U(q)}}
             pub observe fn main()->Bit{{measure_z(init0())}}"
         );
-        let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
-        assert_eq!(error.code, ErrorCode::Unsupported);
-        assert!(
-            error.message.contains("general operation arrows"),
-            "{error}"
-        );
+        check_project(&SourceRoot::new(&source).0).unwrap();
+        let wrong_tree =
+            source.replace(&format!("->Q<{output}>"), &format!("->Q<({output},Unit)>"));
+        let error = check_project(&SourceRoot::new(&wrong_tree).0).unwrap_err();
+        assert_eq!(error.code, ErrorCode::TypeMismatch, "{error}");
     }
 }

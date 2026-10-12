@@ -8,7 +8,7 @@ Qleisli is an experimental quantum programming language with linear quantum
 ownership, explicit measurement effects and exact semantic contracts. A Rust
 frontend and independent native Lean verifier support small reference simulations.
 
-Package version: **0.3.0-alpha** (unpublished prerelease).
+Package version: **0.3.0-beta** (unpublished prerelease).
 Package, executable and Rust library name: **`qleisli`**.
 
 ## Edition
@@ -80,8 +80,8 @@ General Soundness, Physical Realizability and quantitative Resource Safety
 remain proof goals. Successful checking is not proof of algorithm correctness
 or hardware behavior.
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md)
-- [Trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/tests/fixtures/quick_reference/README.md)
+- [Trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/TRUSTBOUNDARY.md)
 - [API documentation](https://docs.rs/qleisli) and [source repository](https://github.com/MGYamada/Qleisli)
 
 ## License

@@ -3,8 +3,11 @@
 use super::*;
 
 type Failure = (Span, &'static str);
-pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Failure> {
-    for (ordinal, parameter) in declaration.static_params.iter().enumerate() {
+pub(super) fn check(declaration: &Decl, _interface: &Interface) -> Result<(), Failure> {
+    if let Some(domain) = &declaration.meaning_domain {
+        ty(domain)?;
+    }
+    for parameter in &declaration.static_params {
         match &parameter.kind {
             StaticParamKind::Basis => {
                 return Err((
@@ -24,22 +27,6 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
                 ty(basis)?;
                 if let Some(codomain) = codomain {
                     ty(codomain)?;
-                    // Eligibility follows the common judgment's exact trees,
-                    // not source spans or equal physical width. The existing
-                    // endomorphic adapter implements both equivalent spellings.
-                    let StaticKind::Operation {
-                        basis, codomain, ..
-                    } = &interface.statics[ordinal].kind
-                    else {
-                        unreachable!("checked operation formal category");
-                    };
-                    // The common judgment canonicalizes equal ports to None.
-                    if codomain.as_ref().is_some_and(|output| output != basis) {
-                        return Err((
-                            parameter.name.span,
-                            "general operation arrows require the selected lowering profile",
-                        ));
-                    }
                 }
             }
         }

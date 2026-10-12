@@ -441,7 +441,21 @@ fn bounded(len: usize, limit: usize) -> Result<(), ContractError> {
 
 /// Check all owned inputs before a clone, recursion, or evidence comparison.
 fn preflight(raw: &RawProgram, bits: usize, budget: &mut Budget) -> Result<usize, ContractError> {
-    if raw.declared_effect != Effect::Unitary
+    preflight_ports(raw, bits, false, budget)
+}
+
+fn preflight_ports(
+    raw: &RawProgram,
+    bits: usize,
+    prepare: bool,
+    budget: &mut Budget,
+) -> Result<usize, ContractError> {
+    if raw.declared_effect
+        > if prepare {
+            Effect::Isometry
+        } else {
+            Effect::Unitary
+        }
         || raw.quantum_inputs.len() != 1
         || raw.quantum_outputs.len() != 1
         || !raw.classical_inputs.is_empty()
@@ -545,6 +559,7 @@ fn preflight(raw: &RawProgram, bits: usize, budget: &mut Budget) -> Result<usize
                         targets.len() + ancilla_wires.len() + function.len() + use_ops.len(),
                     )?;
                 }
+                RawOp::Init0 { .. } if prepare => (),
                 RawOp::Init0 { .. }
                 | RawOp::MeasureZ { .. }
                 | RawOp::Reset { .. }
@@ -612,21 +627,64 @@ pub(crate) fn verified_meaning(
     circuit.matrix(budget)
 }
 
+/// Untrusted rectangular matrix proposal from an already structurally checked
+/// body. This grants no equation, isometry receipt or inverse capability: the
+/// original body and this entire proposal must still pass fresh Lean checking.
+pub(crate) fn propose_pure_meaning(
+    program: &crate::AcceptedProgram,
+    domain: &BasisType,
+    codomain: &BasisType,
+    budget: &mut Budget,
+) -> Result<Matrix, ContractError> {
+    let input_bits = domain.bits()?;
+    let output_bits = codomain.bits()?;
+    if input_bits > output_bits {
+        return Err(ContractError::Type(
+            "pure proposal cannot contract its complete input space",
+        ));
+    }
+    preflight_ports(program.raw(), input_bits, true, budget)?;
+    let circuit = extract_ports(program.raw(), domain, codomain, true, budget)?;
+    expanded_steps(&circuit)?;
+    let square = circuit.matrix(budget)?;
+    let rows = 1usize << output_bits;
+    let cols = 1usize << input_bits;
+    budget.charge(rows * cols)?;
+    let entries = (0..rows)
+        .flat_map(|row| (0..cols).map(move |col| (row, col)))
+        .map(|(row, col)| square.get(row, col).expect("bounded circuit"))
+        .collect();
+    Ok(Matrix::new(rows, cols, entries)?)
+}
+
 fn extract(
     raw: &RawProgram,
     signature: &BasisType,
     budget: &mut Budget,
 ) -> Result<Circuit, ContractError> {
-    let bits = signature.bits()?;
+    extract_ports(raw, signature, signature, false, budget)
+}
+
+fn extract_ports(
+    raw: &RawProgram,
+    domain: &BasisType,
+    codomain: &BasisType,
+    prepare: bool,
+    budget: &mut Budget,
+) -> Result<Circuit, ContractError> {
+    let input_bits = domain.bits()?;
+    let bits = codomain.bits()?;
     let mut state = Extraction {
-        registers: BTreeMap::from([(raw.quantum_inputs[0].token, (0..bits).collect())]),
+        registers: BTreeMap::from([(raw.quantum_inputs[0].token, (0..input_bits).collect())]),
         classical: BTreeMap::new(),
         steps: vec![],
+        next_axis: input_bits,
+        prepare,
         budget,
     };
     state.operations(&raw.operations)?;
     let axes = state.take(raw.quantum_outputs[0])?;
-    if !state.registers.is_empty() || axes.len() != bits {
+    if !state.registers.is_empty() || axes.len() != bits || state.next_axis != bits {
         return Err(ContractError::Type(
             "function output does not preserve the complete quantum interface",
         ));
@@ -652,13 +710,15 @@ fn extract(
             },
         })?;
     }
-    Circuit::new(signature.clone(), state.steps)
+    Circuit::new(codomain.clone(), state.steps)
 }
 
 struct Extraction<'a> {
     registers: BTreeMap<TokenId, Vec<usize>>,
     classical: BTreeMap<ClassicalId, bool>,
     steps: Vec<CircuitStep>,
+    next_axis: usize,
+    prepare: bool,
     budget: &'a mut Budget,
 }
 
@@ -691,6 +751,11 @@ impl Extraction<'_> {
         for op in operations {
             self.budget.charge(1)?;
             match op {
+                RawOp::Init0 { output, .. } if self.prepare => {
+                    let axis = self.fresh_axes(1)?.start;
+                    // Fresh axes start in zero in the rectangular input embedding.
+                    self.registers.insert(*output, vec![axis]);
+                }
                 RawOp::PackUnit { output } => {
                     if self.registers.insert(*output, vec![]).is_some() {
                         return Err(invalid("Unit map reuses a live owner"));
@@ -783,18 +848,47 @@ impl Extraction<'_> {
                     output_wires,
                     table,
                 } => {
-                    let axes = self.take(*input)?;
-                    if output_wires.len() != axes.len() {
+                    let mut axes = self.take(*input)?;
+                    if output_wires.len() < axes.len()
+                        || (!self.prepare && output_wires.len() != axes.len())
+                    {
                         return Err(ContractError::Type(
                             "function evidence requires width-preserving lifts",
                         ));
                     }
+                    let mut permutation = table.clone();
+                    if output_wires.len() > axes.len() {
+                        let old_dimension = 1usize << axes.len();
+                        if table.len() != old_dimension {
+                            return Err(invalid("lift table has the wrong input dimension"));
+                        }
+                        axes.extend(self.fresh_axes(output_wires.len() - axes.len())?);
+                        let dimension = 1usize << axes.len();
+                        self.budget.charge(dimension)?;
+                        let mut used = vec![false; dimension];
+                        for &row in table {
+                            let cell = used
+                                .get_mut(usize::from(row))
+                                .ok_or_else(|| invalid("lift row exceeds its output dimension"))?;
+                            if std::mem::replace(cell, true) {
+                                return Err(invalid("lift is not injective"));
+                            }
+                        }
+                        // Complete the unused zero-ancilla columns arbitrarily.
+                        // Only the original input columns enter the final request.
+                        permutation.extend(
+                            used.iter()
+                                .enumerate()
+                                .filter_map(|(row, used)| (!used).then_some(row as u16)),
+                        );
+                    }
+                    let dimension = permutation.len();
                     self.push(CircuitStep {
                         controls: vec![],
                         action: CircuitAction::Monomial {
                             indices: axes.clone(),
-                            permutation: table.clone(),
-                            phases: vec![0; table.len()],
+                            permutation,
+                            phases: vec![0; dimension],
                         },
                     })?;
                     self.registers.insert(*output, axes);
@@ -920,6 +1014,17 @@ impl Extraction<'_> {
             }
         }
         Ok(())
+    }
+
+    fn fresh_axes(&mut self, count: usize) -> Result<std::ops::Range<usize>, ContractError> {
+        let end = self
+            .next_axis
+            .checked_add(count)
+            .ok_or(ContractError::Limit("pure proposal width overflow"))?;
+        bounded(end, MAX_CONTRACT_BITS)?;
+        let axes = self.next_axis..end;
+        self.next_axis = end;
+        Ok(axes)
     }
 
     fn computed(

@@ -381,14 +381,9 @@ generic assumption is not evidence for an arbitrary external provider.
 
 ### General pure operation arrows
 
-General-arrow completion is deferred beyond all of v0.3.0 and outside the
-current goal under the
-[maintainer's scope decision](https://github.com/MGYamada/Qleisli/issues/83).
-The future release target is unassigned.
-The following records the existing bounded support and its limitations;
-ordinary differing-port project integration and rectangular Meaning are not
-v0.3.0 completion requirements. The
-decision does not remove existing syntax or change ordinary function returns.
+[#83](https://github.com/MGYamada/Qleisli/issues/83) is resumed for 0.3.0-beta.
+Both the ordinary project and selected Raw adapters retain separate operation
+and Meaning ports within their finite checking bounds.
 
 `Op<A -> B>` retains separate exact input and output basis trees. `Op<A>`
 abbreviates `Op<A -> A>`; the existing comma slot remains a Meaning refinement,
@@ -408,9 +403,9 @@ make an Observe body pure or make an Isometry body Unitary.
 implementation; an adjoint exchanges the ports. For an opaque formal
 `U: Op<A -> B>`, direct `adjoint(U)(q)` consumes `Q<B>` and returns `Q<A>`,
 just as applying the static adjoint through another operation parameter does.
-The selected lowering retains the original provider and Meaning requests in
-the same inverse-constructor path. This differs from the ordinary named
-runtime-group rule below. `Controllable(U)` additionally
+Both concrete adapters retain the original provider and Meaning requests.
+Direct adjoints of ordinary unary functions also exchange their exact ports;
+the multi-owner runtime-group rule below remains endomorphic. `Controllable(U)` additionally
 requires the exact endomorphism `A = B`. Repetition also requires `A = B`,
 including a zero count. Sequential construction matches the exact middle tree;
 tensor construction retains ordered pairs of both input and output trees.
@@ -440,11 +435,16 @@ bodies before checked hierarchy construction, including descendants under zero
 repetition. The checked collection additionally supports refined Raw direct,
 sequential, tensor, inverse and controlled application with actual instruction-
 interval and transformed-substep checks under the existing finite bounds.
-The finite project adapter admits both `Op<A>` and explicit `Op<A -> A>`
-when the common judgment establishes exact equality of both ports. It still
-refuses lowering arrows with different ports, and
-rectangular Meaning evidence remains unsupported. Unsupported paths reject
-rather than omit a child, codomain or Meaning obligation.
+The finite project adapter also admits different ports, with the existing
+Unit/Bit/product and closed-entry restrictions. Rectangular
+`meaning M: A -> B = reference(f);` retains both exact trees; the shorthand
+`meaning M: A = ...;` retains equal ports. Both concrete Raw routes check the
+original pure body and its exact rectangular matrix with native `pure-leaf`,
+including `V†V = I`. Composition matches the exact intermediate tree; tensor
+retains both ordered pairs. Hidden observation, reset or discard rejects.
+The hierarchy's existing refined finite leaf remains square; a rectangular
+Meaning requires Raw lowering. Unsupported paths cannot omit a codomain,
+child or Meaning obligation.
 The common judgment checks their port and access rules before profile selection.
 Native acceptance of produced IR does not establish source preservation; public
 results retain `source_meaning_verified: false`. Bounded independent exact
@@ -453,7 +453,8 @@ QS or PR theorem.
 
 ### Direct runtime transforms and opaque operations
 
-A direct `adjoint`/`controlled`/`power` target given by an ordinary function name,
+Except for the unary differing-port adjoint rule above, a direct
+`adjoint`/`controlled`/`power` target given by an ordinary function name,
 its explicit static specialization or a transparent `power` wrapper has a
 runtime target type T. With one runtime parameter, T is its complete input type;
 with more, T is the exact ordered tuple
@@ -921,7 +922,7 @@ linked Issues; this chapter does not discharge QS, PR or quantitative RS.
 
 ### Rust API migration from the sized namespace
 
-In 0.3.0-alpha, import `ParsedProgram`, `BasisBinding`, `OperationBinding`,
+In 0.3.0-beta, import `ParsedProgram`, `BasisBinding`, `OperationBinding`,
 `Instantiation`, elaborated source types and proposal types from
 `qleisli::frontend::compile` instead of `qleisli::frontend::sized`. The latter
 module is removed, with no compatibility alias. Existing methods, preparation

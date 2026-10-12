@@ -14,6 +14,7 @@ use std::sync::Arc;
 #[derive(Clone, Debug)]
 pub(super) struct Target {
     signature: BasisType,
+    codomain: BasisType,
     node: Arc<Node>,
     cells: usize,
     depth: usize,
@@ -29,6 +30,7 @@ impl Target {
     pub(super) fn monomial(target: FiniteMeaning) -> Self {
         Self {
             signature: target.signature().clone(),
+            codomain: target.signature().clone(),
             cells: 1 + target.permutation_table().len() + target.phase_table().len(),
             node: Arc::new(Node::Monomial(target)),
             depth: 1,
@@ -36,11 +38,14 @@ impl Target {
     }
     pub(super) fn reference(
         signature: BasisType,
+        codomain: BasisType,
         definition: DefId,
     ) -> Result<Self, ContractError> {
         signature.bits()?;
+        codomain.bits()?;
         Ok(Self {
             signature,
+            codomain,
             node: Arc::new(Node::Reference(definition)),
             cells: 1,
             depth: 1,
@@ -48,6 +53,9 @@ impl Target {
     }
     pub(super) fn signature(&self) -> &BasisType {
         &self.signature
+    }
+    pub(super) fn codomain(&self) -> &BasisType {
+        &self.codomain
     }
     pub(super) fn cells(&self) -> usize {
         self.cells
@@ -75,7 +83,7 @@ impl Target {
         references
     }
     pub(super) fn compose(&self, next: &Self) -> Result<Self, ContractError> {
-        if self.signature != next.signature {
+        if self.codomain != next.signature {
             return Err(ContractError::Type(
                 "Meaning composition requires identical exact basis trees",
             ));
@@ -114,53 +122,70 @@ impl Target {
                 .clone(),
             Node::Compose(left, right) | Node::Tensor(left, right) => {
                 let tensor = matches!(self.node.as_ref(), Node::Tensor(..));
-                let mut steps = Vec::with_capacity(2);
-                for (child, offset) in [
-                    (left, 0),
-                    (right, if tensor { left.signature.bits()? } else { 0 }),
-                ] {
-                    let raw =
-                        child.materialize_inner(kernel, references, identity, budget, bytes)?;
-                    let evidence = FunctionEvidence::check_retained_with_kernel(
-                        kernel,
-                        child.signature.clone(),
-                        raw.clone(),
-                        raw,
-                        identity(),
-                        budget,
-                    )
-                    .map_err(|e| e.error)?;
-                    steps.push(CircuitStep {
-                        controls: vec![],
-                        action: CircuitAction::Contract {
-                            indices: (offset..offset + child.signature.bits()?).collect(),
-                            evidence: Arc::new(evidence),
-                            adjoint: false,
-                        },
-                    });
-                }
-                let bits = self.signature.bits()?;
-                RawProgram {
-                    quantum_inputs: vec![QuantumPort {
-                        token: TokenId(0),
-                        wires: (0..bits as u32).map(WireId).collect(),
-                        shape: BasisShape { bits: bits as u8 },
-                    }],
-                    classical_inputs: vec![],
-                    operations: vec![RawOp::ApplyUnitary {
-                        input: TokenId(0),
-                        output: TokenId(1),
-                        steps,
-                    }],
-                    quantum_outputs: vec![TokenId(1)],
-                    classical_outputs: vec![],
-                    declared_effect: Effect::Unitary,
+                if left.signature != left.codomain || right.signature != right.codomain {
+                    let mut children = Vec::with_capacity(2);
+                    for child in [left, right] {
+                        let raw =
+                            child.materialize_inner(kernel, references, identity, budget, bytes)?;
+                        children.push(super::pure::check(
+                            kernel,
+                            &raw,
+                            &child.signature,
+                            &child.codomain,
+                            None,
+                            budget,
+                        )?);
+                    }
+                    super::pure::combine(&children[0], &children[1], tensor, budget)?
+                } else {
+                    let mut steps = Vec::with_capacity(2);
+                    for (child, offset) in [
+                        (left, 0),
+                        (right, if tensor { left.signature.bits()? } else { 0 }),
+                    ] {
+                        let raw =
+                            child.materialize_inner(kernel, references, identity, budget, bytes)?;
+                        let evidence = FunctionEvidence::check_retained_with_kernel(
+                            kernel,
+                            child.signature.clone(),
+                            raw.clone(),
+                            raw,
+                            identity(),
+                            budget,
+                        )
+                        .map_err(|e| e.error)?;
+                        steps.push(CircuitStep {
+                            controls: vec![],
+                            action: CircuitAction::Contract {
+                                indices: (offset..offset + child.signature.bits()?).collect(),
+                                evidence: Arc::new(evidence),
+                                adjoint: false,
+                            },
+                        });
+                    }
+                    let bits = self.signature.bits()?;
+                    RawProgram {
+                        quantum_inputs: vec![QuantumPort {
+                            token: TokenId(0),
+                            wires: (0..bits as u32).map(WireId).collect(),
+                            shape: BasisShape { bits: bits as u8 },
+                        }],
+                        classical_inputs: vec![],
+                        operations: vec![RawOp::ApplyUnitary {
+                            input: TokenId(0),
+                            output: TokenId(1),
+                            steps,
+                        }],
+                        quantum_outputs: vec![TokenId(1)],
+                        classical_outputs: vec![],
+                        declared_effect: Effect::Unitary,
+                    }
                 }
             }
         };
         let interface = RootInterface {
             input: self.signature.clone(),
-            output: self.signature.clone(),
+            output: self.codomain.clone(),
         };
         let proposal = native::Proposal::from_raw(&raw, Some(&interface), Version::V2, None)
             .map_err(|e| ContractError::InvalidCircuit(e.to_string()))?;
@@ -180,6 +205,12 @@ impl Target {
             self.signature.clone()
         };
         signature.bits()?;
+        let codomain = if tensor {
+            BasisType::pair(self.codomain.clone(), right.codomain.clone())
+        } else {
+            right.codomain.clone()
+        };
+        codomain.bits()?;
         let depth = 1 + self.depth.max(right.depth);
         let cells = self.cells.saturating_add(right.cells).saturating_add(1);
         if depth > 64 || cells > 4096 {
@@ -196,6 +227,7 @@ impl Target {
         }
         Ok(Self {
             signature,
+            codomain,
             node: Arc::new(if tensor {
                 Node::Tensor(self.clone(), right.clone())
             } else {

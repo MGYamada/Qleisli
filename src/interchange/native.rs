@@ -109,6 +109,7 @@ impl Kernel {
                 output_ports,
                 source_instruments: Arc::from([]),
                 source_instrument_calls: Arc::from([]),
+                source_pure_equations: Arc::from([]),
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -313,6 +314,7 @@ pub struct AcceptedProgram {
     // request, change QIRF bytes or authorize decoding another artifact.
     source_instruments: Arc<[Arc<crate::contract::instrument::InstrumentEvidence>]>,
     source_instrument_calls: Arc<[crate::contract::instrument::InstrumentCall]>,
+    source_pure_equations: Arc<[Arc<super::pure_leaf::SourcePureEquation>]>,
 }
 impl AcceptedProgram {
     pub fn artifact(&self) -> &[u8] {
@@ -341,6 +343,18 @@ impl AcceptedProgram {
     }
     pub fn output_ports(&self) -> &[crate::ir::QuantumPort] {
         &self.output_ports
+    }
+    /// Source-associated equations retain original bodies and requests. They
+    /// do not establish a whole-program source or runtime preservation theorem.
+    pub fn source_pure_equations(&self) -> &[Arc<super::pure_leaf::SourcePureEquation>] {
+        &self.source_pure_equations
+    }
+    pub(crate) fn retain_pure_equations(
+        mut self,
+        equations: Vec<Arc<super::pure_leaf::SourcePureEquation>>,
+    ) -> Self {
+        self.source_pure_equations = equations.into();
+        self
     }
     pub(crate) fn kernel(&self) -> Kernel {
         Kernel::new(self.checker())

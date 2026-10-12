@@ -24,6 +24,11 @@ CONTRACT_PROOF = {
         'establishes original-body instrument meaning for the bounded closed unitary fragment, exact '
         'requested matrix/signature/ordered ports, and an actual verification of the output port; '
         'leaf_reference_laws extends both whole-space inverse laws to any finite reference. '
+        'For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, '
+        'separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; '
+        'pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. '
+        'Ordinary and selected Raw adapters check actual emitted intervals against these requests; '
+        'private original-body/source records grant neither an inverse API nor a source-preservation proof. '
         'For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, '
         'exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper '
         'coefficients equal the original reconstructed matrix, including zero-width phase and axis order. '
@@ -69,6 +74,7 @@ PATHS = {
         ('src/contract/mod.rs', ['pub struct Circuit', 'pub struct Encoding', 'pub struct Contract']),
         ('src/contract/meaning.rs', ['pub fn permutation(', 'pub fn phase(', 'pub fn matrix(', 'pub fn target_ir(']),
         ('src/interchange/finite_leaf.rs', ['pub struct UnitaryBoundary']),
+        ('src/interchange/pure_leaf.rs', ['pub struct PureBoundary']),
         ('src/interchange/finite_matrix.rs', ['pub fn encode(', 'pub fn decode(']),
     ], [('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase')]),
     'ordinary-acceptance': path_rule('native-acceptance',
@@ -111,7 +117,17 @@ PATHS = {
         ('tests/exclusive_access.rs', 'finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls'),
         ('tests/exclusive_access.rs', 'finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
-        ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', 'fn check_instrument(', '"--qirf-contract"']),
+        ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', 'fn check_pure_leaf(', 'fn check_instrument(', '"--qirf-contract"']),
+        ('src/interchange/pure_leaf.rs', ['pub struct CheckedPureLeaf', 'pub fn check_pure(',
+         'pub struct SourcePureEquation', 'kernel.check_pure_leaf(payload, boundary, meaning)?']),
+        ('src/frontend/compile/operations/pure.rs', ['fn pure_provider(', 'SourcePureEquation::bind(',
+         'crate::frontend::pure::check(']),
+        ('src/frontend/compile/lower/operations.rs', ['fn apply_operation(', 'self.raw.operations[start..].to_vec()',
+         'crate::frontend::pure::check(']),
+        ('src/frontend/specialize/raw/preservation.rs', ['fn meaning_interval(', 'pure_leaf::check_with_kernel(']),
+        ('lean-kernel/QleisliKernel/Qirf/PureLeaf.lean', ['def check ', 'Raw.BranchFunction.reconstruct',
+         'Exact.Matrix.isometryWork actual', 'theorem check_postcondition']),
+        ('lean/Qleisli/NativePureLeaf.lean', ['theorem pure_leaf_meaning', 'theorem pure_leaf_reference']),
         ('src/contract/instrument.rs', ['struct InstrumentEvidence ', 'struct InstrumentCall ', 'fn check_call(',
          'implementation.artifact()', 'specification.artifact()']),
         ('src/frontend/instrument.rs', ['fn signature<N>', 'ResultAtom::Quantum', 'signature.validate(budget)']),
@@ -151,6 +167,11 @@ PATHS = {
          '#check @Qleisli.NativeContract.check_sound', '#print Qleisli.NativeContract.LeafMeaning']),
     ], [('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'),
         ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes'),
+        ('tests/pure_leaf.rs', 'original_preparation_and_complete_receipt_binding'),
+        ('tests/pure_leaf.rs', 'observation_cannot_be_hidden_behind_pure_effects_or_unreturned_results'),
+        ('tests/pure_leaf.rs', 'fresh_dependency_body_check_rejects_substitution_and_stale_evidence'),
+        ('tests/rectangular_meanings.rs', 'rectangular_composition_preserves_an_entangled_caller'),
+        ('tests/rectangular_meanings.rs', 'ordinary_project_equal_width_distinct_trees_and_inverse'),
         ('scripts/test_native_verification.py', 'test_control_requests'),
         ('scripts/test_native_verification.py', 'test_instrument_requests'),
         ('src/contract/instrument.rs', 'instrument_receipts_bind_original_bytes_and_fresh_call_decisions'),

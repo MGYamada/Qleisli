@@ -1,0 +1,10 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{finish,init0,h};
+isometry fn reference_plus(q: Q<Unit>) -> Q<Bit> { finish(q); h(init0()) }
+meaning Plus: Unit -> Bit = reference(reference_plus);
+isometry fn prepare(q: Q<Unit>) -> Q<Bit> { finish(q); h(init0()) }
+fn invoke[const U: Op<Unit -> Bit, Plus>](q: Q<Unit>) -> Q<Bit>
+requires Applicable(U) { U(q) }
+pub isometry fn main(q: Q<Unit>) -> Q<Bit> {
+    invoke[checked_op(prepare, Plus)](q)
+}

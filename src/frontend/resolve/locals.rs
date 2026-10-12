@@ -588,6 +588,10 @@ where
         if declaration.kind != FnKind::Static {
             tasks.push(Task::Type(&declaration.return_type));
         }
+        if let Some(domain) = &declaration.meaning_domain {
+            (self.charge)(domain.span, 1)?;
+            tasks.push(Task::Type(domain));
+        }
         let kind = if declaration.kind == FnKind::Classical {
             BindingKind::Basis
         } else {

@@ -15,6 +15,7 @@ use std::sync::Arc;
 
 mod circuit;
 pub(super) mod contracts;
+mod meanings;
 mod preservation;
 
 const MAX_OPERATIONS: usize = 10_000;
@@ -25,7 +26,7 @@ const MAX_LIVE_QUBITS: usize = 16;
 
 pub(super) type CheckedMeaning = (
     super::elaborate::OperationKey,
-    CheckedUnitaryLeaf,
+    meanings::Leaf,
     Option<Arc<crate::contract::FunctionEvidence>>,
 );
 
@@ -265,11 +266,23 @@ impl MeaningCollector<'_, '_> {
         self.budget
             .charge(proposal.payload().len())
             .map_err(|e| Error::new("limit", span, e.to_string()))?;
-        let check = (|| -> Result<(CheckedUnitaryLeaf, Option<Arc<crate::contract::FunctionEvidence>>)> {
+        let check = (|| -> Result<(meanings::Leaf, Option<Arc<crate::contract::FunctionEvidence>>)> {
+            if target.signature() != target.codomain() {
+                let required = source.meaning_artifacts.get(&id)
+                    .ok_or_else(|| invalid(span, "original rectangular target has no fresh native artifact"))?;
+                let accepted = self.kernel.accept(proposal.proposal())
+                    .map_err(|e| Error::new(e.code, span, e.to_string()))?;
+                self.budget.charge(accepted.native_exact_work())
+                    .map_err(|e| Error::new("limit", span, e.to_string()))?;
+                proposal.replay_with_work(&accepted, self.budget)?;
+                let leaf = crate::frontend::pure::check(self.kernel, accepted.raw(), target.signature(), target.codomain(), Some(&required.matrix), self.budget)
+                    .map_err(|e| Error::new(if e.is_capacity() {"limit"} else {"contract"}, span, e.to_string()))?;
+                return Ok((meanings::Leaf::Pure(leaf), None));
+            }
             if target.references().is_empty() {
                 let required = target.finite().map_err(|e| invalid(span, &e.to_string()))?;
                 let check = proposal.check_finite_meaning(self.kernel, required, self.budget)?;
-                return Ok((check.leaf, None));
+                return Ok((meanings::Leaf::Unitary(check.leaf), None));
             }
             let required = source.meaning_artifacts.get(&id)
                 .ok_or_else(|| invalid(span, "original reference target has no fresh native artifact"))?;
@@ -291,7 +304,7 @@ impl MeaningCollector<'_, '_> {
             if self.bytes > MAX_CELLS {
                 return Err(Error::new("limit", span, "source Meaning checking exceeds 100000 aggregate provider bytes"));
             }
-            Ok((leaf, Some(receipt)))
+            Ok((meanings::Leaf::Unitary(leaf), Some(receipt)))
         })()
             .map_err(|mut error| {
                 let location = match site.origin() {
@@ -2378,7 +2391,7 @@ mod tests {
                 let check = identity
                     .check_finite_meaning(&checker, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
                     .unwrap();
-                (key.clone(), check.leaf, None)
+                (key.clone(), meanings::Leaf::Unitary(check.leaf), None)
             })
             .collect::<Vec<_>>();
         assert!(!foreign.is_empty());
@@ -2436,7 +2449,7 @@ mod tests {
                 .leaves
                 .iter()
                 .map(|(key, leaf, _)| {
-                    let signature = leaf.boundary().signature().clone();
+                    let signature = leaf.domain().clone();
                     let dim = 1usize << signature.bits().unwrap();
                     let identity =
                         FiniteMeaning::permutation(signature.clone(), (0..dim as u16).collect())
@@ -2466,7 +2479,7 @@ mod tests {
                         &mut Budget::new(DEFAULT_EXACT_WORK),
                     )
                     .unwrap();
-                    (key.clone(), leaf, None)
+                    (key.clone(), meanings::Leaf::Unitary(leaf), None)
                 })
                 .collect::<Vec<_>>();
             assert!(!foreign.is_empty());

@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rectangular-meaning-v030/attempt-01/plain",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "recorded_utc": "2026-10-11T23:37:18.323793+00:00",
+  "cli_sha256_before": "36c2efc58b492ae4ce0c4d319ad24634c77a186f49048483241a6bff0858dc95",
+  "kernel_sha256_before": "5eeb27648022921df77535e2c3f9bb2d737cb04dd474e6a82fdcd88b6eec08cf",
+  "exit_code": 1,
+  "seconds": 0.04590562509838492,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "general operation arrows require the selected lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 205,
+          "end": 206,
+          "line": 4,
+          "column": 17
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "cli_sha256_after": "36c2efc58b492ae4ce0c4d319ad24634c77a186f49048483241a6bff0858dc95",
+  "kernel_sha256_after": "5eeb27648022921df77535e2c3f9bb2d737cb04dd474e6a82fdcd88b6eec08cf"
+}

@@ -171,6 +171,7 @@ struct Compiler<'a> {
     // One immutable, full-project snapshot. It is copied only when evidence is
     // first needed and charged before allocation. Individual receipts share it.
     function_sources: Option<Arc<Vec<(String, String)>>>,
+    pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
     providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
     instances: Vec<(Key, Vec<operations::Operation>)>,
@@ -769,6 +770,7 @@ fn process_loaded_project_details(
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
         function_sources: None,
+        pure_equations: Vec::new(),
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
         instances: vec![],
@@ -881,7 +883,9 @@ fn process_loaded_project_details(
     compiler.charge("main", Span::default(), compiler.instrument_evidence.len())?;
     Ok(ProjectResult {
         entry: main.map(|program| {
-            program.retain_instruments(compiler.instrument_evidence.into_values().collect())
+            program
+                .retain_instruments(compiler.instrument_evidence.into_values().collect())
+                .retain_pure_equations(compiler.pure_equations)
         }),
         effects,
     })
@@ -970,6 +974,7 @@ mod snapshot_tests {
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
             function_sources: None,
+            pure_equations: Vec::new(),
             meanings: BTreeMap::new(),
             providers: BTreeMap::new(),
             instances: vec![],

@@ -239,6 +239,27 @@ impl Kernel {
         Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
             .map(Checked::into_program)
     }
+
+    pub(crate) fn check_pure_leaf(
+        &self,
+        payload: &[u8],
+        boundary: &crate::interchange::pure_leaf::PureBoundary,
+        required: &Matrix,
+    ) -> Result<AcceptedProgram> {
+        let mut encoder = Encoder::new(Version::V2);
+        let request = json::encode(&Value::object([
+            ("format", Value::String("qleisli.native-contract".into())),
+            ("version", Value::Number(1)),
+            ("kind", Value::String("pure-leaf".into())),
+            ("domain", boundary.domain().write(&mut encoder)?),
+            ("codomain", boundary.codomain().write(&mut encoder)?),
+            ("input", boundary.input().write(&mut encoder)?),
+            ("output", boundary.output().write(&mut encoder)?),
+            ("matrix", matrix(required)?),
+        ]))?;
+        Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
+            .map(Checked::into_program)
+    }
 }
 
 // Called only after bounded prefix/basis validation. The JSON uses the exact
