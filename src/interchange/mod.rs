@@ -825,8 +825,8 @@ impl std::fmt::Debug for DecodedGraph {
             .finish_non_exhaustive()
     }
 }
-fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<DecodedGraph> {
-    let value = json::parse(native.artifact())?;
+fn decode_subject(subject: &Arc<native::Subject>, budget: &mut Budget) -> Result<DecodedGraph> {
+    let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
     let order = graph(programs, entries, root, version)?;
@@ -868,8 +868,8 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
                     .expect("topological specification")
                     .clone();
                     Ok(Arc::new(
-                        FunctionEvidence::decode_native(
-                            native,
+                        FunctionEvidence::decode_subject(
+                            subject,
                             signature,
                             implementation,
                             specification,
@@ -881,8 +881,8 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
                 } else {
                     let target = meaning(entry.field("meaning")?, signature.clone())?;
                     Ok(Arc::new(
-                        FunctionEvidence::decode_native(
-                            native,
+                        FunctionEvidence::decode_subject(
+                            subject,
                             signature,
                             implementation,
                             target.target_ir().map_err(contract_error)?,

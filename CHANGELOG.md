@@ -51,6 +51,11 @@ and exactness obligations retain their recorded scopes and status.
   to its original structural/finite results and reject 112 divergent descriptions.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
+  Prepare finite and finite-leaf runtime graphs before native checking and
+  retain their exact root/dependency allocations through private binding.
+  Separate immutable invocation inputs from native decisions; reject binding
+  with another invocation, including equal bytes. Native refusals remain
+  authoritative, and production QDV1 comparison is still pending.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

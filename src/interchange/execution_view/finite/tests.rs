@@ -330,18 +330,14 @@ fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
     let kernel = Kernel::selected().unwrap();
     for row in rows.array().unwrap() {
         let artifact = json::encode(row.field("artifact").unwrap()).unwrap();
-        let native = kernel.inspect(&artifact, None).unwrap();
-        let decoded = crate::interchange::decode_native(
-            &native,
-            &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
-        )
-        .unwrap();
-        let root = &decoded.programs[decoded.root];
         let accepted = kernel.check(&artifact, None).unwrap().into_program();
+        let retained = accepted.execution_view_graph();
+        let decoded = retained.graph;
+        let root = retained.root;
         let accepted_view = accepted.execution_view_description().unwrap();
         let effect = accepted.derived_effect();
         let ports = accepted.output_ports().to_vec();
-        let actual = graph(&decoded, root, decoded.interface.as_ref(), effect, &ports).unwrap();
+        let actual = graph(decoded, root, decoded.interface.as_ref(), effect, &ports).unwrap();
         let expected = super::super::encode(&super::super::tests::vector_value(
             row.field("view").unwrap(),
         ))
@@ -365,7 +361,7 @@ fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
         }
         assert_ne!(
             graph(
-                &decoded,
+                decoded,
                 root,
                 decoded.interface.as_ref(),
                 effect,
@@ -381,7 +377,7 @@ fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
         };
         assert_ne!(
             graph(
-                &decoded,
+                decoded,
                 root,
                 decoded.interface.as_ref(),
                 wrong_effect,

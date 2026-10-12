@@ -16,25 +16,96 @@ use crate::ir::RawProgram;
 /// Native compilation and transport remain explicit deployment assumptions.
 #[derive(Clone, Debug)]
 pub struct NativeChecked {
+    subject: Arc<Subject>,
+    exact_work: usize,
+}
+
+/// Immutable invocation inputs, without an acceptance decision. Construction
+/// stays in this module; staged dependency caches retain this same allocation.
+#[derive(Debug)]
+pub(crate) struct Subject {
     artifact: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
-    exact_work: usize,
     checker: PathBuf,
+}
+
+impl Subject {
+    pub(crate) fn artifact(&self) -> &[u8] {
+        &self.artifact
+    }
+    pub(crate) fn checker(&self) -> &Path {
+        &self.checker
+    }
 }
 
 impl NativeChecked {
     pub fn artifact(&self) -> &[u8] {
-        &self.artifact
+        self.subject.artifact()
     }
     pub fn request(&self) -> Option<&[u8]> {
-        self.request.as_deref()
+        self.subject.request.as_deref()
     }
     pub fn exact_work(&self) -> usize {
         self.exact_work
     }
     /// Canonical path used for this invocation, not a binary attestation.
     pub fn checker(&self) -> &Path {
-        &self.checker
+        self.subject.checker()
+    }
+}
+
+/// Private pre-decision materialization. Neither this container nor any of its
+/// cached dependency objects may escape before a fresh decision for `subject`.
+/// Binding moves these exact allocations into the public accepted handle.
+struct Prepared {
+    subject: Arc<Subject>,
+    decoded: Arc<super::DecodedGraph>,
+    derived_effect: crate::ir::Effect,
+    output_ports: Vec<crate::ir::QuantumPort>,
+}
+
+impl Prepared {
+    fn new(subject: Arc<Subject>) -> Result<Self> {
+        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+        let decoded = Arc::new(super::decode_subject(&subject, &mut budget)?);
+        let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
+        Ok(Self {
+            subject,
+            decoded,
+            derived_effect,
+            output_ports,
+        })
+    }
+
+    fn bind(self, native: NativeChecked) -> Result<Checked> {
+        if !Arc::ptr_eq(&self.subject, &native.subject) {
+            return Err(Error::new(
+                "kernel",
+                "native decision belongs to a different subject",
+            ));
+        }
+        let root_interface = self.decoded.interface.clone();
+        let imported = Imported {
+            program: AcceptedProgram {
+                native: Arc::new(native.clone()),
+                decoded: self.decoded,
+                interface: root_interface.clone(),
+                derived_effect: self.derived_effect,
+                output_ports: self.output_ports,
+                source_instruments: Arc::from([]),
+                source_instrument_calls: Arc::from([]),
+                source_pure_equations: Arc::from([]),
+            },
+            root_interface,
+            request_checked: native.request().is_some(),
+            exact_work: native.exact_work,
+        };
+        Ok(Checked {
+            artifact: Arc::clone(&native.subject.artifact),
+            request: native.subject.request.clone(),
+            imported,
+            native_exact_work: native.exact_work,
+        })
     }
 }
 
@@ -79,50 +150,31 @@ impl Kernel {
     /// unsupported form, exhausted capacity or transport failure blocks use.
     /// A separate request is optional and checked independently by Lean.
     pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked> {
-        let native = self.inspect(artifact, request).map_err(|mut failure| {
-            // Diagnose only an already rejected artifact. The native code and
-            // message remain authoritative, including for request-only failures.
-            if matches!(failure.code, "format" | "invalid_ir")
-                && failure.message == runtime::REJECTION_MESSAGE
-            {
-                if let Err(detail) = super::json::parse(artifact)
-                    .and_then(|value| super::envelope(&value).map(|_| ()))
+        self.check_mode(artifact, request, "--qirf-native")
+            .map_err(|mut failure| {
+                // Diagnose only an already rejected artifact. The native code and
+                // message remain authoritative, including for request-only failures.
+                if matches!(failure.code, "format" | "invalid_ir")
+                    && failure.message == runtime::REJECTION_MESSAGE
                 {
-                    failure.json_pointer = detail.json_pointer;
+                    if let Err(detail) = super::json::parse(artifact)
+                        .and_then(|value| super::envelope(&value).map(|_| ()))
+                    {
+                        failure.json_pointer = detail.json_pointer;
+                    }
                 }
-            }
-            failure
-        })?;
-        Self::decode_checked(native)
+                failure
+            })
     }
 
-    fn decode_checked(native: NativeChecked) -> Result<Checked> {
-        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
-        let decoded = Arc::new(super::decode_native(&native, &mut budget)?);
-        let program = &decoded.programs[decoded.root];
-        let root_interface = decoded.interface.clone();
-        let (derived_effect, output_ports) = view::metadata(program)?;
-        let imported = Imported {
-            program: AcceptedProgram {
-                native: Arc::new(native.clone()),
-                decoded,
-                interface: root_interface.clone(),
-                derived_effect,
-                output_ports,
-                source_instruments: Arc::from([]),
-                source_instrument_calls: Arc::from([]),
-                source_pure_equations: Arc::from([]),
-            },
-            root_interface,
-            request_checked: native.request().is_some(),
-            exact_work: native.exact_work,
-        };
-        Ok(Checked {
-            artifact: native.artifact,
-            request: native.request,
-            imported,
-            native_exact_work: native.exact_work,
-        })
+    fn check_mode(&self, artifact: &[u8], request: Option<&[u8]>, mode: &str) -> Result<Checked> {
+        let subject = self.subject(artifact, request)?;
+        let prepared = Prepared::new(Arc::clone(&subject));
+        // Keep native rejection authoritative even if materialization also
+        // fails. No staged object is exposed on either failure path. #362's
+        // mandatory view comparison will be inserted before this binding.
+        let native = Self::inspect_subject(subject, mode)?;
+        prepared?.bind(native)
     }
 
     /// Verify manually built IR through the same original-QIRF boundary as
@@ -203,6 +255,10 @@ impl Kernel {
         request: Option<&[u8]>,
         mode: &str,
     ) -> Result<NativeChecked> {
+        Self::inspect_subject(self.subject(artifact, request)?, mode)
+    }
+
+    fn subject(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Arc<Subject>> {
         if artifact.is_empty()
             || artifact.len() > 16 << 20
             || request.is_some_and(|r| r.is_empty() || r.len() > 16 << 20)
@@ -211,25 +267,32 @@ impl Kernel {
                 "native input must contain 1..16777216 bytes per file",
             ));
         }
-        let artifact: Arc<[u8]> = Arc::from(artifact);
-        let request: Option<Arc<[u8]>> = request.map(Arc::from);
+        let checker = std::fs::canonicalize(&self.executable)
+            .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
+        Ok(Arc::new(Subject {
+            artifact: Arc::from(artifact),
+            request: request.map(Arc::from),
+            checker,
+        }))
+    }
+
+    fn inspect_subject(subject: Arc<Subject>, mode: &str) -> Result<NativeChecked> {
+        let artifact = &subject.artifact;
+        let request = &subject.request;
         let mut packet =
             Vec::with_capacity(12 + artifact.len() + request.as_ref().map_or(0, |r| r.len()));
         packet.extend_from_slice(b"QLV1");
         packet.extend_from_slice(&(artifact.len() as u32).to_le_bytes());
         packet.extend_from_slice(&(request.as_ref().map_or(0, |r| r.len()) as u32).to_le_bytes());
-        packet.extend_from_slice(&artifact);
-        if let Some(request) = &request {
+        packet.extend_from_slice(artifact);
+        if let Some(request) = request {
             packet.extend_from_slice(request);
         }
-        let executable = std::fs::canonicalize(&self.executable)
-            .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
-        let native_exact_work = runtime::check_mode(&executable, packet, request.is_some(), mode)?;
+        let native_exact_work =
+            runtime::check_mode(subject.checker(), packet, request.is_some(), mode)?;
         Ok(NativeChecked {
-            artifact,
-            request,
+            subject,
             exact_work: native_exact_work,
-            checker: executable,
         })
     }
 }
@@ -445,7 +508,7 @@ impl Kernel {
             None,
         )?;
         // An untrusted call root makes the proposed evidence a reachable graph
-        // dependency. No FunctionEvidence value exists before Lean accepts.
+        // dependency. No staged FunctionEvidence escapes before Lean accepts.
         let root_raw = RawProgram {
             quantum_inputs: vec![QuantumPort {
                 token: TokenId(0),
@@ -563,4 +626,110 @@ fn rejected_contract_detail(raw: &RawProgram) -> Option<(String, String)> {
         "/operations",
         &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
     )
+}
+
+#[cfg(test)]
+mod preparation_tests {
+    use super::*;
+    use crate::interchange::json::{self, Value};
+
+    fn artifact(name: &str) -> Vec<u8> {
+        let rows = json::parse(include_bytes!(
+            "../../tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json"
+        ))
+        .unwrap();
+        let row = rows
+            .array()
+            .unwrap()
+            .iter()
+            .find(|row| row.field("name").unwrap().text().unwrap() == name)
+            .unwrap();
+        json::encode(row.field("artifact").unwrap()).unwrap()
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn binding_retains_predecision_root_and_every_dependency_allocation() {
+        let kernel = Kernel::selected().unwrap();
+        let mut bytes = artifact("non-topological-evidence-indices");
+        let original = bytes.clone();
+        let subject = kernel.subject(&bytes, None).unwrap();
+        let prepared = Prepared::new(Arc::clone(&subject)).unwrap();
+        let graph = Arc::clone(&prepared.decoded);
+        assert_eq!(graph.evidence.len(), 2);
+        let root = Arc::clone(&graph.programs[graph.root]);
+        let dependencies = graph.evidence.clone();
+        // Caller buffers are no longer involved in either decoding or IO.
+        bytes.fill(0);
+        let native = Kernel::inspect_subject(Arc::clone(&subject), "--qirf-native").unwrap();
+        let accepted = prepared.bind(native).unwrap().into_program();
+        assert_eq!(accepted.artifact(), original);
+        assert!(Arc::ptr_eq(&accepted.native.subject, &subject));
+        assert!(Arc::ptr_eq(&accepted.decoded, &graph));
+        assert!(Arc::ptr_eq(&accepted.decoded.programs[graph.root], &root));
+        for (before, after) in dependencies.iter().zip(&accepted.decoded.evidence) {
+            assert!(Arc::ptr_eq(before, after));
+        }
+        assert_eq!(accepted.raw(), root.as_ref());
+        assert!(accepted.native_exact_work() > 0);
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn equal_bytes_from_another_fresh_invocation_cannot_bind_prepared_data() {
+        let kernel = Kernel::selected().unwrap();
+        let bytes = artifact("phase-graph");
+        let subject = kernel.subject(&bytes, None).unwrap();
+        let prepared = Prepared::new(Arc::clone(&subject)).unwrap();
+        let other = kernel.inspect(&bytes, None).unwrap();
+        assert_eq!(subject.artifact(), other.artifact());
+        assert!(!Arc::ptr_eq(&subject, &other.subject));
+        let failure = prepared.bind(other).unwrap_err();
+        assert_eq!(failure.code, "kernel");
+        assert_eq!(
+            failure.message,
+            "native decision belongs to a different subject"
+        );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn materialization_is_not_acceptance_and_native_rejections_stay_authoritative() {
+        let kernel = Kernel::selected().unwrap();
+        let mut value = json::parse(&artifact("hidden-discard-graph")).unwrap();
+        let Value::Object(fields) = &mut value else {
+            panic!("object")
+        };
+        let Value::Array(programs) = fields.get_mut("programs").unwrap() else {
+            panic!("array")
+        };
+        let Value::Object(root) = &mut programs[0] else {
+            panic!("program")
+        };
+        root.insert("declared_effect".into(), Value::String("unitary".into()));
+        let bytes = json::encode(&value).unwrap();
+        let prepared = Prepared::new(kernel.subject(&bytes, None).unwrap()).unwrap();
+        assert_eq!(prepared.derived_effect, crate::ir::Effect::Observe);
+        let inspection = kernel.inspect(&bytes, None).unwrap_err();
+        let execution = kernel.check(&bytes, None).unwrap_err();
+        assert_eq!(execution.code, "invalid_ir");
+        assert_eq!(execution.code, inspection.code);
+        assert_eq!(execution.message, inspection.message);
+
+        // A simultaneous decoder failure must not replace Lean's refusal.
+        assert!(Prepared::new(kernel.subject(b"{", None).unwrap()).is_err());
+        let inspection = kernel.inspect(b"{", None).unwrap_err();
+        let execution = kernel.check(b"{", None).unwrap_err();
+        assert_eq!(execution.code, inspection.code);
+        assert_eq!(execution.message, inspection.message);
+    }
 }

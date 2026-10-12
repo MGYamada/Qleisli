@@ -113,7 +113,7 @@ pub struct FunctionEvidence {
     depth: usize,
     expanded_steps: usize,
     proof_identity: Arc<()>,
-    native: Arc<crate::interchange::native::NativeChecked>,
+    subject: Arc<crate::interchange::native::Subject>,
     snapshot_key: Arc<[u8]>,
 }
 
@@ -226,10 +226,12 @@ impl FunctionEvidence {
             })
     }
 
-    /// Decode a view of an entry in a freshly accepted artifact. This constructor
-    /// is internal; only the native artifact decoder supplies its bound fields.
-    pub(crate) fn decode_native(
-        ticket: &crate::interchange::native::NativeChecked,
+    /// Materialize a private dependency cache from immutable invocation inputs.
+    /// Only the native decoder calls this; the staged graph must remain private
+    /// until a fresh native decision binds its exact subject. This constructor
+    /// performs no equation/isometry acceptance and issues no accepted handle.
+    pub(crate) fn decode_subject(
+        subject: &Arc<crate::interchange::native::Subject>,
         signature: BasisType,
         implementation: RawProgram,
         specification: RawProgram,
@@ -262,7 +264,7 @@ impl FunctionEvidence {
             depth,
             expanded_steps,
             proof_identity: Arc::new(()),
-            native: Arc::new(ticket.clone()),
+            subject: Arc::clone(subject),
             snapshot_key,
         })
     }
@@ -284,7 +286,7 @@ impl FunctionEvidence {
     }
 
     pub fn checker(&self) -> &std::path::Path {
-        self.native.checker()
+        self.subject.checker()
     }
 
     pub fn signature(&self) -> &BasisType {

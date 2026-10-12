@@ -11,6 +11,18 @@ in tests. Native CLI comparison, complete retained execution profiles and the
 protocol cutover remain required. The existing production protocol has not
 changed. The foundation must not be reported as a bound production execution view.
 
+Finite execution and finite-leaf execution now prepare their actual graph before
+the fresh native invocation. The private prepared container owns the complete
+graph, cached dependency objects and derived root metadata. It retains one
+immutable subject containing the original artifact/request bytes and selected
+checker path; this subject carries no acceptance result. Only a fresh native
+decision for that same subject allocation can move the prepared graph into an
+accepted handle. Binding never decodes or reconstructs it again. Even an
+independently accepted invocation with identical bytes cannot bind another
+prepared container. Native refusal remains authoritative if preparation fails
+as well. This lifecycle prepares the comparison boundary; the production native
+protocol still does not compare QDV1 and the correspondence gap remains open.
+
 ## Byte grammar
 
 An encoding starts with the four ASCII bytes `QDV1`, followed by exactly one

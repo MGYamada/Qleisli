@@ -236,7 +236,7 @@ impl Kernel {
             ("output", boundary.output().write(&mut encoder)?),
             ("matrix", matrix(required)?),
         ]))?;
-        Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
+        self.check_mode(payload, Some(&request), "--qirf-contract")
             .map(Checked::into_program)
     }
 
@@ -257,7 +257,7 @@ impl Kernel {
             ("output", boundary.output().write(&mut encoder)?),
             ("matrix", matrix(required)?),
         ]))?;
-        Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
+        self.check_mode(payload, Some(&request), "--qirf-contract")
             .map(Checked::into_program)
     }
 }
