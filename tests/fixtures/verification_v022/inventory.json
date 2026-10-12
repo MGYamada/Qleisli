@@ -6165,7 +6165,7 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "0303e573563b15184282aee3fbe8a8186f1b9d0fa5201d0e05ec4f96f259f8e9",
       "tests/verification_boundary.rs": "05368997cdae46c12ecf4ccf016605229f77cdfd14d692c777fc7159d73f2a11",
-      "tests/hierarchical_host.rs": "13482d17923ad30f79fbd5e3f6eb2eb851e3e53355401c318aa72b23724fd794",
+      "tests/hierarchical_host.rs": "00a721711c40bd7fb6f28cc2b3ff3e1e759dc0a4256fc0ea1f502f191f01dbfe",
       "scripts/test_hierarchical_readout.py": "872aa491218b9cf3aa6f33527a67567a874ba9366f1b25891c8e2e7b953d31a7",
       "scripts/test_sized_qpe_readout.py": "a196c637ad6dc0c6845d587240ee370ed953f46d3aa7adc0337f25fcb4231f3b",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",

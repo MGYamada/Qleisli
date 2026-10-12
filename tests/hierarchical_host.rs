@@ -51,15 +51,21 @@ fn finite_program_at(owner: u32, wire: u32) -> Vec<u8> {
         classical_outputs: vec![],
         declared_effect: Effect::Unitary,
     };
-    interchange::export(
-        &accept(raw).unwrap(),
+    // Transport-only rejection tests need untrusted proposal bytes, not a
+    // native decision while building their input. Positive tests check the
+    // complete embedded leaf through the selected native hierarchy gate.
+    interchange::native::Proposal::from_raw(
+        &raw,
         Some(&RootInterface {
             input: BasisType::Bit,
             output: BasisType::Bit,
         }),
         Version::V2,
+        None,
     )
     .unwrap()
+    .artifact()
+    .to_vec()
 }
 
 fn side(owner: u32, controlled: bool) -> String {
@@ -338,10 +344,6 @@ fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
     assert_eq!(k.check_against(&cycle, &r).unwrap_err().code, "invalid_ir");
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 fn strict_json_rejects_before_starting_an_executable() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -361,10 +363,6 @@ fn strict_json_rejects_before_starting_an_executable() {
     assert_eq!(k.inspect(big.as_bytes()).unwrap_err().code, "limit");
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -378,10 +376,6 @@ fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
     }
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 fn external_schema_ids_cannot_enable_registry_entries() {
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
@@ -675,10 +669,6 @@ fn power_request(count: u32, negative: bool, controlled: bool, pretty: bool) -> 
     request_from_meanings(nodes, entry)
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 fn independent_request_transport_rejects_flags_and_invalid_references() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -930,10 +920,6 @@ fn instrument_request(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
     format!(r#"{{"format":"qleisli.instrument-request","version":1,"profile":"initialize-unitary-readout-v1","preparation":{{"inputs":{input},"fresh":[{{"owner":0,"basis":[{{"tag":"bit"}}],"axes":[7]}}]}},"circuit":{circuit},"readout":{{"inputs":{readout_input},"owners":[0],"result":900}},"outputs":{output}}}"#).into_bytes()
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 fn instrument_codec_rejects_malformed_fields_before_execution() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -1070,10 +1056,6 @@ fn native_instrument_binds_all_stages_and_reconstructs_finite_obligations() {
     }
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
 #[test]
 #[cfg(unix)]
 fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations() {
