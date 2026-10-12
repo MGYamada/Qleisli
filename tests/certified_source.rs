@@ -39,6 +39,10 @@ fn rejects(source: &str, code: ErrorCode) {
     assert_eq!(error.code, code, "{source}\n{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits() {
     for (logical, body, expected) in [("z", "(d,z(a))", true), ("identity", "(d,h(h(a)))", false)] {
@@ -74,6 +78,10 @@ fn phase_oracle_and_auxiliary_hh_retain_physical_and_logical_circuits() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn simultaneous_data_auxiliary_flip_preserves_reference_correlations() {
     let result = run(&format!(
@@ -88,6 +96,10 @@ fn simultaneous_data_auxiliary_flip_preserves_reference_correlations() {
     probability(&result, &[true, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn certified_phase_is_visible_against_a_correlated_reference() {
     let result = run(&format!(
@@ -102,6 +114,10 @@ fn certified_phase_is_visible_against_a_correlated_reference() {
     probability(&result, &[true, false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning() {
     for (logical, body) in [
@@ -121,6 +137,10 @@ fn explicit_contract_rejects_auxiliary_only_flip_and_wrong_logical_meaning() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn predicate_and_returned_axis_order_participate_in_the_equation() {
     let result = run(&format!(
@@ -163,6 +183,10 @@ fn source_body_cannot_capture_or_lose_ownership() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn outer_classical_values_are_unavailable_but_closed_classical_branches_are_static() {
     rejects(
@@ -206,6 +230,10 @@ fn predicate_and_logical_names_obey_outer_shadowing() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn temporary_binders_do_not_consume_shadowed_outer_owners() {
     let result = run(&format!(
@@ -250,6 +278,10 @@ fn exact_basis_shape_and_declared_unitary_effect_are_required() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     let source = format!(
@@ -279,6 +311,10 @@ fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn certified_functions_support_adjoint_and_coherent_control() {
     let result = run(&format!(
@@ -296,6 +332,10 @@ fn certified_functions_support_adjoint_and_coherent_control() {
     probability(&result, &[false, true], (1.0 - 1.0 / 2.0_f64.sqrt()) / 2.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn one_logical_client_accepts_two_phase_oracle_implementations() {
     let root = SourceRoot::new(&format!(
@@ -320,6 +360,10 @@ fn one_logical_client_accepts_two_phase_oracle_implementations() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn certified_source_checks_step_width_and_recursion_limits() {
     rejects(

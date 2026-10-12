@@ -57,6 +57,10 @@ fn aggregate_includes_many_files_and_bundled_sources() {
     assert_eq!((location.span.start, location.span.end), (0, 0));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn old_host_api_and_explicit_legacy_policy_keep_large_sources() {
     let source = format!(

@@ -11,6 +11,10 @@ fn parsed(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
     let source = "static fn twice[const n:Nat]()->Nat{n+n}
@@ -51,6 +55,10 @@ fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() {
     let source = "use std::quantum::phase;
@@ -113,6 +121,10 @@ fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn checked_helpers_have_no_runtime_instruction_or_entry_authority() {
     let source = "static fn number()->Nat{1+2} pub observe fn main()->Bit{static let n=number();0}";
@@ -132,6 +144,10 @@ fn checked_helpers_have_no_runtime_instruction_or_entry_authority() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
     let modules = BTreeMap::from([
@@ -165,6 +181,10 @@ fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn helper_premises_are_required_at_the_original_call() {
     let positive = "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1}

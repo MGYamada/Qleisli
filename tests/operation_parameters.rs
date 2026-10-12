@@ -20,6 +20,10 @@ meaning ZMeaning: Bit = phase_by(z_phase);
 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 ";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shipped_contract_examples_execute_after_reserved_module_migration() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("examples");
@@ -38,6 +42,10 @@ fn check(source: &str) {
     check_project(&root.0).unwrap_or_else(|e| panic!("{source}\n{e}"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     use qleisli::frontend::documentation::render_markdown;
@@ -115,6 +123,10 @@ fn deterministic(source: &str, bits: &[bool]) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receipts() {
     let root = SourceRoot::new(&format!(
@@ -173,6 +185,10 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn all_constructors_match_independent_full_operator_specifications() {
     for (description, expected) in [
@@ -210,6 +226,10 @@ fn all_constructors_match_independent_full_operator_specifications() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
     // V=T; W=H followed by T. Both order and non-Hermitian inverse matter.
@@ -223,6 +243,10 @@ fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
         unitary fn compare(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{apply_contract(actual,expected,q)}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
     deterministic(
@@ -239,6 +263,10 @@ fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_phase_and_zero_width_ownership_survive_control() {
     deterministic(
@@ -288,6 +316,10 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() {
     // Reversing a constructed controlled circuit uses its retained exact body.
@@ -333,6 +365,10 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
     rejects(
@@ -365,6 +401,10 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn generic_cleanup_obligations_are_discharged_for_each_actual_instance() {
     let generic = "classical fn pred(b:Bit)->Bit{b}
@@ -379,6 +419,10 @@ fn generic_cleanup_obligations_are_discharged_for_each_actual_instance() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn pending_call_frames_declared_effects_and_local_shadowing_are_preserved() {
     deterministic("unitary fn pair[const U:Op<Bit>](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){(a,U(b))}
@@ -439,6 +483,10 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics() {
     rejects("unitary fn dual[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qif(c,q){0=>U,1=>U}}
@@ -532,6 +580,10 @@ fn retired_operation_spellings_reject_at_both_source_entry_points() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn direct_literal_power_keeps_named_function_access_distinct_from_static_providers() {
     for body in ["power(z,0)(q)", "power(z,2)(q)", "power(z,0)(h(q))"] {
@@ -619,6 +671,10 @@ fn composition_study(name: &str, attempt: &str) -> String {
     .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn composed_meanings_check_actual_providers_in_both_public_paths() {
     use qleisli::contract::exact::Budget;
@@ -690,6 +746,10 @@ fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_endomorphisms_match_abbreviations_in_the_project_adapter() {
     let first =
@@ -727,6 +787,10 @@ fn explicit_endomorphisms_match_abbreviations_in_the_project_adapter() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_project_arrows_keep_meaning_and_exact_codomain_rejections() {
     for honest in [true, false] {

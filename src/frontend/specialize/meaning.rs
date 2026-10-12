@@ -159,6 +159,10 @@ mod tests {
         assert_eq!(actual.phase_table(), &[0, 0]);
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn retained_target_does_not_authorize_an_unused_lying_provider() {
         let program = ParsedProgram::parse(BTreeMap::from([(

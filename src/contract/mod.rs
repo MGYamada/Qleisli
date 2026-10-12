@@ -924,6 +924,10 @@ pub(crate) fn invert_steps(steps: &mut [CircuitStep]) {
 mod tests {
     use super::*;
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn counterexample_diagnostic_preserves_the_shared_work_budget() {
         let use_steps = [CircuitStep {

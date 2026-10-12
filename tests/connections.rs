@@ -29,6 +29,10 @@ fn call(args: &[&str], input: &[u8]) -> Output {
     child.wait_with_output().unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn terminal_import_execution_export_and_seeded_fresh_shots() {
     let source = include_bytes!("fixtures/interop/bell.qasm");
@@ -64,6 +68,10 @@ fn malformed_or_unsupported_input_has_no_partial_result() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn malformed_options_are_usage_errors_before_reading_input() {
     for args in [
@@ -79,6 +87,10 @@ fn malformed_options_are_usage_errors_before_reading_input() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn file_inputs_and_early_usage_rejection_do_not_require_stdin_reads() {
     let root = SourceRoot::new("");
@@ -96,6 +108,10 @@ fn file_inputs_and_early_usage_rejection_do_not_require_stdin_reads() {
     assert_eq!(rejected.status.code(), Some(2), "{rejected:?}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity() {
     let source = "// λ🦀\r\nOPENQASM 3.0; include \"stdgates.inc\"; qubit q; bit c; reset q; mystery q; c = measure q;";
@@ -125,6 +141,10 @@ fn qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     use qleisli::ir::{Effect, RawProgram};

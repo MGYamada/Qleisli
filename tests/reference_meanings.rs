@@ -94,6 +94,10 @@ fn matrix(source: &str) -> Matrix {
     ordinary
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reference_operation_bindings_retain_requests_in_raw_and_hierarchy() {
     let source = format!(
@@ -146,6 +150,10 @@ fn reference_operation_bindings_retain_requests_in_raw_and_hierarchy() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reference_identity_is_retained_even_when_the_operator_is_monomial() {
     let source = format!(
@@ -173,6 +181,10 @@ fn reference_identity_is_retained_even_when_the_operator_is_monomial() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_reference_checks_exact_hadamard_and_rejects_probability_equivalence() {
     let prefix = format!(
@@ -203,6 +215,10 @@ fn ordinary_reference_checks_exact_hadamard_and_rejects_probability_equivalence(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn mixed_composition_and_tensor_keep_order_and_low_axes() {
     let prefix = format!(
@@ -328,6 +344,10 @@ fn indirect_function_meaning_cycles_reject_before_concrete_emission() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reference_arguments_and_visibility_are_exact() {
     for body in ["reference(f[1])", "reference(power(f,1))", "reference(f,f)"] {
@@ -382,6 +402,10 @@ fn reference_arguments_and_visibility_are_exact() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reference_does_not_erase_unused_generic_or_zero_repeat_lying_contracts() {
     let prefix = format!(
@@ -417,6 +441,10 @@ fn reference_does_not_erase_unused_generic_or_zero_repeat_lying_contracts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reference_receipts_survive_existing_inverse_and_control_access() {
     let prefix = format!(
@@ -435,6 +463,10 @@ fn reference_receipts_survive_existing_inverse_and_control_access() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
     let source = "use std::quantum::{unit,finish,phase_eighth};
@@ -467,6 +499,10 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fixed_fourier_reference_meanings_match_independent_exact_coefficients() {
     // Fixed 2/3-qubit specifications only; no generic QFT implementation.

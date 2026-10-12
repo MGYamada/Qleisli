@@ -128,14 +128,18 @@ fn family(count: u32, logical_count: u32, negative: bool, controlled: bool) -> V
 }
 
 fn native() -> Kernel {
-    let path = std::env::var_os("QLEISLI_HIERARCHY_KERNEL")
+    let path = std::env::var_os("QLEISLI_KERNEL")
+        .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
         .expect("set QLEISLI_HIERARCHY_KERNEL to the built audited executable");
     assert!(std::path::Path::new(&path).is_file());
     Kernel::new(path)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening() {
     use qleisli::interchange::hierarchical::execution::ExecutionLimits;
     let kernel = native();
@@ -285,8 +289,11 @@ fn native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "VM-22 optional comparison requires the separately built Lean runtime"]
 fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
     let k = native();
     let frozen = |name: &str, bytes: Vec<u8>| {
@@ -331,6 +338,10 @@ fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
     assert_eq!(k.check_against(&cycle, &r).unwrap_err().code, "invalid_ir");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn strict_json_rejects_before_starting_an_executable() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -350,6 +361,10 @@ fn strict_json_rejects_before_starting_an_executable() {
     assert_eq!(k.inspect(big.as_bytes()).unwrap_err().code, "limit");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -363,6 +378,10 @@ fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn external_schema_ids_cannot_enable_registry_entries() {
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
@@ -380,8 +399,11 @@ fn external_schema_ids_cannot_enable_registry_entries() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_shared_powers_reconstruct_one_bound_leaf_without_expansion() {
     let k = native();
     let payload = family(3, 3, false, false);
@@ -411,8 +433,11 @@ fn native_shared_powers_reconstruct_one_bound_leaf_without_expansion() {
     println!("shared power costs: {costs:?}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_phase_fault_remains_an_obligation_under_zero_repeat() {
     let k = native();
     for count in [0, 3, 4096] {
@@ -422,8 +447,11 @@ fn native_phase_fault_remains_an_obligation_under_zero_repeat() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_actual_counts_premises_and_encodings_are_checked() {
     let k = native();
     assert_eq!(
@@ -443,8 +471,11 @@ fn native_actual_counts_premises_and_encodings_are_checked() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_leaf_type_and_owner_are_bound_to_the_embedded_program() {
     let k = native();
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
@@ -493,8 +524,11 @@ fn combined_side(left: u32, right: u32) -> String {
     )
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_disjoint_tensor_reconstructs_both_leaves_in_one_budget() {
     let k = native();
     for negative in [false, true] {
@@ -541,8 +575,11 @@ fn native_disjoint_tensor_reconstructs_both_leaves_in_one_budget() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_phase_and_structural_inverse_need_no_dense_matrix_leaf() {
     let k = native();
     let a = side(0, false);
@@ -638,6 +675,10 @@ fn power_request(count: u32, negative: bool, controlled: bool, pretty: bool) -> 
     request_from_meanings(nodes, entry)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independent_request_transport_rejects_flags_and_invalid_references() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -665,8 +706,11 @@ fn independent_request_transport_rejects_flags_and_invalid_references() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
     let k = native();
     let mut costs = vec![];
@@ -727,8 +771,11 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
     println!("independent request shared-power costs: {costs:?}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_request_detects_coordinated_body_changes_and_wrong_headers() {
     let k = native();
     let a = family(3, 3, false, true);
@@ -771,8 +818,11 @@ fn native_request_detects_coordinated_body_changes_and_wrong_headers() {
     assert_eq!(k.check_against(&phase, &req).unwrap_err().code, "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_request_permits_different_sharing_in_both_directions() {
     let k = native();
     let s = side(0, false);
@@ -880,6 +930,10 @@ fn instrument_request(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
     format!(r#"{{"format":"qleisli.instrument-request","version":1,"profile":"initialize-unitary-readout-v1","preparation":{{"inputs":{input},"fresh":[{{"owner":0,"basis":[{{"tag":"bit"}}],"axes":[7]}}]}},"circuit":{circuit},"readout":{{"inputs":{readout_input},"owners":[0],"result":900}},"outputs":{output}}}"#).into_bytes()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn instrument_codec_rejects_malformed_fields_before_execution() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
@@ -935,8 +989,11 @@ fn instrument_codec_rejects_malformed_fields_before_execution() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires separately built and audited native Lean runtime"]
 fn native_instrument_binds_all_stages_and_reconstructs_finite_obligations() {
     let k = native();
     let mut costs = Vec::new();
@@ -1013,6 +1070,10 @@ fn native_instrument_binds_all_stages_and_reconstructs_finite_obligations() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 #[cfg(unix)]
 fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations() {

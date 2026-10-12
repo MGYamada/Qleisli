@@ -229,6 +229,10 @@ unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
 }
 ";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries() {
     // U|a,b> = sum_r (-1)^(a*r) zeta^r |b xor 1 xor r,r>/sqrt(2).
@@ -276,6 +280,10 @@ unitary fn nested(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {{
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_repetition_preserves_the_phase_of_a_noncommuting_operator() {
     // V = T X, so V|b> = zeta^(1-b)|1-b> and V^2 = zeta I.
@@ -296,6 +304,10 @@ fn finite_repetition_preserves_the_phase_of_a_noncommuting_operator() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_qif_preserves_zero_one_controls_and_branch_phases() {
     let definitions = "
@@ -332,6 +344,10 @@ unitary fn nested(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control() {
     let definitions = "
@@ -362,6 +378,10 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     let imports = "use std::quantum::{s,sdg,tdg,id,phase_eighth};";
@@ -419,6 +439,10 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
     let imports = "use std::quantum::{id,phase_eighth};";
@@ -469,6 +493,10 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
     use qleisli::frontend::compile::{ErrorCode, check_project};
@@ -562,6 +590,10 @@ fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
         % 8
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
     let c3x = include_str!(
@@ -614,6 +646,10 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn closed_classical_computation_selects_static_branches_and_preserves_output_axes() {
     let definitions = "
@@ -710,6 +746,10 @@ unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
     });
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control() {
     let definitions = "

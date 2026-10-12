@@ -29,6 +29,10 @@ fn tuple_diagnostics_do_not_blame_returned_or_destructured_bindings() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn tuple_binding_messages_have_no_host_path() {
     let root = SourceRoot::new(&format!(
@@ -55,6 +59,10 @@ fn tuple_binding_messages_have_no_host_path() {
     assert!(text.contains("\"path\":\"main.qli\""));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn malformed_optional_manifest_tables_warn_without_rejecting_source() {
     let root = SourceRoot::new("observe fn main()->Unit{()}");

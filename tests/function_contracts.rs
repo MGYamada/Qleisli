@@ -29,6 +29,10 @@ fn probability(actual: &BTreeMap<Vec<bool>, f64>, outcome: &[bool], expected: f6
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_contracts_compare_complete_instruments_on_the_emitted_call() {
     for implementation in ["measure_z(h(h(q)))", "measure_z(t(q))"] {
@@ -57,6 +61,10 @@ fn observing_contracts_compare_complete_instruments_on_the_emitted_call() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_contracts_reject_public_relabeling_and_wrong_residual_channels() {
     rejects(
@@ -83,6 +91,10 @@ fn observing_contracts_reject_public_relabeling_and_wrong_residual_channels() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_contracts_keep_zero_owners_nested_results_and_external_references() {
     let result = run(&format!("{IMPORTS}
@@ -98,6 +110,10 @@ fn observing_contracts_keep_zero_owners_nested_results_and_external_references()
     assert_eq!(result.len(), 2);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_contracts_preserve_unused_false_obligations_and_principal_effects() {
     rejects(
@@ -124,6 +140,10 @@ fn observing_contracts_preserve_unused_false_obligations_and_principal_effects()
         fn unused[const o: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(implementation,reference,q) }}"), ErrorCode::Contract);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_contracts_check_nested_calls_branches_and_hidden_discard_histories() {
     let result = run(&format!(
@@ -143,6 +163,10 @@ fn observing_contracts_check_nested_calls_branches_and_hidden_discard_histories(
     probability(&result, &[true, true], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn observing_reference_source_replacement_requires_a_fresh_equation() {
     let root = SourceRoot::new(&format!(
@@ -214,6 +238,10 @@ fn rejects(source: &str, expected: ErrorCode) {
     assert_eq!(error.code, expected, "{source}\n{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unchanged_client_requires_one_specification_across_private_layouts() {
     let root = SourceRoot::new(&format!(
@@ -258,6 +286,10 @@ fn unchanged_client_requires_one_specification_across_private_layouts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_function_evidence_survives_external_inverse_and_control() {
     let root = SourceRoot::new(&format!(
@@ -287,6 +319,10 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
     probability(&result, &[false, true], (1.0 + 1.0 / 2.0_f64.sqrt()) / 2.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn incorrect_implementations_cannot_change_the_clients_meaning() {
     for body in ["q", "x(q)", "t(q)", "with_computed(q,zero) { |a| z(a) }"] {
@@ -303,6 +339,10 @@ fn incorrect_implementations_cannot_change_the_clients_meaning() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_calls_reuse_one_immutable_evidence_object() {
     let root = SourceRoot::new(&format!(
@@ -328,6 +368,10 @@ fn repeated_calls_reuse_one_immutable_evidence_object() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_contract_calls_do_not_recompare_frozen_source_snapshots() {
     let statements = "let q=apply_contract(specified_phase,specified_phase,q);".repeat(60);
@@ -349,6 +393,10 @@ fn repeated_contract_calls_do_not_recompare_frozen_source_snapshots() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unrelated_source_comments_do_not_multiply_contract_reuse_work() {
     let root = SourceRoot::new(&format!(
@@ -390,6 +438,10 @@ unitary fn inner(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation,identity,q
 unitary fn outer(q: Q<Bit>) -> Q<Bit> { apply_contract(inner,identity,q) }
 ";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_nested_contracts_share_one_execution_budget() {
     let root = SourceRoot::new(&format!(
@@ -420,6 +472,10 @@ fn repeated_nested_contracts_share_one_execution_budget() {
     probability(&run_closed(&program, enough).unwrap(), &[false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn classical_branches_and_ensemble_components_share_execution_budget() {
     let root = SourceRoot::new(&format!(
@@ -451,6 +507,10 @@ fn classical_branches_and_ensemble_components_share_execution_budget() {
     probability(&result, &[true, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
     let root = SourceRoot::new(&format!(
@@ -493,6 +553,10 @@ fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
     probability(&result, &[false, true], (1.0 - 1.0 / 2.0_f64.sqrt()) / 2.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn retained_contract_preserves_phase_with_an_entangled_reference() {
     let result = run(&format!(
@@ -508,6 +572,10 @@ fn retained_contract_preserves_phase_with_an_entangled_reference() {
     probability(&result, &[true, false], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordered_function_outputs_are_part_of_the_contract() {
     let definitions = format!(
@@ -538,6 +606,10 @@ fn ordered_function_outputs_are_part_of_the_contract() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn dependency_source_changes_invalidate_the_previous_compilation() {
     let root = SourceRoot::new(&format!(
@@ -618,6 +690,10 @@ fn names_remain_shadowed_after_input_evaluation_and_dependencies_are_acyclic() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn input_ownership_is_consumed_once_and_quantum_frames_remain_owned() {
     rejects(
@@ -639,6 +715,10 @@ fn input_ownership_is_consumed_once_and_quantum_frames_remain_owned() {
     probability(&result, &[true, true], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_width_contract_phase_survives_coherent_control() {
     let result = run(&format!(

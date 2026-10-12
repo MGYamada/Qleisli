@@ -82,6 +82,10 @@ fn check(raw: &RawProgram, boundary: &PureBoundary, meaning: &Matrix) -> bool {
     .is_ok()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn original_preparation_and_complete_receipt_binding() {
     for version in [Version::V1, Version::V2] {
@@ -141,6 +145,10 @@ fn phase_and_nonisometric_requests_are_not_preparation_evidence() {
     assert!(!check(&replaced, &boundary(), &plus()));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn distinct_equal_width_type_trees_and_zero_width_owners() {
     let domain = BasisType::pair(BasisType::Unit, BasisType::Bit);
@@ -177,6 +185,10 @@ fn distinct_equal_width_type_trees_and_zero_width_owners() {
     assert!(!check(&raw, &boundary, &identity));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn preparation_tensor_preserves_axes_and_every_input_column() {
     let domain = BasisType::Bit;
@@ -303,6 +315,10 @@ fn mismatched_ports_dimensions_and_exhausted_budgets_fail_closed() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn every_native_request_is_decoded_strictly_again() {
     let b = boundary();
@@ -345,6 +361,10 @@ fn every_native_request_is_decoded_strictly_again() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fresh_dependency_body_check_rejects_substitution_and_stale_evidence() {
     use qleisli::contract::{FunctionEvidence, FunctionIdentity};

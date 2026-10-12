@@ -20,6 +20,10 @@ fn source(name: &str) -> String {
     .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn patterned_basis_contracts_and_nary_clients_execute() {
     for (name, bits) in [
@@ -39,6 +43,10 @@ fn patterned_basis_contracts_and_nary_clients_execute() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_parameter_patterns_execute_with_canonical_ordinary_types() {
     // Preserve the old source as a removed-type counterexample, rather than
@@ -61,6 +69,10 @@ fn ordinary_parameter_patterns_execute_with_canonical_ordinary_types() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
     for (name, code) in [

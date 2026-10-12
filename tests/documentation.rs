@@ -169,6 +169,10 @@ fn deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax() {
     assert!(error.message.contains("unexpected character"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn documentation_neither_changes_ir_nor_authorizes_invalid_ownership() {
     let plain = SourceRoot::new(

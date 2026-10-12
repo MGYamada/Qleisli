@@ -66,6 +66,10 @@ fn checked_raw(source: &str, entry: &str) -> qleisli::interchange::native::Accep
     accepted
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
     use qleisli::ir::{RawOp, SingleGate};
@@ -117,6 +121,10 @@ fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
     for (body, rejected, occurrence) in [
@@ -165,6 +173,10 @@ fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -239,6 +251,10 @@ fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -294,6 +310,10 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
     assert_eq!(error.module(), Some("helper"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_control_requires_checker_and_one_bounded_budget() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -335,6 +355,10 @@ fn selected_control_requires_checker_and_one_bounded_budget() {
     assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_providers() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -391,6 +415,10 @@ fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_provi
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn updated_owners_survive_nested_blocks_calls_and_measurement() {
     for (body, expected) in [
@@ -432,6 +460,10 @@ fn updated_owners_survive_nested_blocks_calls_and_measurement() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn global_calls_preserve_exact_coefficient_and_external_reference() {
     let source = format!(
@@ -471,6 +503,10 @@ fn global_calls_preserve_exact_coefficient_and_external_reference() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_nested_runtime_branch_retains_updated_owner() {
     let source = format!(
@@ -516,6 +552,10 @@ fn overlap_spent_owner_wrong_interface_and_nonunitary_calls_refuse() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn both_source_paths_preserve_ctrl_phase_kickback_and_an_entangled_reference() {
     for (body, expected) in [
@@ -572,6 +612,10 @@ fn both_source_paths_preserve_ctrl_phase_kickback_and_an_entangled_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls() {
     for call in ["h(ctrl c)", "x(ctrl c)", "cnot(excl c,ctrl t)"] {
@@ -613,6 +657,10 @@ fn finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase() {
     let source=format!("{IMPORTS}
@@ -663,6 +711,10 @@ fn access_markers_remain_ordinary_contextual_names() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_width_owner_keeps_phase_and_cannot_be_duplicated() {
     let source = "use std::quantum::phase_eighth;
@@ -749,6 +801,10 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reassembled_owner_and_callee_binders_do_not_restore_old_snapshot() {
     let source = format!(
@@ -951,6 +1007,10 @@ fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
     let text = "use std::quantum::h;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[0]);q}";
@@ -997,6 +1057,10 @@ fn symbolic_place_overlap_requires_original_binder_guards() {
     assert_eq!(error.code(), "name", "{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1049,6 +1113,10 @@ fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn joint_places_reassemble_updated_values_in_original_axis_order() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1104,6 +1172,10 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1152,6 +1224,10 @@ fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_place_control_rechecks_bound_provider_and_shared_work() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -1195,6 +1271,10 @@ fn selected_place_control_rechecks_bound_provider_and_shared_work() {
     assert_eq!(&bad[error.span().start..error.span().end], "U(ctrl q[1])");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1224,6 +1304,10 @@ fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_places_mix_distinct_whole_parents_and_selected_owners() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1254,6 +1338,10 @@ fn selected_places_mix_distinct_whole_parents_and_selected_owners() {
     proposal.validate_source_steps(&accepted).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1288,6 +1376,10 @@ fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_place_replay_rejects_native_valid_paired_partition_faults() {
     use qleisli::ir::RawOp;
@@ -1335,6 +1427,10 @@ fn selected_place_replay_rejects_native_valid_paired_partition_faults() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_place_inverse_keeps_original_phase_axis() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1362,6 +1458,10 @@ fn selected_place_inverse_keeps_original_phase_axis() {
     proposal.validate_source_steps(&accepted).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1428,6 +1528,10 @@ fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
         .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn closed_static_branches_and_empty_fold_thread_updated_carry() {
     let source = "use std::quantum::x;
@@ -1476,6 +1580,10 @@ fn closed_static_branches_and_empty_fold_thread_updated_carry() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1516,6 +1624,10 @@ fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -1604,6 +1716,10 @@ fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order() {
     use qleisli::ir::RawOp;
@@ -1664,6 +1780,10 @@ fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order
     assert_eq!(&bad[error.span().start..error.span().end], "h(ctrl b)");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_generic_register_access_retains_original_static_bounds() {
     let text = "use std::registers::{take_bit,put_bit};use std::quantum::x;
@@ -1707,6 +1827,10 @@ fn selected_generic_register_access_retains_original_static_bounds() {
     assert_eq!(original.source("main"), Some(text));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_register_access_keeps_zero_width_phase_and_inverse_axis() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};

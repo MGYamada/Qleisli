@@ -232,6 +232,10 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
     let mut random = Random(SEED);

@@ -61,6 +61,10 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn retained_first_sources_reach_native_checking_and_complex_execution() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -90,6 +94,10 @@ fn retained_first_sources_reach_native_checking_and_complex_execution() {
     assert_eq!(finite.code, ErrorCode::InvalidEntry);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
     let source = "use std::quantum::{finish,split,phase};
@@ -125,6 +133,10 @@ fn entry_provider_bindings_check_both_ports_and_actual_effect() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_endomorphism_keeps_abbreviation_effect_and_provider_rules() {
     for kind in ["Op<Bit>", "Op<Bit -> Bit>"] {
@@ -188,6 +200,10 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -221,6 +237,10 @@ fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
     let source = "use std::quantum::{finish,split,phase};
@@ -232,6 +252,10 @@ fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [0.0, 1.0]]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
     let prefix = "use std::quantum::{h,phase};
@@ -267,6 +291,10 @@ fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [omega, omega]]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
     let source = |depth: usize| {
@@ -301,6 +329,10 @@ fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     let source = "fn id(q:Q<Bit>)->Q<Bit>{q}
@@ -351,6 +383,10 @@ fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     raw.validate_source_steps(&accepted).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
     let source = "use std::quantum::{x,phase,split,join};
@@ -423,6 +459,10 @@ fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused(
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn constructors_preserve_the_existing_nested_repetition_product_bound() {
     for source in [
@@ -470,6 +510,10 @@ fn constructors_preserve_the_existing_nested_repetition_product_bound() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -555,6 +599,10 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order() {
     use qleisli::contract::{
@@ -661,6 +709,10 @@ fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
     use qleisli::contract::{
@@ -758,6 +810,10 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference() {
     let source =
@@ -864,6 +920,10 @@ fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn direct_formal_adjoint_preserves_original_nested_meaning_obligations() {
     use qleisli::contract::exact::Budget;

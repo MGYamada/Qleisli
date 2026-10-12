@@ -7,6 +7,10 @@ use qleisli::frontend::core::PRIMITIVES;
 use qleisli::frontend::parser::{parse_documented_module, parse_module};
 use qleisli::sim::{SimulationLimits, run_closed};
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn th_repetition_matches_an_independent_numerical_recurrence_and_inline_source() {
     th_repetition(&[0, 1, 16, 400, 512, 1000, 1024], 16);
@@ -60,6 +64,10 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution() {
     let source = "// 日本語\n/// Shared import docs.\nuse std::{quantum::{init0,h,},observe::measure_z};\nobserve fn main()->Bit{measure_z(h(init0()))}";
@@ -246,6 +254,10 @@ fn grouped_import_markdown_renders_each_source_item_once() {
     assert!(rendered.len() < source.len() + 512);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn every_sealed_declaration_matches_the_existing_source_signature() {
     let root = SourceRoot::new("");
@@ -287,6 +299,10 @@ fn every_sealed_declaration_matches_the_existing_source_signature() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     let root = SourceRoot::new(
@@ -304,6 +320,10 @@ fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     assert_eq!(error.code, "invalid_ir");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn toffoli_flat_pattern_remains_a_located_compatibility_error_with_a_nested_repair() {
     let source = include_str!(

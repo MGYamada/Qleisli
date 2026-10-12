@@ -42,6 +42,17 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
+Cargo builds and documents without a native checker. Ordinary Rust tests that
+need it use `cfg_attr(not(qleisli_native_tests), ignore = ...)`, with the explicit
+`native-kernel gate: requires QLEISLI_KERNEL` reason. `build.rs` enables only this
+test cfg when a nonempty `QLEISLI_KERNEL` is selected, and changing that variable
+invalidates Cargo's build-script result. Selecting a missing or incompatible
+checker must fail the enabled tests. Production acceptance never falls back.
+The shared Rust and MSRV test commands run through `scripts/run_kernel_tests.py`,
+which requires an executable selection and rejects conditional native skips or
+an empty test run. Dedicated generated-fixture/Python-oracle tests and deferred
+stress tests retain their separate schedules and explicit ignore reasons.
+
 PRs with **1,000,000 or more added plus deleted text lines** are forbidden. The
 human-authorized exception is only the existing `MGYamada/Qleisli#307`; it does
 not cover later PRs, branches or repositories. `scripts/check_pr_size.py` counts

@@ -8,6 +8,10 @@ fn parsed(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
     let program = parsed(
@@ -49,6 +53,10 @@ fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn multiple_carried_owners_keep_the_complete_entangled_interface() {
     let program = parsed(
@@ -86,6 +94,10 @@ fn multiple_carried_owners_keep_the_complete_entangled_interface() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_width_carry_does_not_erase_its_scalar_operator() {
     let program = parsed(
@@ -118,6 +130,10 @@ fn zero_width_carry_does_not_erase_its_scalar_operator() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_and_quantum_folds_have_distinct_staging_and_carry_rules() {
     for (source, code, fragment) in [

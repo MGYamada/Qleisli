@@ -114,6 +114,10 @@ fn distinct_contract_pairs_and_static_providers_share_one_project_snapshot() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
     for call in [
@@ -193,6 +197,10 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn small_native_specializations_retain_exact_shared_sources() {
     for calls in [false, true] {

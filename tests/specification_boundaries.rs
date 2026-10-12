@@ -31,6 +31,10 @@ fn deterministic(source: &str, expected: &[bool]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_lifts_destructure_exact_product_patterns() {
     accepted(
@@ -73,6 +77,10 @@ unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     for source in [
@@ -136,6 +144,10 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_wire_ownership_requires_explicit_consumption() {
     rejected(
@@ -161,6 +173,10 @@ fn zero_wire_ownership_requires_explicit_consumption() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
     let declaration = "classical fn flip(x: Bit) -> Bit { not x }";
@@ -190,6 +206,10 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_auxiliary_shadow_preserves_the_outer_owner() {
     let prefix = "use std::quantum::z; classical fn p(x: Bit) -> Bit { x }";
@@ -224,6 +244,10 @@ observe fn main() -> (Bit,Bit) {{
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_bit_literals_and_operators_have_their_truth_tables() {
     for source in [
@@ -266,6 +290,10 @@ fn ordinary_bit_literals_and_operators_have_their_truth_tables() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     // The computed certificate still accepts only a complete empty/Z/T IR
@@ -299,6 +327,10 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     deterministic(
@@ -350,6 +382,10 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn basis_call_arity_is_distinct_from_lift_injectivity() {
     for (name, constant, identity) in [("xor2", "x", "0"), ("and2", "0", "1")] {
@@ -398,6 +434,10 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn entry_point_accepts_nested_classical_products() {
     deterministic(

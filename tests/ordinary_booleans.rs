@@ -62,6 +62,10 @@ fn sized_reject(source: &str, code: &str) {
     assert!(error.span().end <= source.len(), "{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn all_four_truth_rows_match_independent_constants_in_both_profiles() {
     // These expected rows are independent of both compilers and the simulator:
@@ -102,6 +106,10 @@ fn all_four_truth_rows_match_independent_constants_in_both_profiles() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening() {
     let source = "unitary fn f((u,(a,b)): (Unit,(Bit,Bit))) -> ((Bit,Unit),(Bit,(Bit,Unit))) {
@@ -151,6 +159,10 @@ fn ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_shared_calls_keep_each_invocations_classical_values() {
     let graph = both_closed(
@@ -186,6 +198,10 @@ fn repeated_shared_calls_keep_each_invocations_classical_values() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn static_zero_one_two_folds_and_selection_produce_runtime_bits() {
     let fold = "unitary fn flip(b: Bit) -> Bit { not b }
@@ -264,6 +280,10 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_registers_retain_exact_source_types_at_the_raw_boundary() {
     for width in 0..=2 {
@@ -292,6 +312,10 @@ fn ordinary_registers_retain_exact_source_types_at_the_raw_boundary() {
     assert_eq!(&source[error.span().start..error.span().end], "0");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_bits_raw_boundary_retains_atomic_types_and_zero_width_owner() {
     use qleisli::contract::BasisType;
@@ -312,6 +336,10 @@ fn quantum_bits_raw_boundary_retains_atomic_types_and_zero_width_owner() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
     let source = "use std::quantum::{init0,h}; use std::observe::measure_z;
@@ -374,6 +402,10 @@ fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments() {
     let graph = elaborate(
@@ -394,6 +426,10 @@ fn open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_results() {
     for (a, b) in [(0, 0), (0, 1), (1, 0), (1, 1)] {
@@ -417,6 +453,10 @@ fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_result
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
     let source = "use std::classical::empty_bits;
@@ -443,6 +483,10 @@ fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
     let source = include_str!(
@@ -475,6 +519,10 @@ fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordinary_basis_substitutions_keep_register_and_product_tags() {
     use qleisli::frontend::compile::BasisBinding;
@@ -531,6 +579,10 @@ fn ordinary_basis_substitutions_keep_register_and_product_tags() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
     use qleisli::frontend::compile::{BasisBinding, OperationBinding};
@@ -612,6 +664,10 @@ fn register_type_coercions_and_quantum_copy_drop_still_reject() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn retained_register_source_rejects_another_native_accepted_artifact() {
     let text = "use std::classical::{empty_bits,prepend_bit};

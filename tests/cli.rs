@@ -3,6 +3,10 @@ mod common;
 use common::SourceRoot;
 use std::process::Command;
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations() {
     let root = SourceRoot::new("pub unitary fn id(q:Q<Bit>)->Q<Bit>{q}");
@@ -33,6 +37,10 @@ fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declaratio
 }
 
 #[cfg(unix)]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
     use std::os::{fd::OwnedFd, unix::net::UnixStream};
@@ -103,6 +111,10 @@ fn doc_reports_truncated_static_arguments_without_panicking() {
     assert!(!stderr.contains("panicked"), "{stderr}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn check_and_run_accept_source_roots_with_spaces_and_unicode() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");

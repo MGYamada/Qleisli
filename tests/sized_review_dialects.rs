@@ -391,12 +391,18 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the separately built and audited Lean kernel"]
 fn rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively() {
     use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("select audited kernel"),
+    );
     let program = ParsedProgram::parse(corpus_modules()).unwrap();
     let limits = ExecutionLimits {
         max_amplitudes: 256,

@@ -20,7 +20,7 @@ class SourceChecksTests(unittest.TestCase):
             'test_check_fixture_budget', 'test_check_fixture_references',
             'test_ci_profiles', 'test_ci_source_checks', 'test_ci_actions',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
-            'test_archive_lean_kernel')])
+            'test_archive_lean_kernel', 'test_run_kernel_tests')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
         changes = workflow.split('  changes:\n')[1].split('  check-rust:\n')[0]
         self.assertIn('--checks ci-preflight --output', changes)

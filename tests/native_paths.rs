@@ -42,8 +42,11 @@ fn raw_transport_rejects_excessive_nesting_before_serialization() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the freshly built native Lean checker"]
 fn native_report_retains_the_exact_artifact_request_and_reconstructed_program() {
     let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
     let mut bytes = include_bytes!("fixtures/verification_v022/finite/t.v2.qirf").to_vec();
@@ -62,8 +65,11 @@ fn native_report_retains_the_exact_artifact_request_and_reconstructed_program() 
     assert_eq!(checked.into_program().raw(), &before);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the freshly built native Lean checker"]
 fn raw_exports_conversions_and_native_reports_share_the_original_byte_gate() {
     use qleisli::contract::BasisType;
     use qleisli::interchange::{self, RootInterface, Version};

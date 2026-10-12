@@ -199,10 +199,17 @@ fn sized_cli_emits_only_an_untrusted_proposal_without_a_kernel() {
     assert!(String::from_utf8_lossy(&bytes).contains("qleisli.hierarchical-ir"));
     std::fs::remove_file(file).unwrap();
 }
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires freshly built Lean kernel; CI runs explicitly"]
 fn sized_cli_native_source_check_run_and_fresh_sampling() {
-    let kernel = PathBuf::from(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+    let kernel = PathBuf::from(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("kernel path"),
+    );
     let const_client = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/main.qli");
     for action in ["check", "run"] {
@@ -277,12 +284,19 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires freshly built Lean kernel; CI runs explicitly"]
 fn sized_cli_separates_producer_consistency_from_independent_requests() {
     use qleisli::frontend::compile::ParsedProgram;
     use std::collections::BTreeMap;
-    let kernel = PathBuf::from(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+    let kernel = PathBuf::from(
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("kernel path"),
+    );
     let h = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
     let x = "use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
     let h_proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), h.into())]))

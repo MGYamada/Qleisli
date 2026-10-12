@@ -98,8 +98,11 @@ fn proposals_are_untrusted_and_owned_and_missing_checkers_reject() {
     assert_eq!(kernel.accept(&proposal).unwrap_err().code, "io");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the freshly built native Lean checker"]
 fn native_handles_execute_bell_and_feedback_without_legacy_receipts() {
     let kernel = native();
     for version in [Version::V1, Version::V2] {
@@ -147,8 +150,11 @@ fn native_handles_execute_bell_and_feedback_without_legacy_receipts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the freshly built native Lean checker"]
 fn native_rejection_and_independent_requests_bind_exact_bytes() {
     let kernel = native();
     let mut raw = bell(false);
@@ -190,8 +196,11 @@ fn native_rejection_and_independent_requests_bind_exact_bytes() {
     assert!(kernel.accept(&Proposal::new(b"{}", None).unwrap()).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the freshly built native Lean checker"]
 fn evidence_dags_decode_from_the_native_ticket_and_execute() {
     let bytes = include_bytes!("fixtures/verification_v029/native/t-contract.qirf");
     let kernel = native();

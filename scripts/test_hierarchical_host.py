@@ -64,7 +64,7 @@ def main():
         assert actual == expected, (name, expected, actual)
     env = os.environ.copy()
     env['QLEISLI_HIERARCHY_KERNEL'] = str(binary)
-    command = [args.cargo, 'test', '--test', 'hierarchical_host', '--', '--ignored', '--nocapture']
+    command = [args.cargo, 'test', '--test', 'hierarchical_host', '--', '--include-ignored', '--nocapture']
     result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True, timeout=120)
     report = {'format': 'qleisli.hierarchy-host-validation', 'version': 1,
               'status': 'passed' if result.returncode == 0 else 'failed',

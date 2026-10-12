@@ -24,6 +24,10 @@ fn probability(distribution: &BTreeMap<Vec<bool>, f64>, outcome: &[bool], expect
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn documented_projects_compile_verify_and_simulate() {
     let examples = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples");
@@ -39,6 +43,10 @@ fn documented_projects_compile_verify_and_simulate() {
     probability(&feedback, &[true, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn function_branch_preserves_the_callers_quantum_frame() {
     let root = SourceRoot::new(
@@ -63,6 +71,10 @@ observe fn main() -> (Bit, Bit) {
     probability(&result, &[true, true], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_created_wires_and_classical_results_merge() {
     let root = SourceRoot::new(
@@ -87,6 +99,10 @@ observe fn main() -> (Bit, Bit) {
     probability(&result, &[true, true], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn invalid_source_is_rejected_before_execution() {
     let imports = "use std::quantum::init0; use std::quantum::h; use std::quantum::x; use std::quantum::z; use std::quantum::split; use std::observe::measure_z; use std::observe::discard;";
@@ -204,6 +220,10 @@ observe fn main() -> Bit {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bundled_basis_functions_control_a_product_register() {
     let root = SourceRoot::new(
@@ -229,6 +249,10 @@ observe fn main() -> (Bit, Bit) {
     probability(&run(&root.0), &[true, true], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_toffoli_result_reset_and_discard_lower_to_observation() {
     let root = SourceRoot::new(
@@ -250,6 +274,10 @@ observe fn main() -> (Bit, Bit) {
     probability(&run(&root.0), &[false, true], 1.0);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn conditional_swap_pairs_different_input_registers() {
     let root = SourceRoot::new(
@@ -272,6 +300,10 @@ observe fn main() -> (Bit, Bit) {
     probability(&result, &[true, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn library_check_needs_no_entry_and_project_errors_have_coordinates() {
     let root = SourceRoot::new("pub unitary fn id(q: Q<Bit>) -> Q<Bit> { q }");
@@ -288,6 +320,10 @@ fn library_check_needs_no_entry_and_project_errors_have_coordinates() {
     assert_eq!(error.span.start, source.find('@').unwrap());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn exponential_call_expansion_has_a_checked_work_limit() {
     let mut source = "unitary fn f0(q: Q<Bit>) -> Q<Bit> { q }\n".to_owned();
@@ -366,6 +402,10 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
     let source = |doublings, wrappers| {
@@ -392,6 +432,10 @@ fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
     assert_eq!(result, BTreeMap::from([(vec![], 1.0)]));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
     let classical_prefix = format!(
@@ -468,6 +512,10 @@ fn invalid_callee_body_still_reports_its_own_source() {
 }
 
 // Finite v0 conformance boundaries.
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_v0_type_shapes_and_zero_wire_ownership() {
     for source in [
@@ -507,6 +555,10 @@ fn finite_v0_type_shapes_and_zero_wire_ownership() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
     // Classical erasure is allowed; Unitary describes the quantum map for each
@@ -540,6 +592,10 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_v0_mixed_values_move_as_a_whole() {
     check_project(
@@ -562,6 +618,10 @@ fn finite_v0_mixed_values_move_as_a_whole() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_v0_basis_lifts_are_injective_and_closed() {
     check_project(
@@ -587,6 +647,10 @@ fn finite_v0_basis_lifts_are_injective_and_closed() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_v0_computed_blocks_require_the_structural_certificate() {
     let prefix = "use std::quantum::h; use std::quantum::z; use std::quantum::t;
@@ -627,6 +691,10 @@ fn finite_v0_local_names_shadow_static_callees() {
 }
 
 // SPEC-3 resource calculus boundaries (R1).
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_pending_mixed_argument_survives_nested_call() {
     let root = SourceRoot::new(
@@ -658,6 +726,10 @@ observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
     probability(&result, &[true, true, false, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_pending_tuple_field_survives_branch() {
     let root = SourceRoot::new(
@@ -680,6 +752,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {
     probability(&result, &[true, false, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_mixed_branch_results_follow_positions() {
     let root = SourceRoot::new(
@@ -704,6 +780,10 @@ observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
     probability(&result, &[true, true, false, true], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_zero_width_result_and_frame_are_both_merged() {
     use qleisli::ir::RawOp;
@@ -752,6 +832,10 @@ observe fn main() -> (Bit,Bit) {
     probability(&result, &[true, false], 0.5);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_reset_branch_keeps_reference_and_classical_history() {
     let root = SourceRoot::new(
@@ -776,6 +860,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {
     probability(&result, &[true, true, false], 0.25);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn resource_rules_nested_classical_results_keep_their_scopes() {
     let root = SourceRoot::new(

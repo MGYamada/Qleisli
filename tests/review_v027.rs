@@ -6,6 +6,10 @@ use qleisli::frontend::compile::{ErrorCode, check_project};
 use qleisli::frontend::project::manifest_warnings;
 use std::{fs, path::Path, process::Command};
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_manifest_warnings_are_host_independent_and_located() {
     for relative in [None, Some("src"), Some("src/nested")] {

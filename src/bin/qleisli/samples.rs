@@ -44,6 +44,10 @@ fn collect_with_budget(
 mod tests {
     use super::*;
     use qleisli::ir::*;
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn aggregate_failure_does_not_return_earlier_shots() {
         let p = qleisli::interchange::native::Kernel::selected()

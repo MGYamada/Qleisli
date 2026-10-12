@@ -528,6 +528,10 @@ fn exact_basis_view_never_unpacks_an_owner_and_preserves_nested_zero_width_field
     assert_eq!(ordinary.fields().len(), 2);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_reference() {
     let k = kernel();
@@ -555,6 +559,10 @@ fn fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_referenc
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference() {
     let k = kernel();
@@ -584,6 +592,10 @@ fn scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_action() {
     let text = source("operations");
@@ -633,6 +645,10 @@ fn tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_acti
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work() {
     let k = kernel();
@@ -793,6 +809,10 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn direct_packaged_scalar_keeps_exact_tree_axes_and_external_reference() {
     let first = include_str!(
@@ -869,6 +889,10 @@ fn isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject() {
     reject(&study("effectful-argument"), "effect");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn structural_tuple_events_after_observation_retain_exact_basis_and_reference() {
     let graph = elaborate(&source("maps-after-observation"), "main::f");
@@ -924,6 +948,10 @@ fn structural_tuple_events_after_observation_retain_exact_basis_and_reference() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     use qleisli::contract::BasisType;

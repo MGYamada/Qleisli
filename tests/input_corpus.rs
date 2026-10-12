@@ -7,6 +7,10 @@ use qleisli::frontend::compile::compile_project;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path};
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn all_reviewed_corpus_projects_compile_verify_and_execute() {
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("corpus");

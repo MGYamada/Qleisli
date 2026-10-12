@@ -882,6 +882,10 @@ mod tests {
         let candidate = lower.factor_fourier(original).unwrap();
         (lower, original, candidate)
     }
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn direct_finite_gates_bind_actual_ports_and_reuse_identical_headers() {
         let source = source(SOURCE, 1);

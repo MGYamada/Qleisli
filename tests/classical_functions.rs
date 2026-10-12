@@ -28,6 +28,10 @@ fn kernel() -> Kernel {
     Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -91,6 +95,10 @@ fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -144,6 +152,10 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -207,6 +219,10 @@ fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -249,6 +265,10 @@ fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
     let original = common::current_source_text(
@@ -297,6 +317,10 @@ fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -339,6 +363,10 @@ fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -445,6 +473,10 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget};
@@ -529,6 +561,10 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn original_annotations_check_every_nested_and_unused_provider_before_lowering() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -661,6 +697,10 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -689,6 +729,10 @@ fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
     assert!(error.message().contains("main::Flip"), "{error}");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -731,6 +775,10 @@ fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
     let text = common::current_source_text(
@@ -783,6 +831,10 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -848,6 +900,10 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -902,6 +958,10 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -993,6 +1053,10 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
     use qleisli::contract::exact::{Budget, Exact};
@@ -1173,6 +1237,10 @@ fn finite_source_targets_preserve_product_tree_and_refuse_width_substitution() {
     assert!(parsed.finite_meaning_target("main::Missing").is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_preparation_rejects_unused_nonpermutation_meanings() {
     let source = "classical fn constant(b:Bit)->Bit{0}
@@ -1396,6 +1464,10 @@ fn canonical_declaration_retains_expression_ast_and_old_spelling_has_migration_e
     assert!(error.span.end <= retired.len());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn frozen_flip_is_reused_coherently_and_ordinarily_with_explicit_profile_limit() {
     let source = first_source!("shared-flip");
@@ -1424,6 +1496,10 @@ fn act_on_two_axes(table: &[u16], state: [(i32, i32); 4]) -> [(i32, i32); 4] {
     output
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
     let source = "use std::quantum::init0; use std::observe::measure_z;
@@ -1490,6 +1566,10 @@ fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
     both_closed(first_source!("ordinary-and"), &[false]);
@@ -1512,6 +1592,10 @@ fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
     selected_coherent_unsupported(source, "main::collapse");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
     let source = "use std::quantum::init0; use std::quantum::h; use std::quantum::z;
@@ -1543,6 +1627,10 @@ fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
     selected_coherent_unsupported(source, "main::oracle");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_and_nested_products_retain_exact_trees_and_argument_list_arity() {
     both_closed(first_source!("nested-label"), &[false]);
@@ -1579,6 +1667,10 @@ fn unit_and_nested_products_retain_exact_trees_and_argument_list_arity() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn eager_argument_effects_belong_to_the_caller_in_source_order() {
     let source = "use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
@@ -1626,6 +1718,10 @@ fn eager_argument_effects_belong_to_the_caller_in_source_order() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn open_ordinary_inputs_are_explicit_ports_and_closed_wrappers_execute() {
     let source = "classical fn flip(x: Bit) -> Bit { not x }
@@ -1680,6 +1776,10 @@ fn quantum_arguments_and_invalid_unused_declarations_are_rejected_before_native(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn private_classical_helpers_resolve_lexically_and_cycles_remain_illegal() {
     let main = "use helper::outer; pub fn main() -> Bit { outer(0) }";
@@ -1736,6 +1836,10 @@ fn meaning_is_still_a_static_target_and_not_an_ordinary_runtime_function() {
 // Pre-implementation feasibility checks use independently authored native IR,
 // never the unsupported source adapter as their oracle. Source acceptance and
 // transformed source replay remain separate work under the recorded contract.
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_phase() {
     use qleisli::contract::{
@@ -1822,6 +1926,10 @@ fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_pha
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phase() {
     use qleisli::contract::{
@@ -1915,6 +2023,10 @@ fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phas
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn generic_access_providers_check_original_requests_and_preserve_reference_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
@@ -1992,6 +2104,10 @@ fn generic_access_providers_check_original_requests_and_preserve_reference_phase
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn access_routing_and_nested_controls_match_independent_exact_and_reference_actions() {
     use qleisli::contract::{

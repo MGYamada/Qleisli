@@ -34,6 +34,10 @@ fn raw(ops: Vec<RawOp>, outputs: Vec<ClassicalId>) -> AcceptedProgram {
     .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independent_bell_and_gate_fixtures_are_verified() {
     let bell = import_openqasm3(BELL).unwrap();
@@ -64,6 +68,10 @@ fn independent_bell_and_gate_fixtures_are_verified() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn control_axes_and_classical_order_do_not_follow_measurement_order() {
     let p = import_openqasm3(&source("qubit[3] q; bit a; bit[2] b; reset q; x q[2]; cx q[2], q[0]; b[1] = measure q[0]; a = measure q[1]; b[0] = measure q[2];")).unwrap();
@@ -75,6 +83,10 @@ fn control_axes_and_classical_order_do_not_follow_measurement_order() {
     assert!(qir.contains("@__quantum__qis__mz__body(ptr null, ptr inttoptr (i64 2 to ptr))"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn exact_phase_interference_and_hidden_terminal_results() {
     let cr = import_openqasm3(&source(
@@ -115,6 +127,10 @@ fn exact_phase_interference_and_hidden_terminal_results() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn invalid_source_is_rejected_with_original_locations() {
     let cases = [
@@ -179,6 +195,10 @@ fn invalid_source_is_rejected_with_original_locations() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn import_limits_are_checked_before_expansion() {
     let err = import_openqasm3(&" ".repeat(MAX_OPENQASM_BYTES + 1)).unwrap_err();
@@ -211,6 +231,10 @@ fn import_limits_are_checked_before_expansion() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn valid_ir_can_still_be_unrepresentable_in_the_target() {
     let p = import_openqasm3(BELL).unwrap();
@@ -292,6 +316,10 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qli_frontend_and_qir_profile_contract() {
     let p = qleisli::frontend::compile::compile_project(std::path::Path::new(
@@ -328,6 +356,10 @@ fn qli_frontend_and_qir_profile_contract() {
     assert!(!qir.contains("result_record_output(ptr null, ptr null)"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn export_tracks_reordered_owners_and_control_phase() {
     let mut p = raw(

@@ -115,6 +115,10 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
     use qleisli::frontend::compile::{check_project, compile_project};
@@ -227,6 +231,10 @@ fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() 
     assert_eq!(fact.asserted(), Some(Effect::Isometry));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adopted_isometry_cli_retains_scalar_phase_and_the_actual_scope() {
     let text = "use std::quantum::{init0,phase_eighth};pub isometry fn main()->Q<Bit>{phase_eighth(init0())}";
@@ -246,6 +254,10 @@ fn adopted_isometry_cli_retains_scalar_phase_and_the_actual_scope() {
     amplitudes(&text, &[[std::f64::consts::FRAC_1_SQRT_2; 2], [0.0, 0.0]]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() {
     for name in [
@@ -293,6 +305,10 @@ fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_cli_run_retains_preparation_phase_and_zero_width_owner() {
     let omega = [std::f64::consts::FRAC_1_SQRT_2; 2];
@@ -320,6 +336,10 @@ fn isometry_cli_run_retains_preparation_phase_and_zero_width_owner() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_cli_run_keeps_the_retained_frame_axis_and_exact_scalar_phase() {
     let omega = [std::f64::consts::FRAC_1_SQRT_2; 2];
@@ -373,6 +393,10 @@ fn isometry_cli_sampling_requires_actual_observation() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_cli_explicit_raw_retains_its_actual_support_boundary() {
     for json in [false, true] {
@@ -430,6 +454,10 @@ fn isometry_cli_missing_native_checker_never_falls_back() {
 }
 
 #[cfg(unix)]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn isometry_cli_incompatible_native_version_never_falls_back() {
     use std::os::unix::fs::PermissionsExt;

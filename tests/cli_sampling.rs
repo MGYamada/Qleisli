@@ -2,6 +2,10 @@ mod common;
 use common::SourceRoot;
 use std::process::Command;
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn seeded_samples_have_atomic_human_and_json_outputs() {
     let root = SourceRoot::new(
@@ -30,6 +34,10 @@ fn seeded_samples_have_atomic_human_and_json_outputs() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn invalid_flags_and_failed_sampling_never_emit_shots() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
@@ -71,6 +79,10 @@ fn invalid_flags_and_failed_sampling_never_emit_shots() {
     assert!(s.contains("\"result\":null"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cli_new_default_has_an_explicit_legacy_escape() {
     let root = SourceRoot::new(&format!(

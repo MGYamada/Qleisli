@@ -59,7 +59,7 @@ def main():
                 cases.append(f'{name}|{request_name}|ok\n')
         (directory/'cases.txt').write_text(''.join(cases))
         commands.append(run(['cargo','test','--test','sized_corpus','check_source_fourier_contracts',
-                             '--','--ignored','--nocapture'],
+                             '--','--include-ignored','--nocapture'],
                             {'QLEISLI_HIERARCHY_KERNEL':str(args.kernel.resolve()),
                              'QLEISLI_SIZED_QFT':temporary}))
     report = dict(format='qleisli.rust-fourier-factoring-validation',version=1,status='pass',

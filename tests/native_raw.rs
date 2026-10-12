@@ -52,6 +52,10 @@ fn rejected(program: RawProgram, phrase: &str) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn appended_classical_history_fits_the_native_deadline() {
     // A small zero-qubit program previously exhausted the 60-second deadline:
@@ -161,6 +165,10 @@ fn many_branches_share_freshness_history_without_leaking_classical_scopes() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_classical_phi_is_visible_in_its_parent_arm() {
     let inner = RawOp::ClassicalBranch {
@@ -205,6 +213,10 @@ fn nested_classical_phi_is_visible_in_its_parent_arm() {
     .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn classical_phis_cannot_read_outputs_of_the_same_merge() {
     rejected(
@@ -237,6 +249,10 @@ fn classical_phis_cannot_read_outputs_of_the_same_merge() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_preparation_split_and_partial_measurement() {
     let bell = program(
@@ -282,6 +298,10 @@ fn bell_preparation_split_and_partial_measurement() {
     assert_eq!(checked.raw().classical_outputs, vec![c(0), c(1)]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_phase_oracle_has_checked_zero_return_scope() {
     let oracle = program(
@@ -308,6 +328,10 @@ fn computed_phase_oracle_has_checked_zero_return_scope() {
     assert_eq!(accept(oracle).unwrap().derived_effect(), Effect::Unitary);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_scope_can_control_a_target_without_changing_protected_bits() {
     let controlled = program(
@@ -341,6 +365,10 @@ fn computed_scope_can_control_a_target_without_changing_protected_bits() {
     accept(controlled).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn measurement_feedback_merges_exclusive_branch_resources() {
     let feedback = program(
@@ -375,6 +403,10 @@ fn measurement_feedback_merges_exclusive_branch_resources() {
     assert_eq!(accept(feedback).unwrap().derived_effect(), Effect::Observe);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn copied_quantum_token_is_rejected_even_for_unit() {
     rejected(
@@ -398,6 +430,10 @@ fn copied_quantum_token_is_rejected_even_for_unit() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn a_unit_register_can_be_split_into_two_unit_registers() {
     let unit = program(
@@ -427,6 +463,10 @@ fn a_unit_register_can_be_split_into_two_unit_registers() {
     accept(unit).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn measured_token_cannot_be_used_again() {
     rejected(
@@ -452,6 +492,10 @@ fn measured_token_cannot_be_used_again() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn implicit_drop_is_rejected() {
     rejected(
@@ -467,6 +511,10 @@ fn implicit_drop_is_rejected() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn noninjective_and_partial_lifts_are_rejected() {
     for table in [vec![0, 0], vec![0]] {
@@ -494,6 +542,10 @@ fn noninjective_and_partial_lifts_are_rejected() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn growing_lift_cannot_claim_unitary() {
     rejected(
@@ -514,6 +566,10 @@ fn growing_lift_cannot_claim_unitary() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn measurement_cannot_claim_pure_effect() {
     rejected(
@@ -532,6 +588,10 @@ fn measurement_cannot_claim_pure_effect() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn destructive_reset_requires_new_logical_wire() {
     rejected(
@@ -551,6 +611,10 @@ fn destructive_reset_requires_new_logical_wire() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn use_that_changes_source_or_ancilla_basis_is_rejected() {
     for region in [ProtectedRegion::Source, ProtectedRegion::Ancilla] {
@@ -578,6 +642,10 @@ fn use_that_changes_source_or_ancilla_basis_is_rejected() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn compute_scope_rejects_partial_function_and_ancilla_wire_reuse() {
     for (function, ancilla, phrase) in [
@@ -605,6 +673,10 @@ fn compute_scope_rejects_partial_function_and_ancilla_wire_reuse() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_predicate_need_not_be_injective_because_xor_compute_is_reversible() {
     let constant_predicate = program(
@@ -631,6 +703,10 @@ fn computed_predicate_need_not_be_injective_because_xor_compute_is_reversible() 
     accept(constant_predicate).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn conditional_scalar_phase_preserves_unit_target_phase() {
     let phased = program(
@@ -660,6 +736,10 @@ fn conditional_scalar_phase_preserves_unit_target_phase() {
     accept(phased).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_rejects_unmerged_or_mismatched_quantum_contexts() {
     rejected(
@@ -712,6 +792,10 @@ fn branch_rejects_unmerged_or_mismatched_quantum_contexts() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_effects_cannot_be_hidden_and_arm_ids_must_be_globally_fresh() {
     rejected(
@@ -763,6 +847,10 @@ fn branch_effects_cannot_be_hidden_and_arm_ids_must_be_globally_fresh() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn quantum_basis_cannot_be_used_as_classical_branch_guard() {
     rejected(
@@ -789,6 +877,10 @@ fn quantum_basis_cannot_be_used_as_classical_branch_guard() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn wire_ids_are_never_reallocated_even_after_measurement() {
     rejected(
@@ -817,6 +909,10 @@ fn wire_ids_are_never_reallocated_even_after_measurement() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn branch_depth_limit_counts_empty_branches_in_both_arms() {
     // Small nested programs must work with and without a leaf in both arms.
@@ -869,6 +965,10 @@ fn branch_depth_limit_counts_empty_branches_in_both_arms() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn oversized_register_and_deeply_nested_branch_are_rejected() {
     rejected(
@@ -903,6 +1003,10 @@ fn oversized_register_and_deeply_nested_branch_are_rejected() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_qif_accepts_unitary_arms_and_unit_target_phase() {
     let checked = accept(program(
@@ -931,6 +1035,10 @@ fn coherent_qif_accepts_unitary_arms_and_unit_target_phase() {
     assert_eq!(checked.derived_effect(), Effect::Unitary);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn coherent_qif_rejects_aliasing_and_bad_target_indices() {
     rejected(
@@ -997,6 +1105,10 @@ fn coherent_qif_rejects_aliasing_and_bad_target_indices() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn classical_constants_and_conjunction_require_fresh_visible_ssa_values() {
     let checked = accept(program(

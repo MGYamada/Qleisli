@@ -260,6 +260,10 @@ fn assert_qif_matches_independent_extraction(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn legacy_qif_matches_independent_exact_extraction_and_retains_limits() {
     let mut cases = vec![];
@@ -332,6 +336,10 @@ fn legacy_qif_matches_independent_exact_extraction_and_retains_limits() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn generated_circuits_match_exact_amplitudes_adjoint_and_control_laws() {
     let mut generator = Generator(0x514c_4549_534c_4901);
@@ -623,6 +631,10 @@ fn physical_evidence(prefix: Vec<CircuitStep>) -> Arc<FunctionEvidence> {
     )
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn physical_raw_auxiliary_execution_agrees_with_extracted_contracts() {
     let mut generator = Generator(0x514c_4549_534c_4902);
@@ -727,6 +739,10 @@ fn physical_raw_auxiliary_execution_agrees_with_extracted_contracts() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup() {
     let evidence = physical_evidence(vec![]);

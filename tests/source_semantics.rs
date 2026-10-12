@@ -48,6 +48,10 @@ fn assert_both(source: &str, wrapped: &str, expanded: &str, expected: &[(&[bool]
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn measured_actual_is_evaluated_once_before_classical_substitution() {
     let source = r#"
@@ -73,6 +77,10 @@ observe fn main() -> ((Bit,Bit),Bit) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn call_substitution_respects_callee_scope_and_restores_shadowed_classical_names() {
     for (flag, other) in [(false, false), (false, true), (true, false), (true, true)] {
@@ -112,6 +120,10 @@ observe fn main() -> ((Bit,Bit),(Bit,Bit)) {{
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_call_preserves_conditional_phase_against_an_entangled_caller_frame() {
     let source = r#"
@@ -153,6 +165,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn simultaneous_phi_order_preserves_mixed_results_zero_width_and_bell_coherence() {
     let source = r#"

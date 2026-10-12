@@ -244,6 +244,10 @@ fn frozen(name: &str, generated: &[u8]) -> Vec<u8> {
     bytes
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn frozen_finite_artifacts_match_independent_phase_exact_requests() {
     for case in cases() {
@@ -315,6 +319,10 @@ fn frozen_raw_inputs_reject_aliases_and_missing_zero_width_owners() {
     assert!(accept(unit).is_err());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn frozen_request_rejects_axis_identity_type_and_domain_changes() {
     let mut all = cases();

@@ -319,6 +319,10 @@ mod tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn instrument_receipts_bind_original_bytes_and_fresh_call_decisions() {
         let kernel = Kernel::selected().unwrap();
@@ -413,6 +417,10 @@ mod tests {
         assert!(original.request().is_none());
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn instrument_wire_preserves_bits_zero_and_zero_owner_result_trees() {
         let kernel = Kernel::selected().unwrap();

@@ -67,6 +67,10 @@ fn both_closed(name: &str, expected: &[(&[bool], f64)]) -> AcceptedProgram {
     accepted
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use() {
     let accepted = both_closed("eager-zero", &[(&[false], 1.0)]);
@@ -110,6 +114,10 @@ fn eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use() {
     assert_eq!(output, right);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order() {
     // Bell outcomes (a,b) are 00/11. The requested output is (a,a XOR b),
@@ -146,6 +154,10 @@ fn bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order(
     assert_eq!(accepted.raw().classical_outputs, vec![measured[0], output]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn pending_first_argument_keeps_entangled_owner_during_later_argument_measurement() {
     // keep(q,measure_z(r)) must preserve the pending q owner through the RHS
@@ -195,6 +207,10 @@ fn pending_first_argument_keeps_entangled_owner_during_later_argument_measuremen
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
     let repeated = both_closed("repeated-helper", &[(&[true, true], 1.0)]);
@@ -257,6 +273,10 @@ fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn ignored_measurement_and_unit_return_keep_observation_before_later_logic() {
     let accepted = both_closed("unit-effect", &[(&[true], 1.0)]);
@@ -278,6 +298,10 @@ fn ignored_measurement_and_unit_return_keep_observation_before_later_logic() {
     assert!(accepted.raw().quantum_outputs.is_empty());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn representable_phases_match_independent_exact_targets_and_interference() {
     for (numerator, denominator, eighths) in [(1, 3, 1), (2, 4, 1), (3, 3, 3), (0, 4, 0)] {
@@ -365,6 +389,10 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
     distribution(&accept(&graph), &expected);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target() {
     {

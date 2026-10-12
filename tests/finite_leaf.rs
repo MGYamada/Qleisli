@@ -74,6 +74,10 @@ fn permutation(table: &[usize]) -> Matrix {
     Matrix::new(n, n, entries).unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn reconstruct_hadamard_in_both_formats_and_bind_complete_bytes() {
     for version in [Version::V1, Version::V2] {
@@ -98,6 +102,10 @@ fn reconstruct_hadamard_in_both_formats_and_bind_complete_bytes() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn independently_specified_cnot_and_final_axis_order() {
     let ty = BasisType::pair(BasisType::Bit, BasisType::Bit);
@@ -180,6 +188,10 @@ fn independently_specified_cnot_and_final_axis_order() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn type_tree_owner_and_wire_mutations_are_not_dimension_equality() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -217,6 +229,10 @@ fn type_tree_owner_and_wire_mutations_are_not_dimension_equality() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn phase_on_unit_and_zero_width_owner_are_retained() {
     let bytes = packet(
@@ -262,6 +278,10 @@ fn phase_on_unit_and_zero_width_owner_are_retained() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn embedded_receipts_are_reconstructed_before_leaf_equality() {
     let evidence = Arc::new(
@@ -319,6 +339,10 @@ fn embedded_receipts_are_reconstructed_before_leaf_equality() {
     assert_eq!(error.code, "contract");
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn shared_exact_budget_is_not_reset_for_each_leaf() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -354,6 +378,10 @@ fn shared_exact_budget_is_not_reset_for_each_leaf() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn malformed_payload_matrix_and_outside_six_bit_boundary_reject() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -400,6 +428,10 @@ fn malformed_payload_matrix_and_outside_six_bit_boundary_reject() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn classical_phi_output_uses_verified_fresh_axes() {
     let bytes = packet(
@@ -493,6 +525,10 @@ fn fresh_process_child() {
     .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fresh_process_reconstruction_rejects_a_global_phase_mutation() {
     let root = common::SourceRoot::new("observe fn main() -> Unit { () }");
@@ -535,6 +571,10 @@ fn fresh_process_reconstruction_rejects_a_global_phase_mutation() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn serialized_meaning_retains_both_byte_strings_and_exact_work() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -561,6 +601,10 @@ fn serialized_meaning_retains_both_byte_strings_and_exact_work() {
     assert!(!checked.matches(&bytes, &wrong, &description));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn serialized_equations_reject_phase_shape_and_authority_flag_mutations() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -619,6 +663,10 @@ fn serialized_equations_reject_phase_shape_and_authority_flag_mutations() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
@@ -659,6 +707,10 @@ fn fresh_serialized_process_child() {
     .unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fresh_process_decodes_both_sides_and_rejects_changed_meaning() {
     let root = common::SourceRoot::new("observe fn main() -> Unit { () }");

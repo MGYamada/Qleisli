@@ -3196,6 +3196,10 @@ mod access_role_tests {
         .unwrap()
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn public_source_control_roles_reach_replay_as_obligations_not_authority() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
@@ -3271,6 +3275,10 @@ mod access_role_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn transformed_source_replay_cannot_erase_control_obligations() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
@@ -3314,6 +3322,10 @@ mod access_role_tests {
         }
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn native_replay_checks_actual_call_sectors_instead_of_effect_annotation() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
@@ -3351,6 +3363,10 @@ mod access_role_tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn native_control_replay_checks_only_the_consumed_call_and_has_no_fallback() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
@@ -3405,6 +3421,10 @@ mod access_role_tests {
         );
     }
 
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
     #[test]
     fn native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();

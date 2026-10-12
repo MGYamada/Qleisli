@@ -1,0 +1,22 @@
+{
+  "issue": 367,
+  "source_commit": "09a74a1d0d433b355ea946a7565875416258fc4c",
+  "status": "before-observation-started",
+  "first_inputs": {
+    "src/lib.rs": "c59863e479e700376e5d5a87d664757cbd9f0d26094fd0b6c47c7bae1ad7a05c",
+    "Cargo.toml": "3a0bf0acf7e09094930cbd6164fd8640b60c25b43c43b20b7a54983eb5793351",
+    ".github/ci/source-checks.json": "864e435743fe384a7567c8d5c062e0dcfe030f5b6425e769b690c5521937c25c",
+    "src/interchange/native.rs": "428ba2b6b68fb7c3995d46dad5b026a2ca1186b41e809afbec81854eab7283ad"
+  },
+  "command": [
+    "env",
+    "-u",
+    "QLEISLI_KERNEL",
+    "cargo",
+    "+1.98.1",
+    "test",
+    "--no-fail-fast"
+  ],
+  "output": "/tmp/qleisli-beta-367-before-without-kernel.log",
+  "scope": "Existing normal tests; no ignored maximum-size quantum case enabled; no acceptance fallback."
+}

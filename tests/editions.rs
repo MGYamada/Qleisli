@@ -30,6 +30,10 @@ fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {
     Project::load_with_policy(&root.0, SourcePolicy::default()).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
     assert_eq!(CURRENT_EDITION, "2026");
@@ -52,6 +56,10 @@ fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn full_qrate_manifest_and_toml_string_forms_select_the_same_edition() {
     let root = SourceRoot::new(SOURCE);
@@ -63,6 +71,10 @@ fn full_qrate_manifest_and_toml_string_forms_select_the_same_edition() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn missing_manifest_has_no_default_and_all_filesystem_loaders_check_it() {
     let root = SourceRoot::new(SOURCE);
@@ -133,6 +145,10 @@ fn malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn closest_manifest_wins_without_changing_import_roots_or_skipping_invalid_files() {
     let root = SourceRoot::new("");
@@ -156,6 +172,10 @@ fn closest_manifest_wins_without_changing_import_roots_or_skipping_invalid_files
     compile_project(&root.0.join("src")).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qlt_drafts_require_an_edition_without_claiming_execution_support() {
     let root = SourceRoot::new(SOURCE);
@@ -198,6 +218,10 @@ fn sized_and_documentation_files_use_their_enclosing_manifest() {
     assert_eq!(output.status.code(), Some(1));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn manifest_bytes_are_bounded_and_decoded_independently_of_source_policy() {
     let root = SourceRoot::new(SOURCE);

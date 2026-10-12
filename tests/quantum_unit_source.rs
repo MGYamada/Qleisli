@@ -360,6 +360,10 @@ fn retained_fourteen_sources_reach_type_and_owner_judgments() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn source_types_keep_zero_axis_quantum_owners_distinct_from_ordinary_unit() {
     let unit = elaborate(&study("id"), "main::f", BTreeMap::new());
@@ -402,6 +406,10 @@ fn source_types_keep_zero_axis_quantum_owners_distinct_from_ordinary_unit() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasure() {
     for (name, width, basis, naturals) in [
@@ -470,6 +478,10 @@ fn fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasur
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_valid_zero_width_basis_substitutions_fail_the_fixed_typed_request() {
     let unit = elaborate(&study("id"), "main::f", BTreeMap::new())
@@ -497,6 +509,10 @@ fn native_valid_zero_width_basis_substitutions_fail_the_fixed_typed_request() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_requests() {
     let proposal = elaborate(&source("scalar-unit"), "main::f", BTreeMap::new())
@@ -576,6 +592,10 @@ fn native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices() {
     let text = source("operations");
@@ -624,6 +644,10 @@ fn unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_inverse_unit_scalar_retains_independent_reference_request() {
     let text = source("operations");
@@ -659,6 +683,10 @@ fn canonical_inverse_unit_scalar_retains_independent_reference_request() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn native_valid_changed_provider_fails_the_same_fixed_controlled_requests() {
     let p = parsed(&source("operations"));
@@ -743,6 +771,10 @@ fn native_valid_changed_provider_fails_the_same_fixed_controlled_requests() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn scalar_work_precedes_readout_and_cannot_be_retimed_past_observation() {
     // The original Bit-returning first sources remain immutable. This explicit
@@ -851,6 +883,10 @@ fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
     let text = "use std::quantum::phase_eighth; pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(phase_eighth(q)) }";
@@ -894,6 +930,10 @@ fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
     close(&output.amplitudes, &expected);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
     for name in ["unused-invalid", "unused-zero-provider"] {
@@ -934,6 +974,10 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
     let graph = elaborate(&study("id"), "main::f", BTreeMap::new());
@@ -976,6 +1020,10 @@ fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
     for (name, basis, dimension) in [
@@ -1050,6 +1098,10 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
     let text = "use std::quantum::{init0,phase_eighth}; use std::observe::measure_z;\n\
@@ -1075,6 +1127,10 @@ fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
     };
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_nested_products_and_calls_keep_empty_owners_beside_a_live_bit() {
     let text = "unitary fn keep(q: Q<Unit>) -> Q<Unit> { q }\n\
@@ -1107,6 +1163,10 @@ fn raw_nested_products_and_calls_keep_empty_owners_beside_a_live_bit() {
     assert!(raw.operations.is_empty());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_oracle() {
     let text = read(
@@ -1119,6 +1179,10 @@ fn prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_orac
     assert!((distribution[&vec![false]] - (1.0 - one)).abs() < 1e-12);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
     let original = read(
@@ -1173,6 +1237,10 @@ fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
     let prelude = "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
@@ -1278,6 +1346,10 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
     let text = "use std::quantum::{h,z,init0}; use std::observe::measure_z; pub observe fn main()->Bit{measure_z(h(z(h(init0()))))}";
@@ -1312,6 +1384,10 @@ fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit() {
     let text = common::current_source_text(
@@ -1334,6 +1410,10 @@ fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit
     assert!(error.message().contains("exactly one Bits value"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
     let original = common::current_source_text(
@@ -1409,6 +1489,10 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action() {
     let prelude = "use std::quantum::{h,z}; unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}";
@@ -1448,6 +1532,10 @@ fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn canonical_power_zero_width_scalar_and_control_keep_exact_phase() {
     for (expression, width, count) in [

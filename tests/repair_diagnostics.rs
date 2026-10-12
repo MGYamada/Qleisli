@@ -94,6 +94,10 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     let source = "// 日本語\r\nuse helper::strong;\r\nisometry fn bad()->Unit{strong()}";
@@ -133,6 +137,10 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     check_project(&root.0).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
     let root = SourceRoot::new("use std::quantum::{init0, h};");
@@ -162,6 +170,10 @@ fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn snapshot_limit_errors_explain_the_retained_sources() {
     for body in ["apply[p](q)", "apply_contract(p,p,q)"] {
@@ -222,6 +234,10 @@ fn concrete_mismatches_show_expected_and_actual_exact_types() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
     let source = "// 日本語\r\nuse std::transform::qft3;\r\nunitary fn bad(q:Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { qft3(q) }";
@@ -264,6 +280,10 @@ fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     let original = fs::read_to_string(current_namespace_fixture(

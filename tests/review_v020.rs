@@ -136,6 +136,10 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn small_native_receipts_round_trip_shared_source() {
     let source = "use std::quantum::init0; use std::observe::measure_z;

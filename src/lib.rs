@@ -13,8 +13,9 @@
 //! The package name is `qleisli`; Rust imports use `qleisli`.
 //! Import the supported OpenQASM 3 terminal subset and inspect its numerical
 //! reference distribution. Qubits must be explicitly initialized with `reset`.
+//! Running this example requires the matching checker selected by `QLEISLI_KERNEL`.
 //!
-//! ```
+//! ```no_run
 //! use qleisli::{interop::import_openqasm3, sim};
 //!
 //! let program = import_openqasm3(r#"

@@ -16,6 +16,10 @@ fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn impossible_circuit_shapes_are_not_capacity_failures() {
     for step in [
@@ -189,6 +193,10 @@ fn copy_encoding() -> Encoding {
     .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn primitive_evidence_preserves_exact_phase() {
     let t = certify(BasisType::Bit, vec![phase(0, 1)], diagonal(&[0, 1]));
@@ -205,6 +213,10 @@ fn primitive_evidence_preserves_exact_phase() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_phase_hh_and_simultaneous_x_use_the_same_equation() {
     // f(a,b) = a and not b exposes axis and predicate changes.
@@ -219,6 +231,10 @@ fn computed_phase_hh_and_simultaneous_x_use_the_same_equation() {
     check_computed(1, &[0, 1], &[x(0), x(1)], &[x(0)]).unwrap();
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate() {
     assert_eq!(
@@ -281,6 +297,10 @@ fn encodings_and_logical_maps_must_be_isometric() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn entry_requires_exact_coordinates_even_for_the_same_image() {
     let identity = Encoding::identity(BasisType::Bit).unwrap();
@@ -310,6 +330,10 @@ fn entry_requires_exact_coordinates_even_for_the_same_image() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn exact_basis_tree_is_not_erased_by_equal_dimensions() {
     let bit_unit = BasisType::pair(BasisType::Bit, BasisType::Unit);
@@ -333,6 +357,10 @@ fn exact_basis_tree_is_not_erased_by_equal_dimensions() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn sequential_proofs_use_application_order() {
     let first = certify(BasisType::Bit, vec![h(0)], hadamard());
@@ -351,6 +379,10 @@ fn sequential_proofs_use_application_order() {
     assert_eq!(composed.circuit().steps(), &[h(0), phase(0, 1)]);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference() {
     let e = copy_encoding();
@@ -390,6 +422,10 @@ fn tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference() {
     assert_eq!(actual, expected);
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn adjoint_reverses_permutation_with_input_indexed_phases() {
     let step = monomial(&[0], &[1, 0], &[1, 3]);
@@ -415,6 +451,10 @@ fn adjoint_reverses_permutation_with_input_indexed_phases() {
     assert_eq!(identity.contract().logical(), &Matrix::identity(2).unwrap());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn non_surjective_logical_isometry_cannot_be_adjointed_or_controlled() {
     let zero = matrix(2, 1, |row, _| Exact::integer(i128::from(row == 0)));
@@ -436,6 +476,10 @@ fn non_surjective_logical_isometry_cannot_be_adjointed_or_controlled() {
     ));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn controlled_encoded_phase_preserves_the_identity_arm() {
     let e = copy_encoding();
@@ -460,6 +504,10 @@ fn controlled_encoded_phase_preserves_the_identity_arm() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn changed_encoding_blocks_control_even_when_the_logical_map_is_square() {
     let input = Encoding::identity(BasisType::Bit).unwrap();
@@ -477,6 +525,10 @@ fn changed_encoding_blocks_control_even_when_the_logical_map_is_square() {
     assert!(theorem.adjoint(&mut work()).is_ok());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn unit_has_scalar_phase_and_a_distinct_owned_type() {
     let scalar = certify(
@@ -501,6 +553,10 @@ fn unit_has_scalar_phase_and_a_distinct_owned_type() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn evidence_is_bound_to_full_circuit_and_contract() {
     let theorem = certify(BasisType::Bit, vec![x(0)], flip());
@@ -563,6 +619,10 @@ fn malformed_circuits_never_become_checked_evidence() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn capacity_and_shared_work_exhaustion_fail_closed() {
     assert!(matches!(
@@ -653,6 +713,10 @@ fn certified_program(
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
     let good = certified_program(1, vec![0, 1], vec![x(0), x(1)], vec![x(0)]);
@@ -689,6 +753,10 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
     let leakage = certified_program(1, vec![0, 1], vec![x(1)], vec![]);
@@ -714,6 +782,10 @@ fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires() {
     let good = certified_program(0, vec![0], vec![h(0), h(0)], vec![]);

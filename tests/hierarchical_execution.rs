@@ -9,7 +9,9 @@ use std::path::Path;
 
 fn kernel() -> Kernel {
     Kernel::new(
-        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select the built, audited kernel"),
+        std::env::var_os("QLEISLI_KERNEL")
+            .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
+            .expect("select the built, audited kernel"),
     )
 }
 fn coefficients(path: &Path) -> Vec<[f64; 2]> {
@@ -38,8 +40,11 @@ fn compare(actual: &[[f64; 2]], expected: &[[f64; 2]]) -> f64 {
     error
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-#[ignore = "requires the separately built and audited Lean kernel"]
 fn frozen_finite_leaf_executes_through_its_actual_definition_index() {
     let root =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/verification_v022/hierarchy");

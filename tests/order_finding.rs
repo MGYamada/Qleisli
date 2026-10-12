@@ -89,6 +89,10 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, output: &[bool], expected: f64
     );
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn fixed_arithmetic_is_local_ordinary_source_without_public_std_aliases() {
     let root = Root::new();
@@ -120,6 +124,10 @@ fn fixed_arithmetic_is_local_ordinary_source_without_public_std_aliases() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn increment_and_add_match_modular_arithmetic_on_every_basis_input() {
     let root = Root::new();
@@ -143,6 +151,10 @@ fn increment_and_add_match_modular_arithmetic_on_every_basis_input() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
     let root = Root::new();
@@ -174,6 +186,10 @@ fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn arithmetic_round_trip_preserves_four_entangled_references() {
     let root = Root::new();
@@ -193,6 +209,10 @@ fn arithmetic_round_trip_preserves_four_entangled_references() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qpe_matches_every_modular_orbit_including_zero_and_unused_fifteen() {
     let root = Root::example();
@@ -224,6 +244,10 @@ fn qpe_matches_every_modular_orbit_including_zero_and_unused_fifteen() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn qpe_preserves_reference_coherence_in_the_degenerate_fixed_subspace() {
     let root = Root::example();
@@ -278,6 +302,10 @@ fn arithmetic_and_order_finding_obey_types_effects_and_ownership() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn full_quantum_and_classical_pipeline_keeps_retry_probability() {
     let result = Root::example().run();
