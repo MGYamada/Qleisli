@@ -1,5 +1,6 @@
 import Lean
 import Protocol.ExecutionView.CheckedFinite
+import Protocol.ExecutionView.Contracts
 import Protocol.Qirf
 
 /-! Shared QDV1 encoding vectors. This runner checks transport bytes only.
@@ -164,8 +165,49 @@ private def requestCases (input supplied : ByteArray) : IO Unit := do
     | _ => throw (IO.userError "finite gate bypassed the independent request")
   | (.ok _,_) => throw (IO.userError "invalid independent request accepted")
 
+private def contractCases (path : System.FilePath) : IO Unit := do
+  let rows ← IO.ofExcept (Json.parse (← IO.FS.readFile path) >>= Json.getArr?)
+  let mut requests := 0
+  let mut circuits := 0
+  for row in rows do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let expected ← IO.ofExcept ((row.getObjVal? "view") >>= value 129 >>= encode)
+    let kind ← IO.ofExcept ((row.getObjVal? "kind") >>= Json.getStr?)
+    let actual ← if kind == "request" then do
+      let input ← IO.ofExcept (row.getObjVal? "artifact")
+      let requirement ← IO.ofExcept (row.getObjVal? "request")
+      let original := packet input.compress.toUTF8 requirement.compress.toUTF8
+      let retained ← checked (QleisliKernel.Protocol.NativeContract.checkRetained original)
+      unless retained.body == input.compress.toUTF8 && retained.requestBytes == requirement.compress.toUTF8 do
+        throw (IO.userError ("retained contract lost original bytes: " ++ name))
+      -- Retention preserves all original checks, errors and work. This tests
+      -- the executable projection as well as the separately proved equality.
+      match (QleisliKernel.Protocol.NativeContract.checkRetained original).run 10000000,
+          (QleisliKernel.Protocol.NativeContract.check original).run 10000000 with
+      | (.ok _,left),(.ok true,remaining) => unless left == remaining do
+          throw (IO.userError ("contract projection changed work: " ++ name))
+      | _,_ => throw (IO.userError ("contract projection changed success: " ++ name))
+      match (QleisliKernel.Protocol.NativeContract.checkRetained original).run 0,
+          (QleisliKernel.Protocol.NativeContract.check original).run 0 with
+      | (.error error,left),(.error actual,remaining) => unless error == actual && left == remaining do
+          throw (IO.userError ("contract projection changed bounded refusal: " ++ name))
+      | _,_ => throw (IO.userError ("expected bounded contract refusal: " ++ name))
+      requests := requests+1
+      pure (FiniteView.nativeRequest retained.request)
+    else if kind == "circuit" then do
+      let input ← IO.ofExcept ((row.getObjVal? "circuit") >>= QleisliKernel.Protocol.FiniteCodec.circuit)
+      circuits := circuits+1
+      -- This is the supplied literal caller circuit, not a contract wrapper
+      -- or a reconstructed single-action surrogate.
+      pure (FiniteView.circuit input)
+    else throw (IO.userError "unknown contract vector kind")
+    unless (← IO.ofExcept (encode actual)) == expected do
+      throw (IO.userError ("typed contract/caller circuit vector mismatch: " ++ name))
+  IO.println ("retained native obligations: " ++ toString requests ++
+    "; literal caller circuits: " ++ toString circuits ++ "; shared vectors passed; production binding pending")
+
 def main (args : List String) : IO Unit := do
-  let [path,finitePath,functionPath,graphPath] := args | throw (IO.userError "expected primitive, finite, function and graph vector files")
+  let [path,finitePath,functionPath,graphPath,contractPath] := args | throw (IO.userError "expected primitive, finite, function, graph and contract vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   frameCases
@@ -226,3 +268,4 @@ def main (args : List String) : IO Unit := do
   IO.println ("retained finite graphs: " ++ toString graphs.size ++ " shared vectors passed; no production binding claim")
   IO.println ("pure finite view gate: " ++ toString graphs.size ++ " original valid artifacts; " ++
     toString gateRefusals ++ " divergent candidate refusals; CLI/protocol cutover still pending")
+  contractCases contractPath

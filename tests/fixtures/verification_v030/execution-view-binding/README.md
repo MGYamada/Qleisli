@@ -74,4 +74,23 @@ and instrument stage theorems bind the actual retained root/action or expected
 graph. Production contract-view comparison is still pending; these records do
 not authorize execution and do not complete #362.
 
+[Contract walker vectors](contract-walker-vectors.json) supply nine hand-specified
+descriptions: seven valid original native requests cover all six obligation
+kinds, and two caller circuits retain literal steps and an original-index
+adjoint dependency. Rust reads actual typed obligations and caller `Circuit`
+values; Lean checks the original native requests and walks their retained
+stages. Every request also exercises the old/new executable projection at
+normal and exhausted work budgets. Eighteen changed typed request values must
+produce different descriptions; caller dependency lookup must refuse missing
+or ambiguous mappings. This is walker/projection validation, not completed
+production execution binding.
+
+The [first refusal](first-contract-walker-refusal.json) preserves the original
+positive-vector authoring error and native diagnostic: QIRF uses `iso`, not
+`isometry`. The [second refusal](second-contract-walker-refusal.json) preserves
+the subsequent invalid coefficient coordinates and independent equation
+refusal. The corrected plus state uses `b = 1/2` in the existing
+`a+b*sqrt(2)+i*(c+d*sqrt(2))` carrier. Neither correction changes a decoder or
+acceptance rule; the original refused data remains available.
+
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

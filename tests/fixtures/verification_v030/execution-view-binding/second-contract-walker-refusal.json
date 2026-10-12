@@ -1,0 +1,212 @@
+{
+  "format": "qleisli.execution-view-authoring-refusal",
+  "version": 1,
+  "original_vector": {
+    "name": "pure-leaf-rectangular-plus-all-rows",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "unit"
+        },
+        "output": {
+          "tag": "bit"
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "unpack_unit",
+              "input": 0
+            },
+            {
+              "tag": "init0",
+              "output": 1,
+              "wire": 7
+            },
+            {
+              "tag": "gate",
+              "gate": "h",
+              "input": 1,
+              "output": 2
+            }
+          ],
+          "quantum_outputs": [
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "iso"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "pure-leaf",
+      "domain": {
+        "tag": "unit"
+      },
+      "codomain": {
+        "tag": "bit"
+      },
+      "input": {
+        "token": 0,
+        "wires": [],
+        "shape": {
+          "bits": 0
+        }
+      },
+      "output": {
+        "token": 2,
+        "wires": [
+          7
+        ],
+        "shape": {
+          "bits": 1
+        }
+      },
+      "matrix": {
+        "format": "qleisli.finite-matrix",
+        "version": 1,
+        "domain": "zeta8-dyadic-v1",
+        "rows": 2,
+        "cols": 1,
+        "entries": [
+          [
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "1",
+              "denominator_bits": 1
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "-1",
+              "denominator_bits": 1
+            }
+          ],
+          [
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "1",
+              "denominator_bits": 1
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "-1",
+              "denominator_bits": 1
+            }
+          ]
+        ]
+      }
+    },
+    "view": [
+      "pure-leaf",
+      [
+        [
+          "unit"
+        ]
+      ],
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "port",
+        0,
+        [],
+        0
+      ],
+      [
+        "port",
+        2,
+        [
+          7
+        ],
+        1
+      ],
+      [
+        "matrix",
+        2,
+        1,
+        [
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              1
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              1
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  "native_error": "QleisliKernel.Finite.Error.equation",
+  "reason": "The hand-authored positive matrix incorrectly used zeta powers instead of the existing a+b*sqrt(2)+i*(c+d*sqrt(2)) coordinates. Correct plus amplitudes use only b=1/2. The independent native Gram/equation check rejected the original; no acceptance rule changed."
+}

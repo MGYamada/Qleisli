@@ -2,7 +2,8 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{MAX_BYTES, Writer};
 use crate::contract::exact::Matrix;
-use crate::contract::{BasisType, FunctionEvidence};
+use crate::contract::instrument::{ResultAtom, Signature};
+use crate::contract::{BasisType, Circuit, Contract, Encoding, FunctionEvidence};
 use crate::interchange::{Error, Result};
 use crate::ir::*;
 use std::collections::BTreeMap;
@@ -465,6 +466,56 @@ impl View<'_> {
         })
     }
 
+    fn circuit(&mut self, circuit: &Circuit) -> Result<()> {
+        self.record("circuit", 2, |w| {
+            w.basis(circuit.basis())?;
+            w.list(circuit.steps(), Self::step)
+        })
+    }
+
+    fn encoding(&mut self, encoding: &Encoding) -> Result<()> {
+        self.record("encoding", 3, |w| {
+            w.basis(encoding.logical())?;
+            w.basis(encoding.physical())?;
+            w.matrix(encoding.map())
+        })
+    }
+
+    fn contract(&mut self, contract: &Contract) -> Result<()> {
+        self.record("encoded-contract", 3, |w| {
+            w.encoding(contract.input())?;
+            w.encoding(contract.output())?;
+            w.matrix(contract.logical())
+        })
+    }
+
+    fn signature(&mut self, signature: &Signature) -> Result<()> {
+        self.record("instrument-signature", 2, |w| {
+            w.basis(&signature.input)?;
+            w.list(&signature.result, |w, atom| match atom {
+                ResultAtom::Unit => w.record("unit", 0, |_| Ok(())),
+                ResultAtom::Bit => w.record("bit", 0, |_| Ok(())),
+                ResultAtom::Bits(width) => w.record("bits", 1, |w| w.n(*width as usize)),
+                ResultAtom::Quantum(basis) => w.record("quantum", 1, |w| w.basis(basis)),
+                ResultAtom::Pair => w.record("pair", 0, |_| Ok(())),
+                ResultAtom::Tuple(count) => w.record("tuple", 1, |w| w.n(*count)),
+            })
+        })
+    }
+
+    fn identity(&mut self, identity: (&str, &str, &[(String, String)])) -> Result<()> {
+        self.record("identity", 3, |w| {
+            w.writer.text(identity.0)?;
+            w.writer.text(identity.1)?;
+            w.list(identity.2, |w, (path, text)| {
+                w.record("source", 2, |w| {
+                    w.writer.text(path)?;
+                    w.writer.text(text)
+                })
+            })
+        })
+    }
+
     fn evidence(&mut self, evidence: &FunctionEvidence) -> Result<()> {
         self.record("function-evidence", 8, |w| {
             w.basis(evidence.signature())?;
@@ -481,10 +532,7 @@ impl View<'_> {
                     })
                 })
             })?;
-            w.record("circuit", 2, |w| {
-                w.basis(evidence.circuit().basis())?;
-                w.list(evidence.circuit().steps(), Self::step)
-            })?;
+            w.circuit(evidence.circuit())?;
             w.matrix(evidence.meaning())?;
             w.n(evidence.depth())?;
             w.n(evidence.expanded_steps())
@@ -556,6 +604,8 @@ pub(in crate::interchange) fn graph(
     })?;
     Ok(view.writer.bytes)
 }
+
+pub(super) mod contracts;
 
 #[cfg(test)]
 mod tests;

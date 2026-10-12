@@ -185,8 +185,40 @@ The old adapter results are projections of these same computations. Universal
 Lean equalities preserve successes, errors and remaining work, and stage
 binding theorems identify the retained core results. The leaf path retains its
 existing validation sequence. No additional acceptance rule, native mode or
-execution handle is introduced. Canonical contract walkers, actual caller
-circuit/cache binding and production comparison remain required.
+execution handle is introduced.
+
+The typed obligation walkers read these retained stages in Lean and the actual
+typed contract/boundary/signature values in Rust. Their records are:
+
+| Tag | Fields after the tag |
+| --- | --- |
+| `encoding` | logical basis, physical basis, exact map |
+| `encoded-contract` | input encoding, output encoding, logical matrix |
+| `encoded` | encoded contract |
+| `leaf` | signature, input port, output port, required matrix |
+| `pure-leaf` | domain, codomain, input port, output port, required matrix |
+| `control` | signature, ordered control axes |
+| `control-owners` | ordered owner signatures, ordered control axes |
+| `instrument` | actual signature, expected signature, source identity |
+| `instrument-signature` | input basis, complete prefix result tree |
+
+Instrument result atoms are `unit()`, `bit()`, `bits(width)`, `quantum(basis)`,
+`pair()` and `tuple(arity)`. Quantum owners and classical values remain distinct,
+including at zero width. The actual and expected signatures are described
+separately. Identity preserves names, source order and complete decoded strings.
+The independently decoded expected artifact and fresh checked roots belong in
+the complete instrument profile; the obligation record alone does not bind them.
+
+The caller-circuit walker describes the supplied actual `Circuit` as
+`circuit(basis, steps)`, retaining literal controls, phase tables, axis order and
+actual dependency references mapped to original indices. It does not use the
+synthetic single-action wrapper constructed by the encoded-contract checker.
+The [contract vectors](../../../tests/fixtures/verification_v030/execution-view-binding/contract-walker-vectors.json)
+check all six obligation kinds and two literal caller circuits. Lean freshly
+checks each original native request before walking its retained obligation;
+Rust describes independently constructed typed values. Data mutations distinguish
+encodings, phase, both ports, equal-width type trees, source identity and axes.
+Actual caller circuit/cache binding and production comparison remain required.
 
 ## Required production profiles
 

@@ -60,6 +60,7 @@ class NativeCI(unittest.TestCase):
             'tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json',
             'tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json',
             'tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json',
+            'tests/fixtures/verification_v030/execution-view-binding/contract-walker-vectors.json',
         ]])
         # #367 makes these formerly unconditional native ignores conditional.
         # include-ignored preserves their execution and includes normal tests;
