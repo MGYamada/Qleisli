@@ -41,7 +41,7 @@ There is no invented standalone release API.
 
 ## Actual validation
 
-The [validation directory](validation-01/) retains explicit argv, environment,
+The [validation directory](validation-01.archive.json) retains explicit argv, environment,
 exit status, elapsed time and the hashes of actual raw streams. The runner
 accepts newly supplied commands and refuses record overwrite; it never
 executes commands read from retained evidence.
@@ -79,3 +79,13 @@ diagnostics and Cargo Clippy are checked. Full hosted CI, packaging, fresh
 installation and exact-commit release gates remain separate.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [validation-01 inventory](validation-01.archive.json) (50 original files).

@@ -45,3 +45,13 @@ their limited scope; these have not been admitted as new ledger guarantees.
 `witness-weakening/` preserves a compiled counterexample to the first v3 evidence
 enforcer and the repaired checker's rejection. The original admitted meanings
 and theorem claims are unchanged.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [distribution-scratch inventory](distribution-scratch.archive.json) (333 original files).

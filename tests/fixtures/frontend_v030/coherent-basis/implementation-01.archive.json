@@ -1,0 +1,605 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/coherent-basis/implementation-01",
+  "archive": "tests/fixtures/frontend_v030/coherent-basis/implementation-01.tar.gz",
+  "archive_sha256": "8993c9703e0263325739bdd0d5f3ca14a374dfd7409abd2c887fa1cf0ef07a26",
+  "entries": {
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/authoring-final-05.json": {
+      "bytes": 915,
+      "sha256": "19687c4c1b76a0f3a470e5a594f2032b800ced570a86ab3728d537c150a08aa9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/authoring-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/authoring-final-05.stdout.txt": {
+      "bytes": 95,
+      "sha256": "129170ca02710a5a905a6005d5e16773da70205d8152207dc25cb3f8d40410e2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.json": {
+      "bytes": 1026,
+      "sha256": "b864c09d55b04d050e096b9d910b2e5194085a04abedc2ba95cf3b55c63b684b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.stderr.txt": {
+      "bytes": 242,
+      "sha256": "211184f52d22bc55c92df57876f73ed2091389cd6811a6237fc374bff3790190",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.stdout.txt": {
+      "bytes": 269,
+      "sha256": "05c84b25c55d227dcb98b8810d707a3bccfcea6752710bc229db99b0063a53e4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.json": {
+      "bytes": 984,
+      "sha256": "7488c2dbaffd3a5891a112c1e166bd9c803e6cf8dacdd92b2a060dc1b888fb70",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/book-links-contract-final-04.stdout.txt": {
+      "bytes": 68,
+      "sha256": "5535e04aa0cb0432ff8fe8bb06d8d57ba97dcd48c8b72844d1f104a0923dbe77",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.json": {
+      "bytes": 11815,
+      "sha256": "f5d2f5cf633b01fb70561a12126c857aa53c01272870f18950467ca452761499",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.stderr.txt": {
+      "bytes": 389,
+      "sha256": "b52dfa7a398d395b08ee8af2ac82b8f1afbe7f48c012933be4a16aebcaa0ab43",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-01.json": {
+      "bytes": 994,
+      "sha256": "b84c56eb6b7432d5ac27ac823c96cc2f6bcaa3f98d782769da6cf3d7880bfa5e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-01.stderr.txt": {
+      "bytes": 121,
+      "sha256": "5c7425ca55174af2de55693e637fb64e5445a87e50ad4c218208eee5214796bc",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-final-02.json": {
+      "bytes": 1006,
+      "sha256": "55ae6688e40af7f5051f1314a0830d744691e5a8433e5767db133b3f1d04a096",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-final-02.stderr.txt": {
+      "bytes": 120,
+      "sha256": "df602f53c940131df4f0d9b92a8664e41a92a5e9e46bc572bd0a032f00978ba4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-final-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-01.json": {
+      "bytes": 1013,
+      "sha256": "98b73015e39233ab870bdd5eeb311168af1593f772e306aa7ffd0ef0bddea8e2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-01.stderr.txt": {
+      "bytes": 540,
+      "sha256": "61e141cb6cfd9bf138bc8df9b2782297818cacf36e40300f78a15135cda35f3c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-final-02.json": {
+      "bytes": 1025,
+      "sha256": "caa89a525627132fb43c069a4cdfcccad371958fe81e9c9d2772bb2b26ae59f4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-final-02.stderr.txt": {
+      "bytes": 120,
+      "sha256": "df602f53c940131df4f0d9b92a8664e41a92a5e9e46bc572bd0a032f00978ba4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-msrv-final-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/compare_parser_asts.py": {
+      "bytes": 5481,
+      "sha256": "d024ad7c3aa5011b6304a8c3a98cb54a912cbfccbf88582c0467c6d1699b0f45",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/constitution-continuity-01.json": {
+      "bytes": 990,
+      "sha256": "6cda3ed64679ead38173cef1a148cc75eca497dec7604c6a3896fe9d792e9e97",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/constitution-continuity-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/constitution-continuity-01.stdout.txt": {
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-authoring-sessions-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-authoring-sessions-01.stdout.txt": {
+      "bytes": 95,
+      "sha256": "129170ca02710a5a905a6005d5e16773da70205d8152207dc25cb3f8d40410e2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-book-links-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-book-links-01.stdout.txt": {
+      "bytes": 68,
+      "sha256": "5535e04aa0cb0432ff8fe8bb06d8d57ba97dcd48c8b72844d1f104a0923dbe77",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-book-links-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-book-links-02.stdout.txt": {
+      "bytes": 68,
+      "sha256": "5535e04aa0cb0432ff8fe8bb06d8d57ba97dcd48c8b72844d1f104a0923dbe77",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-docs-01.stderr.txt": {
+      "bytes": 844,
+      "sha256": "6235ff656bb4607e08d373a8181dd9bf312480202fef4565efb4ac2fa4635837",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-docs-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-docs-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-docs-02.stdout.txt": {
+      "bytes": 109,
+      "sha256": "a2b72799cde5da62b01e7664c0a1e34e62137c8122bc35d780c5a50b6c6cc11b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-editions-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-editions-01.stdout.txt": {
+      "bytes": 236,
+      "sha256": "9ef53647acc06a6ce45b72e264d98840b34ce66970573f395d46f4a1403c9fb4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-editions-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-editions-02.stdout.txt": {
+      "bytes": 236,
+      "sha256": "86b1fcdbba51404da402be74875881c804af77f6063c0f4aaf20becf8488f145",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-production-coverage-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-production-coverage-01.stdout.txt": {
+      "bytes": 464,
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-schema-source-only-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-schema-source-only-01.stdout.txt": {
+      "bytes": 328,
+      "sha256": "9661cef8aa69ec0dd1f0b0ea9066660d11108abd3b37b382b4dd48cfe2c1018c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-verification-inventory-01.stderr.txt": {
+      "bytes": 73,
+      "sha256": "e234f510a2c2fb2c5a5dc3cd1d4610105cf52e19f5bba22a6ee20dc51d5d1fc1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-verification-inventory-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-verification-inventory-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-check-verification-inventory-02.stdout.txt": {
+      "bytes": 126,
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-complete-final-06.json": {
+      "bytes": 909,
+      "sha256": "79c57a5b8f4bc18859bd5edb5c4d2e956a90ca475e6eefc009577c23fc6a6e00",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-complete-final-06.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-complete-final-06.stdout.txt": {
+      "bytes": 109,
+      "sha256": "e5495069ccfc7447fd62937351a63047f3571b80d82161e113bffada98e63cd1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-independent-parser-migration-review-01.json": {
+      "bytes": 17727,
+      "sha256": "ba1a48e881d9fbbf45474b32d8f3dd9f12eceac4831231054c9c25b63cdddec1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-build-01.stderr.txt": {
+      "bytes": 133,
+      "sha256": "26a7c950d5763dc30cf86f1d59da11bc406565f11db1cca92bb358a62239d6d2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-build-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-build-02.stderr.txt": {
+      "bytes": 133,
+      "sha256": "26a7c950d5763dc30cf86f1d59da11bc406565f11db1cca92bb358a62239d6d2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-build-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-version-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-mdbook-version-01.stdout.txt": {
+      "bytes": 14,
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-reference-review-01.json": {
+      "bytes": 6822,
+      "sha256": "da7cb2581cb8d5be7c2fb2002d5fbb0d0416d9b179fff869d2b70e76726a68ed",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-reference-review-02.json": {
+      "bytes": 7256,
+      "sha256": "5216eda192725fb7348080e1221d3fb10bd32e7dc434063b7bb2f49ff4ecb051",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-reference-review-03.json": {
+      "bytes": 1008,
+      "sha256": "1702a5befcf912a1f12a0bbf5d6c64400db52902a692d0c6c077a124e78f8b19",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-render-before-01.excerpt.txt": {
+      "bytes": 121,
+      "sha256": "13c6ae122ba6007b6d3756f233cf758b7094bb3c0b415da9d2dac2917f114919",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-validation-01.json": {
+      "bytes": 83894,
+      "sha256": "3390b60bb4c8f1610cf9f0de19e25a3796979db9710899fe3220edfd50c5c173",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-validation-02.json": {
+      "bytes": 49130,
+      "sha256": "96bcfb6b0f42c938b82e5bcfde69501308dba59ed6f929e81c9d063feb6ba9fb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-03.json": {
+      "bytes": 922,
+      "sha256": "8f9d19561f692c8d7335c2bcb0493e00448dc7b33fd9d8a0a09340d528caef33",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-03.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-03.stdout.txt": {
+      "bytes": 109,
+      "sha256": "4ab03ec9cbeb4099021c1715d9937bfdb9e0bc3d1f016489cdfd720c9d6ef90e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-05.json": {
+      "bytes": 922,
+      "sha256": "7370c1a71eca683e52baf62f66e5e846d969716c8c1c528880616f14c5cb1b9b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/documentation-policy-final-05.stdout.txt": {
+      "bytes": 109,
+      "sha256": "e5495069ccfc7447fd62937351a63047f3571b80d82161e113bffada98e63cd1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/editions-final-05.json": {
+      "bytes": 902,
+      "sha256": "93bb3b1e914a318215164ecaffa6952312401ed88bcc266fed678563989b9502",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/editions-final-05.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/editions-final-05.stdout.txt": {
+      "bytes": 236,
+      "sha256": "86b1fcdbba51404da402be74875881c804af77f6063c0f4aaf20becf8488f145",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-01.json": {
+      "bytes": 899,
+      "sha256": "e862805366ee190097861fe77b8b725ccfb577fed912fb52710c0e6acffec99c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-final-02.json": {
+      "bytes": 912,
+      "sha256": "694e3a2ab71d91edb0b7ac5b2cc38db2477025518f3ff9a4c9c1344b95cb3edf",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-final-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-final-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/hosted-docs-whitespace-37413163947.excerpt.txt": {
+      "bytes": 3831,
+      "sha256": "1b7cec16933870ff3e5706b48f2063d33ad99349a2a2c121b310caab650580af",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/integrate_validation.py": {
+      "bytes": 9395,
+      "sha256": "531b2d94b8610c3eea55b27d5eaf757bc6849abd9789e64cfd6a4d274a7e27de",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/integration-seal-02.json": {
+      "bytes": 118540,
+      "sha256": "18e1be17e92a41cbdeaa516e2094b8b71f43ba7b7f844425c92eb37325b4618d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/integration-validation-01.json": {
+      "bytes": 25003,
+      "sha256": "fbc850c9ae80fa867249e9024c202b2215c23eacac2e63d177a7985455a395f3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/mdbook-contract-final-04.json": {
+      "bytes": 1003,
+      "sha256": "e69f071795bdfb9fe5bdad70a8db77753845b7194b9456277a0feeb0384e72a2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/mdbook-contract-final-04.stderr.txt": {
+      "bytes": 133,
+      "sha256": "26a7c950d5763dc30cf86f1d59da11bc406565f11db1cca92bb358a62239d6d2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/mdbook-contract-final-04.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/old-span-extractor.rs": {
+      "bytes": 1792,
+      "sha256": "087d9af7311c15c7f0c800c874a2fdd2f2ff395c08409f7c37f3a5323caf8722",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/parser-ast-comparison-01.json": {
+      "bytes": 43534,
+      "sha256": "02912738166fea2cadb643c0979d26297400e6ba29e2aaf5b08fdad6a89e07f6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-distribution-02.excerpt.txt": {
+      "bytes": 1176,
+      "sha256": "e7c97c83be7b914f7be59946ac6c09fdd007533cf1f71d99eaae648df54bbd32",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt": {
+      "bytes": 1622,
+      "sha256": "f7b6f142aa9e8ae88419955172924441dd463d323680f59f03f8b52a4847ec86",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-hosted-review-02.json": {
+      "bytes": 16908,
+      "sha256": "20dcdbb5cf324eb561d2685fbe64ce66f1b7aa1d6188b329155f29c3bbb17220",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt": {
+      "bytes": 1093,
+      "sha256": "93416bd009063600cf06fb8f8e940fee874d6d6da193fd8fd33f102b950427d8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.json": {
+      "bytes": 2050,
+      "sha256": "5b18be0c3d09debf17682e0e2ed0071f34c5bbe7ead1fb903c46c83c7c653a6c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.stderr.txt": {
+      "bytes": 3067,
+      "sha256": "385e3c64d7ecaf0b9a1e100117514eba60afef84b63b6fc6135fefc1336ceae6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.stdout.txt": {
+      "bytes": 21080,
+      "sha256": "ccb3c31ee7e789f56b928c28a9d7a4f0c613201271d81a4670f1b36e9894bcb0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.json": {
+      "bytes": 1080,
+      "sha256": "69f005c8810ed299c26ceb86959d4484a7fb8da281b7d5e5558eb5dca260f287",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.stderr.txt": {
+      "bytes": 494,
+      "sha256": "9e533ab26671c9e0f46a4df02139cd76c4e2987e46cb83f5b99af403b50ad4be",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.stdout.txt": {
+      "bytes": 2483,
+      "sha256": "a4f53963de1fd4802f61f6533e3181b399dca83ca0863ad936772e6f225d6433",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.json": {
+      "bytes": 1424,
+      "sha256": "5a0130b7ce2f134ab9ec65ff4ee95463e08f4a5e4366f34642643a96d9ac1e37",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.stderr.txt": {
+      "bytes": 1823,
+      "sha256": "6da7abb99f81c2feadf16efc6385e890461f5adf1fa98a63de8fe8ec3174e2f0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.stdout.txt": {
+      "bytes": 11021,
+      "sha256": "f5aa3acc62f1e11a57d6cafe658dc448e51cc89bcb33a65f7a27895b3be232a7",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/selector-regressions-01.json": {
+      "bytes": 929,
+      "sha256": "2606dd285cf2e63506fff905650a9fa5332d65f7b5fd30f771c99ca3335447cb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/selector-regressions-01.stderr.txt": {
+      "bytes": 134,
+      "sha256": "285db28e1639083235c92e96735b6f8e6b2e98a10123609d2d51870a0ff42c95",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/selector-regressions-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.json": {
+      "bytes": 1090,
+      "sha256": "0a792ae1a82bb1be445ce6a61e671adfe0b75f95cd3c192e21cd6b52ea24caaf",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.stdout.txt": {
+      "bytes": 159,
+      "sha256": "5f52c45adf6c495634be0d4a702aecbb31d7a16fab1edf074c2819b2dc4a117f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.json": {
+      "bytes": 1014,
+      "sha256": "d632adcb4dcde435317e7e7c0062b250fbe4943011abf9b3622225c5bdbf16bb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stderr.txt": {
+      "bytes": 246,
+      "sha256": "bf53b223f41a807b6272053fcac9645150877d0330ba07b81a5af5bcd2350c0c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stdout.txt": {
+      "bytes": 3344,
+      "sha256": "6b25c715b3ecf222034d4e229ddd890943e7ea7e8fb063d666652b938a3e7558",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.json": {
+      "bytes": 1034,
+      "sha256": "4798906a8d5c99dba2e958c6569c41391e6479b67c5513ef8463f6f09395f2a8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stderr.txt": {
+      "bytes": 248,
+      "sha256": "88481d501e9c38e85559594c8ece49a8b3c54d8ef59506cb521d6d6cffd6628e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stdout.txt": {
+      "bytes": 3344,
+      "sha256": "3757d3dea06a7df53059fd57eec0765b8ff1c03f80f6b057f44fa81abdf1ad21",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/test-diagnostic-repairs-01.json": {
+      "bytes": 1549,
+      "sha256": "f414319b35e2b4ea4fe1ba50439d19852fb211277f3412bc8a78ad0784a5f416",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/verification-inventory-before.json": {
+      "bytes": 233361,
+      "sha256": "559f45eb1bf9c7df8cd62c2672a6efd01543bf00e8db7b2e6be32cde688eea1f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/verification-inventory-review-01.json": {
+      "bytes": 1003,
+      "sha256": "84891ebe09dc45faaccff1813fafaafb818a230e4f61ff1b940d29bc3c9ccc8a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/verification-inventory-review-02.json": {
+      "bytes": 1016,
+      "sha256": "f44a47dc82bb417d5bd1e6f7b4c9fa7c5c02c34e0e2fd3a532727381da0f3f21",
+      "mode": "100644"
+    }
+  }
+}

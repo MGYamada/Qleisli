@@ -8,7 +8,7 @@ final Reference/Book barrier:
 python3 tests/fixtures/frontend_v030/common-parameter-declaration-design/policy-validation/driver.py attempt-01
 ```
 
-This derives the [preceding policy driver](../../common-pattern-design/policy-validation/driver-v2.py)
+This derives the [preceding policy driver](../../common-pattern-design/policy-validation.archive.json)
 and keeps the same **13 authored commands**: pinned mdBook 0.5.4 version/build,
 rendered HTML/print-link checking, book/authoring/source-edition/docs integrity
 and regression checks, constitutional continuity against

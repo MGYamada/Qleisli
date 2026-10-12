@@ -30,3 +30,13 @@ records maintained separately under `implementation-01/`; these selector checks
 are not a preservation theorem or a new constitutional guarantee.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [implementation-01 inventory](implementation-01.archive.json) (124 original files).

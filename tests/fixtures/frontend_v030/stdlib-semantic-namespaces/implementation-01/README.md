@@ -74,3 +74,13 @@ separately. Hosted CI on the preceding commit failed its Rust/distribution tests
 its successful native producer checks do not make that aggregate run successful.
 The next commit requires its own CI. Same-commit full CI, package, installation,
 native bundle, tagging and publication remain separate release duties.
+
+## Historical retention — beta 2026-10-12
+
+The following historical records are preserved losslessly in archives.
+Each manifest binds the complete original inventory, bytes and modes to
+Git commit `7645c2c3b8ba759cd3e7a5035fcf94a5528f5740`. Relative member
+paths and reproduction commands above describe that historical tree;
+they are not current executable test inputs or new validation results.
+
+- [implementation-01 inventory](../implementation-01.archive.json) (188 original files).

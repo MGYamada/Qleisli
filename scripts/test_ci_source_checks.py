@@ -17,7 +17,8 @@ class SourceChecksTests(unittest.TestCase):
         commands = checks.plan('ci-preflight')
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
-            'test_check_fixture_budget', 'test_ci_profiles', 'test_ci_source_checks', 'test_ci_actions',
+            'test_check_fixture_budget', 'test_check_fixture_references',
+            'test_ci_profiles', 'test_ci_source_checks', 'test_ci_actions',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()

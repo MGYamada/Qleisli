@@ -1,0 +1,405 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/functional-boundary/validation-01",
+  "archive": "tests/fixtures/frontend_v030/functional-boundary/validation-01.tar.gz",
+  "archive_sha256": "4c1e72b2aef639fee2d24ddc962fadbb4a582a7d9b800593f39ed37e9970f5a8",
+  "entries": {
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/authoring-01.json": {
+      "bytes": 905,
+      "sha256": "f57fbeccecb518788bd97f7ea3ce7a77109f13157eec8206ef6e3532d4088e8e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/authoring-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/authoring-01.stdout.txt": {
+      "bytes": 95,
+      "sha256": "1edd3ff89f19038f80564e4b1eea4aa0ad8268f9cbb84959bce7e4bed50796f1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-01.json": {
+      "bytes": 976,
+      "sha256": "ffa0d5510366a674296b3aba65715c3b2c504fd2324b0e476b5ac7d9f7c31a74",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-01.stderr.txt": {
+      "bytes": 138,
+      "sha256": "30f1a73535edaadded60b988a2bdecee0ae048f423d0ae1f0773ba7d994d7af0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-final-02.json": {
+      "bytes": 988,
+      "sha256": "b26461db7b84c734924f1e61171be677da0acfbdaf49a24c618218a5242bedcd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-final-02.stderr.txt": {
+      "bytes": 138,
+      "sha256": "30f1a73535edaadded60b988a2bdecee0ae048f423d0ae1f0773ba7d994d7af0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-final-02.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-01.json": {
+      "bytes": 961,
+      "sha256": "454871016ee5c8b4e491510cb364171a50750a7b84246318a4df1e6dc86b28ce",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-01.stdout.txt": {
+      "bytes": 68,
+      "sha256": "8e29ce4f29da867540bfcc4640d05ad3b374df534538b2a11838443dd3eb8e7a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-final-02.json": {
+      "bytes": 973,
+      "sha256": "549ffb7edf91896ad32d0a70a140cd4f7c707ec54264ddb427c1098579e2b081",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-final-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/book-links-final-02.stdout.txt": {
+      "bytes": 68,
+      "sha256": "8e29ce4f29da867540bfcc4640d05ad3b374df534538b2a11838443dd3eb8e7a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-latest-01.json": {
+      "bytes": 996,
+      "sha256": "f20b55c904e32f73fa1f073e9f6e1c591e529865375bdd051c03bfb9029fca14",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-latest-01.stderr.txt": {
+      "bytes": 120,
+      "sha256": "dd91ce629aa7449fd3598e5bf57c5d8761f50ab8db133cdb6367e3b10ae358b5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-latest-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-msrv-01.json": {
+      "bytes": 1015,
+      "sha256": "36ff37ea80d9ceb484bd108f0e21f1dfbaa6aa4b89a498de65ff6386e585b41f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-msrv-01.stderr.txt": {
+      "bytes": 120,
+      "sha256": "565ccec04ddb3923fd79de0dee8dccce70cc6f9b132f5228c45bcdfb277398ae",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/clippy-msrv-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/continuity-01.json": {
+      "bytes": 967,
+      "sha256": "43b8dedb9c0d0da2529d3c1eb6bb009218b5766dd6eaea974e9f634412a6b0e8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/continuity-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/continuity-01.stdout.txt": {
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/coverage-01.json": {
+      "bytes": 905,
+      "sha256": "9bead5d7fb08b1dde0d1f93dd5c0c78840bb5c253630938700da289d11eec3b3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/coverage-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/coverage-01.stdout.txt": {
+      "bytes": 464,
+      "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.json": {
+      "bytes": 880,
+      "sha256": "e964c1936f4c27c9a963093bcf68e093c2a23df0e7cbd26a9e3abd5761b839c9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.stdout.txt": {
+      "bytes": 109,
+      "sha256": "f14a0fb2696f6c8d083cef2c950649e84b21c12c460f111065168caea5f19462",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-seal-02.json": {
+      "bytes": 890,
+      "sha256": "6cceedfb09dd2f8af8eef7a33cb50b6ee9f7713fbea30254f23b07f5d04a1539",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-seal-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-seal-02.stdout.txt": {
+      "bytes": 109,
+      "sha256": "5ad1c3beb2bc73553e63a0167c2bf640e2a1d182b4c78e05c20ca57953b3473f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-01.json": {
+      "bytes": 892,
+      "sha256": "2bc7674af6e21682a7b426c12cf5a8bb51950fe7cf40c23c8fee4f18d04dd4b9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-01.stdout.txt": {
+      "bytes": 236,
+      "sha256": "7a1f134207032403995c076c92f830a2b2a6d1eb3f76b8f70b36d1c92a8a1f2a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-02.json": {
+      "bytes": 893,
+      "sha256": "daec3945b24714c99b999afec40f11a482dac15fb5544dde1de793f8ac0ef465",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-02.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/editions-02.stdout.txt": {
+      "bytes": 236,
+      "sha256": "c6bf6dd84d131bed9924b6ec422d587686df9568b9e576102bc81396dbc4a695",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/fmt-01.json": {
+      "bytes": 904,
+      "sha256": "0ab5dda0ba27093917965cd04067406c49c7b020647e218e99883caede9e6fb2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/fmt-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/fmt-01.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/integration-validation-01.json": {
+      "bytes": 10367,
+      "sha256": "674f33df3e565d4cf8557460d2bae954425b146ed3bd1b44a68ae5f50104e8be",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/inventory-01.json": {
+      "bytes": 909,
+      "sha256": "d61596f23268800f87ad304d484fb673367d885a7af0e549c73e2adaa53a190e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/inventory-01.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/inventory-01.stdout.txt": {
+      "bytes": 126,
+      "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/observed-inputs-01.json": {
+      "bytes": 12845,
+      "sha256": "0b48389509c4ec6cf188924b0a171adc5510dc842c19886a6cd269c3154bcd49",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/observed-inputs-02.json": {
+      "bytes": 26344,
+      "sha256": "5a1e87c8083c5a5d5fc1aea69f0dcac32eaf7e20126ad56a1e8c2a923c6930f8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/record_validation.py": {
+      "bytes": 1699,
+      "sha256": "618dbd44229f7140fba1790f6a8b359fa0e5e8c464c3ca1e7851595d702a58b2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-latest-01.json": {
+      "bytes": 1122,
+      "sha256": "0d28fb87349eefc931412ff12bec28674732bb5cafd9f05813ba13fdd96ea694",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-latest-01.stderr.txt": {
+      "bytes": 661,
+      "sha256": "baf09b00cf9bdd72cfa5ca136ee5c6d0017c4585b5d4c9c48282c9c3cfe9c7be",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-latest-01.stdout.txt": {
+      "bytes": 3901,
+      "sha256": "35c0d3f777d0929339d731e5239a2ea7d56c58702c474f72668395f19d468b70",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.json": {
+      "bytes": 1142,
+      "sha256": "252fbdc8d27ccc6be70fb849756bb84f2d5fb55907f9bac66ea189eeee119cca",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.stderr.txt": {
+      "bytes": 669,
+      "sha256": "0cddc6c8eaa656722d13ef6d1f211d4d76ae9c854669adac137d644b1bde0637",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.stdout.txt": {
+      "bytes": 3901,
+      "sha256": "d1370ef744b5c5dcf891dec5e388b6c672b964b25a83e14188a087f504ebee30",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-01.json": {
+      "bytes": 1076,
+      "sha256": "58a6d14faa6b27145c12d350017fcf3c1b8674ddcdac9b23e718c71b1e2f2e90",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-01.stderr.txt": {
+      "bytes": 246,
+      "sha256": "83731c689e3d38a8ee07fb50fb5bee9b2297c9a1822f7a6c0f34645ae4f0ceb6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-01.stdout.txt": {
+      "bytes": 176,
+      "sha256": "319f8d57ddf2f3d15f43a1661cf007a2a5cb07aa20ec65c61f7cd8eda16c9aac",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-02.json": {
+      "bytes": 1099,
+      "sha256": "b85a14bae50fa285281bfe830bc9f982ab54d044ff16daaa181f9e659909d251",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-02.stderr.txt": {
+      "bytes": 186,
+      "sha256": "a649b8cfc249a10646244ee1c7f17ea5d53129ec7ea97c3859394b4fdc6eab48",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-02.stdout.txt": {
+      "bytes": 198,
+      "sha256": "33a9b52a13011e1c5952dda0133bf51fd853c660fc85225b963dbebb8d3f7280",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-03.json": {
+      "bytes": 1065,
+      "sha256": "c6cde53493c94c2895a613d1af197fdbf899281d3a9b19654ac92282895e7683",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-03.stderr.txt": {
+      "bytes": 186,
+      "sha256": "55edbd5344cb9238ea7fbacb04023ceaa47634a19a3c8b6f9b68e1de8dc37210",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-03.stdout.txt": {
+      "bytes": 165,
+      "sha256": "28e45bfd7fad06a8cc5a52f0de6dd00d0328038f056d7f81b72ae43d40ac8561",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-04.json": {
+      "bytes": 1079,
+      "sha256": "a3bce725b5bc4da121919245a3d3ecc0acdbe26f9a1d7012d9ea28436fb1aa4b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-04.stderr.txt": {
+      "bytes": 186,
+      "sha256": "55edbd5344cb9238ea7fbacb04023ceaa47634a19a3c8b6f9b68e1de8dc37210",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-latest-04.stdout.txt": {
+      "bytes": 178,
+      "sha256": "e3d9e0c70c34e0146afb1a196e5559c09b6ed99ab8b8d5a4bd9416a7865b384c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-01.json": {
+      "bytes": 1095,
+      "sha256": "12b56a6f0f1654c0fb276eab2a4c5be5ef66eac56e8d821be9b867eae38945f2",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-01.stderr.txt": {
+      "bytes": 248,
+      "sha256": "8c11be992ed64b049dd52c0375d55076f7b971aca1948794776f3b50c2a92589",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-01.stdout.txt": {
+      "bytes": 176,
+      "sha256": "319f8d57ddf2f3d15f43a1661cf007a2a5cb07aa20ec65c61f7cd8eda16c9aac",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-02.json": {
+      "bytes": 1118,
+      "sha256": "b97a8e1f70fedcf87a361c499779946a11caf6640d351f6ff5253b14de24686f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-02.stderr.txt": {
+      "bytes": 188,
+      "sha256": "fbe917335f84ec7ba1e506b0e387efa484f5fdade367b39370e4ccab0a9c64a7",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-02.stdout.txt": {
+      "bytes": 198,
+      "sha256": "33a9b52a13011e1c5952dda0133bf51fd853c660fc85225b963dbebb8d3f7280",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.json": {
+      "bytes": 1085,
+      "sha256": "a0b45a75931004a7cd1ec242ed406ee9753db3fac5860e86c40d826e7fcd6b14",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.stderr.txt": {
+      "bytes": 188,
+      "sha256": "01f6d66534dbe6f1c31ad33ccaff1a6cec43d701de7ec5da9154a764a36a7f3a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.stdout.txt": {
+      "bytes": 165,
+      "sha256": "28e45bfd7fad06a8cc5a52f0de6dd00d0328038f056d7f81b72ae43d40ac8561",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-04.json": {
+      "bytes": 1098,
+      "sha256": "26d09cf0f726dc5856245244f313861048e9f86d258a3acbeab1d479f2c0e43f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-04.stderr.txt": {
+      "bytes": 188,
+      "sha256": "e16a1f402e21b4703c2106d6ee93ab0d8ae9301fe952511f203e698abd015f40",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-04.stdout.txt": {
+      "bytes": 178,
+      "sha256": "04bd25523a3264a32c1755a99905cccd4544f1933a7d688dfbff926cc7b37c60",
+      "mode": "100644"
+    }
+  }
+}

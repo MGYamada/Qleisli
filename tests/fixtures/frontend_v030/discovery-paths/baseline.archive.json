@@ -1,0 +1,290 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/discovery-paths/baseline",
+  "archive": "tests/fixtures/frontend_v030/discovery-paths/baseline.tar.gz",
+  "archive_sha256": "8b88fd5af56d7decfd1e1a95b11bd5ad694045cef0568b33310fc228e21ef152",
+  "entries": {
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/0.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/0.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/0.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/1.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/1.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/1.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/10.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/10.stderr.txt": {
+      "bytes": 825,
+      "sha256": "05f2ab1c2a3492c09ae34d3a7fa8700620bcc72c1fe09e70d57b8cfc8c83616a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/10.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/11.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/11.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/11.stdout.txt": {
+      "bytes": 2372,
+      "sha256": "54706861683c2548de20f9e71ecaa77de6bcc3c6f1ab5ba331d956b84d4c0bc6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/12.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/12.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/12.stdout.txt": {
+      "bytes": 2368,
+      "sha256": "d512c07ce9b44b60069c7925b4a7970a23331b81da0df1ec0c0f7adac0c4812a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/13.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/13.stderr.txt": {
+      "bytes": 825,
+      "sha256": "05f2ab1c2a3492c09ae34d3a7fa8700620bcc72c1fe09e70d57b8cfc8c83616a",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/13.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/14.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/14.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/14.stdout.txt": {
+      "bytes": 1065,
+      "sha256": "353f8e12807ba67e3b7eb218d22168041e2a5aaa25d597c7f938dc2499f9e927",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/15.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/15.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/15.stdout.txt": {
+      "bytes": 444,
+      "sha256": "0c03b5a2a019c89159995f1df6807ef625d9d2f0eb27b3170504b8291cfd8798",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/16.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/16.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/16.stdout.txt": {
+      "bytes": 450,
+      "sha256": "5fbf387d15ee1d139599b05b8e8fa92dfa02689b056d95a9646fc66eab25212c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/17.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/17.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/17.stdout.txt": {
+      "bytes": 422,
+      "sha256": "f2cdb0d089c85f28665f40acac9800ad57afb02bcdb0549c0fc2e1715ab6b83d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/2.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/2.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/2.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/3.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/3.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/3.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/4.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/4.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/4.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/5.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/5.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/5.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/6.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/6.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/6.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/7.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/7.stderr.txt": {
+      "bytes": 2066,
+      "sha256": "a33c1eb3622a3b4af195d360ef084e3384fbf71127380878b783af4473e012b6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/7.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/8.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/8.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/8.stdout.txt": {
+      "bytes": 2371,
+      "sha256": "1a1eab160154140d74b06e67435b06687f3943bc8522ed950c3bc3d0f9fe753c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/9.native.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/9.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/9.stdout.txt": {
+      "bytes": 2379,
+      "sha256": "707c8d86acded9e3a46808d30e94206431af0159ab6f8622b8dbd4476f8d4c5b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/driver.py.txt": {
+      "bytes": 2910,
+      "sha256": "d97e52f55334de673452357154846ce84fd38d7b879e7b53ab1105d3f0a66d9e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/discovery-paths/baseline/result.json": {
+      "bytes": 11003,
+      "sha256": "1a5ec884c9dbd2b3109e5b838ce267743d6cc9071b1f60a3ee54d57fa54a8a1e",
+      "mode": "100644"
+    }
+  }
+}

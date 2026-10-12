@@ -1,0 +1,215 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs",
+  "archive": "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs.tar.gz",
+  "archive_sha256": "30e2ecc5d27f5224aa000706d50dc8ce3e3d2d2efb2f239597735372f245e496",
+  "entries": {
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/README.md": {
+      "bytes": 2748,
+      "sha256": "b7ad70a274e20e1ce9d17fbe2d0f0294eed8e2b3fc64e6bc989f1069e23e3ce9",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/check_manifest.py": {
+      "bytes": 1016,
+      "sha256": "3557cf02701284e6a3b3835827a578a8139a422d854e03e16b680c33eaea8389",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/files.json": {
+      "bytes": 4075,
+      "sha256": "11168247db6b980f6b5be281c81e91b72ca9d1c6dc23ff7137a69a656c4c53c3",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/1.stderr.txt": {
+      "bytes": 2240,
+      "sha256": "8044fe02ead4b787e2a2504f69a6043f7e1a2ce1d4274f365db6aa3b421ba7e0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/1.stdout.txt": {
+      "bytes": 596,
+      "sha256": "9c7b125939f8818e1605badfe8253b0be631f2f3294bcff4c96abbf5eb206a50",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/2.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/2.stdout.txt": {
+      "bytes": 109,
+      "sha256": "40766b5bf3fd64898a777eca30f84b7026c275ef95dda5ff47b26ad4f4433c21",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/3.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/3.stdout.txt": {
+      "bytes": 14,
+      "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/4.stderr.txt": {
+      "bytes": 138,
+      "sha256": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/4.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/5.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/5.stdout.txt": {
+      "bytes": 67,
+      "sha256": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/6.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/6.stdout.txt": {
+      "bytes": 95,
+      "sha256": "7da3a5237dec03006c431939bf0cb877347cdf5f784669b14f253fb2bb09b073",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/7.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/7.stdout.txt": {
+      "bytes": 397,
+      "sha256": "cb6c669c060dd9463200668c58b579065d3e408b3f94db4855e03bfd7d31649d",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/8.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/8.stdout.txt": {
+      "bytes": 529,
+      "sha256": "59b4f43003d30074e7bd70c6d0fe1755e5a9a5522cf7641d34cfc0846039b6b1",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/commands.json": {
+      "bytes": 4751,
+      "sha256": "b2af6993b02818c1e0946109c0847c5f8a2fb7a048cadbe5a83a29569c8e7f95",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/inputs-after.json": {
+      "bytes": 17301,
+      "sha256": "220a59e5eeaa75c001c5f990bc90eedb3b1eeadeccda4618172acdce7244d405",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/inputs-before.json": {
+      "bytes": 17301,
+      "sha256": "220a59e5eeaa75c001c5f990bc90eedb3b1eeadeccda4618172acdce7244d405",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/initial/result.json": {
+      "bytes": 628,
+      "sha256": "a8ba46bc330652ef157f8db01b0ba1664afaba3e245d52229db1a7e6623067a5",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/record.py": {
+      "bytes": 4905,
+      "sha256": "a3f1a12b43c35cb8b99c52bd016a3b69ca86a59f85fc608e24cf67f385685d4b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/recorder-initial.py.txt": {
+      "bytes": 4886,
+      "sha256": "dd4ea9a8236a029d33cab173afc97b99831307dcc1b8edd16aa59759cac4d950",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/1.stderr.txt": {
+      "bytes": 114,
+      "sha256": "b75b49bf0053a3fc038b9356c96b9debe7eef6462e875daa45cd495b645a423f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/1.stdout.txt": {
+      "bytes": 596,
+      "sha256": "9c7b125939f8818e1605badfe8253b0be631f2f3294bcff4c96abbf5eb206a50",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/commands.json": {
+      "bytes": 1093,
+      "sha256": "3443fbec1cdd00853946a9b5ef2a34fafef70588377b072b5ce48c7ff6b5aa19",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/inputs-after.json": {
+      "bytes": 17301,
+      "sha256": "df77b52fb049f1ef2d495edd2254ff7a0b181070177a75fe6003b400bdad7827",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/inputs-before.json": {
+      "bytes": 17301,
+      "sha256": "df77b52fb049f1ef2d495edd2254ff7a0b181070177a75fe6003b400bdad7827",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-final/result.json": {
+      "bytes": 635,
+      "sha256": "6a120fc5ed659d85a5da87fc094f1221afc446723638aa453b88ed407f4c42c4",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/1.stderr.txt": {
+      "bytes": 1492,
+      "sha256": "a213077d9bac357df7aeeec8b0076e1febdb4826f0b769d63ef6e15fb3312858",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/1.stdout.txt": {
+      "bytes": 596,
+      "sha256": "ae47abf634725f0182745ec80f6ac0bcf6d109042d55fbc0c1ac3f4d7079e0de",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/commands.json": {
+      "bytes": 1093,
+      "sha256": "ab209b633d6e012a641e04af890a1ca3f7319ee49a171106829223e6637374f6",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/inputs-after.json": {
+      "bytes": 17301,
+      "sha256": "2993c4333f984c55e9fb21ef5330699176ad5278a848434ea9c12bd4edc6d508",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/inputs-before.json": {
+      "bytes": 17301,
+      "sha256": "2993c4333f984c55e9fb21ef5330699176ad5278a848434ea9c12bd4edc6d508",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-fixed/result.json": {
+      "bytes": 636,
+      "sha256": "c0a8f5c85980279f29f07e24c352bf05baaf89d27008fe1b2d18dd7eebce380f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-test-initial.py.txt": {
+      "bytes": 15000,
+      "sha256": "4b264e81e2f8fe45cd4e20193b505eef09003fcedf4c172b1da5ffe6ab8cc93f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-test-intermediate.py.txt": {
+      "bytes": 15075,
+      "sha256": "3ffc66600c106cc0a793fdf7373121d21fe37fbe65d39ae4b1b7dc0763e3acf0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/scheduler-test-repair.patch": {
+      "bytes": 1186,
+      "sha256": "4101a39e72f0252c9c1138166fb44cbde5809af8103527447a37695916c36e68",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/quantum-unit-source/policy-docs/summary.json": {
+      "bytes": 1794,
+      "sha256": "8fd18eaa44cdedee8462320bb7185a4839f226f50a6de22fc451880b3ae8aa81",
+      "mode": "100644"
+    }
+  }
+}

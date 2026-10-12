@@ -1,0 +1,210 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "7645c2c3b8ba759cd3e7a5035fcf94a5528f5740",
+  "prefix": "tests/fixtures/frontend_v030/ordinary-type-client-integration/results",
+  "archive": "tests/fixtures/frontend_v030/ordinary-type-client-integration/results.tar.gz",
+  "archive_sha256": "92a129f1ffda0f194c42c106fe9a531833d84751d2e4b3c86d80e63465309cc4",
+  "entries": {
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-check.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-check.stdout.txt": {
+      "bytes": 125,
+      "sha256": "6b3b291db240c66443988dd91115bf0f299b6327c2418e13778513a3c969748b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-emit-qasm.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-emit-qasm.stdout.txt": {
+      "bytes": 304,
+      "sha256": "d30e9c93ae02872485a3be7b602d241880b169897929de1cd228ebce98acc73c",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-emit-qir.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/current-terminal-emit-qir.stdout.txt": {
+      "bytes": 2024,
+      "sha256": "ebb27e83a03009e303239ed5337d6e5af658265f449439a1583c84d51a5fb787",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_layout.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_layout.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_layout_dag.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_layout_dag.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_phase_layout.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/direct-ci-lean_phase_layout.stdout.txt": {
+      "bytes": 117,
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/external-terminal-oracles.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/external-terminal-oracles.stdout.txt": {
+      "bytes": 81,
+      "sha256": "5613e23d2c33d98379d74dfa3bde872a402d53222665c38a55bf2ef654fdaf98",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/fixture-identity-tests-final.stderr.txt": {
+      "bytes": 104,
+      "sha256": "031ddcd913a2db7b0f7456019a62ccace8a3d71f5591d3662c6912b150cbe21b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/fixture-identity-tests-final.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/fixture-identity-tests.stderr.txt": {
+      "bytes": 104,
+      "sha256": "9dcd28667e1283c487c705512175a0d7eae82f1b684d2c36c2fa50a9e9d9288b",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/fixture-identity-tests.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/historical-terminal-emit-qasm.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/historical-terminal-emit-qasm.stdout.txt": {
+      "bytes": 312,
+      "sha256": "217ce5e93fe3f76b80d3328c4a32100aebdd1c39b6760b4483a3b03ad316ff59",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/historical-terminal-emit-qir.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/historical-terminal-emit-qir.stdout.txt": {
+      "bytes": 311,
+      "sha256": "6cb848c89201f6d2bf1a62a86b841f9e4a7e567c4410ed9ae563352e82c1f819",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/python-project-reverification.stderr.txt": {
+      "bytes": 205,
+      "sha256": "a5770103ac6ac1f83977020f89c17acac3ffc7bdda6b33ab979246a526ae97d7",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/python-project-reverification.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/selected-native-clients.stderr.txt": {
+      "bytes": 410,
+      "sha256": "a150f337fa366c5e7a1c65398a1619dfba57e5ab52580d1859606786865a6acd",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/selected-native-clients.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-controlled_power.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-controlled_power.stdout.txt": {
+      "bytes": 649,
+      "sha256": "498e55eef8f33b8c7904b1d917635e4e40111db0cafd913e86dde07b06df67c8",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-interference.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-interference.stdout.txt": {
+      "bytes": 405,
+      "sha256": "db9c2f34ed58920deb8e5a453eb366ec5b542891fdeeb688562c0eec5096586e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-kernel.stderr.txt": {
+      "bytes": 103,
+      "sha256": "7957052ce2927c2c229862b04dd8db06edb0c2f1d5516229c5b53294c17e9cf0",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-kernel.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-phase_layout.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-phase_layout.stdout.txt": {
+      "bytes": 82,
+      "sha256": "db5806750692fa91a061249c8254be54dc8de88c498a27de195c9317cd151083",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-qft.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-qft.stdout.txt": {
+      "bytes": 58,
+      "sha256": "e6af49b1f1b65850d175efdde38562f160f853af8a6b6ea6f51e7c1795714770",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-qpe.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/source-qpe.stdout.txt": {
+      "bytes": 66,
+      "sha256": "1d6567884304198068bcc5c85f00763a965c4d4324a4f514f7e4fc3489547c1f",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/terminal.ll": {
+      "bytes": 1670,
+      "sha256": "5e9b0d6653c71011c2480277b28a719d7a53d750de4b5ddf60df198c0dd2d57e",
+      "mode": "100644"
+    },
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/results/terminal.qasm": {
+      "bytes": 134,
+      "sha256": "f764cb90722e25d1de47e7c79859ba214ab7b0b38974af7a91054f331967d6b6",
+      "mode": "100644"
+    }
+  }
+}
