@@ -50,8 +50,15 @@ class NativeCI(unittest.TestCase):
 
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
-        self.assertEqual(len(tasks), 67)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 91)
+        self.assertEqual(len(tasks), 68)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 92)
+        added = next(task for task in tasks if task['id'] == 'execution-view-encoding')
+        self.assertEqual(added['commands'], [[
+            'lake', '-d', 'lean-kernel', 'env', 'lean', '--run',
+            'tests/execution_view_vectors.lean',
+            'tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json',
+            'tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json',
+        ]])
         # #367 makes these formerly unconditional native ignores conditional.
         # include-ignored preserves their execution and includes normal tests;
         # normalize only these exact reviewed commands for the historical hash.
@@ -66,7 +73,7 @@ class NativeCI(unittest.TestCase):
         # native-acceptance already used include-ignored before this migration.
         actual = [c for c in actual if "native_acceptance" not in c]
         self.assertEqual(sorted(actual), sorted(migrated))
-        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
+        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance", "execution-view-encoding"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]

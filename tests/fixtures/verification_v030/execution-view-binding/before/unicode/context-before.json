@@ -1,0 +1,52 @@
+{
+  "kind": "Informed shared canonical decoder vectors prepared before checking",
+  "created_utc": "2026-10-12T10:03:51.105518+00:00",
+  "parent_context": "../context-before.json",
+  "scope": "Two one-bit pure H programs and one complete circuit evidence entry. The root invokes the checked evidence. Source text is inert identity metadata and does not claim compiler/source correspondence. The only changed logical field is the implementation identity string.",
+  "known_evidence": "Issue #362 comment 6115001175 reports parser-level surrogate difference without a valid accepted-artifact control; these vectors attempt to supply that control.",
+  "predictions": "ASCII, valid pair, literal non-BMP and both replacement spellings should agree. Lean may replace lone surrogates while Rust rejects them; that is conservative host refusal, not execution divergence. Every actual outcome will be retained.",
+  "cases": [
+    {
+      "case": "ascii",
+      "path": "ascii.qirf",
+      "sha256": "11e00ac86f3fa8f5aa43e3fd2228f38842648ddf83d9befbb4e04ba4c3853050",
+      "json_escapes": true
+    },
+    {
+      "case": "lone-high",
+      "path": "lone-high.qirf",
+      "sha256": "409fec39f3d7a30e77de243a33b7f6e51458dfda567c3bbbd303f5d2b2a64f90",
+      "json_escapes": true
+    },
+    {
+      "case": "lone-low",
+      "path": "lone-low.qirf",
+      "sha256": "bcd6c84ee3767a0f8a323fc71a5c36a8c8e1a922f5819bb4924462001f1fac05",
+      "json_escapes": true
+    },
+    {
+      "case": "valid-pair",
+      "path": "valid-pair.qirf",
+      "sha256": "968bef1cb7a124f425bb0c2868f34e82fb5adbe886b5e49a3457caa5922c917d",
+      "json_escapes": true
+    },
+    {
+      "case": "literal-nonbmp",
+      "path": "literal-nonbmp.qirf",
+      "sha256": "8a387ab7cd865ea24b9eb78251398e48a35a7c20cf2cdef85e6e73cd22be3e2d",
+      "json_escapes": false
+    },
+    {
+      "case": "escaped-replacement",
+      "path": "escaped-replacement.qirf",
+      "sha256": "eaad0f83d67035f8c56d060bf1db99860dfd1bbc501b918d1e09a04f4249ee3a",
+      "json_escapes": true
+    },
+    {
+      "case": "literal-replacement",
+      "path": "literal-replacement.qirf",
+      "sha256": "be99d6f55f9661fbf3844034f2c80e2704c3a6b09cddc001aa918d740d84d38c",
+      "json_escapes": false
+    }
+  ]
+}

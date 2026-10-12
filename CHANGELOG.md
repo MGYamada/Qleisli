@@ -15,6 +15,10 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Specify and independently exercise QDV1 execution-view encoding and typed
+  finite data walkers for #362, retaining first sources and real diagnostics.
+  The production comparison, complete execution profiles and native protocol
+  cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

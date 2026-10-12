@@ -1,0 +1,52 @@
+{
+  "issue": 362,
+  "kind": "informed bounded source controls before execution-view binding; not a demonstrated decoder exploit",
+  "created_utc": "2026-10-12T09:46:09.576991+00:00",
+  "source_commit": "e1816954b64aaf399dc29aeb69299f14be4815a4",
+  "available_context": "Repository and issue reviewed; no external author or blind benchmark. Current standard-library spelling is preserved before the separate #369 migration. This study does not mutate Rust decoding. Native acceptance is about decoded IR, not source preservation.",
+  "cli": {
+    "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "sha256": "598a2e974a85a69cb2afcc1db4082a52b55d9008b057113a470c522fedb147bd"
+  },
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "804e7ceb48176be26243cc84a42bfd3eca68aa38df0ddeed95c223e7d2742020"
+  },
+  "cases": [
+    {
+      "case": "bell",
+      "files": {
+        "main.qli": "fa15419302f6fb94e9bb4f70560ce1bcca8de1b8d87361a76f3bbdaadfcc3493",
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "case": "phase",
+      "files": {
+        "main.qli": "6b59dcc98c66d76da151215468e842f8f3ff0d1f3fe5e014af75859f5451ff28",
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "case": "hidden-discard",
+      "files": {
+        "main.qli": "9df50eacbb003646ea7f26d1888a15d30cb45090e4122e967571bab01d0ad726",
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "case": "false-unitary",
+      "files": {
+        "main.qli": "d11ba33b7b29850e882c30879aa54a4e358aa243b1242add0c0972329c4e8323",
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    }
+  ],
+  "independent_expectations": {
+    "bell": "00 and 11 each 1/2",
+    "phase": "P(0)=(2+sqrt(2))/4; P(1)=(2-sqrt(2))/4; phase is not quotiented away",
+    "hidden-discard": "0 and 1 each 1/2; observe history retained",
+    "false-unitary": "Reject the observing body under unitary; success would be a separate effect defect"
+  },
+  "limitations": "Tiny floating-point simulation is not exact/source/runtime proof. A successful baseline is not a counterexample to #362 or completion evidence. Protocol/canonical mutation negatives will be separate tests."
+}

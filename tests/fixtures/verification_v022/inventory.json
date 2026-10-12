@@ -734,6 +734,25 @@
         "path": "tests/quantum_unit_maps.rs",
         "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
       }
+    },
+    {
+      "id": "execution-view-encoding",
+      "producer": "Actual typed Rust finite data and independent Lean decoded data",
+      "consumer": "QDV1 encoding and typed finite walker tests only; production gate not connected",
+      "obligation": "Keep type, phase, axis order, both branch arms, owners, identities and actual caches in the decoded description; no acceptance or preservation claim",
+      "reference": "docs/src/reference/execution-view.md",
+      "replacement": [
+        "VM-28",
+        "VM-29"
+      ],
+      "positive": {
+        "path": "src/interchange/execution_view/finite/tests.rs",
+        "test": "typed_raw_basis_and_matrix_walkers_match_shared_descriptions"
+      },
+      "negative": {
+        "path": "src/interchange/execution_view.rs",
+        "test": "incomplete_over_capacity_and_over_depth_values_never_return_bytes"
+      }
     }
   ],
   "enums": [
@@ -2207,7 +2226,7 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "ed1854a67d0cf1e4a3334ef3bbb876a31aac323c7fb3ec3aff819428fe5a13d7",
+      "sha256": "0b29cba3546eaf6805a827bb153736ef416ac86bade454309b333ecee373726e",
       "group": "hierarchy",
       "surface": null
     },
@@ -4712,7 +4731,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "d154b95f5c685f409f8a936300d898ae62a79ec876cb0361aed53061c8209463",
+      "sha256": "36bbddb6114c6e12d024d25c76534f2d5ff66079ff22fb4eddc37baf4d1581db",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5302,6 +5321,51 @@
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView.lean",
+      "group": "execution-view-encoding",
+      "sha256": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Finite.lean",
+      "group": "execution-view-encoding",
+      "sha256": "a2712273f179386fc4d84565ead41629f8c8f5cc5d93b536021ffe3bd26b9240",
+      "surface": null
+    },
+    {
+      "path": "src/interchange/execution_view.rs",
+      "group": "execution-view-encoding",
+      "sha256": "2b977e5eeb6cffcbbe897859218ecfad4bd58e537ec0244cd4de699151372f08",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_BYTES: usize = 64 << 20;",
+          "const MAX_DEPTH: usize = 128;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite.rs",
+      "group": "execution-view-encoding",
+      "sha256": "945d49222b0e8e57b75f6521d30a2c0592ce88e0e4f2e1808270d95a2bbdd213",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/tests.rs",
+      "group": "execution-view-encoding",
+      "sha256": "07b23bcba2124d23eb8cbfb5894de1f27df48f0b9ec93791efd3111e96059cf5",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -5316,7 +5380,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -5338,7 +5402,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -5359,7 +5423,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -5380,7 +5444,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -5404,7 +5468,7 @@
       "binding": "Fresh native check of immutable original QIRF/dependency bytes and request. Square leaf retains two-sided unitarity; pure-leaf reconstructs the original body and exact Gram identity. Private source sidecars retain separately checked reference/implementation leaves and source provenance, without a source-preservation or inverse-access claim.",
       "encoding": "Exact trees and ordered quantum ports, including zero-width owners; pure-leaf accepts Unit -> A preparation and different input/output widths",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
       "failure": "Reject shape, effect, hidden observation, phase, request, dependency or identity mismatch and exceeded capacity; no receipt or fallback",
       "replacement": [
         "VM-23",
@@ -5427,7 +5491,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending",
       "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
-      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
+      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -5449,7 +5513,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
+      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -5864,7 +5928,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -5906,7 +5970,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [

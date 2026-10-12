@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "6a9e4a019c9cbcb59c40fc5c054295092a5f38dd132bd794d90dcada478dcfd7",
+  "surface_sha256": "fce2b384fd333473fd3db926e2fe49d2288355bdda763d8c6357ee55363184b6",
   "groups": [
     {
       "id": "raw-core",
@@ -912,6 +912,30 @@
         "lean-kernel/QleisliKernel/Raw/Unit.lean",
         "lean-kernel/QleisliKernel/Raw/Trace.lean",
         "lean-kernel/QleisliKernel/Raw/Ownership.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "execution-view-encoding",
+      "status": "untrusted-host",
+      "blocker": "QDV1 encoding and typed finite walkers are exercised only as helpers. Every production execution profile, native comparison, protocol cutover, actual-bound-entry proof connection and runtime/source preservation remain separate; no #362 completion credit.",
+      "evidence": [
+        "src/interchange/execution_view/finite/tests.rs",
+        "tests/execution_view_vectors.lean",
+        "docs/src/reference/execution-view.md"
       ],
       "proof_gates": [
         "S05-C1",

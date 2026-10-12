@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "28eb5dd0e172d2a5335c217e237dfb5a796152b4ef7a04c4348aa75f0bf92db4",
+      "sha256": "a0909e9afebdf1723eece8f7f08563ac52a5506647e24e42fab459e8c5f6d25e",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -140,9 +140,11 @@
         "lean-kernel/Cli/Finite.lean": "c513812b72f9752033159059fc145a246c30f59583ca24bee57481566b66b427",
         "lean-kernel/Cli/Hierarchical.lean": "cc776268f9d08d54ca1eaac900766d6ddb9678f73c17e2c54ee2863e57add378",
         "lean-kernel/Cli/Validity.lean": "ed997410d7bf6c815288605e543cae81ded5274155f631fcfc7b54b1dbd4bd18",
-        "lean-kernel/Main.lean": "ed1854a67d0cf1e4a3334ef3bbb876a31aac323c7fb3ec3aff819428fe5a13d7",
+        "lean-kernel/Main.lean": "0b29cba3546eaf6805a827bb153736ef416ac86bade454309b333ecee373726e",
         "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
         "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
+        "lean-kernel/Protocol/ExecutionView/Finite.lean": "a2712273f179386fc4d84565ead41629f8c8f5cc5d93b536021ffe3bd26b9240",
+        "lean-kernel/Protocol/ExecutionView.lean": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
         "lean-kernel/Protocol/FiniteCodec.lean": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",
         "lean-kernel/Protocol/Hierarchical.lean": "a098e44ed67362fe3ab388b19fb3abd7fc8d1381f9a38a000e93e9efe9cc59a3",
         "lean-kernel/Protocol/HierarchicalFinite.lean": "8d3231c6de519a0bc8ca9b4047a944ef5c1a6183be14323aafcb90b87647cc41",
@@ -265,12 +267,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "2eddca94d63c3490c25f46c5b0fdf1f5023bf1dc43982d0098359d42035f14d1",
+      "lean/schema-registry.json": "170f9ae39fff36e81bb78a0613c6cf55fa16c13a49146cfe45138a2c14803982",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "131fe2e133161399c6693c85b29013bacd2d8b118dea161cf05755628ed1d5de"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "e0745c2973687a3c0b6b14a39e933c8f930ec7a521f3e5201df67ab5814cd5a0"
     },
     "commands": [
       {
@@ -283,7 +285,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 17.720730250002816,
+        "seconds": 21.476231707958505,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -297,7 +299,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 62.09046004200354,
+        "seconds": 61.35456104099285,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -340,7 +342,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 21.68379024998285,
+      "seconds": 20.12721833307296,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -356,7 +358,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "28eb5dd0e172d2a5335c217e237dfb5a796152b4ef7a04c4348aa75f0bf92db4",
+    "source_revision_sha256": "a0909e9afebdf1723eece8f7f08563ac52a5506647e24e42fab459e8c5f6d25e",
     "command": {
       "argv": [
         "lake",

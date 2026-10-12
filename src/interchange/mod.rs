@@ -1,6 +1,10 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
+// #362 staging: exercise the common encoding before production view walkers
+// and the atomic native protocol cutover are connected.
+#[cfg(test)]
+mod execution_view;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;

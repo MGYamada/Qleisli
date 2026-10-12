@@ -2,6 +2,23 @@
   "format": 1,
   "tasks": [
     {
+      "id": "execution-view-encoding",
+      "name": "Independent canonical encoding and typed finite data vectors; no execution-binding claim",
+      "commands": [
+        [
+          "lake",
+          "-d",
+          "lean-kernel",
+          "env",
+          "lean",
+          "--run",
+          "tests/execution_view_vectors.lean",
+          "tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json",
+          "tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json"
+        ]
+      ]
+    },
+    {
       "id": "lean-hierarchy",
       "name": "Shared DAG semantics, binding, limits and zero-width owners",
       "commands": [

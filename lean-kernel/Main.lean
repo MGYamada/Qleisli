@@ -2,6 +2,7 @@ import Cli.Finite
 import Cli.Hierarchical
 import Cli.Validity
 import Protocol.Product
+import Protocol.ExecutionView.Finite
 
 /-! Unproved transport adapter for the existing experimental profiles.
 Inputs remain untrusted until checked by the independently specified pure kernel.
