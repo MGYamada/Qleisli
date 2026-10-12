@@ -47,3 +47,19 @@ existing shared steps. The tests and their source programs remain unchanged.
 The repaired tree passed all 24 function-contract, 19 general-arrow and six
 rectangular-Meaning tests on both the default toolchain and Rust 1.85.0.
 This focused result does not replace the required full CI run on the fix.
+
+The subsequent local closed-Issue regression audit at `ce462f9` found one
+obsolete general-arrow refusal expectation in `tests/operation_parameters.rs`:
+
+```text
+explicit_project_arrows_keep_meaning_and_exact_codomain_rejections
+tests/operation_parameters.rs:756:64:
+called `Result::unwrap_err()` on an `Ok` value: ()
+```
+
+Its unchanged source declares a well-typed unused general-arrow function, now
+supported by the resumed contract. The updated test requires acceptance and
+also rejects a result tree with an extra Unit field at the same bit width.
+It retains the independent dishonest-Meaning rejection. All 24 operation-
+parameter, 11 reference-Meaning and 12 static-operation tests pass locally;
+full CI and the beta audit remain separate.
