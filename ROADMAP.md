@@ -54,6 +54,9 @@ fixes the user-approved beta scope at **127 Issues**, including the original
 111 and 16 additions. At the 2026-10-12 checkpoint, 81 were open and 46 closed;
 every acceptance criterion and evidence binding must be audited, including
 closed Issues. GitHub status is not completion evidence.
+The maintainer reaffirmed #63's all-v0.3.0 exclusion on 2026-10-12. Retain it
+among the 127 audit entries as an approved exclusion, without implementation
+credit; 126 Issues remain subject to their applicable completion criteria.
 The maintainer resumed #39 and [#83](https://github.com/MGYamada/Qleisli/issues/83)
 for beta, superseding their alpha exclusions. #83 comes first: separate
 operation/Meaning ports, ordinary project integration and independently checked

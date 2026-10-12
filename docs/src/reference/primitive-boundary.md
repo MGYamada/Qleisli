@@ -17,6 +17,8 @@ existing concrete finite and selected lowering subsets, whose emitter support
 remains distinct. Source recognition and typing do not supply concrete
 capability, native acceptance or semantic evidence. Source paths identify files
 in the [Qleisli repository](https://github.com/MGYamada/Qleisli).
+The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
+distinguishes inspectable derived source from primitive or external semantic authority.
 
 ## Meaning, spelling and implementation
 

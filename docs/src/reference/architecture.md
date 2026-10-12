@@ -127,6 +127,34 @@ acceptance path or weaken accepted meaning. Their implementation is later work;
 this chapter installs none of those tools. mdBook is the separate documentation
 build environment and creates no language or API-introspection authority.
 
+### Inference and explicit discovery
+
+For human authors and coding agents, **zero-prior inferable** means that the
+intended semantic role can be recovered without knowing Qleisli-specific names.
+Familiar spelling or similar-looking code alone is insufficient. **Explicitly
+discoverable** means that a canonical introduction exposes the role and its
+contract without requiring the author to guess the construct's name first.
+These are documentation and design categories, not claims about an LLM's
+measured success rate or permission to infer quantum meaning.
+
+| Concept | Category and recovery path |
+| --- | --- |
+| Ordinary modules, imports, tuples and binders | Inferable where their ordinary meaning survives. The source/type Reference and located diagnostics identify the exact syntax and predictable classical mistakes. |
+| Quantum owners, effects, access capabilities and Meaning | Explicit discovery through the type, Rust and functional boundary chapters. Classical familiarity cannot supply their quantum obligations. |
+| Derived stdlib abstractions | Explicit discovery through the signature and mathematical contract, then ordinary `.qli` source under `stdlib/src/` and its callees. Source inspection does not itself prove the contract. |
+| Sealed primitives and external providers | Explicit discovery through the primitive and production boundaries. Reading derived source cannot reconstruct or grant their semantic authority. |
+| First-party ecosystem tools, including QLT, QDB and QCP | Explicit discovery through `qleisli --help`, then `qleisli help ecosystem`; each tool's role and current availability are stated there. These are Qleisli-native discovery targets. |
+
+The help path works without a project or native checker and issues no accepted
+handle. Planned tools remain unavailable for execution. Predictable classical
+mistakes need deterministic, located correction paths that preserve owners,
+phase and evidence; semantic ambiguity must reject. Naming must avoid misleading
+pseudo-analogues and [semantic false friends](functional-boundary.md#false-friends-and-diagnostics).
+Every future first-party language or ecosystem addition must declare its
+category, intended semantic role and canonical recovery or discovery path.
+This implements the documentation boundary in
+[#253](https://github.com/MGYamada/Qleisli/issues/253) within the current Reference.
+
 ## Required review of future designs
 
 Every major language or tooling design document must identify how it preserves:

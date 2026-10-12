@@ -15,8 +15,19 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Require all 127 selected Issues at the complete-feature release gate, retain
+  the historical 111-Issue inventory, and reject old #83/#39 deferrals. Preserve
+  the exact alpha-only approval; no completion evidence is inferred from scope.
+  Retain #63's unimplemented criteria outside v0.3.0, including beta, and align
+  the static Reference with that explicit exclusion without crediting implementation.
 - Restore the README link to the canonical project-name explanation (#234),
   retaining the alpha removal of the ecosystem naming comparison.
+- State the inference/discovery boundary in the existing architecture Reference
+  (#253), with current help/source paths and tool availability.
+- Align the functional-boundary Reference with implemented general arrows,
+  rectangular Raw Meaning checks and selected ordinary Bits transport (#80).
+  Record the maintainer's external-qlippy exclusion while retaining core
+  compiler diagnostics and Cargo Clippy checks.
 - Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
   native rectangular pure-leaf component for #83: separate interface ports,
   exact original-body matrix equality and isometry/reference proofs. Preserve
@@ -30,6 +41,16 @@ and exactness obligations retain their recorded scopes and status.
 - Retain small installed-CLI playground sources, analytical expectations and
   actual simulation/ownership diagnostics, including a deliberately omitted
   teleportation correction. These observations do not establish a general proof.
+
+- Stop native checker descendants before reaping their process-group leader;
+  disarm cleanup after reaping so a recycled group number cannot be signalled
+  (#366). Unix targets lacking a non-reaping wait reject before launching.
+
+- Clarify that AcceptedProgram's private instrument pair/call sidecars are
+  currently inert retention for a future source-to-artifact replay/audit
+  consumer (#365). Actual equations are checked before attachment; no
+  downstream replay, execution or export consumer reads these instrument
+  sidecars. Source-associated pure equations have a separate inspection API.
 
 - Update the Python build backend to setuptools 83.0.0. Build the installed
   interop test package in isolation using its declared build requirements,
@@ -102,8 +123,9 @@ incompatible source/API changes from 0.2.9.
   Add a private paired Rust handle retaining both original artifacts, complete
   signature and source identity. Ordinary concrete compilation executes only
   the implementation and freshly checks its emitted call interval against the
-  reference; retain private pair/call sidecars without changing whole-root
-  request disclosure. Connect explicit Raw specialization with independent
+  reference; retain private pair/call sidecars as currently inert data, without
+  a downstream consumer or change to whole-root request disclosure. Connect
+  explicit Raw specialization with independent
   source replay, fresh actual-call equations, nested/unused/zero-count obligations
   and ordered result checks. Reject hierarchy/checker-free lowering of observing
   contracts. Preserve pure contracts and their exact phase rule.

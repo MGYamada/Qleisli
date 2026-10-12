@@ -3,20 +3,85 @@
 //! This cleans up ordinary descendants, not executables that escape their group.
 use std::io::{Read, Write};
 use std::path::Path;
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Command, ExitStatus, Stdio};
 use std::time::{Duration, Instant};
 
 use super::{Error, Result};
 
-struct Invocation(Child);
+// A child stays owned until group cleanup has completed. Taking it before
+// reaping also disarms Drop, so cleanup never signals a number after reaping it.
+struct Invocation(Option<Child>);
+
+fn stop_descendants(child: &mut Child) {
+    #[cfg(all(test, unix, not(any(target_os = "openbsd", target_os = "redox"))))]
+    {
+        use rustix::process::{Pid, WaitId, WaitIdOptions, waitid};
+        let pid = Pid::from_raw(child.id() as i32).unwrap();
+        // Assert at the actual cleanup site, including the success path: a
+        // future wait-before-signal regression must fail before sending KILL.
+        let status = waitid(
+            WaitId::Pid(pid),
+            WaitIdOptions::EXITED | WaitIdOptions::NOHANG | WaitIdOptions::NOWAIT,
+        );
+        assert_ne!(status.err(), Some(rustix::io::Errno::CHILD));
+    }
+    #[cfg(unix)]
+    if let Some(group) = rustix::process::Pid::from_raw(child.id() as i32) {
+        let _ = rustix::process::kill_process_group(group, rustix::process::Signal::KILL);
+    }
+    let _ = child.kill();
+}
+
+impl Invocation {
+    fn child(&mut self) -> &mut Child {
+        self.0.as_mut().expect("unreaped native child")
+    }
+
+    fn finish(&mut self) -> std::io::Result<ExitStatus> {
+        let mut child = self.0.take().expect("unreaped native child");
+        stop_descendants(&mut child);
+        child.wait()
+    }
+
+    fn try_wait(&mut self) -> std::io::Result<Option<ExitStatus>> {
+        #[cfg(all(unix, not(any(target_os = "openbsd", target_os = "redox"))))]
+        {
+            use rustix::process::{Pid, WaitId, WaitIdOptions, waitid};
+            let pid = Pid::from_raw(self.child().id() as i32).expect("native child PID");
+            // WNOWAIT keeps an exited leader waitable and reserves its PID/PGID
+            // until finish has stopped descendants and reaped the leader.
+            match waitid(
+                WaitId::Pid(pid),
+                WaitIdOptions::EXITED | WaitIdOptions::NOHANG | WaitIdOptions::NOWAIT,
+            ) {
+                Ok(Some(_)) => self.finish().map(Some),
+                Ok(None) => Ok(None),
+                Err(error) if error == rustix::io::Errno::INTR => Ok(None),
+                Err(error) if error == rustix::io::Errno::CHILD => {
+                    // An external reaper violates our child-ownership premise.
+                    // Do not signal a number whose reservation is now unknown.
+                    self.0.take();
+                    Err(error.into())
+                }
+                Err(error) => Err(error.into()),
+            }
+        }
+        #[cfg(any(not(unix), target_os = "openbsd", target_os = "redox"))]
+        {
+            let status = self.child().try_wait()?;
+            if status.is_some() {
+                self.0.take();
+            }
+            Ok(status)
+        }
+    }
+}
+
 impl Drop for Invocation {
     fn drop(&mut self) {
-        #[cfg(unix)]
-        if let Some(group) = rustix::process::Pid::from_raw(self.0.id() as i32) {
-            let _ = rustix::process::kill_process_group(group, rustix::process::Signal::KILL);
+        if self.0.is_some() {
+            let _ = self.finish();
         }
-        let _ = self.0.kill();
-        let _ = self.0.wait();
     }
 }
 
@@ -28,6 +93,15 @@ pub(super) fn invoke<T>(
     maximum: usize,
     decode: impl FnOnce(&[u8]) -> Result<T>,
 ) -> Result<T> {
+    // rustix cannot provide a non-reaping wait on these Unix targets. Reject
+    // before spawning rather than signal an unreserved process-group number.
+    if cfg!(all(unix, any(target_os = "openbsd", target_os = "redox"))) {
+        return Err(Error::new(
+            "unsupported",
+            "native process-group cleanup requires a non-reaping wait on this platform",
+        ));
+    }
+
     let mut command = Command::new(executable);
     command
         .arg(mode)
@@ -40,13 +114,12 @@ pub(super) fn invoke<T>(
         use std::os::unix::process::CommandExt;
         command.process_group(0);
     }
-    let mut child = Invocation(
-        command
-            .spawn()
-            .map_err(|e| Error::new("io", format!("cannot start Lean native checker: {e}")))?,
-    );
-    let stdin = child.0.stdin.take().expect("piped stdin");
-    let stdout = child.0.stdout.take().expect("piped stdout");
+    let mut child =
+        Invocation(Some(command.spawn().map_err(|e| {
+            Error::new("io", format!("cannot start Lean native checker: {e}"))
+        })?));
+    let stdin = child.child().stdin.take().expect("piped stdin");
+    let stdout = child.child().stdout.take().expect("piped stdout");
     let deadline = Instant::now() + timeout;
     #[cfg(unix)]
     let (bytes, written) = {
@@ -150,7 +223,6 @@ pub(super) fn invoke<T>(
     };
     let status = loop {
         if let Some(status) = child
-            .0
             .try_wait()
             .map_err(|e| Error::new("io", format!("native wait failed: {e}")))?
         {
@@ -173,10 +245,51 @@ pub(super) fn invoke<T>(
     Ok(result)
 }
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, unix, not(any(target_os = "openbsd", target_os = "redox"))))]
 mod tests {
     use super::*;
     use std::os::unix::fs::symlink;
+    use std::os::unix::process::CommandExt;
+
+    #[test]
+    fn exited_leader_remains_waitable_until_cleanup_and_disarms_after_reaping() {
+        use rustix::process::{Pid, WaitId, WaitIdOptions, waitid};
+        let mut command = Command::new("/bin/sh");
+        command.args(["-c", "exit 0"]).process_group(0);
+        let mut invocation = Invocation(Some(command.spawn().unwrap()));
+        let pid = Pid::from_raw(invocation.child().id() as i32).unwrap();
+        let options = WaitIdOptions::EXITED | WaitIdOptions::NOHANG | WaitIdOptions::NOWAIT;
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while waitid(WaitId::Pid(pid), options).unwrap().is_none() {
+            assert!(Instant::now() < deadline, "leader did not exit");
+            std::thread::sleep(Duration::from_millis(1));
+        }
+
+        // Cleanup must leave the leader's PID reserved until the final wait.
+        stop_descendants(invocation.child());
+        assert!(waitid(WaitId::Pid(pid), options).unwrap().is_some());
+        assert!(invocation.try_wait().unwrap().unwrap().success());
+        assert!(invocation.0.is_none());
+        assert!(matches!(
+            waitid(WaitId::Pid(pid), options),
+            Err(rustix::io::Errno::CHILD)
+        ));
+        // No PID remains owned: dropping the guard must perform no cleanup.
+        drop(invocation);
+    }
+
+    #[test]
+    fn failed_leader_cannot_authorize_a_successful_response() {
+        let result = invoke(
+            Path::new("/usr/bin/false"),
+            vec![],
+            "--test",
+            Duration::from_secs(2),
+            256,
+            |_| Ok(()),
+        );
+        assert_eq!(result.unwrap_err().code, "io");
+    }
 
     #[test]
     fn inherited_pipes_do_not_leave_descendants_or_transport_threads() {

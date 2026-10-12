@@ -31,7 +31,10 @@ ALPHA_RECORDS = {
     "release/alpha-scope-approval.json": "3d186f683833161f9c1a09472d74c9a6e19409553d73211c67cd01a4178d5032",
 }
 LEDGER = "governance/guarantees.json"
-GROUPS = {
+# Preserve the original 111-Issue inventory as history. Beta's adopted scope in
+# #142 adds sixteen Issues; neither a closed state nor an alpha deferral is
+# completion evidence. These groups index requirements, not execution order.
+HISTORICAL_GROUPS = {
     "G01": [129, 134, 137, 138, 149],
     "G02": [135, 136, 139, 140, 154, 280, 281, 311], "G03": [141, 142],
     "G04": [22, 27, 43, 44, 84, 100],
@@ -44,7 +47,15 @@ GROUPS = {
     "G11": [169, 170, 171, 172, 173, 174, 230, 231, 255],
     "G12": [133, 224, 225, 226, 237, 245, 270, 272], "G13": [48, 234, 253, 254],
 }
+BETA_ADDITIONS = {
+    "G02": [362, 365], "G03": [343, 364, 366, 367], "G04": [342],
+    "G05": [38, 355], "G06": [352], "G07": [78], "G08": [14],
+    "G10": [369], "G12": [363, 368], "G13": [350],
+}
+GROUPS = {group: sorted(numbers + BETA_ADDITIONS.get(group, []))
+          for group, numbers in HISTORICAL_GROUPS.items()}
 ISSUES = {number for numbers in GROUPS.values() for number in numbers}
+RESUMED_ISSUES = {39, 83}
 ROLES = {"implementation", "reference", "migration", "positive", "negative", "jurisdictions",
          "production", "compatibility"}
 NATIVE_JOBS = {"check-macos-source": "aarch64-apple-darwin",
@@ -203,7 +214,7 @@ def requirements(root, base, snapshot, *, product_version=None):
     require(data["release_line"] == "0.3.0" and data["identities"] == IDENTITIES,
             "reviewed release/edition/schema identities differ")
     require(type(data["identities"]["qrate_schema"]) is int, "qrate schema must be an integer")
-    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/111 Issues")
+    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/127 Issues")
     require(all(type(number) is int for numbers in data["groups"].values() for number in numbers),
             "group Issue identities must be integers")
     # References in the reviewed requirements resolve against immutable Git blobs.
@@ -229,6 +240,8 @@ def requirements(root, base, snapshot, *, product_version=None):
             nonempty(criterion["text"], "criterion text")
             require(criterion["text"] in body, f"Issue {number}: criterion absent from reviewed snapshot")
             require(criterion["scope"] in {"required", "explicit-later-version"}, "unknown criterion scope")
+            require(number not in RESUMED_ISSUES or criterion["scope"] == "required",
+                    f"Issue {number}: resumed for beta; historical deferral cannot authorize readiness")
             roles = criterion["roles"]
             require(type(roles) is list and len(set(roles)) == len(roles)
                     and set(roles) <= ROLES, "unknown/duplicate evidence roles")

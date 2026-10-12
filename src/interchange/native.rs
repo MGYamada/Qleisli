@@ -310,10 +310,14 @@ pub struct AcceptedProgram {
     interface: Option<RootInterface>,
     derived_effect: crate::ir::Effect,
     output_ports: Vec<crate::ir::QuantumPort>,
-    // Source equations are private sidecars. They do not add a whole-root
-    // request, change QIRF bytes or authorize decoding another artifact.
+    // Inert retention for a future source-to-artifact replay/audit consumer
+    // (#356): no current replay, execution or export path reads these two fields.
+    // Equations are checked before attachment; retention grants no authority,
+    // adds no whole-root request and does not prove source preservation.
     source_instruments: Arc<[Arc<crate::contract::instrument::InstrumentEvidence>]>,
     source_instrument_calls: Arc<[crate::contract::instrument::InstrumentCall]>,
+    // Separate source-associated pure equations, exposed by the getter below
+    // and inspected by the rectangular Meaning regressions.
     source_pure_equations: Arc<[Arc<super::pure_leaf::SourcePureEquation>]>,
 }
 impl AcceptedProgram {

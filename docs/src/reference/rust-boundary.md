@@ -5,6 +5,8 @@ Qleisli's checking. The governing rule is: **reuse familiar syntax for familiar
 semantics; use distinct syntax when that intuition would misdescribe a quantum
 operation.** Familiar spelling is not evidence of a physical operation, an
 ownership transition or a checked mathematical law.
+The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
+connects predictable classical mistakes to diagnostics and explicit quantum contracts.
 
 This chapter specifies the current `0.3.0-beta` boundary in edition 2026 under
 the [authority hierarchy](authority.md). It applies the ordinary

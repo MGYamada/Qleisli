@@ -73,7 +73,11 @@ correlations remain obligations, not information inferred from variable names.
 An `Op<A>` is a static endomorphic operation description, used through explicit
 static parameters and arguments. It is not an ordinary runtime value and
 contains no live quantum owner. Reusing a description does not duplicate its
-input. For example, this existing form applies one static operation twice:
+input. The general form `Op<A -> B>` retains separate input and output trees;
+`Op<A -> B, M>` keeps the existing Meaning slot. Its application, capability
+and concrete profile rules are specified in the
+[type model](type-model.md#general-pure-operation-arrows).
+For example, this existing form applies one endomorphic operation twice:
 
 ```qli
 unitary fn twice[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
@@ -109,7 +113,8 @@ or EXACT discharge.
 
 The table gives the existing endomorphic common-source rules; the
 [general pure-arrow rules](type-model.md#general-pure-operation-arrows) specify
-separate ports and their current selected hierarchy implementation. Concrete
+separate ports in the ordinary project and selected Raw adapters, together
+with the selected hierarchy's supported unrefined construction. Concrete
 lowering eligibility still depends on the profile and retained evidence.
 Finite provider materialization retains its refusal of explicit specialization
 through this path. Selected hierarchy projection and bounded pure Raw
@@ -118,7 +123,11 @@ endomorphic Meaning requests apply to the whole tree and every annotated child,
 including children under zero repetitions. Each request checks the actual Raw
 artifact with Lean, then independently replays its source steps. Adjoint reverses
 both ports; packed control and repetition still require endomorphisms. Unsupported
-Raw primitives and rectangular Meaning equations remain separate profile limits.
+Raw primitives still reject. Rectangular Meaning equations use fresh native
+`pure-leaf` checks of the original bodies and exact two-port matrices in both
+Raw routes, including `V†V = I`; the hierarchy's refined finite leaf remains
+square. These checks retain phase and ordered ports without proving general
+source preservation.
 A successful common judgment cannot replace the independent evidence required
 by a profile.
 
@@ -225,7 +234,10 @@ Selected-source specialization has its own concrete eligibility rules.
 Closed `checked_op` and Meaning-refined bindings use the all-binding native
 gate described in the [type model](type-model.md#direct-runtime-transforms-and-opaque-operations).
 Exact Unit/Bit/Bits/product quantum interfaces are retained; unsupported
-constructors and ordinary runtime Bits materialization retain explicit refusals.
+constructors retain explicit refusals. Ordinary `Bits<n>` values have separate
+[selected Raw transport rules](type-model.md#one-finite-type-universe), including
+copyable `Bits<0>`; the ordinary finite project and hierarchy retain their
+concrete limitations. Static operation construction does not erase those limits.
 A successful common judgment
 or pending obligation does not supply a missing emitter or an accepted handle.
 The [type model](type-model.md#direct-runtime-transforms-and-opaque-operations)
@@ -250,8 +262,9 @@ each basis transition and acts linearly, including on entangled inputs. Copying
 a label inside that map can create correlations; it does not copy an arbitrary
 quantum state. The body is one restricted basis expression, not an ordinary
 statement block, closure or measurement. Outer runtime captures reject.
-Selected CoherentLift projection and finite quantum Unit limitations remain;
-the source contract grants no unsupported emitter.
+Coherent lifting retains its concrete
+[basis-map profile limits](coherent-basis.md); the source contract grants no
+unsupported emitter. Quantum Unit owners follow their separate explicit rules.
 
 Physical information is obtained through an explicit observing operation such
 as `measure_z`, which consumes its logical owner. Ordinary `if` requires an
@@ -313,7 +326,7 @@ acceptance checks or the broader feature Issues are complete.
 | --- | --- |
 | Functional influence | Explicit contracts subordinate to the authority hierarchy; Rust/Haskell slogans are mnemonics. |
 | Descriptions and owners | Static descriptions contain no live Q; each application retains linear ownership. |
-| Higher-order abstraction | Existing endomorphic static formals, specialization and constructors with explicit access; broader arrows/builders remain candidates. |
+| Higher-order abstraction | Static operation formals, specialization and constructors with explicit access; general arrows retain both exact ports and their concrete profile limits. General builders remain separate work. |
 | Closure capture | No general runtime closure/function value; scoped compiler bodies keep their own checks. |
 | Pattern meanings | Ordinary patterns, explicit quantum structural maps and physical observation remain distinct. |
 | Algebraic sums | No general ADT or coherent-sum admission here; future classical ADTs cannot silently define quantum sums. |
@@ -348,9 +361,10 @@ In particular, ordinary classical matching does not measure Q, a zero-width
 owner is not disposable ordinary Unit, probability agreement does not supply
 exact phase equality, and an operation's Unitary label does not provide inverse
 or controlled access. Diagnostic suggestions must not imply any of those
-substitutions. External qargo/qlippy diagnostic integration is omitted under
-the maintainer's explicit authorization. This chapter reports no updated
-consumer support; actual Qleisli diagnostics remain required.
+substitutions. External qlippy implementation, compatibility and diagnostics
+are excluded from beta under the maintainer's explicit authorization. This
+does not waive Qleisli compiler diagnostics or Rust Cargo Clippy checks, or
+establish qargo or other consumer support.
 
 ## Evidence identity and proof limits
 
@@ -363,9 +377,10 @@ sources, counterexamples and real observations remain unchanged beside explicit
 current derivatives.
 
 The [operations design candidate](../design/operations.md), general builders,
-broader arrow/capability systems, ADTs and linear closures remain under their
-separate decisions and implementation work. This chapter adopts none of those
-proposed extensions. The [production boundary](production-boundary.md)
+further capability extensions, ADTs and linear closures remain under their
+separate decisions and implementation work. The implemented general-arrow rules
+above do not adopt those other proposed extensions. The
+[production boundary](production-boundary.md)
 distinguishes source judgment, concrete lowering, native acceptance and runtime
 or emitted-artifact correspondence. Valid proposed IR alone is not a general
 proof of source preservation.
