@@ -277,8 +277,9 @@ Each alias is `evidence-alias(original-evidence-index, function-evidence)` with
 the complete actual function description specified above. An index is proposed
 by the original encoder's canonical snapshot map. That lookup is not evidence
 that the actual body, matrix, circuit or descendants equal Lean's fresh result.
-Every alias still requires independent native comparison against its proposed
-original entry before any execution handle can be issued.
+The pure Lean attachment compares each emitted alias against that proposed
+original entry. Production use of this attachment is still required before
+an execution handle can be issued from these descriptions.
 
 This extra traversal is necessary because the artifact encoder returns early
 when it finds an equal snapshot. That encoder registers the directly encountered
@@ -299,8 +300,50 @@ Arcs, and references in an unselected branch's certified use/logical circuits.
 The [original branch refusal](../../../tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json)
 retains the first invalid phi wire and real diagnostic; the regression rechecks
 that native refusal before exercising the corrected fresh-wire case.
-These tests add no acceptance authority. Lean alias comparison, private unbound
-staging, hierarchy execution and the versioned protocol cutover remain required.
+These tests add no production acceptance authority. Private unbound staging,
+hierarchy execution and the versioned protocol cutover remain required.
+
+## Pure caller attachment
+
+`Caller.alias` reads the fresh receipt at the supplied original evidence index
+and independently derives its complete function description. Its universal
+binding theorem identifies that exact slot and derivation. Repeated indices
+are permitted for distinct actual caller aliases; missing receipts refuse.
+`Caller.origin` describes the same checked root and original interface, then
+every supplied alias in order. It accepts no host snapshot, matrix or receipt
+as proof. It precharges the alias list and retains the existing node ceiling.
+
+`CheckedCaller.finite` and `CheckedCaller.contract` each call their existing
+finite or complete-contract comparison gate exactly once, then attach caller
+comparison to that exact returned artifact/root. The latter covers all six
+current contract kinds. Binding proofs preserve the actual base computation,
+caller derivation, compared encoding and continuous work states. Original-byte
+and ownership/scope binding, or native-contract returned-field binding, is
+inherited from that same base execution.
+
+The two QDV1 descriptions together must fit the existing 64 MiB ceiling.
+The base description's byte length is reserved first. Caller construction
+encodes the empty alias-list prefix, then counts each additional alias value
+without its four-byte QDV1 header before retaining it. It therefore bounds
+repeated large descriptions before accumulating the final tree. A supplied
+lower byte limit cannot raise the fixed ceiling. Accumulation uses cons/reverse,
+preserving order without quadratic list append. Exhausted work/capacity,
+malformed framing, missing receipts and divergent data remain distinct refusals.
+
+The four caller recipes also specify original artifacts and complete graphs
+independently of the walkers. Rust checks exact original serialization and
+the actual retained runtime graph. Lean checks the hand-authored caller data
+through finite and native-contract attachments, including nonempty aliases;
+all six contract kinds also have their existing independent request controls.
+Mutations keep each native-valid original fixed and change only the supplied
+description or proposed alias indices. Exact and one-byte-short capacities
+exercise repeated-description accounting without large quantum instances.
+
+These are pure staging gates. The native CLI and Rust execution do not use
+them yet. The gate checks every emitted alias; correspondence of the collector
+with all objects actually consumed by execution remains a separate production
+integration and runtime-preservation duty. This does not complete #362 or admit
+a constitutional guarantee.
 
 ## Required production profiles
 

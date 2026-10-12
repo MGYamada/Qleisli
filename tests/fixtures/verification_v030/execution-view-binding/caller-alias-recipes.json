@@ -304,6 +304,640 @@
           ]
         ]
       ]
+    ],
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            },
+            {
+              "tag": "apply_unitary",
+              "input": 1,
+              "output": 2,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 1,
+          "specification": 2,
+          "identity": {
+            "implementation": "leaf",
+            "specification": "flip",
+            "sources": []
+          }
+        }
+      ],
+      "root": 0,
+      "root_interface": null
+    },
+    "graph_view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ],
+            [
+              "apply-unitary",
+              1,
+              2,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            2
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ]
+      ],
+      [
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "leaf",
+            "flip",
+            []
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          1,
+          1
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "apply-unitary",
+            0,
+            1,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ],
+          [
+            "apply-unitary",
+            1,
+            2,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          2
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          2,
+          [
+            0
+          ],
+          1
+        ]
+      ]
     ]
   },
   {
@@ -845,6 +1479,640 @@
             1,
             1
           ]
+        ]
+      ]
+    ],
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            },
+            {
+              "tag": "apply_unitary",
+              "input": 1,
+              "output": 2,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 1,
+          "specification": 2,
+          "identity": {
+            "implementation": "leaf",
+            "specification": "flip",
+            "sources": []
+          }
+        }
+      ],
+      "root": 0,
+      "root_interface": null
+    },
+    "graph_view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ],
+            [
+              "apply-unitary",
+              1,
+              2,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            2
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ]
+      ],
+      [
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "leaf",
+            "flip",
+            []
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          1,
+          1
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "apply-unitary",
+            0,
+            1,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ],
+          [
+            "apply-unitary",
+            1,
+            2,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          2
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          2,
+          [
+            0
+          ],
+          1
         ]
       ]
     ]
@@ -1838,6 +3106,1042 @@
           ]
         ]
       ]
+    ],
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            },
+            {
+              "tag": "apply_unitary",
+              "input": 1,
+              "output": 2,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 1,
+                    "adjoint": false
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 1,
+          "specification": 4,
+          "identity": {
+            "implementation": "same-parent",
+            "specification": "flip",
+            "sources": []
+          }
+        },
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 2,
+          "specification": 3,
+          "identity": {
+            "implementation": "leaf",
+            "specification": "flip",
+            "sources": []
+          }
+        }
+      ],
+      "root": 0,
+      "root_interface": null
+    },
+    "graph_view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ],
+            [
+              "apply-unitary",
+              1,
+              2,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            2
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    1,
+                    false
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ]
+      ],
+      [
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "contract",
+                      [
+                        0
+                      ],
+                      1,
+                      false
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "same-parent",
+            "flip",
+            []
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  1,
+                  false
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          2,
+          1
+        ],
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "leaf",
+            "flip",
+            []
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          1,
+          1
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "apply-unitary",
+            0,
+            1,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ],
+          [
+            "apply-unitary",
+            1,
+            2,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          2
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          2,
+          [
+            0
+          ],
+          1
+        ]
+      ]
     ]
   },
   {
@@ -2661,6 +4965,776 @@
             1,
             1
           ]
+        ]
+      ]
+    ],
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "classical_const",
+              "value": true,
+              "output": 0
+            },
+            {
+              "tag": "classical_branch",
+              "condition": 0,
+              "then_ops": [
+                {
+                  "tag": "apply_unitary",
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "controls": [],
+                      "action": {
+                        "tag": "contract",
+                        "indices": [
+                          0
+                        ],
+                        "evidence": 0,
+                        "adjoint": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "else_ops": [
+                {
+                  "tag": "certified_compute",
+                  "source": 0,
+                  "source_out": 2,
+                  "ancilla_wires": [
+                    1
+                  ],
+                  "function": [
+                    0,
+                    0
+                  ],
+                  "use_steps": [
+                    {
+                      "controls": [],
+                      "action": {
+                        "tag": "contract",
+                        "indices": [
+                          0
+                        ],
+                        "evidence": 0,
+                        "adjoint": false
+                      }
+                    }
+                  ],
+                  "logical_steps": [
+                    {
+                      "controls": [],
+                      "action": {
+                        "tag": "contract",
+                        "indices": [
+                          0
+                        ],
+                        "evidence": 0,
+                        "adjoint": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "quantum_phis": [
+                {
+                  "then_token": 1,
+                  "else_token": 2,
+                  "output": 3,
+                  "output_wires": [
+                    2
+                  ]
+                }
+              ],
+              "classical_phis": []
+            }
+          ],
+          "quantum_outputs": [
+            3
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      0
+                    ],
+                    "permutation": [
+                      1,
+                      0
+                    ],
+                    "phases": [
+                      0,
+                      0
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 1,
+          "specification": 2,
+          "identity": {
+            "implementation": "leaf",
+            "specification": "flip",
+            "sources": []
+          }
+        }
+      ],
+      "root": 0,
+      "root_interface": null
+    },
+    "graph_view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "constant",
+              true,
+              0
+            ],
+            [
+              "branch",
+              0,
+              [
+                [
+                  "apply-unitary",
+                  0,
+                  1,
+                  [
+                    [
+                      "step",
+                      [],
+                      [
+                        "contract",
+                        [
+                          0
+                        ],
+                        0,
+                        false
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                [
+                  "certified-compute",
+                  0,
+                  2,
+                  [
+                    1
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    [
+                      "step",
+                      [],
+                      [
+                        "contract",
+                        [
+                          0
+                        ],
+                        0,
+                        false
+                      ]
+                    ]
+                  ],
+                  [
+                    [
+                      "step",
+                      [],
+                      [
+                        "contract",
+                        [
+                          0
+                        ],
+                        0,
+                        false
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                [
+                  "quantum-phi",
+                  1,
+                  2,
+                  3,
+                  [
+                    2
+                  ]
+                ]
+              ],
+              []
+            ]
+          ],
+          [
+            3
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "monomial",
+                    [
+                      0
+                    ],
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ]
+      ],
+      [
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "monomial",
+                      [
+                        0
+                      ],
+                      [
+                        1,
+                        0
+                      ],
+                      [
+                        0,
+                        0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "leaf",
+            "flip",
+            []
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          1,
+          1
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "constant",
+            true,
+            0
+          ],
+          [
+            "branch",
+            0,
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "contract",
+                      [
+                        0
+                      ],
+                      0,
+                      false
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              [
+                "certified-compute",
+                0,
+                2,
+                [
+                  1
+                ],
+                [
+                  0,
+                  0
+                ],
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "contract",
+                      [
+                        0
+                      ],
+                      0,
+                      false
+                    ]
+                  ]
+                ],
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "contract",
+                      [
+                        0
+                      ],
+                      0,
+                      false
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              [
+                "quantum-phi",
+                1,
+                2,
+                3,
+                [
+                  2
+                ]
+              ]
+            ],
+            []
+          ]
+        ],
+        [
+          3
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          3,
+          [
+            2
+          ],
+          1
         ]
       ]
     ]

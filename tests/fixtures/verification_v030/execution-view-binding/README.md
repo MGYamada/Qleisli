@@ -138,6 +138,19 @@ reused wire0; existing global wire freshness requires the corrected wire2.
 The regression freshly rechecks the original `invalid_ir` refusal. This is
 an input-authoring correction, not a new checker acceptance rule or a divergent
 view refusal. Alias index lookup proposes a binding and cannot establish cache
-equality. Independent Lean alias comparison and production integration remain
-pending. The shared node, byte and depth ceilings are unchanged; no maximum
+equality. The shared node, byte and depth ceilings are unchanged; no maximum
 quantum instance is generated.
+
+Each recipe additionally retains a hand-authored original artifact and complete
+graph, specified before the Lean caller implementation. Rust checks the exact
+serialized original and actual retained graph against these expectations.
+The pure Lean attachment calls the existing finite or native-contract gate
+once and then compares every alias to that same fresh root's original receipt
+slot. The same four bodies also exercise the contract attachment after the
+explicit Bit interface and empty control-sector request are added; all six
+contract kinds retain their independent request cases too. Candidate mutations
+leave these independently valid original inputs fixed. Exact/one-byte-short
+capacity controls check repeated-description accounting before accumulation.
+The receipt-slot, comparison and inherited original-byte binding proofs are
+technical staging evidence. Native CLI/Rust execution, hierarchy binding and
+the protocol cutover remain pending; no new guarantee or completion is claimed.

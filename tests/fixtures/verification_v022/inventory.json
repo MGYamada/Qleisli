@@ -2226,7 +2226,7 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "84a3875bc3fd6419801386e4abdeb613541cfc21bcc39665c1a239741609e013",
+      "sha256": "bd73bb2b68cbaf1854b50dd89f6335ac3e1e4c2104708ee603aa5fd431ee3e14",
       "group": "hierarchy",
       "surface": null
     },
@@ -5436,12 +5436,24 @@
     {
       "path": "src/interchange/execution_view/finite/caller/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "393d0d49bb9546788206c6d2dea5c55d11871a8e6ea44f9a1f5bad294f3d37f3",
+      "sha256": "e1d2f76f6203863caf2d3ae6c21647395c2fbcc2e479b9c0a237ae376db9ad91",
       "surface": {
         "declarations": [],
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Caller.lean",
+      "sha256": "ec31ea2a95499e9f5c1211e3836ed7d4fe3a0f538d564914f057113714173b1e",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedCaller.lean",
+      "sha256": "6e6f051dec9ae1853840dd0774219720f9ee2a89e49986a66db4b54246f3a9e6",
+      "group": "execution-view-encoding",
+      "surface": null
     }
   ],
   "boundaries": [

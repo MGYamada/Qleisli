@@ -1,6 +1,7 @@
 import Lean
 import Protocol.ExecutionView.CheckedFinite
 import Protocol.ExecutionView.CheckedContract
+import Protocol.ExecutionView.CheckedCaller
 import Protocol.Qirf
 
 /-! Shared QDV1 data and pure comparison-gate regressions. Production cutover is pending.
@@ -218,10 +219,107 @@ private def singleChanges (fuel : Nat) : Value → List Value :=
         | none => []
         | some field => (recurse field).map fun changed => .array (fields.set index changed))) fuel
 
+private def callerAttachmentCases {α : Type} (base : Gate.CheckM α)
+    (attach : ByteArray → List Nat → Gate.CheckM α) (description : Value)
+    (indices : List Nat) (name : String) : IO Nat := do
+  let supplied ← IO.ofExcept (encode description)
+  match base.run 10000000 with
+  | (.ok _,_) => pure ()
+  | (.error error,_) => throw (IO.userError ("original caller base rejected: " ++ name ++ reprStr error))
+  match (attach supplied indices).run 10000000 with
+  | (.ok _,_) => pure ()
+  | (.error error,_) => throw (IO.userError ("correct caller attachment rejected: " ++ name ++ reprStr error))
+  let mut refusals := 0
+  for changed in singleChanges 129 description do
+    match (attach (← IO.ofExcept (encode changed)) indices).run 10000000 with
+    | (.error .decodedView,_) => refusals := refusals+1
+    | _ => throw (IO.userError ("changed caller attachment did not refuse: " ++ name))
+  match (attach "QDV1".toUTF8 indices).run 10000000 with
+  | (.error .invalidView,_) => pure ()
+  | _ => throw (IO.userError "malformed caller attachment accepted")
+  match (attach supplied [1000000]).run 10000000 with
+  | (.error (.native .invalid),_) => pure ()
+  | _ => throw (IO.userError "caller attachment accepted an absent receipt")
+  if !indices.isEmpty then
+    match (attach supplied []).run 10000000 with
+    | (.error .decodedView,_) => pure ()
+    | _ => throw (IO.userError "caller attachment accepted omitted aliases")
+    match (attach supplied (indices ++ [0])).run 10000000 with
+    | (.error .decodedView,_) => pure ()
+    | _ => throw (IO.userError "caller attachment accepted an extra alias")
+    if indices.contains 1 then
+      match (attach supplied (indices.map fun index => if index == 0 then 1 else index)).run 10000000 with
+      | (.error .decodedView,_) => pure ()
+      | _ => throw (IO.userError "caller attachment accepted a different valid original slot")
+  match base.run 0 with
+  | (.error error,remaining) =>
+    match (attach supplied indices).run 0 with
+    | (.error actual,left) => unless actual == error && left == remaining do
+        throw (IO.userError "caller attachment changed base work refusal")
+    | _ => throw (IO.userError "caller attachment hid base work refusal")
+  | (.ok _,_) => throw (IO.userError "expected exhausted caller base work")
+  return refusals
+
+private def callerCases (path refusalPath : System.FilePath) : IO Unit := do
+  let rows ← IO.ofExcept (Json.parse (← IO.FS.readFile path) >>= Json.getArr?)
+  let mut refusals := 0
+  for row in rows do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let input ← IO.ofExcept (row.getObjVal? "artifact")
+    let indices ← IO.ofExcept ((row.getObjVal? "indices") >>= Json.getArr? >>= fun xs => xs.toList.mapM Json.getNat?)
+    let description ← IO.ofExcept ((row.getObjVal? "view") >>= value 129)
+    let graph ← IO.ofExcept ((row.getObjVal? "graph_view") >>= value 129)
+    let suppliedGraph ← IO.ofExcept (encode graph)
+    let original := packet input.compress.toUTF8
+    let (artifact,order) ← checked (QleisliKernel.Protocol.Qirf.read input.compress.toUTF8)
+    let root ← checked (QleisliKernel.Qirf.Validity.checkRoot artifact order)
+    let supplied ← IO.ofExcept (encode description)
+    let actual ← checked (Caller.origin artifact root indices)
+    unless (← IO.ofExcept (encode actual)) == supplied do
+      throw (IO.userError ("independent caller alias description mismatch: " ++ name))
+    let exact ← checked (Caller.origin artifact root indices supplied.size)
+    unless (← IO.ofExcept (encode exact)) == supplied do
+      throw (IO.userError "exact caller byte capacity changed the view")
+    match (Caller.origin artifact root indices (supplied.size-1)).run 10000000 with
+    | (.error .limit,_) => pure ()
+    | _ => throw (IO.userError "caller byte accounting omitted repeated data")
+    match (Caller.origin artifact root indices).run 0 with
+    | (.error (.arithmetic .workLimit),0) => pure ()
+    | _ => throw (IO.userError "caller discovery work exhaustion was hidden")
+    refusals := refusals + (← callerAttachmentCases (CheckedFinite.check original suppliedGraph)
+      (CheckedCaller.finite original suppliedGraph) description indices name)
+    -- The same independently authored bodies/caches also pass through the
+    -- native-contract attachment. Only the explicit Bit root interface and
+    -- empty control-sector request are added; no producer receipt is supplied.
+    let fields ← IO.ofExcept input.getObj?
+    let tree := Json.mkObj [("tag",.str "bit")]
+    let contractInput := Json.mkObj (fields.toList.map fun (key,old) =>
+      (key,if key == "root_interface" then Json.mkObj [("input",tree),("output",tree)] else old))
+    let iface := Value.array [.text "root-interface",.array [.array [.text "bit"]],.array [.array [.text "bit"]]]
+    let .array graphFields := graph | throw (IO.userError "caller graph is not a record")
+    let .array originFields := description | throw (IO.userError "caller origin is not a record")
+    let contractGraph := Value.array (graphFields.set 2 iface)
+    let contractOrigin := Value.array (originFields.set 1 iface)
+    let request := Json.mkObj [("format",.str "qleisli.native-contract"),("version",toJson (1 : Nat)),
+      ("kind",.str "control"),("signature",tree),("axes",.arr #[])]
+    let contractPacket := packet contractInput.compress.toUTF8 request.compress.toUTF8
+    let contractView := Value.array [.text "native-contract",.array [.text "control",.array [.array [.text "bit"]],.array []],contractGraph,.null]
+    let contractBytes ← IO.ofExcept (encode contractView)
+    refusals := refusals + (← callerAttachmentCases (CheckedContract.check contractPacket contractBytes)
+      (CheckedCaller.contract contractPacket contractBytes) contractOrigin indices (name ++ " native-contract"))
+  let refusal ← IO.ofExcept (Json.parse (← IO.FS.readFile refusalPath))
+  let original ← IO.ofExcept ((refusal.getObjVal? "original_artifact_text") >>= Json.getStr?)
+  match (QleisliKernel.Protocol.Validity.check (packet original.toUTF8)).run 10000000 with
+  | (.error .invalid,_) => pure ()
+  | _ => throw (IO.userError "first caller phi refusal changed")
+  IO.println ("caller aliases: " ++ toString rows.size ++ " finite and native-contract originals; " ++
+    toString refusals ++ " divergent descriptions refused; original phi refusal rechecked")
+
 private def completeContractCases (sourcePath path : System.FilePath) : IO Unit := do
   let sources ← IO.ofExcept (Json.parse (← IO.FS.readFile sourcePath) >>= Json.getArr?)
   let rows ← IO.ofExcept (Json.parse (← IO.FS.readFile path) >>= Json.getArr?)
   let mut refusals := 0
+  let mut callerRefusals := 0
   for row in rows do
     let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
     let index ← IO.ofExcept ((row.getObjVal? "source_index") >>= Json.getNat?)
@@ -241,6 +339,12 @@ private def completeContractCases (sourcePath path : System.FilePath) : IO Unit 
     let expectedGraph ← IO.ofExcept ((row.getObjVal? "expected_graph") >>= value 129)
     let description := Value.array [.text "native-contract",request,actualGraph,expectedGraph]
     let supplied ← IO.ofExcept (encode description)
+    let .array graphFields := actualGraph | throw (IO.userError "expected actual contract graph")
+    let some interface := graphFields[2]? | throw (IO.userError "missing contract interface")
+    let some body := graphFields[6]? | throw (IO.userError "missing actual contract root")
+    let callerDescription := Value.array [.text "caller-origin",interface,body,.array []]
+    callerRefusals := callerRefusals + (← callerAttachmentCases (CheckedContract.check original supplied)
+      (CheckedCaller.contract original supplied) callerDescription [] name)
     let actual ← checked (FiniteView.nativeContract retained)
     unless (← IO.ofExcept (encode actual)) == supplied do
       throw (IO.userError ("complete contract graph mismatch: " ++ name))
@@ -266,8 +370,14 @@ private def completeContractCases (sourcePath path : System.FilePath) : IO Unit 
     match (CheckedContract.check (packet input.compress.toUTF8 "{}".toUTF8) supplied).run 10000000 with
     | (.error (.native _),_) => pure ()
     | _ => throw (IO.userError "complete contract gate bypassed mandatory request")
+    let callerBytes ← IO.ofExcept (encode callerDescription)
+    match (CheckedCaller.contract (packet input.compress.toUTF8 "{}".toUTF8) supplied callerBytes []).run 10000000 with
+    | (.error (.native _),_) => pure ()
+    | _ => throw (IO.userError "caller attachment bypassed mandatory request")
   IO.println ("pure complete contract gate: " ++ toString rows.size ++
     " original valid requests; " ++ toString refusals ++ " individual data mutations refused; production cutover pending")
+  IO.println ("caller attachment across all six contract kinds: " ++ toString rows.size ++
+    " original valid requests; " ++ toString callerRefusals ++ " divergent caller descriptions refused")
 
 private def refusalCase (path : System.FilePath) (expected : QleisliKernel.Finite.Error) : IO Unit := do
   let record ← IO.ofExcept (Json.parse (← IO.FS.readFile path))
@@ -281,8 +391,8 @@ private def refusalCase (path : System.FilePath) (expected : QleisliKernel.Finit
   | (.ok _,_) => throw (IO.userError ("preserved refused contract accepted: " ++ path.toString))
 
 def main (args : List String) : IO Unit := do
-  let [path,finitePath,functionPath,graphPath,contractPath,firstRefusal,secondRefusal,completeContractPath] := args |
-    throw (IO.userError "expected primitive, finite, function, graph, contract, two refusal and complete-contract vector files")
+  let [path,finitePath,functionPath,graphPath,contractPath,firstRefusal,secondRefusal,completeContractPath,callerPath,callerRefusal] := args |
+    throw (IO.userError "expected primitive, finite, function, graph, contract, two refusal, complete-contract and two caller vector files")
   let text ← IO.FS.readFile path
   let rows ← IO.ofExcept (Json.parse text >>= Json.getArr?)
   frameCases
@@ -345,6 +455,7 @@ def main (args : List String) : IO Unit := do
     toString gateRefusals ++ " divergent candidate refusals; CLI/protocol cutover still pending")
   contractCases contractPath
   completeContractCases contractPath completeContractPath
+  callerCases callerPath callerRefusal
   refusalCase firstRefusal .invalid
   refusalCase secondRefusal .equation
   IO.println "preserved original contract authoring refusals: 2 rechecked"

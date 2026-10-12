@@ -38,7 +38,10 @@ and exactness obligations retain their recorded scopes and status.
   Collect every distinct original caller evidence Arc, including children
   hidden by snapshot deduplication and references in both branch arms and
   certified use/logical circuits; exercise four independent complete descriptions.
-  Native alias comparison and production integration remain pending.
+  Attach pure Lean caller comparison to the same finite/native-contract core
+  result, with original receipt-slot and continuous-work binding proofs.
+  Bound repeated alias descriptions before accumulating them. Production
+  alias integration, hierarchy execution and protocol cutover remain pending.
   The production comparison, complete execution profiles and native protocol
   cutover remain pending; these helpers confer no execution authority.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is

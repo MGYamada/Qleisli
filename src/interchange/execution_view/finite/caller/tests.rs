@@ -198,6 +198,25 @@ fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
         // The actual serialized original remains valid independently of the
         // proposed alias descriptions; no alias is minted into fresh evidence.
         let artifact = crate::interchange::finish_proposal(root_index, None, encoder).unwrap();
+        assert_eq!(
+            artifact,
+            json::encode(row.field("artifact").unwrap()).unwrap(),
+            "recipe {recipe}"
+        );
+        let accepted = crate::interchange::native::Kernel::selected()
+            .unwrap()
+            .check(&artifact, None)
+            .unwrap();
+        let expected_graph = crate::interchange::execution_view::encode(
+            &crate::interchange::execution_view::tests::vector_value(
+                row.field("graph_view").unwrap(),
+            ),
+        )
+        .unwrap();
+        assert_eq!(
+            accepted.program().execution_view_description().unwrap(),
+            expected_graph
+        );
         let result = crate::interchange::native::Kernel::selected()
             .unwrap()
             .inspect(&artifact, None);
