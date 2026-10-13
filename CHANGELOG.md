@@ -15,6 +15,11 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Apply #311's adopted exactness boundary explicitly to realization contracts
+  and #31/#163 terminology: approximation certificates are separate engineering
+  claims, including at a reported zero error. Preserve independent exact
+  correspondence, phase/control, cleanup and resource gates and all remaining
+  implementation criteria; this clarification adds no approximation checker.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.

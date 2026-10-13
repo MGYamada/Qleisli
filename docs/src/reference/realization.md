@@ -117,6 +117,42 @@ introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
+## Separate engineering approximation claims
+
+The human-adopted **EXACT-2026-01** interpretation in
+[#311](https://github.com/MGYamada/Qleisli/issues/311) governs this boundary.
+An epsilon-bound approximation is an engineering synthesis or export claim,
+outside edition-2026 constitutional semantic truth conditions. It cannot
+replace exact source Meaning, semantic equality, phase/control, owner/effect
+or clean/dirty restoration obligations. An approximation bound grants no
+purity, inverse, control access or exact release capability.
+
+A checked engineering claim must identify the exact ideal, actual artifact,
+interface, target/profile, metric, finite bound, input/reference domain and
+composition assumptions. Instrument claims must retain the complete public
+outcomes and residual outputs with arbitrary external references. Sampling,
+algorithmic resolution, synthesis and numerical-runtime information remain
+distinct; an absent claim does not mean zero error. These are implementation
+obligations under #31 and #163, not a declaration that a current certificate
+or universal approximation metric exists.
+
+Engineering receipts and their API/CLI claim kinds must remain mechanically
+distinct from exact correspondence and resource evidence. Neither a small
+bound nor a reported `epsilon = 0` bypasses the independent exact gates or
+automatically discharges constitutional PR or target RS. An actual circuit
+may independently obtain ordinary acceptance for its own exact meaning;
+that acceptance does not identify its meaning with the source ideal.
+Reusing engineering evidence through a Meaning or operation interface cannot
+weaken that interface's exact promise.
+
+Numerical, interval and approximate search methods may construct an exact
+artifact or proof. That result remains eligible for the separate exact
+correspondence and resource checks; the spelling of a search parameter does
+not decide its claim kind. Conversely, exact cost accounting for an approximate
+artifact does not supply its missing exact correspondence to the source.
+No new interpretation, guarantee admission or broader QS/PR/RS discharge
+follows from either engineering validation or this clarification.
+
 ## Quantitative resource claims
 
 A resource certificate must identify the actual closed instance, emitted
