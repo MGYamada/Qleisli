@@ -3,7 +3,7 @@ import Protocol.ExecutionView.CheckedFinite
 import Protocol.ExecutionView.CheckedContract
 
 /-! Attach caller-origin comparison to the same finite/native-contract result.
-These pure staging gates issue no handle; production protocol cutover is pending.
+These pure gates issue no handle; Native dispatch invokes them for QLV2 caller scope.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.ExecutionView.CheckedCaller
 open Gate

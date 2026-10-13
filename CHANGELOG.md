@@ -27,6 +27,9 @@ and exactness obligations retain their recorded scopes and status.
   vectors, adversarial native requests and retained allocation tests distinguish
   byte binding from the pending source, compiler, walker and runtime proofs.
   Preserve original sources, diagnostics and the two admitted scoped guarantees.
+  Compile complete comparison drivers against the current native kernel library,
+  preserving every mutation and existing deadlines; test malformed outer frames
+  directly so a valid-frame helper cannot replace native refusal coverage.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

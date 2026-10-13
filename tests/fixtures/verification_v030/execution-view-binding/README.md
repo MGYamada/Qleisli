@@ -1,5 +1,9 @@
 # Execution-view binding: original controls and encoding vectors
 
+The sections below retain staged authoring and validation evidence. The current
+production QLV2 binding is specified in the [Reference](../../../../docs/src/reference/execution-view.md)
+and exercised separately by `scripts/test_native_execution_protocol.py`.
+
 [Eight frozen mode inputs](hierarchy-mode-inputs.json) cover five valid modes
 and three invalid original requests. The [captured validation](hierarchy-mode-validation.json)
 compares actual owned Rust plans against `CheckedHierarchy.Modes.checkMode`:

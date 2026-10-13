@@ -2,7 +2,7 @@ import Protocol.ExecutionView.Gate
 import Protocol.ExecutionView.Contracts
 
 /-! Pure contract execution-view comparison over one retained core result.
-CLI/protocol and original caller cache binding remain separate integration work.
+Native dispatch and CheckedCaller connect this gate to QLV2 and caller cache binding.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.ExecutionView.CheckedContract
 open Gate

@@ -6,12 +6,8 @@
       "name": "Native QLV2 execution-view binding and independent data comparisons",
       "commands": [
         [
-          "lake",
-          "-d",
-          "lean-kernel",
-          "env",
-          "lean",
-          "--run",
+          "python3",
+          "scripts/run_native_lean_test.py",
           "tests/execution_view_vectors.lean",
           "tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json",
           "tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json",
@@ -25,13 +21,8 @@
           "tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json"
         ],
         [
-          "lake",
-          "-d",
-          "lean-kernel",
-          "env",
-          "lean",
-          "-DwarningAsError=true",
-          "--run",
+          "python3",
+          "scripts/run_native_lean_test.py",
           "tests/hierarchy_execution_view.lean",
           "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
         ],

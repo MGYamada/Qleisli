@@ -2,7 +2,7 @@ import Lean
 import Protocol.ExecutionView.CheckedHierarchy
 
 /-! Compare real retained Rust plans in all five hierarchy modes. This is
-bounded cross-implementation evidence, not completed production cutover.
+bounded cross-implementation evidence; the QLV2 CLI is exercised separately.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 open Lean QleisliKernel.Protocol.ExecutionView
 open CheckedHierarchy.Modes

@@ -76,7 +76,14 @@ def encode_readout(request, packet, budget=2000000):
 def inspect(kernel, kind, payload):
     if kind not in ('preparation', 'readout'):
         raise ValueError('unknown component')
-    run = subprocess.run([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=envelope(payload),
+    return inspect_envelope(kernel, kind, envelope(payload))
+
+
+def inspect_envelope(kernel, kind, packet):
+    """Send explicit outer bytes, including deliberately malformed test inputs."""
+    if kind not in ('preparation', 'readout'):
+        raise ValueError('unknown component')
+    run = subprocess.run([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=packet,
                          capture_output=True, timeout=60)
     fields = run.stdout.decode('ascii').splitlines()
     if len(fields) != 3 or fields[0] != f'qleisli.{kind}-result 2':

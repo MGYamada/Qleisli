@@ -4,7 +4,7 @@ import Protocol.ExecutionView.CheckedContract
 import Protocol.ExecutionView.CheckedCaller
 import Protocol.Qirf
 
-/-! Shared QDV1 data and pure comparison-gate regressions. Production cutover is pending.
+/-! Shared QDV1 data and pure comparison-gate regressions. QLV2 CLI checks run separately.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 open Lean QleisliKernel.Protocol.ExecutionView
 
@@ -205,7 +205,7 @@ private def contractCases (path : System.FilePath) : IO Unit := do
     unless (← IO.ofExcept (encode actual)) == expected do
       throw (IO.userError ("typed contract/caller circuit vector mismatch: " ++ name))
   IO.println ("retained native obligations: " ++ toString requests ++
-    "; literal caller circuits: " ++ toString circuits ++ "; shared vectors passed; production binding pending")
+    "; literal caller circuits: " ++ toString circuits ++ "; shared vectors passed; QLV2 checks run separately")
 
 private def singleChanges (fuel : Nat) : Value → List Value :=
   Nat.rec (fun _ => []) (fun _ recurse input => match input with
@@ -375,7 +375,7 @@ private def completeContractCases (sourcePath path : System.FilePath) : IO Unit 
     | (.error (.native _),_) => pure ()
     | _ => throw (IO.userError "caller attachment bypassed mandatory request")
   IO.println ("pure complete contract gate: " ++ toString rows.size ++
-    " original valid requests; " ++ toString refusals ++ " individual data mutations refused; production cutover pending")
+    " original valid requests; " ++ toString refusals ++ " individual data mutations refused; QLV2 checks run separately")
   IO.println ("caller attachment across all six contract kinds: " ++ toString rows.size ++
     " original valid requests; " ++ toString callerRefusals ++ " divergent caller descriptions refused")
 
@@ -452,7 +452,7 @@ def main (args : List String) : IO Unit := do
     if name == "unit-interface" then requestCases input.compress.toUTF8 expected
   IO.println ("retained finite graphs: " ++ toString graphs.size ++ " shared vectors passed; no production binding claim")
   IO.println ("pure finite view gate: " ++ toString graphs.size ++ " original valid artifacts; " ++
-    toString gateRefusals ++ " divergent candidate refusals; CLI/protocol cutover still pending")
+    toString gateRefusals ++ " divergent candidate refusals; QLV2 checks run separately")
   contractCases contractPath
   completeContractCases contractPath completeContractPath
   callerCases callerPath callerRefusal

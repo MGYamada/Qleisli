@@ -97,4 +97,4 @@ def main (args : List String) : IO Unit := do
       throw (IO.userError ("hierarchy view mismatch: " ++ name))
     if scope == "native-inspection" then refusals := refusals + (← gateCases bytes description)
   IO.println ("hierarchy execution views: " ++ toString rows.size ++ " shared cases; " ++
-    toString refusals ++ " divergent candidates refused; production cutover pending")
+    toString refusals ++ " divergent candidates refused; QLV2 checks run separately")
