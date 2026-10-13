@@ -654,3 +654,166 @@ example : accepts ⟨[⟨0,[],0⟩],[0],[.branch 0 [] [] [] []],[],[],.unitary�
 example : accepts ⟨[⟨0,[],0⟩],[0],
     [.branch 0 [] [] [⟨0,0,1,[]⟩] []],[1],[],.unitary⟩ = true := by decide +kernel
 end RawObservationTests
+
+
+/- Bounded engineering arithmetic regressions only; these issue no program,
+Meaning, capability, cleanup, resource or constitutional acceptance. -/
+namespace EngineeringArithmeticTests
+open QleisliKernel.Semantics.Exact QleisliKernel.Engineering.Pure
+
+private def id2 : Matrix := ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩
+private def diagonal (phase : Int) : Matrix :=
+  ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,QleisliKernel.Exact.Scalar.phase phase]⟩
+private def scalarMatrix (phase : Int) : Matrix := ⟨1,1,[QleisliKernel.Exact.Scalar.phase phase]⟩
+private def budget : Coefficient := ⟨7,3⟩
+private def succeeds (a u : Matrix) (e : Coefficient) (work : Nat := 200000) : Bool :=
+  ((checkMatrices a u e).run work).1.isOk
+
+-- The seven independently recorded exact host cases.
+example : succeeds (diagonal 1) id2 budget = true := by decide +kernel
+example : succeeds (diagonal 1) id2 ⟨1,1⟩ = false := by decide +kernel
+example : succeeds (diagonal 7) (diagonal 1) budget = false := by decide +kernel
+example : succeeds (scalarMatrix 4) (scalarMatrix 0) (.integer 1) = false := by decide +kernel
+example : succeeds (diagonal 1) (diagonal 1) (.integer 0) = true := by decide +kernel
+private def tensorT : Matrix := ⟨4,4,[
+  Scalar.one,Scalar.zero,Scalar.zero,Scalar.zero,
+  Scalar.zero,QleisliKernel.Exact.Scalar.phase 1,Scalar.zero,Scalar.zero,
+  Scalar.zero,Scalar.zero,Scalar.one,Scalar.zero,
+  Scalar.zero,Scalar.zero,Scalar.zero,QleisliKernel.Exact.Scalar.phase 1]⟩
+private def id4 : Matrix := ⟨4,4,[
+  Scalar.one,Scalar.zero,Scalar.zero,Scalar.zero,
+  Scalar.zero,Scalar.one,Scalar.zero,Scalar.zero,
+  Scalar.zero,Scalar.zero,Scalar.one,Scalar.zero,
+  Scalar.zero,Scalar.zero,Scalar.zero,Scalar.one]⟩
+example : succeeds tensorT id4 budget = false := by decide +kernel
+example : succeeds (diagonal 2) id2 ⟨7,2⟩ = true := by decide +kernel
+
+-- Rectangular acceptance and shape rejection, without maximum-size cases.
+private def prepare0 : Matrix := ⟨2,1,[Scalar.one,Scalar.zero]⟩
+private def phasedPrepare : Matrix := ⟨2,1,[QleisliKernel.Exact.Scalar.phase 1,Scalar.zero]⟩
+example : succeeds prepare0 prepare0 (.integer 0) = true := by decide +kernel
+example : succeeds phasedPrepare prepare0 budget = true := by decide +kernel
+example : succeeds prepare0 ⟨1,2,[Scalar.one,Scalar.zero]⟩ budget = false := by decide +kernel
+
+-- Malformed inputs, too-small complex-phase bounds, invalid precision and work fail closed.
+example : succeeds ⟨2,2,[Scalar.one]⟩ id2 budget = false := by decide +kernel
+example : succeeds ⟨0,1,[]⟩ (scalarMatrix 0) budget = false := by decide +kernel
+example : succeeds ⟨1,1,[⟨⟨2,1⟩,.integer 0,.integer 0,.integer 0⟩]⟩
+    (scalarMatrix 0) budget = false := by decide +kernel
+example : succeeds (scalarMatrix 2) (scalarMatrix 0) (.integer 1) = false := by decide +kernel
+example : succeeds id2 id2 (.integer (-1)) = false := by decide +kernel
+example : succeeds id2 id2 ⟨2,1⟩ = false := by decide +kernel
+example : succeeds id2 id2 (.integer (2^100)) = false := by decide +kernel
+example : succeeds id2 id2 (.integer 0) 0 = false := by decide +kernel
+example : succeeds id2 id2 (.integer 0) 10000001 = true := by decide +kernel
+private def signResult (a b : Coefficient) : Option Bool :=
+  match realNonneg a b with | .ok answer => some answer | .error _ => none
+example : signResult (.integer 1) (.integer (-1)) = some false := by decide +kernel
+example : signResult (.integer (-1)) (.integer 1) = some true := by decide +kernel
+example : (match realNonneg (.integer (2^100)) (.integer (-1)) with
+    | .error .arithmeticCapacity => true | _ => false) = true := by decide +kernel
+
+
+end EngineeringArithmeticTests
+
+
+namespace EngineeringArtifactTests
+open QleisliKernel QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
+open QleisliKernel.Semantics.Observation QleisliKernel.Qirf.EngineeringPure
+
+private def identityMatrix : Matrix := ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩
+private def phaseMatrix (exponent : Nat) : Matrix :=
+  ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,QleisliKernel.Exact.Scalar.phase exponent]⟩
+private def body (steps : List Step) : Program :=
+  ⟨[⟨0,[0],1⟩],[],[.pure (.applyUnitary 0 1 steps)],[1],[],.unitary⟩
+private def original (basis : Basis) (steps : List Step) : Qirf.Artifact :=
+  ⟨#[body steps],#[],#[],0,some (basis,basis)⟩
+private def phaseSteps (exponent : Nat) : List Step :=
+  [⟨[],.monomial [0] [0,1] [0,exponent]⟩]
+private def leaf (basis : Basis) (steps : List Step) (required : Matrix) : LeafRequest :=
+  ⟨original basis steps,#[0],⟨0,[0],1⟩,⟨1,[0],1⟩,required⟩
+private def compare : QleisliKernel.Qirf.EngineeringPure.Request :=
+  ⟨[.bit],[.bit],leaf [.bit] [] identityMatrix,
+    leaf [.bit] (phaseSteps 1) (phaseMatrix 1),⟨7,3⟩⟩
+private def accepts (request : QleisliKernel.Qirf.EngineeringPure.Request)
+    (work : Nat := 2000000) : Bool :=
+  ((QleisliKernel.Qirf.EngineeringPure.check request).run work).1.isOk
+
+-- I versus T has squared Frobenius error 2-sqrt(2); 7/8 is sufficient.
+example : accepts compare = true := by decide +kernel
+-- An exact equality case still returns the engineering-only Checked type.
+example : accepts {compare with ideal := compare.actual,epsilon := ⟨0,0⟩} = true := by decide +kernel
+example : accepts {compare with epsilon := ⟨1,1⟩} = false := by decide +kernel
+-- T-dagger is valid against its own exact request, but differs from T by more
+-- than the same 7/8 engineering budget. Standalone validity is insufficient.
+example : ((Qirf.PureLeaf.check (original [.bit] (phaseSteps 7)) #[0]
+    [.bit] [.bit] ⟨0,[0],1⟩ ⟨1,[0],1⟩ (phaseMatrix 7)).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : accepts {compare with actual := leaf [.bit] (phaseSteps 7) (phaseMatrix 7)} = false :=
+  by decide +kernel
+-- The original T body cannot be paired with an identity matrix assertion.
+example : accepts {compare with ideal := {compare.ideal with required := identityMatrix}} = false :=
+  by decide +kernel
+-- Changing a body cannot reuse its old requested matrix even at a loose bound.
+example : accepts {compare with ideal :=
+    {compare.ideal with artifact := original [.bit] (phaseSteps 7)}} = false := by decide +kernel
+example : accepts {compare with actual :=
+    {compare.actual with output := ⟨1,[1],1⟩}} = false := by decide +kernel
+-- Bits<1> and Bit each have width one and valid separate exact leaves. Their
+-- full root interfaces cannot satisfy the same common Basis request.
+example : ((Qirf.PureLeaf.check (original [.bits 1] []) #[0]
+    [.bits 1] [.bits 1] ⟨0,[0],1⟩ ⟨1,[0],1⟩ identityMatrix).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : accepts {compare with ideal := leaf [.bits 1] [] identityMatrix} = false := by decide +kernel
+private def hiddenBody (effect : QleisliKernel.Semantics.Raw.Effect) : Program :=
+  ⟨[⟨0,[0],1⟩],[],[.measure 0 0,.pure (.init0 1 1)],[1],[],effect⟩
+private def hiddenObserve : Qirf.Artifact :=
+  ⟨#[hiddenBody .unitary],#[],#[],0,none⟩
+-- Measurement is internal: no public classical output exposes the false pure
+-- label. Correcting only the effect makes ordinary native root validity pass.
+private def correctlyObserving : Qirf.Artifact :=
+  {hiddenObserve with programs := hiddenObserve.programs.map fun program =>
+    {program with effect := .observe}}
+-- Effect checking itself detects hidden observation before any port-interface
+-- gate or pure matrix reconstruction. All three have the identical body.
+example : ((Raw.Observation.verify [] (hiddenBody .observe)).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Raw.Observation.verify [] (hiddenBody .unitary)).run 2000000).1.isOk = false :=
+  by decide +kernel
+example : ((Raw.Observation.verify [] (hiddenBody .iso)).run 2000000).1.isOk = false :=
+  by decide +kernel
+example : ((Qirf.Validity.checkRoot correctlyObserving #[0]).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Qirf.Validity.checkRoot hiddenObserve #[0]).run 2000000).1.isOk = false :=
+  by decide +kernel
+-- Pure-leaf candidates additionally assert their full quantum Basis interface;
+-- their rejection cannot be supplied merely by a missing pure root interface.
+private def pureHiddenObserve : Qirf.Artifact :=
+  {hiddenObserve with rootInterface := some ([.bit],[.bit])}
+example : accepts {compare with actual :=
+    {compare.actual with artifact := pureHiddenObserve,output := ⟨1,[1],1⟩}} = false := by decide +kernel
+private def falselyIsometric : Qirf.Artifact :=
+  {hiddenObserve with programs := hiddenObserve.programs.map fun program =>
+    {program with effect := .iso}}
+example : ((Qirf.Validity.checkRoot falselyIsometric #[0]).run 2000000).1.isOk = false :=
+  by decide +kernel
+private def pureFalselyIsometric : Qirf.Artifact :=
+  {falselyIsometric with rootInterface := some ([.bit],[.bit])}
+example : accepts {compare with actual :=
+    {compare.actual with artifact := pureFalselyIsometric,output := ⟨1,[1],1⟩}} = false := by decide +kernel
+example : accepts compare 0 = false := by decide +kernel
+example : accepts {compare with actual := {compare.actual with order := #[]}} = false :=
+  by decide +kernel
+
+-- A genuine rectangular Unit -> Bit preparation uses distinct common ports.
+private def preparation : Qirf.Artifact :=
+  ⟨#[⟨[⟨0,[],0⟩],[],[.pure (.unpackUnit 0),.pure (.init0 1 0)],[1],[],.iso⟩],
+    #[],#[],0,some ([.unit],[.bit])⟩
+private def preparedLeaf : LeafRequest :=
+  ⟨preparation,#[0],⟨0,[],0⟩,⟨1,[0],1⟩,⟨2,1,[Scalar.one,Scalar.zero]⟩⟩
+private def rectangular : QleisliKernel.Qirf.EngineeringPure.Request :=
+  ⟨[.unit],[.bit],preparedLeaf,preparedLeaf,⟨0,0⟩⟩
+example : accepts rectangular = true := by decide +kernel
+example : accepts {rectangular with codomain := [.bits 1]} = false := by decide +kernel
+
+end EngineeringArtifactTests

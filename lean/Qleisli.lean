@@ -80,3 +80,6 @@ import Qleisli.HierarchicalQpeInstrument
 import Qleisli.RoutedControlCommutation
 import Qleisli.FiniteBasisTransport
 import Qleisli.ControlAccess
+import Qleisli.Semantics.EngineeringPure
+import Qleisli.EngineeringPure
+import Qleisli.NativeEngineeringPure

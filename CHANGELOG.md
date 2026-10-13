@@ -15,6 +15,23 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Apply #311's adopted exactness boundary explicitly to realization contracts
+  and #31/#163 terminology: approximation certificates are separate engineering
+  claims, including at a reported zero error. Preserve independent exact
+  correspondence, phase/control, cleanup and resource gates and all remaining
+  implementation criteria; this clarification adds no approximation checker.
+- Retain #31/#163's six first projects, separate phase translation and residual
+  counterexample, 34 actual CLI observations and seven exact host arithmetic
+  experiments in a lossless static bundle. Check history integrity without
+  executing recorded programs; these observations issue no approximation
+  certificate or constitutional guarantee.
+- Add internal Mathlib-free engineering checks for exact R8 squared-error
+  witnesses on rectangular matrices. Prove their phase-sensitive Euclidean
+  operator bound, including arbitrary finite references, and connect it to two
+  original artifacts through their unchanged exact PureLeaf checks. Retain
+  small arithmetic/artifact regressions. Native transport, public approximation
+  handles, composition, instruments and target resources remain unfinished;
+  these components grant no exact correspondence or constitutional admission.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.

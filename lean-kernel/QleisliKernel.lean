@@ -68,3 +68,5 @@ import QleisliKernel.Hierarchical.QpeInstrument
 
 import QleisliKernel.Qirf.Contract
 import QleisliKernel.Qirf.ControlAccess
+import QleisliKernel.Engineering.Pure
+import QleisliKernel.Qirf.EngineeringPure
