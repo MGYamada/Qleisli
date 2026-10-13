@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/Users/masa/Documents/Codex/2026-10-13/task/Qleisli/target/debug/qleisli",
+    "check",
+    "/Users/masa/Documents/Codex/2026-10-13/task/Qleisli/tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/adjoint-observe",
+    "--format=json",
+    "--lean-kernel=/Users/masa/Documents/Codex/2026-10-13/task/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-13T12:34:53.366167+00:00",
+  "cli_sha256_before": "8fb919536e44441f7b5b4bad48db6ea19ffd8910ed7c0308887a2e0ca0890844",
+  "cli_sha256_after": "8fb919536e44441f7b5b4bad48db6ea19ffd8910ed7c0308887a2e0ca0890844",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`; adjoint/controlled also require an operation provider with inferred body effect Unitary; measurement cannot satisfy this obligation",
+        "primary": {
+          "path": "main.qli",
+          "start": 151,
+          "end": 152,
+          "line": 7,
+          "column": 21
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}
