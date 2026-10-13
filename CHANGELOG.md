@@ -39,6 +39,14 @@ and exactness obligations retain their recorded scopes and status.
   explicit unclaimed error categories. Add original-entry reference proofs and
   pure composition lemmas; observing/composed certificates, actual target costs
   and broader #31/#163 obligations remain unfinished.
+- Add internal engineering checks for complete outcome-indexed instrument
+  coefficient bounds, with exact dyadic majorants and fresh original-graph,
+  interface and Kraus reconstruction. Define the independent complete adjoint
+  Euclidean operator metric with arbitrary finite references. Preserve first
+  source/import failures, binary packets and residual/reference counterexamples;
+  retain the existing exact symbolic pi/8 profile and explicit unsupported
+  targets. Instrument native/API integration, composition and resource evidence
+  remain unfinished; exact phase, cleanup and constitutional gates are unchanged.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.

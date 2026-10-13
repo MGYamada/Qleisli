@@ -230,6 +230,54 @@ requires equal domain/codomain and the existing independent access meanings.
 These mathematical rules do not implement a composed native receipt, change
 the single-component profile or supply compiler/lowering preservation.
 
+### Internal instrument engineering comparison
+
+The internal instrument component uses a **complete adjoint Euclidean operator
+bound**. For actual and ideal Kraus families, it bounds the difference between
+their adjoint actions on every joint observable family `B`, for every finite
+external reference `R` and classical input `x`:
+
+```text
+norm(sum_y,h (K_actual[x,y,h] tensor I_R)^dagger B[y]
+             (K_actual[x,y,h] tensor I_R)
+   - sum_y,k (K_ideal[x,y,k] tensor I_R)^dagger B[y]
+             (K_ideal[x,y,k] tensor I_R)) <= epsilon * norm(B)_infinity
+```
+
+The norms on operators are explicitly Euclidean operator norms; the family
+norm is the supremum over public outcomes. Hidden-history sets may differ.
+This quantifies joint observables, including reference correlations, without
+a reference-dimension factor or branch renormalization. The metric is not
+advertised as a diamond norm without a separate norm-duality proof.
+
+The sufficient witness assigns a canonical nonnegative closed dyadic `q` to
+every complex CP-coefficient difference, in fixed order: public outcome,
+output row, input column, other output row, other input column. All actual and
+ideal public labels contribute; absent labels denote zero. Each coefficient
+is freshly reconstructed from all matching hidden histories. Existing exact
+R8 arithmetic checks its squared magnitude against `q*q`, and exact summation
+checks `sum(q) <= epsilon`. Both `q` and `epsilon` have unsquared norm units.
+Witness length is exact. Malformed dimensions/coefficients, noncanonical or
+negative budgets, insufficient witnesses and arithmetic/work exhaustion refuse.
+A remaining-work preflight precedes Cartesian witness allocation. Its work
+counter bounds verification, separately from program or target resources.
+
+The original-graph wrapper reuses ordinary root/dependency checks, requested
+complete signature equality, ordered result projection, principal Observe
+checks and complete Kraus/Gram reconstruction on both bodies. Its current
+profile has one quantum input owner, empty classical inputs and the existing
+bounded dense reconstruction. Requested source/type trees remain distinct
+from source-to-IR preservation. The independent metric also defines general
+finite classical input families for subsequent composition work.
+
+These internal components have no native byte schema, public report, source
+epsilon annotation or compiler consumption. The existing pure CLI continues
+to report instrument bounds as unestablished. Instrument API integration,
+composition and actual target/resource certification remain required under
+#31/#163. An instrument bound supplies no pure phase agreement, coherent
+control, inverse, exact release or constitutional PR/RS authority, including
+at epsilon zero.
+
 ## Quantitative resource claims
 
 A resource certificate must identify the actual closed instance, emitted

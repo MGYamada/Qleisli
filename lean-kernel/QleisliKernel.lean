@@ -70,3 +70,4 @@ import QleisliKernel.Qirf.Contract
 import QleisliKernel.Qirf.ControlAccess
 import QleisliKernel.Engineering.Pure
 import QleisliKernel.Qirf.EngineeringPure
+import QleisliKernel.Qirf.EngineeringInstrument

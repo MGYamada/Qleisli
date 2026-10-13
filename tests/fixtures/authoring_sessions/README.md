@@ -5,6 +5,13 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [instrument engineering study](engineering-instrument-v030/README.md)
+preserves first import/name failures, separate translations, original binary
+packets and exact residual/reference counterexamples. The
+[exact pi/8 profile study](exact-pi8-v030/README.md) retains symbolic integers,
+explicit unsupported-profile refusals and an observer's command-only repair.
+History is inert; fresh checks and general proofs remain separate.
+
 The [native engineering client](engineering-pure-native-v030/README.md) retains
 the first command refusal, original invalid Basis request, actual new diagnostic
 and separate successful repair. Its one-qubit bound is engineering evidence;
