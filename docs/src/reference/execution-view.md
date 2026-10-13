@@ -370,14 +370,14 @@ a constitutional guarantee.
 
 ## Retained hierarchy runtime plan
 
-The Rust hierarchy runtime now materializes one owned execution plan per report.
-Both native-only and finite-reconstructed reports retain that plan, or its
-explicit materialization failure, in a private once-initialized cell. Inspection
-still makes the original native decision; unsupported execution cannot acquire
-a replacement plan or change that decision. Public payload/request access is
-immutable. Production QDV1 integration must initialize and compare this same
-plan before granting execution authority; the present retention change alone
-does not perform that comparison.
+The Rust hierarchy runtime materializes one owned execution plan before the
+fresh native decision. Native-only and finite-reconstructed reports retain that
+same allocation, or its explicit materialization failure. Inspection still
+makes the original native decision; unsupported execution cannot acquire a
+replacement plan or change that decision. Public payload/request access is
+immutable. Production QDV1 integration must compare this same plan before
+granting execution authority; preparation and retention alone do not perform
+that comparison.
 
 Pure plans retain original node order, child indices, width, root and ordered
 input/output axes. Finite leaves own their exact matrices. A phase node retains
@@ -450,10 +450,20 @@ claim accepted hierarchy or instrument semantics. The valid H original also
 rejects 112 separately mutated, well-framed candidate descriptions, with
 malformed-frame and exhausted-work controls. Rust's native and compatibility
 reports describe the same retained H plan even after private fault injection
-poisons old transport storage. Rust's view walker remains test-only; native
-CLI integration, other hierarchy contract modes and the mandatory protocol
-cutover are still required. These staging helpers confer no production
-execution authority.
+poisons old transport storage. The `CheckedHierarchy.Modes` gate also retains
+the original fresh checks for independent root requests, named Fourier,
+instruments and named QPE instruments. Its binding theorems retain the original
+packet, actual finite matrices, independent pair/H checks and comparison with
+the plan derived from those same objects. Rust's view walker remains test-only;
+native CLI integration and the mandatory protocol cutover are still required.
+These staging helpers confer no production execution authority.
+
+The five-mode comparison harness additionally uses actual retained Rust plans
+from five small native-accepted inputs. It rejects 2,683 individual description
+mutations while fresh inspection of each original still succeeds. Three invalid
+original requests separately exercise independent finite-pair phase checks and
+the named-QPE phase-fixed H check. This is bounded cross-implementation evidence;
+the generated graph/request structures are not independent source semantics.
 
 ## Required production profiles
 
@@ -519,6 +529,16 @@ Lean's own decoded/derived view inside Lean. A well-framed mismatch rejects
 with `decoded_view`. Missing or malformed data and unsupported protocol
 versions reject separately. The production cutover must reject old native
 request/reply frames; QIRF1/2 artifact compatibility is a separate contract.
+
+Hierarchy comparison must cover inspection, independent root requests, named
+Fourier requests, instruments and named QPE instruments. Each call obtains one
+fresh structural result, reconstructs that result's actual finite leaves and
+checks its independent pair/H obligations under the same exact-work allowance.
+The plan then derives from those exact retained matrices and original typed
+packet, including actual preparation and readout. A QPE plan uses the original
+circuit entry, rather than the provider entry used for its independent request.
+Inspection without an execution comparison must remain distinct from an
+execution-capable result, so unsupported execution cannot narrow inspection.
 
 Any private inspection needed to construct a candidate must not expose an
 accepted execution handle. After successful comparison, execution must retain

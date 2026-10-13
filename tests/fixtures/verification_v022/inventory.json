@@ -5468,7 +5468,7 @@
     {
       "path": "src/interchange/hierarchical/execution/plan/tests.rs",
       "group": "hierarchical-execution",
-      "sha256": "e7cf83e79e3276d0dac788b426999e4c9be3b501caa8cebed67fc185beaffbd9",
+      "sha256": "b0a1c4676d898cf5e1c1931aa0f70be1d49f4e93c36014b320380e56e2a10cba",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5493,7 +5493,7 @@
     },
     {
       "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
-      "sha256": "dfee43aa016249a7071d63faac924181b896f5fc3a96127d66a863cab937f3df",
+      "sha256": "121713a329d118c160e50737ff94c93e830d8ddc8cd43cd5ebe24b60c5e98335",
       "group": "execution-view-encoding",
       "surface": null
     }

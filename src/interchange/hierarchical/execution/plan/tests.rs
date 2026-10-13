@@ -4,6 +4,68 @@ use super::*;
 use crate::contract::DEFAULT_EXACT_WORK;
 use crate::contract::exact::Budget;
 
+/// The shared runner supplies the output directory and invokes this exact test.
+/// Captures describe the same owned plan that the public report executes.
+#[test]
+#[ignore = "shared hierarchy comparison runner supplies QLEISLI_HIERARCHY_VIEW_CAPTURE"]
+fn capture_native_hierarchy_mode_plans() {
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("QLEISLI_HIERARCHY_VIEW_CAPTURE").expect("capture directory"),
+    );
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let document = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json"
+    )))
+    .unwrap();
+    let rows = document.field("rows").unwrap().array().unwrap();
+    assert_eq!(rows.len(), 8);
+    for (index, row) in rows.iter().enumerate() {
+        let payload = json::encode(row.field("artifact").unwrap()).unwrap();
+        let request = row.field("request").ok().map(|r| json::encode(r).unwrap());
+        let candidate = row
+            .field("candidate")
+            .ok()
+            .map(|r| json::encode(r).unwrap());
+        let request = request.as_deref().unwrap_or_default();
+        let candidate = candidate.as_deref().unwrap_or_default();
+        let (bridge, report) = match row.field("mode").unwrap().text().unwrap() {
+            "inspect" => (
+                bridge::decode(&payload).unwrap().bridge,
+                kernel.inspect_native(&payload),
+            ),
+            "request" | "fourier" => (
+                bridge::decode_request(&payload, request).unwrap().bridge,
+                kernel.check_against_native(&payload, request),
+            ),
+            "instrument" => (
+                bridge::decode_instrument(&payload, request).unwrap().bridge,
+                kernel.check_instrument_native(&payload, request),
+            ),
+            "qpeInstrument" => (
+                bridge::decode_qpe_instrument(&payload, request, candidate)
+                    .unwrap()
+                    .bridge,
+                kernel.check_qpe_instrument_native(&payload, request, candidate),
+            ),
+            mode => panic!("unexpected mode {mode}"),
+        };
+        std::fs::write(directory.join(format!("{index}.bridge")), bridge).unwrap();
+        if row.field("accept").unwrap().boolean().unwrap() {
+            let report = report.unwrap();
+            let view = report.execution().unwrap().view().unwrap();
+            std::fs::write(directory.join(format!("{index}.qdv")), view).unwrap();
+        } else {
+            assert!(
+                report.is_err(),
+                "negative original request {index} accepted"
+            );
+        }
+    }
+}
+
 #[test]
 fn retained_plan_matches_independent_shared_hierarchy_descriptions() {
     use crate::interchange::execution_view::{encode, tests::vector_value};

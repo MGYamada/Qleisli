@@ -34,6 +34,10 @@
           "--run",
           "tests/hierarchy_execution_view.lean",
           "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
+        ],
+        [
+          "python3",
+          "scripts/test_hierarchy_mode_views.py"
         ]
       ]
     },

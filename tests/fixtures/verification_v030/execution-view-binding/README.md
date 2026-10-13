@@ -1,5 +1,27 @@
 # Execution-view binding: original controls and encoding vectors
 
+[Eight frozen mode inputs](hierarchy-mode-inputs.json) cover five valid modes
+and three invalid original requests. The [captured validation](hierarchy-mode-validation.json)
+compares actual owned Rust plans against `CheckedHierarchy.Modes.checkMode`:
+inspection, independent root, named Fourier, generic instrument and named QPE.
+All five exact comparisons pass; 2,683 individual description mutations reject
+with `decodedView`. Framing and exhausted-work controls reject separately.
+Independent finite-pair phase faults in the root/instrument requests and a
+coordinated negative-H body/Meaning in QPE reject with the original equation
+error in both inspection and comparison modes. Matching a proposed view cannot
+bypass these independent obligations.
+
+The capture test reads the same private plan allocation returned by native
+checking, and the Lean runner freshly reconstructs its own original packet and
+matrices. Existing hand-described vectors and independent numerical oracles
+remain separate. These are curated small H, one-bit Fourier and three-qubit
+QPE inputs from existing sources; generated request structure is producer
+consistency evidence, not independent source or algorithm correctness. No new
+source-language feature, maximum-size case, production protocol cutover, Issue
+completion or constitutional guarantee is claimed. The shared native manifest
+invokes `scripts/test_hierarchy_mode_views.py`, including the explicitly
+selected Rust capture test; missing native configuration or zero tests fails.
+
 [The first classical inspection refusal](first-classical-inspection-refusal.json)
 preserves the first attempted classical
 passthrough control and its real native refusal. Pure Meaning interfaces forbid
