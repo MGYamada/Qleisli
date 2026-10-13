@@ -187,14 +187,29 @@ pub(super) fn predicate(
     truth: bool,
     budget: &Budget,
 ) -> Result<Context> {
-    let a = natural(&p.left, index, scope, None, budget)?;
-    let b = natural(&p.right, index, scope, None, budget)?;
-    let span = p.left.span.cover(p.right.span);
-    Ok(scope
-        .context
-        .compare_budgeted(a, p.comparison, b, truth, span, &mut |span, cells| {
-            budget.preparation_charge(span, cells)
-        })?)
+    let p = numeric_premise(p, index, scope, budget)?;
+    Ok(scope.context.compare_budgeted(
+        p.left,
+        p.comparison,
+        p.right,
+        truth,
+        p.span,
+        &mut |span, cells| budget.preparation_charge(span, cells),
+    )?)
+}
+
+pub(super) fn numeric_premise(
+    p: &Predicate,
+    index: &Index<'_>,
+    scope: &Scope,
+    budget: &Budget,
+) -> Result<NumericPremise> {
+    Ok(NumericPremise {
+        left: natural(&p.left, index, scope, None, budget)?,
+        comparison: p.comparison,
+        right: natural(&p.right, index, scope, None, budget)?,
+        span: p.left.span.cover(p.right.span),
+    })
 }
 
 pub(super) fn ty(

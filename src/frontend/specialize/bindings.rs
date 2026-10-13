@@ -221,11 +221,65 @@ pub(super) fn closed_interface_budgeted(
         }
     }
     if !satisfied {
-        return Err(Error::new(
-            "size",
-            span,
-            "concrete function premise is false",
-        ));
+        for premise in &interface.numeric_premises {
+            // These affine expressions were normalized by the complete common
+            // judgment, under the original preceding guards. Evaluate them
+            // only to locate an already rejected closed constraint; never
+            // reparse a predicate or use this diagnostic as acceptance.
+            let checked = (|| {
+                charge(premise.span, 1)?;
+                let left =
+                    closed_linear(&premise.left, &resolved_naturals, premise.span, &mut charge)?;
+                let right = closed_linear(
+                    &premise.right,
+                    &resolved_naturals,
+                    premise.span,
+                    &mut charge,
+                )?;
+                use crate::frontend::ast::Compare;
+                let (valid, comparison) = match premise.comparison {
+                    Compare::Eq => (left == right, "=="),
+                    Compare::Ne => (left != right, "!="),
+                    Compare::Lt => (left < right, "<"),
+                    Compare::Le => (left <= right, "<="),
+                    Compare::Gt => (left > right, ">"),
+                    Compare::Ge => (left >= right, ">="),
+                };
+                if !valid {
+                    // Account for rendering the original normalized names and
+                    // the diagnostic before constructing their owned String.
+                    let cells = premise
+                        .left
+                        .storage_cells()?
+                        .checked_add(premise.right.storage_cells()?)
+                        .and_then(|cells| cells.checked_add(subject.len() + 128))
+                        .ok_or_else(|| {
+                            Error::new(
+                                "limit",
+                                premise.span,
+                                "premise diagnostic accounting overflow",
+                            )
+                        })?;
+                    charge(premise.span, cells)?;
+                    return Err(Error::new(
+                        "size",
+                        premise.span,
+                        format!(
+                            "concrete {subject} premise `{} {comparison} {}` is false (evaluated {left} {comparison} {right})",
+                            premise.left, premise.right,
+                        ),
+                    ));
+                }
+                Ok::<_, Error>(())
+            })();
+            checked.map_err(|error| error.in_module(&interface.module))?;
+        }
+        // Keep the original failure if a rejected Context has no false source
+        // comparison (for example, a future additional implicit constraint).
+        return Err(
+            Error::new("size", span, "concrete function premise is false")
+                .in_module(&interface.module),
+        );
     }
     let mut close = |ty: &crate::frontend::check::Ty| -> Result<SourceType> {
         let closed = close_type_budgeted(

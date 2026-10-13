@@ -10,10 +10,11 @@ Develop and validate locally using the shared check groups below. Hosted CI
 runs on every branch push, on pull requests when opened, updated or reopened,
 and on `v*` tag pushes. Manual Issue-completion and release checks remain
 available. Record candidate Issues, their acceptance evidence, remaining
-obligations and exact commit in the PR when verifying completion. Several
-related Issues may share one checkpoint; do not close an Issue until its own
-criteria and the selected checks succeed. Unrun, cancelled or skipped required
-work is not success, and new source changes invalidate an old result.
+obligations and exact commit in the PR when verifying completion. Related fixes
+may proceed in parallel and share one PR or checkpoint; do not close an Issue
+until its own criteria and the selected checks succeed. Unrun, cancelled or
+skipped required work is not success, and new source changes invalidate an old
+result.
 
 For an explicit manual PR-completion checkpoint, run on the candidate branch with
 `completion_pr` and `completion_issues`. The size gates fetch read-only GitHub
@@ -479,7 +480,8 @@ The human/workflow caller supplies an exact trusted base commit through the
 manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
 tag. There is no fallback to candidate HEAD. For complete feature releases,
 review and commit `release/requirements.json` at that base: the exact
-13 groups/127 IDs fixed by the 2026-10-12 beta plan in #142, complete applicable criteria,
+13 groups/127 audit IDs fixed by the 2026-10-12 beta plan in #142, complete
+applicable criteria and the maintainer-approved exclusions,
 immutable Issue snapshot references and an explicit review record. The checker
 reads these from Git blobs at the base. A candidate `release/acceptance.json` supplies evidence for
 exactly those criteria. GitHub remains the only decisions/progress ledger;
@@ -488,10 +490,12 @@ no real completed index. Missing reviewed requirements or acceptance evidence
 is an actionable failure, not a request to auto-generate completion records.
 The checker retains the historical 111-Issue groups separately and adds exactly
 the sixteen beta-scope Issues. Closed Issues require the same criterion evidence.
-#83 and #39 are resumed: their historical deferrals cannot pass the complete
-feature gate, even when present in an older caller-reviewed requirements base.
-The maintainer reaffirmed #63's all-v0.3.0 exclusion on 2026-10-12: audit its
-reviewed exclusion without implementation-completion credit. The existing
+#83 remains resumed: its historical deferral cannot pass the complete feature
+gate, even when present in an older caller-reviewed requirements base.
+The maintainer excludes #39 and #63 from all v0.3.0, including beta, and the
+current goal, superseding #39's earlier beta resumption. Retain the 127 audit
+entries as **125 applicable Issues plus two approved exclusions**. Audit both
+reviewed exclusions without implementation-completion credit. The existing
 explicitly approved generic-QFT exclusion also remains separate.
 
 The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)

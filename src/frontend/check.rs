@@ -305,6 +305,14 @@ pub(super) struct StaticFormal {
     pub kind: StaticKind,
 }
 #[derive(Clone, Debug)]
+pub(super) struct NumericPremise {
+    pub left: Linear,
+    pub comparison: ast::Compare,
+    pub right: Linear,
+    pub span: Span,
+}
+
+#[derive(Clone, Debug)]
 pub(super) struct Interface {
     pub module: String,
     pub ast_index: usize,
@@ -314,6 +322,10 @@ pub(super) struct Interface {
     pub meaning_domain: Option<Ty>,
     pub result: Ty,
     pub premises: Context,
+    // Already checked source comparisons, retained only for closed-failure
+    // diagnostics. The declaring module is `module`; Context remains the
+    // symbolic and closed constraint judgment.
+    pub numeric_premises: Vec<NumericPremise>,
 }
 
 impl Interface {

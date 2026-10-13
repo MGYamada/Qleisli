@@ -1,0 +1,551 @@
+{
+  "format": "qleisli.requires-first-observations",
+  "version": 1,
+  "baseline_commit": "803b8512eeaad18c638c54c2446aa12d1727dd82",
+  "studies": {
+    "mixed": {
+      "original_root": "/private/tmp/qleisli-beta-47-first-44lnlptt",
+      "files": [
+        {
+          "path": "01-mixed-success/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "01-mixed-success/expectation.before.json",
+          "mode": 420,
+          "sha256": "2fa44796c25b246d803704798f45c44e9e8e51f232b60683bfe046e240cfb57a",
+          "utf8": "{\n  \"name\": \"01-mixed-success\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"native Raw acceptance\",\n  \"expectation_rationale\": \"A comma-separated requires combines numeric premises and Applicable on an opaque Basis, then closes one Bit instance.\"\n}\n"
+        },
+        {
+          "path": "01-mixed-success/main.qli",
+          "mode": 420,
+          "sha256": "0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "01-mixed-success/observation.json",
+          "mode": 420,
+          "sha256": "be57231cfc08472629c09a83241ed0f0c4f1e11fb809317bd988097733266f05",
+          "utf8": "{\n  \"name\": \"01-mixed-success\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success\",\n  \"started_utc\": \"2026-10-13T09:41:09.210602+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.257228+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"status_matches\": true,\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "01-mixed-success/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "01-mixed-success/stdout.txt",
+          "mode": 420,
+          "sha256": "9321884ef8599dac1cac9054c8ec72090c05194edfaa33a9d45279fe2c1c151f",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::generic\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "02-closed-false-premise/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "02-closed-false-premise/expectation.before.json",
+          "mode": 420,
+          "sha256": "674a4c3e30fd178e4dc95c14127ab3f76a15f94e74659812ffff6ea1eb2ca5d6",
+          "utf8": "{\n  \"name\": \"02-closed-false-premise\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=0\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"size before native invocation\",\n  \"expectation_rationale\": \"Closed n=0 falsifies n>=1 even though identity body and provider fit one qubit.\"\n}\n"
+        },
+        {
+          "path": "02-closed-false-premise/main.qli",
+          "mode": 420,
+          "sha256": "0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "02-closed-false-premise/observation.json",
+          "mode": 420,
+          "sha256": "58c2f8595fa643f231865e646bba185eb7ee9e2111de65678c35543f4b0acd16",
+          "utf8": "{\n  \"name\": \"02-closed-false-premise\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=0\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise\",\n  \"started_utc\": \"2026-10-13T09:41:09.319121+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.326168+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "02-closed-false-premise/stderr.txt",
+          "mode": 420,
+          "sha256": "fdf34c4a006a683b21d0a0643079ac0479a1a8cddc58fd38874ed9b7a6dd3a6a",
+          "utf8": "main:51..184: size: concrete function premise is false\n"
+        },
+        {
+          "path": "02-closed-false-premise/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "03-missing-applicable/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "03-missing-applicable/expectation.before.json",
+          "mode": 420,
+          "sha256": "9f87574ff07eae544face9d2082f2aa0e38c515c22d532622feddf2a6f748fa2",
+          "utf8": "{\n  \"name\": \"03-missing-applicable\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"c855030e4a46d15d065c56cc09007e8ade1ff05a26cabf22ae7b67f685457c90\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"access in common original-source checking\",\n  \"expectation_rationale\": \"A valid Nat premise cannot authorize direct application of an Op formal without Applicable.\"\n}\n"
+        },
+        {
+          "path": "03-missing-applicable/main.qli",
+          "mode": 420,
+          "sha256": "c855030e4a46d15d065c56cc09007e8ade1ff05a26cabf22ae7b67f685457c90",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2 { U(q) }\n"
+        },
+        {
+          "path": "03-missing-applicable/observation.json",
+          "mode": 420,
+          "sha256": "d2db85e7d6b9e215140724bf94272a6f6a34a9aee24afdf9a3dc705ebc249151",
+          "utf8": "{\n  \"name\": \"03-missing-applicable\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable\",\n  \"started_utc\": \"2026-10-13T09:41:09.387426+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.393118+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"c855030e4a46d15d065c56cc09007e8ade1ff05a26cabf22ae7b67f685457c90\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "03-missing-applicable/stderr.txt",
+          "mode": 420,
+          "sha256": "555dd156e16d1c63102eb1ac5d25bae988aa760c58ea1cc1e0f113f36c10b19e",
+          "utf8": "main:163..167: access: missing Applicable operation access\n"
+        },
+        {
+          "path": "03-missing-applicable/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "04-symbolic-forwarding/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "04-symbolic-forwarding/expectation.before.json",
+          "mode": 420,
+          "sha256": "211b5bfc0d92e178128faae8aef84d175f3621316ec5b37e37e7ba8304ceea7d",
+          "utf8": "{\n  \"name\": \"04-symbolic-forwarding\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"f1357fb0ce47a0e9844bf0c611b99940ad9c80368a14b0b40e0da682e5f851c5\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::forward\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=2\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"native Raw acceptance\",\n  \"expectation_rationale\": \"Symbolic caller entails callee numeric and capability premises; requires order differs.\"\n}\n"
+        },
+        {
+          "path": "04-symbolic-forwarding/main.qli",
+          "mode": 420,
+          "sha256": "f1357fb0ce47a0e9844bf0c611b99940ad9c80368a14b0b40e0da682e5f851c5",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\npub unitary fn forward[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires Applicable(U), n <= 2, n >= 1 { generic[A,n,U](q) }\n"
+        },
+        {
+          "path": "04-symbolic-forwarding/observation.json",
+          "mode": 420,
+          "sha256": "e7a0e5dc463f1ffb7b27298dce9c25c8efe4ab2088ed8ffdfd5e108b984f4887",
+          "utf8": "{\n  \"name\": \"04-symbolic-forwarding\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::forward\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=2\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding\",\n  \"started_utc\": \"2026-10-13T09:41:09.452591+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.485289+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"status_matches\": true,\n  \"source_sha256\": \"f1357fb0ce47a0e9844bf0c611b99940ad9c80368a14b0b40e0da682e5f851c5\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "04-symbolic-forwarding/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "04-symbolic-forwarding/stdout.txt",
+          "mode": 420,
+          "sha256": "991adc32b9780e243d85c0ecab7cf6ce820a0f0825946d5bb67379cc53460fde",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::forward\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/expectation.before.json",
+          "mode": 420,
+          "sha256": "bf62172c2cd6f51256208f563974ed252af97f597e9c96cc57274916853ed21b",
+          "utf8": "{\n  \"name\": \"05-forwarding-missing-numeric-premise\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"95270cd49e5807b25592ac050cdf1540c541fa39d7c0b93910c598c168670764\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::forward\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"size at original symbolic call\",\n  \"expectation_rationale\": \"A convenient closed n=1 cannot repair an unguarded generic forwarding definition.\"\n}\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/main.qli",
+          "mode": 420,
+          "sha256": "95270cd49e5807b25592ac050cdf1540c541fa39d7c0b93910c598c168670764",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\npub unitary fn forward[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires Applicable(U), n <= 2 { generic[A,n,U](q) }\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/observation.json",
+          "mode": 420,
+          "sha256": "0527fd51ec21eecef1e5cdc05e881d1fbedbf02c5f9e82ff59b3e7c44199c76d",
+          "utf8": "{\n  \"name\": \"05-forwarding-missing-numeric-premise\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::forward\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise\",\n  \"started_utc\": \"2026-10-13T09:41:09.547570+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.553730+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"95270cd49e5807b25592ac050cdf1540c541fa39d7c0b93910c598c168670764\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/stderr.txt",
+          "mode": 420,
+          "sha256": "73170737c543631f1697c0c62ae61eb1208d452e7f01d3ae8d3d5353066ab8dc",
+          "utf8": "main:304..321: size: callee natural premise is not implied by caller guards\n"
+        },
+        {
+          "path": "05-forwarding-missing-numeric-premise/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "06-exact-basis-mismatch/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "06-exact-basis-mismatch/expectation.before.json",
+          "mode": 420,
+          "sha256": "678d2701a810789367705f790acddb1e4f0242e11456609cdd7531beed59c2af",
+          "utf8": "{\n  \"name\": \"06-exact-basis-mismatch\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch/main.qli\",\n    \"--type=A=Bits<1>\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"type at closed provider binding\",\n  \"expectation_rationale\": \"Equal physical width does not equate Bit and Bits<1>; provider must match exact requested Basis.\"\n}\n"
+        },
+        {
+          "path": "06-exact-basis-mismatch/main.qli",
+          "mode": 420,
+          "sha256": "0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "06-exact-basis-mismatch/observation.json",
+          "mode": 420,
+          "sha256": "0b93bb6c3cdc996c521b8a054ce08375afca93443bab9d24155fa9bf9c7174f2",
+          "utf8": "{\n  \"name\": \"06-exact-basis-mismatch\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch/main.qli\",\n    \"--type=A=Bits<1>\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch\",\n  \"started_utc\": \"2026-10-13T09:41:09.612536+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.618561+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "06-exact-basis-mismatch/stderr.txt",
+          "mode": 420,
+          "sha256": "0b5bc70ef4db64b51acdcc8daef625b1e743c19f637aed3c7091ee0a21e3fa79",
+          "utf8": "main:51..184: type: concrete provider type or tuple/size shape mismatch\n"
+        },
+        {
+          "path": "06-exact-basis-mismatch/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "07-control-is-not-direct-access/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "07-control-is-not-direct-access/expectation.before.json",
+          "mode": 420,
+          "sha256": "8a0bbd240091e54d399d7defccc952f385b519a5f799511a546f58506226dabd",
+          "utf8": "{\n  \"name\": \"07-control-is-not-direct-access\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"e98f951eaf5f4d6e91db8747ab8cd51bb333956f375245644d8fd436be8041e1\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"access in common original-source checking\",\n  \"expectation_rationale\": \"Controllable is not Applicable for the original opaque operation formal.\"\n}\n"
+        },
+        {
+          "path": "07-control-is-not-direct-access/main.qli",
+          "mode": 420,
+          "sha256": "e98f951eaf5f4d6e91db8747ab8cd51bb333956f375245644d8fd436be8041e1",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Controllable(U) { U(q) }\n"
+        },
+        {
+          "path": "07-control-is-not-direct-access/observation.json",
+          "mode": 420,
+          "sha256": "c544216d9c3834fc874a4c6b87085eb5b8e334988f800d6a75379d3d70b6ca88",
+          "utf8": "{\n  \"name\": \"07-control-is-not-direct-access\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access\",\n  \"started_utc\": \"2026-10-13T09:41:09.675342+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.681428+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"e98f951eaf5f4d6e91db8747ab8cd51bb333956f375245644d8fd436be8041e1\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "07-control-is-not-direct-access/stderr.txt",
+          "mode": 420,
+          "sha256": "2688b556cc733b805954ace853df4fb6cce135c4a89e48e7eed67417e7c45e48",
+          "utf8": "main:180..184: access: missing Applicable operation access\n"
+        },
+        {
+          "path": "07-control-is-not-direct-access/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "08-empty-fold-missing-access/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "08-empty-fold-missing-access/expectation.before.json",
+          "mode": 420,
+          "sha256": "b27da8698674553754d3973a2cb1935b4f5987bbdee07f4edb676247a141715f",
+          "utf8": "{\n  \"name\": \"08-empty-fold-missing-access\",\n  \"source\": \"main.qli\",\n  \"source_sha256\": \"66a5996538ecca8294d60178841eb23ac44454562e35fce273ee73276dc98324\",\n  \"manifest\": \"Qargo.toml\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"access in empty original fold body\",\n  \"expectation_rationale\": \"Zero iterations cannot erase a missing capability obligation; sizes remain tiny.\"\n}\n"
+        },
+        {
+          "path": "08-empty-fold-missing-access/main.qli",
+          "mode": 420,
+          "sha256": "66a5996538ecca8294d60178841eb23ac44454562e35fce273ee73276dc98324",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2 { qfor static i in 0..0 carry a=q { yield U(a); } }\n"
+        },
+        {
+          "path": "08-empty-fold-missing-access/observation.json",
+          "mode": 420,
+          "sha256": "c50c2ecf5b6dc57b9fbbf048ed3bbdc67ec367128ad86141dc9fb637994d9c54",
+          "utf8": "{\n  \"name\": \"08-empty-fold-missing-access\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access\",\n  \"started_utc\": \"2026-10-13T09:41:09.737330+00:00\",\n  \"finished_utc\": \"2026-10-13T09:41:09.742616+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"status_matches\": true,\n  \"source_sha256\": \"66a5996538ecca8294d60178841eb23ac44454562e35fce273ee73276dc98324\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n}\n"
+        },
+        {
+          "path": "08-empty-fold-missing-access/stderr.txt",
+          "mode": 420,
+          "sha256": "98476a127c9941ba2669988735ab852cd446210dac93c51b9f86ca27d4878f92",
+          "utf8": "main:203..207: access: missing Applicable operation access\n"
+        },
+        {
+          "path": "08-empty-fold-missing-access/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "assessment.after.json",
+          "mode": 420,
+          "sha256": "836ae3e21f03d83966cd427a35ca2f478f1d58ea5163e365f1aa793fab41b18d",
+          "utf8": "{\n  \"scope\": \"First informed bounded observations only; no implementation, repairs, completion credit, blind benchmark or formal proof.\",\n  \"all_sources_preserved\": true,\n  \"all_status_expectations_met\": true,\n  \"all_cli_identities_unchanged\": true,\n  \"all_kernel_identities_unchanged\": true,\n  \"all_head_identities_unchanged\": true,\n  \"native_process_trace\": \"Not instrumented; diagnostic stages are identified from their original source locations and implementation paths, rather than claiming observed invocation counts.\",\n  \"rows\": [\n    {\n      \"case\": \"01-mixed-success\",\n      \"expected_boundary\": \"native Raw acceptance\",\n      \"actual_status\": 0,\n      \"actual_diagnostic\": \"\",\n      \"success_report\": {\n        \"status\": \"checked\",\n        \"checker_path\": \"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\n        \"checker_identity\": \"unpinned\",\n        \"request_checked\": false,\n        \"source_preservation_verified\": false,\n        \"verification\": {\n          \"scope\": \"native-validity\",\n          \"request_origin\": \"none\",\n          \"source_steps_checked\": true,\n          \"source_meaning_verified\": false\n        },\n        \"execution_authority\": \"checked-produced-ir\",\n        \"entry\": \"main::generic\",\n        \"ir_profile\": \"raw\",\n        \"source_check_scope\": \"all-supplied-module-declarations\",\n        \"native_check_scope\": \"selected-specialization\"\n      }\n    },\n    {\n      \"case\": \"02-closed-false-premise\",\n      \"expected_boundary\": \"size before native invocation\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:51..184: size: concrete function premise is false\\n\",\n      \"code\": \"size\",\n      \"span\": [\n        51,\n        184\n      ],\n      \"source_slice\": \"pub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\"\n    },\n    {\n      \"case\": \"03-missing-applicable\",\n      \"expected_boundary\": \"access in common original-source checking\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:163..167: access: missing Applicable operation access\\n\",\n      \"code\": \"access\",\n      \"span\": [\n        163,\n        167\n      ],\n      \"source_slice\": \"U(q)\"\n    },\n    {\n      \"case\": \"04-symbolic-forwarding\",\n      \"expected_boundary\": \"native Raw acceptance\",\n      \"actual_status\": 0,\n      \"actual_diagnostic\": \"\",\n      \"success_report\": {\n        \"status\": \"checked\",\n        \"checker_path\": \"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\n        \"checker_identity\": \"unpinned\",\n        \"request_checked\": false,\n        \"source_preservation_verified\": false,\n        \"verification\": {\n          \"scope\": \"native-validity\",\n          \"request_origin\": \"none\",\n          \"source_steps_checked\": true,\n          \"source_meaning_verified\": false\n        },\n        \"execution_authority\": \"checked-produced-ir\",\n        \"entry\": \"main::forward\",\n        \"ir_profile\": \"raw\",\n        \"source_check_scope\": \"all-supplied-module-declarations\",\n        \"native_check_scope\": \"selected-specialization\"\n      }\n    },\n    {\n      \"case\": \"05-forwarding-missing-numeric-premise\",\n      \"expected_boundary\": \"size at original symbolic call\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:304..321: size: callee natural premise is not implied by caller guards\\n\",\n      \"code\": \"size\",\n      \"span\": [\n        304,\n        321\n      ],\n      \"source_slice\": \"generic[A,n,U](q)\"\n    },\n    {\n      \"case\": \"06-exact-basis-mismatch\",\n      \"expected_boundary\": \"type at closed provider binding\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:51..184: type: concrete provider type or tuple/size shape mismatch\\n\",\n      \"code\": \"type\",\n      \"span\": [\n        51,\n        184\n      ],\n      \"source_slice\": \"pub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\"\n    },\n    {\n      \"case\": \"07-control-is-not-direct-access\",\n      \"expected_boundary\": \"access in common original-source checking\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:180..184: access: missing Applicable operation access\\n\",\n      \"code\": \"access\",\n      \"span\": [\n        180,\n        184\n      ],\n      \"source_slice\": \"U(q)\"\n    },\n    {\n      \"case\": \"08-empty-fold-missing-access\",\n      \"expected_boundary\": \"access in empty original fold body\",\n      \"actual_status\": 1,\n      \"actual_diagnostic\": \"main:203..207: access: missing Applicable operation access\\n\",\n      \"code\": \"access\",\n      \"span\": [\n        203,\n        207\n      ],\n      \"source_slice\": \"U(a)\"\n    }\n  ]\n}\n"
+        },
+        {
+          "path": "observations.json",
+          "mode": 420,
+          "sha256": "7553c3c1c4aadcc11b9cb14575952e748f71f5f725f95d8f8be4dd7ec9e96be9",
+          "utf8": "{\n  \"root\": \"/private/tmp/qleisli-beta-47-first-44lnlptt\",\n  \"git_head_before\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_before\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_before\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"observations\": [\n    {\n      \"name\": \"01-mixed-success\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success\",\n      \"started_utc\": \"2026-10-13T09:41:09.210602+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.257228+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"status_matches\": true,\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"02-closed-false-premise\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=0\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise\",\n      \"started_utc\": \"2026-10-13T09:41:09.319121+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.326168+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"03-missing-applicable\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable\",\n      \"started_utc\": \"2026-10-13T09:41:09.387426+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.393118+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"c855030e4a46d15d065c56cc09007e8ade1ff05a26cabf22ae7b67f685457c90\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"04-symbolic-forwarding\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::forward\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=2\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding\",\n      \"started_utc\": \"2026-10-13T09:41:09.452591+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.485289+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"status_matches\": true,\n      \"source_sha256\": \"f1357fb0ce47a0e9844bf0c611b99940ad9c80368a14b0b40e0da682e5f851c5\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"05-forwarding-missing-numeric-premise\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::forward\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise\",\n      \"started_utc\": \"2026-10-13T09:41:09.547570+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.553730+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"95270cd49e5807b25592ac050cdf1540c541fa39d7c0b93910c598c168670764\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"06-exact-basis-mismatch\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch/main.qli\",\n        \"--type=A=Bits<1>\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch\",\n      \"started_utc\": \"2026-10-13T09:41:09.612536+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.618561+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"07-control-is-not-direct-access\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access\",\n      \"started_utc\": \"2026-10-13T09:41:09.675342+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.681428+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"e98f951eaf5f4d6e91db8747ab8cd51bb333956f375245644d8fd436be8041e1\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    },\n    {\n      \"name\": \"08-empty-fold-missing-access\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access\",\n      \"started_utc\": \"2026-10-13T09:41:09.737330+00:00\",\n      \"finished_utc\": \"2026-10-13T09:41:09.742616+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"status_matches\": true,\n      \"source_sha256\": \"66a5996538ecca8294d60178841eb23ac44454562e35fce273ee73276dc98324\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\"\n    }\n  ]\n}\n"
+        },
+        {
+          "path": "study.before.json",
+          "mode": 420,
+          "sha256": "47261b922d33364036141298884035486f494af2c4aa3a2c9d981facd62f2af3",
+          "utf8": "{\n  \"study\": \"Issue #47 first bounded authoring observations\",\n  \"kind\": \"informed-study\",\n  \"context\": \"Agent had full English specification, repository, issue and existing test access before authoring. No blind benchmark, external model or proof claim. No implementation changes. No source repairs in place.\",\n  \"timestamp_utc\": \"2026-10-13T09:41:09.125595+00:00\",\n  \"repository\": \"/Users/masa/git/Qleisli\",\n  \"git_head\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"expected_candidate\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli\": \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n  \"cli_sha256\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel\": \"/tmp/qleisli-beta-362-qlv2-stable-kernel\",\n  \"kernel_sha256\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"maximum_quantum_width\": 1,\n  \"cases\": [\n    {\n      \"name\": \"01-mixed-success\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/01-mixed-success\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"native Raw acceptance\",\n      \"expectation_rationale\": \"A comma-separated requires combines numeric premises and Applicable on an opaque Basis, then closes one Bit instance.\"\n    },\n    {\n      \"name\": \"02-closed-false-premise\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=0\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/02-closed-false-premise\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"size before native invocation\",\n      \"expectation_rationale\": \"Closed n=0 falsifies n>=1 even though identity body and provider fit one qubit.\"\n    },\n    {\n      \"name\": \"03-missing-applicable\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"c855030e4a46d15d065c56cc09007e8ade1ff05a26cabf22ae7b67f685457c90\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/03-missing-applicable\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"access in common original-source checking\",\n      \"expectation_rationale\": \"A valid Nat premise cannot authorize direct application of an Op formal without Applicable.\"\n    },\n    {\n      \"name\": \"04-symbolic-forwarding\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"f1357fb0ce47a0e9844bf0c611b99940ad9c80368a14b0b40e0da682e5f851c5\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::forward\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=2\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/04-symbolic-forwarding\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"native Raw acceptance\",\n      \"expectation_rationale\": \"Symbolic caller entails callee numeric and capability premises; requires order differs.\"\n    },\n    {\n      \"name\": \"05-forwarding-missing-numeric-premise\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"95270cd49e5807b25592ac050cdf1540c541fa39d7c0b93910c598c168670764\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::forward\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/05-forwarding-missing-numeric-premise\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"size at original symbolic call\",\n      \"expectation_rationale\": \"A convenient closed n=1 cannot repair an unguarded generic forwarding definition.\"\n    },\n    {\n      \"name\": \"06-exact-basis-mismatch\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch/main.qli\",\n        \"--type=A=Bits<1>\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/06-exact-basis-mismatch\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"type at closed provider binding\",\n      \"expectation_rationale\": \"Equal physical width does not equate Bit and Bits<1>; provider must match exact requested Basis.\"\n    },\n    {\n      \"name\": \"07-control-is-not-direct-access\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"e98f951eaf5f4d6e91db8747ab8cd51bb333956f375245644d8fd436be8041e1\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/07-control-is-not-direct-access\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"access in common original-source checking\",\n      \"expectation_rationale\": \"Controllable is not Applicable for the original opaque operation formal.\"\n    },\n    {\n      \"name\": \"08-empty-fold-missing-access\",\n      \"source\": \"main.qli\",\n      \"source_sha256\": \"66a5996538ecca8294d60178841eb23ac44454562e35fce273ee73276dc98324\",\n      \"manifest\": \"Qargo.toml\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-first-44lnlptt/08-empty-fold-missing-access\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"access in empty original fold body\",\n      \"expectation_rationale\": \"Zero iterations cannot erase a missing capability obligation; sizes remain tiny.\"\n    }\n  ]\n}\n"
+        }
+      ]
+    },
+    "order": {
+      "original_root": "/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl",
+      "files": [
+        {
+          "path": "01-guard-before-subtraction/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "01-guard-before-subtraction/expectation.before.json",
+          "mode": 420,
+          "sha256": "f59b0cfb1252320d4ec29a8f1f26e21697af0232b68f4d79fab389aa9d284281",
+          "utf8": "{\n  \"name\": \"01-guard-before-subtraction\",\n  \"requires\": \"n >= 1, n-1 <= 1, Applicable(U)\",\n  \"source_sha256\": \"8e4d3eb977b658265a5df9bd0cccef3a05d0f72b800df13c00e5f006d3949a6a\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"Native Raw validity acceptance\",\n  \"rationale\": \"Existing preceding guard establishes nonnegative subtraction.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "01-guard-before-subtraction/main.qli",
+          "mode": 420,
+          "sha256": "8e4d3eb977b658265a5df9bd0cccef3a05d0f72b800df13c00e5f006d3949a6a",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n-1 <= 1, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "01-guard-before-subtraction/observation.json",
+          "mode": 420,
+          "sha256": "2764e44ad9925bff92546f0480b3079e78397745abf9e785f5f180e1250a7436",
+          "utf8": "{\n  \"name\": \"01-guard-before-subtraction\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction\",\n  \"started_utc\": \"2026-10-13T09:51:04.596089+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:04.639582+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"expected_status_matches\": true,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"8e4d3eb977b658265a5df9bd0cccef3a05d0f72b800df13c00e5f006d3949a6a\"\n}\n"
+        },
+        {
+          "path": "01-guard-before-subtraction/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "01-guard-before-subtraction/stdout.txt",
+          "mode": 420,
+          "sha256": "9321884ef8599dac1cac9054c8ec72090c05194edfaa33a9d45279fe2c1c151f",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::generic\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/expectation.before.json",
+          "mode": 420,
+          "sha256": "93eafd649a6fa2055cac4f941551df05f869585dd5db360fac2bfe9b87d56d26",
+          "utf8": "{\n  \"name\": \"02-guard-after-subtraction\",\n  \"requires\": \"n-1 <= 1, n >= 1, Applicable(U)\",\n  \"source_sha256\": \"e3e481264ec7f386f09b63e83a5f519879d04e330babe18718c83d8569a3f7c5\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction\",\n  \"expected_status\": null,\n  \"expected_boundary\": \"Unknown language-contract expectation: ordered well-formedness versus mathematical conjunction\",\n  \"rationale\": \"Reference says current premises must guard subtraction but does not explicitly define whether all requires siblings or only preceding siblings count. Code inspection predicts rejection; no adopted order-independent requirement is assumed.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/main.qli",
+          "mode": 420,
+          "sha256": "e3e481264ec7f386f09b63e83a5f519879d04e330babe18718c83d8569a3f7c5",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n-1 <= 1, n >= 1, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/observation.json",
+          "mode": 420,
+          "sha256": "5fa15f0aa3085e95960cb994f3ff2b3428a66f5fc29c23211de184e00b976e33",
+          "utf8": "{\n  \"name\": \"02-guard-after-subtraction\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction\",\n  \"started_utc\": \"2026-10-13T09:51:04.694475+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:04.699880+00:00\",\n  \"status\": 1,\n  \"expected_status\": null,\n  \"expected_status_matches\": null,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"e3e481264ec7f386f09b63e83a5f519879d04e330babe18718c83d8569a3f7c5\",\n  \"diagnostic_code\": \"size\",\n  \"source_span\": [\n    146,\n    149\n  ],\n  \"source_slice\": \"n-1\"\n}\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/stderr.txt",
+          "mode": 420,
+          "sha256": "db9de411a5efaa9deb47c93e04d680657bba10ab0849698d912194ada8ec1830",
+          "utf8": "main:146..149: size: subtraction lacks a nonnegative guard\n"
+        },
+        {
+          "path": "02-guard-after-subtraction/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "03-simple-numeric-forward-order/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "03-simple-numeric-forward-order/expectation.before.json",
+          "mode": 420,
+          "sha256": "ae2173a64d2021ca5c4d3198e4b2e5ead730e80ae11bee9da7500700dd4fa2dc",
+          "utf8": "{\n  \"name\": \"03-simple-numeric-forward-order\",\n  \"requires\": \"n >= 1, n <= 2, Applicable(U)\",\n  \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"Native Raw validity acceptance\",\n  \"rationale\": \"Both numeric atoms are individually well formed; conjunction implies admitted n=1.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "03-simple-numeric-forward-order/main.qli",
+          "mode": 420,
+          "sha256": "0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n <= 2, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "03-simple-numeric-forward-order/observation.json",
+          "mode": 420,
+          "sha256": "67c119543bb82593c8f955efd9f0538eba343af7927f7d8ee86e08afc006cc39",
+          "utf8": "{\n  \"name\": \"03-simple-numeric-forward-order\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order\",\n  \"started_utc\": \"2026-10-13T09:51:04.754571+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:04.779491+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"expected_status_matches\": true,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\"\n}\n"
+        },
+        {
+          "path": "03-simple-numeric-forward-order/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "03-simple-numeric-forward-order/stdout.txt",
+          "mode": 420,
+          "sha256": "9321884ef8599dac1cac9054c8ec72090c05194edfaa33a9d45279fe2c1c151f",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::generic\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/expectation.before.json",
+          "mode": 420,
+          "sha256": "208b7dc231b18c81808b5422d0c141ed829e0c5516ebf9cf9f0ef6e9b3d1b9f9",
+          "utf8": "{\n  \"name\": \"04-simple-numeric-reverse-order\",\n  \"requires\": \"n <= 2, n >= 1, Applicable(U)\",\n  \"source_sha256\": \"c339cfcc8cf11fd6f5024727f6029dc666e9519a6d79572ee275f2f36ad92da3\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"Native Raw validity acceptance\",\n  \"rationale\": \"Simple comparisons need no partial arithmetic, so swapping them changes no required well-formedness fact.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/main.qli",
+          "mode": 420,
+          "sha256": "c339cfcc8cf11fd6f5024727f6029dc666e9519a6d79572ee275f2f36ad92da3",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n <= 2, n >= 1, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/observation.json",
+          "mode": 420,
+          "sha256": "58f113b5889785910bd93631d42d151ede9e7cbee33ba3a859e5d3c9b68e8a33",
+          "utf8": "{\n  \"name\": \"04-simple-numeric-reverse-order\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order\",\n  \"started_utc\": \"2026-10-13T09:51:04.834298+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:04.859248+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"expected_status_matches\": true,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"c339cfcc8cf11fd6f5024727f6029dc666e9519a6d79572ee275f2f36ad92da3\"\n}\n"
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "04-simple-numeric-reverse-order/stdout.txt",
+          "mode": 420,
+          "sha256": "9321884ef8599dac1cac9054c8ec72090c05194edfaa33a9d45279fe2c1c151f",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::generic\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "05-capability-interleaved/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "05-capability-interleaved/expectation.before.json",
+          "mode": 420,
+          "sha256": "50bcad9eea25bc0cd081cfe15e347ca36ce706048e689f5b4a8587a4f6099db3",
+          "utf8": "{\n  \"name\": \"05-capability-interleaved\",\n  \"requires\": \"n >= 1, Applicable(U), n-1 <= 1\",\n  \"source_sha256\": \"f3f7ffbf873e0c0e4213833f5916c8bae31c94fa33248bf3c26a0bcfa6f96421\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved\",\n  \"expected_status\": 0,\n  \"expected_boundary\": \"Native Raw validity acceptance\",\n  \"rationale\": \"Capability between the numeric guard and dependent arithmetic does not remove the natural guard.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "05-capability-interleaved/main.qli",
+          "mode": 420,
+          "sha256": "f3f7ffbf873e0c0e4213833f5916c8bae31c94fa33248bf3c26a0bcfa6f96421",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, Applicable(U), n-1 <= 1 { U(q) }\n"
+        },
+        {
+          "path": "05-capability-interleaved/observation.json",
+          "mode": 420,
+          "sha256": "ffe960df8736d19bd274cef4b45337587e04c84848e73dfd435f7a917d46dc67",
+          "utf8": "{\n  \"name\": \"05-capability-interleaved\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved\",\n  \"started_utc\": \"2026-10-13T09:51:04.914758+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:04.941193+00:00\",\n  \"status\": 0,\n  \"expected_status\": 0,\n  \"expected_status_matches\": true,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"f3f7ffbf873e0c0e4213833f5916c8bae31c94fa33248bf3c26a0bcfa6f96421\"\n}\n"
+        },
+        {
+          "path": "05-capability-interleaved/stderr.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "05-capability-interleaved/stdout.txt",
+          "mode": 420,
+          "sha256": "9321884ef8599dac1cac9054c8ec72090c05194edfaa33a9d45279fe2c1c151f",
+          "utf8": "{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-beta-362-qlv2-stable-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::generic\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/Qargo.toml",
+          "mode": 420,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "utf8": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/expectation.before.json",
+          "mode": 420,
+          "sha256": "268d61c2b9ad998fcf992d240366a95d6b67668ff3aaae1a5836ae53beaa05c6",
+          "utf8": "{\n  \"name\": \"06-nonlinear-generic-control\",\n  \"requires\": \"n >= 1, n*n <= 1, Applicable(U)\",\n  \"source_sha256\": \"349d27eccc719cc9bf9ef9bb2a17695e6c60a052c5bf5a657312eb38f1f1914f\",\n  \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control\",\n  \"expected_status\": 1,\n  \"expected_boundary\": \"Unsupported symbolic nonlinear arithmetic\",\n  \"rationale\": \"Generic n*n is explicitly unsupported even when the selected closed n=1 satisfies the mathematical comparison.\",\n  \"fresh_process\": true,\n  \"fresh_source_collection\": true\n}\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/main.qli",
+          "mode": 420,
+          "sha256": "349d27eccc719cc9bf9ef9bb2a17695e6c60a052c5bf5a657312eb38f1f1914f",
+          "utf8": "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }\npub unitary fn generic[const A: Basis, const n: Nat, const U: Op<A>](q: Q<A>) -> Q<A>\nrequires n >= 1, n*n <= 1, Applicable(U) { U(q) }\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/observation.json",
+          "mode": 420,
+          "sha256": "ce29d18ed56b76a48a4a01b50eb8449c023b6716c51f3cb07ac79a4153124480",
+          "utf8": "{\n  \"name\": \"06-nonlinear-generic-control\",\n  \"argv\": [\n    \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n    \"check\",\n    \"--entry=main::generic\",\n    \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control/main.qli\",\n    \"--type=A=Bit\",\n    \"--nat=n=1\",\n    \"--operation=U=main::identity\",\n    \"--ir-profile=raw\",\n    \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control\",\n  \"started_utc\": \"2026-10-13T09:51:04.996717+00:00\",\n  \"finished_utc\": \"2026-10-13T09:51:05.002019+00:00\",\n  \"status\": 1,\n  \"expected_status\": 1,\n  \"expected_status_matches\": true,\n  \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"source_sha256_after\": \"349d27eccc719cc9bf9ef9bb2a17695e6c60a052c5bf5a657312eb38f1f1914f\",\n  \"diagnostic_code\": \"unsupported\",\n  \"source_span\": [\n    154,\n    157\n  ],\n  \"source_slice\": \"n*n\"\n}\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/stderr.txt",
+          "mode": 420,
+          "sha256": "7792fb51b02b775c34ccdff4a4b0c6582c28fb9ca62be5809cfa221a748d9cba",
+          "utf8": "main:154..157: unsupported: multiplication of two symbolic sizes is nonlinear\n"
+        },
+        {
+          "path": "06-nonlinear-generic-control/stdout.txt",
+          "mode": 420,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        {
+          "path": "observations.json",
+          "mode": 420,
+          "sha256": "7b1a1d54003acb9484653d8531da3c2cffa75c29e8372d40625eb01cb72f0294",
+          "utf8": "{\n  \"root\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl\",\n  \"observations\": [\n    {\n      \"name\": \"01-guard-before-subtraction\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction\",\n      \"started_utc\": \"2026-10-13T09:51:04.596089+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:04.639582+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"expected_status_matches\": true,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"8e4d3eb977b658265a5df9bd0cccef3a05d0f72b800df13c00e5f006d3949a6a\"\n    },\n    {\n      \"name\": \"02-guard-after-subtraction\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction\",\n      \"started_utc\": \"2026-10-13T09:51:04.694475+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:04.699880+00:00\",\n      \"status\": 1,\n      \"expected_status\": null,\n      \"expected_status_matches\": null,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"e3e481264ec7f386f09b63e83a5f519879d04e330babe18718c83d8569a3f7c5\",\n      \"diagnostic_code\": \"size\",\n      \"source_span\": [\n        146,\n        149\n      ],\n      \"source_slice\": \"n-1\"\n    },\n    {\n      \"name\": \"03-simple-numeric-forward-order\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order\",\n      \"started_utc\": \"2026-10-13T09:51:04.754571+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:04.779491+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"expected_status_matches\": true,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\"\n    },\n    {\n      \"name\": \"04-simple-numeric-reverse-order\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order\",\n      \"started_utc\": \"2026-10-13T09:51:04.834298+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:04.859248+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"expected_status_matches\": true,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"c339cfcc8cf11fd6f5024727f6029dc666e9519a6d79572ee275f2f36ad92da3\"\n    },\n    {\n      \"name\": \"05-capability-interleaved\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved\",\n      \"started_utc\": \"2026-10-13T09:51:04.914758+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:04.941193+00:00\",\n      \"status\": 0,\n      \"expected_status\": 0,\n      \"expected_status_matches\": true,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"f3f7ffbf873e0c0e4213833f5916c8bae31c94fa33248bf3c26a0bcfa6f96421\"\n    },\n    {\n      \"name\": \"06-nonlinear-generic-control\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control\",\n      \"started_utc\": \"2026-10-13T09:51:04.996717+00:00\",\n      \"finished_utc\": \"2026-10-13T09:51:05.002019+00:00\",\n      \"status\": 1,\n      \"expected_status\": 1,\n      \"expected_status_matches\": true,\n      \"git_head_after\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n      \"cli_sha256_after\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n      \"kernel_sha256_after\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n      \"source_sha256_after\": \"349d27eccc719cc9bf9ef9bb2a17695e6c60a052c5bf5a657312eb38f1f1914f\",\n      \"diagnostic_code\": \"unsupported\",\n      \"source_span\": [\n        154,\n        157\n      ],\n      \"source_slice\": \"n*n\"\n    }\n  ],\n  \"all_executable_identities_unchanged\": true,\n  \"all_git_identities_unchanged\": true,\n  \"interpretation\": \"Simple well-formed numeric atom reordering can be compared directly. The guarded subtraction pair probes definition well-formedness ordering, not a proof of different mathematical conjunction meanings. Each case used a new CLI process/source collection, so no cache or solver-completeness claim follows. Native invocation counts were not instrumented.\"\n}\n"
+        },
+        {
+          "path": "study.before.json",
+          "mode": 420,
+          "sha256": "aaf4e8551022b683098e249e5cccf517c3d82bf809dd28a097c6773a7badf6af",
+          "utf8": "{\n  \"kind\": \"informed-study\",\n  \"scope\": \"Issue #47 requires ordering and guarded subtraction first observations; preparatory only, no repository implementation or completion credit.\",\n  \"context\": \"Full English static-language/type-model, formals, original declaration normalization and earlier informed study were read. This is not blind authoring, a benchmark or a solver completeness/proof claim.\",\n  \"first_study_untouched\": \"/private/tmp/qleisli-beta-47-first-44lnlptt\",\n  \"git_head\": \"803b8512eeaad18c638c54c2446aa12d1727dd82\",\n  \"cli\": \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n  \"cli_sha256\": \"76d1d7300ff0bccf343edcd73250093df652a31976f1f29316134f8d990db56f\",\n  \"kernel\": \"/tmp/qleisli-beta-362-qlv2-stable-kernel\",\n  \"kernel_sha256\": \"00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4\",\n  \"maximum_quantum_width\": 1,\n  \"timestamp_utc\": \"2026-10-13T09:51:04.584487+00:00\",\n  \"cases\": [\n    {\n      \"name\": \"01-guard-before-subtraction\",\n      \"requires\": \"n >= 1, n-1 <= 1, Applicable(U)\",\n      \"source_sha256\": \"8e4d3eb977b658265a5df9bd0cccef3a05d0f72b800df13c00e5f006d3949a6a\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/01-guard-before-subtraction\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"Native Raw validity acceptance\",\n      \"rationale\": \"Existing preceding guard establishes nonnegative subtraction.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    },\n    {\n      \"name\": \"02-guard-after-subtraction\",\n      \"requires\": \"n-1 <= 1, n >= 1, Applicable(U)\",\n      \"source_sha256\": \"e3e481264ec7f386f09b63e83a5f519879d04e330babe18718c83d8569a3f7c5\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/02-guard-after-subtraction\",\n      \"expected_status\": null,\n      \"expected_boundary\": \"Unknown language-contract expectation: ordered well-formedness versus mathematical conjunction\",\n      \"rationale\": \"Reference says current premises must guard subtraction but does not explicitly define whether all requires siblings or only preceding siblings count. Code inspection predicts rejection; no adopted order-independent requirement is assumed.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    },\n    {\n      \"name\": \"03-simple-numeric-forward-order\",\n      \"requires\": \"n >= 1, n <= 2, Applicable(U)\",\n      \"source_sha256\": \"0fceca4579b7166acf4056fa6e8aac418fbb53e208e183ae872b36c461f49636\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/03-simple-numeric-forward-order\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"Native Raw validity acceptance\",\n      \"rationale\": \"Both numeric atoms are individually well formed; conjunction implies admitted n=1.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    },\n    {\n      \"name\": \"04-simple-numeric-reverse-order\",\n      \"requires\": \"n <= 2, n >= 1, Applicable(U)\",\n      \"source_sha256\": \"c339cfcc8cf11fd6f5024727f6029dc666e9519a6d79572ee275f2f36ad92da3\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/04-simple-numeric-reverse-order\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"Native Raw validity acceptance\",\n      \"rationale\": \"Simple comparisons need no partial arithmetic, so swapping them changes no required well-formedness fact.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    },\n    {\n      \"name\": \"05-capability-interleaved\",\n      \"requires\": \"n >= 1, Applicable(U), n-1 <= 1\",\n      \"source_sha256\": \"f3f7ffbf873e0c0e4213833f5916c8bae31c94fa33248bf3c26a0bcfa6f96421\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/05-capability-interleaved\",\n      \"expected_status\": 0,\n      \"expected_boundary\": \"Native Raw validity acceptance\",\n      \"rationale\": \"Capability between the numeric guard and dependent arithmetic does not remove the natural guard.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    },\n    {\n      \"name\": \"06-nonlinear-generic-control\",\n      \"requires\": \"n >= 1, n*n <= 1, Applicable(U)\",\n      \"source_sha256\": \"349d27eccc719cc9bf9ef9bb2a17695e6c60a052c5bf5a657312eb38f1f1914f\",\n      \"manifest_sha256\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"argv\": [\n        \"/Users/masa/git/Qleisli/target/debug/qleisli\",\n        \"check\",\n        \"--entry=main::generic\",\n        \"--module=main=/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control/main.qli\",\n        \"--type=A=Bit\",\n        \"--nat=n=1\",\n        \"--operation=U=main::identity\",\n        \"--ir-profile=raw\",\n        \"--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel\"\n      ],\n      \"cwd\": \"/private/tmp/qleisli-beta-47-requires-order-first-9sqkq_bl/06-nonlinear-generic-control\",\n      \"expected_status\": 1,\n      \"expected_boundary\": \"Unsupported symbolic nonlinear arithmetic\",\n      \"rationale\": \"Generic n*n is explicitly unsupported even when the selected closed n=1 satisfies the mathematical comparison.\",\n      \"fresh_process\": true,\n      \"fresh_source_collection\": true\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  }
+}
