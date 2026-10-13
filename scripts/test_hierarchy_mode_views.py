@@ -17,12 +17,26 @@ FIXTURE = 'tests/fixtures/verification_v030/execution-view-binding/hierarchy-mod
 TEST = 'interchange::hierarchical::execution::plan::tests::capture_native_hierarchy_mode_plans'
 
 
+def check_original_capture():
+    """Preserve the historical observation; never execute its saved commands."""
+    path = ROOT / 'tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-validation.json'
+    historical = json.loads(path.read_text())
+    expected = hashlib.sha256((ROOT / FIXTURE).read_bytes()).hexdigest()
+    if historical.get('input_sha256') != expected:
+        raise ValueError('original mode inputs differ from the retained observation')
+    if (historical.get('status') != 'passed' or historical.get('modes') != 5
+            or historical.get('invalid_originals') != 3):
+        raise ValueError('incomplete original five-mode observation')
+    # The recorded result never skips fresh Rust capture or Lean comparison.
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kernel', type=Path,
                         default=ROOT / 'lean-kernel/.lake/build/bin/qleisli-kernel')
     parser.add_argument('--record', type=Path)
     args = parser.parse_args()
+    check_original_capture()
     kernel = args.kernel.resolve()
     report = dict(format='qleisli.hierarchy-mode-view-validation', version=1,
                   status='failed', commands=[], source_preservation_proved=False,
