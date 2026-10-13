@@ -14,9 +14,12 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 CAPTURE = ROOT / 'tests/fixtures/authoring_sessions/engineering-pure-native-v030/first-observations.json'
+NOTES = ROOT / 'tests/fixtures/authoring_sessions/engineering-pure-native-v030/README.md'
 
 
 def baseline():
+    notes = NOTES.read_text()
+    assert '`first-observations.json`' in notes
     data = json.loads(CAPTURE.read_text())
     assert data['format'] == 'qleisli.engineering-pure-first-capture' and data['version'] == 1
     assert data['baseline_commit'] == '216ebf03d62f5f490ecd6e8097e037d1d5dfe98c'
