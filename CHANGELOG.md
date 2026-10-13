@@ -20,6 +20,11 @@ and exactness obligations retain their recorded scopes and status.
   claims, including at a reported zero error. Preserve independent exact
   correspondence, phase/control, cleanup and resource gates and all remaining
   implementation criteria; this clarification adds no approximation checker.
+- Retain #31/#163's six first projects, separate phase translation and residual
+  counterexample, 34 actual CLI observations and seven exact host arithmetic
+  experiments in a lossless static bundle. Check history integrity without
+  executing recorded programs; these observations issue no approximation
+  certificate or constitutional guarantee.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.
