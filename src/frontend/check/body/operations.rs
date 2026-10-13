@@ -174,7 +174,15 @@ impl Checker<'_, '_> {
                     &scope.context,
                     name.span,
                     &self.program.budget,
-                )?;
+                )
+                .map_err(|mut error| {
+                    // Effect inference needs typed bodies. Keep this shape
+                    // refusal, but expose the later obligation it would mask.
+                    if error.code == "type" {
+                        error.message.push_str("; adjoint/controlled also require an operation provider with inferred body effect Unitary; measurement cannot satisfy this obligation");
+                    }
+                    error
+                })?;
                 access_mask(&mask, requested, span)?;
                 normalize::expect(
                     target,

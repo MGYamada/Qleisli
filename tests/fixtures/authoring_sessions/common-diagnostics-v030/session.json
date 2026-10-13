@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Repair all five diagnostic/documentation items in GitHub issue #368",
+  "author": "Codex assistant (GPT-6); no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "2ff8f6179e0aa2554fe91bfa32f5ccd94962e13f",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retain issue reproducers and a live-rebinding counterexample before local checks or diagnostic changes.",
+      "sha256": {
+        "adjoint-observe/main.qli": "9182c86123fcc0d87f442f699f6e4d74cd4553bc1d3362cda534b1e28acb74f2",
+        "missing-else/main.qli": "c9dfcb623b4aff778b447c60e0273953a6236ae1b458c7a2b6dfd6e6595db547",
+        "qualified-call/main.qli": "e94a1838280fa40acc1e3249bb2c8da69a8bf4614981eea896e3fad0837405f2",
+        "live-rebinding/main.qli": "d75c3eccd82b9773aedc793a736ffb4e7195dc7b06010812a37ac7ca58941689"
+      },
+      "manifest_sha256": {
+        "adjoint-observe/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "missing-else/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qualified-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "live-rebinding/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/adjoint-observe.json",
+        "before/live-rebinding.json",
+        "before/missing-else.json",
+        "before/qualified-call.json",
+        "after/adjoint-observe.json",
+        "after/live-rebinding.json",
+        "after/missing-else.json",
+        "after/qualified-call.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "project-manifests",
+      "reason": "Bind and retain the exact filesystem project manifests used in every before/after observation.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/adjoint-observe/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/missing-else/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/qualified-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/live-rebinding/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    }
+  ]
+}

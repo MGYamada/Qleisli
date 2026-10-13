@@ -106,7 +106,7 @@ fn truncated_static_arguments_emit_one_located_json_parse_error() {
             assert_eq!(
                 String::from_utf8(output.stdout).unwrap(),
                 format!(
-                    "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"{command}\",\"outcome\":\"error\",\"diagnostics\":[{{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{{\"path\":\"main.qli\",\"start\":{end},\"end\":{end},\"line\":1,\"column\":{column}}},\"related\":[]}}],\"result\":null}}\n"
+                    "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"{command}\",\"outcome\":\"error\",\"diagnostics\":[{{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"expected a static operation description\",\"primary\":{{\"path\":\"main.qli\",\"start\":{end},\"end\":{end},\"line\":1,\"column\":{column}}},\"related\":[]}}],\"result\":null}}\n"
                 )
             );
         }

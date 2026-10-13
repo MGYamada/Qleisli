@@ -1,0 +1,5 @@
+use std::quantum::init0;
+
+observe fn main() -> Bit {
+    std::observe::measure_z(init0())
+}

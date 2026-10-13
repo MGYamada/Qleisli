@@ -240,7 +240,17 @@ impl LoadFailure {
         let (line, column) = self.coordinates.unwrap_or((1, 1));
         Diagnostic {
             code: self.code,
-            message: self.error.message,
+            // The legacy ProjectError has no category field and retains its
+            // parse context. Structured diagnostics carry that category once.
+            message: if self.code == "parse" {
+                self.error
+                    .message
+                    .strip_prefix("parse error: ")
+                    .unwrap_or(&self.error.message)
+                    .to_owned()
+            } else {
+                self.error.message
+            },
             primary: Some(SourceLocation {
                 path: self.error.path,
                 span: self.error.span,

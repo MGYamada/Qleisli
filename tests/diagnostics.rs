@@ -169,6 +169,7 @@ fn invalid_contract_inside_an_isolated_computed_body_keeps_its_source_span() {
     let root = SourceRoot::new(&source);
     let failure = check_project(&root.0).unwrap_err();
     assert_eq!(failure.code, ErrorCode::InvalidIr, "{failure}");
+    assert!(!failure.message.starts_with("invalid_ir"), "{failure}");
     assert_eq!(failure.span.start, source.find(dirty).unwrap(), "{failure}");
     assert_eq!(failure.span.end - failure.span.start, dirty.len());
 }

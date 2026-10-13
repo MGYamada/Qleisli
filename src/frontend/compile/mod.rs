@@ -69,6 +69,26 @@ pub enum ErrorCode {
     Contract,
 }
 
+impl ErrorCode {
+    pub(super) fn as_str(self) -> &'static str {
+        match self {
+            ErrorCode::Project => "project",
+            ErrorCode::UnknownName => "unknown_name",
+            ErrorCode::RecursiveCall => "recursive_call",
+            ErrorCode::TypeMismatch => "type_mismatch",
+            ErrorCode::Arity => "arity",
+            ErrorCode::Ownership => "ownership",
+            ErrorCode::Effect => "effect",
+            ErrorCode::InvalidEntry => "invalid_entry",
+            ErrorCode::Unsupported => "unsupported",
+            ErrorCode::Limit => "limit",
+            ErrorCode::InvalidIr => "invalid_ir",
+            ErrorCode::Capability => "capability",
+            ErrorCode::Contract => "contract",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompileError {
     pub code: ErrorCode,
@@ -200,7 +220,7 @@ impl Compiler<'_> {
             span,
             line,
             column,
-            message: message.into(),
+            message: super::diagnostic::without_repeated_category(code.as_str(), message.into()),
         }
     }
 
