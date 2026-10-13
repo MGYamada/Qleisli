@@ -930,6 +930,16 @@
           "scripts/test_native_acceptance_replay.py",
           "--record",
           "{record}"
+        ],
+        [
+          "python3",
+          "scripts/test_json_prescan.py",
+          "--record",
+          "{record}/json-prescan"
+        ],
+        [
+          "python3",
+          "scripts/test_test_json_prescan.py"
         ]
       ],
       "env": {

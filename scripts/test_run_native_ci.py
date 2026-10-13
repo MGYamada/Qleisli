@@ -51,7 +51,7 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 68)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 95)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 97)
         added = next(task for task in tasks if task['id'] == 'execution-view-encoding')
         self.assertEqual(added['commands'], [[
             'python3', 'scripts/run_native_lean_test.py',
@@ -156,6 +156,8 @@ class NativeCI(unittest.TestCase):
             ['cargo', '+1.98.1', 'test', '--lib', 'raw_source_replay'],
             ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--example', 'native_acceptance'],
             ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
+            ['python3', 'scripts/test_json_prescan.py', '--record', '{record}/json-prescan'],
+            ['python3', 'scripts/test_test_json_prescan.py'],
         ])
         self.assertEqual(task['env']['QLEISLI_KERNEL'], 'lean-kernel/.lake/build/bin/qleisli-kernel')
 

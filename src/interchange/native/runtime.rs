@@ -1,11 +1,11 @@
 //! Bounded process IO. A process status and a strictly framed reply must agree.
 use std::path::Path;
-use std::time::Duration;
 #[cfg(test)]
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use super::{Error, Result};
 use crate::interchange::native_packet::Scope;
+use crate::interchange::process::TransportLimits;
 
 pub(super) const REJECTION_MESSAGE: &str =
     "Lean native checker rejected the artifact/request; no fallback";
@@ -78,7 +78,7 @@ pub(super) fn check_mode(
         executable,
         packet,
         requested,
-        Duration::from_secs(60),
+        TransportLimits::FINITE,
         mode,
         scope,
     )
@@ -89,7 +89,7 @@ fn invoke(executable: &Path, packet: Vec<u8>, requested: bool, timeout: Duration
         executable,
         packet,
         requested,
-        timeout,
+        TransportLimits::FINITE.with_timeout(timeout),
         "--qirf-native",
         Scope::Inspection,
     )
@@ -98,11 +98,11 @@ fn invoke_mode(
     executable: &Path,
     packet: Vec<u8>,
     requested: bool,
-    timeout: Duration,
+    limits: TransportLimits,
     mode: &str,
     scope: Scope,
 ) -> Result<usize> {
-    crate::interchange::process::invoke(executable, packet, mode, timeout, 256, |bytes| {
+    limits.invoke(executable, packet, mode, |bytes| {
         response_bound(bytes, requested, scope)
     })
 }

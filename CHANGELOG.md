@@ -11,6 +11,17 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Separate native process transport settings from acceptance/work budgets
+  (#94): finite, hierarchy inspection and hierarchy request profiles retain
+  their existing 256/1,100,000/2,200,000-byte replies and 60-second deadlines.
+  Boundary tests cover exact limits and one extra byte. Classification of
+  other production and experimental capacities remains open.
+- Protect the existing streaming JSON prescan repair (#290) with actual-parser
+  refusals and fresh-process RSS checks for long strings and arrays through
+  both the parser and native QLV2/QLV1 boundary near the 16 MiB input limit.
+  This adds regression coverage; it does not newly remove `List Char`, change
+  parser acceptance or certify program resource bounds.
+
 - Clarify common authoring diagnostics (#368): locate missing `else` at `if`,
   explain unsupported qualified expression paths and the Unitary requirement
   when a transformed provider has mismatched ports, and report each structured
