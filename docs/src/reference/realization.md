@@ -117,6 +117,55 @@ introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
+## Separate engineering approximation claims
+
+The human-adopted **EXACT-2026-01** interpretation in
+[#311](https://github.com/MGYamada/Qleisli/issues/311) governs this boundary.
+An epsilon-bound approximation is an engineering synthesis or export claim,
+outside edition-2026 constitutional semantic truth conditions. It cannot
+replace exact source Meaning, semantic equality, phase/control, owner/effect
+or clean/dirty restoration obligations. An approximation bound grants no
+purity, inverse, control access or exact release capability.
+
+A checked engineering claim must identify the exact ideal, actual artifact,
+interface, target/profile, metric, finite bound, input/reference domain and
+composition assumptions. Instrument claims must retain the complete public
+outcomes and residual outputs with arbitrary external references. Sampling,
+algorithmic resolution, synthesis and numerical-runtime information remain
+distinct; an absent claim does not mean zero error. These are implementation
+obligations under #31 and #163, not a declaration that a current certificate
+or universal approximation metric exists.
+
+Engineering receipts and their API/CLI claim kinds must remain mechanically
+distinct from exact correspondence and resource evidence. Neither a small
+bound nor a reported `epsilon = 0` bypasses the independent exact gates or
+automatically discharges constitutional PR or target RS. An actual circuit
+may independently obtain ordinary acceptance for its own exact meaning;
+that acceptance does not identify its meaning with the source ideal.
+Reusing engineering evidence through a Meaning or operation interface cannot
+weaken that interface's exact promise.
+
+Numerical, interval and approximate search methods may construct an exact
+artifact or proof. That result remains eligible for the separate exact
+correspondence and resource checks; the spelling of a search parameter does
+not decide its claim kind. Conversely, exact cost accounting for an approximate
+artifact does not supply its missing exact correspondence to the source.
+No new interpretation, guarantee admission or broader QS/PR/RS discharge
+follows from either engineering validation or this clarification.
+
+The current internal pure component checks a sufficient squared Frobenius
+witness over canonical rectangular R8 matrices and a closed nonnegative dyadic
+budget. Its proof bounds the explicitly selected Euclidean operator norm,
+including arbitrary finite external references and literal scalar phase.
+Witness failure does not establish that no approximation or synthesis exists.
+The original-artifact component runs the existing exact PureLeaf check on each
+body against its own independent matrix request before comparing those matrices;
+both complete type trees and ordered ports remain checked. Neither component
+changes the exact equality gate. The components are not connected to a native
+protocol, public engineering handle or target-resource gate. Checked composition
+and the complete instrument contract remain unfinished under #31/#163; the
+internal pure proof does not complete those Issues or source/target preservation.
+
 ## Quantitative resource claims
 
 A resource certificate must identify the actual closed instance, emitted

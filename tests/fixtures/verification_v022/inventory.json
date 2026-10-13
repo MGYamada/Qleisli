@@ -2406,7 +2406,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "bc5da95118cb887a4a728d65f116a95cb8d208cdde37303b9e5fa3b61c2371b7",
+      "sha256": "fa06da4caf4973acee4ec7fb5d0d101febeb44f380cc21ed22b691d40b7bdcae",
       "group": "hierarchy",
       "surface": null
     },
@@ -2426,6 +2426,12 @@
       "path": "lean-kernel/QleisliKernel/Dag.lean",
       "sha256": "21c94f141113b67ca72e2a694baba74a23653bd780d848ec2959ad855550dba2",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Engineering/Pure.lean",
+      "sha256": "8513036bd29e1e06a314c342da95cee90e6b64170a5aab2187816fafd3a6b82f",
+      "group": "scalar",
       "surface": null
     },
     {
@@ -2741,6 +2747,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPure.lean",
+      "sha256": "fe680527e737b914d92c4e5972953bf3bf29e91395dcdef8954f7c2f65edc055",
+      "group": "finite-leaf",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean",
       "sha256": "b8f23d9a3e15eecad316cc5221eab2afc80fd27005eb0b4f2bb8b1546301b910",
       "group": "raw-core",
@@ -3000,13 +3012,13 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "4692536a6cb2c6de04f3065adc70c1f0c502dd88d9f89b18a1128ae153db47a1",
+      "sha256": "81a95e67b9c628e9bc54d702dc714699684e58b53bc29537050f8672e7db9efb",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "616ddc36de4dd0c6671140e021fa62511245c94b5d4e9c27994be277af652396",
+      "sha256": "a5db0a24b8145963feb7699ec5590d9f3141b0082c59e655279bc5021ea555d8",
       "group": "raw-core",
       "surface": null
     },
@@ -3014,6 +3026,12 @@
       "path": "lean/Qleisli/ControlAccess.lean",
       "sha256": "90938b8ef731ee1d1fa565a09fca6f0e0251e7aecff7b70ee226cc55cf2b64c3",
       "group": "finite-meaning",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringPure.lean",
+      "sha256": "ebac1908394bd2db37e6d55d06438f462e9a7710ca3e503f7058882bee3cd96e",
+      "group": "scalar",
       "surface": null
     },
     {
@@ -3026,6 +3044,12 @@
       "path": "lean/Qleisli/NativeContract.lean",
       "sha256": "5e8f2b132b098cefb3a8e581ce3fe48017fe3ef77acd56b6c86deade147bc031",
       "group": "finite-contract",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringPure.lean",
+      "sha256": "9c0ba10fa5b7cae3b93b446215fc1735a2af1dcdc22b83202cccdaabaa56a232",
+      "group": "finite-leaf",
       "surface": null
     },
     {
@@ -3146,6 +3170,12 @@
       "path": "lean/Qleisli/RoutedControlCommutation.lean",
       "sha256": "b0a940328561899330b31b35961c22feefb2104ef719082e115a8f70ae2d64b9",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/EngineeringPure.lean",
+      "sha256": "c183a7e42bc222a0c721cb2c727faed66590c2a1ff8ad7d6e5829cb31398a3fb",
+      "group": "scalar",
       "surface": null
     },
     {

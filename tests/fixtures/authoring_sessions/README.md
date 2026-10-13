@@ -5,6 +5,13 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [exact/approximate boundary study](exact-approx-boundary-v030/README.md)
+retains six first projects, a separate phase translation, a residual-output
+counterexample and 34 actual CLI observations. Its seven exact host calculations
+remain separate from native approximation checking and operator-norm proofs.
+Original profile refusals, complete outputs and untrusted proposals are retained;
+no approximation certificate or constitutional discharge is claimed.
+
 The [unified requires study](unified-requires-v030/README.md) retains fourteen
 first sources and real diagnostics, including a false closed premise and the
 initially unresolved question about subtraction-guard order. Its static byte
