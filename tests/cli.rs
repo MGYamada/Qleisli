@@ -241,6 +241,10 @@ fn doc_reports_io_and_comment_errors_without_partial_output() {
 
 // Linux filesystems permit non-UTF-8 directory names; macOS may reject them.
 #[cfg(target_os = "linux")]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
 fn check_and_run_accept_existing_non_utf8_source_roots() {
     use std::ffi::OsStr;
@@ -259,7 +263,21 @@ fn check_and_run_accept_existing_non_utf8_source_roots() {
         assert!(output.status.success(), "{output:?}");
         let stdout = String::from_utf8(output.stdout).unwrap();
         if command == "check" {
-            assert!(stdout.contains(&source_root.display().to_string()));
+            let expected_root = format!("checked source: {source_root:?}");
+            assert_eq!(
+                stdout.lines().next(),
+                Some(expected_root.as_str()),
+                "{stdout}"
+            );
+            assert!(stdout.contains("checker identity: unpinned\n"), "{stdout}");
+            assert!(
+                stdout.contains("entry request checked: false\n"),
+                "{stdout}"
+            );
+            assert!(
+                stdout.contains("source preservation: not proved\n"),
+                "{stdout}"
+            );
         } else {
             assert_eq!(stdout, "0: 1.000000000000e0\n");
         }

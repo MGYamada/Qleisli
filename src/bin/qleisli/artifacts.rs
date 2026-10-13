@@ -1,4 +1,5 @@
 //! Filesystem adapter only. The library importer never resolves source labels.
+use super::check_report::ArtifactReport;
 use super::options::Options;
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::interchange;
@@ -87,12 +88,13 @@ pub(super) fn write_new(path: &Path, bytes: &[u8]) -> Result<(), Failure> {
 }
 
 pub(super) enum Success {
-    Emitted(String),
-    Verified(bool),
+    Emitted(String, ArtifactReport),
+    Checked(ArtifactReport),
 }
 pub(super) fn execute(
     options: &Options,
     input: &super::source_commands::Input,
+    json: bool,
 ) -> Result<Success, Failure> {
     let kernel = options
         .lean_kernel
@@ -106,15 +108,18 @@ pub(super) fn execute(
             .to_str()
             .ok_or_else(|| io_error("output path is not valid UTF-8"))?;
         let program = input.compile(&kernel)?;
+        let report = ArtifactReport::new(&program);
+        if json {
+            // JSON cannot name a non-UTF-8 checker faithfully. Refuse before
+            // installing an artifact whose success report cannot be rendered.
+            report.validate_json()?;
+        }
         write_new(output, program.artifact())?;
-        Ok(Success::Emitted(label.into()))
+        Ok(Success::Emitted(label.into(), report))
     } else {
         let bytes = read(input.path())?;
         let request = options.against.as_deref().map(read).transpose()?;
-        let requested = kernel
-            .check(&bytes, request.as_deref())?
-            .imported()
-            .request_checked;
-        Ok(Success::Verified(requested))
+        let checked = kernel.check(&bytes, request.as_deref())?;
+        Ok(Success::Checked(ArtifactReport::new(checked.program())))
     }
 }

@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [native check scope study](native-check-scope-v030/README.md) preserves
+three first sources, twelve actual CLI observations and an 18-decision trace
+with no independent requests. Generic-profile refusals, unused bundled roots,
+the old success wording and a corrected mistaken expectation remain explicit.
+
 The [rectangular Meaning study](rectangular-meaning-v030/README.md) preserves
 first-source profile/parser failures, their later closed-entry refusals and
 explicit readout adapters. Small exact native equations and cross-adapter

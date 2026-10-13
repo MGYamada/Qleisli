@@ -189,7 +189,12 @@ class Connections(unittest.TestCase):
     def test_project_and_raw_ir_reverification(self):
         p = self.client.compile_project(current_source_fixture(FIXTURES / "terminal"))
         self.assertEqual(self.client.from_ir(p.artifact).run(), p.run())
-        self.assertTrue(p.check()["verified"])
+        self.assertEqual(p.check(), {
+            "checker_path": str(Path(os.environ["QLEISLI_KERNEL"]).resolve(strict=True)),
+            "checker_identity": "unpinned",
+            "request_checked": False,
+            "source_preservation_verified": False,
+        })
         for mutated in [b"{}", p.artifact.rstrip()[:-1], p.artifact + b"garbage"]:
             with self.subTest(mutated=mutated[:50]), self.assertRaises(QleisliError):
                 replace(p, artifact=mutated).run()

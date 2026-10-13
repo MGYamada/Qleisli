@@ -151,7 +151,15 @@ def main():
                 if result.returncode != 0 or result.stderr:
                     raise RuntimeError((command, result.returncode, result.stdout, result.stderr))
                 response = json.loads(result.stdout)
-                if response["outcome"] != "ok":
+                expected_result = dict(
+                    checker_path=str(selected_kernel.resolve()),
+                    checker_identity="unpinned", request_checked=False,
+                    source_preservation_verified=False,
+                )
+                if action == "emit-ir":
+                    expected_result["path"] = str(output)
+                if response != dict(format="qleisli.result", version=1, command=action,
+                                    outcome="ok", diagnostics=[], result=expected_result):
                     raise RuntimeError(response)
                 if action == "emit-ir":
                     data = output.read_bytes()
@@ -163,10 +171,6 @@ def main():
                     if data != artifacts[name].read_bytes():
                         raise RuntimeError(f"emitted artifact changed: {name}/{route}")
                     output.unlink()
-                elif response != dict(format="qleisli.result", version=1, command="verify-ir",
-                                      outcome="ok", diagnostics=[],
-                                      result=dict(verified=True, request_checked=False)):
-                    raise RuntimeError(response)
                 return elapsed
 
             rng = random.Random(2903)

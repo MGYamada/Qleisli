@@ -169,6 +169,11 @@ def finite_comparisons():
 
 
 def source_comparisons(binary):
+    expected_scope = dict(
+        checker_path=str(Path(os.environ['QLEISLI_KERNEL']).resolve()),
+        checker_identity='unpinned', request_checked=False,
+        source_preservation_verified=False,
+    )
     from observation_sources import component
     from test_lean_observation import component_oracle
     sources=[
@@ -202,7 +207,9 @@ def source_comparisons(binary):
             for label, artifact_path in [('historical', path), ('current', emitted)]:
                 stdout,_=invoke([binary,'verify-ir',artifact_path,'--format=json'])
                 verified=json.loads(stdout,object_pairs_hook=unique)
-                if verified['result']!={'verified':True,'request_checked':False}: raise ValueError('unexpected ordinary IR guarantee')
+                if verified != dict(format='qleisli.result', version=1, command='verify-ir',
+                                    outcome='ok', diagnostics=[], result=expected_scope):
+                    raise ValueError('unexpected ordinary IR scope')
                 verifications[label] = verified
             # Encoding and dependency graphs may evolve. The frozen artifact
             # remains immutable; compare full exact unnormalized operators,

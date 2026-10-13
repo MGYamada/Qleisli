@@ -5,7 +5,11 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod binding;
+mod reporting;
 mod runtime;
+
+pub(crate) use reporting::DecisionLog;
+pub use reporting::NativeDecisionSummary;
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -30,6 +34,7 @@ pub(crate) struct Subject {
     artifact: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     checker: PathBuf,
+    decisions: Option<DecisionLog>,
 }
 
 impl Subject {
@@ -122,6 +127,7 @@ impl Prepared {
 #[derive(Clone, Debug)]
 pub struct Kernel {
     executable: PathBuf,
+    decisions: Option<DecisionLog>,
 }
 
 /// Metadata for a fresh native decision and its decoded execution view.
@@ -152,7 +158,21 @@ impl Kernel {
     pub fn new(executable: impl AsRef<Path>) -> Self {
         Self {
             executable: executable.as_ref().to_owned(),
+            decisions: None,
         }
+    }
+
+    /// Observe fresh successful native decisions for one diagnostic operation.
+    /// The observer carries no acceptance authority and does not pin a binary.
+    pub(crate) fn recording(&self) -> (Self, DecisionLog) {
+        let decisions = DecisionLog::new();
+        (
+            Self {
+                executable: self.executable.clone(),
+                decisions: Some(decisions.clone()),
+            },
+            decisions,
+        )
     }
 
     /// The native checker must accept the same complete input. Any rejection,
@@ -289,6 +309,7 @@ impl Kernel {
             artifact: Arc::from(artifact),
             request: request.map(Arc::from),
             checker,
+            decisions: self.decisions.clone(),
         }))
     }
 
@@ -315,6 +336,9 @@ impl Kernel {
         let (packet, scope) = super::native_packet::encode(&packet, view)?;
         let native_exact_work =
             runtime::check_mode(subject.checker(), packet, request.is_some(), mode, scope)?;
+        if let Some(decisions) = &subject.decisions {
+            decisions.record(subject.checker(), mode, request.is_some(), scope);
+        }
         Ok(NativeChecked {
             subject,
             exact_work: native_exact_work,
@@ -473,7 +497,10 @@ impl AcceptedProgram {
         self
     }
     pub(crate) fn kernel(&self) -> Kernel {
-        Kernel::new(self.checker())
+        Kernel {
+            executable: self.checker().to_owned(),
+            decisions: self.native.subject.decisions.clone(),
+        }
     }
     pub(crate) fn retain_instruments(
         mut self,

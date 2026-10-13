@@ -224,6 +224,19 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
         let text = String::from_utf8(output.stdout).unwrap();
         assert!(text.contains("\"scope\":\"native-validity\""), "{text}");
         assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
+        if action == "check" {
+            let checker = std::fs::canonicalize(&kernel).unwrap();
+            assert!(
+                text.contains(&format!("\"checker_path\":\"{}\"", checker.display())),
+                "{text}"
+            );
+            assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
+            assert!(text.contains("\"request_checked\":false"), "{text}");
+            assert!(
+                text.contains("\"source_preservation_verified\":false"),
+                "{text}"
+            );
+        }
         if action == "run" {
             assert!(
                 text.contains("\"distribution\":[{\"bits\":[false],\"probability\":1}]"),
@@ -270,7 +283,20 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
             "{text}"
         );
         match action {
-            "check" => assert!(text.contains("\"checked\"")),
+            "check" => {
+                assert!(text.contains("\"checked\""));
+                let checker = std::fs::canonicalize(&kernel).unwrap();
+                assert!(
+                    text.contains(&format!("\"checker_path\":\"{}\"", checker.display())),
+                    "{text}"
+                );
+                assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
+                assert!(text.contains("\"request_checked\":true"), "{text}");
+                assert!(
+                    text.contains("\"source_preservation_verified\":false"),
+                    "{text}"
+                );
+            }
             "run" => {
                 assert!(text.contains("\"measured_bits\":1"));
                 assert!(text.contains("\"branches\":"));

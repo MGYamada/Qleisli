@@ -7,6 +7,8 @@ use qleisli::frontend::project::read_source_file;
 
 #[path = "qleisli/artifacts.rs"]
 mod artifacts;
+#[path = "qleisli/check_report.rs"]
+mod check_report;
 #[path = "qleisli/interop.rs"]
 mod interop;
 #[path = "qleisli/json.rs"]
@@ -111,15 +113,13 @@ fn main() -> ExitCode {
         }
     }
     if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-        return match artifacts::execute(&options, &input) {
-            Ok(artifacts::Success::Emitted(path)) => write_stdout(
-                format!("emitted independently verified IR: {path}\n").as_bytes(),
-                "emission result",
-            ),
-            Ok(artifacts::Success::Verified(request)) => write_stdout(
-                format!("verified IR; request_checked: {request}\n").as_bytes(),
-                "verification result",
-            ),
+        return match artifacts::execute(&options, &input, false) {
+            Ok(artifacts::Success::Emitted(path, report)) => {
+                write_stdout(report.text(Some(&path)).as_bytes(), "emission result")
+            }
+            Ok(artifacts::Success::Checked(report)) => {
+                write_stdout(report.text(None).as_bytes(), "verification result")
+            }
             Err(artifacts::Failure::Source(error)) => {
                 report(source_root, error);
                 ExitCode::FAILURE
@@ -147,12 +147,8 @@ fn main() -> ExitCode {
         };
     }
     match source_commands::execute(&options, &input) {
-        Ok(source_commands::Success::Checked) => write_stdout(
-            format!(
-                "checked source and verified IR: {}\n",
-                source_root.display()
-            )
-            .as_bytes(),
+        Ok(source_commands::Success::Checked(checks)) => write_stdout(
+            check_report::project_text(source_root, &checks).as_bytes(),
             "check result",
         ),
         Err(source_commands::Failure::Source(error)) => {

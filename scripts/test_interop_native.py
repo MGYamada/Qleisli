@@ -71,6 +71,14 @@ class PublicNative(unittest.TestCase):
             self.assertTrue(document["diagnostics"])
         else:
             self.assertFalse(document["diagnostics"])
+            if action == "check":
+                actual_checker = Path(kernel or ENV["QLEISLI_KERNEL"]).resolve()
+                self.assertEqual(document["result"], {
+                    "checker_path": str(actual_checker),
+                    "checker_identity": "unpinned",
+                    "request_checked": False,
+                    "source_preservation_verified": False,
+                })
         return document
 
     def test_all_actions_formats_use_real_native_checker(self):
@@ -140,6 +148,16 @@ class PublicNative(unittest.TestCase):
                 source.write_bytes(original)
                 before = self.cli(action, "qasm", source)
                 selected = self.cli(action, "qasm", source, kernel=forwarder)
+                if action == "check":
+                    self.assertEqual(before["result"]["checker_path"], str(KERNEL.resolve()))
+                    self.assertEqual(selected["result"]["checker_path"], str(forwarder.resolve()))
+                    self.assertNotEqual(before["result"]["checker_path"], selected["result"]["checker_path"])
+                    # The actual invoked checker is expected to differ. Keep
+                    # every other scope/result field identical across source
+                    # mutation rather than discarding the metadata wholesale.
+                    selected = selected | {"result": selected["result"] | {
+                        "checker_path": before["result"]["checker_path"],
+                    }}
                 self.assertEqual(before, selected)
                 self.assertEqual(source.read_text(), replacement)
 

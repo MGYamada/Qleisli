@@ -1,4 +1,4 @@
-//! Bounded host transport; every imported artifact is independently verified.
+//! Bounded host transport; imported artifacts require a fresh native IR check.
 use std::ffi::OsString;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -178,7 +178,11 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let loaded = load(format, root, &kernel)?;
     let program = &loaded;
     let text = match action {
-        "check" => return Ok("{\"verified\":true}".into()),
+        "check" => {
+            return super::check_report::ArtifactReport::new(program)
+                .json(None)
+                .map_err(Failure::Diagnostic);
+        }
         "run" => {
             return distribution_json(
                 run_closed(program, SimulationLimits::default()).map_err(simulation_failure)?,

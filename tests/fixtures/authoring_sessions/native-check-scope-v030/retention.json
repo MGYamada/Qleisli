@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.cli-scope-retention",
+  "version": 1,
+  "baseline_commit": "cebc5cf85b5267a35dd8b708ee12a354ece5f3ee",
+  "issue": "https://github.com/MGYamada/Qleisli/issues/363",
+  "context": "README.md",
+  "retention": "Copied unchanged first sources and actual observations from the pre-implementation temporary study. This manifest was created later while preserving the study; no original timestamp or model settings are available.",
+  "sha256": {
+    "first/generic-library/main.qli": "c7e2a9a9d5f07641a5f1a207c9b7e9a097bb94c5dc87abd395b1846ca8dcbded",
+    "first/generic-library/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/closed-entry/main.qli": "b4bbca1c0d1b23e1c03485c8f6ce6f03ffe8fd6fc0ade61619fc99c3bb1e1e0e",
+    "first/closed-entry/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/classical-library/main.qli": "cdc5cdaa5bbd95d99722fe8da2b7438aff6bb0453fd411017c16b7481b8a71fe",
+    "first/classical-library/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "observations-initial.json": "760f5fe6e78266c4567414beebb51d38c8361672e42754f5e1c676c62286174b",
+    "observations-with-classical.json": "98e03a444442788277604274ad046cd5113a9ee0a2884a34c3f9ae067cc647ef",
+    "classical-native-trace.json": "f853501cf39c4e2a9af40814e771bb54fbb455183ac8274370648ca2c4305cf6",
+    "trace-checker.py": "e57b7083e35244a0390716e2e5c0efb5a08f3f453ac2e8f87c157b20a66c705f"
+  }
+}

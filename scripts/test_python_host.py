@@ -70,18 +70,22 @@ class HostBoundary(unittest.TestCase):
 
     def test_malformed_json_response_cannot_become_host_success(self):
         client = Client('unused')
+        # Fabricated transport data tests envelope parsing only. It supplies
+        # neither a native acceptance decision nor checker identity authority.
+        scope = dict(checker_path='/test/selected-checker', checker_identity='unpinned',
+                     request_checked=False, source_preservation_verified=False)
         valid = dict(format='qleisli.result', version=1, command='interop check',
-                     outcome='ok', diagnostics=[], result={'verified': True})
+                     outcome='ok', diagnostics=[], result=scope)
         def response(data):
             return patch.object(client, '_process', return_value=
                                 subprocess.CompletedProcess([], 0, data.encode(), b''))
         with response(json.dumps(valid)):
-            self.assertEqual(client._call('check', 'qirf'), {'verified': True})
+            self.assertEqual(client._call('check', 'qirf'), scope)
         malformed = [json.dumps(valid | {'version': version}) for version in (True, 1.0, '1', 0, 2, None)]
         malformed += [json.dumps(valid).replace('"version": 1', '"version": 2, "version": 1'),
-                      json.dumps(valid).replace('"verified": true', '"verified": false, "verified": true'),
-                      json.dumps(valid).replace('"verified": true', '"probability": NaN'),
-                      json.dumps(valid).replace('"verified": true', '"probability": 1e999'),
+                      json.dumps(valid).replace('"request_checked": false', '"request_checked": true, "request_checked": false'),
+                      json.dumps(valid).replace('"request_checked": false', '"request_checked": NaN'),
+                      json.dumps(valid).replace('"request_checked": false', '"request_checked": 1e999'),
                       '[' * 3000 + '0' + ']' * 3000]
         for data in malformed:
             with self.subTest(data=data), response(data), self.assertRaises(QleisliError) as failure:

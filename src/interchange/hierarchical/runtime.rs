@@ -1,6 +1,6 @@
 //! Bounded native process transport and strict response framing.
 //! A decoded response proposes reconstruction obligations; it is not evidence.
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use super::{Error, Result};
@@ -50,6 +50,7 @@ impl Mode {
     }
 }
 pub(super) struct Response {
+    pub(super) checker: PathBuf,
     pub(super) work: usize,
     pub(super) exact_work: usize,
     pub(super) indices: Vec<usize>,
@@ -59,10 +60,10 @@ pub(super) struct Response {
 
 #[cfg(test)]
 fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
-    response_bound(bytes, mode, Scope::Inspection)
+    response_bound(bytes, mode, Scope::Inspection, Path::new(""))
 }
 
-fn response_bound(bytes: &[u8], mode: Mode, scope: Scope) -> Result<Response> {
+fn response_bound(bytes: &[u8], mode: Mode, scope: Scope, checker: &Path) -> Result<Response> {
     // Main rejects a product-version mismatch before dispatching to a mode,
     // using the common failure frame. Only this exact failure is recognized;
     // a generic success frame never authorizes hierarchical reconstruction.
@@ -162,6 +163,7 @@ fn response_bound(bytes: &[u8], mode: Mode, scope: Scope) -> Result<Response> {
         return Err(Error::format("trailing runtime response data"));
     }
     Ok(Response {
+        checker: checker.to_owned(),
         work,
         exact_work,
         indices,
@@ -183,13 +185,15 @@ pub(super) fn check(
             caller: None,
         }),
     )?;
+    let checker = std::fs::canonicalize(executable)
+        .map_err(|error| Error::new("io", format!("cannot start Lean native checker: {error}")))?;
     crate::interchange::process::invoke(
-        executable,
+        &checker,
         bytes,
         mode.argument(),
         Duration::from_secs(60),
         mode.maximum(),
-        |bytes| response_bound(bytes, mode, scope),
+        |bytes| response_bound(bytes, mode, scope, &checker),
     )
 }
 
@@ -408,5 +412,100 @@ mod response_diagnostics_tests {
         let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
         assert_eq!(error.code, "contract");
         assert!(!error.message.contains("capacity"));
+    }
+}
+
+#[cfg(all(test, unix))]
+mod checker_path_tests {
+    use std::path::PathBuf;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    use crate::interchange::{hierarchical::Kernel, json};
+
+    #[test]
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    fn all_native_modes_retain_invoked_canonical_paths_after_alias_and_target_moves() {
+        use std::os::unix::fs::symlink;
+        static SERIAL: AtomicU64 = AtomicU64::new(0);
+        let original = std::fs::canonicalize(std::env::var_os("QLEISLI_KERNEL").unwrap()).unwrap();
+        let directory = std::env::temp_dir().join(format!(
+            "qleisli-hierarchy-checker-path-{}-{}",
+            std::process::id(),
+            SERIAL.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&directory).unwrap();
+        struct Cleanup(PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(directory.clone());
+        let other = directory.join("other-checker");
+        if std::fs::hard_link(&original, &other).is_err() {
+            std::fs::copy(&original, &other).unwrap();
+        }
+        let other = std::fs::canonicalize(other).unwrap();
+        let alias = directory.join("checker-alias");
+        symlink(&original, &alias).unwrap();
+        let kernel = Kernel::new(&alias);
+        let inputs = json::parse(include_bytes!(
+            "../../../tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json"
+        ))
+        .unwrap();
+        let mut reports = Vec::new();
+        for row in inputs.field("rows").unwrap().array().unwrap() {
+            if !row.field("accept").unwrap().boolean().unwrap() {
+                continue;
+            }
+            let payload = json::encode(row.field("artifact").unwrap()).unwrap();
+            let request = row.field("request").ok().map(|r| json::encode(r).unwrap());
+            let candidate = row
+                .field("candidate")
+                .ok()
+                .map(|r| json::encode(r).unwrap());
+            let report = match row.field("mode").unwrap().text().unwrap() {
+                "inspect" => kernel.inspect_native(&payload),
+                "request" | "fourier" => {
+                    kernel.check_against_native(&payload, request.as_deref().unwrap())
+                }
+                "instrument" => {
+                    kernel.check_instrument_native(&payload, request.as_deref().unwrap())
+                }
+                "qpeInstrument" => kernel.check_qpe_instrument_native(
+                    &payload,
+                    request.as_deref().unwrap(),
+                    candidate.as_deref().unwrap(),
+                ),
+                mode => panic!("unexpected mode {mode}"),
+            }
+            .unwrap();
+            assert_eq!(report.request(), request.as_deref());
+            assert_eq!(report.candidate(), candidate.as_deref());
+            assert_eq!(
+                report.checker(),
+                if reports.is_empty() {
+                    &original
+                } else {
+                    &other
+                }
+            );
+            reports.push(report);
+            if reports.len() == 1 {
+                std::fs::remove_file(&alias).unwrap();
+                symlink(&other, &alias).unwrap();
+            }
+        }
+        assert_eq!(reports.len(), 5);
+        std::fs::remove_file(&alias).unwrap();
+        std::fs::rename(&other, directory.join("moved-checker")).unwrap();
+        assert_eq!(reports[0].checker(), original);
+        for report in &reports[1..] {
+            assert_eq!(report.checker(), other);
+            assert!(!report.checker().exists());
+        }
     }
 }
