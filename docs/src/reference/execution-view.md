@@ -458,7 +458,8 @@ the plan derived from those same objects. Rust's view walker remains test-only;
 native CLI integration and the mandatory protocol cutover are still required.
 These staging helpers confer no production execution authority.
 
-The five-mode comparison harness additionally uses actual retained Rust plans
+The [five-mode comparison record](../../../tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-validation.json)
+uses actual retained Rust plans
 from five small native-accepted inputs. It rejects 2,683 individual description
 mutations while fresh inspection of each original still succeeds. Three invalid
 original requests separately exercise independent finite-pair phase checks and
