@@ -4,7 +4,7 @@ import Qleisli.QirfValidity
 import Qleisli.RawBranchFunction
 import Qleisli.ExactMatrix
 
-/-! Original-body meaning for the unwired engineering-only pure comparison.
+/-! Original-body meaning for the separate engineering-only pure comparison.
 The two existing exact gates establish each body's own requested matrix and
 isometry; the separate inequality relates those matrices without identifying
 their meanings. No source/transport/native-compiler preservation, hardware

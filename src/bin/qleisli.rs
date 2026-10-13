@@ -9,6 +9,10 @@ use qleisli::frontend::project::read_source_file;
 mod artifacts;
 #[path = "qleisli/check_report.rs"]
 mod check_report;
+#[path = "qleisli/digest.rs"]
+mod digest;
+#[path = "qleisli/engineering.rs"]
+mod engineering;
 #[path = "qleisli/interop.rs"]
 mod interop;
 #[path = "qleisli/json.rs"]
@@ -86,6 +90,9 @@ fn main() -> ExitCode {
     }
     if args.first().is_some_and(|arg| arg == "interop") {
         return interop::run(&args[1..]);
+    }
+    if args.first().is_some_and(|arg| arg == "engineering") {
+        return engineering::run(&args[1..]);
     }
     if source_plan::selected(&args) {
         return source_plan::run(&args);

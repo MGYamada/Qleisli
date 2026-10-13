@@ -3,8 +3,8 @@ import QleisliKernel.Engineering.Pure
 
 /-! Engineering comparison of two original rectangular pure artifacts.
 Both existing exact PureLeaf gates run before any inequality check. This
-component is not wired to a protocol, public schema or accepted handle, and
-provides no exact equality between the two meanings, capability, cleanup,
+component is used by a separate engineering protocol, never an exact accepted
+handle. It provides no exact equality between the two meanings, capability, cleanup,
 realization or resource certificate. A zero budget retains that claim kind.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.EngineeringPure

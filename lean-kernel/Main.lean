@@ -5,6 +5,7 @@ import Protocol.ExecutionView.Contracts
 import Cli.Finite
 import Cli.Hierarchical
 import Cli.Validity
+import Cli.EngineeringPure
 import Protocol.Product
 import Protocol.ExecutionView.CheckedFinite
 
@@ -16,6 +17,7 @@ private def nativeMode (mode : String) : Option (IO UInt32) :=
   match mode with
   | "--qirf-native" => some QleisliKernel.Cli.runValidity
   | "--qirf-contract" => some (QleisliKernel.Cli.runValidity true)
+  | "--engineering-pure-check" => some QleisliKernel.Cli.runEngineeringPure
   | "--qpe-instrument-pending" => some QleisliKernel.Cli.runQpeInstrument
   | "--instrument-pending" => some QleisliKernel.Cli.runInstrument
   | "--readout-check" => some QleisliKernel.Cli.runReadout
@@ -25,23 +27,24 @@ private def nativeMode (mode : String) : Option (IO UInt32) :=
   | "--hierarchy-pending" => some QleisliKernel.Cli.runHierarchy
   | _ => none
 
+private def nativeVersionError (mode : String) : IO UInt32 := do
+  IO.println ((if mode == "--engineering-pure-check" then "qleisli.engineering-pure-native 1"
+    else "qleisli.qirf-native 2") ++ "\nerror\nversion")
+  pure 1
+
 def main (args : List String) : IO UInt32 :=
   match args with
   | [mode, version] =>
     match nativeMode mode with
     | some action =>
       if version == QleisliKernel.Protocol.productVersion then action
-      else do
-        IO.println "qleisli.qirf-native 2\nerror\nversion"
-        pure 1
+      else nativeVersionError mode
     | none => QleisliKernel.Cli.run mode version
   -- Native modes always require the explicitly paired product version, so
   -- version agreement is enforced here rather than by caller convention.
   | [mode] =>
     match nativeMode mode with
-    | some _ => do
-      IO.println "qleisli.qirf-native 2\nerror\nversion"
-      pure 1
+    | some _ => nativeVersionError mode
     | none => QleisliKernel.Cli.usage
   | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
   | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement

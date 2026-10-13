@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [native engineering client](engineering-pure-native-v030/README.md) retains
+the first command refusal, original invalid Basis request, actual new diagnostic
+and separate successful repair. Its one-qubit bound is engineering evidence;
+exact correspondence, composition, instruments and resources remain separate.
+
 The [exact/approximate boundary study](exact-approx-boundary-v030/README.md)
 retains six first projects, a separate phase translation, a residual-output
 counterexample and 34 actual CLI observations. Its seven exact host calculations

@@ -17,12 +17,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['public_boundaries'], 20)
+        self.assertEqual(result['groups'], 42)
+        self.assertEqual(result['public_boundaries'], 21)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 22)
-        self.assertEqual(result['native_modes'], 9)
+        self.assertEqual(result['production_paths'], 23)
+        self.assertEqual(result['native_modes'], 10)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -101,6 +102,53 @@ class ProductionCoverage(unittest.TestCase):
         row['classification'] = 'native-acceptance'
         with self.assertRaisesRegex(ValueError, 'classification'):
             coverage.check(coverage.ROOT, self.data, self.inventory)
+
+    def test_engineering_report_has_a_separate_native_mode_and_cannot_be_exact_acceptance(self):
+        path = next(row for row in self.data['paths'] if row['id'] == 'engineering-pure-check')
+        self.assertEqual(path['classification'], 'engineering-check')
+        self.assertEqual(path['native_modes'], ['--engineering-pure-check'])
+        self.assertEqual(path['boundaries'], ['engineering-pure'])
+        for field, value in (('classification', 'native-acceptance'),
+                             ('classification', 'native-hierarchy-check'),
+                             ('native_modes', ['--qirf-contract'])):
+            data = copy.deepcopy(self.data)
+            row = next(row for row in data['paths'] if row['id'] == 'engineering-pure-check')
+            row[field] = value
+            with self.subTest(field=field, value=value), self.assertRaisesRegex(ValueError, 'classification or binding'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_engineering_status_cannot_be_promoted_or_reused_for_existing_acceptance(self):
+        for section, identifier, status in (
+            ('groups', 'engineering-pure', 'native-execution'),
+            ('boundaries', 'engineering-pure', 'native-execution'),
+            ('groups', 'raw-core', 'engineering-check'),
+            ('boundaries', 'qirf-native-v029', 'engineering-check'),
+        ):
+            data = copy.deepcopy(self.data)
+            row = next(row for row in data[section] if row['id'] == identifier)
+            row['status'] = status
+            with self.subTest(section=section, identifier=identifier), self.assertRaisesRegex(ValueError, 'engineering-only status'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_engineering_proof_scope_cannot_claim_source_resources_or_constitutional_discharge(self):
+        for field, claim in (
+            ('proof_scope', 'epsilon zero promotes the engineering report to exact source Meaning'),
+            ('gaps', 'None; the report certifies cleanup, physical realization and QS/PR/RS'),
+        ):
+            data = copy.deepcopy(self.data)
+            row = next(row for row in data['paths'] if row['id'] == 'engineering-pure-check')
+            row[field] = claim
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'engineering-pure proof scope'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_missing_engineering_original_byte_or_execution_view_binding_rejects(self):
+        for path, marker in (
+            ('lean-kernel/Protocol/EngineeringPure.lean', 'theorem checkRetained_bound'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean', 'theorem run_binding'),
+            ('lean/Qleisli/NativeEngineeringPureProtocol.lean', 'theorem run_meaning'),
+        ):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed declaration')
 
     def test_omitted_route_and_boundary_path_reject(self):
         for change in (lambda d: d['paths'].pop(),

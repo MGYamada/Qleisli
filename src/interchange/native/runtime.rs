@@ -117,6 +117,7 @@ mod tests {
         assert_eq!(response(good.as_bytes(), false).unwrap(), 42);
         assert!(response(good.as_bytes(), true).is_err());
         for bad in [
+            "qleisli.engineering-pure-native 1\nengineering-checked\nexecution\n42\n".into(),
             good.replace("native 2", "native 1"),
             good.replace("42", "042"),
             good.replace("42", "10000001"),

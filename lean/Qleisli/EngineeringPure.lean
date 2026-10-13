@@ -5,9 +5,9 @@ import Qleisli.Finite
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-! Refinement of the actual bounded engineering arithmetic to an independent
-Euclidean operator inequality. No original-artifact wrapper, native protocol,
-public approximation API, resource certificate or constitutional discharge is
-implemented here. Existing exact acceptance and cleanup gates are unchanged.
+Euclidean operator inequality. Original-artifact and native-entry bridges are
+separate modules; this arithmetic proof supplies no resource certificate or
+constitutional discharge. Existing exact acceptance and cleanup gates are unchanged.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.EngineeringPure
 open QleisliKernel.Semantics.Exact QleisliKernel.Engineering.Pure

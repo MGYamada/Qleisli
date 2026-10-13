@@ -32,6 +32,13 @@ and exactness obligations retain their recorded scopes and status.
   small arithmetic/artifact regressions. Native transport, public approximation
   handles, composition, instruments and target resources remain unfinished;
   these components grant no exact correspondence or constitutional admission.
+- Connect pure engineering comparisons to a separate native QLV2 mode, private
+  Rust reports and `qleisli engineering compare-pure`. Bind both original bodies,
+  complete typed requests and retained execution graphs; preserve exact gates
+  and reject cross-kind responses. Report literal phase-sensitive bounds and
+  explicit unclaimed error categories. Add original-entry reference proofs and
+  pure composition lemmas; observing/composed certificates, actual target costs
+  and broader #31/#163 obligations remain unfinished.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.
