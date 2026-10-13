@@ -358,7 +358,7 @@ class SyntheticRelease(unittest.TestCase):
 
     def test_resumed_issues_cannot_use_a_historical_deferral_even_at_reviewed_base(self):
         original = copy.deepcopy(self.requirements)
-        for number in [39, 83]:
+        for number in [83]:
             with self.subTest(issue=number):
                 self.requirements = copy.deepcopy(original)
                 row = next(row for row in self.requirements['issues'] if row['id'] == number)
@@ -369,23 +369,34 @@ class SyntheticRelease(unittest.TestCase):
                     checker.requirements(self.root, self.base, checker.Snapshot(),
                                          product_version='0.3.0-beta')
 
-    def test_reviewed_issue_63_exclusion_is_retained_without_implementation_credit(self):
-        row = next(row for row in self.requirements['issues'] if row['id'] == 63)
-        row['criteria'][0].update(scope='explicit-later-version', roles=[])
+    def test_reviewed_39_and_63_exclusions_are_retained_without_implementation_credit(self):
+        records = []
+        for number in [39, 63]:
+            row = next(row for row in self.requirements['issues'] if row['id'] == number)
+            row['criteria'][0].update(scope='explicit-later-version', roles=[])
+            record = next(row for row in self.acceptance['issues'] if row['id'] == number)['criteria'][0]
+            record.update(disposition='explicit-later-version', evidence={})
+            records.append(record)
         self.write(checker.REQUIREMENTS, encoded(self.requirements))
         self.base = self.commit()
         self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
-        record = next(row for row in self.acceptance['issues'] if row['id'] == 63)['criteria'][0]
-        record.update(disposition='explicit-later-version', evidence={})
         self.write(checker.ACCEPTANCE, encoded(self.acceptance))
         snapshot = checker.Snapshot()
         expected, raw = checker.requirements(self.root, self.base, snapshot,
                                               product_version='0.3.0-beta')
+        self.assertEqual(len(expected['issues']), 127)
+        required = {row['id'] for row in expected['issues']
+                    if row['criteria'][0]['scope'] == 'required'}
+        self.assertEqual(required, checker.ISSUES - {39, 63})
+        self.assertEqual(len(required), 125)
         checker.acceptance(self.root, expected, raw, snapshot, self.ledger)
-        record['disposition'] = 'implemented'
-        self.write(checker.ACCEPTANCE, encoded(self.acceptance))
-        with self.assertRaisesRegex(PacketError, 'unresolved or unauthorized exclusion'):
-            checker.acceptance(self.root, expected, raw, checker.Snapshot(), self.ledger)
+        for number, record in zip([39, 63], records):
+            with self.subTest(issue=number):
+                record['disposition'] = 'implemented'
+                self.write(checker.ACCEPTANCE, encoded(self.acceptance))
+                with self.assertRaisesRegex(PacketError, 'unresolved or unauthorized exclusion'):
+                    checker.acceptance(self.root, expected, raw, checker.Snapshot(), self.ledger)
+                record['disposition'] = 'explicit-later-version'
 
     def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)

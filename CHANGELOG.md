@@ -55,11 +55,13 @@ and exactness obligations retain their recorded scopes and status.
   preserving exact source commits, inventories, bytes and modes. Reject new
   fixtures without rooted static consumer references before CI lane selection;
   retain the existing size caps and separate reference reachability from execution.
-- Require all 127 selected Issues at the complete-feature release gate, retain
-  the historical 111-Issue inventory, and reject old #83/#39 deferrals. Preserve
-  the exact alpha-only approval; no completion evidence is inferred from scope.
-  Retain #63's unimplemented criteria outside v0.3.0, including beta, and align
-  the static Reference with that explicit exclusion without crediting implementation.
+- Retain 127 audit entries at the complete-feature release gate: 125 applicable
+  Issues and the maintainer-approved #39/#63 exclusions from all v0.3.0,
+  including beta, and the current goal. Exclusions earn no implementation credit.
+  Preserve the historical 111-Issue inventory and exact alpha-only approval;
+  #83 remains resumed and its old deferral cannot pass the beta gate.
+  Related fixes may proceed in parallel and share one PR while retaining each
+  Issue's criteria, evidence and required checks.
 - Restore the README link to the canonical project-name explanation (#234),
   retaining the alpha removal of the ecosystem naming comparison.
 - State the inference/discovery boundary in the existing architecture Reference
@@ -68,7 +70,7 @@ and exactness obligations retain their recorded scopes and status.
   rectangular Raw Meaning checks and selected ordinary Bits transport (#80).
   Record the maintainer's external-qlippy exclusion while retaining core
   compiler diagnostics and Cargo Clippy checks.
-- Resume the 127-Issue beta scope under #142, including #83 and #39. Add the
+- Resume #83 within the beta audit under #142. Add the
   native rectangular pure-leaf component for #83: separate interface ports,
   exact original-body matrix equality and isometry/reference proofs. Preserve
   square unitary checking. Integrate `Op<A -> B>` and `meaning M: A -> B`

@@ -55,7 +55,10 @@ BETA_ADDITIONS = {
 GROUPS = {group: sorted(numbers + BETA_ADDITIONS.get(group, []))
           for group, numbers in HISTORICAL_GROUPS.items()}
 ISSUES = {number for numbers in GROUPS.values() for number in numbers}
-RESUMED_ISSUES = {39, 83}
+# #39 was excluded again from all v0.3.0 by the maintainer on 2026-10-13,
+# like #63. Its exclusion still needs the caller-trusted reviewed snapshot;
+# it is not implementation credit. #83 remains resumed for beta.
+RESUMED_ISSUES = {83}
 ROLES = {"implementation", "reference", "migration", "positive", "negative", "jurisdictions",
          "production", "compatibility"}
 NATIVE_JOBS = {"check-macos-source": "aarch64-apple-darwin",

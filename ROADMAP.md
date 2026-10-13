@@ -50,18 +50,20 @@ were subsequently admitted after proof review and explicit human approval; the
 [guarantee record](docs/src/design/initial-guarantees.md) states their exact
 scope and assumptions. The three broader obligations remain pending. The
 [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
-fixes the user-approved beta scope at **127 Issues**, including the original
+fixes the user-approved beta audit at **127 entries**, including the original
 111 and 16 additions. At the 2026-10-12 checkpoint, 81 were open and 46 closed;
-every acceptance criterion and evidence binding must be audited, including
-closed Issues. GitHub status is not completion evidence.
-The maintainer reaffirmed #63's all-v0.3.0 exclusion on 2026-10-12. Retain it
-among the 127 audit entries as an approved exclusion, without implementation
-credit; 126 Issues remain subject to their applicable completion criteria.
-The maintainer resumed #39 and [#83](https://github.com/MGYamada/Qleisli/issues/83)
-for beta, superseding their alpha exclusions. #83 comes first: separate
-operation/Meaning ports, ordinary project integration and independently checked
-rectangular pure equations. The remaining ordered work and exact candidate
-evidence live in #142; no separate backlog is maintained here.
+every applicable acceptance criterion and evidence binding must be audited,
+including closed Issues. GitHub status is not completion evidence.
+The maintainer excludes #39 and #63 from all v0.3.0, including beta, and the
+current development goal. Retain both among the 127 audit entries as approved
+exclusions, without implementation credit; **125 applicable Issues** retain
+their completion criteria. This supersedes #39's earlier beta resumption.
+[#83](https://github.com/MGYamada/Qleisli/issues/83) remains resumed for beta:
+separate operation/Meaning ports, ordinary project integration and independently
+checked rectangular pure equations. The remaining work and exact candidate
+evidence live in #142; no separate backlog is maintained here. Related fixes may
+proceed in parallel and share one PR, with each Issue's criteria and evidence
+assessed separately.
 Historical alpha approval and the original 111-entry inventory remain historical
 records and cannot authorize beta readiness. Selecting beta supplies no
 completion credit for unfinished implementation, proof or validation criteria.
