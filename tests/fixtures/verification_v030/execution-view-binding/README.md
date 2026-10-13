@@ -1,6 +1,7 @@
 # Execution-view binding: original controls and encoding vectors
 
-`first-classical-inspection-refusal.json` preserves the first attempted classical
+[The first classical inspection refusal](first-classical-inspection-refusal.json)
+preserves the first attempted classical
 passthrough control and its real native refusal. Pure Meaning interfaces forbid
 classical ports; this is not an accepted-but-unexecutable artifact. The hierarchy
 plan regression rechecks that refusal. A separate private fault injection uses

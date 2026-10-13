@@ -5468,7 +5468,7 @@
     {
       "path": "src/interchange/hierarchical/execution/plan/tests.rs",
       "group": "hierarchical-execution",
-      "sha256": "a3db03b067afac5736ed0f70e1a6528a8f427bcede065a550813f539f88e5616",
+      "sha256": "e7cf83e79e3276d0dac788b426999e4c9be3b501caa8cebed67fc185beaffbd9",
       "surface": {
         "declarations": [],
         "functions": [],

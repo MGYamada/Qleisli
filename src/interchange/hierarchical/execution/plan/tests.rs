@@ -175,7 +175,8 @@ fn non_executable_inspection_retains_its_original_prepared_failure() {
     // in a pure Meaning do not supply an accepted-but-unexecutable artifact.
     let first = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/verification_v030/execution-view-binding/first-classical-inspection-refusal.json"
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/first-classical-inspection-refusal.json"
     )))
     .unwrap();
     let first_payload = json::encode(first.field("artifact").unwrap()).unwrap();
