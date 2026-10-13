@@ -5,15 +5,21 @@ use std::time::Duration;
 use std::time::Instant;
 
 use super::{Error, Result};
+use crate::interchange::native_packet::Scope;
 
 pub(super) const REJECTION_MESSAGE: &str =
     "Lean native checker rejected the artifact/request; no fallback";
 
+#[cfg(test)]
 fn response(bytes: &[u8], requested: bool) -> Result<usize> {
+    response_bound(bytes, requested, Scope::Inspection)
+}
+
+fn response_bound(bytes: &[u8], requested: bool, scope: Scope) -> Result<usize> {
     let text =
         std::str::from_utf8(bytes).map_err(|_| Error::format("invalid native response UTF-8"))?;
     let lines: Vec<_> = text.split('\n').collect();
-    if lines.first() != Some(&"qleisli.qirf-native 1") {
+    if lines.first() != Some(&"qleisli.qirf-native 2") {
         return Err(Error::format("unknown native response protocol"));
     }
     match lines.as_slice() {
@@ -23,6 +29,7 @@ fn response(bytes: &[u8], requested: bool) -> Result<usize> {
                 "contract" => "contract",
                 "invalid_ir" => "invalid_ir",
                 "format" => "format",
+                "decoded_view" => "decoded_view",
                 "version" => "kernel",
                 _ => return Err(Error::format("unknown native rejection")),
             };
@@ -35,7 +42,10 @@ fn response(bytes: &[u8], requested: bool) -> Result<usize> {
                 },
             ))
         }
-        [_, "accepted", work, flag, ""] => {
+        [_, "accepted", checked_scope, work, flag, ""] => {
+            if *checked_scope != scope.name() {
+                return Err(Error::format("native execution scope disagrees"));
+            }
             if work.is_empty()
                 || work.len() > 8
                 || !work.bytes().all(|b| b.is_ascii_digit())
@@ -62,12 +72,27 @@ pub(super) fn check_mode(
     packet: Vec<u8>,
     requested: bool,
     mode: &str,
+    scope: Scope,
 ) -> Result<usize> {
-    invoke_mode(executable, packet, requested, Duration::from_secs(60), mode)
+    invoke_mode(
+        executable,
+        packet,
+        requested,
+        Duration::from_secs(60),
+        mode,
+        scope,
+    )
 }
 #[cfg(test)]
 fn invoke(executable: &Path, packet: Vec<u8>, requested: bool, timeout: Duration) -> Result<usize> {
-    invoke_mode(executable, packet, requested, timeout, "--qirf-native")
+    invoke_mode(
+        executable,
+        packet,
+        requested,
+        timeout,
+        "--qirf-native",
+        Scope::Inspection,
+    )
 }
 fn invoke_mode(
     executable: &Path,
@@ -75,9 +100,10 @@ fn invoke_mode(
     requested: bool,
     timeout: Duration,
     mode: &str,
+    scope: Scope,
 ) -> Result<usize> {
     crate::interchange::process::invoke(executable, packet, mode, timeout, 256, |bytes| {
-        response(bytes, requested)
+        response_bound(bytes, requested, scope)
     })
 }
 
@@ -87,23 +113,23 @@ mod tests {
 
     #[test]
     fn replies_bind_request_presence_and_reject_ambiguous_success() {
-        let good = "qleisli.qirf-native 1\naccepted\n42\n0\n";
+        let good = "qleisli.qirf-native 2\naccepted\ninspection\n42\n0\n";
         assert_eq!(response(good.as_bytes(), false).unwrap(), 42);
         assert!(response(good.as_bytes(), true).is_err());
         for bad in [
-            good.replace("native 1", "native 0"),
+            good.replace("native 2", "native 1"),
             good.replace("42", "042"),
             good.replace("42", "10000001"),
             good.replace("\n0\n", "\ntrue\n"),
             good.trim_end().to_owned(),
             format!("{good}extra"),
             format!("{good}\n"),
-            "qleisli.qirf-native 1\nerror\ncontract\nextra".into(),
+            "qleisli.qirf-native 2\nerror\ncontract\nextra".into(),
         ] {
             assert!(response(bad.as_bytes(), false).is_err(), "{bad}");
         }
         assert_eq!(
-            response(b"qleisli.qirf-native 1\nerror\ncontract\n", false)
+            response(b"qleisli.qirf-native 2\nerror\ncontract\n", false)
                 .unwrap_err()
                 .code,
             "contract"
@@ -132,7 +158,7 @@ mod tests {
         }
         let _cleanup = Cleanup(directory.clone());
         let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v029/process-failure.sh");
+            .join("tests/fixtures/verification_v030/execution-view-binding/process-failure.sh");
         // Immutable code avoids ETXTBSY from concurrent forked children that
         // temporarily inherit a fixture writer. Each link selects one case.
         for (case, code) in [

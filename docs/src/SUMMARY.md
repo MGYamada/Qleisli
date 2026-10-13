@@ -11,6 +11,7 @@
 - [Authority hierarchy](reference/authority.md)
 - [Initial QS, PR and RS interpretations](design/initial-interpretations.md)
 - [Current production boundary](reference/production-boundary.md)
+- [Canonical execution-view encoding](reference/execution-view.md)
 - [Primitive boundary and admission](reference/primitive-boundary.md)
 - [Initial scoped QS guarantees](design/initial-guarantees.md)
 

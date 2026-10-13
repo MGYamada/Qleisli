@@ -1,0 +1,362 @@
+[
+  {
+    "case": "bell",
+    "kind": "check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/tmp/qleisli-beta-362-first-study/bell",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:41.436499+00:00",
+    "stdout": {
+      "path": "bell-check.stdout",
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+    },
+    "stderr": {
+      "path": "bell-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "bell",
+    "kind": "run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/tmp/qleisli-beta-362-first-study/bell",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:41.824006+00:00",
+    "stdout": {
+      "path": "bell-run.stdout",
+      "sha256": "350d7f4e62664334f3fff3c8e606c3b830b8011f134ce312675421ec528cbc04"
+    },
+    "stderr": {
+      "path": "bell-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "bell",
+    "kind": "emit-ir",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/tmp/qleisli-beta-362-first-study/bell",
+      "--output=/tmp/qleisli-beta-362-first-study/bell.qirf",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:42.216295+00:00",
+    "stdout": {
+      "path": "bell-emit-ir.stdout",
+      "sha256": "5388fc816014c805166796c94dceed9fd52a8ee3fb635a370b8cf879afa370b0"
+    },
+    "stderr": {
+      "path": "bell-emit-ir.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "bell",
+    "kind": "native-qlv1-control",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native"
+    ],
+    "stdin": {
+      "path": "bell.qlv1",
+      "sha256": "7c1cce6a06f1999b39484b576d0d1f162617fed9b53e0341520a84dcd360afc5"
+    },
+    "artifact": {
+      "path": "bell.qirf",
+      "sha256": "cf49bdac7a65c744572d64efe6226e37e3ef005591929186c296646444d4a2e8"
+    },
+    "exit_code": 1,
+    "stdout": {
+      "path": "bell-native.stdout",
+      "sha256": "e0a6f0d0012d027a45b2d2ff0819ee8f20afb3559694661ce7033c2e41a2c7cb"
+    },
+    "stderr": {
+      "path": "bell-native.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "phase",
+    "kind": "check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/tmp/qleisli-beta-362-first-study/phase",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:42.621551+00:00",
+    "stdout": {
+      "path": "phase-check.stdout",
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+    },
+    "stderr": {
+      "path": "phase-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "phase",
+    "kind": "run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/tmp/qleisli-beta-362-first-study/phase",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:43.005683+00:00",
+    "stdout": {
+      "path": "phase-run.stdout",
+      "sha256": "faf0713ff028e088097b3461b73cb391d95b7e3dfa0a70cfdfb72c568189c5ef"
+    },
+    "stderr": {
+      "path": "phase-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "phase",
+    "kind": "emit-ir",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/tmp/qleisli-beta-362-first-study/phase",
+      "--output=/tmp/qleisli-beta-362-first-study/phase.qirf",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:43.395924+00:00",
+    "stdout": {
+      "path": "phase-emit-ir.stdout",
+      "sha256": "d2840df024019a6e378ceaa59151d36cd8ef0dea21290d79d83e133569e5bd75"
+    },
+    "stderr": {
+      "path": "phase-emit-ir.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "phase",
+    "kind": "native-qlv1-control",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native"
+    ],
+    "stdin": {
+      "path": "phase.qlv1",
+      "sha256": "807b418694433d41c08b070b373faabf5e2e04a9110b1044b2be4c0cc3f76b6c"
+    },
+    "artifact": {
+      "path": "phase.qirf",
+      "sha256": "a2066e1259d0b48e3e957a234a131400c8f01893ed96c423b27c7d67c48917cc"
+    },
+    "exit_code": 1,
+    "stdout": {
+      "path": "phase-native.stdout",
+      "sha256": "e0a6f0d0012d027a45b2d2ff0819ee8f20afb3559694661ce7033c2e41a2c7cb"
+    },
+    "stderr": {
+      "path": "phase-native.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "hidden-discard",
+    "kind": "check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/tmp/qleisli-beta-362-first-study/hidden-discard",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:43.807967+00:00",
+    "stdout": {
+      "path": "hidden-discard-check.stdout",
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e"
+    },
+    "stderr": {
+      "path": "hidden-discard-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "hidden-discard",
+    "kind": "run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/tmp/qleisli-beta-362-first-study/hidden-discard",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:44.193346+00:00",
+    "stdout": {
+      "path": "hidden-discard-run.stdout",
+      "sha256": "2a7bb57e986974d3549e67a456547ed1d6f77ff404590cec5a3a12981963584b"
+    },
+    "stderr": {
+      "path": "hidden-discard-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "hidden-discard",
+    "kind": "emit-ir",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/tmp/qleisli-beta-362-first-study/hidden-discard",
+      "--output=/tmp/qleisli-beta-362-first-study/hidden-discard.qirf",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "observed_utc": "2026-10-12T09:46:44.583670+00:00",
+    "stdout": {
+      "path": "hidden-discard-emit-ir.stdout",
+      "sha256": "e2b8b3e97d89fe75cfbbc4299c60242bcb7a2763c7dfbdffdac8a74b43335fdb"
+    },
+    "stderr": {
+      "path": "hidden-discard-emit-ir.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "hidden-discard",
+    "kind": "native-qlv1-control",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native"
+    ],
+    "stdin": {
+      "path": "hidden-discard.qlv1",
+      "sha256": "98bca909fe00724f0d49b85e5fca3057af281e354155beb8e6cc4d60e1435a85"
+    },
+    "artifact": {
+      "path": "hidden-discard.qirf",
+      "sha256": "fb7d409f7eeae1087fe86fe8d9395e80b53911592cf6cd1af1dcc7fea0416b58"
+    },
+    "exit_code": 1,
+    "stdout": {
+      "path": "hidden-discard-native.stdout",
+      "sha256": "e0a6f0d0012d027a45b2d2ff0819ee8f20afb3559694661ce7033c2e41a2c7cb"
+    },
+    "stderr": {
+      "path": "hidden-discard-native.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "false-unitary",
+    "kind": "check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/tmp/qleisli-beta-362-first-study/false-unitary",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 1,
+    "observed_utc": "2026-10-12T09:46:44.611677+00:00",
+    "stdout": {
+      "path": "false-unitary-check.stdout",
+      "sha256": "9eb85c25ed8125fca559750d1b12c323ce603508dad011de4a5f567727dd115b"
+    },
+    "stderr": {
+      "path": "false-unitary-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "bell",
+    "kind": "native-qlv1-paired-control",
+    "reason": "The first direct invocation omitted the mandatory paired product version and was rejected at version selection. This append changes argv only; source/artifact/packet bytes are unchanged.",
+    "observed_utc": "2026-10-12T09:48:01.550274+00:00",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native",
+      "0.3.0-beta"
+    ],
+    "stdin": {
+      "path": "bell.qlv1",
+      "sha256": "7c1cce6a06f1999b39484b576d0d1f162617fed9b53e0341520a84dcd360afc5"
+    },
+    "exit_code": 0,
+    "stdout": {
+      "path": "bell-native-paired.stdout",
+      "sha256": "83993a3e7360436bb3b3fd7b4b0dd5d1a45be3017d84be4e8c14d4a8252fee79"
+    },
+    "stderr": {
+      "path": "bell-native-paired.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "phase",
+    "kind": "native-qlv1-paired-control",
+    "reason": "The first direct invocation omitted the mandatory paired product version and was rejected at version selection. This append changes argv only; source/artifact/packet bytes are unchanged.",
+    "observed_utc": "2026-10-12T09:48:01.572937+00:00",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native",
+      "0.3.0-beta"
+    ],
+    "stdin": {
+      "path": "phase.qlv1",
+      "sha256": "807b418694433d41c08b070b373faabf5e2e04a9110b1044b2be4c0cc3f76b6c"
+    },
+    "exit_code": 0,
+    "stdout": {
+      "path": "phase-native-paired.stdout",
+      "sha256": "ca5db10b53f136a5acc2243296607c33375b728a9c7fdfd8d8a91d6df4b06c82"
+    },
+    "stderr": {
+      "path": "phase-native-paired.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "case": "hidden-discard",
+    "kind": "native-qlv1-paired-control",
+    "reason": "The first direct invocation omitted the mandatory paired product version and was rejected at version selection. This append changes argv only; source/artifact/packet bytes are unchanged.",
+    "observed_utc": "2026-10-12T09:48:01.596018+00:00",
+    "argv": [
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--qirf-native",
+      "0.3.0-beta"
+    ],
+    "stdin": {
+      "path": "hidden-discard.qlv1",
+      "sha256": "98bca909fe00724f0d49b85e5fca3057af281e354155beb8e6cc4d60e1435a85"
+    },
+    "exit_code": 0,
+    "stdout": {
+      "path": "hidden-discard-native-paired.stdout",
+      "sha256": "faf4267dbd6ea1092fcbec7fd89c746eac71265eac7a1e65c4ea028e4b87d26c"
+    },
+    "stderr": {
+      "path": "hidden-discard-native-paired.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+]

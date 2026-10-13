@@ -82,12 +82,33 @@ private def adapt {α : Type} (value : Except String α) : WorkM α :=
 
 /-- The actual graph comes from the original QLV1 body. The expected graph is
 read from the original UTF-8 string in the same mandatory independent request. -/
+structure Retained where
+  decoded : Decoded
+  expected : QleisliKernel.Qirf.Artifact
+  expectedOrder : Array Nat
+  checked : QleisliKernel.Qirf.InstrumentContract.Checked
+
+def checkRetained (actual : QleisliKernel.Qirf.Artifact) (actualOrder : Array Nat)
+    (value : Json) : WorkM Retained := do
+  let decoded ← adapt (decode value)
+  let (expected,expectedOrder) ← Qirf.read decoded.expectedText.toUTF8
+  let checked ← QleisliKernel.Qirf.InstrumentContract.check actual actualOrder expected expectedOrder
+    decoded.actualSignature decoded.expectedSignature decoded.identity
+  return ⟨decoded,expected,expectedOrder,checked⟩
+
 def check (actual : QleisliKernel.Qirf.Artifact) (actualOrder : Array Nat)
     (value : Json) : WorkM QleisliKernel.Qirf.InstrumentContract.Checked := do
+  return (← checkRetained actual actualOrder value).checked
+
+/-- Retaining the independently decoded expected graph adds no check, fallback
+or work charge; the projected computation is exactly the original adapter. -/
+theorem check_projection (actual : QleisliKernel.Qirf.Artifact) (actualOrder : Array Nat)
+    (value : Json) : check actual actualOrder value = (do
   let decoded ← adapt (decode value)
   let (expected,expectedOrder) ← Qirf.read decoded.expectedText.toUTF8
   QleisliKernel.Qirf.InstrumentContract.check actual actualOrder expected expectedOrder
-    decoded.actualSignature decoded.expectedSignature decoded.identity
+    decoded.actualSignature decoded.expectedSignature decoded.identity) := by
+  simp only [check, checkRetained, bind_assoc, pure_bind, bind_pure]
 
 structure Acceptance (actual : QleisliKernel.Qirf.Artifact) (actualOrder : Array Nat)
     (value : Json) (checked : QleisliKernel.Qirf.InstrumentContract.Checked) (work left : Nat) where
@@ -104,11 +125,34 @@ theorem check_acceptance (actual : QleisliKernel.Qirf.Artifact) (actualOrder : A
     (value : Json) (checked : QleisliKernel.Qirf.InstrumentContract.Checked) (work left : Nat)
     (ok : (check actual actualOrder value).run work = (.ok checked,left)) :
     Nonempty (Acceptance actual actualOrder value checked work left) := by
+  rw [check_projection] at ok
   obtain ⟨decoded,middle,hd,h⟩ := bind_success _ _ _ _ _ ok
   have lifted := lift_success _ _ _ _ hd
   have bound : decode value = .ok decoded := by
     cases definition : decode value <;> simp_all [Except.mapError]
   obtain ⟨⟨expected,expectedOrder⟩,afterExpected,he,hcheck⟩ := bind_success _ _ _ _ _ h
   exact ⟨⟨decoded,expected,expectedOrder,afterExpected,bound,lifted.2 ▸ he,hcheck⟩⟩
+
+/-- The retained expected graph and request are those actually decoded in
+this computation, and its core result is bound to both original graphs. -/
+theorem checkRetained_bound (actual : QleisliKernel.Qirf.Artifact) (actualOrder : Array Nat)
+    (value : Json) (checked : Retained) (work left : Nat)
+    (ok : (checkRetained actual actualOrder value).run work = (.ok checked,left)) :
+    decode value = .ok checked.decoded ∧ ∃ afterExpected,
+      (Qirf.read checked.decoded.expectedText.toUTF8).run work =
+        (.ok (checked.expected,checked.expectedOrder),afterExpected) ∧
+      (QleisliKernel.Qirf.InstrumentContract.check actual actualOrder checked.expected checked.expectedOrder
+        checked.decoded.actualSignature checked.decoded.expectedSignature checked.decoded.identity).run
+        afterExpected = (.ok checked.checked,left) := by
+  obtain ⟨decoded,middle,hd,h⟩ := bind_success _ _ _ _ _ ok
+  have lifted := lift_success _ _ _ _ hd
+  have bound : decode value = .ok decoded := by
+    cases definition : decode value <;> simp_all [Except.mapError]
+  obtain ⟨⟨expected,expectedOrder⟩,afterExpected,he,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨result,afterCheck,hcheck,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨same,sameWork⟩ := pure_success _ _ _ _ h
+  subst checked
+  subst afterCheck
+  exact ⟨bound,afterExpected,lifted.2 ▸ he,hcheck⟩
 
 end QleisliKernel.Protocol.InstrumentContract

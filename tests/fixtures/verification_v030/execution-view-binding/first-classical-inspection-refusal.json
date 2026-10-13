@@ -1,0 +1,296 @@
+{
+  "artifact": {
+    "format": "qleisli.hierarchical-ir",
+    "version": 1,
+    "profile": "qpe-dyadic8-v1",
+    "definitions": [
+      {
+        "interface": {
+          "inputs": {
+            "quantum": [
+              {
+                "owner": 1,
+                "basis": [
+                  {
+                    "tag": "bit"
+                  }
+                ],
+                "axes": [
+                  7
+                ]
+              }
+            ],
+            "classical": [
+              {
+                "value": 20,
+                "basis": [
+                  {
+                    "tag": "bits",
+                    "width": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "outputs": {
+            "quantum": [
+              {
+                "owner": 0,
+                "basis": [
+                  {
+                    "tag": "bit"
+                  }
+                ],
+                "axes": [
+                  7
+                ]
+              }
+            ],
+            "classical": [
+              {
+                "value": 20,
+                "basis": [
+                  {
+                    "tag": "bits",
+                    "width": 1
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "effect": "unitary",
+        "body": {
+          "tag": "rewire",
+          "permutation": {
+            "owners": [
+              0
+            ],
+            "axes": [
+              0
+            ],
+            "classical": [
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "meanings": [
+      {
+        "interface": {
+          "inputs": {
+            "quantum": [
+              {
+                "owner": 1,
+                "basis": [
+                  {
+                    "tag": "bit"
+                  }
+                ],
+                "axes": [
+                  7
+                ]
+              }
+            ],
+            "classical": [
+              {
+                "value": 20,
+                "basis": [
+                  {
+                    "tag": "bits",
+                    "width": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "outputs": {
+            "quantum": [
+              {
+                "owner": 0,
+                "basis": [
+                  {
+                    "tag": "bit"
+                  }
+                ],
+                "axes": [
+                  7
+                ]
+              }
+            ],
+            "classical": [
+              {
+                "value": 20,
+                "basis": [
+                  {
+                    "tag": "bits",
+                    "width": 1
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "body": {
+          "tag": "rewire",
+          "permutation": {
+            "owners": [
+              0
+            ],
+            "axes": [
+              0
+            ],
+            "classical": [
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "encodings": [
+      {
+        "logical": {
+          "quantum": [
+            {
+              "owner": 1,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                7
+              ]
+            }
+          ],
+          "classical": [
+            {
+              "value": 20,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ]
+        },
+        "physical": {
+          "quantum": [
+            {
+              "owner": 1,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                7
+              ]
+            }
+          ],
+          "classical": [
+            {
+              "value": 20,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ]
+        },
+        "body": {
+          "tag": "identity"
+        }
+      },
+      {
+        "logical": {
+          "quantum": [
+            {
+              "owner": 0,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                7
+              ]
+            }
+          ],
+          "classical": [
+            {
+              "value": 20,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ]
+        },
+        "physical": {
+          "quantum": [
+            {
+              "owner": 0,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                7
+              ]
+            }
+          ],
+          "classical": [
+            {
+              "value": 20,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ]
+        },
+        "body": {
+          "tag": "identity"
+        }
+      }
+    ],
+    "proofs": [
+      {
+        "kind": "equation",
+        "rule": {
+          "tag": "rewire"
+        },
+        "premises": [],
+        "implementation": 0,
+        "meaning": 0,
+        "input_encoding": 0,
+        "output_encoding": 1,
+        "witness": {
+          "template_version": 1,
+          "parameters": [],
+          "references": []
+        }
+      }
+    ],
+    "entry": {
+      "implementation": 0,
+      "proof": 0
+    }
+  },
+  "diagnostic": {
+    "code": "invalid_ir",
+    "message": "Lean artifact inspection: the native checker rejected the artifact or request",
+    "json_pointer": ""
+  },
+  "role": "Preserve the first attempted classical passthrough inspection control; no native acceptance or execution claim."
+}

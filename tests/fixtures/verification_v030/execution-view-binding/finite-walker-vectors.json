@@ -1,0 +1,1216 @@
+[
+  {
+    "name": "bell",
+    "kind": "raw-source",
+    "source": "before/bell.qirf",
+    "view": [
+      "program",
+      [],
+      [],
+      [
+        [
+          "init0",
+          0,
+          0
+        ],
+        [
+          "gate",
+          0,
+          0,
+          1
+        ],
+        [
+          "init0",
+          2,
+          1
+        ],
+        [
+          "cnot",
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          "measure",
+          3,
+          0
+        ],
+        [
+          "measure",
+          4,
+          1
+        ]
+      ],
+      [],
+      [
+        0,
+        1
+      ],
+      2
+    ]
+  },
+  {
+    "name": "phase",
+    "kind": "raw-source",
+    "source": "before/phase.qirf",
+    "view": [
+      "program",
+      [],
+      [],
+      [
+        [
+          "init0",
+          0,
+          0
+        ],
+        [
+          "gate",
+          0,
+          0,
+          1
+        ],
+        [
+          "gate",
+          3,
+          1,
+          2
+        ],
+        [
+          "gate",
+          0,
+          2,
+          3
+        ],
+        [
+          "measure",
+          3,
+          0
+        ]
+      ],
+      [],
+      [
+        0
+      ],
+      2
+    ]
+  },
+  {
+    "name": "hidden-discard",
+    "kind": "raw-source",
+    "source": "before/hidden-discard.qirf",
+    "view": [
+      "program",
+      [],
+      [],
+      [
+        [
+          "init0",
+          0,
+          0
+        ],
+        [
+          "gate",
+          0,
+          0,
+          1
+        ],
+        [
+          "init0",
+          2,
+          1
+        ],
+        [
+          "cnot",
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          "discard",
+          3
+        ],
+        [
+          "measure",
+          4,
+          0
+        ]
+      ],
+      [],
+      [
+        0
+      ],
+      2
+    ]
+  },
+  {
+    "name": "all-raw-constructors-transport-only",
+    "kind": "raw",
+    "program": {
+      "quantum_inputs": [
+        {
+          "token": 7,
+          "wires": [
+            19,
+            3
+          ],
+          "shape": {
+            "bits": 2
+          }
+        },
+        {
+          "token": 8,
+          "wires": [],
+          "shape": {
+            "bits": 0
+          }
+        }
+      ],
+      "classical_inputs": [
+        41,
+        43
+      ],
+      "operations": [
+        {
+          "tag": "pack_unit",
+          "output": 9
+        },
+        {
+          "tag": "unpack_unit",
+          "input": 8
+        },
+        {
+          "tag": "init0",
+          "output": 10,
+          "wire": 5
+        },
+        {
+          "tag": "gate",
+          "gate": "z",
+          "input": 7,
+          "output": 11
+        },
+        {
+          "tag": "cnot",
+          "control": 11,
+          "target": 10,
+          "control_out": 12,
+          "target_out": 13
+        },
+        {
+          "tag": "toffoli",
+          "control_a": 12,
+          "control_b": 13,
+          "target": 14,
+          "control_a_out": 15,
+          "control_b_out": 16,
+          "target_out": 17
+        },
+        {
+          "tag": "quantum_if",
+          "control": 15,
+          "target": 17,
+          "control_out": 18,
+          "target_out": 19,
+          "zero_ops": [
+            {
+              "tag": "gate",
+              "gate": "t",
+              "target_index": 2
+            },
+            {
+              "tag": "cnot",
+              "control_index": 1,
+              "target_index": 0
+            },
+            {
+              "tag": "toffoli",
+              "control_a_index": 2,
+              "control_b_index": 1,
+              "target_index": 0
+            },
+            {
+              "tag": "scalar_phase",
+              "phase": "eighth_turn"
+            }
+          ],
+          "one_ops": [
+            {
+              "tag": "scalar_phase",
+              "phase": "minus_one"
+            }
+          ]
+        },
+        {
+          "tag": "split",
+          "input": 19,
+          "left": 20,
+          "right": 21,
+          "left_bits": 0
+        },
+        {
+          "tag": "join",
+          "left": 20,
+          "right": 21,
+          "output": 22
+        },
+        {
+          "tag": "lift_basis",
+          "input": 22,
+          "output": 23,
+          "output_wires": [
+            8,
+            9
+          ],
+          "table": [
+            0,
+            2
+          ]
+        },
+        {
+          "tag": "apply_unitary",
+          "input": 23,
+          "output": 24,
+          "steps": [
+            {
+              "controls": [
+                {
+                  "index": 2,
+                  "when_one": false
+                }
+              ],
+              "action": {
+                "tag": "hadamard",
+                "target": 1
+              }
+            },
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  1,
+                  0
+                ],
+                "permutation": [
+                  2,
+                  0,
+                  3,
+                  1
+                ],
+                "phases": [
+                  3,
+                  7,
+                  0,
+                  1
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "tag": "certified_compute",
+          "source": 24,
+          "source_out": 25,
+          "ancilla_wires": [
+            11
+          ],
+          "function": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "use_steps": [
+            {
+              "controls": [
+                {
+                  "index": 2,
+                  "when_one": false
+                }
+              ],
+              "action": {
+                "tag": "hadamard",
+                "target": 1
+              }
+            }
+          ],
+          "logical_steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  1,
+                  0
+                ],
+                "permutation": [
+                  2,
+                  0,
+                  3,
+                  1
+                ],
+                "phases": [
+                  3,
+                  7,
+                  0,
+                  1
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "tag": "compute_use_uncompute",
+          "source": 25,
+          "source_out": 26,
+          "targets": [
+            {
+              "input": 16,
+              "output": 27
+            }
+          ],
+          "ancilla_wires": [
+            12
+          ],
+          "function": [
+            1,
+            0
+          ],
+          "use_ops": [
+            {
+              "tag": "protected_gate",
+              "bit": {
+                "region": "source",
+                "index": 1
+              },
+              "gate": "t"
+            },
+            {
+              "tag": "controlled_target_gate",
+              "controls": [
+                {
+                  "bit": {
+                    "region": "source",
+                    "index": 1
+                  },
+                  "when_one": false
+                },
+                {
+                  "bit": {
+                    "region": "ancilla",
+                    "index": 0
+                  },
+                  "when_one": true
+                }
+              ],
+              "target_index": 2,
+              "gate": "x"
+            },
+            {
+              "tag": "controlled_phase",
+              "controls": [
+                {
+                  "bit": {
+                    "region": "source",
+                    "index": 1
+                  },
+                  "when_one": false
+                },
+                {
+                  "bit": {
+                    "region": "ancilla",
+                    "index": 0
+                  },
+                  "when_one": true
+                }
+              ],
+              "phase": "eighth_turn"
+            }
+          ]
+        },
+        {
+          "tag": "measure_z",
+          "input": 26,
+          "output": 44
+        },
+        {
+          "tag": "reset",
+          "input": 27,
+          "output": 28,
+          "fresh_wire": 18
+        },
+        {
+          "tag": "discard",
+          "input": 28
+        },
+        {
+          "tag": "classical_const",
+          "value": false,
+          "output": 45
+        },
+        {
+          "tag": "classical_not",
+          "input": 45,
+          "output": 46
+        },
+        {
+          "tag": "classical_xor",
+          "left": 46,
+          "right": 44,
+          "output": 47
+        },
+        {
+          "tag": "classical_and",
+          "left": 47,
+          "right": 43,
+          "output": 48
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 48,
+          "then_ops": [
+            {
+              "tag": "classical_const",
+              "value": true,
+              "output": 50
+            }
+          ],
+          "else_ops": [
+            {
+              "tag": "classical_const",
+              "value": false,
+              "output": 51
+            },
+            {
+              "tag": "discard",
+              "input": 32
+            }
+          ],
+          "quantum_phis": [
+            {
+              "then_token": 31,
+              "else_token": 32,
+              "output": 33,
+              "output_wires": [
+                17,
+                3
+              ]
+            },
+            {
+              "then_token": 34,
+              "else_token": 35,
+              "output": 36,
+              "output_wires": []
+            }
+          ],
+          "classical_phis": [
+            {
+              "then_id": 50,
+              "else_id": 51,
+              "output": 49
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        8,
+        7
+      ],
+      "classical_outputs": [
+        49,
+        41
+      ],
+      "declared_effect": "observe"
+    },
+    "view": [
+      "program",
+      [
+        [
+          "port",
+          7,
+          [
+            19,
+            3
+          ],
+          2
+        ],
+        [
+          "port",
+          8,
+          [],
+          0
+        ]
+      ],
+      [
+        41,
+        43
+      ],
+      [
+        [
+          "pack-unit",
+          9
+        ],
+        [
+          "unpack-unit",
+          8
+        ],
+        [
+          "init0",
+          10,
+          5
+        ],
+        [
+          "gate",
+          2,
+          7,
+          11
+        ],
+        [
+          "cnot",
+          11,
+          10,
+          12,
+          13
+        ],
+        [
+          "toffoli",
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        [
+          "quantum-if",
+          15,
+          17,
+          18,
+          19,
+          [
+            [
+              "gate",
+              3,
+              2
+            ],
+            [
+              "cnot",
+              1,
+              0
+            ],
+            [
+              "toffoli",
+              2,
+              1,
+              0
+            ],
+            [
+              "phase",
+              1
+            ]
+          ],
+          [
+            [
+              "phase",
+              0
+            ]
+          ]
+        ],
+        [
+          "split",
+          19,
+          20,
+          21,
+          0
+        ],
+        [
+          "join",
+          20,
+          21,
+          22
+        ],
+        [
+          "lift-basis",
+          22,
+          23,
+          [
+            8,
+            9
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        [
+          "apply-unitary",
+          23,
+          24,
+          [
+            [
+              "step",
+              [
+                [
+                  "control",
+                  2,
+                  false
+                ]
+              ],
+              [
+                "hadamard",
+                1
+              ]
+            ],
+            [
+              "step",
+              [],
+              [
+                "monomial",
+                [
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  3,
+                  1
+                ],
+                [
+                  3,
+                  7,
+                  0,
+                  1
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "certified-compute",
+          24,
+          25,
+          [
+            11
+          ],
+          [
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            [
+              "step",
+              [
+                [
+                  "control",
+                  2,
+                  false
+                ]
+              ],
+              [
+                "hadamard",
+                1
+              ]
+            ]
+          ],
+          [
+            [
+              "step",
+              [],
+              [
+                "monomial",
+                [
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  3,
+                  1
+                ],
+                [
+                  3,
+                  7,
+                  0,
+                  1
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "compute-use-uncompute",
+          25,
+          26,
+          [
+            [
+              "target",
+              16,
+              27
+            ]
+          ],
+          [
+            12
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            [
+              "protected-gate",
+              [
+                "protected-bit",
+                0,
+                1
+              ],
+              3
+            ],
+            [
+              "target-gate",
+              [
+                [
+                  "protected-control",
+                  [
+                    "protected-bit",
+                    0,
+                    1
+                  ],
+                  false
+                ],
+                [
+                  "protected-control",
+                  [
+                    "protected-bit",
+                    1,
+                    0
+                  ],
+                  true
+                ]
+              ],
+              2,
+              1
+            ],
+            [
+              "protected-phase",
+              [
+                [
+                  "protected-control",
+                  [
+                    "protected-bit",
+                    0,
+                    1
+                  ],
+                  false
+                ],
+                [
+                  "protected-control",
+                  [
+                    "protected-bit",
+                    1,
+                    0
+                  ],
+                  true
+                ]
+              ],
+              1
+            ]
+          ]
+        ],
+        [
+          "measure",
+          26,
+          44
+        ],
+        [
+          "reset",
+          27,
+          28,
+          18
+        ],
+        [
+          "discard",
+          28
+        ],
+        [
+          "constant",
+          false,
+          45
+        ],
+        [
+          "not",
+          45,
+          46
+        ],
+        [
+          "xor",
+          46,
+          44,
+          47
+        ],
+        [
+          "and",
+          47,
+          43,
+          48
+        ],
+        [
+          "branch",
+          48,
+          [
+            [
+              "constant",
+              true,
+              50
+            ]
+          ],
+          [
+            [
+              "constant",
+              false,
+              51
+            ],
+            [
+              "discard",
+              32
+            ]
+          ],
+          [
+            [
+              "quantum-phi",
+              31,
+              32,
+              33,
+              [
+                17,
+                3
+              ]
+            ],
+            [
+              "quantum-phi",
+              34,
+              35,
+              36,
+              []
+            ]
+          ],
+          [
+            [
+              "classical-phi",
+              50,
+              51,
+              49
+            ]
+          ]
+        ]
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        49,
+        41
+      ],
+      2
+    ]
+  },
+  {
+    "name": "atomic-register",
+    "kind": "basis",
+    "basis": {
+      "tag": "bits",
+      "width": 2
+    },
+    "view": [
+      [
+        "bits",
+        2
+      ]
+    ]
+  },
+  {
+    "name": "pair-register",
+    "kind": "basis",
+    "basis": {
+      "tag": "pair",
+      "left": {
+        "tag": "bit"
+      },
+      "right": {
+        "tag": "bit"
+      }
+    },
+    "view": [
+      [
+        "pair"
+      ],
+      [
+        "bit"
+      ],
+      [
+        "bit"
+      ]
+    ]
+  },
+  {
+    "name": "zero-width-unit",
+    "kind": "basis",
+    "basis": {
+      "tag": "unit"
+    },
+    "view": [
+      [
+        "unit"
+      ]
+    ]
+  },
+  {
+    "name": "zero-width-register",
+    "kind": "basis",
+    "basis": {
+      "tag": "bits",
+      "width": 0
+    },
+    "view": [
+      [
+        "bits",
+        0
+      ]
+    ]
+  },
+  {
+    "name": "tuple-shape",
+    "kind": "basis",
+    "basis": {
+      "tag": "tuple",
+      "fields": [
+        {
+          "tag": "unit"
+        },
+        {
+          "tag": "bits",
+          "width": 2
+        },
+        {
+          "tag": "bit"
+        }
+      ]
+    },
+    "view": [
+      [
+        "tuple",
+        3
+      ],
+      [
+        "unit"
+      ],
+      [
+        "bits",
+        2
+      ],
+      [
+        "bit"
+      ]
+    ]
+  },
+  {
+    "name": "rectangular-exact",
+    "kind": "matrix",
+    "matrix": {
+      "rows": 2,
+      "cols": 1,
+      "entries": [
+        [
+          [
+            "-1",
+            1
+          ],
+          [
+            "3",
+            2
+          ],
+          [
+            "0",
+            0
+          ],
+          [
+            "1",
+            3
+          ]
+        ],
+        [
+          [
+            "0",
+            0
+          ],
+          [
+            "0",
+            0
+          ],
+          [
+            "1",
+            0
+          ],
+          [
+            "-1",
+            2
+          ]
+        ]
+      ]
+    },
+    "view": [
+      "matrix",
+      2,
+      1,
+      [
+        [
+          [
+            "dyadic",
+            "-1",
+            1
+          ],
+          [
+            "dyadic",
+            "3",
+            2
+          ],
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "1",
+            3
+          ]
+        ],
+        [
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "1",
+            0
+          ],
+          [
+            "dyadic",
+            "-1",
+            2
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "row-column-order",
+    "kind": "matrix",
+    "matrix": {
+      "rows": 1,
+      "cols": 2,
+      "entries": [
+        [
+          [
+            "-1",
+            1
+          ],
+          [
+            "3",
+            2
+          ],
+          [
+            "0",
+            0
+          ],
+          [
+            "1",
+            3
+          ]
+        ],
+        [
+          [
+            "0",
+            0
+          ],
+          [
+            "0",
+            0
+          ],
+          [
+            "1",
+            0
+          ],
+          [
+            "-1",
+            2
+          ]
+        ]
+      ]
+    },
+    "view": [
+      "matrix",
+      1,
+      2,
+      [
+        [
+          [
+            "dyadic",
+            "-1",
+            1
+          ],
+          [
+            "dyadic",
+            "3",
+            2
+          ],
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "1",
+            3
+          ]
+        ],
+        [
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "0",
+            0
+          ],
+          [
+            "dyadic",
+            "1",
+            0
+          ],
+          [
+            "dyadic",
+            "-1",
+            2
+          ]
+        ]
+      ]
+    ]
+  }
+]

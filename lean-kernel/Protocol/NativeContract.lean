@@ -23,14 +23,34 @@ private def port (value : Json) : Except String Semantics.Raw.Port := do
     ← (← shape.getObjVal? "bits").getNat?⟩
 
 /-- Decode an obligation, never a producer-supplied action or success receipt. -/
+structure ControlRetained where
+  signature : Semantics.Finite.Basis
+  axes : List Nat
+  checked : QleisliKernel.Qirf.ControlAccess.Retained
+
+private def checkControlRetained (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM ControlRetained := do
+  adapt (fields value ["format","version","kind","signature","axes"])
+  let signature ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "signature")))
+  let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
+    values.toList.mapM Json.getNat?)
+  let checked ← QleisliKernel.Qirf.ControlAccess.checkRetained artifact order signature axes
+  return ⟨signature,axes,checked⟩
+
 private def checkControl (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
     (value : Json) : WorkM Unit := do
+  let _ ← checkControlRetained artifact order value
+  pure ()
+
+private theorem checkControl_projection (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) : checkControl artifact order value = (do
   adapt (fields value ["format","version","kind","signature","axes"])
   let signature ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "signature")))
   let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
     values.toList.mapM Json.getNat?)
   let _ ← QleisliKernel.Qirf.ControlAccess.check artifact order signature axes
-  pure ()
+  pure ()) := by
+  simp only [checkControl, checkControlRetained, QleisliKernel.Qirf.ControlAccess.check, bind_assoc, pure_bind]
 
 /-- Bound owner-forest decoding before traversing individual type trees. -/
 def decodeOwnerSignatures (value : Json) : Except String (List Semantics.Finite.Basis) := do
@@ -39,26 +59,142 @@ def decodeOwnerSignatures (value : Json) : Except String (List Semantics.Finite.
   values.toList.mapM (Qirf.basis 129)
 
 /-- Decode an obligation, never a producer-supplied action or success receipt. -/
+structure ControlOwnersRetained where
+  signatures : List Semantics.Finite.Basis
+  axes : List Nat
+  checked : QleisliKernel.Qirf.ControlAccess.Retained
+
+private def checkControlOwnersRetained (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM ControlOwnersRetained := do
+  adapt (fields value ["format","version","kind","signatures","axes"])
+  let signatures ← adapt (decodeOwnerSignatures (← adapt (value.getObjVal? "signatures")))
+  let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
+    values.toList.mapM Json.getNat?)
+  let checked ← QleisliKernel.Qirf.ControlAccess.checkOwnersRetained artifact order signatures axes
+  return ⟨signatures,axes,checked⟩
+
 private def checkControlOwners (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
     (value : Json) : WorkM Unit := do
+  let _ ← checkControlOwnersRetained artifact order value
+  pure ()
+
+private theorem checkControlOwners_projection (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) : checkControlOwners artifact order value = (do
   adapt (fields value ["format","version","kind","signatures","axes"])
   let signatures ← adapt (decodeOwnerSignatures (← adapt (value.getObjVal? "signatures")))
   let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
     values.toList.mapM Json.getNat?)
   let _ ← QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes
-  pure ()
+  pure ()) := by
+  simp only [checkControlOwners, checkControlOwnersRetained, QleisliKernel.Qirf.ControlAccess.checkOwners, bind_assoc, pure_bind]
 
-private def checkPureLeaf (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
-    (value : Json) : WorkM QleisliKernel.Qirf.PureLeaf.Checked := do
+structure PureLeafRetained where
+  domain : Semantics.Finite.Basis
+  codomain : Semantics.Finite.Basis
+  input : Semantics.Raw.Port
+  output : Semantics.Raw.Port
+  required : Semantics.Exact.Matrix
+  checked : QleisliKernel.Qirf.PureLeaf.Checked
+
+private def checkPureLeafRetained (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM PureLeafRetained := do
   adapt (fields value ["format","version","kind","domain","codomain","input","output","matrix"])
   let domain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "domain")))
   let codomain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "codomain")))
   let input ← adapt (port (← adapt (value.getObjVal? "input")))
   let output ← adapt (port (← adapt (value.getObjVal? "output")))
   let matrix ← FiniteCodec.readMatrixValue (← adapt (value.getObjVal? "matrix"))
-  QleisliKernel.Qirf.PureLeaf.check artifact order domain codomain input output matrix
+  let checked ← QleisliKernel.Qirf.PureLeaf.check artifact order domain codomain input output matrix
+  return ⟨domain,codomain,input,output,matrix,checked⟩
+
+private def checkPureLeaf (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM QleisliKernel.Qirf.PureLeaf.Checked := do
+  return (← checkPureLeafRetained artifact order value).checked
+
+private theorem checkPureLeaf_projection (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) : checkPureLeaf artifact order value = (do
+  adapt (fields value ["format","version","kind","domain","codomain","input","output","matrix"])
+  let domain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "domain")))
+  let codomain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "codomain")))
+  let input ← adapt (port (← adapt (value.getObjVal? "input")))
+  let output ← adapt (port (← adapt (value.getObjVal? "output")))
+  let matrix ← FiniteCodec.readMatrixValue (← adapt (value.getObjVal? "matrix"))
+  QleisliKernel.Qirf.PureLeaf.check artifact order domain codomain input output matrix) := by
+  simp only [checkPureLeaf, checkPureLeafRetained, bind_assoc, pure_bind, bind_pure]
+
+/-- The decoded obligation and actual already checked stages for each native
+contract profile. These records cannot authorize an accepted execution handle. -/
+inductive RequestRetained where
+  | encoded (required : Semantics.Finite.Contract) (checked : QleisliKernel.Qirf.ContractRetained)
+  | leaf (signature : Semantics.Finite.Basis) (input output : Semantics.Raw.Port)
+      (required : Semantics.Exact.Matrix) (root : QleisliKernel.Qirf.Validity.Root)
+      (actual : Semantics.Exact.Matrix)
+  | control (checked : ControlRetained)
+  | controlOwners (checked : ControlOwnersRetained)
+  | instrument (checked : InstrumentContract.Retained)
+  | pureLeaf (checked : PureLeafRetained)
+
+structure Retained where
+  body : ByteArray
+  requestBytes : ByteArray
+  text : String
+  value : Json
+  artifact : QleisliKernel.Qirf.Artifact
+  order : Array Nat
+  request : RequestRetained
+
+private def checkRequestRetained (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) (kind : String) : WorkM RequestRetained :=
+  if kind == "encoded" then do
+    adapt (fields value ["format","version","kind","contract"])
+    let required ← FiniteCodec.readContract (← adapt (value.getObjVal? "contract"))
+    pure (.encoded required (← QleisliKernel.Qirf.checkContractRetained artifact order required))
+  else if kind == "leaf" then do
+    adapt (fields value ["format","version","kind","signature","input","output","matrix"])
+    let signature ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "signature")))
+    let input ← adapt (port (← adapt (value.getObjVal? "input")))
+    let output ← adapt (port (← adapt (value.getObjVal? "output")))
+    let matrix ← FiniteCodec.readMatrixValue (← adapt (value.getObjVal? "matrix"))
+    let root ← QleisliKernel.Qirf.Validity.checkRoot artifact order
+    let actual ← QleisliKernel.Qirf.check artifact order signature input output matrix
+    pure (.leaf signature input output matrix root actual)
+  else if kind == "control" then do
+    pure (.control (← checkControlRetained artifact order value))
+  else if kind == "control-owners" then do
+    pure (.controlOwners (← checkControlOwnersRetained artifact order value))
+  else if kind == "instrument" then do
+    pure (.instrument (← InstrumentContract.checkRetained artifact order value))
+  else if kind == "pure-leaf" then do
+    pure (.pureLeaf (← checkPureLeafRetained artifact order value))
+  else throw .request
+
+def checkRetained (bytes : ByteArray) : WorkM Retained := do
+  let (body,request) ← adapt (Validity.packet bytes)
+  let some request := request | throw .request
+  let some text := String.fromUTF8? request | throw .invalid
+  let value ← adapt (FiniteCodec.parseWithDepth text 128)
+  let kind ← adapt ((← adapt (value.getObjVal? "kind")).getStr?)
+  let format ← adapt ((← adapt (value.getObjVal? "format")).getStr?)
+  let version ← adapt ((← adapt (value.getObjVal? "version")).getNat?)
+  guard (format == "qleisli.native-contract" && version == 1) .request
+  let (artifact,order) ← Qirf.read body
+  let result ← checkRequestRetained artifact order value kind
+  return ⟨body,request,text,value,artifact,order,result⟩
+
 
 def check (bytes : ByteArray) : WorkM Bool := do
+  let _ ← checkRetained bytes
+  return true
+
+private theorem bind_if {α β : Type} (condition : Prop) [Decidable condition]
+    (yes no : WorkM α) (next : α → WorkM β) :
+    ((if condition then yes else no) >>= next) =
+      (if condition then yes >>= next else no >>= next) := by
+  split <;> rfl
+
+/-- All original checks, errors and work charges survive erasure of retained
+contract data. The existing acceptance theorems keep their original subjects. -/
+theorem check_projection (bytes : ByteArray) : check bytes = (do
   let (body,request) ← adapt (Validity.packet bytes)
   let some request := request | throw .request
   let some text := String.fromUTF8? request | throw .invalid
@@ -92,7 +228,24 @@ def check (bytes : ByteArray) : WorkM Bool := do
     let _ ← checkPureLeaf artifact order value
     pure ()
   else throw .request
-  return true
+  return true) := by
+  unfold check checkRetained checkRequestRetained
+  simp only [bind_assoc]
+  apply congrArg (fun next => adapt (Validity.packet bytes) >>= next)
+  funext input
+  obtain ⟨body,request⟩ := input
+  cases request with
+  | none => rfl
+  | some request =>
+    cases utf8 : String.fromUTF8? request with
+    | none => simp only [utf8]; rfl
+    | some text =>
+      simp only [utf8, checkControl, checkControlRetained,
+        checkControlOwners, checkControlOwnersRetained, checkPureLeaf, checkPureLeafRetained,
+        QleisliKernel.Qirf.checkContract, InstrumentContract.check,
+        InstrumentContract.checkRetained, bind_assoc, pure_bind, bind_pure, bind_if, ExceptT.bind_throw]
+
+
 
 /-- The token, ordered wire list and exact bit shape read from a request port.
 This is a binding fact, not a substitute for the kernel's port checks. -/
@@ -289,12 +442,63 @@ private theorem adapt_bind_success {α β : Type} (input : Except String α)
   obtain ⟨bound,same⟩ := adapt_success _ _ _ _ first
   exact ⟨value,bound,same ▸ rest⟩
 
+/-- Every field of the returned record comes from the original packet and this
+checker execution. The request stage is the existing six-kind dispatch; its
+result is the very value retained, rather than an unrelated existential witness.
+This binding is not an execution-view comparison or a semantic specification. -/
+structure RetainedBinding (bytes : ByteArray) (checked : Retained) (work left : Nat) where
+  kind : String
+  afterArtifact : Nat
+  packetBound : Validity.packet bytes = .ok (checked.body,some checked.requestBytes)
+  utf8Bound : String.fromUTF8? checked.requestBytes = some checked.text
+  requestBound : FiniteCodec.parseWithDepth checked.text 128 = .ok checked.value
+  kindBound : (checked.value.getObjVal? "kind" >>= Json.getStr?) = .ok kind
+  formatBound : (checked.value.getObjVal? "format" >>= Json.getStr?) = .ok "qleisli.native-contract"
+  versionBound : (checked.value.getObjVal? "version" >>= Json.getNat?) = .ok 1
+  artifactBound : (Qirf.read checked.body).run work =
+    (.ok (checked.artifact,checked.order),afterArtifact)
+  requestAccepted : (checkRequestRetained checked.artifact checked.order checked.value kind).run
+    afterArtifact = (.ok checked.request,left)
+
+theorem checkRetained_bound (bytes : ByteArray) (checked : Retained) (work left : Nat)
+    (ok : (checkRetained bytes).run work = (.ok checked,left)) :
+    Nonempty (RetainedBinding bytes checked work left) := by
+  unfold checkRetained at ok
+  obtain ⟨⟨body,request⟩,packet,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  cases request with
+  | none => cases h
+  | some request =>
+    cases utf8 : String.fromUTF8? request with
+    | none => simp only [utf8] at h; cases h
+    | some text =>
+      simp only [utf8] at h
+      obtain ⟨value,parsed,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kindJson,kj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kind,k,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨formatJson,fj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨format,f,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨versionJson,vj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨version,v,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨_,middle,hguard,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨profile,sameWork⟩ := guard_success _ _ _ _ hguard
+      have hguarded := sameWork ▸ h
+      simp only [Bool.and_eq_true,beq_iff_eq] at profile
+      obtain ⟨⟨artifact,order⟩,afterArtifact,hread,h⟩ := bind_success _ _ _ _ _ hguarded
+      obtain ⟨result,afterRequest,hrequest,h⟩ := bind_success _ _ _ _ _ h
+      have final := pure_success _ _ _ _ h
+      cases final.1
+      cases final.2
+      refine ⟨⟨kind,afterArtifact,packet,utf8,parsed,?_,?_,?_,hread,hrequest⟩⟩
+      · simp [kj,bind,Except.bind,k]
+      · simp [fj,bind,Except.bind,f,profile.1]
+      · simp [vj,bind,Except.bind,v,profile.2]
+
 private theorem checkControl_binding (artifact : QleisliKernel.Qirf.Artifact)
     (order : Array Nat) (value : Json) (work left : Nat)
     (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control")
     (ok : (checkControl artifact order value).run work = (.ok (),left)) :
     Nonempty (ControlAcceptance artifact order value work left) := by
-  unfold checkControl at ok
+  rw [checkControl_projection] at ok
   obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
   obtain ⟨signatureJson,sj,h⟩ := adapt_bind_success _ _ _ _ _ h
   obtain ⟨signature,s,h⟩ := adapt_bind_success _ _ _ _ _ h
@@ -310,7 +514,7 @@ private theorem checkControlOwners_binding (artifact : QleisliKernel.Qirf.Artifa
     (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control-owners")
     (ok : (checkControlOwners artifact order value).run work = (.ok (),left)) :
     Nonempty (ControlOwnersAcceptance artifact order value work left) := by
-  unfold checkControlOwners at ok
+  rw [checkControlOwners_projection] at ok
   obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
   obtain ⟨signaturesJson,sj,h⟩ := adapt_bind_success _ _ _ _ _ h
   obtain ⟨signatures,s,h⟩ := adapt_bind_success _ _ _ _ _ h
@@ -327,7 +531,7 @@ private theorem checkPureLeaf_binding (artifact : QleisliKernel.Qirf.Artifact)
     (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "pure-leaf")
     (ok : (checkPureLeaf artifact order value).run work = (.ok checked,left)) :
     Nonempty (PureLeafAcceptance artifact order value work left) := by
-  unfold checkPureLeaf at ok
+  rw [checkPureLeaf_projection] at ok
   obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
   obtain ⟨domainJson,dj,h⟩ := adapt_bind_success _ _ _ _ _ h
   obtain ⟨domain,dom,h⟩ := adapt_bind_success _ _ _ _ _ h
@@ -346,7 +550,7 @@ private theorem checkPureLeaf_binding (artifact : QleisliKernel.Qirf.Artifact)
 theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
     Nonempty (Acceptance bytes answer work left) := by
-  unfold check at ok
+  rw [check_projection] at ok
   obtain ⟨⟨body,request⟩,packet,h⟩ := adapt_bind_success _ _ _ _ _ ok
   cases request with
   | none => cases h
@@ -456,5 +660,15 @@ theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
                     (last ▸ accepted)
                   exact ⟨⟨.pureLeaf binding⟩,final.1⟩
                 · cases h
+
+/-- Retaining contract stages preserves the original acceptance implication;
+this supplies no execution-view match or native-runtime preservation claim. -/
+theorem checkRetained_acceptance (bytes : ByteArray) (checked : Retained) (work left : Nat)
+    (ok : (checkRetained bytes).run work = (.ok checked,left)) :
+    Nonempty (Acceptance bytes true work left) := by
+  apply check_acceptance
+  unfold check
+  rw [bind_run,ok]
+  rfl
 
 end QleisliKernel.Protocol.NativeContract

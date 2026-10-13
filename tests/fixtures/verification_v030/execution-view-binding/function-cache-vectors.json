@@ -1,0 +1,4667 @@
+[
+  {
+    "name": "x-dependency",
+    "signature": {
+      "tag": "bit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "gate",
+          "gate": "x",
+          "input": 0,
+          "output": 1
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "gate",
+          "gate": "x",
+          "input": 0,
+          "output": 1
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "x-dependency",
+      "specification": "x-dependency-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            1,
+            0,
+            1
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            1,
+            0,
+            1
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "x-dependency",
+        "x-dependency-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        2,
+        2,
+        [
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "unit-owner",
+    "signature": {
+      "tag": "unit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [],
+          "shape": {
+            "bits": 0
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "pack_unit",
+          "output": 1
+        },
+        {
+          "tag": "unpack_unit",
+          "input": 0
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [],
+          "shape": {
+            "bits": 0
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "pack_unit",
+          "output": 1
+        },
+        {
+          "tag": "unpack_unit",
+          "input": 0
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "unit-owner",
+      "specification": "unit-owner-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "unit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [],
+            0
+          ]
+        ],
+        [],
+        [
+          [
+            "pack-unit",
+            1
+          ],
+          [
+            "unpack-unit",
+            0
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [],
+            0
+          ]
+        ],
+        [],
+        [
+          [
+            "pack-unit",
+            1
+          ],
+          [
+            "unpack-unit",
+            0
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "unit-owner",
+        "unit-owner-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "unit"
+          ]
+        ],
+        []
+      ],
+      [
+        "matrix",
+        1,
+        1,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "h-t-h-exact",
+    "signature": {
+      "tag": "bit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 0,
+          "output": 1
+        },
+        {
+          "tag": "gate",
+          "gate": "t",
+          "input": 1,
+          "output": 2
+        },
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 2,
+          "output": 3
+        }
+      ],
+      "quantum_outputs": [
+        3
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 0,
+          "output": 1
+        },
+        {
+          "tag": "gate",
+          "gate": "t",
+          "input": 1,
+          "output": 2
+        },
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 2,
+          "output": 3
+        }
+      ],
+      "quantum_outputs": [
+        3
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "h-t-h-exact",
+      "specification": "h-t-h-exact-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            0,
+            0,
+            1
+          ],
+          [
+            "gate",
+            3,
+            1,
+            2
+          ],
+          [
+            "gate",
+            0,
+            2,
+            3
+          ]
+        ],
+        [
+          3
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            0,
+            0,
+            1
+          ],
+          [
+            "gate",
+            3,
+            1,
+            2
+          ],
+          [
+            "gate",
+            0,
+            2,
+            3
+          ]
+        ],
+        [
+          3
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "h-t-h-exact",
+        "h-t-h-exact-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "hadamard",
+              0
+            ]
+          ],
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          ],
+          [
+            "step",
+            [],
+            [
+              "hadamard",
+              0
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        2,
+        2,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "1",
+              2
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              2
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "-1",
+              2
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              2
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "-1",
+              2
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              2
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "1",
+              2
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              2
+            ]
+          ]
+        ]
+      ],
+      1,
+      3
+    ]
+  },
+  {
+    "name": "final-output-swap",
+    "signature": {
+      "tag": "pair",
+      "left": {
+        "tag": "bit"
+      },
+      "right": {
+        "tag": "bit"
+      }
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "join",
+          "left": 2,
+          "right": 1,
+          "output": 3
+        }
+      ],
+      "quantum_outputs": [
+        3
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "join",
+          "left": 2,
+          "right": 1,
+          "output": 3
+        }
+      ],
+      "quantum_outputs": [
+        3
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "final-output-swap",
+      "specification": "final-output-swap-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "join",
+            2,
+            1,
+            3
+          ]
+        ],
+        [
+          3
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "join",
+            2,
+            1,
+            3
+          ]
+        ],
+        [
+          3
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "final-output-swap",
+        "final-output-swap-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "pair"
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2,
+                1,
+                3
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        4,
+        4,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "branch-route-then-h",
+    "signature": {
+      "tag": "pair",
+      "left": {
+        "tag": "bit"
+      },
+      "right": {
+        "tag": "bit"
+      }
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "classical_const",
+          "value": true,
+          "output": 0
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 2,
+              "else_token": 2,
+              "output": 10,
+              "output_wires": [
+                20
+              ]
+            },
+            {
+              "then_token": 1,
+              "else_token": 1,
+              "output": 11,
+              "output_wires": [
+                21
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 10,
+          "output": 14
+        },
+        {
+          "tag": "join",
+          "left": 14,
+          "right": 11,
+          "output": 15
+        }
+      ],
+      "quantum_outputs": [
+        15
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "classical_const",
+          "value": true,
+          "output": 0
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 2,
+              "else_token": 2,
+              "output": 10,
+              "output_wires": [
+                20
+              ]
+            },
+            {
+              "then_token": 1,
+              "else_token": 1,
+              "output": 11,
+              "output_wires": [
+                21
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "gate",
+          "gate": "h",
+          "input": 10,
+          "output": 14
+        },
+        {
+          "tag": "join",
+          "left": 14,
+          "right": 11,
+          "output": 15
+        }
+      ],
+      "quantum_outputs": [
+        15
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "branch-route-then-h",
+      "specification": "branch-route-then-h-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "constant",
+            true,
+            0
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                2,
+                2,
+                10,
+                [
+                  20
+                ]
+              ],
+              [
+                "quantum-phi",
+                1,
+                1,
+                11,
+                [
+                  21
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "gate",
+            0,
+            10,
+            14
+          ],
+          [
+            "join",
+            14,
+            11,
+            15
+          ]
+        ],
+        [
+          15
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "constant",
+            true,
+            0
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                2,
+                2,
+                10,
+                [
+                  20
+                ]
+              ],
+              [
+                "quantum-phi",
+                1,
+                1,
+                11,
+                [
+                  21
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "gate",
+            0,
+            10,
+            14
+          ],
+          [
+            "join",
+            14,
+            11,
+            15
+          ]
+        ],
+        [
+          15
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "branch-route-then-h",
+        "branch-route-then-h-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "pair"
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "hadamard",
+              1
+            ]
+          ],
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2,
+                1,
+                3
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        4,
+        4,
+        [
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      2
+    ]
+  },
+  {
+    "name": "branch-routes-cancel",
+    "signature": {
+      "tag": "pair",
+      "left": {
+        "tag": "bit"
+      },
+      "right": {
+        "tag": "bit"
+      }
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "classical_const",
+          "value": true,
+          "output": 0
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 2,
+              "else_token": 2,
+              "output": 10,
+              "output_wires": [
+                20
+              ]
+            },
+            {
+              "then_token": 1,
+              "else_token": 1,
+              "output": 11,
+              "output_wires": [
+                21
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 11,
+              "else_token": 11,
+              "output": 12,
+              "output_wires": [
+                30
+              ]
+            },
+            {
+              "then_token": 10,
+              "else_token": 10,
+              "output": 13,
+              "output_wires": [
+                31
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "join",
+          "left": 12,
+          "right": 13,
+          "output": 14
+        }
+      ],
+      "quantum_outputs": [
+        14
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "classical_const",
+          "value": true,
+          "output": 0
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 2,
+              "else_token": 2,
+              "output": 10,
+              "output_wires": [
+                20
+              ]
+            },
+            {
+              "then_token": 1,
+              "else_token": 1,
+              "output": 11,
+              "output_wires": [
+                21
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "classical_branch",
+          "condition": 0,
+          "then_ops": [],
+          "else_ops": [],
+          "quantum_phis": [
+            {
+              "then_token": 11,
+              "else_token": 11,
+              "output": 12,
+              "output_wires": [
+                30
+              ]
+            },
+            {
+              "then_token": 10,
+              "else_token": 10,
+              "output": 13,
+              "output_wires": [
+                31
+              ]
+            }
+          ],
+          "classical_phis": []
+        },
+        {
+          "tag": "join",
+          "left": 12,
+          "right": 13,
+          "output": 14
+        }
+      ],
+      "quantum_outputs": [
+        14
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "branch-routes-cancel",
+      "specification": "branch-routes-cancel-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "constant",
+            true,
+            0
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                2,
+                2,
+                10,
+                [
+                  20
+                ]
+              ],
+              [
+                "quantum-phi",
+                1,
+                1,
+                11,
+                [
+                  21
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                11,
+                11,
+                12,
+                [
+                  30
+                ]
+              ],
+              [
+                "quantum-phi",
+                10,
+                10,
+                13,
+                [
+                  31
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "join",
+            12,
+            13,
+            14
+          ]
+        ],
+        [
+          14
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "constant",
+            true,
+            0
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                2,
+                2,
+                10,
+                [
+                  20
+                ]
+              ],
+              [
+                "quantum-phi",
+                1,
+                1,
+                11,
+                [
+                  21
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "branch",
+            0,
+            [],
+            [],
+            [
+              [
+                "quantum-phi",
+                11,
+                11,
+                12,
+                [
+                  30
+                ]
+              ],
+              [
+                "quantum-phi",
+                10,
+                10,
+                13,
+                [
+                  31
+                ]
+              ]
+            ],
+            []
+          ],
+          [
+            "join",
+            12,
+            13,
+            14
+          ]
+        ],
+        [
+          14
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "branch-routes-cancel",
+        "branch-routes-cancel-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "pair"
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bit"
+          ]
+        ],
+        []
+      ],
+      [
+        "matrix",
+        4,
+        4,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "certified-ancilla-phase",
+    "signature": {
+      "tag": "bit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "certified_compute",
+          "source": 0,
+          "source_out": 1,
+          "ancilla_wires": [
+            1
+          ],
+          "function": [
+            0,
+            1
+          ],
+          "use_steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  1
+                ],
+                "permutation": [
+                  0,
+                  1
+                ],
+                "phases": [
+                  0,
+                  1
+                ]
+              }
+            }
+          ],
+          "logical_steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  0
+                ],
+                "permutation": [
+                  0,
+                  1
+                ],
+                "phases": [
+                  0,
+                  1
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "certified_compute",
+          "source": 0,
+          "source_out": 1,
+          "ancilla_wires": [
+            1
+          ],
+          "function": [
+            0,
+            1
+          ],
+          "use_steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  1
+                ],
+                "permutation": [
+                  0,
+                  1
+                ],
+                "phases": [
+                  0,
+                  1
+                ]
+              }
+            }
+          ],
+          "logical_steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "monomial",
+                "indices": [
+                  0
+                ],
+                "permutation": [
+                  0,
+                  1
+                ],
+                "phases": [
+                  0,
+                  1
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "certified-ancilla-phase",
+      "specification": "certified-ancilla-phase-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "certified-compute",
+            0,
+            1,
+            [
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ]
+                ]
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "certified-compute",
+            0,
+            1,
+            [
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ]
+                ]
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "certified-ancilla-phase",
+        "certified-ancilla-phase-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        2,
+        2,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "protected-ancilla-phase",
+    "signature": {
+      "tag": "bit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "compute_use_uncompute",
+          "source": 0,
+          "source_out": 1,
+          "targets": [],
+          "ancilla_wires": [
+            1
+          ],
+          "function": [
+            0,
+            1
+          ],
+          "use_ops": [
+            {
+              "tag": "protected_gate",
+              "bit": {
+                "region": "ancilla",
+                "index": 0
+              },
+              "gate": "t"
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "compute_use_uncompute",
+          "source": 0,
+          "source_out": 1,
+          "targets": [],
+          "ancilla_wires": [
+            1
+          ],
+          "function": [
+            0,
+            1
+          ],
+          "use_ops": [
+            {
+              "tag": "protected_gate",
+              "bit": {
+                "region": "ancilla",
+                "index": 0
+              },
+              "gate": "t"
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "protected-ancilla-phase",
+      "specification": "protected-ancilla-phase-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "compute-use-uncompute",
+            0,
+            1,
+            [],
+            [
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              [
+                "protected-gate",
+                [
+                  "protected-bit",
+                  1,
+                  0
+                ],
+                3
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "compute-use-uncompute",
+            0,
+            1,
+            [],
+            [
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              [
+                "protected-gate",
+                [
+                  "protected-bit",
+                  1,
+                  0
+                ],
+                3
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "protected-ancilla-phase",
+        "protected-ancilla-phase-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "monomial",
+              [
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        2,
+        2,
+        [
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ]
+          ]
+        ]
+      ],
+      1,
+      1
+    ]
+  },
+  {
+    "name": "quantum-conditional-phase",
+    "signature": {
+      "tag": "pair",
+      "left": {
+        "tag": "bit"
+      },
+      "right": {
+        "tag": "bit"
+      }
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "quantum_if",
+          "control": 1,
+          "target": 2,
+          "control_out": 3,
+          "target_out": 4,
+          "zero_ops": [
+            {
+              "tag": "scalar_phase",
+              "phase": "minus_one"
+            }
+          ],
+          "one_ops": [
+            {
+              "tag": "gate",
+              "gate": "h",
+              "target_index": 0
+            }
+          ]
+        },
+        {
+          "tag": "join",
+          "left": 3,
+          "right": 4,
+          "output": 5
+        }
+      ],
+      "quantum_outputs": [
+        5
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0,
+            1
+          ],
+          "shape": {
+            "bits": 2
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "split",
+          "input": 0,
+          "left": 1,
+          "right": 2,
+          "left_bits": 1
+        },
+        {
+          "tag": "quantum_if",
+          "control": 1,
+          "target": 2,
+          "control_out": 3,
+          "target_out": 4,
+          "zero_ops": [
+            {
+              "tag": "scalar_phase",
+              "phase": "minus_one"
+            }
+          ],
+          "one_ops": [
+            {
+              "tag": "gate",
+              "gate": "h",
+              "target_index": 0
+            }
+          ]
+        },
+        {
+          "tag": "join",
+          "left": 3,
+          "right": 4,
+          "output": 5
+        }
+      ],
+      "quantum_outputs": [
+        5
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "quantum-conditional-phase",
+      "specification": "quantum-conditional-phase-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "quantum-if",
+            1,
+            2,
+            3,
+            4,
+            [
+              [
+                "phase",
+                0
+              ]
+            ],
+            [
+              [
+                "gate",
+                0,
+                0
+              ]
+            ]
+          ],
+          [
+            "join",
+            3,
+            4,
+            5
+          ]
+        ],
+        [
+          5
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0,
+              1
+            ],
+            2
+          ]
+        ],
+        [],
+        [
+          [
+            "split",
+            0,
+            1,
+            2,
+            1
+          ],
+          [
+            "quantum-if",
+            1,
+            2,
+            3,
+            4,
+            [
+              [
+                "phase",
+                0
+              ]
+            ],
+            [
+              [
+                "gate",
+                0,
+                0
+              ]
+            ]
+          ],
+          [
+            "join",
+            3,
+            4,
+            5
+          ]
+        ],
+        [
+          5
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "quantum-conditional-phase",
+        "quantum-conditional-phase-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "pair"
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [
+              [
+                "control",
+                0,
+                false
+              ]
+            ],
+            [
+              "monomial",
+              [],
+              [
+                0
+              ],
+              [
+                4
+              ]
+            ]
+          ],
+          [
+            "step",
+            [
+              [
+                "control",
+                0,
+                true
+              ]
+            ],
+            [
+              "hadamard",
+              1
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        4,
+        4,
+        [
+          [
+            [
+              "dyadic",
+              "-1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "-1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "-1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      1,
+      2
+    ]
+  },
+  {
+    "name": "original-index-adjoint-dependency",
+    "signature": {
+      "tag": "bit"
+    },
+    "implementation": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "apply_unitary",
+          "input": 0,
+          "output": 1,
+          "steps": [
+            {
+              "controls": [],
+              "action": {
+                "tag": "contract",
+                "indices": [
+                  0
+                ],
+                "evidence": 0,
+                "adjoint": true
+              }
+            }
+          ]
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "specification": {
+      "quantum_inputs": [
+        {
+          "token": 0,
+          "wires": [
+            0
+          ],
+          "shape": {
+            "bits": 1
+          }
+        }
+      ],
+      "classical_inputs": [],
+      "operations": [
+        {
+          "tag": "gate",
+          "gate": "x",
+          "input": 0,
+          "output": 1
+        }
+      ],
+      "quantum_outputs": [
+        1
+      ],
+      "classical_outputs": [],
+      "declared_effect": "unitary"
+    },
+    "identity": {
+      "implementation": "original-index-adjoint-dependency",
+      "specification": "original-index-adjoint-dependency-reference",
+      "sources": [
+        [
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ]
+    },
+    "view": [
+      "function-evidence",
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "apply-unitary",
+            0,
+            1,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  true
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            1,
+            0,
+            1
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      [
+        "identity",
+        "original-index-adjoint-dependency",
+        "original-index-adjoint-dependency-reference",
+        [
+          [
+            "source",
+            "𝄞.qli",
+            "Fixture identity only; no source preservation claim."
+          ]
+        ]
+      ],
+      [
+        "circuit",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "step",
+            [],
+            [
+              "contract",
+              [
+                0
+              ],
+              0,
+              true
+            ]
+          ]
+        ]
+      ],
+      [
+        "matrix",
+        2,
+        2,
+        [
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ],
+      2,
+      1
+    ]
+  }
+]

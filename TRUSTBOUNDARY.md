@@ -113,6 +113,28 @@ realization contracts before use. Neither the oracle nor all Lean program code
 is added to the trusted assumptions. This applies the de Bruijn criterion per
 pass without requiring every search algorithm to migrate.
 
+### Per-invocation execution binding (v0.3.0-beta, #362)
+
+The QLV2 native envelope binds the actual retained Rust execution data to
+Lean's freshly decoded and checked data by exact QDV1 byte comparison. It
+covers finite graphs and dependency caches, typed finite contracts and both
+instrument roots, original raw caller aliases, and all five hierarchy modes'
+retained plans. An inspection-only decision cannot authorize an execution
+view. The old external protocol is rejected; internal original QLV1 and
+hierarchy payloads still pass their existing independent checks.
+
+This removes the assumption that the two readers agree on the submitted
+decoded data without a per-invocation check. Remaining assumptions are that
+the Rust view walkers describe every field actually consumed by execution,
+that the retained compared objects are those consumed, and that native
+compilation, transport and numerical simulation implement their definitions.
+Tests exercise these links; the Rust walkers and runtime are not proved.
+Hierarchy bridge construction, source lowering, emitted target preservation,
+and general hierarchy operator semantics retain their separate obligations.
+QLV2 success is formally connected to the original decoded-root ownership
+and classical-scope properties; this preserves their admitted scope and does
+not admit a new guarantee or discharge broader QS, PR, RS or EXACT duties.
+
 ### Non-verifier backend implementation scope (2026-10-11)
 
 [Decision #350](https://github.com/MGYamada/Qleisli/issues/350) retires the

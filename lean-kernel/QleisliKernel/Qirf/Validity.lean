@@ -48,12 +48,15 @@ theorem inspect_projection (artifact : Qirf.Artifact) (order : Array Nat)
       match request with
       | none => pure ()
       | some request => requested artifact dependencies program request) := by
-  cases request <;> simp [inspect,check,checkRoot,sourcesUsed,requested,bind_assoc]
+  cases request <;> simp [inspect,check,checkRoot,checkGraph,sourcesUsed,requested,bind_assoc]
 
 /-- Named stage facts keep acceptance decomposition out of semantic proofs.
 These are refinement facts, not a definition of semantic resource safety. -/
 structure RootPostcondition (artifact : Qirf.Artifact) (order : Array Nat)
     (root : Root) (work : Nat) : Prop where
+  fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList root.receipts
+  complete : root.receipts.all Option.isSome = true
+  dependencyBinding : root.dependencies = (before root.receipts).map Semantics.ObservingFunction.Receipt.dependency
   graph : ∃ left, (checkGraph artifact order).run work = (.ok root.dependencies,left)
   sources : sourcesUsed artifact = true
   original : artifact.programs[artifact.root]? = some root.program
@@ -85,7 +88,7 @@ theorem checkRoot_postcondition (artifact : Qirf.Artifact) (order : Array Nat)
     (root : Root) (work left : Nat)
     (ok : (checkRoot artifact order).run work = (.ok root,left)) :
     RootPostcondition artifact order root work := by
-  obtain ⟨dependencies,a,hg,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨receipts,a,hg,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,b,hs,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨program,c,hp,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨checked,d,hv,h⟩ := bind_success _ _ _ _ _ h
@@ -95,7 +98,9 @@ theorem checkRoot_postcondition (artifact : Qirf.Artifact) (order : Array Nat)
   have present : artifact.programs[artifact.root]? = some program := by
     have found := (lift_success _ _ _ _ hp).1
     cases hf : artifact.programs[artifact.root]? <;> simp_all [readOption]
-  exact ⟨⟨a,hg⟩,(guard_success _ _ _ _ hs).1,present,⟨c,d,hv⟩,(guard_success _ _ _ _ hi).1⟩
+  have graph := checkGraph_receipts_result artifact order receipts work a hg
+  obtain ⟨fresh,complete⟩ := checkGraphReceipts_fresh _ _ _ _ _ hg
+  exact ⟨fresh,complete,rfl,⟨a,graph⟩,(guard_success _ _ _ _ hs).1,present,⟨c,d,hv⟩,(guard_success _ _ _ _ hi).1⟩
 
 theorem checkRequested_postcondition (artifact : Qirf.Artifact) (dependencies : List Dependency)
     (program : Program) (request : Request) (equation : Equation) (work left : Nat)

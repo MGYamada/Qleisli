@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "6a9e4a019c9cbcb59c40fc5c054295092a5f38dd132bd794d90dcada478dcfd7",
+  "surface_sha256": "3ade86d95e3ba13bcf8dd28cd28d248a031c4a1a6b2347985dc828299c3404e4",
   "groups": [
     {
       "id": "raw-core",
@@ -912,6 +912,33 @@
         "lean-kernel/QleisliKernel/Raw/Unit.lean",
         "lean-kernel/QleisliKernel/Raw/Trace.lean",
         "lean-kernel/QleisliKernel/Raw/Ownership.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "execution-view-encoding",
+      "status": "mixed-boundary",
+      "blocker": "QDV1 encoding and typed finite walkers are exercised only as helpers. Every production execution profile, native comparison, protocol cutover, actual-bound-entry proof connection and runtime/source preservation remain separate; no #362 completion credit.",
+      "evidence": [
+        "src/interchange/execution_view/finite/tests.rs",
+        "tests/execution_view_vectors.lean",
+        "docs/src/reference/execution-view.md",
+        "src/interchange/execution_view/finite/caller/tests.rs",
+        "lean-kernel/Protocol/ExecutionView/Native.lean",
+        "scripts/test_native_execution_protocol.py"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1942,7 +1969,23 @@
         {
           "path": "lean-kernel/Cli/Validity.lean",
           "markers": [
-            "Protocol.Validity.check"
+            "Native.ordinary bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def ordinary ",
+            "theorem ordinary_original",
+            "theorem ordinary_root_safe"
+          ]
+        },
+        {
+          "path": "src/interchange/native/binding.rs",
+          "markers": [
+            "fn check_bound(",
+            "prepared.bind(native)",
+            "Self::submit_subject"
           ]
         },
         {
@@ -2068,9 +2111,9 @@
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
-      "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes",
-      "checker": "Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
-      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership.",
+      "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
+      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem."
     },
     {
@@ -2206,14 +2249,25 @@
         {
           "path": "lean-kernel/Cli/Validity.lean",
           "markers": [
-            "Protocol.NativeContract.check"
+            "Native.contract bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def contract ",
+            "theorem contract_binding"
           ]
         },
         {
           "path": "lean-kernel/Protocol/NativeContract.lean",
           "markers": [
             "def check ",
-            "QleisliKernel.Qirf.checkContract",
+            "def checkRetained ",
+            "inductive RequestRetained ",
+            "theorem check_projection",
+            "theorem checkRetained_acceptance",
+            "QleisliKernel.Qirf.checkContractRetained",
             "QleisliKernel.Qirf.check ",
             "structure Acceptance ",
             "structure LeafAcceptance ",
@@ -2227,6 +2281,10 @@
           "markers": [
             "def decode ",
             "def check ",
+            "def checkRetained ",
+            "structure Retained ",
+            "theorem check_projection",
+            "theorem checkRetained_bound",
             "structure Acceptance ",
             "expectedText.toUTF8",
             "theorem check_acceptance"
@@ -2246,7 +2304,21 @@
         {
           "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
           "markers": [
+            "def checkContractRetained ",
+            "theorem checkContract_projection",
+            "theorem checkContractRetained_bound",
             "theorem checkContract_bound"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
+          "markers": [
+            "def checkRetained ",
+            "def checkOwnersRetained ",
+            "theorem check_projection",
+            "theorem checkOwners_projection",
+            "theorem checkRetained_bound",
+            "theorem checkOwnersRetained_bound"
           ]
         },
         {
@@ -2387,9 +2459,9 @@
         }
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
-      "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity",
-      "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check; instrument -> Protocol.InstrumentContract.check -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
-      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
+      "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> checkRetained (original result projection); instrument -> Protocol.InstrumentContract.check -> checkRetained -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
+      "proof_scope": "ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {
@@ -3069,8 +3141,22 @@
           "path": "lean-kernel/Cli/Hierarchical.lean",
           "markers": [
             "def runHierarchy ",
-            "Hierarchical.Conditional.checkAll",
-            "Protocol.HierarchicalFinite.checkLeaves"
+            "Native.hierarchy mode bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def hierarchy ",
+            "theorem hierarchy_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+          "markers": [
+            "Conditional.checkAll",
+            "HierarchyView.reconstructLeaves",
+            "native core.extra"
           ]
         },
         {
@@ -3087,9 +3173,9 @@
         }
       ],
       "entry_path": "hierarchical::Kernel::{inspect,inspect_native}",
-      "checked_artifact": "Dedicated hierarchy payload; no ordinary QLV1 root",
-      "checker": "Main --hierarchy-pending -> Cli.runHierarchy -> Conditional.checkAll plus HierarchicalFinite.checkLeaves",
-      "proof_scope": "NativeHierarchy.conditional_derives and checkLeaves_semantics cover structural derivation and finite premises.",
+      "checked_artifact": "Dedicated hierarchy payload; no ordinary QLV1 root; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-pending -> Cli.runHierarchy -> Conditional.checkAll plus HierarchicalFinite.checkLeaves",
+      "proof_scope": "NativeHierarchy.conditional_derives and checkLeaves_semantics cover structural derivation and finite premises. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "Dedicated hierarchical::NativeChecked/reconstructed report, not native::AcceptedProgram. Full analytic Operator bridge, source and execution preservation remain open."
     },
     {
@@ -3120,8 +3206,22 @@
           "path": "lean-kernel/Cli/Hierarchical.lean",
           "markers": [
             "def runHierarchyRequest ",
-            "Hierarchical.Root.checkAll",
-            "Protocol.HierarchicalFinite.checkLeaves"
+            "Native.hierarchy mode bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def hierarchy ",
+            "theorem hierarchy_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+          "markers": [
+            "Root.checkAll",
+            "HierarchyView.reconstructLeaves",
+            "native core.extra"
           ]
         },
         {
@@ -3138,9 +3238,9 @@
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_against,check_against_native}; sized pure checks",
-      "checked_artifact": "Hierarchy payload and composition request",
-      "checker": "Main --hierarchy-request-pending -> Cli.runHierarchyRequest -> Root.checkAll plus checkLeaves/checkPairs",
-      "proof_scope": "NativeHierarchy.requested_pairs and checkLeaves_semantics retain explicit finite/structural premises.",
+      "checked_artifact": "Hierarchy payload and composition request; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-request-pending -> Cli.runHierarchyRequest -> Root.checkAll plus checkLeaves/checkPairs",
+      "proof_scope": "NativeHierarchy.requested_pairs and checkLeaves_semantics retain explicit finite/structural premises. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "Dedicated hierarchy report; producer comparison is only consistency, caller request changes scope but does not prove source preservation or full analytic semantics."
     },
     {
@@ -3171,8 +3271,22 @@
           "path": "lean-kernel/Cli/Hierarchical.lean",
           "markers": [
             "def runHierarchyFourier ",
-            "Hierarchical.FourierRoot.checkAll",
-            "Protocol.HierarchicalFinite.checkLeaves"
+            "Native.hierarchy mode bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def hierarchy ",
+            "theorem hierarchy_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+          "markers": [
+            "FourierRoot.checkAll",
+            "HierarchyView.reconstructLeaves",
+            "native core.extra"
           ]
         },
         {
@@ -3189,9 +3303,9 @@
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_against,check_against_native} Fourier request branch; sized Fourier checks",
-      "checked_artifact": "Hierarchy payload and Fourier request including Hadamard obligations",
-      "checker": "Main --hierarchy-fourier-pending -> Cli.runHierarchyFourier -> FourierRoot.checkAll plus checkLeaves/checkHadamards",
-      "proof_scope": "NativeHierarchy.hadamard_semantics/checkHadamards_semantics and finite-leaf theorems.",
+      "checked_artifact": "Hierarchy payload and Fourier request including Hadamard obligations; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-fourier-pending -> Cli.runHierarchyFourier -> FourierRoot.checkAll plus checkLeaves/checkHadamards",
+      "proof_scope": "NativeHierarchy.hadamard_semantics/checkHadamards_semantics and finite-leaf theorems. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "Named structure and finite obligations do not close full native analytic Operator/source/runtime composition."
     },
     {
@@ -3222,8 +3336,22 @@
           "path": "lean-kernel/Cli/Hierarchical.lean",
           "markers": [
             "def runInstrument ",
-            "Hierarchical.Instrument.checkAll",
-            "Protocol.HierarchicalFinite.checkLeaves"
+            "Native.hierarchy mode bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def hierarchy ",
+            "theorem hierarchy_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+          "markers": [
+            "Instrument.checkAll",
+            "HierarchyView.reconstructLeaves",
+            "native core.extra"
           ]
         },
         {
@@ -3240,9 +3368,9 @@
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_instrument,check_instrument_native}; sized instrument checks",
-      "checked_artifact": "Private instrument payload and preparation/evolution/readout request",
-      "checker": "Main --instrument-pending -> Cli.runInstrument -> Instrument.checkAll plus checkLeaves/checkPairs",
-      "proof_scope": "Instrument.checkAll_stages/checkAll_boundary and native finite component theorems.",
+      "checked_artifact": "Private instrument payload and preparation/evolution/readout request; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --instrument-pending -> Cli.runInstrument -> Instrument.checkAll plus checkLeaves/checkPairs",
+      "proof_scope": "Instrument.checkAll_stages/checkAll_boundary and native finite component theorems. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "NativeChecked has instrument scope and retained bytes; full analytic composition, source and host runtime correspondence remain open."
     },
     {
@@ -3273,8 +3401,22 @@
           "path": "lean-kernel/Cli/Hierarchical.lean",
           "markers": [
             "def runQpeInstrument ",
-            "Hierarchical.QpeInstrument.checkAll",
-            "Protocol.HierarchicalFinite.checkLeaves"
+            "Native.hierarchy mode bytes"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def hierarchy ",
+            "theorem hierarchy_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+          "markers": [
+            "QpeInstrument.checkAll",
+            "HierarchyView.reconstructLeaves",
+            "native core.extra"
           ]
         },
         {
@@ -3291,9 +3433,9 @@
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_qpe_instrument,check_qpe_instrument_native}; sized named-QPE checks",
-      "checked_artifact": "Instrument payload, named provider request and candidate binding",
-      "checker": "Main --qpe-instrument-pending -> Cli.runQpeInstrument -> QpeInstrument.checkAll plus checkLeaves/checkPairs/checkHadamards",
-      "proof_scope": "Named QPE structural and finite component results with explicit premises; bounded independent QPE tests.",
+      "checked_artifact": "Instrument payload, named provider request and candidate binding; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qpe-instrument-pending -> Cli.runQpeInstrument -> QpeInstrument.checkAll plus checkLeaves/checkPairs/checkHadamards",
+      "proof_scope": "Named QPE structural and finite component results with explicit premises; bounded independent QPE tests. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
       "gaps": "This dedicated report does not establish arbitrary source QPE meaning, the complete Operator bridge or runtime preservation."
     },
     {

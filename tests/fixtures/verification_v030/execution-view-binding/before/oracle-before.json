@@ -1,0 +1,70 @@
+{
+  "scope": "Independent analytical small-system distribution observations only; tolerance is numerical QA, not exact identity or a constitutional guarantee. No Rust/Lean canonical binding is implemented or validated by this report.",
+  "threshold": 1e-12,
+  "cases": [
+    {
+      "case": "bell",
+      "run_sha256": "350d7f4e62664334f3fff3c8e606c3b830b8011f134ce312675421ec528cbc04",
+      "expected": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "max_absolute_error": 1.1102230246251565e-16,
+      "within_numerical_threshold": true
+    },
+    {
+      "case": "phase",
+      "run_sha256": "faf0713ff028e088097b3461b73cb391d95b7e3dfa0a70cfdfb72c568189c5ef",
+      "expected": [
+        {
+          "bits": [
+            false
+          ],
+          "probability": 0.8535533905932737
+        },
+        {
+          "bits": [
+            true
+          ],
+          "probability": 0.1464466094067262
+        }
+      ],
+      "max_absolute_error": 4.440892098500626e-16,
+      "within_numerical_threshold": true
+    },
+    {
+      "case": "hidden-discard",
+      "run_sha256": "2a7bb57e986974d3549e67a456547ed1d6f77ff404590cec5a3a12981963584b",
+      "expected": [
+        {
+          "bits": [
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "max_absolute_error": 1.1102230246251565e-16,
+      "within_numerical_threshold": true
+    }
+  ],
+  "false_unitary_rejected": true,
+  "unchanged_context_sha256": "f8b9d8ea32ea2f17a6cb43fd83d7810779f2a696cb869590a360990160422d08"
+}

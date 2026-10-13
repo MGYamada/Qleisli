@@ -99,6 +99,10 @@
         [
           "python3",
           "scripts/test_observation_sources.py"
+        ],
+        [
+          "python3",
+          "scripts/test_execution_view_encoding.py"
         ]
       ],
       "prepare": []

@@ -99,7 +99,8 @@ inductive CheckedGraph (artifact : Artifact) : Slots → List Nat → Slots → 
       (remaining : CheckedGraph artifact next rest final) :
       CheckedGraph artifact slots (node :: rest) final
 
-def checkGraph (artifact : Artifact) (order : Array Nat) : WorkM (List Dependency) := do
+/-- The original checking sequence retains every freshly reconstructed receipt. -/
+def checkGraphReceipts (artifact : Artifact) (order : Array Nat) : WorkM Slots := do
   guard ((← get) ≤ 10000000) .limit
   guard (artifact.programs.size + artifact.entries.size ≤ 65536 && artifact.sources.size ≤ 128) .limit
   guard (artifact.sources.all sourceValid && Raw.unique (artifact.sources.toList.map (·.1)))
@@ -125,7 +126,12 @@ def checkGraph (artifact : Artifact) (order : Array Nat) : WorkM (List Dependenc
   exactWork (Exact.charge schedule.stats.visits)
   let receipts ← order.toList.foldlM (checkNode artifact) (Array.replicate artifact.entries.size none)
   guard (receipts.all Option.isSome)
-  return receipts.toList.map (fun receipt => (receipt.getD emptyReceipt).dependency)
+  return receipts
+
+/-- Compatibility projection; no graph check or work charge is duplicated. -/
+def checkGraph (artifact : Artifact) (order : Array Nat) : WorkM (List Dependency) := do
+  let receipts ← checkGraphReceipts artifact order
+  return (before receipts).map Receipt.dependency
 
 def reconstruct (artifact : Artifact) (order : Array Nat) (signature : Basis)
     (inputPort outputPort : Semantics.Raw.Port) : WorkM Matrix := do
@@ -190,10 +196,10 @@ theorem fold_fresh (artifact : Artifact) (nodes : List Nat) (slots final : Slots
     obtain ⟨next,middle,checked,remaining⟩ := bind_success _ _ _ _ _ ok
     exact .cons _ _ _ _ _ (checkNode_fresh _ _ _ _ _ _ checked) (ih next middle remaining)
 
-theorem checkGraph_fresh (artifact : Artifact) (order : Array Nat) (dependencies : List Dependency)
-    (work left : Nat) (ok : (checkGraph artifact order).run work = (.ok dependencies,left)) :
-    ∃ slots, CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
-      slots.all Option.isSome = true ∧ dependencies = (before slots).map Receipt.dependency := by
+theorem checkGraphReceipts_fresh (artifact : Artifact) (order : Array Nat) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceipts artifact order).run work = (.ok slots,left)) :
+    CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
+      slots.all Option.isSome = true := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
@@ -206,13 +212,14 @@ theorem checkGraph_fresh (artifact : Artifact) (order : Array Nat) (dependencies
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨slots,middle,hf,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨receipts,middle,hf,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,hg,h⟩ := bind_success _ _ _ _ _ h
-  exact ⟨slots,fold_fresh _ _ _ _ _ _ hf,(guard_success _ _ _ _ hg).1,
-    by simpa [before,List.map_map,Function.comp_def] using (pure_success _ _ _ _ h).1⟩
+  have same := (pure_success _ _ _ _ h).1
+  subst slots
+  exact ⟨fold_fresh _ _ _ _ _ _ hf,(guard_success _ _ _ _ hg).1⟩
 
-theorem checkGraph_schedule (artifact : Artifact) (order : Array Nat) (dependencies : List Dependency)
-    (work left : Nat) (ok : (checkGraph artifact order).run work = (.ok dependencies,left)) :
+theorem checkGraphReceipts_schedule (artifact : Artifact) (order : Array Nat) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceipts artifact order).run work = (.ok slots,left)) :
     ∃ schedule, Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule ∧
       schedule.stats.depth ≤ 32 := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
@@ -230,6 +237,59 @@ theorem checkGraph_schedule (artifact : Artifact) (order : Array Nat) (dependenc
   have present : Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule := by
     cases hg : Hierarchical.Graph.check (nodes artifact) [artifact.root] order <;> simp_all
   exact ⟨schedule,present,of_decide_eq_true (guard_success _ _ _ _ hd).1⟩
+
+/-- Retaining graph receipts is observationally identical to the former API,
+including failures and the remaining work budget. -/
+theorem checkGraph_projection (artifact : Artifact) (order : Array Nat) :
+    checkGraph artifact order = (do
+      guard ((← get) ≤ 10000000) .limit
+      guard (artifact.programs.size + artifact.entries.size ≤ 65536 && artifact.sources.size ≤ 128) .limit
+      guard (artifact.sources.all sourceValid && Raw.unique (artifact.sources.toList.map (·.1)))
+      guard ((artifact.sources.toList.map (fun source => source.2.utf8ByteSize)).sum ≤ 1048576) .limit
+      guard (artifact.entries.all fun entry => entry.sources.length ≤ 128 &&
+        entry.sources.all (· < artifact.sources.size))
+      exactWork (Exact.charge (artifact.entries.size +
+        (artifact.entries.toList.map (fun entry => entry.sources.length)).sum))
+      let used := artifact.entries.foldl (fun used entry =>
+        entry.sources.foldl (fun used index => used.set! index true) used)
+        (Array.replicate artifact.sources.size false)
+      guard (used.all id)
+      let identityBytes := (artifact.entries.toList.map (fun entry =>
+        entry.implementationName.utf8ByteSize + entry.specificationName.utf8ByteSize)).sum +
+        ((List.range artifact.sources.size).filter (fun index => used[index]?.getD false) |>.map (fun index =>
+          let source := artifact.sources[index]?.getD ("","")
+          source.1.utf8ByteSize + source.2.utf8ByteSize)).sum
+      guard (identityBytes ≤ 1048576) .limit
+      let schedule ← lift (match Hierarchical.Graph.check (nodes artifact) [artifact.root] order with
+        | .ok schedule => .ok schedule
+        | .error error => .error (if error.kind == .limit then .limit else .invalid))
+      guard (schedule.stats.depth ≤ 32) .limit
+      exactWork (Exact.charge schedule.stats.visits)
+      let receipts ← order.toList.foldlM (checkNode artifact) (Array.replicate artifact.entries.size none)
+      guard (receipts.all Option.isSome)
+      return receipts.toList.map (fun receipt => (receipt.getD emptyReceipt).dependency)) := by
+  simp [checkGraph,checkGraphReceipts,before,List.map_map,Function.comp_def]
+
+theorem checkGraph_fresh (artifact : Artifact) (order : Array Nat) (dependencies : List Dependency)
+    (work left : Nat) (ok : (checkGraph artifact order).run work = (.ok dependencies,left)) :
+    ∃ slots, CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
+      slots.all Option.isSome = true ∧ dependencies = (before slots).map Receipt.dependency := by
+  obtain ⟨slots,middle,hc,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨chain,all⟩ := checkGraphReceipts_fresh _ _ _ _ _ hc
+  exact ⟨slots,chain,all,(pure_success _ _ _ _ h).1⟩
+
+theorem checkGraph_receipts_result (artifact : Artifact) (order : Array Nat) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceipts artifact order).run work = (.ok slots,left)) :
+    (checkGraph artifact order).run work = (.ok ((before slots).map Receipt.dependency),left) := by
+  rw [checkGraph,bind_run,ok]
+  rfl
+
+theorem checkGraph_schedule (artifact : Artifact) (order : Array Nat) (dependencies : List Dependency)
+    (work left : Nat) (ok : (checkGraph artifact order).run work = (.ok dependencies,left)) :
+    ∃ schedule, Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule ∧
+      schedule.stats.depth ≤ 32 := by
+  obtain ⟨slots,middle,hc,_⟩ := bind_success _ _ _ _ _ ok
+  exact checkGraphReceipts_schedule _ _ _ _ _ hc
 
 theorem reconstruct_conditions (artifact : Artifact) (order : Array Nat) (signature : Basis)
     (inputPort outputPort : Semantics.Raw.Port) (actual : Matrix) (work left : Nat)

@@ -5,6 +5,7 @@ use crate::contract::exact::Matrix;
 use crate::contract::function::{RetainedIdentity, validate_identity};
 use crate::contract::instrument::{ResultAtom, Signature};
 use crate::contract::{BasisType, Circuit, Contract, Encoding};
+use crate::interchange::execution_view::finite::contracts::{self as view, Request};
 use crate::interchange::{
     codec::Codec,
     json::{self, Value},
@@ -59,9 +60,9 @@ impl Kernel {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn check_instrument(
         &self,
-        actual: &[u8],
+        actual: &AcceptedProgram,
         actual_signature: &Signature,
-        expected: &[u8],
+        expected: &AcceptedProgram,
         expected_signature: &Signature,
         identity: &RetainedIdentity,
         budget: &mut crate::contract::exact::Budget,
@@ -70,6 +71,8 @@ impl Kernel {
         actual_signature.validate(budget).map_err(map)?;
         expected_signature.validate(budget).map_err(map)?;
         validate_identity(identity, budget).map_err(map)?;
+        let expected_program = expected;
+        let expected = expected.artifact();
         if expected.is_empty() || expected.len() > 16 * 1024 * 1024 {
             return Err(map(crate::contract::ContractError::Limit(
                 "expected instrument artifact exceeds 16 MiB",
@@ -132,7 +135,23 @@ impl Kernel {
             ),
             ("expected_artifact", Value::String(expected.into())),
         ]))?;
-        let accepted = self.inspect_mode(actual, Some(&request), "--qirf-contract")?;
+        let graph = view::complete(
+            Request::Instrument {
+                actual: actual_signature,
+                expected: expected_signature,
+                identity: identity.parts(),
+            },
+            actual.execution_view_graph(),
+            Some(expected_program.execution_view_graph()),
+        )?;
+        let accepted = Self::submit_subject(
+            self.subject(actual.artifact(), Some(&request))?,
+            "--qirf-contract",
+            Some(super::super::native_packet::View {
+                graph: &graph,
+                caller: None,
+            }),
+        )?;
         budget
             .charge(accepted.exact_work())
             .map_err(crate::contract::ContractError::from)
@@ -149,7 +168,7 @@ impl Kernel {
         axes: &[usize],
         budget: &mut crate::contract::exact::Budget,
     ) -> Result<NativeChecked> {
-        let proposal = Proposal::from_raw(raw, None, Version::V2, None)?;
+        let (proposal, caller) = super::super::encode_caller(raw, None, Encoder::new(Version::V2))?;
         let mut encoder = Encoder::new(Version::V2);
         let request = json::encode(&Value::object([
             ("format", Value::String("qleisli.native-contract".into())),
@@ -173,7 +192,20 @@ impl Kernel {
                 ),
             ),
         ]))?;
-        let accepted = self.inspect_mode(proposal.artifact(), Some(&request), "--qirf-contract")?;
+        let checked = self.check_bound(
+            &proposal,
+            Some(&request),
+            "--qirf-contract",
+            |prepared| {
+                view::complete(
+                    Request::ControlOwners(signatures, axes),
+                    prepared.graph(),
+                    None,
+                )
+            },
+            Some(&caller),
+        )?;
+        let accepted = checked.program().native.as_ref().clone();
         budget
             .charge(accepted.exact_work())
             .map_err(crate::contract::ContractError::from)
@@ -210,14 +242,22 @@ impl Kernel {
             input: circuit.basis().clone(),
             output: circuit.basis().clone(),
         };
-        let proposal = Proposal::from_raw(&raw, Some(&interface), Version::V2, None)?;
+        let (proposal, caller) =
+            super::super::encode_caller(&raw, Some(&interface), Encoder::new(Version::V2))?;
         let request = json::encode(&Value::object([
             ("format", Value::String("qleisli.native-contract".into())),
             ("version", Value::Number(1)),
             ("kind", Value::String("encoded".into())),
             ("contract", contract(required)?),
         ]))?;
-        self.inspect_mode(proposal.artifact(), Some(&request), "--qirf-contract")
+        let checked = self.check_bound(
+            &proposal,
+            Some(&request),
+            "--qirf-contract",
+            |prepared| view::complete(Request::Encoded(required), prepared.graph(), None),
+            Some(&caller),
+        )?;
+        Ok(checked.program().native.as_ref().clone())
     }
 
     pub(crate) fn check_leaf(
@@ -236,8 +276,14 @@ impl Kernel {
             ("output", boundary.output().write(&mut encoder)?),
             ("matrix", matrix(required)?),
         ]))?;
-        Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
-            .map(Checked::into_program)
+        self.check_bound(
+            payload,
+            Some(&request),
+            "--qirf-contract",
+            |prepared| view::complete(Request::Leaf(boundary, required), prepared.graph(), None),
+            None,
+        )
+        .map(Checked::into_program)
     }
 
     pub(crate) fn check_pure_leaf(
@@ -257,8 +303,20 @@ impl Kernel {
             ("output", boundary.output().write(&mut encoder)?),
             ("matrix", matrix(required)?),
         ]))?;
-        Self::decode_checked(self.inspect_mode(payload, Some(&request), "--qirf-contract")?)
-            .map(Checked::into_program)
+        self.check_bound(
+            payload,
+            Some(&request),
+            "--qirf-contract",
+            |prepared| {
+                view::complete(
+                    Request::PureLeaf(boundary, required),
+                    prepared.graph(),
+                    None,
+                )
+            },
+            None,
+        )
+        .map(Checked::into_program)
     }
 }
 

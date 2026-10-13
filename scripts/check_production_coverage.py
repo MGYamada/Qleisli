@@ -18,6 +18,8 @@ PUBLICATION = 'tests/fixtures/releases/v0.2.9/publication.json'
 PUBLISHED_COMMIT = 'a77e68f4d3942cd75cb4c4710350aab9a99f8c8b'
 CONTRACT_PROOF = {
     'proof_scope': (
+        'ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. '
+        'CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. '
         'Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded '
         'artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning '
         'and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning '
@@ -87,7 +89,9 @@ PATHS = {
         ('src/bin/qleisli/source_plan.rs', ['fn raw_execute(', 'native::Kernel::new(kernel).accept(proposal.proposal())', 'proposal.validate_source_steps(&checked)']),
         ('src/interchange/mod.rs', ['pub fn import(', 'pub fn convert(']),
         ('src/interop/openqasm.rs', ['pub fn import_openqasm3_with_kernel(']),
-        ('lean-kernel/Cli/Validity.lean', ['Protocol.Validity.check']),
+        ('lean-kernel/Cli/Validity.lean', ['Native.ordinary bytes']),
+        ('lean-kernel/Protocol/ExecutionView/Native.lean', ['def ordinary ', 'theorem ordinary_original', 'theorem ordinary_root_safe']),
+        ('src/interchange/native/binding.rs', ['fn check_bound(', 'prepared.bind(native)', 'Self::submit_subject']),
         ('lean-kernel/Protocol/Validity.lean', ['def check ', 'theorem check_acceptance', 'theorem check_ownershipSafe']),
         ('lean/Qleisli/NativeValidity.lean', ['theorem check_sound', 'theorem check_scopeSafe']),
     ], [('tests/native_paths.rs', 'native_report_retains_the_exact_artifact_request_and_reconstructed_program'),
@@ -139,16 +143,24 @@ PATHS = {
          'self.raw.operations[first..self.cursor].to_vec()', 'fn check_subject_with_meanings(']),
         ('src/frontend/specialize/raw.rs', ['instrument_calls:', 'preservation::check_subject_with_meanings(']),
         ('src/interchange/native.rs', ['source_instruments:', 'source_instrument_calls:', 'fn retain_instruments(', 'fn retain_instrument_calls(']),
-        ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
-        ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'QleisliKernel.Qirf.checkContract',
+        ('lean-kernel/Cli/Validity.lean', ['Native.contract bytes']),
+        ('lean-kernel/Protocol/ExecutionView/Native.lean', ['def contract ', 'theorem contract_binding']),
+        ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'def checkRetained ',
+         'inductive RequestRetained ', 'theorem check_projection', 'theorem checkRetained_acceptance',
+         'QleisliKernel.Qirf.checkContractRetained',
          'QleisliKernel.Qirf.check ', 'structure Acceptance ', 'structure LeafAcceptance ',
          'structure ControlAcceptance ', 'QleisliKernel.Qirf.ControlAccess.check', 'theorem check_acceptance']),
-        ('lean-kernel/Protocol/InstrumentContract.lean', ['def decode ', 'def check ', 'structure Acceptance ',
+        ('lean-kernel/Protocol/InstrumentContract.lean', ['def decode ', 'def check ', 'def checkRetained ',
+         'structure Retained ', 'theorem check_projection', 'theorem checkRetained_bound', 'structure Acceptance ',
          'expectedText.toUTF8', 'theorem check_acceptance']),
         ('lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean', ['def interface ', 'def check ',
          'Validity.checkRoot actual actualOrder', 'Validity.checkRoot expected expectedOrder',
          'Raw.InstrumentEquality.compare', 'theorem check_acceptance']),
-        ('lean-kernel/QleisliKernel/Qirf/Contract.lean', ['theorem checkContract_bound']),
+        ('lean-kernel/QleisliKernel/Qirf/Contract.lean', ['def checkContractRetained ',
+         'theorem checkContract_projection', 'theorem checkContractRetained_bound', 'theorem checkContract_bound']),
+        ('lean-kernel/QleisliKernel/Qirf/ControlAccess.lean', ['def checkRetained ', 'def checkOwnersRetained ',
+         'theorem check_projection', 'theorem checkOwners_projection',
+         'theorem checkRetained_bound', 'theorem checkOwnersRetained_bound']),
         ('lean/Qleisli/Qirf.lean', ['theorem reconstruct_semantics', 'theorem check_semantics']),
         ('lean/Qleisli/NativeContract.lean', ['structure LeafMeaning ', 'theorem check_root_meaning',
          'theorem leaf_meaning', 'theorem leaf_reference_laws', 'theorem check_sound',
@@ -383,7 +395,9 @@ for _id, _boundaries, _mode, _method, _cli, _check, _test in [
     PATHS[_id] = path_rule('native-hierarchy-check', _boundaries, _mode, [
         ('src/interchange/hierarchical.rs', [f'pub fn {_method}(', 'pub struct NativeChecked']),
         ('src/interchange/hierarchical/runtime.rs', [f'"{_mode}"']),
-        ('lean-kernel/Cli/Hierarchical.lean', [f'def {_cli} ', _check, 'Protocol.HierarchicalFinite.checkLeaves']),
+        ('lean-kernel/Cli/Hierarchical.lean', [f'def {_cli} ', 'Native.hierarchy mode bytes']),
+        ('lean-kernel/Protocol/ExecutionView/Native.lean', ['def hierarchy ', 'theorem hierarchy_binding']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean', [_check.removeprefix('Hierarchical.'), 'HierarchyView.reconstructLeaves', 'native core.extra']),
         ('lean/Qleisli/NativeHierarchy.lean', ['theorem checkLeaves_semantics']),
     ], [_test])
 

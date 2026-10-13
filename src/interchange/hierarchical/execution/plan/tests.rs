@@ -1,0 +1,385 @@
+//! Original-plan retention and independent coordinate controls.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
+use super::*;
+use crate::contract::DEFAULT_EXACT_WORK;
+use crate::contract::exact::Budget;
+
+/// The shared runner supplies the output directory and invokes this exact test.
+/// Captures describe the same owned plan that the public report executes.
+#[test]
+#[ignore = "shared hierarchy comparison runner supplies QLEISLI_HIERARCHY_VIEW_CAPTURE"]
+fn capture_native_hierarchy_mode_plans() {
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("QLEISLI_HIERARCHY_VIEW_CAPTURE").expect("capture directory"),
+    );
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let document = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json"
+    )))
+    .unwrap();
+    let rows = document.field("rows").unwrap().array().unwrap();
+    assert_eq!(rows.len(), 8);
+    for (index, row) in rows.iter().enumerate() {
+        let payload = json::encode(row.field("artifact").unwrap()).unwrap();
+        let request = row.field("request").ok().map(|r| json::encode(r).unwrap());
+        let candidate = row
+            .field("candidate")
+            .ok()
+            .map(|r| json::encode(r).unwrap());
+        let request = request.as_deref().unwrap_or_default();
+        let candidate = candidate.as_deref().unwrap_or_default();
+        let (bridge, report) = match row.field("mode").unwrap().text().unwrap() {
+            "inspect" => (
+                bridge::decode(&payload).unwrap().bridge,
+                kernel.inspect_native(&payload),
+            ),
+            "request" | "fourier" => (
+                bridge::decode_request(&payload, request).unwrap().bridge,
+                kernel.check_against_native(&payload, request),
+            ),
+            "instrument" => (
+                bridge::decode_instrument(&payload, request).unwrap().bridge,
+                kernel.check_instrument_native(&payload, request),
+            ),
+            "qpeInstrument" => (
+                bridge::decode_qpe_instrument(&payload, request, candidate)
+                    .unwrap()
+                    .bridge,
+                kernel.check_qpe_instrument_native(&payload, request, candidate),
+            ),
+            mode => panic!("unexpected mode {mode}"),
+        };
+        std::fs::write(directory.join(format!("{index}.bridge")), bridge).unwrap();
+        if row.field("accept").unwrap().boolean().unwrap() {
+            let report = report.unwrap();
+            let view = report.execution().unwrap().view().unwrap();
+            std::fs::write(directory.join(format!("{index}.qdv")), view).unwrap();
+        } else {
+            assert!(
+                report.is_err(),
+                "negative original request {index} accepted"
+            );
+        }
+    }
+}
+
+#[test]
+fn retained_plan_matches_independent_shared_hierarchy_descriptions() {
+    use crate::interchange::execution_view::{encode, tests::vector_value};
+    let rows = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
+    )))
+    .unwrap();
+    for row in rows.array().unwrap() {
+        let actual = row.field("actual").unwrap();
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let matrices = row
+            .field("matrices")
+            .unwrap()
+            .array()
+            .unwrap()
+            .iter()
+            .map(|leaf| {
+                (
+                    index(leaf.field("definition").unwrap()).unwrap(),
+                    crate::interchange::finite_matrix::decode(
+                        &json::encode(leaf.field("value").unwrap()).unwrap(),
+                        &mut budget,
+                    )
+                    .unwrap(),
+                )
+            })
+            .collect();
+        let instrument = actual
+            .field("format")
+            .is_ok_and(|f| f.text().is_ok_and(|f| f == "qleisli.instrument-ir"));
+        let plan = Plan::compile(actual, instrument, |_| Ok(matrices)).unwrap();
+        let expected = encode(&vector_value(row.field("value").unwrap())).unwrap();
+        assert_eq!(
+            plan.view().unwrap(),
+            expected,
+            "{}",
+            row.field("name").unwrap().text().unwrap()
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn native_and_compatibility_execution_keep_the_same_owned_plan() {
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let artifact = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v022/hierarchy/h.qirh"
+    ));
+    let request = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v022/hierarchy/h.request.json"
+    ));
+    let input = [[1.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 2.0]];
+    let limits = ExecutionLimits {
+        max_amplitudes: 8,
+        max_steps: 1000,
+    };
+    let mut native = kernel.check_against_native(artifact, request).unwrap();
+    let first = native.execute_pure(&input, 2, limits).unwrap();
+    let address = native.execution().unwrap() as *const Plan;
+    let description = native.execution().unwrap().view().unwrap();
+    let vectors = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-plan-vectors.json"
+    )))
+    .unwrap();
+    let expected = crate::interchange::execution_view::encode(
+        &crate::interchange::execution_view::tests::vector_value(
+            vectors.array().unwrap()[0].field("value").unwrap(),
+        ),
+    )
+    .unwrap();
+    assert_eq!(description, expected);
+    assert_eq!(address, native.execution().unwrap() as *const Plan);
+    assert_eq!(description, native.execution().unwrap().view().unwrap());
+    // Private fault injection: public reports expose only immutable slices.
+    // Poisoning old transport storage catches any subsequent reparse, while
+    // the actual execution plan must retain its original exact matrix/nodes.
+    native.payload = std::sync::Arc::from(b"not JSON".as_slice());
+    let second = native.execute_pure(&input, 2, limits).unwrap();
+    assert_eq!(first.amplitudes, second.amplitudes);
+    assert_eq!(first.steps, second.steps);
+    assert_eq!(address, native.execution().unwrap() as *const Plan);
+    assert_eq!(description, native.execution().unwrap().view().unwrap());
+
+    let mut compatibility = kernel.check_against(artifact, request).unwrap();
+    let first = compatibility.execute(&input, 2, limits).unwrap();
+    let address = compatibility.reconstruction.execution().unwrap() as *const Plan;
+    assert_eq!(
+        compatibility
+            .reconstruction
+            .execution()
+            .unwrap()
+            .view()
+            .unwrap(),
+        description
+    );
+    compatibility.reconstruction.payload = std::sync::Arc::from(b"not JSON".as_slice());
+    compatibility.reconstruction.leaves.clear();
+    let second = compatibility.execute(&input, 2, limits).unwrap();
+    assert_eq!(first.amplitudes, second.amplitudes);
+    assert_eq!(first.steps, second.steps);
+    assert_eq!(
+        description,
+        compatibility
+            .reconstruction
+            .execution()
+            .unwrap()
+            .view()
+            .unwrap()
+    );
+    assert_eq!(
+        address,
+        compatibility.reconstruction.execution().unwrap() as *const Plan
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
+    use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let payload = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v022/hierarchy/h.qirh"
+    ));
+    let decoded = bridge::decode(payload).unwrap();
+    let prepared = Prepared::new(payload, None, None, false);
+    let candidate = prepared.execution.as_ref().unwrap();
+    let address = candidate.as_ref() as *const Plan;
+    let description = candidate.view().unwrap();
+    let response = runtime::check(
+        kernel.executable(),
+        decoded.bridge,
+        crate::interchange::hierarchical::Mode::Inspect,
+        Some(&description),
+    )
+    .unwrap();
+    validate_leaves(&decoded.value, &response.indices).unwrap();
+    let report = NativeChecked::new(prepared, &response, false);
+    assert_eq!(address, report.execution().unwrap() as *const Plan);
+    assert_eq!(description, report.execution().unwrap().view().unwrap());
+    assert_eq!(report.payload(), payload);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn non_executable_inspection_retains_its_original_prepared_failure() {
+    use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    // Preserve the first attempted control and real refusal. Classical ports
+    // in a pure Meaning do not supply an accepted-but-unexecutable artifact.
+    let first = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/",
+        "tests/fixtures/verification_v030/execution-view-binding/first-classical-inspection-refusal.json"
+    )))
+    .unwrap();
+    let first_payload = json::encode(first.field("artifact").unwrap()).unwrap();
+    let refused = kernel.inspect_native(&first_payload).unwrap_err();
+    assert_eq!(refused.code, "invalid_ir");
+    assert_eq!(
+        refused.message,
+        first
+            .field("diagnostic")
+            .unwrap()
+            .field("message")
+            .unwrap()
+            .text()
+            .unwrap()
+    );
+    assert_eq!(
+        kernel.inspect(&first_payload).unwrap_err().code,
+        "invalid_ir"
+    );
+    let failure = Plan::prepare(&first_payload, false).unwrap_err();
+    assert_eq!(failure.code, "unsupported");
+
+    // Private fault injection models an unavailable host execution capability
+    // without inventing a native-accepted classical artifact. The frozen H
+    // subject still obtains a real fresh inspection; its inspection report
+    // must retain the earlier preparation refusal and cannot recompile later.
+    let payload = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v022/hierarchy/h.qirh"
+    ));
+    let decoded = bridge::decode(payload).unwrap();
+    let mut prepared = Prepared::new(payload, None, None, false);
+    prepared.execution = Err(failure.clone());
+    let response = runtime::check(
+        kernel.executable(),
+        decoded.bridge,
+        crate::interchange::hierarchical::Mode::Inspect,
+        None,
+    )
+    .unwrap();
+    validate_leaves(&decoded.value, &response.indices).unwrap();
+    let mut native = NativeChecked::new(prepared, &response, false);
+    assert_eq!(native.payload(), payload);
+    assert_eq!(native.execution().unwrap_err().code, failure.code);
+    let message = failure.message;
+    // Failure is retained too: inspection cannot lazily derive a new plan or
+    // a different error from transport data after the native decision.
+    native.payload = std::sync::Arc::from(b"not JSON".as_slice());
+    assert_eq!(native.execution().unwrap_err().message, message);
+}
+
+#[test]
+fn compilation_retains_literal_exact_phase_before_numerical_interpretation() {
+    let side = r#"{"quantum":[{"owner":0,"basis":[{"tag":"bit"}],"axes":[9]}],"classical":[]}"#;
+    let original = format!(
+        r#"{{"definitions":[{{"interface":{{"inputs":{side},"outputs":{side}}},"effect":"unitary","body":{{"tag":"dyadic_phase","target":0,"j":9,"k":3}}}}],"entry":{{"implementation":0}}}}"#
+    );
+    let actual = json::parse(original.as_bytes()).unwrap();
+    let program = Program::compile(&actual, BTreeMap::new()).unwrap();
+    assert!(matches!(
+        program.nodes[0].op,
+        Op::Phase {
+            target: 0,
+            j: 9,
+            k: 3
+        }
+    ));
+    let result = execute_pure(
+        &program,
+        &[[0.0, 0.0], [1.0, 0.0]],
+        1,
+        ExecutionLimits {
+            max_amplitudes: 4,
+            max_steps: 10,
+        },
+    )
+    .unwrap();
+    let r = std::f64::consts::FRAC_1_SQRT_2;
+    assert!((result.amplitudes[1][0] - r).abs() < 1e-15);
+    assert!((result.amplitudes[1][1] - r).abs() < 1e-15);
+}
+
+#[test]
+fn prepared_and_readout_positions_retain_order_and_reference_coefficients() {
+    // A hand-authored untrusted materialization control, not native acceptance.
+    // Input axes [9,3], fresh zero axis 7; circuit output order [9,7,3].
+    // Observe fresh 7 then data 9; pack order is [20,21], residual axis is 3.
+    let input = r#"{"quantum":[{"owner":0,"axes":[9]},{"owner":1,"axes":[3]}],"classical":[]}"#;
+    let prepared = r#"{"quantum":[{"owner":0,"axes":[9]},{"owner":1,"axes":[3]},{"owner":2,"axes":[7]}],"classical":[]}"#;
+    let after_first =
+        r#"{"quantum":[{"owner":0,"axes":[9]},{"owner":1,"axes":[3]}],"classical":[]}"#;
+    let residual = r#"{"quantum":[{"owner":1,"axes":[3]}],"classical":[]}"#;
+    let original = format!(
+        r#"{{"preparation":{{"initializations":[{{"interface":{{"inputs":{input},"outputs":{prepared}}},"body":{{"tag":"init0","output":2}}}}]}},"readout":{{"measurements":[{{"interface":{{"inputs":{prepared}}},"body":{{"tag":"observe_z","input":2,"output":20}}}},{{"interface":{{"inputs":{after_first}}},"body":{{"tag":"observe_z","input":0,"output":21}}}}],"pack":[20,21],"outputs":{residual}}}}}"#
+    );
+    let program = Program {
+        nodes: vec![Node {
+            width: 3,
+            op: Op::Permutation(vec![0, 2, 1]),
+        }],
+        root: 0,
+        inputs: vec![9, 3, 7],
+        outputs: vec![9, 7, 3],
+    };
+    let actual = json::parse(original.as_bytes()).unwrap();
+    let plan = InstrumentPlan::compile(&actual, program).unwrap();
+    assert_eq!(plan.fresh_axes, [7]);
+    assert_eq!(plan.input_positions, [0, 1]);
+    assert_eq!(plan.measurements, [(20, 7), (21, 9)]);
+    assert_eq!(plan.pack, [20, 21]);
+    assert_eq!(plan.outcome_positions, [1, 0]);
+    assert_eq!(plan.residual_positions, [2]);
+    let input = [
+        [1.0, 0.0],
+        [2.0, 0.0],
+        [0.0, 3.0],
+        [0.0, 4.0],
+        [5.0, 0.0],
+        [6.0, 0.0],
+        [0.0, 7.0],
+        [0.0, 8.0],
+    ];
+    let result = execute_instrument(
+        &plan,
+        &input,
+        2,
+        ExecutionLimits {
+            max_amplitudes: 32,
+            max_steps: 100,
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.branches,
+        vec![
+            vec![[1.0, 0.0], [0.0, 3.0], [5.0, 0.0], [0.0, 7.0]],
+            vec![[0.0, 0.0]; 4],
+            vec![[2.0, 0.0], [0.0, 4.0], [6.0, 0.0], [0.0, 8.0]],
+            vec![[0.0, 0.0]; 4],
+        ]
+    );
+    assert_eq!(result.steps, 52);
+}

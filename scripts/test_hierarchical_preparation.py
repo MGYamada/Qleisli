@@ -149,9 +149,13 @@ def test_preparation_transport(rows, results, kernel):
             assert observed['work'] == int(results[row['name']][1])
     r, p = base(1)
     good = encode_preparation(r, p)
-    malformed = [b'', b'QLZ2'+good[4:], good[:-1], good+b'\0', b'QLZ1'+struct.pack('<I', 100001)]
+    # An empty original cannot be wrapped by the valid-envelope helper. Send
+    # the empty external frame itself so the actual native reader must refuse.
+    from instrument_transport import inspect_envelope
+    assert inspect_envelope(kernel, 'preparation', b'')['status'] == 'format'
+    malformed = [b'QLZ2'+good[4:], good[:-1], good+b'\0', b'QLZ1'+struct.pack('<I', 100001)]
     for i, payload in enumerate(malformed):
-        assert inspect(kernel, 'preparation', payload)['status'] == ('format' if i < 4 else 'limit')
+        assert inspect(kernel, 'preparation', payload)['status'] == ('format' if i < 3 else 'limit')
     r['fresh'][0]['owner'] = 2**32
     try:
         encode_preparation(r, p)
@@ -159,7 +163,7 @@ def test_preparation_transport(rows, results, kernel):
         pass
     else:
         raise AssertionError('transport truncated u32')
-    return len(malformed)
+    return 1 + len(malformed)
 
 
 def main():

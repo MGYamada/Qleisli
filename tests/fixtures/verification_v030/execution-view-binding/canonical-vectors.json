@@ -1,0 +1,108 @@
+[
+  {
+    "name": "null",
+    "value": null,
+    "hex": "5144563100"
+  },
+  {
+    "name": "false",
+    "value": false,
+    "hex": "5144563101"
+  },
+  {
+    "name": "true",
+    "value": true,
+    "hex": "5144563102"
+  },
+  {
+    "name": "zero",
+    "value": 0,
+    "hex": "51445631030000000000000000"
+  },
+  {
+    "name": "one",
+    "value": 1,
+    "hex": "51445631030100000000000000"
+  },
+  {
+    "name": "little-endian-256",
+    "value": 256,
+    "hex": "51445631030001000000000000"
+  },
+  {
+    "name": "unsigned-u64-max",
+    "value": 18446744073709551615,
+    "hex": "5144563103ffffffffffffffff"
+  },
+  {
+    "name": "empty-text",
+    "value": "",
+    "hex": "514456310400000000"
+  },
+  {
+    "name": "nul-text",
+    "value": "\u0000",
+    "hex": "51445631040100000000"
+  },
+  {
+    "name": "nonbmp",
+    "value": "𝄞",
+    "hex": "514456310404000000f09d849e"
+  },
+  {
+    "name": "replacement",
+    "value": "�",
+    "hex": "514456310403000000efbfbd"
+  },
+  {
+    "name": "precomposed",
+    "value": "é",
+    "hex": "514456310402000000c3a9"
+  },
+  {
+    "name": "decomposed",
+    "value": "é",
+    "hex": "51445631040300000065cc81"
+  },
+  {
+    "name": "empty-array",
+    "value": [],
+    "hex": "514456310500000000"
+  },
+  {
+    "name": "ordered-booleans",
+    "value": [
+      false,
+      true
+    ],
+    "hex": "5144563105020000000102"
+  },
+  {
+    "name": "reverse-booleans",
+    "value": [
+      true,
+      false
+    ],
+    "hex": "5144563105020000000201"
+  },
+  {
+    "name": "nested",
+    "value": [
+      "q",
+      [
+        1,
+        false
+      ]
+    ],
+    "hex": "514456310502000000040100000071050200000003010000000000000001"
+  },
+  {
+    "name": "signed-dyadic",
+    "value": [
+      "dyadic",
+      "-1",
+      1
+    ],
+    "hex": "514456310503000000040600000064796164696304020000002d31030100000000000000"
+  }
+]

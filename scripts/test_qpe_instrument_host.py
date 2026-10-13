@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+from native_packet import envelope, inspection_lines
 import struct
 import tempfile
 import tomllib
@@ -79,7 +80,19 @@ def expected_obligations(payload,request,candidate):
 
 
 def test_binary_transport(frame_path):
-    kernel=ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel';good=frame_path.read_bytes()
+    kernel=ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel';captured=frame_path.read_bytes()
+    # The host now emits the complete QLV2 execution request. Exercise that
+    # exact capture before mutating its inner QLQ1 parser input for inspection.
+    assert captured[:4]==b'QLV2' and len(captured)>=24
+    scope,original,graph,caller,aliases=struct.unpack('<5I',captured[4:24])
+    assert scope==1 and original and graph and caller==aliases==0
+    assert len(captured)==24+original+graph
+    run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],
+                       input=captured,capture_output=True,timeout=30)
+    assert run.returncode==0 and run.stdout.splitlines()[:3]==[
+        b'qleisli.qpe-instrument-pending 4',b'pending',b'execution'],run
+    good=captured[24:24+original]
+    assert good[:4]==b'QLQ1'
     words=lambda values:struct.pack('<'+'I'*len(values),*values)
     cuts=sorted(set([0,*range(1,33),*range(len(good)-32,len(good)),len(good)//4,len(good)//2]))
     cases=[(f'truncated-{i}',good[:i],'format') for i in cuts]
@@ -92,12 +105,13 @@ def test_binary_transport(frame_path):
     assert len(root)//4<1000000 and len(atoms)<1000000
     cases.append(('shared-word-budget',b'QLQ1'+words([len(root)])+root+words(header+atoms),'limit'))
     for name,data,expected in cases:
-        run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],input=data,capture_output=True,timeout=30)
-        lines=run.stdout.decode().splitlines()
-        assert lines[:1]==['qleisli.qpe-instrument-pending 3'],(name,run)
+        run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],input=envelope(data) if data else b"",capture_output=True,timeout=30)
+        lines=inspection_lines(run.stdout)
+        assert lines[:1]==['qleisli.qpe-instrument-pending 4'],(name,run)
         if expected=='pending':assert run.returncode==0 and lines[1]=='pending',(name,lines)
         else:assert run.returncode==1 and lines[1:]==['error',expected],(name,lines)
-    return dict(cases=len(cases),shared_word_budget='rejected before semantic checking',maximum_qubit_corpus_generated=False)
+    return dict(cases=len(cases),captured_execution_roundtrip=True,
+                shared_word_budget='rejected before semantic checking',maximum_qubit_corpus_generated=False)
 
 
 def test_named_host(record=None):
@@ -159,8 +173,8 @@ def test_named_host(record=None):
                 (directory/f'{name}.{suffix}.json').write_text(json.dumps(value))
         (directory/'cases.txt').write_text(''.join(f'{name}|{expected}\n' for name,(*_,expected) in rows.items()))
         a,b,h=expected_obligations(*rows['finite-provider'][:3]);assert b
-        def response(a=a,b=b,h=h):return '\n'.join(map(str,['qleisli.qpe-instrument-pending 3','pending',0,0,len(a),*a,len(b),*b,len(h),*h]))+'\n'
-        bad={'omit-proof':response(a=a[:-1]),'duplicate-proof':response(a=a+[a[0]]),'omit-provider':response(b=[]),'duplicate-provider':response(b=b+b),'omit-H':response(h=h[:-1]),'duplicate-H':response(h=h+[h[0]]),'substitute-H':response(h=[99999,*h[1:]]),'trailing':response()+'extra\n','noncanonical':response().replace('pending\n0\n','pending\n00\n'),'claimed-seal':response().replace('\npending\n','\nchecked\n'),'failure-trailing':'qleisli.qpe-instrument-pending 3\nerror\ncontract\nextra\n'}
+        def response(a=a,b=b,h=h):return '\n'.join(map(str,['qleisli.qpe-instrument-pending 4','pending','execution',0,0,len(a),*a,len(b),*b,len(h),*h]))+'\n'
+        bad={'omit-proof':response(a=a[:-1]),'duplicate-proof':response(a=a+[a[0]]),'omit-provider':response(b=[]),'duplicate-provider':response(b=b+b),'omit-H':response(h=h[:-1]),'duplicate-H':response(h=h+[h[0]]),'substitute-H':response(h=[99999,*h[1:]]),'trailing':response()+'extra\n','noncanonical':response().replace('execution\n0\n','execution\n00\n'),'claimed-seal':response().replace('\npending\n','\nchecked\n'),'failure-trailing':'qleisli.qpe-instrument-pending 4\nerror\ncontract\nextra\n'}
         (directory/'bad-responses').mkdir()
         for name,value in bad.items():(directory/'bad-responses'/name).write_text(value)
         command=['cargo','test','--test','hierarchical_qpe_host','--','--include-ignored','--nocapture']

@@ -30,18 +30,41 @@ def checkMatrix (bits : Nat) (matrix : Matrix) (axes : List Nat) : WorkM Unit :=
   exactWork (Exact.charge (matrix.rows * matrix.cols * (axes.length + 4)))
   guard (sectors matrix axes) .equation
 
+/-- The freshly checked root and its reconstructed action remain available to
+execution-view consumers without a second graph validation. -/
+structure Retained where
+  root : Validity.Root
+  actual : Matrix
+
 /-- A matrix supplied by the producer is never substituted for reconstruction.
 Fresh graph/root acceptance, exact tree identity and actual dependencies precede
 unitarity and the requested sector obligation. The finite profile remains six bits. -/
-def check (artifact : Artifact) (order : Array Nat) (signature : Basis)
-    (axes : List Nat) : WorkM Matrix := do
+def checkRetained (artifact : Artifact) (order : Array Nat) (signature : Basis)
+    (axes : List Nat) : WorkM Retained := do
   let root ← Validity.checkRoot artifact order
   guard (artifact.rootInterface == some (signature,signature)) .request
   guard (Raw.BranchFunction.preflight signature root.program) .limit
   let actual ← Raw.BranchFunction.reconstruct root.dependencies root.program
   wholeSpace actual
   checkMatrix (width signature) actual axes
-  return actual
+  return ⟨root,actual⟩
+
+def check (artifact : Artifact) (order : Array Nat) (signature : Basis)
+    (axes : List Nat) : WorkM Matrix := do
+  return (← checkRetained artifact order signature axes).actual
+
+/-- Projecting the retained result leaves every original check and work state unchanged. -/
+theorem check_projection (artifact : Artifact) (order : Array Nat)
+    (signature : Basis) (axes : List Nat) :
+    check artifact order signature axes = (do
+  let root ← Validity.checkRoot artifact order
+  guard (artifact.rootInterface == some (signature,signature)) .request
+  guard (Raw.BranchFunction.preflight signature root.program) .limit
+  let actual ← Raw.BranchFunction.reconstruct root.dependencies root.program
+  wholeSpace actual
+  checkMatrix (width signature) actual axes
+  return actual) := by
+  simp only [check, checkRetained, bind_assoc, pure_bind]
 
 theorem checkMatrix_sectors (bits : Nat) (matrix : Matrix) (axes : List Nat)
     (work left : Nat) (ok : (checkMatrix bits matrix axes).run work = (.ok (),left)) :
@@ -64,6 +87,7 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (signature : Basis
       (wholeSpace actual).run b = (.ok (),c) ∧
       (checkMatrix (width signature) actual axes).run c = (.ok (),left) ∧
       PreservesSectors actual axes := by
+  rw [check_projection] at ok
   obtain ⟨root,a,hr,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,a₁,hi,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨interface,same₁⟩ := guard_success _ _ _ _ hi
@@ -107,15 +131,32 @@ def ownersPreflight (program : Semantics.Observation.Program) : Bool :=
 /-- The original multi-owner call is checked directly. No synthetic packing,
 routing, matrix or producer receipt is substituted for its emitted operations.
 The optional ordinary single-port root interface is absent for this request. -/
-def checkOwners (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
-    (axes : List Nat) : WorkM Matrix := do
+def checkOwnersRetained (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
+    (axes : List Nat) : WorkM Retained := do
   let root ← Validity.checkRoot artifact order
   guard (artifact.rootInterface.isNone && ownerInterface root signatures) .request
   guard (ownersPreflight root.program) .limit
   let actual ← Raw.BranchFunction.reconstruct root.dependencies root.program
   wholeSpace actual
   checkMatrix (width (ownerSignature signatures)) actual axes
-  return actual
+  return ⟨root,actual⟩
+
+def checkOwners (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
+    (axes : List Nat) : WorkM Matrix := do
+  return (← checkOwnersRetained artifact order signatures axes).actual
+
+/-- Projecting the retained result leaves every original check and work state unchanged. -/
+theorem checkOwners_projection (artifact : Artifact) (order : Array Nat)
+    (signatures : List Basis) (axes : List Nat) :
+    checkOwners artifact order signatures axes = (do
+  let root ← Validity.checkRoot artifact order
+  guard (artifact.rootInterface.isNone && ownerInterface root signatures) .request
+  guard (ownersPreflight root.program) .limit
+  let actual ← Raw.BranchFunction.reconstruct root.dependencies root.program
+  wholeSpace actual
+  checkMatrix (width (ownerSignature signatures)) actual axes
+  return actual) := by
+  simp only [checkOwners, checkOwnersRetained, bind_assoc, pure_bind]
 
 /-- Bind the forest/sector result to the same original root, dependencies,
 returned ports, reconstructed action and continuous work states. -/
@@ -130,6 +171,7 @@ theorem checkOwners_bound (artifact : Artifact) (order : Array Nat) (signatures 
       (wholeSpace actual).run b = (.ok (),c) ∧
       (checkMatrix (width (ownerSignature signatures)) actual axes).run c = (.ok (),left) ∧
       PreservesSectors actual axes := by
+  rw [checkOwners_projection] at ok
   obtain ⟨root,a,hr,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,a₁,hi,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨interface,same₁⟩ := guard_success _ _ _ _ hi
@@ -145,6 +187,63 @@ theorem checkOwners_bound (artifact : Artifact) (order : Array Nat) (signatures 
   subst d
   simp only [Bool.and_eq_true] at interface
   exact ⟨root,a,b,c,hr,interface.1,interface.2,preflight,hm,hu,hs,
+    checkMatrix_sectors _ _ _ _ _ hs⟩
+
+/-- The retained root and action come from this exact fresh check. -/
+theorem checkRetained_bound (artifact : Artifact) (order : Array Nat) (signature : Basis)
+    (axes : List Nat) (checked : Retained) (work left : Nat)
+    (ok : (checkRetained artifact order signature axes).run work = (.ok checked,left)) :
+    ∃ a b c,
+      (Validity.checkRoot artifact order).run work = (.ok checked.root,a) ∧
+      artifact.rootInterface = some (signature,signature) ∧
+      Raw.BranchFunction.preflight signature checked.root.program = true ∧
+      (Raw.BranchFunction.reconstruct checked.root.dependencies checked.root.program).run a = (.ok checked.actual,b) ∧
+      (wholeSpace checked.actual).run b = (.ok (),c) ∧
+      (checkMatrix (width signature) checked.actual axes).run c = (.ok (),left) ∧
+      PreservesSectors checked.actual axes := by
+  obtain ⟨root,a,hr,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,a₁,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨interface,same₁⟩ := guard_success _ _ _ _ hi
+  subst a₁
+  obtain ⟨_,a₂,hp,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨preflight,same₂⟩ := guard_success _ _ _ _ hp
+  subst a₂
+  obtain ⟨matrix,b,hm,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,c,hu,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,d,hs,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨value,same⟩ := pure_success _ _ _ _ h
+  subst checked
+  subst d
+  exact ⟨a,b,c,hr,beq_iff_eq.mp interface,preflight,hm,hu,hs,
+    checkMatrix_sectors _ _ _ _ _ hs⟩
+
+/-- The retained root and action come from this exact fresh check. -/
+theorem checkOwnersRetained_bound (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
+    (axes : List Nat) (checked : Retained) (work left : Nat)
+    (ok : (checkOwnersRetained artifact order signatures axes).run work = (.ok checked,left)) :
+    ∃ a b c,
+      (Validity.checkRoot artifact order).run work = (.ok checked.root,a) ∧
+      artifact.rootInterface.isNone = true ∧ ownerInterface checked.root signatures = true ∧
+      ownersPreflight checked.root.program = true ∧
+      (Raw.BranchFunction.reconstruct checked.root.dependencies checked.root.program).run a = (.ok checked.actual,b) ∧
+      (wholeSpace checked.actual).run b = (.ok (),c) ∧
+      (checkMatrix (width (ownerSignature signatures)) checked.actual axes).run c = (.ok (),left) ∧
+      PreservesSectors checked.actual axes := by
+  obtain ⟨root,a,hr,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,a₁,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨interface,same₁⟩ := guard_success _ _ _ _ hi
+  subst a₁
+  obtain ⟨_,a₂,hp,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨preflight,same₂⟩ := guard_success _ _ _ _ hp
+  subst a₂
+  obtain ⟨matrix,b,hm,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,c,hu,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,d,hs,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨value,same⟩ := pure_success _ _ _ _ h
+  subst checked
+  subst d
+  simp only [Bool.and_eq_true] at interface
+  exact ⟨a,b,c,hr,interface.1,interface.2,preflight,hm,hu,hs,
     checkMatrix_sectors _ _ _ _ _ hs⟩
 
 end QleisliKernel.Qirf.ControlAccess

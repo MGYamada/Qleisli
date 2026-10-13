@@ -1,0 +1,63 @@
+{
+  "format": "qleisli.hierarchy-mode-view-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "cargo",
+        "test",
+        "--lib",
+        "interchange::hierarchical::execution::plan::tests::capture_native_hierarchy_mode_plans",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "stdout": "   Compiling qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.52s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-a048825d2bb075c9)\n\nrunning 1 test\ntest interchange::hierarchical::execution::plan::tests::capture_native_hierarchy_mode_plans ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 200 filtered out; finished in 1.66s\n\nnative test gate: zero conditional native skips\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--run",
+        "tests/hierarchy_mode_views.lean",
+        "tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-mode-views-_wjoacs3"
+      ],
+      "exit_code": 0,
+      "stdout": "original-h: retained plan compared; 112 mutations refused\noriginal-h-request: retained plan compared; 112 mutations refused\none-bit-fourier: retained plan compared; 187 mutations refused\nqpe-generic-1-2: retained plan compared; 1136 mutations refused\nqpe-named-1-2: retained plan compared; 1136 mutations refused\nhierarchy mode comparisons: 5 modes; 3 invalid originals; 2683 divergent plans refused; production cutover pending\n",
+      "stderr": ""
+    }
+  ],
+  "source_preservation_proved": false,
+  "production_comparison_enabled": false,
+  "modes": 5,
+  "invalid_originals": 3,
+  "input_sha256": "77359108a9ea6f5a2ec27aa2847c45be3dcca6cef604a2f82cef7eb752a2bc84",
+  "kernel_sha256": "ad005b227e328414c1a55c9292a6a07ea06b7ba6bae16cfb1819e020bee0248b",
+  "captures": {
+    "0.bridge": "0fd0ece2127062763fb02f2f08c4d52f2558326dc891a60071d80abff18b0258",
+    "0.qdv": "e936b7290ebd6a80beb1430ab79576814c7959b08b1ae87e668bf3d6a2a86dea",
+    "1.bridge": "de4a7004f1104588080461b9b6725922f688c86298f9db12db32ba0a28e065b5",
+    "1.qdv": "e936b7290ebd6a80beb1430ab79576814c7959b08b1ae87e668bf3d6a2a86dea",
+    "2.bridge": "db4a808ecbf1e71ec6073a0db5451027894978e00e2cc36a0c9d7d9688636d86",
+    "2.qdv": "9ef4c36db8f9c93613c72c08ffe163e867125e9c7cfea1e7843d28ccd2322d2d",
+    "3.bridge": "8cb78d6528ce86c8ee6162fdd7f5658d4f7e5db1b3158a128e337c2e4c237c97",
+    "3.qdv": "18c67594072fd94b7a1ff5ed648efa3dd00806e6fca0b50e66f9ebeab74c8e56",
+    "4.bridge": "3a93d1b7b7efa6a462f8b2ae4f05f4805c39440ae79b38ecbee8c19184f65cb1",
+    "4.qdv": "18c67594072fd94b7a1ff5ed648efa3dd00806e6fca0b50e66f9ebeab74c8e56",
+    "5.bridge": "294a717d0f80c56b208eb79b5739ce6ee44f3dcf848e15367ca9e55cbe1b5102",
+    "6.bridge": "1756b72113d4bc951543e2f640c9714f6a8b461c181c792dddf3e80f278df064",
+    "7.bridge": "315844d153911864a52e63d481180303873ab00485f43df6b725cd5fc66befe3"
+  }
+}

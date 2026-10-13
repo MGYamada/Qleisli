@@ -1,0 +1,1417 @@
+[
+  {
+    "name": "encoded-distinct-input-output-maps",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "pair",
+          "left": {
+            "tag": "unit"
+          },
+          "right": {
+            "tag": "bit"
+          }
+        },
+        "output": {
+          "tag": "pair",
+          "left": {
+            "tag": "unit"
+          },
+          "right": {
+            "tag": "bit"
+          }
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                7
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "x",
+              "input": 0,
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "encoded",
+      "contract": {
+        "input": {
+          "logical": [
+            "unit"
+          ],
+          "physical": [
+            "pair",
+            "unit",
+            "bit"
+          ],
+          "map": {
+            "format": "qleisli.finite-matrix",
+            "version": 1,
+            "domain": "zeta8-dyadic-v1",
+            "rows": 2,
+            "cols": 1,
+            "entries": [
+              [
+                {
+                  "numerator": "1",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                }
+              ],
+              [
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                }
+              ]
+            ]
+          }
+        },
+        "output": {
+          "logical": [
+            "unit"
+          ],
+          "physical": [
+            "pair",
+            "unit",
+            "bit"
+          ],
+          "map": {
+            "format": "qleisli.finite-matrix",
+            "version": 1,
+            "domain": "zeta8-dyadic-v1",
+            "rows": 2,
+            "cols": 1,
+            "entries": [
+              [
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                }
+              ],
+              [
+                {
+                  "numerator": "1",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                },
+                {
+                  "numerator": "0",
+                  "denominator_bits": 0
+                }
+              ]
+            ]
+          }
+        },
+        "logical": {
+          "format": "qleisli.finite-matrix",
+          "version": 1,
+          "domain": "zeta8-dyadic-v1",
+          "rows": 1,
+          "cols": 1,
+          "entries": [
+            [
+              {
+                "numerator": "1",
+                "denominator_bits": 0
+              },
+              {
+                "numerator": "0",
+                "denominator_bits": 0
+              },
+              {
+                "numerator": "0",
+                "denominator_bits": 0
+              },
+              {
+                "numerator": "0",
+                "denominator_bits": 0
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "view": [
+      "encoded",
+      [
+        "encoded-contract",
+        [
+          "encoding",
+          [
+            [
+              "unit"
+            ]
+          ],
+          [
+            [
+              "pair"
+            ],
+            [
+              "unit"
+            ],
+            [
+              "bit"
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            1,
+            [
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "encoding",
+          [
+            [
+              "unit"
+            ]
+          ],
+          [
+            [
+              "pair"
+            ],
+            [
+              "unit"
+            ],
+            [
+              "bit"
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            1,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "matrix",
+          1,
+          1,
+          [
+            [
+              [
+                "dyadic",
+                "1",
+                0
+              ],
+              [
+                "dyadic",
+                "0",
+                0
+              ],
+              [
+                "dyadic",
+                "0",
+                0
+              ],
+              [
+                "dyadic",
+                "0",
+                0
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "leaf-zero-width-owner-negative-phase",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "unit"
+        },
+        "output": {
+          "tag": "unit"
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [],
+                    "permutation": [
+                      0
+                    ],
+                    "phases": [
+                      4
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "leaf",
+      "signature": {
+        "tag": "unit"
+      },
+      "input": {
+        "token": 0,
+        "wires": [],
+        "shape": {
+          "bits": 0
+        }
+      },
+      "output": {
+        "token": 1,
+        "wires": [],
+        "shape": {
+          "bits": 0
+        }
+      },
+      "matrix": {
+        "format": "qleisli.finite-matrix",
+        "version": 1,
+        "domain": "zeta8-dyadic-v1",
+        "rows": 1,
+        "cols": 1,
+        "entries": [
+          [
+            {
+              "numerator": "-1",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            }
+          ]
+        ]
+      }
+    },
+    "view": [
+      "leaf",
+      [
+        [
+          "unit"
+        ]
+      ],
+      [
+        "port",
+        0,
+        [],
+        0
+      ],
+      [
+        "port",
+        1,
+        [],
+        0
+      ],
+      [
+        "matrix",
+        1,
+        1,
+        [
+          [
+            [
+              "dyadic",
+              "-1",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "pure-leaf-rectangular-plus-all-rows",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "unit"
+        },
+        "output": {
+          "tag": "bit"
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "unpack_unit",
+              "input": 0
+            },
+            {
+              "tag": "init0",
+              "output": 1,
+              "wire": 7
+            },
+            {
+              "tag": "gate",
+              "gate": "h",
+              "input": 1,
+              "output": 2
+            }
+          ],
+          "quantum_outputs": [
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "iso"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "pure-leaf",
+      "domain": {
+        "tag": "unit"
+      },
+      "codomain": {
+        "tag": "bit"
+      },
+      "input": {
+        "token": 0,
+        "wires": [],
+        "shape": {
+          "bits": 0
+        }
+      },
+      "output": {
+        "token": 2,
+        "wires": [
+          7
+        ],
+        "shape": {
+          "bits": 1
+        }
+      },
+      "matrix": {
+        "format": "qleisli.finite-matrix",
+        "version": 1,
+        "domain": "zeta8-dyadic-v1",
+        "rows": 2,
+        "cols": 1,
+        "entries": [
+          [
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "1",
+              "denominator_bits": 1
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            }
+          ],
+          [
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "1",
+              "denominator_bits": 1
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            },
+            {
+              "numerator": "0",
+              "denominator_bits": 0
+            }
+          ]
+        ]
+      }
+    },
+    "view": [
+      "pure-leaf",
+      [
+        [
+          "unit"
+        ]
+      ],
+      [
+        [
+          "bit"
+        ]
+      ],
+      [
+        "port",
+        0,
+        [],
+        0
+      ],
+      [
+        "port",
+        2,
+        [
+          7
+        ],
+        1
+      ],
+      [
+        "matrix",
+        2,
+        1,
+        [
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ],
+          [
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "1",
+              1
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ],
+            [
+              "dyadic",
+              "0",
+              0
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "control-pair-ordered-axis",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "pair",
+          "left": {
+            "tag": "bit"
+          },
+          "right": {
+            "tag": "bit"
+          }
+        },
+        "output": {
+          "tag": "pair",
+          "left": {
+            "tag": "bit"
+          },
+          "right": {
+            "tag": "bit"
+          }
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                7,
+                3
+              ],
+              "shape": {
+                "bits": 2
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      1,
+                      0
+                    ],
+                    "permutation": [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    "phases": [
+                      0,
+                      0,
+                      0,
+                      4
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "control",
+      "signature": {
+        "tag": "pair",
+        "left": {
+          "tag": "bit"
+        },
+        "right": {
+          "tag": "bit"
+        }
+      },
+      "axes": [
+        1
+      ]
+    },
+    "view": [
+      "control",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        1
+      ]
+    ]
+  },
+  {
+    "name": "control-atomic-bits-equal-width",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "bits",
+          "width": 2
+        },
+        "output": {
+          "tag": "bits",
+          "width": 2
+        }
+      },
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                7,
+                3
+              ],
+              "shape": {
+                "bits": 2
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "monomial",
+                    "indices": [
+                      1,
+                      0
+                    ],
+                    "permutation": [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    "phases": [
+                      0,
+                      0,
+                      0,
+                      4
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "control",
+      "signature": {
+        "tag": "bits",
+        "width": 2
+      },
+      "axes": [
+        1
+      ]
+    },
+    "view": [
+      "control",
+      [
+        [
+          "bits",
+          2
+        ]
+      ],
+      [
+        1
+      ]
+    ]
+  },
+  {
+    "name": "control-owners-zero-width-and-axis-order",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": null,
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            },
+            {
+              "token": 1,
+              "wires": [
+                7
+              ],
+              "shape": {
+                "bits": 1
+              }
+            },
+            {
+              "token": 2,
+              "wires": [
+                3
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "z",
+              "input": 1,
+              "output": 3
+            }
+          ],
+          "quantum_outputs": [
+            0,
+            3,
+            2
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "control-owners",
+      "signatures": [
+        {
+          "tag": "unit"
+        },
+        {
+          "tag": "bit"
+        },
+        {
+          "tag": "bit"
+        }
+      ],
+      "axes": [
+        1,
+        0
+      ]
+    },
+    "view": [
+      "control-owners",
+      [
+        [
+          [
+            "unit"
+          ]
+        ],
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "bit"
+          ]
+        ]
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  {
+    "name": "instrument-result-tree-and-source-identity",
+    "kind": "request",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "sources": [],
+      "evidence": [],
+      "root": 0,
+      "root_interface": null,
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                7
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "measure_z",
+              "input": 0,
+              "output": 0
+            },
+            {
+              "tag": "pack_unit",
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [
+            0
+          ],
+          "declared_effect": "observe"
+        }
+      ]
+    },
+    "request": {
+      "format": "qleisli.native-contract",
+      "version": 1,
+      "kind": "instrument",
+      "actual_signature": {
+        "input": {
+          "tag": "bit"
+        },
+        "result": {
+          "tag": "tuple",
+          "fields": [
+            {
+              "tag": "quantum",
+              "basis": {
+                "tag": "unit"
+              }
+            },
+            {
+              "tag": "bit"
+            },
+            {
+              "tag": "bits",
+              "width": 0
+            }
+          ]
+        }
+      },
+      "expected_signature": {
+        "input": {
+          "tag": "bit"
+        },
+        "result": {
+          "tag": "tuple",
+          "fields": [
+            {
+              "tag": "quantum",
+              "basis": {
+                "tag": "unit"
+              }
+            },
+            {
+              "tag": "bit"
+            },
+            {
+              "tag": "bits",
+              "width": 0
+            }
+          ]
+        }
+      },
+      "identity": {
+        "implementation": "\u89b3\u6e2c\ud834\udd1e",
+        "specification": "reference\u0000identity",
+        "sources": [
+          {
+            "path": "e\u0301.qli",
+            "text": "first\nsource"
+          },
+          {
+            "path": "\u00e9.qli",
+            "text": "second source"
+          }
+        ]
+      },
+      "expected_artifact": "{\"format\":\"qleisli.finite-ir\",\"version\":2,\"profile\":\"finite-meaning-v1\",\"sources\":[],\"evidence\":[],\"root\":0,\"root_interface\":null,\"programs\":[{\"quantum_inputs\":[{\"token\":0,\"wires\":[7],\"shape\":{\"bits\":1}}],\"classical_inputs\":[],\"operations\":[{\"tag\":\"measure_z\",\"input\":0,\"output\":0},{\"tag\":\"pack_unit\",\"output\":1}],\"quantum_outputs\":[1],\"classical_outputs\":[0],\"declared_effect\":\"observe\"}]}"
+    },
+    "view": [
+      "instrument",
+      [
+        "instrument-signature",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "tuple",
+            3
+          ],
+          [
+            "quantum",
+            [
+              [
+                "unit"
+              ]
+            ]
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bits",
+            0
+          ]
+        ]
+      ],
+      [
+        "instrument-signature",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "tuple",
+            3
+          ],
+          [
+            "quantum",
+            [
+              [
+                "unit"
+              ]
+            ]
+          ],
+          [
+            "bit"
+          ],
+          [
+            "bits",
+            0
+          ]
+        ]
+      ],
+      [
+        "identity",
+        "\u89b3\u6e2c\ud834\udd1e",
+        "reference\u0000identity",
+        [
+          [
+            "source",
+            "e\u0301.qli",
+            "first\nsource"
+          ],
+          [
+            "source",
+            "\u00e9.qli",
+            "second source"
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "caller-circuit-literal-controls-phase-axis-order",
+    "kind": "circuit",
+    "circuit": {
+      "basis": [
+        "pair",
+        "bit",
+        "bit"
+      ],
+      "steps": [
+        {
+          "controls": [
+            {
+              "index": 1,
+              "when_one": false
+            }
+          ],
+          "action": {
+            "tag": "hadamard",
+            "target": 0
+          }
+        },
+        {
+          "controls": [],
+          "action": {
+            "tag": "monomial",
+            "indices": [
+              1,
+              0
+            ],
+            "permutation": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "phases": [
+              0,
+              0,
+              0,
+              4
+            ]
+          }
+        }
+      ]
+    },
+    "view": [
+      "circuit",
+      [
+        [
+          "pair"
+        ],
+        [
+          "bit"
+        ],
+        [
+          "bit"
+        ]
+      ],
+      [
+        [
+          "step",
+          [
+            [
+              "control",
+              1,
+              false
+            ]
+          ],
+          [
+            "hadamard",
+            0
+          ]
+        ],
+        [
+          "step",
+          [],
+          [
+            "monomial",
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              4
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "caller-circuit-original-dependency-and-adjoint",
+    "kind": "circuit",
+    "dependency": "x-dependency",
+    "circuit": {
+      "basis": [
+        "bits:2"
+      ],
+      "steps": [
+        {
+          "controls": [
+            {
+              "index": 0,
+              "when_one": false
+            }
+          ],
+          "action": {
+            "tag": "contract",
+            "indices": [
+              1
+            ],
+            "evidence": 0,
+            "adjoint": true
+          }
+        }
+      ]
+    },
+    "view": [
+      "circuit",
+      [
+        [
+          "bits",
+          2
+        ]
+      ],
+      [
+        [
+          "step",
+          [
+            [
+              "control",
+              0,
+              false
+            ]
+          ],
+          [
+            "contract",
+            [
+              1
+            ],
+            0,
+            true
+          ]
+        ]
+      ]
+    ]
+  }
+]

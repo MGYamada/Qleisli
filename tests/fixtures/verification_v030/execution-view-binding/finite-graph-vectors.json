@@ -1,0 +1,1667 @@
+[
+  {
+    "name": "bell-graph",
+    "artifact": {
+      "evidence": [],
+      "format": "qleisli.finite-ir",
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "classical_inputs": [],
+          "classical_outputs": [
+            0,
+            1
+          ],
+          "declared_effect": "observe",
+          "operations": [
+            {
+              "output": 0,
+              "tag": "init0",
+              "wire": 0
+            },
+            {
+              "gate": "h",
+              "input": 0,
+              "output": 1,
+              "tag": "gate"
+            },
+            {
+              "output": 2,
+              "tag": "init0",
+              "wire": 1
+            },
+            {
+              "control": 1,
+              "control_out": 3,
+              "tag": "cnot",
+              "target": 2,
+              "target_out": 4
+            },
+            {
+              "input": 3,
+              "output": 0,
+              "tag": "measure_z"
+            },
+            {
+              "input": 4,
+              "output": 1,
+              "tag": "measure_z"
+            }
+          ],
+          "quantum_inputs": [],
+          "quantum_outputs": []
+        }
+      ],
+      "root": 0,
+      "root_interface": null,
+      "sources": [],
+      "version": 2
+    },
+    "view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [],
+          [],
+          [
+            [
+              "init0",
+              0,
+              0
+            ],
+            [
+              "gate",
+              0,
+              0,
+              1
+            ],
+            [
+              "init0",
+              2,
+              1
+            ],
+            [
+              "cnot",
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              "measure",
+              3,
+              0
+            ],
+            [
+              "measure",
+              4,
+              1
+            ]
+          ],
+          [],
+          [
+            0,
+            1
+          ],
+          2
+        ]
+      ],
+      [],
+      [
+        "program",
+        [],
+        [],
+        [
+          [
+            "init0",
+            0,
+            0
+          ],
+          [
+            "gate",
+            0,
+            0,
+            1
+          ],
+          [
+            "init0",
+            2,
+            1
+          ],
+          [
+            "cnot",
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            "measure",
+            3,
+            0
+          ],
+          [
+            "measure",
+            4,
+            1
+          ]
+        ],
+        [],
+        [
+          0,
+          1
+        ],
+        2
+      ],
+      2,
+      []
+    ]
+  },
+  {
+    "name": "phase-graph",
+    "artifact": {
+      "evidence": [],
+      "format": "qleisli.finite-ir",
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "classical_inputs": [],
+          "classical_outputs": [
+            0
+          ],
+          "declared_effect": "observe",
+          "operations": [
+            {
+              "output": 0,
+              "tag": "init0",
+              "wire": 0
+            },
+            {
+              "gate": "h",
+              "input": 0,
+              "output": 1,
+              "tag": "gate"
+            },
+            {
+              "gate": "t",
+              "input": 1,
+              "output": 2,
+              "tag": "gate"
+            },
+            {
+              "gate": "h",
+              "input": 2,
+              "output": 3,
+              "tag": "gate"
+            },
+            {
+              "input": 3,
+              "output": 0,
+              "tag": "measure_z"
+            }
+          ],
+          "quantum_inputs": [],
+          "quantum_outputs": []
+        }
+      ],
+      "root": 0,
+      "root_interface": null,
+      "sources": [],
+      "version": 2
+    },
+    "view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [],
+          [],
+          [
+            [
+              "init0",
+              0,
+              0
+            ],
+            [
+              "gate",
+              0,
+              0,
+              1
+            ],
+            [
+              "gate",
+              3,
+              1,
+              2
+            ],
+            [
+              "gate",
+              0,
+              2,
+              3
+            ],
+            [
+              "measure",
+              3,
+              0
+            ]
+          ],
+          [],
+          [
+            0
+          ],
+          2
+        ]
+      ],
+      [],
+      [
+        "program",
+        [],
+        [],
+        [
+          [
+            "init0",
+            0,
+            0
+          ],
+          [
+            "gate",
+            0,
+            0,
+            1
+          ],
+          [
+            "gate",
+            3,
+            1,
+            2
+          ],
+          [
+            "gate",
+            0,
+            2,
+            3
+          ],
+          [
+            "measure",
+            3,
+            0
+          ]
+        ],
+        [],
+        [
+          0
+        ],
+        2
+      ],
+      2,
+      []
+    ]
+  },
+  {
+    "name": "hidden-discard-graph",
+    "artifact": {
+      "evidence": [],
+      "format": "qleisli.finite-ir",
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "classical_inputs": [],
+          "classical_outputs": [
+            0
+          ],
+          "declared_effect": "observe",
+          "operations": [
+            {
+              "output": 0,
+              "tag": "init0",
+              "wire": 0
+            },
+            {
+              "gate": "h",
+              "input": 0,
+              "output": 1,
+              "tag": "gate"
+            },
+            {
+              "output": 2,
+              "tag": "init0",
+              "wire": 1
+            },
+            {
+              "control": 1,
+              "control_out": 3,
+              "tag": "cnot",
+              "target": 2,
+              "target_out": 4
+            },
+            {
+              "input": 3,
+              "tag": "discard"
+            },
+            {
+              "input": 4,
+              "output": 0,
+              "tag": "measure_z"
+            }
+          ],
+          "quantum_inputs": [],
+          "quantum_outputs": []
+        }
+      ],
+      "root": 0,
+      "root_interface": null,
+      "sources": [],
+      "version": 2
+    },
+    "view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [],
+          [],
+          [
+            [
+              "init0",
+              0,
+              0
+            ],
+            [
+              "gate",
+              0,
+              0,
+              1
+            ],
+            [
+              "init0",
+              2,
+              1
+            ],
+            [
+              "cnot",
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              "discard",
+              3
+            ],
+            [
+              "measure",
+              4,
+              0
+            ]
+          ],
+          [],
+          [
+            0
+          ],
+          2
+        ]
+      ],
+      [],
+      [
+        "program",
+        [],
+        [],
+        [
+          [
+            "init0",
+            0,
+            0
+          ],
+          [
+            "gate",
+            0,
+            0,
+            1
+          ],
+          [
+            "init0",
+            2,
+            1
+          ],
+          [
+            "cnot",
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            "discard",
+            3
+          ],
+          [
+            "measure",
+            4,
+            0
+          ]
+        ],
+        [],
+        [
+          0
+        ],
+        2
+      ],
+      2,
+      []
+    ]
+  },
+  {
+    "name": "unit-interface",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 7,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [],
+          "quantum_outputs": [
+            7
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [],
+      "sources": [],
+      "root": 0,
+      "root_interface": {
+        "input": {
+          "tag": "unit"
+        },
+        "output": {
+          "tag": "unit"
+        }
+      }
+    },
+    "view": [
+      "finite-graph",
+      0,
+      [
+        "root-interface",
+        [
+          [
+            "unit"
+          ]
+        ],
+        [
+          [
+            "unit"
+          ]
+        ]
+      ],
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              7,
+              [],
+              0
+            ]
+          ],
+          [],
+          [],
+          [
+            7
+          ],
+          [],
+          0
+        ]
+      ],
+      [],
+      [
+        "program",
+        [
+          [
+            "port",
+            7,
+            [],
+            0
+          ]
+        ],
+        [],
+        [],
+        [
+          7
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          7,
+          [],
+          0
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "output-order-with-unit",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 7,
+              "wires": [],
+              "shape": {
+                "bits": 0
+              }
+            },
+            {
+              "token": 9,
+              "wires": [
+                4
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [],
+          "quantum_outputs": [
+            9,
+            7
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [],
+      "sources": [],
+      "root": 0,
+      "root_interface": null
+    },
+    "view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              7,
+              [],
+              0
+            ],
+            [
+              "port",
+              9,
+              [
+                4
+              ],
+              1
+            ]
+          ],
+          [],
+          [],
+          [
+            9,
+            7
+          ],
+          [],
+          0
+        ]
+      ],
+      [],
+      [
+        "program",
+        [
+          [
+            "port",
+            7,
+            [],
+            0
+          ],
+          [
+            "port",
+            9,
+            [
+              4
+            ],
+            1
+          ]
+        ],
+        [],
+        [],
+        [
+          9,
+          7
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          9,
+          [
+            4
+          ],
+          1
+        ],
+        [
+          "port",
+          7,
+          [],
+          0
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "conservative-observe",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "x",
+              "input": 0,
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "observe"
+        }
+      ],
+      "evidence": [],
+      "sources": [],
+      "root": 0,
+      "root_interface": null
+    },
+    "view": [
+      "finite-graph",
+      0,
+      null,
+      [],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "gate",
+              1,
+              0,
+              1
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          2
+        ]
+      ],
+      [],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "gate",
+            1,
+            0,
+            1
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        2
+      ],
+      0,
+      [
+        [
+          "port",
+          1,
+          [
+            0
+          ],
+          1
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "non-topological-evidence-indices",
+    "artifact": {
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": [
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "x",
+              "input": 0,
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "x",
+              "input": 0,
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 1,
+                    "adjoint": true
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "gate",
+              "gate": "x",
+              "input": 0,
+              "output": 1
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        },
+        {
+          "quantum_inputs": [
+            {
+              "token": 0,
+              "wires": [
+                0
+              ],
+              "shape": {
+                "bits": 1
+              }
+            }
+          ],
+          "classical_inputs": [],
+          "operations": [
+            {
+              "tag": "apply_unitary",
+              "input": 0,
+              "output": 1,
+              "steps": [
+                {
+                  "controls": [],
+                  "action": {
+                    "tag": "contract",
+                    "indices": [
+                      0
+                    ],
+                    "evidence": 0,
+                    "adjoint": false
+                  }
+                }
+              ]
+            }
+          ],
+          "quantum_outputs": [
+            1
+          ],
+          "classical_outputs": [],
+          "declared_effect": "unitary"
+        }
+      ],
+      "evidence": [
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 2,
+          "specification": 3,
+          "identity": {
+            "implementation": "original-index-adjoint-dependency",
+            "specification": "original-index-adjoint-dependency-reference",
+            "sources": [
+              0
+            ]
+          }
+        },
+        {
+          "tag": "circuit",
+          "signature": {
+            "tag": "bit"
+          },
+          "implementation": 0,
+          "specification": 1,
+          "identity": {
+            "implementation": "x-dependency",
+            "specification": "x-dependency-reference",
+            "sources": [
+              0
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "path": "𝄞.qli",
+          "text": "Fixture identity only; no source preservation claim."
+        }
+      ],
+      "root": 4,
+      "root_interface": {
+        "input": {
+          "tag": "bit"
+        },
+        "output": {
+          "tag": "bit"
+        }
+      }
+    },
+    "view": [
+      "finite-graph",
+      4,
+      [
+        "root-interface",
+        [
+          [
+            "bit"
+          ]
+        ],
+        [
+          [
+            "bit"
+          ]
+        ]
+      ],
+      [
+        [
+          "source",
+          "𝄞.qli",
+          "Fixture identity only; no source preservation claim."
+        ]
+      ],
+      [
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "gate",
+              1,
+              0,
+              1
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "gate",
+              1,
+              0,
+              1
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    1,
+                    true
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "gate",
+              1,
+              0,
+              1
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ],
+        [
+          "program",
+          [
+            [
+              "port",
+              0,
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          [],
+          [
+            [
+              "apply-unitary",
+              0,
+              1,
+              [
+                [
+                  "step",
+                  [],
+                  [
+                    "contract",
+                    [
+                      0
+                    ],
+                    0,
+                    false
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            1
+          ],
+          [],
+          0
+        ]
+      ],
+      [
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "apply-unitary",
+                0,
+                1,
+                [
+                  [
+                    "step",
+                    [],
+                    [
+                      "contract",
+                      [
+                        0
+                      ],
+                      1,
+                      true
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "gate",
+                1,
+                0,
+                1
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "original-index-adjoint-dependency",
+            "original-index-adjoint-dependency-reference",
+            [
+              [
+                "source",
+                "𝄞.qli",
+                "Fixture identity only; no source preservation claim."
+              ]
+            ]
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  1,
+                  true
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          2,
+          1
+        ],
+        [
+          "function-evidence",
+          [
+            [
+              "bit"
+            ]
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "gate",
+                1,
+                0,
+                1
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "program",
+            [
+              [
+                "port",
+                0,
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            [],
+            [
+              [
+                "gate",
+                1,
+                0,
+                1
+              ]
+            ],
+            [
+              1
+            ],
+            [],
+            0
+          ],
+          [
+            "identity",
+            "x-dependency",
+            "x-dependency-reference",
+            [
+              [
+                "source",
+                "𝄞.qli",
+                "Fixture identity only; no source preservation claim."
+              ]
+            ]
+          ],
+          [
+            "circuit",
+            [
+              [
+                "bit"
+              ]
+            ],
+            [
+              [
+                "step",
+                [],
+                [
+                  "monomial",
+                  [
+                    0
+                  ],
+                  [
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "matrix",
+            2,
+            2,
+            [
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "1",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ],
+              [
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ],
+                [
+                  "dyadic",
+                  "0",
+                  0
+                ]
+              ]
+            ]
+          ],
+          1,
+          1
+        ]
+      ],
+      [
+        "program",
+        [
+          [
+            "port",
+            0,
+            [
+              0
+            ],
+            1
+          ]
+        ],
+        [],
+        [
+          [
+            "apply-unitary",
+            0,
+            1,
+            [
+              [
+                "step",
+                [],
+                [
+                  "contract",
+                  [
+                    0
+                  ],
+                  0,
+                  false
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          1
+        ],
+        [],
+        0
+      ],
+      0,
+      [
+        [
+          "port",
+          1,
+          [
+            0
+          ],
+          1
+        ]
+      ]
+    ]
+  }
+]

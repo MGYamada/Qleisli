@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"verify-ir","outcome":"error","diagnostics":[{"code":"format","severity":"error","message":"missing low surrogate","primary":null,"related":[{"message":"json_pointer: ","location":null}]}],"result":null}

@@ -1,11 +1,13 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
+mod execution_view;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;
 pub(crate) mod json;
 pub mod native;
+mod native_packet;
 pub mod pure_leaf;
 
 use codec::Codec;
@@ -359,8 +361,35 @@ fn export_inner(
 fn encode_proposal(
     program: &RawProgram,
     interface: Option<&RootInterface>,
-    mut encoder: Encoder,
+    encoder: Encoder,
 ) -> Result<Vec<u8>> {
+    let (root, encoder) = prepare_proposal(program, interface, encoder)?;
+    finish_proposal(root, interface, encoder)
+}
+
+fn encode_caller(
+    program: &RawProgram,
+    interface: Option<&RootInterface>,
+    encoder: Encoder,
+) -> Result<(Vec<u8>, native_packet::Caller)> {
+    let (root, encoder) = prepare_proposal(program, interface, encoder)?;
+    let origin = execution_view::finite::caller::Origin::collect(
+        program,
+        interface,
+        &encoder.canonical_evidence,
+    )?;
+    let caller = native_packet::Caller {
+        bytes: origin.describe()?,
+        indices: origin.alias_indices(),
+    };
+    Ok((finish_proposal(root, interface, encoder)?, caller))
+}
+
+fn prepare_proposal(
+    program: &RawProgram,
+    interface: Option<&RootInterface>,
+    mut encoder: Encoder,
+) -> Result<(usize, Encoder)> {
     if let Some(interface) = interface {
         for tree in [&interface.input, &interface.output] {
             let mut pending = vec![(tree, 0usize)];
@@ -399,7 +428,7 @@ fn encode_proposal(
             "supplied meaning receipt is not referenced by the program",
         ));
     }
-    finish_proposal(root, interface, encoder)
+    Ok((root, encoder))
 }
 
 fn finish_proposal(
@@ -800,9 +829,29 @@ fn envelope(value: &Value) -> Result<(Version, &[Value], &[Value], usize)> {
     Ok((version, programs, entries, root))
 }
 
-type RootParts = (RawProgram, Option<RootInterface>, Vec<(String, String)>);
-fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<RootParts> {
-    let value = json::parse(native.artifact())?;
+/// The actual decoded graph in original table order. Retaining it lets the
+/// native comparison cover every cached dependency and the same root Arc used
+/// by execution. This data type carries no independent acceptance authority.
+struct DecodedGraph {
+    programs: Vec<Arc<RawProgram>>,
+    evidence: Vec<Arc<FunctionEvidence>>,
+    root: usize,
+    interface: Option<RootInterface>,
+    sources: Vec<(String, String)>,
+}
+impl std::fmt::Debug for DecodedGraph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DecodedGraph")
+            .field("program_count", &self.programs.len())
+            .field("evidence_count", &self.evidence.len())
+            .field("root", &self.root)
+            .field("interface", &self.interface)
+            .field("source_count", &self.sources.len())
+            .finish_non_exhaustive()
+    }
+}
+fn decode_subject(subject: &Arc<native::Subject>, budget: &mut Budget) -> Result<DecodedGraph> {
+    let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
     let order = graph(programs, entries, root, version)?;
@@ -844,8 +893,8 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
                     .expect("topological specification")
                     .clone();
                     Ok(Arc::new(
-                        FunctionEvidence::decode_native(
-                            native,
+                        FunctionEvidence::decode_subject(
+                            subject,
                             signature,
                             implementation,
                             specification,
@@ -857,8 +906,8 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
                 } else {
                     let target = meaning(entry.field("meaning")?, signature.clone())?;
                     Ok(Arc::new(
-                        FunctionEvidence::decode_native(
-                            native,
+                        FunctionEvidence::decode_subject(
+                            subject,
                             signature,
                             implementation,
                             target.target_ir().map_err(contract_error)?,
@@ -875,7 +924,6 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
     if used.len() != snapshot.len() {
         return Err(Error::format("unused source entry").at("/sources"));
     }
-    let program = checked[root].take().expect("root checked");
     let interface = match value.field("root_interface")? {
         Value::Null => None,
         i => {
@@ -888,7 +936,25 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
             Some(interface)
         }
     };
-    Ok((program, interface, snapshot))
+    let programs = checked
+        .into_iter()
+        .map(|program| {
+            program
+                .map(Arc::new)
+                .ok_or_else(|| Error::format("incomplete decoded program graph"))
+        })
+        .collect::<Result<_>>()?;
+    let evidence = receipts
+        .into_iter()
+        .map(|receipt| receipt.ok_or_else(|| Error::format("incomplete decoded evidence graph")))
+        .collect::<Result<_>>()?;
+    Ok(DecodedGraph {
+        programs,
+        evidence,
+        root,
+        interface,
+        sources: snapshot,
+    })
 }
 
 /// Checked format migration preserves exact root metadata and source ordering.

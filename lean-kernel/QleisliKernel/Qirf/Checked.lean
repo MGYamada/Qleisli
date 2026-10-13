@@ -58,6 +58,7 @@ structure Request where
 /-- A result is data produced by checking, not a supplied certificate. Its
 correctness is established separately from the executable acceptance path. -/
 structure Root where
+  receipts : Slots
   dependencies : List Dependency
   program : Program
   checked : Raw.Observation.Checked
@@ -79,12 +80,13 @@ def sourcesUsed (artifact : Qirf.Artifact) : Bool :=
 /-- Preserve the complete original graph, root and independent event reader.
 The optional mathematical request is a separate stage with the same budget. -/
 def checkRoot (artifact : Qirf.Artifact) (order : Array Nat) : WorkM Root := do
-  let dependencies ← checkGraph artifact order
+  let receipts ← checkGraphReceipts artifact order
+  let dependencies := (before receipts).map Semantics.ObservingFunction.Receipt.dependency
   guard (sourcesUsed artifact)
   let program ← lift (readOption artifact.programs[artifact.root]?)
   let checked ← Raw.Observation.verify dependencies program
   guard (portInterfaceValid artifact program) .request
-  return ⟨dependencies,program,checked⟩
+  return ⟨receipts,dependencies,program,checked⟩
 
 /-- Retain both original requested semantics and the reconstructed operator.
 Equality checking and whole-space unitarity still execute before returning. -/

@@ -15,6 +15,21 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Bind retained Rust execution data to Lean's freshly checked data through the
+  QLV2 native protocol (#362). Finite graphs, dependency caches, literal caller
+  aliases, typed contracts and both instrument roots use exact QDV1 comparison;
+  all five hierarchy modes compare their actual retained execution plans.
+  Inspection remains explicit and cannot authorize an execution view. Reject
+  divergent views with `decoded_view` and reject old external request/reply
+  frames without fallback. Original artifact formats and independent checks
+  remain in force. Pure-gate proofs connect the actual new ordinary entry to
+  the original root's ownership and classical-scope properties. Shared small
+  vectors, adversarial native requests and retained allocation tests distinguish
+  byte binding from the pending source, compiler, walker and runtime proofs.
+  Preserve original sources, diagnostics and the two admitted scoped guarantees.
+  Compile complete comparison drivers against the current native kernel library,
+  preserving every mutation and existing deadlines; test malformed outer frames
+  directly so a valid-frame helper cannot replace native refusal coverage.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

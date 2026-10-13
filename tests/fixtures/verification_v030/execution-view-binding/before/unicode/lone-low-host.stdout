@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"verify-ir","outcome":"error","diagnostics":[{"code":"format","severity":"error","message":"invalid Unicode scalar","primary":null,"related":[{"message":"json_pointer: ","location":null}]}],"result":null}
