@@ -22,9 +22,10 @@ Compatibility reports additionally keep freshly checked finite-leaf handles.
 ## Native envelope cutover
 
 The #362 cutover uses `QLV2` as the external native envelope. Its six
-little-endian fields are four magic bytes, a `u32` scope, three `u32` byte
+header fields are four magic bytes, a `u32` scope, three `u32` byte
 lengths (original payload, graph view, caller view), and a `u32` alias count.
-The payloads follow in that order, followed by the alias indices as `u32`s.
+Integers are little endian. The payloads follow in that order, followed by
+the alias indices as `u32`s.
 Exact EOF is required. The complete envelope is bounded by 64 MiB, the two
 views together by the existing QDV1 byte limit, and the alias count by 100,000.
 Original per-profile limits remain in force; these are not increased budgets.
@@ -85,7 +86,7 @@ configured repository fixture/PR budgets remain unchanged.
 For example, null is `5144563100`, false is `5144563101`, and zero is
 `51445631030000000000000000`. The string `𝄞` is
 `514456310404000000f09d849e`. Byte counts concern UTF-8 bytes, not character
-counts. The [shared vectors](../../../tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json)
+counts. The [shared vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json)
 fix type distinctions, unsigned width, endian order, nested array order, NUL,
 non-BMP/replacement characters and composed/decomposed text.
 
@@ -162,10 +163,10 @@ circuit from its literal implementation events and uses a fresh native receipt
 for the checked exact matrix, depth and expanded-step count. Closed classical
 branches select events only after both arms have been checked. Frame reorderings
 rename later axes; only the final composite permutation is materialized.
-Connecting these walkers to the complete retained graph and native comparison
-remains an integration obligation.
+The production graph and caller descriptions include these walkers in the
+native comparison before retaining the same runtime objects for execution.
 
-The [finite vectors](../../../tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json)
+The [finite vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json)
 include three retained observing source roots, all 21 Raw constructors, both
 branch arms, zero-width owners, exact type trees and rectangular matrices.
 The combined all-constructors row is intentionally transport data, not an
@@ -173,7 +174,7 @@ accepted quantum program. Rust and Lean read their own typed data and compare
 against these independently specified descriptions. This checks the walkers,
 not execution binding or a source/runtime preservation theorem.
 
-The [function-cache vectors](../../../tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json)
+The [function-cache vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json)
 add ten independently specified full retained-evidence descriptions. They
 cover Unit ownership, H–T–H exact coefficients, output permutations, branch
 routes that compose or cancel, certified/protected ancilla phases, quantum
@@ -181,7 +182,7 @@ conditional phase and a dependency with an adjoint. Rust checks actual retained
 function data; Lean freshly checks the original bodies and derives its own
 cache view. Dependency zero in the last row identifies the first corpus entry;
 the test remaps actual retained Arc references to that explicit corpus index.
-This test indexing is not the eventual production artifact graph mapping.
+This test indexing is separate from the original-index production graph mapping.
 
 ## Retained finite graph
 
@@ -203,7 +204,7 @@ Full-graph dependency references use original artifact indices, including
 when the successful checking order differs from table order. The walker reads
 fresh graph receipts produced by the common checker, never submitted receipts.
 
-The [graph vectors](../../../tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json)
+The [graph vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json)
 retain three original observing sentinels and add Unit interfaces, ordered
 mixed-width output ports, conservative effects and an evidence table whose
 first entry depends on its second. These remain bounded transport comparisons;
@@ -260,12 +261,12 @@ The caller-circuit walker describes the supplied actual `Circuit` as
 `circuit(basis, steps)`, retaining literal controls, phase tables, axis order and
 actual dependency references mapped to original indices. It does not use the
 synthetic single-action wrapper constructed by the encoded-contract checker.
-The [contract vectors](../../../tests/fixtures/verification_v030/execution-view-binding/contract-walker-vectors.json)
+The [contract vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/contract-walker-vectors.json)
 check all six obligation kinds and two literal caller circuits. Lean freshly
 checks each original native request before walking its retained obligation;
 Rust describes independently constructed typed values. Data mutations distinguish
 encodings, phase, both ports, equal-width type trees, source identity and axes.
-The [authoring record](../../../tests/fixtures/verification_v030/execution-view-binding/README.md)
+The [authoring record](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/README.md)
 describes both preserved refusals and their corrections.
 The QLV2 caller scope also binds the actual circuit steps and retained caches.
 
@@ -292,14 +293,14 @@ total storage across all three fields. Neither side serializes the original
 request JSON as the execution view. Production uses private unbound staging
 and moves the compared graph into the accepted handle only after native success.
 
-The [complete-contract vectors](../../../tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json)
+The [complete-contract vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json)
 retain eight independently authored graph descriptions covering every current
 contract kind and an observing reference with distinct owner/wire identities.
 The pure Lean gate refuses 1,152 individual scalar, empty-list and array-shape
 mutations over these valid original requests. The Rust tests also refuse missing
-or unexpected reference graphs. These checks do not bind original caller Arc
-aliases/caches or hierarchy execution and do not complete the native CLI or
-protocol. The walker alone issues no execution handle or constitutional guarantee.
+or unexpected reference graphs. These pure checks are separate from the QLV2
+native regressions and the caller/hierarchy bindings below. The walker alone
+issues no execution handle or constitutional guarantee.
 
 ## Original caller evidence aliases
 
@@ -332,11 +333,11 @@ against the existing 1,000,000-node transport capacity. Description construction
 uses one writer with the existing total-byte and depth limits. These are host
 transport bounds, not quantitative quantum resource certificates.
 
-The [caller recipes](../../../tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json)
+The [caller recipes](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/caller-alias-recipes.json)
 specify four complete descriptions independently of the walkers: repeated Arc,
 separate equal clone, equal independently checked parents with distinct child
 Arcs, and references in an unselected branch's certified use/logical circuits.
-The [original branch refusal](../../../tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json)
+The [original branch refusal](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json)
 retains the first invalid phi wire and real diagnostic; the regression rechecks
 that native refusal before exercising the corrected fresh-wire case.
 These tests add no production acceptance authority. Private unbound staging and
@@ -473,7 +474,7 @@ the plan derived from those same objects. The QLV2 CLI dispatches to these gates
 with a mandatory execution view when execution is requested. Production Rust
 describes and retains the same plan; the walker itself confers no acceptance.
 
-The [five-mode comparison record](../../../tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-validation.json)
+The [five-mode comparison record](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-validation.json)
 uses actual retained Rust plans
 from five small native-accepted inputs. It rejects 2,683 individual description
 mutations while fresh inspection of each original still succeeds. Three invalid

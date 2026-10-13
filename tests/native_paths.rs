@@ -90,7 +90,9 @@ fn raw_exports_conversions_and_native_reports_share_the_original_byte_gate() {
         .unwrap();
     assert_eq!(native.artifact(), checked.artifact());
     assert_eq!(native.request(), checked.request());
-    assert_eq!(native.exact_work(), checked.native_exact_work());
+    // The original decision is identical; literal-caller comparison adds
+    // separately accounted work before authorizing the execution view.
+    assert!(native.exact_work() < checked.native_exact_work());
     for version in [Version::V1, Version::V2] {
         let converted = kernel
             .convert(checked.artifact(), version, Some(request))
