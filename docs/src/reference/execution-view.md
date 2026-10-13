@@ -318,8 +318,8 @@ the complete actual function description specified above. An index is proposed
 by the original encoder's canonical snapshot map. That lookup is not evidence
 that the actual body, matrix, circuit or descendants equal Lean's fresh result.
 The pure Lean attachment compares each emitted alias against that proposed
-original entry. Production use of this attachment is still required before
-an execution handle can be issued from these descriptions.
+original entry. Native QLV2 caller requests invoke this attachment before
+issuing an execution handle from the compared descriptions.
 
 This extra traversal is necessary because the artifact encoder returns early
 when it finds an equal snapshot. That encoder registers the directly encountered
