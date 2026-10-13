@@ -23,6 +23,34 @@ class JsonCliTests(unittest.TestCase):
     def source(self, source):
         (self.root / "main.qli").write_bytes(source.encode("utf-8"))
 
+    def checker_path(self):
+        selected = os.environ.get("QLEISLI_KERNEL")
+        self.assertIsNotNone(selected, "select the native checker with QLEISLI_KERNEL")
+        return str(Path(selected).resolve(strict=True))
+
+    def assert_requestless_source_check(self, result):
+        self.assertEqual(set(result), {
+            "checker_paths", "checker_identity", "native_decisions", "entry",
+            "concrete_ir_roots", "source_preservation_verified",
+        })
+        self.assertEqual(result["checker_paths"], [self.checker_path()])
+        self.assertEqual(result["checker_identity"], "unpinned")
+        self.assertEqual(result["entry"], {"present": True, "request_checked": False})
+        self.assertIs(result["source_preservation_verified"], False)
+        roots = result["concrete_ir_roots"]
+        self.assertEqual(set(roots), {"local", "bundled"})
+        self.assertIs(type(roots["local"]), int)
+        self.assertIs(type(roots["bundled"]), int)
+        self.assertEqual(roots["local"], 1)
+        self.assertGreater(roots["bundled"], 0)
+        native = result["native_decisions"]
+        self.assertEqual(set(native), {"count", "requests_checked", "complete"})
+        self.assertIs(type(native["count"]), int)
+        self.assertGreaterEqual(native["count"], roots["local"] + roots["bundled"])
+        self.assertIs(type(native["requests_checked"]), int)
+        self.assertEqual(native["requests_checked"], 0)
+        self.assertIs(native["complete"], True)
+
     def invoke(self, *args, status=0):
         output = subprocess.run([BINARY, *args], capture_output=True, check=False)
         self.assertEqual(output.returncode, status, output)
@@ -61,7 +89,7 @@ class JsonCliTests(unittest.TestCase):
     def test_check_run_and_distribution_order(self):
         self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
-        self.assertEqual(self.invoke("check", self.root, "--format=json")["result"], {"verified": True})
+        self.assert_requestless_source_check(self.invoke("check", self.root, "--format=json")["result"])
         rows = self.invoke("run", "--format=json", self.root)["result"]["distribution"]
         self.assertEqual([row["bits"] for row in rows], [[False, True], [True, False]])
         for row in rows:
@@ -213,13 +241,18 @@ class JsonCliTests(unittest.TestCase):
     def test_portable_ir_is_independently_decoded_and_reverified(self):
         self.source("observe fn main() -> Bit { 1 }")
         artifact = self.root / "artifact.json"
-        self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"], {"path": str(artifact)})
+        artifact_scope = {
+            "checker_path": self.checker_path(), "checker_identity": "unpinned",
+            "request_checked": False, "source_preservation_verified": False,
+        }
+        self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"],
+                         {"path": str(artifact), **artifact_scope})
         data = json.loads(artifact.read_bytes())
         self.assertEqual(set(data), {"format", "version", "profile", "sources", "programs", "evidence", "root", "root_interface"})
         self.assertEqual(data["format"], "qleisli.finite-ir")
         self.assertEqual(data["version"], 2)
         (self.root / "main.qli").unlink()
-        self.assertEqual(self.invoke("verify-ir", artifact, "--format=json")["result"], {"verified": True, "request_checked": False})
+        self.assertEqual(self.invoke("verify-ir", artifact, "--format=json")["result"], artifact_scope)
         data["programs"][data["root"]]["classical_outputs"] = [4294967295]
         artifact.write_text(json.dumps(data), encoding="utf-8")
         error = self.invoke("verify-ir", artifact, "--format=json", status=1)["diagnostics"][0]

@@ -5127,7 +5127,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "9c7928aaa5b830432461cce3d27a3612919e613dc651cf3cf343f94eafd6149d",
+      "sha256": "1f9a859fed686c80070df7d780bac3209ba7e8b5196fc26ba1c8ea4210e34e3c",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -6441,7 +6441,7 @@
       "tests/fixtures/verification_v022/hierarchy/h.wrong-phase.request.json": "2680dc9e5af50c780436fed1d421f124177fbbaa38b7e4729601518af9b9c898",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
-      "scripts/test_verification_baseline.py": "0303e573563b15184282aee3fbe8a8186f1b9d0fa5201d0e05ec4f96f259f8e9",
+      "scripts/test_verification_baseline.py": "9f10922ec6b4082e4cffbe5abf1941a0b325c4a9edea0f3a99394c7459ff28ec",
       "tests/verification_boundary.rs": "05368997cdae46c12ecf4ccf016605229f77cdfd14d692c777fc7159d73f2a11",
       "tests/hierarchical_host.rs": "23682feb75043e8448e47ed4872cfb6e7c64fc2765eb7262e7bf7c6901185875",
       "scripts/test_hierarchical_readout.py": "c56647a4fa0ec53d13dd7f07acafd2427cd430ecb71afb2803250b9b0ba79ea7",

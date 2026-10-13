@@ -186,7 +186,7 @@ pub(super) fn check(
         }),
     )?;
     let checker = std::fs::canonicalize(executable)
-        .map_err(|error| Error::new("io", format!("cannot resolve Lean checker: {error}")))?;
+        .map_err(|error| Error::new("io", format!("cannot start Lean native checker: {error}")))?;
     crate::interchange::process::invoke(
         &checker,
         bytes,

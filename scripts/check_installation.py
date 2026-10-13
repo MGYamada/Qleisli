@@ -121,7 +121,13 @@ def check(root, binary):
                                   env=missing, capture_output=True, text=True, timeout=60)
         require(rejected.returncode == 1 and json.loads(rejected.stdout)["diagnostics"][0]["code"] == "project",
                 "missing native checker must reject without discovery or download")
-        invoke("check", "bell", structured=False)
+        checked_text = invoke("check", "bell", structured=False)
+        require(f"checker: {env['QLEISLI_KERNEL']}\n" in checked_text
+                and "checker identity: unpinned\n" in checked_text
+                and "independent requests checked: 0\n" in checked_text
+                and "entry request checked: false\n" in checked_text
+                and "source preservation: not proved\n" in checked_text,
+                "Bell text check did not report the actual checker and request-free scope")
         output = invoke("run", "bell", structured=False)
         text_distribution = {bits: float(weight) for bits, weight in
                              (row.split(": ") for row in output.splitlines())}
@@ -129,8 +135,18 @@ def check(root, binary):
                 and all(math.isclose(p, 0.5, abs_tol=1e-12, rel_tol=0)
                         for p in text_distribution.values()), "wrong Bell distribution")
         invoke("sample", "bell", "--shots=8", "--seed=0", structured=False)
-        require(invoke("check", "bell")["result"] == {"verified": True},
-                "Bell was not verified")
+        checked = invoke("check", "bell")["result"]
+        require(checked["checker_paths"] == [env["QLEISLI_KERNEL"]]
+                and checked["checker_identity"] == "unpinned"
+                and checked["entry"] == {"present": True, "request_checked": False}
+                and checked["source_preservation_verified"] is False
+                and "verified" not in checked,
+                "Bell JSON check did not report the actual checker and request-free scope")
+        roots, decisions = checked["concrete_ir_roots"], checked["native_decisions"]
+        require(roots["local"] == 1 and roots["bundled"] > 0
+                and decisions["count"] >= roots["local"] + roots["bundled"]
+                and decisions["requests_checked"] == 0 and decisions["complete"] is True,
+                "Bell check did not retain complete concrete-root/native-decision metadata")
         sampled = invoke("sample", "bell", "--shots=8", "--seed=0")
         shots = sampled["result"]["shots"]
         require(len(shots) == 8 and all(s["bits"] in [[False, False], [True, True]]
