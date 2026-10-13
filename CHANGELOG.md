@@ -15,6 +15,13 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Consolidate the existing numeric and operation-access obligations in one
+  `requires` contract (#47), preserving ordered arithmetic well-formedness,
+  exact bounded affine checking and independent capability requirements.
+  Locate false closed premises at their original clauses and identify the
+  selected entry or provider and failed predicate. Retain complete generic-body
+  checking, exact specialization identities and separate native acceptance;
+  this adds no const-language extension or general preservation proof.
 - Report the actual native checking scope in source `check`, `verify-ir`,
   `emit-ir` and `interop check` successes (#363), replacing the unqualified
   `verified: true` claim.

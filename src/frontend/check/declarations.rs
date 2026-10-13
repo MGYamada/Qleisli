@@ -195,10 +195,26 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         moved: BTreeSet::new(),
         next_binding: Rc::new(Cell::new(0)),
     };
+    let mut numeric_premises = Vec::new();
     for requirement in &decl.requires {
         budget.charge(decl.span, 1)?;
         if let Requirement::Predicate(predicate) = requirement {
-            scope.context = normalize::predicate(predicate, index, &scope, true, budget)?;
+            let premise = normalize::numeric_premise(predicate, index, &scope, budget)?;
+            let mut charge = |span, cells| budget.preparation_charge(span, cells);
+            // Preserve the checked comparison before Context consumes its
+            // affine inputs. Charge both provenance storage and copied trees.
+            charge(premise.span, 4)?;
+            let left = premise.left.copy_budgeted(premise.span, &mut charge)?;
+            let right = premise.right.copy_budgeted(premise.span, &mut charge)?;
+            scope.context = scope.context.compare_budgeted(
+                left,
+                premise.comparison,
+                right,
+                true,
+                premise.span,
+                &mut charge,
+            )?;
+            numeric_premises.push(premise);
         }
     }
     if !scope.context.feasible_budgeted(
@@ -399,6 +415,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         meaning_domain,
         result,
         premises: scope.context,
+        numeric_premises,
     })
 }
 

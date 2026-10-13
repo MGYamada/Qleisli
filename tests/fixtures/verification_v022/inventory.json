@@ -3625,7 +3625,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "30c0a088dcc6190eb98a528618b31973041ebff94182f32e1ec3bcd25f4d8e72",
+      "sha256": "bf261cb616c869c565e316d5d31d9cb944f4db7d4b3a36ecc5bb2e7a70ad91ae",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3683,7 +3683,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "a3ec4e263960c9110ee77e40ebe4cec77c7d6b17f4f8d7e7ad121ed0a2a6ad43",
+      "sha256": "c0b85212f95e3aef032952b46d1872ab4dfebea93484437f46ffe7830cd9bf56",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3693,7 +3693,7 @@
     },
     {
       "path": "src/frontend/check/normalize.rs",
-      "sha256": "d9d6f2569f75c24b3a4f0ee8dbc3d73fd44aeeea649e403384c42bc19d20fe53",
+      "sha256": "7f5186573fecfdad9bff57f814d3987ed9ab58946f2e90f601800fee3e2a6481",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4440,7 +4440,7 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "eb6bd18bd2ea61c71be019c32318efa74b0cb592fc71bd618b7f787225dd28a7",
+      "sha256": "4bae3d8aea86d27eb3715ecfa3a0e42519eaf8d14d44780189b1d4f2d126f7ad",
       "group": "sized-source",
       "surface": {
         "declarations": [],

@@ -365,9 +365,22 @@ owner/effect rule, capability, dependency and static branch, including private
 and unused declarations, both arms, zero-iteration bodies and all five ordinary
 bundled modules. A source-semantic error precedes concrete profile eligibility.
 Specialization then checks closed substitutions, exact type trees, provider
-identity, premises and aggregate work. Specialization keys retain those inputs
-and source/dependency identity; width alone is not a key. Instance success is
-not a proof about every member of a generic family.
+identity, premises and aggregate work. Numeric and operation obligations share
+the [ordered `requires` mechanism](static-language.md#unified-requires-obligations);
+the closed check consumes its normalized facts rather than reclassifying the
+source definition. Instance success is not a proof about every member of a
+generic family.
+
+The specialization cache belongs to one immutable checked program and its
+resolved dependency universe. Its keys retain the resolved declaration, exact
+Basis trees, closed Nat values and recursive operation identity, including
+provider specializations, constructor arguments and retained Meaning identities.
+The owning checked program supplies the source/dependency identity; the key is
+not a process-wide name or width cache. Relevant premises and capabilities come
+from that declaration and its checked substitutions. Equal width, matching
+display names or a cache entry from different source cannot replace them.
+Cache reuse retains aggregate call accounting and does not itself supply
+native acceptance or a source-preservation proof.
 
 An endomorphic `Op<A>` formal starts with no executable access. Each
 `requires Applicable(U)`, `Adjointable(U)` or `Controllable(U)` grants only that named

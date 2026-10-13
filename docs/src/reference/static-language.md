@@ -4,6 +4,7 @@ This chapter specifies the implemented static fragment in 0.3.0-beta, under
 the [type boundary](type-model.md) and [authority hierarchy](authority.md).
 It records the existing rules tracked by
 [#28](https://github.com/MGYamada/Qleisli/issues/28),
+[#47](https://github.com/MGYamada/Qleisli/issues/47),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#63](https://github.com/MGYamada/Qleisli/issues/63). It does not introduce a
 general compile-time programming language. General builders and static collections
@@ -105,6 +106,50 @@ symbolic implementation stores affine coefficients/constants as signed
 specialization uses checked unsigned 32-bit naturals. Exceeding either
 representation is a capacity failure, not permission to wrap, truncate or
 approximate the value. Concrete negative subtraction also rejects.
+
+## Unified `requires` obligations
+
+One comma-separated `requires` clause contains both natural comparisons and
+operation-access predicates. Both use the common original-source judgment and
+closed substitution checks, with their respective rules below. For example:
+
+```qli
+fn step[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>>
+requires n >= 1, Applicable(U), n-1 <= 3 {
+    U(q)
+}
+```
+
+The numeric entries use the six comparisons above; the access entries are
+`Applicable(U)`, `Adjointable(U)` and `Controllable(U)`. An access entry must
+name an operation parameter of that declaration. Repeating the same access
+entry rejects. Each access is independent: neither another access, an effect
+annotation nor a Meaning refinement supplies it.
+
+Numeric entries are normalized in source order. While checking an entry's
+arithmetic, only preceding numeric entries extend the initial Nat context.
+Thus `requires n >= 1, n-1 <= 3` is well formed, whereas
+`requires n-1 <= 3, n >= 1` rejects at `n-1`: a later guard cannot repair an
+earlier unguarded subtraction. An intervening access entry adds no numeric
+fact and does not remove an earlier one. After this ordered well-formedness
+check, the normalized numeric facts form a conjunction; access entries form
+the declaration's explicit capability assumptions. The original body is
+checked under those facts, including both static arms and empty fold bodies.
+
+A generic call substitutes exact static arguments simultaneously and must
+establish every callee numeric premise and required operation path from the
+caller context. An unresolved premise or missing path rejects at its source
+obligation. A closed instance separately evaluates the checked numeric facts
+and checks the actual providers before concrete body elaboration. A false
+numeric premise identifies the selected entry or resolved provider, the failed
+predicate and its original clause location. Supplying a convenient closed
+instance cannot validate an ill-formed generic declaration.
+
+These obligations compose with opaque Basis parameters, exact `Bits<n>` sizes
+and the [provider rules](type-model.md#inference-and-generic-responsibilities).
+They introduce no runtime condition, owner conversion, semantic evidence or
+new native acceptance rule. Arbitrary Boolean formulas, user-defined constraint
+predicates and a broader const language are not admitted by this clause.
 
 ## Sizes and zero width
 
@@ -422,6 +467,14 @@ profile also limits retained scope storage to 16,384 cells. Natural-expression
 depth is limited to 128; type trees have separate 4,096-cell, depth-64 and
 64-immediate-field capacities. Accounting units measure implementation work
 and retained structures; they are not byte counts or quantum resource bounds.
+
+The exact constraint procedure allows at most 64 alternatives and 32 symbolic
+variables per elimination problem. Before generating an elimination pair, it
+rejects if the pair count would exceed 50,000 or the retained set already has
+4,096 constraints. All storage also consumes the common preparation budget.
+Ordered binder identities and deterministic collections fix its
+traversal and tie-breaking. Exceeding a solver capacity rejects; it does not
+convert an unresolved premise into a successful assumption.
 
 The current selected-source concrete elaborator limits aggregate function
 calls to 1,024, call depth to 16, aggregate fold iterations to 1,024, emitted

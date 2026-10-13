@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [unified requires study](unified-requires-v030/README.md) retains fourteen
+first sources and real diagnostics, including a false closed premise and the
+initially unresolved question about subtraction-guard order. Its static byte
+checks are separate from current mixed-constraint and evidence regressions.
+
 The [native check scope study](native-check-scope-v030/README.md) preserves
 three first sources, twelve actual CLI observations and an 18-decision trace
 with no independent requests. Generic-profile refusals, unused bundled roots,
