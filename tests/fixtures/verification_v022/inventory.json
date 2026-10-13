@@ -3792,7 +3792,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "e04386549580927f627454bb54734bf13ac1047d0ede74f2f1f22d9870ba7599",
+      "sha256": "27b550a6c95abfad511b783ee7b8826ea42e589d5243ebb0345d2d25dd9e1de7",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3802,7 +3802,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "42cdbb9515b809d82c99847f5a956622bb5b11336413289489e4fe6b572f4f8b",
+      "sha256": "593c2651db3cbe2bc43e8b9905feaf1a1042f8a09b04afe59a9827ecbdaab145",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4011,7 +4011,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "92107e1641e4464f5484b16c97800ed88e9ebcc7ef9f3390973e9da7aad16763",
+      "sha256": "2a3eb35a30ddc461f5463fcae8dd4e1a9ce04ff21004f9187cef4177c59b4a10",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4110,7 +4110,7 @@
     },
     {
       "path": "src/frontend/diagnostic.rs",
-      "sha256": "6dc493549ea758c25e11f77184d6cb04c35fbd493dbcf3ced841a954cb93ca68",
+      "sha256": "075f2baa95b0cee42008820f883776be328cba8a3f5442c8a29720e35e3d989c",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4300,7 +4300,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "b4d157542fe57d67eeb7b06c61e6d6c08869f79178982ff8d8eab73812af1de3",
+      "sha256": "a07ea45a5575f948064a636e1dd9a9ffc44806cd4f6d9f08bbb8786fd984b2f9",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4340,7 +4340,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "714905039ae5f7329f0c222ee9b91daa25d5a6365c93428487a1857f63b5f6cb",
+      "sha256": "58400f1c4cd1cda449960a736842b8e4cfec83cf828156f2ec9f5b01ceaacdc8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5686,7 +5686,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "b351721c365bcb77efe4a812e43e2f59b80844692db0928327b0a3920b502666",
+      "sha256": "0c0b83faf845b3a0f55fefa3d61a5ad2830342a2a715f5b5afa728e1d203d4c4",
       "group": "raw-core",
       "surface": {
         "declarations": [

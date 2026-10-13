@@ -6,7 +6,7 @@
 use std::path::PathBuf;
 
 use super::ast::Span;
-use super::compile::{CompileError, ErrorCode};
+use super::compile::CompileError;
 
 pub(crate) const CONTROL_ACCESS_EXPLANATION: &str = "ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access";
 
@@ -33,21 +33,7 @@ pub struct Diagnostic {
 
 impl Diagnostic {
     pub(crate) fn from_compile(error: CompileError) -> Self {
-        let code = match error.code {
-            ErrorCode::Project => "project",
-            ErrorCode::UnknownName => "unknown_name",
-            ErrorCode::RecursiveCall => "recursive_call",
-            ErrorCode::TypeMismatch => "type_mismatch",
-            ErrorCode::Arity => "arity",
-            ErrorCode::Ownership => "ownership",
-            ErrorCode::Effect => "effect",
-            ErrorCode::InvalidEntry => "invalid_entry",
-            ErrorCode::Unsupported => "unsupported",
-            ErrorCode::Limit => "limit",
-            ErrorCode::InvalidIr => "invalid_ir",
-            ErrorCode::Capability => "capability",
-            ErrorCode::Contract => "contract",
-        };
+        let code = error.code.as_str();
         let primary = (error.span != Span::default()).then_some(SourceLocation {
             path: error.path,
             span: error.span,
@@ -56,9 +42,22 @@ impl Diagnostic {
         });
         Self {
             code,
-            message: error.message,
+            message: without_repeated_category(code, error.message),
             primary,
         }
+    }
+}
+
+pub(super) fn without_repeated_category(code: &str, message: String) -> String {
+    // Interchange Display includes its category and optional JSON pointer.
+    // Preserve a distinct nested category, but do not repeat our own category
+    // in structured text/JSON. This does not alter native error classification.
+    if let Some(detail) = message.strip_prefix(&format!("{code}: ")) {
+        detail.to_owned()
+    } else if let Some(detail) = message.strip_prefix(&format!("{code} at ")) {
+        format!("at {detail}")
+    } else {
+        message
     }
 }
 
@@ -83,4 +82,49 @@ pub(crate) fn coordinates(source: &str, span: Span) -> (usize, usize) {
         previous_cr = ch == '\r';
     }
     (line, column)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::frontend::compile::ErrorCode;
+
+    #[test]
+    fn native_diagnostic_conversion_preserves_pointers_and_distinct_causes() {
+        for (native_code, pointer, expected) in [
+            ("invalid_ir", "", "rejected"),
+            (
+                "invalid_ir",
+                "/programs/0/ops/1",
+                "at /programs/0/ops/1: rejected",
+            ),
+            ("contract", "/request", "contract at /request: rejected"),
+        ] {
+            let native = crate::interchange::Error {
+                code: native_code,
+                message: "rejected".into(),
+                json_pointer: pointer.into(),
+            };
+            let source = CompileError {
+                code: ErrorCode::InvalidIr,
+                path: "module.qli".into(),
+                span: Span::new(8, 12),
+                line: 2,
+                column: 3,
+                message: native.to_string(),
+            };
+            let diagnostic = Diagnostic::from_compile(source);
+            assert_eq!(diagnostic.code, "invalid_ir");
+            assert_eq!(diagnostic.message, expected);
+            assert_eq!(
+                diagnostic.primary,
+                Some(SourceLocation {
+                    path: "module.qli".into(),
+                    span: Span::new(8, 12),
+                    line: 2,
+                    column: 3,
+                })
+            );
+        }
+    }
 }

@@ -1635,7 +1635,7 @@ impl Parser {
         if self.consume(&TokenKind::Static).is_some() {
             let predicate = self.predicate()?;
             let then_branch = self.block()?;
-            self.expect(&TokenKind::Else)?;
+            self.required_else(if_token.span)?;
             let else_branch = self.block()?;
             return Ok(Expr {
                 span: Span::new(if_token.span.start, else_branch.span.end),
@@ -1648,7 +1648,7 @@ impl Parser {
         }
         let condition = self.expr()?;
         let then_branch = self.block()?;
-        self.expect(&TokenKind::Else)?;
+        self.required_else(if_token.span)?;
         let else_branch = self.block()?;
         let span = Span::new(if_token.span.start, else_branch.span.end);
         Ok(Expr {
@@ -1659,6 +1659,16 @@ impl Parser {
             },
             span,
         })
+    }
+
+    fn required_else(&mut self, if_span: Span) -> Result<(), ParseError> {
+        if self.consume(&TokenKind::Else).is_none() {
+            return Err(ParseError {
+                message: "`if` without `else` is unsupported; add an explicit `else` branch (for a Unit result, use `else { () }`)".into(),
+                span: if_span,
+            });
+        }
+        Ok(())
     }
 
     fn coherent_lift(&mut self, basis_token: Token) -> Result<Expr, ParseError> {
@@ -1801,6 +1811,49 @@ impl Parser {
 
     fn named_expr(&mut self) -> Result<Expr, ParseError> {
         let ident = self.ident()?;
+        if self.at(&TokenKind::DoubleColon) {
+            let mut path = ident.text.clone();
+            let mut last = ident.text.as_str();
+            let mut end = self.current().span;
+            let mut position = self.pos;
+            while self
+                .tokens
+                .get(position)
+                .is_some_and(|t| t.kind == TokenKind::DoubleColon)
+            {
+                let Some(token) = self.tokens.get(position + 1) else {
+                    break;
+                };
+                let segment = match &token.kind {
+                    TokenKind::Ident(name) => name.as_str(),
+                    TokenKind::Basis if path == "std" => "basis",
+                    TokenKind::Observe if path == "std" => "observe",
+                    TokenKind::Classical if path == "std" => "classical",
+                    _ => break,
+                };
+                path.push_str("::");
+                path.push_str(segment);
+                last = segment;
+                end = token.span;
+                position += 2;
+            }
+            let message = if self
+                .tokens
+                .get(position)
+                .is_some_and(|t| t.kind == TokenKind::DoubleColon)
+            {
+                end = self.tokens[position].span;
+                "qualified call paths are unsupported in expressions; use a complete `use module::function;` import and call its unqualified name".into()
+            } else {
+                format!(
+                    "qualified call paths are unsupported in expressions; import the function with `use {path};` and call its unqualified name `{last}`"
+                )
+            };
+            return Err(ParseError {
+                message,
+                span: ident.span.cover(end),
+            });
+        }
         // Explain already-invalid early-return syntax without reserving the
         // ordinary identifier or turning an ordinary return(q) call into exit.
         if ident.text == "return"

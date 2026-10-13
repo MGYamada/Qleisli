@@ -11,6 +11,12 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Clarify common authoring diagnostics (#368): locate missing `else` at `if`,
+  explain unsupported qualified expression paths and the Unitary requirement
+  when a transformed provider has mismatched ports, and report each structured
+  category once. Quote live-owner binding names consistently and link the
+  README and crate documentation to the maintained Language Reference.
+
 - Synchronize product metadata, the native checker and Python runtime to
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
