@@ -93,7 +93,6 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     // Poisoning old transport storage catches any subsequent reparse, while
     // the actual execution plan must retain its original exact matrix/nodes.
     native.payload = std::sync::Arc::from(b"not JSON".as_slice());
-    native.finite_indices.clear();
     let second = native.execute_pure(&input, 2, limits).unwrap();
     assert_eq!(first.amplitudes, second.amplitudes);
     assert_eq!(first.steps, second.steps);
@@ -130,6 +129,101 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
         address,
         compatibility.reconstruction.execution().unwrap() as *const Plan
     );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
+    use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let payload = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v022/hierarchy/h.qirh"
+    ));
+    let decoded = bridge::decode(payload).unwrap();
+    let prepared = Prepared::new(payload, None, None, false);
+    let candidate = prepared.execution.as_ref().unwrap();
+    let address = candidate.as_ref() as *const Plan;
+    let description = candidate.view().unwrap();
+    let response = runtime::check(
+        kernel.executable(),
+        decoded.bridge,
+        crate::interchange::hierarchical::Mode::Inspect,
+    )
+    .unwrap();
+    validate_leaves(&decoded.value, &response.indices).unwrap();
+    let report = NativeChecked::new(prepared, &response, false);
+    assert_eq!(address, report.execution().unwrap() as *const Plan);
+    assert_eq!(description, report.execution().unwrap().view().unwrap());
+    assert_eq!(report.payload(), payload);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn non_executable_inspection_retains_its_original_prepared_failure() {
+    use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
+    let kernel =
+        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    // Preserve the first attempted control and real refusal. Classical ports
+    // in a pure Meaning do not supply an accepted-but-unexecutable artifact.
+    let first = json::parse(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v030/execution-view-binding/first-classical-inspection-refusal.json"
+    )))
+    .unwrap();
+    let first_payload = json::encode(first.field("artifact").unwrap()).unwrap();
+    let refused = kernel.inspect_native(&first_payload).unwrap_err();
+    assert_eq!(refused.code, "invalid_ir");
+    assert_eq!(
+        refused.message,
+        first
+            .field("diagnostic")
+            .unwrap()
+            .field("message")
+            .unwrap()
+            .text()
+            .unwrap()
+    );
+    assert_eq!(
+        kernel.inspect(&first_payload).unwrap_err().code,
+        "invalid_ir"
+    );
+    let failure = Plan::prepare(&first_payload, false).unwrap_err();
+    assert_eq!(failure.code, "unsupported");
+
+    // Private fault injection models an unavailable host execution capability
+    // without inventing a native-accepted classical artifact. The frozen H
+    // subject still obtains a real fresh inspection; its inspection report
+    // must retain the earlier preparation refusal and cannot recompile later.
+    let payload = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/verification_v022/hierarchy/h.qirh"
+    ));
+    let decoded = bridge::decode(payload).unwrap();
+    let mut prepared = Prepared::new(payload, None, None, false);
+    prepared.execution = Err(failure.clone());
+    let response = runtime::check(
+        kernel.executable(),
+        decoded.bridge,
+        crate::interchange::hierarchical::Mode::Inspect,
+    )
+    .unwrap();
+    validate_leaves(&decoded.value, &response.indices).unwrap();
+    let mut native = NativeChecked::new(prepared, &response, false);
+    assert_eq!(native.payload(), payload);
+    assert_eq!(native.execution().unwrap_err().code, failure.code);
+    let message = failure.message;
+    // Failure is retained too: inspection cannot lazily derive a new plan or
+    // a different error from transport data after the native decision.
+    native.payload = std::sync::Arc::from(b"not JSON".as_slice());
+    assert_eq!(native.execution().unwrap_err().message, message);
 }
 
 #[test]

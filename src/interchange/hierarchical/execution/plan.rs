@@ -30,18 +30,22 @@ pub(super) struct InstrumentPlan {
 }
 
 impl Plan {
-    pub(in crate::interchange::hierarchical) fn retained(checked: &Reconstructed) -> Result<Self> {
-        let actual = json::parse(checked.payload())?;
-        let instrument = actual.field("format")?.text()? == "qleisli.instrument-ir";
+    /// Build an untrusted candidate before native inspection. Every finite
+    /// proof, including unused ones, must subsequently be covered by the fresh
+    /// native result before this plan can enter a public report.
+    pub(in crate::interchange::hierarchical) fn prepare(
+        payload: &[u8],
+        instrument: bool,
+    ) -> Result<Self> {
+        let actual = json::parse(payload)?;
         Self::compile(&actual, instrument, |circuit| {
-            retained_matrices(circuit, checked)
-        })
-    }
-
-    pub(in crate::interchange::hierarchical) fn native(checked: &NativeChecked) -> Result<Self> {
-        let actual = json::parse(checked.payload())?;
-        Self::compile(&actual, checked.instrument, |circuit| {
-            native_matrices(circuit, checked)
+            let mut indices = Vec::new();
+            for (index, proof) in circuit.field("proofs")?.array()?.iter().enumerate() {
+                if proof.field("rule")?.field("tag")?.text()? == "finite" {
+                    indices.push(index);
+                }
+            }
+            proposed_matrices(circuit, &indices)
         })
     }
 

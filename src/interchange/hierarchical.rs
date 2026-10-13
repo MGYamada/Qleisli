@@ -8,7 +8,7 @@ use runtime::Mode;
 pub mod execution;
 
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
 
 use super::finite_leaf::{
     CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_with_kernel,
@@ -26,6 +26,34 @@ pub struct Kernel {
     executable: PathBuf,
 }
 
+/// Private immutable inputs and candidate execution data, without acceptance.
+/// Construct only after the bounded bridge decoder succeeds. Native refusal
+/// remains authoritative even when execution preparation returns an error.
+struct Prepared {
+    payload: Arc<[u8]>,
+    request: Option<Arc<[u8]>>,
+    candidate: Option<Arc<[u8]>>,
+    execution: Result<Box<execution::Plan>>,
+}
+
+impl Prepared {
+    fn new(
+        payload: &[u8],
+        request: Option<&[u8]>,
+        candidate: Option<&[u8]>,
+        instrument: bool,
+    ) -> Self {
+        let payload: Arc<[u8]> = Arc::from(payload);
+        let execution = execution::Plan::prepare(&payload, instrument).map(Box::new);
+        Self {
+            payload,
+            request: request.map(Arc::from),
+            candidate: candidate.map(Arc::from),
+            execution,
+        }
+    }
+}
+
 /// A completed reconstruction report for the supported conditional profile.
 /// No independently requested root or source-adequacy claim is included.
 #[derive(Debug)]
@@ -35,24 +63,24 @@ pub struct Reconstructed {
     structural_work: usize,
     exact_work: usize,
     native_exact_work: usize,
-    execution: OnceLock<Result<execution::Plan>>,
+    execution: Result<Box<execution::Plan>>,
 }
 
 impl Reconstructed {
     fn new(
-        payload: &[u8],
+        prepared: Prepared,
         leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
         structural_work: usize,
         native_exact_work: usize,
         budget: &Budget,
     ) -> Self {
         Self {
-            payload: Arc::from(payload),
+            payload: prepared.payload,
             leaves,
             structural_work,
             exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
             native_exact_work,
-            execution: OnceLock::new(),
+            execution: prepared.execution,
         }
     }
 
@@ -78,8 +106,8 @@ impl Reconstructed {
 
     fn execution(&self) -> Result<&execution::Plan> {
         self.execution
-            .get_or_init(|| execution::Plan::retained(self))
             .as_ref()
+            .map(Box::as_ref)
             .map_err(Clone::clone)
     }
 }
@@ -100,6 +128,7 @@ impl Kernel {
     /// response or producer success flag is accepted as an API argument.
     pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed> {
         let decoded = bridge::decode(payload)?;
+        let prepared = Prepared::new(payload, None, None, false);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -109,7 +138,7 @@ impl Kernel {
             &mut budget,
         )?;
         Ok(Reconstructed::new(
-            payload,
+            prepared,
             leaves,
             response.work,
             response.exact_work,
@@ -128,30 +157,22 @@ pub struct NativeChecked {
     payload: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     candidate: Option<Arc<[u8]>>,
-    finite_indices: Vec<usize>,
     instrument: bool,
     structural_work: usize,
     exact_work: usize,
-    execution: OnceLock<Result<execution::Plan>>,
+    execution: Result<Box<execution::Plan>>,
 }
 
 impl NativeChecked {
-    fn new(
-        payload: &[u8],
-        request: Option<&[u8]>,
-        candidate: Option<&[u8]>,
-        response: &runtime::Response,
-        instrument: bool,
-    ) -> Self {
+    fn new(prepared: Prepared, response: &runtime::Response, instrument: bool) -> Self {
         Self {
-            payload: Arc::from(payload),
-            request: request.map(Arc::from),
-            candidate: candidate.map(Arc::from),
-            finite_indices: response.indices.clone(),
+            payload: prepared.payload,
+            request: prepared.request,
+            candidate: prepared.candidate,
             instrument,
             structural_work: response.work,
             exact_work: response.exact_work,
-            execution: OnceLock::new(),
+            execution: prepared.execution,
         }
     }
     pub fn payload(&self) -> &[u8] {
@@ -176,8 +197,8 @@ impl NativeChecked {
 
     fn execution(&self) -> Result<&execution::Plan> {
         self.execution
-            .get_or_init(|| execution::Plan::native(self))
             .as_ref()
+            .map(Box::as_ref)
             .map_err(Clone::clone)
     }
 }
@@ -186,14 +207,16 @@ impl Kernel {
     /// Check all actual QIRF leaves natively, without invoking Rust acceptance.
     pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked> {
         let decoded = bridge::decode(payload)?;
+        let prepared = Prepared::new(payload, None, None, false);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         validate_leaves(&decoded.value, &response.indices)?;
-        Ok(NativeChecked::new(payload, None, None, &response, false))
+        Ok(NativeChecked::new(prepared, &response, false))
     }
 
     /// Native original-QIRF/request checking, including phase-fixed Fourier H.
     pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
         let decoded = bridge::decode_request(payload, request)?;
+        let prepared = Prepared::new(payload, Some(request), None, false);
         let mode = if decoded.fourier_width.is_some() {
             Mode::Fourier
         } else {
@@ -211,18 +234,13 @@ impl Kernel {
                 response.pairs.clone(),
             )?;
         }
-        Ok(NativeChecked::new(
-            payload,
-            Some(request),
-            None,
-            &response,
-            false,
-        ))
+        Ok(NativeChecked::new(prepared, &response, false))
     }
 
     /// Native composed initialization, finite circuit request and readout.
     pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
         let decoded = bridge::decode_instrument(payload, request)?;
+        let prepared = Prepared::new(payload, Some(request), None, true);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
         validate_leaves(&decoded.pure.actual, &response.indices)?;
         validate_pairs(
@@ -231,13 +249,7 @@ impl Kernel {
             &decoded.pure.pairs,
             response.pairs.clone(),
         )?;
-        Ok(NativeChecked::new(
-            payload,
-            Some(request),
-            None,
-            &response,
-            true,
-        ))
+        Ok(NativeChecked::new(prepared, &response, true))
     }
 
     /// Native named-QPE provider, schedule and exact H checks. No production
@@ -249,6 +261,7 @@ impl Kernel {
         candidate: &[u8],
     ) -> Result<NativeChecked> {
         let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
+        let prepared = Prepared::new(payload, Some(request), Some(candidate), true);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
         validate_leaves(&decoded.provider.actual, &response.indices)?;
         validate_pairs(
@@ -266,13 +279,7 @@ impl Kernel {
         for &index in &response.hadamards {
             validate_hadamards(&decoded.provider.actual, 1, vec![index])?;
         }
-        Ok(NativeChecked::new(
-            payload,
-            Some(request),
-            Some(candidate),
-            &response,
-            true,
-        ))
+        Ok(NativeChecked::new(prepared, &response, true))
     }
 }
 
@@ -373,6 +380,7 @@ impl Kernel {
     /// neither serialized success flags nor cached pair results are inputs.
     pub fn check_against(&self, payload: &[u8], request: &[u8]) -> Result<CheckedRequest> {
         let decoded = bridge::decode_request(payload, request)?;
+        let prepared = Prepared::new(payload, Some(request), None, false);
         let mode = if decoded.fourier_width.is_some() {
             Mode::Fourier
         } else {
@@ -398,7 +406,7 @@ impl Kernel {
         }
         Ok(CheckedRequest {
             reconstruction: Reconstructed::new(
-                payload,
+                prepared,
                 leaves,
                 response.work,
                 response.exact_work,
@@ -476,6 +484,7 @@ impl Kernel {
     /// can be supplied in place of a fresh native check.
     pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument> {
         let decoded = bridge::decode_instrument(payload, request)?;
+        let prepared = Prepared::new(payload, Some(request), None, true);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -492,7 +501,7 @@ impl Kernel {
         )?;
         Ok(CheckedInstrument {
             reconstruction: Reconstructed::new(
-                payload,
+                prepared,
                 leaves,
                 response.work,
                 response.exact_work,
@@ -515,6 +524,7 @@ impl Kernel {
         candidate: &[u8],
     ) -> Result<CheckedQpeInstrument> {
         let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
+        let prepared = Prepared::new(payload, Some(request), Some(candidate), true);
         let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -541,7 +551,7 @@ impl Kernel {
         Ok(CheckedQpeInstrument {
             instrument: CheckedInstrument {
                 reconstruction: Reconstructed::new(
-                    payload,
+                    prepared,
                     leaves,
                     response.work,
                     response.exact_work,

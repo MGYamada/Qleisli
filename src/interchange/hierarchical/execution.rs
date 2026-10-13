@@ -4,8 +4,7 @@
 
 use super::super::json;
 use super::{
-    CheckedInstrument, CheckedRequest, Error, Matrix, NativeChecked, Reconstructed, Result, Value,
-    bridge,
+    CheckedInstrument, CheckedRequest, Error, Matrix, NativeChecked, Result, Value, bridge,
 };
 use crate::sim::RandomSource;
 use std::collections::BTreeMap;
@@ -211,49 +210,17 @@ use plan::Node;
 pub(super) use plan::Plan;
 use plan::{InstrumentPlan, Op, Program};
 
-// Compatibility reports retain the old public leaf handles. Their bound
-// matrices are an execution view, not new acceptance or a second equation.
-fn retained_matrices(actual: &Value, checked: &Reconstructed) -> Result<BTreeMap<usize, Matrix>> {
-    let proofs = actual.field("proofs")?.array()?;
-    let definitions = actual.field("definitions")?.array()?;
-    let mut matrices = BTreeMap::new();
-    for (proof_index, checked_leaf) in checked.leaves() {
-        let proof = proofs
-            .get(*proof_index)
-            .ok_or_else(|| invalid("missing finite proof"))?;
-        let implementation = index(proof.field("implementation")?)?;
-        let definition = definitions
-            .get(implementation)
-            .ok_or_else(|| invalid("missing finite definition"))?;
-        // Bind the retained matrix to the actual body, not the proof table's
-        // position, requested meaning, or producer-supplied identity flags.
-        if definition
-            .field("body")?
-            .field("program")?
-            .text()?
-            .as_bytes()
-            != checked_leaf.leaf().payload()
-            || super::boundary(definition.field("interface")?)? != *checked_leaf.leaf().boundary()
-        {
-            return Err(invalid(
-                "finite matrix no longer matches its actual definition",
-            ));
-        }
-        matrices.insert(implementation, checked_leaf.leaf().meaning().clone());
-    }
-    Ok(matrices)
-}
-
-// Decode the ACTUAL artifact's finite mathematical descriptions only after a
-// fresh native check bound each complete original QIRF body to that matrix.
+// Materialize actual finite descriptions as untrusted candidate matrices.
+// Every selected proof must subsequently pass the fresh whole-artifact native
+// check, including original QIRF equality and complete obligation coverage.
 // This performs no Rust IR verification, equality or isometry acceptance.
-fn native_matrices(actual: &Value, checked: &NativeChecked) -> Result<BTreeMap<usize, Matrix>> {
+fn proposed_matrices(actual: &Value, indices: &[usize]) -> Result<BTreeMap<usize, Matrix>> {
     let proofs = actual.field("proofs")?.array()?;
     let definitions = actual.field("definitions")?.array()?;
     let meanings = actual.field("meanings")?.array()?;
     let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let mut matrices = BTreeMap::new();
-    for &proof_index in &checked.finite_indices {
+    for &proof_index in indices {
         let proof = proofs
             .get(proof_index)
             .ok_or_else(|| invalid("missing native finite proof"))?;
@@ -279,8 +246,8 @@ fn native_matrices(actual: &Value, checked: &NativeChecked) -> Result<BTreeMap<u
                 .as_bytes(),
             &mut budget,
         )?;
-        // Every returned finite proof was bound to its actual body natively.
-        // Repeated proofs need no second Rust equality decision here.
+        // Repeated proofs need no Rust equality decision: native acceptance
+        // must check every one against the same original body.
         matrices.entry(implementation).or_insert(matrix);
     }
     Ok(matrices)
@@ -1220,16 +1187,7 @@ mod tests {
 
     #[test]
     fn capability_scan_rejects_unsupported_zero_repeat_children_and_classical_inputs() {
-        // Capability-only fixtures, not values returned by a native check.
-        // No fake report can enter the public execution API outside this module.
-        let report = Reconstructed {
-            native_exact_work: 0,
-            execution: std::sync::OnceLock::new(),
-            payload: std::sync::Arc::from([]),
-            leaves: vec![],
-            structural_work: 0,
-            exact_work: 0,
-        };
+        // Capability-only candidates, without constructing an accepted report.
         let side = r#"{"quantum":[{"owner":0,"basis":[{"tag":"bit"}],"axes":[9]}],"classical":[]}"#;
         let header = format!(r#"{{"inputs":{side},"outputs":{side}}}"#);
         let input = format!(
@@ -1237,7 +1195,7 @@ mod tests {
         );
         let actual = json::parse(input.as_bytes()).unwrap();
         assert!(
-            matches!(Program::compile(&actual, retained_matrices(&actual, &report).unwrap()), Err(e) if e.code == "unsupported")
+            matches!(Program::compile(&actual, BTreeMap::new()), Err(e) if e.code == "unsupported")
         );
         let input = input.replace(
             r#""classical":[]"#,
@@ -1245,7 +1203,7 @@ mod tests {
         );
         let actual = json::parse(input.as_bytes()).unwrap();
         assert!(
-            matches!(Program::compile(&actual, retained_matrices(&actual, &report).unwrap()), Err(e) if e.code == "unsupported")
+            matches!(Program::compile(&actual, BTreeMap::new()), Err(e) if e.code == "unsupported")
         );
     }
 

@@ -56,6 +56,11 @@ and exactness obligations retain their recorded scopes and status.
   Separate immutable invocation inputs from native decisions; reject binding
   with another invocation, including equal bytes. Native refusals remain
   authoritative, and production QDV1 comparison is still pending.
+  Prepare owned hierarchy plans before fresh native decisions on inspection,
+  independent-request, instrument and QPE paths. Retain the original plan or
+  execution-preparation failure without lazy recompilation; complete finite
+  coverage and original-body checks remain required. Production comparison
+  and the protocol cutover remain pending.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

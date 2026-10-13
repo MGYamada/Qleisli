@@ -23,6 +23,17 @@ prepared container. Native refusal remains authoritative if preparation fails
 as well. This lifecycle prepares the comparison boundary; the production native
 protocol still does not compare QDV1 and the correspondence gap remains open.
 
+Hierarchy inspection, independent requests, instruments and QPE reports likewise
+prepare their owned execution plan before the fresh native decision. The
+candidate contains the actual ordered nodes, exact finite descriptions and
+preparation/readout coordinates. It has no acceptance authority: every finite
+proof must still pass the original-body equality checks and complete native
+coverage checks. Reports retain the same boxed plan, including a preparation
+failure when execution is unavailable, rather than compiling on first use.
+Inspection refusal remains authoritative. Compatibility reports keep their
+freshly checked leaf handles as well. Native comparison and the protocol cutover
+remain pending; eager preparation alone does not bind the two decoded views.
+
 ## Byte grammar
 
 An encoding starts with the four ASCII bytes `QDV1`, followed by exactly one
