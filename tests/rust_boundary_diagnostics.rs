@@ -43,15 +43,7 @@ fn shared_rejection(
     let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
         .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
-    if common_code == "parse" {
-        assert_eq!(
-            finite.message,
-            format!("parse error: {}", common.message()),
-            "{source}"
-        );
-    } else {
-        assert_eq!(finite.message, common.message(), "{source}");
-    }
+    assert_eq!(finite.message, common.message(), "{source}");
     let location = finite.primary.unwrap();
     assert_eq!(
         location.path,
@@ -453,7 +445,7 @@ fn ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear
             "let env=0;()",
             "env=0",
             3,
-            "binding env would drop a live quantum owner",
+            "binding `env` would drop a live quantum owner",
         ),
     ] {
         let classical = format!("pub unitary fn client(env:(Bit,(Unit,Bit)))->Unit{{{body}}}");

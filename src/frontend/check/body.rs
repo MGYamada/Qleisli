@@ -178,7 +178,7 @@ fn bind_name(
         {
             return Err(disposal_error(
                 span,
-                format!("binding {} would drop a live quantum owner", name.text),
+                format!("binding `{}` would drop a live quantum owner", name.text),
             ));
         }
     }

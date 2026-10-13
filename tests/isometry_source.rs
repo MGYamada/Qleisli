@@ -196,10 +196,7 @@ fn retired_iso_reports_one_exact_migration_span_before_native_checking() {
     let location = diagnostic.primary.unwrap();
     assert_eq!((location.line, location.column), (2, 1));
     assert_eq!(&source[location.span.start..location.span.end], "iso");
-    assert_eq!(
-        diagnostic.message,
-        format!("parse error: {}", error.message())
-    );
+    assert_eq!(diagnostic.message, error.message());
     // Trivia and longer ordinary identifiers are not retired source tokens.
     ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
