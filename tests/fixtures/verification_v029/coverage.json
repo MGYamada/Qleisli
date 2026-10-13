@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "3ade86d95e3ba13bcf8dd28cd28d248a031c4a1a6b2347985dc828299c3404e4",
+  "surface_sha256": "7526b6012f4218b5a594512d9ba9b58678e2f01b4ee59f90c7770357ccb2d552",
   "groups": [
     {
       "id": "raw-core",
@@ -181,7 +181,8 @@
         "tests/fixtures/authoring_sessions/closure-capture-v030/README.md",
         "tests/reference_meanings.rs",
         "tests/pure_leaf.rs",
-        "tests/rectangular_meanings.rs"
+        "tests/rectangular_meanings.rs",
+        "tests/check_scope_report.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1161,7 +1162,9 @@
         "compile/check_project_with_policy",
         "CLI check/run/sample/emit-ir/doc",
         "compile/check_project_with_kernel",
-        "QrateSource::{compile_with_kernel,check_with_kernel}"
+        "QrateSource::{compile_with_kernel,check_with_kernel}",
+        "compile::check_project_report_with_kernel",
+        "QrateSource::check_report_with_kernel"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -1169,7 +1172,9 @@
         "tests/review_v021.rs",
         "tests/static_operations.rs",
         "scripts/test_source_kernel.py",
-        "tests/ordinary_booleans.rs"
+        "tests/ordinary_booleans.rs",
+        "tests/check_scope_report.rs",
+        "tests/check_scope_cli.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",

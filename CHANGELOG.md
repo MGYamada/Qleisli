@@ -15,6 +15,16 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
+- Report the actual native checking scope in source `check`, `verify-ir`,
+  `emit-ir` and `interop check` successes (#363), replacing the unqualified
+  `verified: true` claim.
+  Name the invoked canonical checker paths and their unpinned identity, count
+  source decisions and requests separately, and distinguish concrete local and
+  bundled roots from the optional entry request. Partial source contracts do
+  not become a whole-source Meaning check; source preservation remains unproved.
+  Selected-source checks report their actual root checker and request metadata
+  while retaining request origin and verification scope; a producer-consistency
+  request does not become an independent source Meaning specification.
 - Bind retained Rust execution data to Lean's freshly checked data through the
   QLV2 native protocol (#362). Finite graphs, dependency caches, literal caller
   aliases, typed contracts and both instrument roots use exact QDV1 comparison;

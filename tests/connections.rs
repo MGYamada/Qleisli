@@ -42,6 +42,21 @@ fn terminal_import_execution_export_and_seeded_fresh_shots() {
         let text = String::from_utf8(result.stdout).unwrap();
         assert!(text.contains("\"outcome\":\"ok\""));
         assert!(text.contains("\"diagnostics\":[]"));
+        if action == "check" {
+            let checker =
+                std::fs::canonicalize(std::env::var_os("QLEISLI_KERNEL").unwrap()).unwrap();
+            assert!(
+                text.contains(&format!("\"checker_path\":\"{}\"", checker.display())),
+                "{text}"
+            );
+            assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
+            assert!(text.contains("\"request_checked\":false"), "{text}");
+            assert!(
+                text.contains("\"source_preservation_verified\":false"),
+                "{text}"
+            );
+            assert!(!text.contains("\"verified\":true"), "{text}");
+        }
     }
     let args = ["sample", "-", "--input=qasm", "--shots=20", "--seed=0"];
     let first = call(&args, source);
@@ -163,6 +178,26 @@ fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     assert!(text.contains("\"root\":0"), "{text}");
     let malformed = text.replace("\"root\":0", "\"root\":null");
     let root = SourceRoot::new("");
+    let valid_file = root.0.join("valid.qirf");
+    std::fs::write(&valid_file, &text).unwrap();
+    let direct = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["verify-ir", valid_file.to_str().unwrap(), "--format=json"])
+        .output()
+        .unwrap();
+    let interop = call(
+        &["check", valid_file.to_str().unwrap(), "--input=qirf"],
+        b"",
+    );
+    assert!(direct.status.success() && interop.status.success());
+    let expected = String::from_utf8(direct.stdout)
+        .unwrap()
+        .replace("\"command\":\"verify-ir\"", "\"command\":\"interop check\"");
+    assert!(expected.contains("\"request_checked\":false"), "{expected}");
+    assert!(
+        expected.contains("\"source_preservation_verified\":false"),
+        "{expected}"
+    );
+    assert_eq!(String::from_utf8(interop.stdout).unwrap(), expected);
     let file = root.0.join("bad.qirf");
     std::fs::write(&file, malformed).unwrap();
     let direct = Command::new(env!("CARGO_BIN_EXE_qleisli"))

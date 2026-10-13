@@ -279,6 +279,80 @@ whole-root inspection still reports no independent requested meaning. Source,
 decoder, native compilation/runtime and emitted-artifact preservation remain
 separate obligations; these lemmas admit no constitutional guarantee.
 
+## CLI success reports and requested meaning
+
+Without an explicit `--entry`, `qleisli check <source-root>` and
+`qleisli check <directory> --qrate` check the source project and its concrete
+lowered roots. A successful request-free native
+decision establishes the applicable IR structure, ownership, interface and
+classical-scope checks. It does not establish an independently requested
+algorithm, the source's full meaning, or preservation from source to IR.
+The text success report names this scope and the actual canonical checker paths,
+states whether independent requests were checked, and states that source
+preservation is not proved.
+
+The version-1 JSON result envelope retains `outcome: "ok"` and an empty
+`diagnostics` array. Its whole-project source-check `result` replaces the former
+`{"verified":true}` with the following fields:
+
+| Field | Meaning |
+| --- | --- |
+| `checker_paths` | Distinct canonical executable paths captured from actual successful native invocations, rather than resolved again after checking. Several paths can occur if a selected symlink changes between invocations. |
+| `checker_identity` | `"unpinned"`: the executable was selected and invoked, but its bytes were not checked against a trusted binary identity. A canonical path is not attestation. |
+| `native_decisions.count` | Number of successful native acceptance decisions observed during this source check, including repeated decisions and decisions for partial source contracts. |
+| `native_decisions.requests_checked` | Number of those decisions with a separate native request payload checked by Lean. This counts decisions, not distinct source declarations or whole-source meanings. |
+| `native_decisions.complete` | Whether the metadata covers every successful decision and its checker path. If false, the bounded report is incomplete and its path list or counts must not be treated as exhaustive. |
+| `entry.present` | Whether the ordinary project has a supported `main::main` entry. A library without that entry can still check successfully. |
+| `entry.request_checked` | Whether that entry's own ordinary accepted artifact has an independent request; `null` when there is no entry. Requests on other roots or partial contracts do not change this value. |
+| `concrete_ir_roots.local`, `concrete_ir_roots.bundled` | Counts of checked concrete ordinary function roots, separating loaded project/dependency modules from bundled library modules. |
+| `source_preservation_verified` | `false`: this command does not prove source-to-IR preservation. |
+
+All loaded bundled concrete functions are checked, including unused ones;
+their decisions and roots therefore contribute to the report. Generic operation
+expansions occur within enclosing concrete roots; they are not additional roots
+merely because a specialization was registered. Constructing or declaring an
+unused Meaning does not imply that Lean checked a corresponding equation.
+Pure/function/instrument contract requests have their individual native scopes.
+Their successful decisions contribute to `requests_checked` without asserting
+a whole-entry Meaning or general source preservation. In particular, a positive
+aggregate request count can accompany `entry.request_checked: false`.
+These request fields describe the separate external request payload, not
+Meaning entries embedded in an ordinary QIRF artifact. A zero request count
+does not claim that no embedded Meaning was checked. Request data can itself be
+producer generated; checking it does not establish an independent specification
+of the original source.
+
+Selected-source `check --entry ...` routes report the selected root's singular
+actual `checker_path`, `checker_identity: "unpinned"`, `request_checked` and
+`source_preservation_verified: false`, alongside their existing `verification`
+scope and `request_origin`. The Raw route's native-validity scope is distinct
+from hierarchy composition, Fourier, instrument and named-QPE request scopes.
+`request_checked: true` also applies to a checked producer-consistency request;
+it does not assert an independent specification of the source's Meaning.
+The existing `source_meaning_verified: false` remains explicit. These fields
+describe the selected root's receipt, rather than an aggregate of every native
+decision made while preparing and checking the source.
+
+`verify-ir` reports the checked artifact's singular actual `checker_path`,
+`checker_identity: "unpinned"` and `request_checked`; with `--against`, the
+request result applies to that exact supplied artifact/request pair. `emit-ir`
+reports its output `path` with the emitted root's checker and request metadata.
+Their text successes likewise state the IR/request scope. Neither command's
+success establishes preservation from a source, a trusted binary identity,
+or correctness of downstream execution/export.
+`interop check` uses the same singular actual-root metadata in its JSON
+success instead of the former unqualified `verified: true`; importing foreign
+source and accepting its lowered artifact do not prove translation preservation.
+
+Clients using the former source-check `verified` boolean must inspect the
+explicit scope fields instead. The former `verify-ir` and `interop check`
+unqualified `verified` booleans are also retired. Request-free success remains
+a successful structural
+check; no independent Meaning is inferred from it. Binary identity pinning is
+separately tracked by [#302](https://github.com/MGYamada/Qleisli/issues/302).
+These reporting changes alter no acceptance rules, proof scope or admitted
+constitutional guarantee.
+
 ## Public operations that confer no new acceptance
 
 | Operation | Scope |

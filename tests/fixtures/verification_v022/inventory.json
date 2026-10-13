@@ -3306,7 +3306,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "adb753e033dff705e70f3f1cb5dc493b3c6a4a91acb60c6bccd1307415d65601",
+      "sha256": "61dda0f22d4a422aebd5fe3d85cc816f56a658d79d025ced2f0f6a77f8b59ba8",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3316,7 +3316,7 @@
     },
     {
       "path": "src/bin/qleisli/artifacts.rs",
-      "sha256": "8bfe629c5b881651fea5a5fde17b889abd6d27af9d03edec790852547d93646e",
+      "sha256": "ad1429a277f43aecca0d6745a8066d1112de9f66215b2b93460e25ff551a9e80",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -3325,8 +3325,18 @@
       }
     },
     {
+      "path": "src/bin/qleisli/check_report.rs",
+      "sha256": "2fceac08313f33f841ab8ad2a434494a69af7b6c484f7c4fc4e3b7d7618efdbc",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/bin/qleisli/interop.rs",
-      "sha256": "3b543cd1c360ff647bacc2a8da52eb37f6b2cd0b4e1dc9faa971dadcb3be326a",
+      "sha256": "bf1235cbb7dcf394ed1e0385a6064c3e4165040064704367314279b63cf1accc",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -3336,7 +3346,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "59bb912e4ed836f3d54c68d48a504f9bb0bf7449bbf685f80dc8cdbd02697124",
+      "sha256": "a8ed2982e6b95977ce1a8498df9258fe8d80c76f2658fe1120544c5d722fbea0",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -3368,7 +3378,7 @@
     },
     {
       "path": "src/bin/qleisli/source_commands.rs",
-      "sha256": "320edbe1938d5240aa3c7bc7cccaa03992854dc5910c2b1a421839a752e004d2",
+      "sha256": "0f8281e9b194fd4ea48a879fda12234ecdb25bff79dc5dca9c5a71a3373c2916",
       "group": "execution",
       "surface": {
         "declarations": [],
@@ -3384,7 +3394,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "8bee921d3a97e022359541d1e65eee43330ed96665595f879bc5cda7d2af9b0a",
+      "sha256": "7f4466841eb0cd94063ebc883f5aadc3fb18cfb5e958f029a0065745eea2dab3",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3852,7 +3862,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "6d5c795feb4c931c67cd4fe44bbf21940263ef7659974a0ccbc1149aecb0fbdf",
+      "sha256": "92107e1641e4464f5484b16c97800ed88e9ebcc7ef9f3390973e9da7aad16763",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3863,8 +3873,10 @@
         "functions": [
           "pub fn check_project(root: &Path) -> Result<(), CompileError>",
           "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_report_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<ProjectCheckReport, Diagnostic>",
           "pub fn check_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
           "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_report_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<ProjectCheckReport, Diagnostic>",
           "pub fn check_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
           "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
           "pub fn compile_project(root: &Path) -> Result<AcceptedProgram, CompileError>",
@@ -3913,6 +3925,23 @@
       "surface": {
         "declarations": [],
         "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/report.rs",
+      "sha256": "79f16462025e7bd4b954a6206c0a8e6e3a8cb398f909ada43ec9b10cae791884",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "ProjectCheckReport"
+        ],
+        "functions": [
+          "pub fn concrete_bundled_roots(&self) -> usize",
+          "pub fn concrete_local_roots(&self) -> usize",
+          "pub fn entry_request_checked(&self) -> Option<bool>",
+          "pub fn native_decisions(&self) -> &NativeDecisionSummary"
+        ],
         "capacity_constants": []
       }
     },
@@ -4956,7 +4985,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "3df401bb70efd8399729819ba86956e3c15a07cbce416e18b41bfecb0faad252",
+      "sha256": "de1fbd4b3918496a01dcb0a8b3b2d02c76dc9edda661f398354df2bfcdcffa39",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4977,6 +5006,7 @@
           "pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
           "pub fn check_qpe_instrument( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<CheckedQpeInstrument>",
           "pub fn check_qpe_instrument_native( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<NativeChecked>",
+          "pub fn checker(&self) -> &Path",
           "pub fn exact_work(&self) -> usize",
           "pub fn exact_work(&self) -> usize",
           "pub fn executable(&self) -> &Path",
@@ -5097,7 +5127,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "3984a13a972ae6abcaa6ed4285084362dc6336956f04b144031b6deb4bc43e4a",
+      "sha256": "9c7928aaa5b830432461cce3d27a3612919e613dc651cf3cf343f94eafd6149d",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5158,7 +5188,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "9577c4ba982a711cae3a36500777c698b17a0e2dbe1801db6ac169d1ce62e1af",
+      "sha256": "a1e843764aef84acfe296a957b8f9909753ef566128066193188a6d9b29cb3c8",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5226,6 +5256,26 @@
         "declarations": [],
         "functions": [],
         "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/reporting.rs",
+      "sha256": "82af6b6ce88d9c2beac84cc09f2f16796ed2c80f3a4cdd17c2ab45ee3ddfdfac",
+      "group": "transport",
+      "surface": {
+        "declarations": [
+          "NativeDecisionSummary"
+        ],
+        "functions": [
+          "pub fn checker_paths(&self) -> impl ExactSizeIterator<Item = &Path>",
+          "pub fn complete(&self) -> bool",
+          "pub fn decisions(&self) -> usize",
+          "pub fn requests_checked(&self) -> usize"
+        ],
+        "capacity_constants": [
+          "const MAX_CHECKER_PATHS: usize = 1_024;",
+          "const MAX_CHECKER_PATH_BYTES: usize = 1 << 20;"
+        ]
       }
     },
     {
@@ -5647,11 +5697,13 @@
         "compile/check_project_with_policy",
         "CLI check/run/sample/emit-ir/doc",
         "compile/check_project_with_kernel",
-        "QrateSource::{compile_with_kernel,check_with_kernel}"
+        "QrateSource::{compile_with_kernel,check_with_kernel}",
+        "compile::check_project_report_with_kernel",
+        "QrateSource::check_report_with_kernel"
       ],
       "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
-      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending",
+      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation.",
       "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
@@ -6416,10 +6468,10 @@
       "scripts/test_hierarchical_qpe_instrument.py": "4d30f3d65a146e01359eff89fe5947bc54a8cad245619384167d3a1351f36dc4",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "41d854e33e8fdb30eb8e8d7882cadbc8e84b6856a650c9d11afef317cbea2357",
-      "tests/sized_cli.rs": "1079f8107a3b5b1c395033d83ef1be9b9c3179cce6ebb1cc6f21f8630cdce4ca",
+      "tests/sized_cli.rs": "ad9df15c671e285595a9d7d00e307dbd181e72ace98cf64de4f60b3993a791a6",
       "tests/hierarchical_qpe_host.rs": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
       "scripts/test_qpe_instrument_host.py": "dd1eed6adf9650051940771ff63ad55af7d383767c055335fcd607fabac7d315",
-      "tests/connections.rs": "948bb3e3a714fb1768a4a79c6c20b817e85f73fbbffdbd1af3b338c43671f931",
+      "tests/connections.rs": "fcaff4e0ca4f5efe6a62ada25b0d1e415919082f1dfe33143f0f5aa5d6730b4a",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",

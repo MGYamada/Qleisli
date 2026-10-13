@@ -3,7 +3,9 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use qleisli::frontend::compile::{check_project_with_kernel, compile_project_with_kernel};
+use qleisli::frontend::compile::{
+    ProjectCheckReport, check_project_report_with_kernel, compile_project_with_kernel,
+};
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::frontend::project::{QrateSource, SourcePolicy};
 use qleisli::interchange::native::Kernel;
@@ -55,10 +57,10 @@ impl Input {
         }
     }
 
-    fn check(&self, kernel: &Kernel) -> Result<(), Diagnostic> {
+    fn check(&self, kernel: &Kernel) -> Result<ProjectCheckReport, Diagnostic> {
         match &self.root {
-            Root::Path(path) => check_project_with_kernel(path, self.policy, kernel),
-            Root::Qrate(selected) => selected.check_with_kernel(self.policy, kernel),
+            Root::Path(path) => check_project_report_with_kernel(path, self.policy, kernel),
+            Root::Qrate(selected) => selected.check_report_with_kernel(self.policy, kernel),
         }
     }
 
@@ -71,7 +73,7 @@ impl Input {
 }
 
 pub(super) enum Success {
-    Checked,
+    Checked(ProjectCheckReport),
     Distribution(BTreeMap<Vec<bool>, f64>),
     Samples {
         shots: Vec<Sample>,
@@ -104,8 +106,7 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
             primary: None,
         })?;
     if options.command == "check" {
-        input.check(&kernel)?;
-        return Ok(Success::Checked);
+        return Ok(Success::Checked(input.check(&kernel)?));
     }
     let program = input.compile(&kernel)?;
     if options.command == "sample" {

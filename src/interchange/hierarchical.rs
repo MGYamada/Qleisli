@@ -173,6 +173,7 @@ impl Kernel {
 /// the selected audited executable remain explicit assumptions.
 #[derive(Debug)]
 pub struct NativeChecked {
+    checker: PathBuf,
     payload: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     candidate: Option<Arc<[u8]>>,
@@ -185,6 +186,7 @@ pub struct NativeChecked {
 impl NativeChecked {
     fn new(prepared: Prepared, response: &runtime::Response, instrument: bool) -> Self {
         Self {
+            checker: response.checker.clone(),
             payload: prepared.payload,
             request: prepared.request,
             candidate: prepared.candidate,
@@ -196,6 +198,11 @@ impl NativeChecked {
     }
     pub fn payload(&self) -> &[u8] {
         &self.payload
+    }
+    /// Canonical path used for this invocation, not a binary attestation.
+    /// It is retained without resolving the configured path again.
+    pub fn checker(&self) -> &Path {
+        &self.checker
     }
     pub fn request(&self) -> Option<&[u8]> {
         self.request.as_deref()

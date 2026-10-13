@@ -201,7 +201,7 @@ fn execute(
         Failure::Source(error) => error,
         Failure::Simulation(error) => simulation_failure(error),
     })? {
-        Success::Checked => Ok("{\"verified\":true}".into()),
+        Success::Checked(report) => super::check_report::project_json(&report),
         Success::Distribution(distribution) => distribution_json(distribution),
         Success::Samples {
             shots,
@@ -246,13 +246,11 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                 }
                 if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
                     // Keep source spans from emission separate from artifact pointers.
-                    match super::artifacts::execute(&options, &input) {
-                        Ok(super::artifacts::Success::Emitted(path)) => {
-                            Ok(format!("{{\"path\":{}}}", quoted(&path)))
+                    match super::artifacts::execute(&options, &input, true) {
+                        Ok(super::artifacts::Success::Emitted(path, report)) => {
+                            report.json(Some(&path))
                         }
-                        Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
-                            "{{\"verified\":true,\"request_checked\":{request}}}"
-                        )),
+                        Ok(super::artifacts::Success::Checked(report)) => report.json(None),
                         Err(super::artifacts::Failure::Source(error)) => Err(error),
                         Err(super::artifacts::Failure::Artifact(error)) => {
                             artifact_pointer = Some(error.json_pointer);

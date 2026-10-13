@@ -187,25 +187,38 @@ fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup()
 #[test]
 fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
-    for (command, result) in [
-        ("check", "{\"verified\":true}"),
-        (
-            "run",
-            "{\"distribution\":[{\"bits\":[true],\"probability\":1}]}",
-        ),
-    ] {
+    for command in ["check", "run"] {
+        let mut first = None;
         for flag_index in 0..3 {
             let mut args = vec![command.as_ref(), root.0.as_os_str()];
             args.insert(flag_index, "--format=json".as_ref());
             let output = cli(&args);
             assert_eq!(output.status.code(), Some(0), "{output:?}");
             assert!(output.stderr.is_empty(), "{output:?}");
-            assert_eq!(
-                String::from_utf8(output.stdout).unwrap(),
-                format!(
-                    "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"{command}\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{result}}}\n"
-                )
-            );
+            let text = String::from_utf8(output.stdout).unwrap();
+            if command == "run" {
+                assert_eq!(
+                    text,
+                    "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n"
+                );
+            } else {
+                assert!(text.starts_with("{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":["), "{text}");
+                assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
+                assert!(
+                    text.contains("\"entry\":{\"present\":true,\"request_checked\":false}"),
+                    "{text}"
+                );
+                assert!(
+                    text.contains("\"source_preservation_verified\":false"),
+                    "{text}"
+                );
+                assert!(!text.contains("\"verified\":true"), "{text}");
+            }
+            if let Some(expected) = &first {
+                assert_eq!(&text, expected);
+            } else {
+                first = Some(text);
+            }
         }
     }
 }

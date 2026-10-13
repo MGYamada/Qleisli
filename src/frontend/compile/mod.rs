@@ -15,6 +15,9 @@ mod circuit;
 mod lower;
 mod operations;
 mod profile;
+mod report;
+
+pub use report::ProjectCheckReport;
 
 pub use super::specialize::{
     BasisBinding, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort, HierarchyEligibility,
@@ -542,7 +545,23 @@ pub fn check_project_with_kernel(
     policy: SourcePolicy,
     kernel: &crate::interchange::native::Kernel,
 ) -> Result<(), Diagnostic> {
-    process_project_with_kernel(root, false, policy, kernel).map(|_| ())
+    check_project_report_with_kernel(root, policy, kernel).map(|_| ())
+}
+
+/// Check every declaration and report the actual successful native decisions.
+/// An independent contract for one body does not establish entry or whole-source
+/// preservation. Libraries without an entry remain valid check inputs.
+pub fn check_project_report_with_kernel(
+    root: &Path,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<ProjectCheckReport, Diagnostic> {
+    let project = Project::load_detailed_with_policy(root, policy)
+        .map_err(|failure| failure.into_diagnostic())?;
+    let (kernel, decisions) = kernel.recording();
+    let result = process_loaded_project_details(root, &project, false, Some(&kernel))
+        .map_err(Diagnostic::from_compile)?;
+    Ok(ProjectCheckReport::new(result, decisions.summary()))
 }
 
 /// Compile after native checking every concrete function, including unused
@@ -585,10 +604,21 @@ impl super::project::QrateSource {
         policy: SourcePolicy,
         kernel: &crate::interchange::native::Kernel,
     ) -> Result<(), Diagnostic> {
+        self.check_report_with_kernel(policy, kernel).map(|_| ())
+    }
+
+    /// Retain the selected directory identity and report successful native checks.
+    /// The report is diagnostic metadata, not a reusable acceptance handle.
+    pub fn check_report_with_kernel(
+        &self,
+        policy: SourcePolicy,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<ProjectCheckReport, Diagnostic> {
         let project = self.load_with_policy(policy)?;
-        process_loaded_project_with_kernel(self.path(), &project, false, Some(kernel))
-            .map(|_| ())
-            .map_err(Diagnostic::from_compile)
+        let (kernel, decisions) = kernel.recording();
+        let result = process_loaded_project_details(self.path(), &project, false, Some(&kernel))
+            .map_err(Diagnostic::from_compile)?;
+        Ok(ProjectCheckReport::new(result, decisions.summary()))
     }
 
     /// Compile every concrete declaration through the selected kernel.
@@ -642,6 +672,8 @@ fn process_loaded_project_with_kernel(
 struct ProjectResult {
     entry: Option<AcceptedProgram>,
     effects: BTreeMap<String, super::effects::FunctionEffect>,
+    concrete_local_roots: usize,
+    concrete_bundled_roots: usize,
 }
 
 /// Immutable interface facts bound to the source collection actually checked.
@@ -881,6 +913,17 @@ fn process_loaded_project_details(
         .map(|(key, fact)| (compiler.resolution.path(*key), *fact))
         .collect();
     compiler.charge("main", Span::default(), compiler.instrument_evidence.len())?;
+    let (concrete_local_roots, concrete_bundled_roots) =
+        compiler
+            .checked
+            .keys()
+            .fold((0, 0), |(local, bundled), key| {
+                let module = &compiler.resolution.declaration(*key).name.0;
+                match project.modules[module].origin {
+                    super::project::ModuleOrigin::Local => (local + 1, bundled),
+                    super::project::ModuleOrigin::Bundled => (local, bundled + 1),
+                }
+            });
     Ok(ProjectResult {
         entry: main.map(|program| {
             program
@@ -888,6 +931,8 @@ fn process_loaded_project_details(
                 .retain_pure_equations(compiler.pure_equations)
         }),
         effects,
+        concrete_local_roots,
+        concrete_bundled_roots,
     })
 }
 

@@ -1,0 +1,126 @@
+{
+  "format": "qleisli.cli-scope-baseline",
+  "version": 1,
+  "commit": "cebc5cf85b5267a35dd8b708ee12a354ece5f3ee",
+  "context": "Read-only preparation for #363 after reviewing the existing project checker; no product behavior changed. Desired sources are informed by existing supported grammar. Numerical or source-preservation guarantees are not tested.",
+  "cli_sha256": "3d993f8d57cb67fb15143fea7d957555414ab402924bf663c4687921f7bf4cbb",
+  "checker_sha256": "00a3a50c2f7c23c4b368377c77ebba7ede795becc51b821a08038ae5872c20b4",
+  "observations": [
+    {
+      "source": "generic-library",
+      "format": "text",
+      "checker": "/tmp/qleisli-beta-362-qlv2-stable-kernel",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library",
+        "--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library/main.qli:1:31: unsupported: finite profile does not support static Nat parameters\n"
+    },
+    {
+      "source": "generic-library",
+      "format": "json",
+      "checker": "/tmp/qleisli-beta-362-qlv2-stable-kernel",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library",
+        "--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":30,\"end\":31,\"line\":1,\"column\":31},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "source": "generic-library",
+      "format": "text",
+      "checker": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library/main.qli:1:31: unsupported: finite profile does not support static Nat parameters\n"
+    },
+    {
+      "source": "generic-library",
+      "format": "json",
+      "checker": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/generic-library",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":30,\"end\":31,\"line\":1,\"column\":31},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "source": "closed-entry",
+      "format": "text",
+      "checker": "/tmp/qleisli-beta-362-qlv2-stable-kernel",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry",
+        "--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "checked source and verified IR: /var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry\n",
+      "stderr": ""
+    },
+    {
+      "source": "closed-entry",
+      "format": "json",
+      "checker": "/tmp/qleisli-beta-362-qlv2-stable-kernel",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry",
+        "--lean-kernel=/tmp/qleisli-beta-362-qlv2-stable-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "source": "closed-entry",
+      "format": "text",
+      "checker": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry/main.qli:1:1: project: io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\n"
+    },
+    {
+      "source": "closed-entry",
+      "format": "json",
+      "checker": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/closed-entry",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/missing-checker",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\",\"primary\":{\"path\":\"main.qli\",\"start\":0,\"end\":30,\"line\":1,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

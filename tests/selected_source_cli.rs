@@ -60,6 +60,15 @@ fn result(output: Output, action: &str, success: bool) -> String {
     );
     if success {
         assert!(text.contains("\"diagnostics\":[]"), "{text}");
+        if action == "check" {
+            assert!(text.contains("\"checker_path\":"), "{text}");
+            assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
+            assert!(
+                text.contains("\"source_preservation_verified\":false"),
+                "{text}"
+            );
+            assert!(!text.contains("\"verified\":true"), "{text}");
+        }
     } else {
         assert!(text.contains("\"result\":null"), "{text}");
     }
@@ -109,6 +118,11 @@ fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
             .unwrap();
         let text = result(output, "check", true);
         scope(&text, "main::f", "raw");
+        assert!(
+            text.contains(&format!("\"checker_path\":\"{}\"", kernel().display())),
+            "{text}"
+        );
+        assert!(text.contains("\"request_checked\":false"), "{text}");
     }
 }
 
@@ -487,6 +501,15 @@ fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
         assert_eq!(log.calls(), ["--hierarchy-request-pending"], "{text}");
         if success {
             scope(&text, "main::f", "hierarchy");
+            let actual_checker = std::fs::canonicalize(log.files.0.join("native")).unwrap();
+            assert!(
+                text.contains(&format!(
+                    "\"checker_path\":\"{}\"",
+                    actual_checker.display()
+                )),
+                "{text}"
+            );
+            assert!(text.contains("\"request_checked\":true"), "{text}");
             let expected = if supplied {
                 "caller-composition"
             } else {

@@ -1,0 +1,230 @@
+{
+  "argv": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/classical-library",
+    "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/trace-checker.py"
+  ],
+  "exit_code": 0,
+  "stdout": "checked source and verified IR: /var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-beta-363-first-scope-qbqypoxi/classical-library\n",
+  "stderr": "",
+  "native_invocations": [
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 534,
+      "caller_bytes": 240,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 779,
+      "caller_bytes": 344,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 429,
+      "caller_bytes": 215,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 555,
+      "caller_bytes": 278,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 833,
+      "caller_bytes": 371,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 698,
+      "caller_bytes": 322,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 1422,
+      "caller_bytes": 684,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 323,
+      "caller_bytes": 139,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 487,
+      "caller_bytes": 221,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 1470,
+      "caller_bytes": 708,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 323,
+      "caller_bytes": 139,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 487,
+      "caller_bytes": 221,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 323,
+      "caller_bytes": 139,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 405,
+      "caller_bytes": 180,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 405,
+      "caller_bytes": 180,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 323,
+      "caller_bytes": 139,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 487,
+      "caller_bytes": 221,
+      "aliases": 0,
+      "request_bytes": 0
+    },
+    {
+      "args": [
+        "--qirf-native",
+        "0.3.0-beta"
+      ],
+      "magic": "QLV2",
+      "scope": 2,
+      "graph_bytes": 3059,
+      "caller_bytes": 1498,
+      "aliases": 0,
+      "request_bytes": 0
+    }
+  ],
+  "context": "Forwarding trace wrapper; actual decisions come from the selected stable native executable. This is a diagnostic observation, not identity pinning or source preservation."
+}

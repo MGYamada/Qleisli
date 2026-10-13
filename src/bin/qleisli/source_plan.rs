@@ -418,7 +418,10 @@ fn raw_execute(options: &Options, proposal: &RawSourceProposal, kernel: PathBuf)
     let checked = native::Kernel::new(kernel).accept(proposal.proposal())?;
     proposal.validate_source_steps(&checked)?;
     let result = match options.command.as_str() {
-        "check" => "{\"status\":\"checked\"}".into(),
+        "check" => fields(
+            "{\"status\":\"checked\"}".into(),
+            &super::check_report::ArtifactReport::new(&checked).json_fields()?,
+        ),
         "sample" => {
             let seed = options.seed.expect("parsed sample seed");
             let (shots, steps) = super::samples::collect(
@@ -484,7 +487,12 @@ fn hierarchy_execute(
                 "sized-instrument"
             };
             return Ok(format!(
-                "{{\"status\":\"checked\",\"profile\":\"{profile}\",\"contract\":\"{contract}\",{verification}}}"
+                "{{\"status\":\"checked\",\"profile\":\"{profile}\",\"contract\":\"{contract}\",{verification},{}}}",
+                super::check_report::ArtifactReport::from_checker(
+                    checked.checker(),
+                    checked.request().is_some(),
+                )
+                .json_fields()?,
             ));
         }
         let input = input.expect("prepared execution input");
@@ -533,7 +541,12 @@ fn hierarchy_execute(
             .map_err(checking_error)?;
         if options.command == "check" {
             return Ok(format!(
-                "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification}}}"
+                "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification},{}}}",
+                super::check_report::ArtifactReport::from_checker(
+                    checked.checker(),
+                    checked.request().is_some(),
+                )
+                .json_fields()?,
             ));
         }
         let output = checked.execute_pure(input.expect("prepared execution input"), 1, limits)?;
