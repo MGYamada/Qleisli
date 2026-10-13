@@ -3326,7 +3326,7 @@
     },
     {
       "path": "src/bin/qleisli/check_report.rs",
-      "sha256": "2fceac08313f33f841ab8ad2a434494a69af7b6c484f7c4fc4e3b7d7618efdbc",
+      "sha256": "d17daee4540569a87d91cca992ceb8eece0bd9ef14d8bd3ae502cb02de46c7c7",
       "group": "transport",
       "surface": {
         "declarations": [],

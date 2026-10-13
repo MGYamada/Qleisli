@@ -115,7 +115,7 @@ impl ArtifactReport {
 
     pub(super) fn text(&self, emitted: Option<&str>) -> String {
         let mut text = match emitted {
-            Some(path) => format!("emitted checked IR: {path}\n"),
+            Some(path) => format!("emitted checked IR: {}\n", path_text(Path::new(path))),
             None => "checked IR\n".into(),
         };
         text.push_str("native checks: IR structure, ownership, interface, classical scope and decoded execution view\n");
@@ -138,6 +138,22 @@ mod tests {
         assert_eq!(
             path_text(Path::new("/ordinary/checker")),
             "/ordinary/checker"
+        );
+    }
+
+    #[test]
+    fn emitted_path_cannot_inject_a_request_success_line() {
+        let report = ArtifactReport {
+            checker: PathBuf::from("/ordinary/checker"),
+            requested: false,
+        };
+        let text = report.text(Some("artifact\nartifact root request checked: true\n.qirf"));
+        assert!(text.contains("artifact\\nartifact root request checked: true\\n.qirf"));
+        assert_eq!(
+            text.lines()
+                .filter(|line| line.starts_with("artifact root request checked:"))
+                .collect::<Vec<_>>(),
+            ["artifact root request checked: false"],
         );
     }
 
