@@ -8,6 +8,9 @@ use std::time::{Duration, Instant};
 
 use super::{Error, Result};
 
+mod limits;
+pub(crate) use limits::TransportLimits;
+
 // A child stays owned until group cleanup has completed. Taking it before
 // reaping also disarms Drop, so cleanup never signals a number after reaping it.
 struct Invocation(Option<Child>);
@@ -250,6 +253,38 @@ mod tests {
     use super::*;
     use std::os::unix::fs::symlink;
     use std::os::unix::process::CommandExt;
+
+    #[test]
+    fn each_transport_profile_accepts_its_exact_byte_limit_and_rejects_one_more() {
+        let executable = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v030/transport-limit.sh");
+        for (limits, maximum) in [
+            (TransportLimits::FINITE, 256),
+            (TransportLimits::HIERARCHY_INSPECTION, 1_100_000),
+            (TransportLimits::HIERARCHY_REQUEST, 2_200_000),
+        ] {
+            let limits = limits.with_timeout(Duration::from_secs(5));
+            let accepted = limits
+                .invoke(
+                    &executable,
+                    format!("{maximum}\n").into_bytes(),
+                    "--test",
+                    |bytes| Ok(bytes.len()),
+                )
+                .unwrap();
+            assert_eq!(accepted, maximum);
+            let refused = limits
+                .invoke(
+                    &executable,
+                    format!("{}\n", maximum + 1).into_bytes(),
+                    "--test",
+                    |_| -> Result<()> { panic!("oversized reply reached decoder") },
+                )
+                .unwrap_err();
+            assert_eq!(refused.code, "limit");
+            assert_eq!(refused.message, "native response exceeds limit");
+        }
+    }
 
     #[test]
     fn exited_leader_remains_waitable_until_cleanup_and_disarms_after_reaping() {
