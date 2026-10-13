@@ -25,6 +25,13 @@ and exactness obligations retain their recorded scopes and status.
   experiments in a lossless static bundle. Check history integrity without
   executing recorded programs; these observations issue no approximation
   certificate or constitutional guarantee.
+- Add internal Mathlib-free engineering checks for exact R8 squared-error
+  witnesses on rectangular matrices. Prove their phase-sensitive Euclidean
+  operator bound, including arbitrary finite references, and connect it to two
+  original artifacts through their unchanged exact PureLeaf checks. Retain
+  small arithmetic/artifact regressions. Native transport, public approximation
+  handles, composition, instruments and target resources remain unfinished;
+  these components grant no exact correspondence or constitutional admission.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.

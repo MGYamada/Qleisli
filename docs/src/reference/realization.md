@@ -153,6 +153,19 @@ artifact does not supply its missing exact correspondence to the source.
 No new interpretation, guarantee admission or broader QS/PR/RS discharge
 follows from either engineering validation or this clarification.
 
+The current internal pure component checks a sufficient squared Frobenius
+witness over canonical rectangular R8 matrices and a closed nonnegative dyadic
+budget. Its proof bounds the explicitly selected Euclidean operator norm,
+including arbitrary finite external references and literal scalar phase.
+Witness failure does not establish that no approximation or synthesis exists.
+The original-artifact component runs the existing exact PureLeaf check on each
+body against its own independent matrix request before comparing those matrices;
+both complete type trees and ordered ports remain checked. Neither component
+changes the exact equality gate. The components are not connected to a native
+protocol, public engineering handle or target-resource gate. Checked composition
+and the complete instrument contract remain unfinished under #31/#163; the
+internal pure proof does not complete those Issues or source/target preservation.
+
 ## Quantitative resource claims
 
 A resource certificate must identify the actual closed instance, emitted
