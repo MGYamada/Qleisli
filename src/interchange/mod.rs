@@ -1,15 +1,13 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
-// #362 staging: exercise the common encoding before production view walkers
-// and the atomic native protocol cutover are connected.
-#[cfg(test)]
 mod execution_view;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;
 pub(crate) mod json;
 pub mod native;
+mod native_packet;
 pub mod pure_leaf;
 
 use codec::Codec;
@@ -363,8 +361,35 @@ fn export_inner(
 fn encode_proposal(
     program: &RawProgram,
     interface: Option<&RootInterface>,
-    mut encoder: Encoder,
+    encoder: Encoder,
 ) -> Result<Vec<u8>> {
+    let (root, encoder) = prepare_proposal(program, interface, encoder)?;
+    finish_proposal(root, interface, encoder)
+}
+
+fn encode_caller(
+    program: &RawProgram,
+    interface: Option<&RootInterface>,
+    encoder: Encoder,
+) -> Result<(Vec<u8>, native_packet::Caller)> {
+    let (root, encoder) = prepare_proposal(program, interface, encoder)?;
+    let origin = execution_view::finite::caller::Origin::collect(
+        program,
+        interface,
+        &encoder.canonical_evidence,
+    )?;
+    let caller = native_packet::Caller {
+        bytes: origin.describe()?,
+        indices: origin.alias_indices(),
+    };
+    Ok((finish_proposal(root, interface, encoder)?, caller))
+}
+
+fn prepare_proposal(
+    program: &RawProgram,
+    interface: Option<&RootInterface>,
+    mut encoder: Encoder,
+) -> Result<(usize, Encoder)> {
     if let Some(interface) = interface {
         for tree in [&interface.input, &interface.output] {
             let mut pending = vec![(tree, 0usize)];
@@ -403,7 +428,7 @@ fn encode_proposal(
             "supplied meaning receipt is not referenced by the program",
         ));
     }
-    finish_proposal(root, interface, encoder)
+    Ok((root, encoder))
 }
 
 fn finish_proposal(

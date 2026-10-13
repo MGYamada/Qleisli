@@ -5,34 +5,50 @@ This is the implementation contract for
 data; it is separate from the QIRF artifact version and the native request/reply
 version. Encoding a description grants no acceptance authority.
 
-The current foundation implements the byte encoding, the typed finite walkers
-and a pure Lean finite comparison gate below. Rust exercises these walkers only
-in tests. Native CLI comparison, complete retained execution profiles and the
-protocol cutover remain required. The existing production protocol has not
-changed. The foundation must not be reported as a bound production execution view.
+QLV2 connects these walkers and pure Lean gates to the production native
+entry points. Finite execution prepares its actual graph, dependency caches
+and root metadata before submission. The comparison borrows those exact
+allocations; successful binding moves them into `AcceptedProgram` without
+re-decoding. Both the immutable subject identity and an execution-capable
+native scope are required. An inspection for identical bytes cannot substitute.
 
-Finite execution and finite-leaf execution now prepare their actual graph before
-the fresh native invocation. The private prepared container owns the complete
-graph, cached dependency objects and derived root metadata. It retains one
-immutable subject containing the original artifact/request bytes and selected
-checker path; this subject carries no acceptance result. Only a fresh native
-decision for that same subject allocation can move the prepared graph into an
-accepted handle. Binding never decodes or reconstructs it again. Even an
-independently accepted invocation with identical bytes cannot bind another
-prepared container. Native refusal remains authoritative if preparation fails
-as well. This lifecycle prepares the comparison boundary; the production native
-protocol still does not compare QDV1 and the correspondence gap remains open.
+Hierarchy reports likewise retain the same boxed plan prepared before the
+fresh native check. Each of the five modes compares that plan, including exact
+finite descriptions and ordered preparation/readout coordinates. A failed plan
+or description is retained as an execution error while explicit inspection
+remains available. No report can lazily replace it with an unchecked plan.
+Compatibility reports additionally keep freshly checked finite-leaf handles.
 
-Hierarchy inspection, independent requests, instruments and QPE reports likewise
-prepare their owned execution plan before the fresh native decision. The
-candidate contains the actual ordered nodes, exact finite descriptions and
-preparation/readout coordinates. It has no acceptance authority: every finite
-proof must still pass the original-body equality checks and complete native
-coverage checks. Reports retain the same boxed plan, including a preparation
-failure when execution is unavailable, rather than compiling on first use.
-Inspection refusal remains authoritative. Compatibility reports keep their
-freshly checked leaf handles as well. Native comparison and the protocol cutover
-remain pending; eager preparation alone does not bind the two decoded views.
+## Native envelope cutover
+
+The #362 cutover uses `QLV2` as the external native envelope. Its six
+little-endian fields are four magic bytes, a `u32` scope, three `u32` byte
+lengths (original payload, graph view, caller view), and a `u32` alias count.
+The payloads follow in that order, followed by the alias indices as `u32`s.
+Exact EOF is required. The complete envelope is bounded by 64 MiB, the two
+views together by the existing QDV1 byte limit, and the alias count by 100,000.
+Original per-profile limits remain in force; these are not increased budgets.
+
+Scope 0 (`inspection`) requires empty views and no aliases. Scope 1
+(`execution`) requires the graph view, an empty caller view and no aliases.
+Scope 2 (`caller`) requires both views; it also compares the literal caller
+root and each actual retained evidence alias against its proposed entry index.
+Indices are proposals, not evidence. Hierarchy permits scopes 0 and 1;
+standalone preparation/readout components permit only scope 0.
+
+The original finite payload remains the exact internal QLV1 packet, and a
+hierarchy payload retains its original bridge encoding. These inner payloads
+are checked by the existing definitions. Neither is accepted as an unwrapped
+external request after cutover. No compatibility retry is permitted.
+
+Finite replies use `qleisli.qirf-native 2`; successful replies contain
+`accepted`, the checked scope name, exact work, and request-presence flag.
+Hierarchy replies increment their five `*-pending` versions from 3 to 4 and
+place the checked scope name immediately after `pending`; their work and
+obligation fields retain their meanings. Component response versions become
+2. Errors retain `error` and a code; a compared-view mismatch is
+`decoded_view`. A consumer must validate the response version and exact
+requested scope before granting use of its retained data.
 
 ## Byte grammar
 
@@ -191,7 +207,7 @@ The [graph vectors](../../../tests/fixtures/verification_v030/execution-view-bin
 retain three original observing sentinels and add Unit interfaces, ordered
 mixed-width output ports, conservative effects and an evidence table whose
 first entry depends on its second. These remain bounded transport comparisons;
-native gate and protocol integration are required before execution binding.
+the native QLV2 regression separately exercises their production binding.
 
 ## Retained contract stages
 
@@ -251,7 +267,7 @@ Rust describes independently constructed typed values. Data mutations distinguis
 encodings, phase, both ports, equal-width type trees, source identity and axes.
 The [authoring record](../../../tests/fixtures/verification_v030/execution-view-binding/README.md)
 describes both preserved refusals and their corrections.
-Actual caller circuit/cache binding and production comparison remain required.
+The QLV2 caller scope also binds the actual circuit steps and retained caches.
 
 ## Pure complete contract comparison
 
@@ -273,8 +289,8 @@ finishes before describing the view; the added work is not hidden.
 Rust's corresponding walker borrows the actual typed obligation and retained
 actual/reference runtime graphs. One bounded writer accounts for nesting and
 total storage across all three fields. Neither side serializes the original
-request JSON as the execution view. Rust still needs private unbound staging
-before this walker can participate in production acceptance.
+request JSON as the execution view. Production uses private unbound staging
+and moves the compared graph into the accepted handle only after native success.
 
 The [complete-contract vectors](../../../tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json)
 retain eight independently authored graph descriptions covering every current
@@ -283,11 +299,11 @@ The pure Lean gate refuses 1,152 individual scalar, empty-list and array-shape
 mutations over these valid original requests. The Rust tests also refuse missing
 or unexpected reference graphs. These checks do not bind original caller Arc
 aliases/caches or hierarchy execution and do not complete the native CLI or
-protocol cutover. No execution handle or new guarantee is issued by the walker.
+protocol. The walker alone issues no execution handle or constitutional guarantee.
 
 ## Original caller evidence aliases
 
-The test-only caller collector retains the supplied root program, its optional
+The caller collector retains the supplied root program, its optional
 interface and every distinct actual `Arc<FunctionEvidence>` reachable through
 implementation bodies, specification bodies and cached circuit steps. It walks
 both complete classical branch arms and both certified use/logical step lists.
@@ -323,8 +339,8 @@ Arcs, and references in an unselected branch's certified use/logical circuits.
 The [original branch refusal](../../../tests/fixtures/verification_v030/execution-view-binding/first-caller-branch-refusal.json)
 retains the first invalid phi wire and real diagnostic; the regression rechecks
 that native refusal before exercising the corrected fresh-wire case.
-These tests add no production acceptance authority. Private unbound staging,
-hierarchy execution and the versioned protocol cutover remain required.
+These tests add no production acceptance authority. Private unbound staging and
+hierarchy execution are checked separately through the QLV2 native entry points.
 
 ## Pure caller attachment
 
@@ -362,11 +378,10 @@ Mutations keep each native-valid original fixed and change only the supplied
 description or proposed alias indices. Exact and one-byte-short capacities
 exercise repeated-description accounting without large quantum instances.
 
-These are pure staging gates. The native CLI and Rust execution do not use
-them yet. The gate checks every emitted alias; correspondence of the collector
-with all objects actually consumed by execution remains a separate production
-integration and runtime-preservation duty. This does not complete #362 or admit
-a constitutional guarantee.
+The native CLI invokes these gates for the QLV2 caller scope. The gate checks
+every emitted alias; correspondence of the collector with all objects actually
+consumed by execution remains a runtime-preservation assumption. The binding
+proofs do not prove the Rust collector or admit a constitutional guarantee.
 
 ## Retained hierarchy runtime plan
 
@@ -375,7 +390,7 @@ fresh native decision. Native-only and finite-reconstructed reports retain that
 same allocation, or its explicit materialization failure. Inspection still
 makes the original native decision; unsupported execution cannot acquire a
 replacement plan or change that decision. Public payload/request access is
-immutable. Production QDV1 integration must compare this same plan before
+immutable. Production QDV1 integration compares this same plan before
 granting execution authority; preparation and retention alone do not perform
 that comparison.
 
@@ -399,7 +414,7 @@ errors, work counts and outcome counts are unchanged. Private fault injection
 also checks that execution retains its original plan after old transport/leaf
 storage is poisoned. Hand-authored controls separately retain literal phase
 parameters and nontrivial preparation/readout/reference coordinates. These
-tests establish bounded regression evidence, not native plan comparison,
+tests establish bounded regression evidence, separately from native plan comparison,
 source/runtime preservation or a new constitutional guarantee.
 
 ## Hierarchy plan records
@@ -454,9 +469,9 @@ poisons old transport storage. The `CheckedHierarchy.Modes` gate also retains
 the original fresh checks for independent root requests, named Fourier,
 instruments and named QPE instruments. Its binding theorems retain the original
 packet, actual finite matrices, independent pair/H checks and comparison with
-the plan derived from those same objects. Rust's view walker remains test-only;
-native CLI integration and the mandatory protocol cutover are still required.
-These staging helpers confer no production execution authority.
+the plan derived from those same objects. The QLV2 CLI dispatches to these gates
+with a mandatory execution view when execution is requested. Production Rust
+describes and retains the same plan; the walker itself confers no acceptance.
 
 The [five-mode comparison record](../../../tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-validation.json)
 uses actual retained Rust plans
@@ -494,13 +509,13 @@ dyadics are not canonical. Matrix dimensions and row-major entry order remain
 explicit. Exact phase data is bound before numerical interpretation; numerical
 runtime values are not a replacement for exact coefficients.
 
-Complete profile record schemas and actual native comparison are not supplied
-by the primitive byte grammar alone. Until their integration, no public
-execution API may claim QDV1 comparison or use this foundation as a fallback.
+The primitive byte grammar grants no authority by itself. The typed profile
+walkers and fresh comparison gates below are required; encoding success is
+never a fallback acceptance decision.
 
 ## Acceptance and remaining assumptions
 
-`ExecutionView.CheckedFinite.check` is a pure staging gate over an original
+`ExecutionView.CheckedFinite.check` is the pure finite comparison gate over an original
 packet and a mandatory candidate view. It checks QDV1 framing, decodes the
 original artifact/request, runs the common typed QIRF check once, derives the
 view from that same fresh result, encodes it and compares exact byte arrays
@@ -522,23 +537,24 @@ The shared runner checks seven independently valid original artifacts against
 their correct views and 71 divergent candidates, including every graph field
 and retained evidence-cache fields. It separately covers malformed frames,
 native work refusal and an original optional request. These are tests of the
-pure staging gate. No native CLI mode or Rust execution handle uses it yet;
-all execution profiles and the mandatory versioned protocol remain open.
+pure comparison gate. The QLV2 native tests separately check finite, complete
+contract, caller and all five hierarchy paths, including valid original inputs
+with divergent views and rejection of old external frames.
 
-The intended production gate compares the submitted actual-view encoding with
+The production gate compares the submitted actual-view encoding with
 Lean's own decoded/derived view inside Lean. A well-framed mismatch rejects
 with `decoded_view`. Missing or malformed data and unsupported protocol
-versions reject separately. The production cutover must reject old native
+versions reject separately. The production cutover rejects old native
 request/reply frames; QIRF1/2 artifact compatibility is a separate contract.
 
-Hierarchy comparison must cover inspection, independent root requests, named
+Hierarchy comparison covers inspection, independent root requests, named
 Fourier requests, instruments and named QPE instruments. Each call obtains one
 fresh structural result, reconstructs that result's actual finite leaves and
 checks its independent pair/H obligations under the same exact-work allowance.
 The plan then derives from those exact retained matrices and original typed
 packet, including actual preparation and readout. A QPE plan uses the original
 circuit entry, rather than the provider entry used for its independent request.
-Inspection without an execution comparison must remain distinct from an
+Inspection without an execution comparison remains distinct from an
 execution-capable result, so unsupported execution cannot narrow inspection.
 
 Any private inspection needed to construct a candidate must not expose an

@@ -1089,8 +1089,8 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
         "checked\n0\n0\n0\n",              // a claimed final result is not the protocol
     ] {
         let script = format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 3\n{}'\n",
-            body.replacen("pending\n0\n", "pending\n0\n0\n", 1)
+            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 4\n{}'\n",
+            body.replacen("pending\n0\n", "pending\nexecution\n0\n0\n", 1)
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();

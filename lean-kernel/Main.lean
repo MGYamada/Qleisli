@@ -32,7 +32,7 @@ def main (args : List String) : IO UInt32 :=
     | some action =>
       if version == QleisliKernel.Protocol.productVersion then action
       else do
-        IO.println "qleisli.qirf-native 1\nerror\nversion"
+        IO.println "qleisli.qirf-native 2\nerror\nversion"
         pure 1
     | none => QleisliKernel.Cli.run mode version
   -- Native modes always require the explicitly paired product version, so
@@ -40,7 +40,7 @@ def main (args : List String) : IO UInt32 :=
   | [mode] =>
     match nativeMode mode with
     | some _ => do
-      IO.println "qleisli.qirf-native 1\nerror\nversion"
+      IO.println "qleisli.qirf-native 2\nerror\nversion"
       pure 1
     | none => QleisliKernel.Cli.usage
   | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement

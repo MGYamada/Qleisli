@@ -9,6 +9,7 @@ pub(in crate::interchange) enum Request<'a> {
     Encoded(&'a Contract),
     Leaf(&'a UnitaryBoundary, &'a Matrix),
     PureLeaf(&'a PureBoundary, &'a Matrix),
+    #[cfg(test)]
     Control(&'a BasisType, &'a [usize]),
     ControlOwners(&'a [BasisType], &'a [usize]),
     Instrument {
@@ -39,6 +40,7 @@ fn write_request(value: Request<'_>, writer: &mut Writer) -> Result<()> {
             w.port(boundary.output())?;
             w.matrix(required)
         })?,
+        #[cfg(test)]
         Request::Control(signature, axes) => view.record("control", 2, |w| {
             w.basis(signature)?;
             w.axes(axes)
@@ -60,6 +62,7 @@ fn write_request(value: Request<'_>, writer: &mut Writer) -> Result<()> {
     Ok(())
 }
 
+#[cfg(test)]
 pub(in crate::interchange) fn request(value: Request<'_>) -> Result<Vec<u8>> {
     let mut writer = Writer {
         bytes: b"QDV1".to_vec(),
@@ -104,6 +107,7 @@ pub(in crate::interchange) fn complete(
     Ok(writer.bytes)
 }
 
+#[cfg(test)]
 pub(in crate::interchange) fn circuit(
     value: &Circuit,
     dependencies: &[Arc<FunctionEvidence>],

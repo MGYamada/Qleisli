@@ -738,8 +738,8 @@
     {
       "id": "execution-view-encoding",
       "producer": "Actual typed Rust finite data and independent Lean decoded data",
-      "consumer": "QDV1 encoding, typed walkers and pure Lean finite comparison tests; native CLI gate not connected",
-      "obligation": "Keep type, phase, axis order, both branch arms, owners, identities and actual caches; bind the pure finite gate to original bytes/root and checked comparison; no production execution or runtime-preservation claim",
+      "consumer": "QLV2 native finite, complete-contract, caller and five-mode hierarchy gates; the same retained Rust graph/plan is consumed after comparison",
+      "obligation": "Fresh original checks and exact QDV1 comparison of type, phase, axis order, both branch arms, owners, identities and actual caches; inspection cannot authorize execution; source/walker/compiler/runtime preservation remains separate",
       "reference": "docs/src/reference/execution-view.md",
       "replacement": [
         "VM-28",
@@ -2214,19 +2214,19 @@
     },
     {
       "path": "lean-kernel/Cli/Hierarchical.lean",
-      "sha256": "cc776268f9d08d54ca1eaac900766d6ddb9678f73c17e2c54ee2863e57add378",
+      "sha256": "a2106b3b29b702e0a87dad4803bff1b1c0ee97a757e438203fdf143e6db95e81",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Cli/Validity.lean",
-      "sha256": "ed997410d7bf6c815288605e543cae81ded5274155f631fcfc7b54b1dbd4bd18",
+      "sha256": "3e8f61ab8b707ba1e4f3f0614c0f6d80d7909bb0384ae8b944292bea8bb93880",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "e4be8fa97b378d808d625d13ed7728674fecfe186281b90254ae201ae0c15000",
+      "sha256": "ab8b5eaff420cc732aae9858919619b259aad252e9da05a94b666648a0ea2631",
       "group": "hierarchy",
       "surface": null
     },
@@ -2255,9 +2255,39 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/Caller.lean",
+      "sha256": "ec31ea2a95499e9f5c1211e3836ed7d4fe3a0f538d564914f057113714173b1e",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedCaller.lean",
+      "sha256": "6e6f051dec9ae1853840dd0774219720f9ee2a89e49986a66db4b54246f3a9e6",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedContract.lean",
+      "sha256": "c4a5676bd6d56b63d33297183ae46e3a9711f0d091c0f4aa37a8145ab10ef19f",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean",
       "sha256": "0b574fd1b1e55dbf7b1664423907ffd9b3c9121b160ef9048998fb11fe2f68a1",
       "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
+      "sha256": "121713a329d118c160e50737ff94c93e830d8ddc8cd43cd5ebe24b60c5e98335",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Contracts.lean",
+      "group": "execution-view-encoding",
+      "sha256": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
       "surface": null
     },
     {
@@ -2273,9 +2303,33 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/Gate.lean",
+      "sha256": "e9e181bb20bb7df2faf3abd27126c3338466455c4387fdf172428287f95279b5",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/Graph.lean",
       "group": "execution-view-encoding",
       "sha256": "29114cfeca63e1d888b33876c45560c4b846d644c21b38085bf3221dbf36a5d9",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Hierarchy.lean",
+      "sha256": "a48ffca8d16d73835e24563c07592876d94c37b93a1b6fd76e16f22c9f042105",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+      "sha256": "3303732fa3937b990648103de53e8b8a16626d99f9156b514798df73087bcc43",
+      "group": "execution-view-encoding",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+      "sha256": "caf281588d3f97163866257abdc0fb168cda9f5db5023c31bbbaa2e514bfdd7a",
+      "group": "execution-view-encoding",
       "surface": null
     },
     {
@@ -3216,7 +3270,7 @@
     },
     {
       "path": "scripts/test_instrument_host.py",
-      "sha256": "271274bbe737c6bedd43943488ec234b15cd4c159d3bcba750dc33658a5b2479",
+      "sha256": "29b7ba3c5f786e1c4ba5863f9d50ad88edc5fbe481c3c71b407a92ec8db121cf",
       "group": "instrument",
       "surface": null
     },
@@ -3422,7 +3476,7 @@
     },
     {
       "path": "src/contract/instrument.rs",
-      "sha256": "c3630a2ac2a45c50503dc2314493c8cac2f6df365fd75319b3eceb90413735c2",
+      "sha256": "656baf2221102d25f3ffa20bf1a875a4e102227d917e713d27d122284af45c46",
       "group": "function-evidence",
       "surface": {
         "declarations": [],
@@ -4786,20 +4840,60 @@
     {
       "path": "src/interchange/execution_view.rs",
       "group": "execution-view-encoding",
-      "sha256": "55d67a956b33fb5bd530cb174644a3b57397977dbd7ddd8f0744738ce7d1ae36",
+      "sha256": "6b90d5ec9528c8cc95666d81c81ab4fd1745821341273743ec569cf41adc446a",
       "surface": {
         "declarations": [],
         "functions": [],
         "capacity_constants": [
-          "const MAX_BYTES: usize = 64 << 20;",
-          "const MAX_DEPTH: usize = 128;"
+          "const MAX_DEPTH: usize = 128;",
+          "pub(super) const MAX_BYTES: usize = 64 << 20;"
         ]
       }
     },
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "92dcfe6515439a12db822f8e84b38d48abc88022a3d11807a472401070c1c10e",
+      "sha256": "ee32d334c8b5db9216ed69db50ab30529481fe9211788bd8428d5d5b8917321f",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/caller.rs",
+      "group": "execution-view-encoding",
+      "sha256": "be640b5cf8fa8245982e0cec2eea728ca851dec6a2610a29139822b5c47dfb44",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/caller/tests.rs",
+      "group": "execution-view-encoding",
+      "sha256": "e1d2f76f6203863caf2d3ae6c21647395c2fbcc2e479b9c0a237ae376db9ad91",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/contracts.rs",
+      "group": "execution-view-encoding",
+      "sha256": "f750301e09c25683c8930d0757613df4d8ab97945aa57b5d45cb707f3f5a8c62",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/contracts/tests.rs",
+      "group": "execution-view-encoding",
+      "sha256": "6c148fc492644a1cf1d642bbaee515c1906625518a5e7410b89a7fe83bc25e12",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4862,7 +4956,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "cb38a581c1931ef1c3f7d8fd634dc168d6e8aee016c89d1b5bb160c345a1fe2a",
+      "sha256": "3df401bb70efd8399729819ba86956e3c15a07cbce416e18b41bfecb0faad252",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4972,8 +5066,38 @@
       }
     },
     {
+      "path": "src/interchange/hierarchical/execution/plan.rs",
+      "group": "hierarchical-execution",
+      "sha256": "9bbb0e4b53fcbb60999ec4f1de91a7b7e245d506ae5d0efa1d3b333583b53de2",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/hierarchical/execution/plan/tests.rs",
+      "group": "hierarchical-execution",
+      "sha256": "6784910505dd166ca762e8b23593674499a87a0d1ebb4bec02133fe27ea7186a",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/hierarchical/execution/plan/view.rs",
+      "group": "hierarchical-execution",
+      "sha256": "95c451d1d05e6108994c9baad803c92c2bf1eb4933e0dc078569b3cf49b31d11",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "a7885f3d227356cd81773a1ed092caee1e316d7865e88f75cb4ace4174c2e765",
+      "sha256": "3984a13a972ae6abcaa6ed4285084362dc6336956f04b144031b6deb4bc43e4a",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5005,7 +5129,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "d3e9c7e387ac1357d1d074683843340c4908ea2714868e59e8085883b38d9257",
+      "sha256": "06def895f168cfb48f212dedc5c64d36558abbcb0044cc84dfa1fbca80348420",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5034,7 +5158,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "4902146861f78cc94895bee131446544d7160fdfbce9a88d70750fef2f015f57",
+      "sha256": "9577c4ba982a711cae3a36500777c698b17a0e2dbe1801db6ac169d1ce62e1af",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5085,8 +5209,18 @@
       }
     },
     {
+      "path": "src/interchange/native/binding.rs",
+      "sha256": "675d8b12fe781f412d9bdf066ac77094645b31b319b0bd43fc474cf70c389fac",
+      "group": "execution-view-encoding",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "4571852611ee8168edab115c6121c064ac8835375f76b3c8e2b6bea7ebd97fba",
+      "sha256": "c64ab5cf6e9620e83f1858643c5d5540f688e7d20d77a1bdc5bef83e2f737ec3",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -5096,7 +5230,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "b38489cbdc7930a027b20a394dd57533c795f27a4573c74496176b99be1461ac",
+      "sha256": "0d763d3b6d5dc49a0e7e71891057637f880d7441dbf4f2bb6a4900ea9594f59a",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5108,6 +5242,16 @@
       "path": "src/interchange/native/view.rs",
       "sha256": "6115cd8549265e82de2f685fbf84aa2418a4efa50938859ec07eb3c526ee613d",
       "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native_packet.rs",
+      "sha256": "93884653cf72679ed6b50f5951b2f650a90b783c2e76ae85dbcc577ea81fb247",
+      "group": "execution-view-encoding",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5384,118 +5528,6 @@
       "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
-    },
-    {
-      "path": "src/interchange/execution_view/finite/contracts.rs",
-      "group": "execution-view-encoding",
-      "sha256": "e5f43eb29725f9b3497dd5c7d028d1cd31fffd8b17f596a4a43278462f7a60ed",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/execution_view/finite/contracts/tests.rs",
-      "group": "execution-view-encoding",
-      "sha256": "6c148fc492644a1cf1d642bbaee515c1906625518a5e7410b89a7fe83bc25e12",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/Contracts.lean",
-      "group": "execution-view-encoding",
-      "sha256": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/Gate.lean",
-      "sha256": "e9e181bb20bb7df2faf3abd27126c3338466455c4387fdf172428287f95279b5",
-      "group": "execution-view-encoding",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedContract.lean",
-      "sha256": "c4a5676bd6d56b63d33297183ae46e3a9711f0d091c0f4aa37a8145ab10ef19f",
-      "group": "execution-view-encoding",
-      "surface": null
-    },
-    {
-      "path": "src/interchange/execution_view/finite/caller.rs",
-      "group": "execution-view-encoding",
-      "sha256": "cc88b7eb36f79d1606524e5a174dd1a857b0d17094fc6f077534a7693c714374",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/execution_view/finite/caller/tests.rs",
-      "group": "execution-view-encoding",
-      "sha256": "e1d2f76f6203863caf2d3ae6c21647395c2fbcc2e479b9c0a237ae376db9ad91",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/Caller.lean",
-      "sha256": "ec31ea2a95499e9f5c1211e3836ed7d4fe3a0f538d564914f057113714173b1e",
-      "group": "execution-view-encoding",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedCaller.lean",
-      "sha256": "6e6f051dec9ae1853840dd0774219720f9ee2a89e49986a66db4b54246f3a9e6",
-      "group": "execution-view-encoding",
-      "surface": null
-    },
-    {
-      "path": "src/interchange/hierarchical/execution/plan.rs",
-      "group": "hierarchical-execution",
-      "sha256": "52ca95cc30b6932e677273b740459564072bf8cb78d68b607b6d04d7f40c9dd6",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/hierarchical/execution/plan/tests.rs",
-      "group": "hierarchical-execution",
-      "sha256": "b0a1c4676d898cf5e1c1931aa0f70be1d49f4e93c36014b320380e56e2a10cba",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/hierarchical/execution/plan/view.rs",
-      "group": "hierarchical-execution",
-      "sha256": "8a295090035b0771053a0b000b5c80247c886d916ab81fdcbd3b3c1e3fb1444f",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/Hierarchy.lean",
-      "sha256": "a48ffca8d16d73835e24563c07592876d94c37b93a1b6fd76e16f22c9f042105",
-      "group": "execution-view-encoding",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean",
-      "sha256": "121713a329d118c160e50737ff94c93e830d8ddc8cd43cd5ebe24b60c5e98335",
-      "group": "execution-view-encoding",
-      "surface": null
     }
   ],
   "boundaries": [
@@ -5510,7 +5542,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -5532,7 +5564,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -5553,7 +5585,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -5574,7 +5606,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -5598,7 +5630,7 @@
       "binding": "Fresh native check of immutable original QIRF/dependency bytes and request. Square leaf retains two-sided unitarity; pure-leaf reconstructs the original body and exact Gram identity. Private source sidecars retain separately checked reference/implementation leaves and source provenance, without a source-preservation or inverse-access claim.",
       "encoding": "Exact trees and ordered quantum ports, including zero-width owners; pure-leaf accepts Unit -> A preparation and different input/output widths",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
       "failure": "Reject shape, effect, hidden observation, phase, request, dependency or identity mismatch and exceeded capacity; no receipt or fallback",
       "replacement": [
         "VM-23",
@@ -5621,7 +5653,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending",
       "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
-      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
+      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -5643,7 +5675,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
+      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -6058,7 +6090,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -6100,7 +6132,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [
@@ -6359,22 +6391,22 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "0303e573563b15184282aee3fbe8a8186f1b9d0fa5201d0e05ec4f96f259f8e9",
       "tests/verification_boundary.rs": "05368997cdae46c12ecf4ccf016605229f77cdfd14d692c777fc7159d73f2a11",
-      "tests/hierarchical_host.rs": "00a721711c40bd7fb6f28cc2b3ff3e1e759dc0a4256fc0ea1f502f191f01dbfe",
-      "scripts/test_hierarchical_readout.py": "872aa491218b9cf3aa6f33527a67567a874ba9366f1b25891c8e2e7b953d31a7",
+      "tests/hierarchical_host.rs": "23682feb75043e8448e47ed4872cfb6e7c64fc2765eb7262e7bf7c6901185875",
+      "scripts/test_hierarchical_readout.py": "c56647a4fa0ec53d13dd7f07acafd2427cd430ecb71afb2803250b9b0ba79ea7",
       "scripts/test_sized_qpe_readout.py": "a196c637ad6dc0c6845d587240ee370ed953f46d3aa7adc0337f25fcb4231f3b",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
       "scripts/compact_sized_graph.py": "5246c9e2524823dbf1bf13f3a4e03a5006ea6d43d908fbc16540629d3c959bf9",
-      "scripts/instrument_transport.py": "79598b86f25c96dc0a6d82616f27aa8fdf203f3d5827bbdaf7cd7dff962711ac",
+      "scripts/instrument_transport.py": "1874de96f8cadd6b187407339df2d203aded5ae604af36785cd1512a42c92590",
       "scripts/test_hierarchical_preparation.py": "4847a275b523a2ec474afb89f928f1db1a410aa510f00bf871c0fe47a4831ad0",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
       "scripts/test_hierarchical_instrument.py": "b267b62dc9ca4145eb093c90f52492fa41e3f6c8f781a62027cb72f795bcd3b2",
       "tests/sized_corpus.rs": "c41e60eb4c31c52dc4ce18922217a630100290a7f515245fcf7077874d532947",
-      "scripts/test_instrument_host.py": "271274bbe737c6bedd43943488ec234b15cd4c159d3bcba750dc33658a5b2479",
+      "scripts/test_instrument_host.py": "29b7ba3c5f786e1c4ba5863f9d50ad88edc5fbe481c3c71b407a92ec8db121cf",
       "scripts/test_sized_qft.py": "ba5aa3164371f5cc479de027dd5bd9901e48a4e5fc2e36e6804fe3754e898ea4",
       "scripts/test_hierarchical_contract_typing.py": "71e8f180b1ce221c43ae07bc0d77cfaa4d8156162ec6a0d073b079cb9bb80ce8",
-      "scripts/test_hierarchical_request.py": "b06e8197e9553dde4a618b7d7cc71c88f050a80df7b584b67b0981768dee02f4",
+      "scripts/test_hierarchical_request.py": "2750a246c00f0a73a31138301539eefd4a8f6bd2dc5779a6a49931709cd06f82",
       "scripts/test_hierarchical_routed_power.py": "55aac6c84042428e098eb5ee7dcfae7a13ff4bf3f383603fece3e3a6a04ccc16",
       "scripts/test_hierarchical_execution.py": "c9c7fe8fead31d0ee497eeab8f04159945f0bb3273ba374dcc18e6609f342d87",
       "tests/hierarchical_execution.rs": "13aceaa54a5a8dffb00c325e44c7f49acda7dfcc7cebd53914c19f6592dc3592",
@@ -6386,7 +6418,7 @@
       "tests/sized_linear_seeded.rs": "41d854e33e8fdb30eb8e8d7882cadbc8e84b6856a650c9d11afef317cbea2357",
       "tests/sized_cli.rs": "1079f8107a3b5b1c395033d83ef1be9b9c3179cce6ebb1cc6f21f8630cdce4ca",
       "tests/hierarchical_qpe_host.rs": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
-      "scripts/test_qpe_instrument_host.py": "0c42d4bf75096ce7d45d3c65e8e16e51ed920bcf7f5b21a8bfe6712b8ad82d5c",
+      "scripts/test_qpe_instrument_host.py": "dd1eed6adf9650051940771ff63ad55af7d383767c055335fcd607fabac7d315",
       "tests/connections.rs": "948bb3e3a714fb1768a4a79c6c20b817e85f73fbbffdbd1af3b338c43671f931",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",

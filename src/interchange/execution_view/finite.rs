@@ -554,6 +554,7 @@ fn dependency_indices(dependencies: &[Arc<FunctionEvidence>]) -> Result<BTreeMap
     Ok(indices)
 }
 
+#[cfg(test)]
 pub(super) fn raw(program: &RawProgram, dependencies: &[Arc<FunctionEvidence>]) -> Result<Vec<u8>> {
     let indices = dependency_indices(dependencies)?;
     let mut writer = Writer {
@@ -634,8 +635,8 @@ pub(in crate::interchange) fn graph(
     Ok(writer.bytes)
 }
 
-pub(super) mod caller;
-pub(super) mod contracts;
+pub(in crate::interchange) mod caller;
+pub(in crate::interchange) mod contracts;
 
 /// Reuse the one bounded QDV1 writer and exact-matrix vocabulary for a view
 /// that contains no finite dependency references.

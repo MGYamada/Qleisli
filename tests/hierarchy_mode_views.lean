@@ -85,4 +85,4 @@ def main (args : List String) : IO Unit := do
       negatives := negatives+1
   unless positives == 5 && negatives == 3 do throw (IO.userError "missing native mode controls")
   IO.println ("hierarchy mode comparisons: 5 modes; 3 invalid originals; " ++
-    toString refusals ++ " divergent plans refused; production cutover pending")
+    toString refusals ++ " divergent plans refused; pure-gate evidence; QLV2 CLI exercised separately")

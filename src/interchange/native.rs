@@ -1,8 +1,10 @@
 //! One native acceptance boundary for immutable QIRF proposals.
-//! Rust decodes the exact accepted bytes for execution; it issues no ownership,
-//! equation or isometry decision. Decoder/runtime correspondence remains explicit.
+//! Lean compares Rust's retained decoded data before authorizing execution.
+//! Rust issues no ownership, equation or isometry decision; walker coverage and
+//! numerical runtime correspondence remain explicit assumptions.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
+mod binding;
 mod runtime;
 
 use std::path::{Path, PathBuf};
@@ -18,6 +20,7 @@ use crate::ir::RawProgram;
 pub struct NativeChecked {
     subject: Arc<Subject>,
     exact_work: usize,
+    scope: super::native_packet::Scope,
 }
 
 /// Immutable invocation inputs, without an acceptance decision. Construction
@@ -82,6 +85,12 @@ impl Prepared {
             return Err(Error::new(
                 "kernel",
                 "native decision belongs to a different subject",
+            ));
+        }
+        if native.scope == super::native_packet::Scope::Inspection {
+            return Err(Error::new(
+                "kernel",
+                "inspection does not authorize an execution view",
             ));
         }
         let root_interface = self.decoded.interface.clone();
@@ -168,13 +177,7 @@ impl Kernel {
     }
 
     fn check_mode(&self, artifact: &[u8], request: Option<&[u8]>, mode: &str) -> Result<Checked> {
-        let subject = self.subject(artifact, request)?;
-        let prepared = Prepared::new(Arc::clone(&subject));
-        // Keep native rejection authoritative even if materialization also
-        // fails. No staged object is exposed on either failure path. #362's
-        // mandatory view comparison will be inserted before this binding.
-        let native = Self::inspect_subject(subject, mode)?;
-        prepared?.bind(native)
+        self.check_bound(artifact, request, mode, Prepared::description, None)
     }
 
     /// Verify manually built IR through the same original-QIRF boundary as
@@ -198,8 +201,15 @@ impl Kernel {
         version: Version,
         request: Option<&[u8]>,
     ) -> Result<Checked> {
-        let bytes = super::encode_proposal(program, interface, Encoder::new(version))?;
-        self.check(&bytes, request).map_err(|mut failure| {
+        let (bytes, caller) = super::encode_caller(program, interface, Encoder::new(version))?;
+        self.check_bound(
+            &bytes,
+            request,
+            "--qirf-native",
+            Prepared::description,
+            Some(&caller),
+        )
+        .map_err(|mut failure| {
             // An explanation is optional and cannot reverse Lean's rejection.
             if failure.code == "contract" {
                 if let Some((pointer, detail)) = rejected_contract_detail(program) {
@@ -227,8 +237,14 @@ impl Kernel {
                 meaning.target().clone(),
             );
         }
-        let bytes = super::encode_proposal(program.raw(), interface, encoder)?;
-        self.check(&bytes, request)
+        let (bytes, caller) = super::encode_caller(program.raw(), interface, encoder)?;
+        self.check_bound(
+            &bytes,
+            request,
+            "--qirf-native",
+            Prepared::description,
+            Some(&caller),
+        )
     }
 
     /// Check both original and converted artifacts against the same request.
@@ -277,6 +293,14 @@ impl Kernel {
     }
 
     fn inspect_subject(subject: Arc<Subject>, mode: &str) -> Result<NativeChecked> {
+        Self::submit_subject(subject, mode, None)
+    }
+
+    fn submit_subject(
+        subject: Arc<Subject>,
+        mode: &str,
+        view: Option<super::native_packet::View<'_>>,
+    ) -> Result<NativeChecked> {
         let artifact = &subject.artifact;
         let request = &subject.request;
         let mut packet =
@@ -288,11 +312,13 @@ impl Kernel {
         if let Some(request) = request {
             packet.extend_from_slice(request);
         }
+        let (packet, scope) = super::native_packet::encode(&packet, view)?;
         let native_exact_work =
-            runtime::check_mode(subject.checker(), packet, request.is_some(), mode)?;
+            runtime::check_mode(subject.checker(), packet, request.is_some(), mode, scope)?;
         Ok(NativeChecked {
             subject,
             exact_work: native_exact_work,
+            scope,
         })
     }
 }
@@ -415,7 +441,6 @@ impl AcceptedProgram {
     pub fn output_ports(&self) -> &[crate::ir::QuantumPort] {
         &self.output_ports
     }
-    #[cfg(test)]
     pub(super) fn execution_view_graph(&self) -> super::execution_view::finite::Graph<'_> {
         super::execution_view::finite::Graph {
             graph: &self.decoded,
@@ -664,7 +689,16 @@ mod preparation_tests {
         let dependencies = graph.evidence.clone();
         // Caller buffers are no longer involved in either decoding or IO.
         bytes.fill(0);
-        let native = Kernel::inspect_subject(Arc::clone(&subject), "--qirf-native").unwrap();
+        let view = prepared.description().unwrap();
+        let native = Kernel::submit_subject(
+            Arc::clone(&subject),
+            "--qirf-native",
+            Some(super::super::native_packet::View {
+                graph: &view,
+                caller: None,
+            }),
+        )
+        .unwrap();
         let accepted = prepared.bind(native).unwrap().into_program();
         assert_eq!(accepted.artifact(), original);
         assert!(Arc::ptr_eq(&accepted.native.subject, &subject));
@@ -696,6 +730,54 @@ mod preparation_tests {
             failure.message,
             "native decision belongs to a different subject"
         );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn inspection_of_the_same_subject_cannot_authorize_execution() {
+        let kernel = Kernel::selected().unwrap();
+        let subject = kernel.subject(&artifact("phase-graph"), None).unwrap();
+        let prepared = Prepared::new(Arc::clone(&subject)).unwrap();
+        let native = Kernel::inspect_subject(subject, "--qirf-native").unwrap();
+        let error = prepared.bind(native).unwrap_err();
+        assert_eq!(error.code, "kernel");
+        assert_eq!(
+            error.message,
+            "inspection does not authorize an execution view"
+        );
+    }
+
+    #[test]
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    fn divergent_actual_decoded_root_is_rejected_while_original_inspection_succeeds() {
+        let kernel = Kernel::selected().unwrap();
+        let subject = kernel.subject(&artifact("phase-graph"), None).unwrap();
+        let mut prepared = Prepared::new(Arc::clone(&subject)).unwrap();
+        let graph = Arc::get_mut(&mut prepared.decoded).unwrap();
+        let root = Arc::make_mut(&mut graph.programs[graph.root]);
+        let crate::ir::RawOp::Gate { gate, .. } = &mut root.operations[2] else {
+            panic!("the phase fixture must retain its original T gate")
+        };
+        assert_eq!(*gate, crate::ir::SingleGate::T);
+        *gate = crate::ir::SingleGate::Z;
+        let view = prepared.description().unwrap();
+        Kernel::inspect_subject(Arc::clone(&subject), "--qirf-native").unwrap();
+        let error = Kernel::submit_subject(
+            subject,
+            "--qirf-native",
+            Some(super::super::native_packet::View {
+                graph: &view,
+                caller: None,
+            }),
+        )
+        .unwrap_err();
+        assert_eq!(error.code, "decoded_view");
     }
 
     #[cfg_attr(

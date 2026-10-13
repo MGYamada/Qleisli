@@ -7,8 +7,7 @@ use std::sync::Arc;
 use super::exact::Budget;
 use super::function::RetainedIdentity;
 use super::{BasisType, ContractError, MAX_CONTRACT_BITS};
-use crate::interchange::Version;
-use crate::interchange::native::{AcceptedProgram, Kernel, NativeChecked, Proposal};
+use crate::interchange::native::{AcceptedProgram, Kernel, NativeChecked};
 use crate::ir::RawProgram;
 
 const MAX_NODES: usize = 4096;
@@ -173,9 +172,9 @@ impl InstrumentEvidence {
         signature.validate(budget)?;
         let native = kernel
             .check_instrument(
-                implementation.artifact(),
+                implementation,
                 &signature,
-                specification.artifact(),
+                specification,
                 &expected_signature,
                 &identity,
                 budget,
@@ -227,12 +226,15 @@ impl InstrumentEvidence {
         {
             return Err(ContractError::EvidenceMismatch);
         }
-        let actual = Proposal::from_raw(actual, None, Version::V2, None).map_err(native_error)?;
+        // First bind the literal caller and its caches to this decoded graph.
+        // The contract comparison below borrows that exact retained graph.
+        let actual = kernel.verify(actual).map_err(native_error)?.into_program();
+        budget.charge(actual.native_exact_work())?;
         let native = kernel
             .check_instrument(
-                actual.artifact(),
+                &actual,
                 signature,
-                self.specification.artifact(),
+                &self.specification,
                 &self.expected_signature,
                 &self.identity,
                 budget,

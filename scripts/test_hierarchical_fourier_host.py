@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
+from native_packet import envelope, inspection_lines
 import sys
 import tempfile
 import time
@@ -194,7 +195,7 @@ def host_cases(directory):
     # Malformed subprocess responses must never become checked request reports.
     finite=[i for i,p in enumerate(a['proofs']) if p['rule']['tag']=='finite']
     h=[p['implementation'] for p in a['proofs'] if p['rule']['tag']=='finite']
-    header=['qleisli.hierarchy-fourier-pending 3','pending','1','0',str(len(finite)),*map(str,finite)]
+    header=['qleisli.hierarchy-fourier-pending 4','pending','execution','1','0',str(len(finite)),*map(str,finite)]
     for name, tail in [('missing-h',['0']),('duplicate-h',['4',*map(str,[h[0]]*4)]),
                        ('outside-h',['4','99999',*map(str,h[1:])]),('nonleaf-h',['4',str(root),*map(str,h[1:])]),
                        ('too-many-h',['9']),('truncated-h',['4',str(h[0])])]:
@@ -223,8 +224,8 @@ def main():
         cases.append((name,replace_word(good,fields[field]+delta,value),expected))
     results=[];start=time.monotonic()
     for name,data,expected in cases:
-        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=data,capture_output=True,timeout=30)
-        lines=p.stdout.decode().splitlines();assert lines[:1]==['qleisli.hierarchy-fourier-pending 3'],(name,p)
+        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope(data) if data else b"",capture_output=True,timeout=30)
+        lines=inspection_lines(p.stdout);assert lines[:1]==['qleisli.hierarchy-fourier-pending 4'],(name,p)
         actual='pending' if lines[1]=='pending' else lines[2]
         assert actual==expected,(name,actual,expected)
         assert p.returncode==(0 if actual=='pending' else 1)

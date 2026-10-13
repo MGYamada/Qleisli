@@ -96,7 +96,7 @@ class InstrumentTransportTests(unittest.TestCase):
                     result = recorded_run([str(KERNEL), f'--{case["kind"]}-check', *suffix],
                                           input=encode(case), capture_output=True, timeout=60)
                     self.assertEqual(result.returncode, 1)
-                    self.assertEqual(result.stdout, b'qleisli.qirf-native 1\nerror\nversion\n')
+                    self.assertEqual(result.stdout, b'qleisli.qirf-native 2\nerror\nversion\n')
 
     def test_unknown_component_never_starts_the_kernel(self):
         with patch.object(transport.subprocess, 'run') as run:

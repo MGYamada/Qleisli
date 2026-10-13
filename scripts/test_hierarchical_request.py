@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+from native_packet import envelope, inspection_lines
 import time
 import tomllib
 
@@ -171,10 +172,10 @@ def main():
     started = time.monotonic()
     observed = []
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-request-pending', PRODUCT_VERSION], input=data,
+        result = subprocess.run([str(binary), '--hierarchy-request-pending', PRODUCT_VERSION], input=envelope(data) if data else b"",
                                 capture_output=True, timeout=30)
-        lines = result.stdout.decode().splitlines()
-        assert lines[:1] == ['qleisli.hierarchy-request-pending 3'], (name, result)
+        lines = inspection_lines(result.stdout)
+        assert lines[:1] == ['qleisli.hierarchy-request-pending 4'], (name, result)
         if lines[1:2] == ['pending']:
             actual = 'pending'
             assert result.returncode == 0 and len(lines) == 6 and lines[3:] == ['0','0','0'], (name, lines)

@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import time
 import tomllib
+from native_packet import envelope
 
 from check_lean_kernel import check_kernel
 
@@ -68,6 +69,7 @@ def main(argv=None):
                (path.suffix == ".lean" or path.name in ("lakefile.toml", "lake-manifest.json", "lean-toolchain"))}
     sources["scripts/check_lean_kernel.py"] = digest(ROOT / "scripts/check_lean_kernel.py")
     sources["scripts/package_lean_kernel.py"] = digest(Path(__file__))
+    sources["scripts/native_packet.py"] = digest(ROOT / "scripts/native_packet.py")
     with tempfile.TemporaryDirectory(prefix="qleisli-kernel-build-") as temporary:
         staged = Path(temporary)
         for relative in sources:
@@ -117,9 +119,15 @@ def main(argv=None):
             request = json.dumps(dict(format="qleisli.request", version=1, signature=dict(tag="bit"),
                                       meaning=dict(tag="phase8", table=phases), source_snapshot=None)).encode()
             packet = b"QLV1" + len(artifact).to_bytes(4, "little") + len(request).to_bytes(4, "little") + artifact + request
+            packet = envelope(packet)
             result = subprocess.run([binary, "--qirf-native", PRODUCT_VERSION], input=packet, cwd=output,
                                     env=environment, capture_output=True, timeout=60)
-            if (result.returncode == 0) != accepted or not result.stdout.startswith(b"qleisli.qirf-native 1\n"):
+            lines = result.stdout.splitlines()
+            expected_prefix = [b"qleisli.qirf-native 2", b"accepted", b"inspection"] if accepted else [
+                b"qleisli.qirf-native 2", b"error", b"contract"]
+            if (result.returncode != (0 if accepted else 1) or result.stderr
+                    or lines[:3] != expected_prefix
+                    or (len(lines) != 5 or lines[-1] != b"1" if accepted else len(lines) != 3)):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
             logs.append(dict(command=["bin/" + binary.name, "--qirf-native", PRODUCT_VERSION], exit_code=result.returncode,
                              expected_acceptance=accepted, input_sha256=hashlib.sha256(packet).hexdigest(),
@@ -128,7 +136,7 @@ def main(argv=None):
                         validation=dict(lane=args.validation, fresh_replay=args.validation == "full",
                                         scope="native package only; Mathlib proof maintenance is a separate CI job"),
                         package_version=tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"],
-                        protocol="qleisli.qirf-native 1", toolchain=(package / "lean-toolchain").read_text().strip(),
+                        protocol="qleisli.qirf-native 2", toolchain=(package / "lean-toolchain").read_text().strip(),
                         platform=platform.system(), machine=platform.machine(), sources=sources,
                         files={p.relative_to(output).as_posix(): digest(p) for p in output.rglob("*") if p.is_file()},
                         checks=logs, authority="sole production acceptance implementation; no full S05/source/native-compiler proof")

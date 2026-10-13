@@ -4,6 +4,7 @@ use std::path::Path;
 use std::time::Duration;
 
 use super::{Error, Result};
+use crate::interchange::native_packet::{self, Scope, View};
 
 #[derive(Clone, Copy)]
 pub(super) enum Mode {
@@ -34,11 +35,11 @@ impl Mode {
     }
     fn header(self) -> &'static str {
         match self {
-            Self::Inspect => "qleisli.hierarchy-pending 3",
-            Self::Request => "qleisli.hierarchy-request-pending 3",
-            Self::Fourier => "qleisli.hierarchy-fourier-pending 3",
-            Self::Instrument => "qleisli.instrument-pending 3",
-            Self::QpeInstrument => "qleisli.qpe-instrument-pending 3",
+            Self::Inspect => "qleisli.hierarchy-pending 4",
+            Self::Request => "qleisli.hierarchy-request-pending 4",
+            Self::Fourier => "qleisli.hierarchy-fourier-pending 4",
+            Self::Instrument => "qleisli.instrument-pending 4",
+            Self::QpeInstrument => "qleisli.qpe-instrument-pending 4",
         }
     }
     fn maximum(self) -> usize {
@@ -56,11 +57,16 @@ pub(super) struct Response {
     pub(super) hadamards: Vec<usize>,
 }
 
+#[cfg(test)]
 fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
+    response_bound(bytes, mode, Scope::Inspection)
+}
+
+fn response_bound(bytes: &[u8], mode: Mode, scope: Scope) -> Result<Response> {
     // Main rejects a product-version mismatch before dispatching to a mode,
     // using the common failure frame. Only this exact failure is recognized;
     // a generic success frame never authorizes hierarchical reconstruction.
-    if bytes == b"qleisli.qirf-native 1\nerror\nversion\n" {
+    if bytes == b"qleisli.qirf-native 2\nerror\nversion\n" {
         return Err(Error::new(
             "version",
             format!(
@@ -84,6 +90,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
                 Some("contract") => "contract",
                 Some("invalid_ir") => "invalid_ir",
                 Some("format") => "format",
+                Some("decoded_view") => "decoded_view",
                 _ => return Err(Error::format("unknown runtime failure")),
             };
             if lines.next() != Some("") || lines.next().is_some() {
@@ -100,6 +107,9 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
             ));
         }
         _ => return Err(Error::format("unknown runtime response status")),
+    }
+    if lines.next() != Some(scope.name()) {
+        return Err(Error::format("native execution scope disagrees"));
     }
     let integer = |s: Option<&str>, maximum: usize| -> Result<usize> {
         let s = s.ok_or_else(|| Error::format("truncated runtime response"))?;
@@ -160,14 +170,26 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
     })
 }
 
-pub(super) fn check(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Response> {
+pub(super) fn check(
+    executable: &Path,
+    bytes: Vec<u8>,
+    mode: Mode,
+    view: Option<&[u8]>,
+) -> Result<Response> {
+    let (bytes, scope) = native_packet::encode(
+        &bytes,
+        view.map(|graph| View {
+            graph,
+            caller: None,
+        }),
+    )?;
     crate::interchange::process::invoke(
         executable,
         bytes,
         mode.argument(),
         Duration::from_secs(60),
         mode.maximum(),
-        |bytes| response_indices(bytes, mode),
+        |bytes| response_bound(bytes, mode, scope),
     )
 }
 
@@ -184,7 +206,7 @@ mod response_diagnostics_tests {
             Mode::Instrument,
             Mode::QpeInstrument,
         ] {
-            let error = response_indices(b"qleisli.qirf-native 1\nerror\nversion\n", mode)
+            let error = response_indices(b"qleisli.qirf-native 2\nerror\nversion\n", mode)
                 .err()
                 .unwrap();
             assert_eq!(error.code, "version");
@@ -194,11 +216,11 @@ mod response_diagnostics_tests {
                     .contains("native checker product version does not match")
             );
             for frame in [
-                b"qleisli.qirf-native 1\nerror\nversion\nextra\n".as_slice(),
-                b"qleisli.qirf-native 1\nerror\nversion".as_slice(),
-                b"qleisli.qirf-native 1\nerror\ninvalid_ir\n".as_slice(),
-                b"qleisli.qirf-native 1\nok\n".as_slice(),
-                b"qleisli.qirf-native 2\nerror\nversion\n".as_slice(),
+                b"qleisli.qirf-native 2\nerror\nversion\nextra\n".as_slice(),
+                b"qleisli.qirf-native 2\nerror\nversion".as_slice(),
+                b"qleisli.qirf-native 2\nerror\ninvalid_ir\n".as_slice(),
+                b"qleisli.qirf-native 2\nok\n".as_slice(),
+                b"qleisli.qirf-native 1\nerror\nversion\n".as_slice(),
             ] {
                 assert_eq!(response_indices(frame, mode).err().unwrap().code, "format");
             }
@@ -206,7 +228,7 @@ mod response_diagnostics_tests {
     }
 
     #[test]
-    fn native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
+    fn native_v4_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
         for mode in [
             Mode::Inspect,
             Mode::Fourier,
@@ -224,13 +246,18 @@ mod response_diagnostics_tests {
             } else {
                 "0\n"
             };
-            let valid = format!("{}\npending\n12\n36\n0\n{pairs}{suffix}", mode.header());
+            let valid = format!(
+                "{}\npending\ninspection\n12\n36\n0\n{pairs}{suffix}",
+                mode.header()
+            );
             let response = response_indices(valid.as_bytes(), mode).unwrap();
             assert_eq!(response.work, 12);
             assert_eq!(response.exact_work, 36);
             for malformed in [
-                valid.replacen("pending 3", "pending 1", 1),
-                valid.replacen("pending 3", "pending 2", 1),
+                valid.replacen("pending 4", "pending 1", 1),
+                valid.replacen("pending 4", "pending 2", 1),
+                valid.replacen("pending 4", "pending 3", 1),
+                valid.replacen("inspection", "execution", 1),
                 valid.replacen("\n36\n", "\n10000001\n", 1),
                 valid.replacen("\n36\n", "\n036\n", 1),
                 format!("{valid}extra\n"),
@@ -247,7 +274,7 @@ mod response_diagnostics_tests {
         // inherited write descriptors can cause Linux ETXTBSY even after the
         // parent's write has closed. This immutable fixture varies via stdin.
         let executable = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v029/framing-rejection.sh");
+            .join("tests/fixtures/verification_v030/execution-view-binding/framing-rejection.sh");
         for mode in [
             Mode::Inspect,
             Mode::Request,
@@ -260,9 +287,16 @@ mod response_diagnostics_tests {
                 ("extra", "format"),
                 ("missing-newline", "format"),
             ] {
-                let error = super::check(&executable, format!("{case}\n").into_bytes(), mode)
-                    .err()
-                    .unwrap();
+                let error = crate::interchange::process::invoke(
+                    &executable,
+                    format!("{case}\n").into_bytes(),
+                    mode.argument(),
+                    std::time::Duration::from_secs(5),
+                    mode.maximum(),
+                    |bytes| response_indices(bytes, mode),
+                )
+                .err()
+                .unwrap();
                 assert_eq!(error.code, expected, "{}", error.message);
             }
         }
@@ -321,7 +355,7 @@ mod response_diagnostics_tests {
                 ""
             };
             let reply = format!(
-                "{}\npending\n42\n{}2\n0\n9\n{pairs}{hadamards}",
+                "{}\npending\ninspection\n42\n{}2\n0\n9\n{pairs}{hadamards}",
                 mode.header(),
                 "36\n"
             );
@@ -370,7 +404,7 @@ mod response_diagnostics_tests {
             assert!(error.message.contains("2000000"));
             assert!(error.message.contains("required work is unavailable"));
         }
-        let reply = b"qleisli.qpe-instrument-pending 3\nerror\ncontract\n";
+        let reply = b"qleisli.qpe-instrument-pending 4\nerror\ncontract\n";
         let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
         assert_eq!(error.code, "contract");
         assert!(!error.message.contains("capacity"));

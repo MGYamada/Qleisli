@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+from native_packet import envelope
 import tomllib
 
 from test_hierarchical_artifact import ROOT, build_and_run
@@ -253,10 +254,10 @@ def bridge(request, packet, budget=2000000):
 
 
 def inspect(kernel, payload):
-    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=payload,
+    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=envelope(payload) if payload else b"",
                          capture_output=True, timeout=60)
     fields = run.stdout.decode('ascii').splitlines()
-    assert len(fields) == 3 and fields[0] == 'qleisli.readout-result 1', (fields, run.stderr)
+    assert len(fields) == 3 and fields[0] == 'qleisli.readout-result 2', (fields, run.stderr)
     assert run.returncode == (0 if fields[1] == 'checked' else 1), (run.returncode, fields)
     assert fields[1] in ('checked', 'error'), fields
     return fields[1:]

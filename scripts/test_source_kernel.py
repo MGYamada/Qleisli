@@ -71,12 +71,16 @@ class SourceKernel(unittest.TestCase):
             shim = tmp/'kernel'
             shim.write_text(f'#!{sys.executable}\n' + '''import json, subprocess, sys
 data = sys.stdin.buffer.read()
-size = int.from_bytes(data[4:8], 'little')
-artifact = json.loads(data[12:12+size])
+assert data[:4] == b'QLV2'
+inner_size = int.from_bytes(data[8:12], 'little')
+inner = data[24:24+inner_size]
+assert inner[:4] == b'QLV1'
+size = int.from_bytes(inner[4:8], 'little')
+artifact = json.loads(inner[12:12+size])
 ops = artifact['programs'][artifact['root']]['operations']
 if sum(op.get('gate') == 't' for op in ops) >= 2 or sum(
         any(s['action']['tag'] == 'contract' for s in op.get('steps', [])) for op in ops) >= 2:
-    print('qleisli.qirf-native 1\\nerror\\ncontract')
+    print('qleisli.qirf-native 2\\nerror\\ncontract')
     sys.exit(1)
 result = subprocess.run(''' + repr([str(KERNEL)]) + ''' + sys.argv[1:], input=data, capture_output=True)
 sys.stdout.buffer.write(result.stdout)

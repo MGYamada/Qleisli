@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import tomllib
+from native_packet import envelope, inspection_lines
 
 from check_input_corpus import check_manifest, current_project
 
@@ -25,7 +26,7 @@ def encoded(value):
 
 
 def packet(artifact, request=None):
-    return b"QLV1" + len(artifact).to_bytes(4, "little") + len(request or b"").to_bytes(4, "little") + artifact + (request or b"")
+    return envelope(b"QLV1" + len(artifact).to_bytes(4, "little") + len(request or b"").to_bytes(4, "little") + artifact + (request or b""))
 
 
 def test_control_requests(kernel, run):
@@ -36,12 +37,12 @@ def test_control_requests(kernel, run):
                            signature=signature, axes=axes)
         output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
                      packet(encoded(artifact), encoded(request)))
-        lines = output.decode().splitlines()
-        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        lines = inspection_lines(output)
+        assert lines[:2] == ["qleisli.qirf-native 2", "accepted" if accepted else "error"], output
         if accepted:
             assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
         elif error is not None:
-            assert lines == ["qleisli.qirf-native 1", "error", error], output
+            assert lines == ["qleisli.qirf-native 2", "error", error], output
 
     pair = dict(tag="pair", left=dict(tag="bit"), right=dict(tag="bit"))
     cnot = json.loads((FINITE / "raw_computed_target.v2.qirf").read_bytes())
@@ -114,12 +115,12 @@ def test_control_owner_requests(kernel, run):
     def check(artifact=cnot, obligation=request, accepted=False, error=None):
         output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
                      packet(encoded(artifact), encoded(obligation)))
-        lines = output.decode().splitlines()
-        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        lines = inspection_lines(output)
+        assert lines[:2] == ["qleisli.qirf-native 2", "accepted" if accepted else "error"], output
         if accepted:
             assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
         elif error is not None:
-            assert lines == ["qleisli.qirf-native 1", "error", error], output
+            assert lines == ["qleisli.qirf-native 2", "error", error], output
 
     check(accepted=True)
     for axes in [[1], [0, 0], [2]]:
@@ -215,12 +216,12 @@ def test_instrument_requests(kernel, run):
                               expected_artifact=encoded(expected).decode())
         output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
                      packet(encoded(actual), encoded(obligation)))
-        lines = output.decode().splitlines()
-        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        lines = inspection_lines(output)
+        assert lines[:2] == ["qleisli.qirf-native 2", "accepted" if accepted else "error"], output
         if accepted:
             assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
         elif error is not None:
-            assert lines == ["qleisli.qirf-native 1", "error", error], output
+            assert lines == ["qleisli.qirf-native 2", "error", error], output
 
     check(accepted=True)
     hh = artifact(program([port(0, [0])], operations=[op("gate", gate="h", input=0, output=1),
@@ -315,7 +316,7 @@ def test_instrument_requests(kernel, run):
     # A per-call contract does not turn request-free whole-root inspection into
     # an external functional specification certificate.
     output = run([kernel, "--qirf-native", VERSION], 0, packet(encoded(z)))
-    assert output.decode().splitlines()[3] == "0", output
+    assert inspection_lines(output)[3] == "0", output
 
 
 def main():
@@ -341,8 +342,8 @@ def main():
     def native(artifact, request=None, accepted=True):
         data = packet(artifact, request)
         result = run([kernel, "--qirf-native", VERSION], 0 if accepted else 1, data)
-        lines = result.decode().splitlines()
-        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], result
+        lines = inspection_lines(result)
+        assert lines[:2] == ["qleisli.qirf-native 2", "accepted" if accepted else "error"], result
         if accepted:
             assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000
             assert lines[3] == ("1" if request is not None else "0")
@@ -360,12 +361,12 @@ def main():
                          "--readout-check", "--preparation-check", "--instrument-pending",
                          "--qpe-instrument-pending"]:
                 wrong_version = run([kernel, mode, "0.0.0"], 1, b"")
-                assert wrong_version == b"qleisli.qirf-native 1\nerror\nversion\n"
+                assert wrong_version == b"qleisli.qirf-native 2\nerror\nversion\n"
                 # A missing version is not an implicit match for any native mode.
                 missing_version = run([kernel, mode], 1, b"")
-                assert missing_version == b"qleisli.qirf-native 1\nerror\nversion\n"
+                assert missing_version == b"qleisli.qirf-native 2\nerror\nversion\n"
                 matching_version = run([kernel, mode, VERSION], 1, b"")
-                assert matching_version != b"qleisli.qirf-native 1\nerror\nversion\n"
+                assert matching_version != b"qleisli.qirf-native 2\nerror\nversion\n"
 
             test_control_requests(kernel, run)
             test_control_owner_requests(kernel, run)

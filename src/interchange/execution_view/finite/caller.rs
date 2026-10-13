@@ -120,6 +120,10 @@ impl<'a> Origin<'a> {
         })
     }
 
+    pub(in crate::interchange) fn alias_indices(&self) -> Vec<usize> {
+        self.aliases.iter().map(|(index, _)| *index).collect()
+    }
+
     pub(in crate::interchange) fn describe(&self) -> Result<Vec<u8>> {
         let mut writer = Writer {
             bytes: b"QDV1".to_vec(),

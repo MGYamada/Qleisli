@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from test_native_execution_protocol import hierarchy
 
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = 'tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json'
@@ -40,7 +41,7 @@ def main():
     kernel = args.kernel.resolve()
     report = dict(format='qleisli.hierarchy-mode-view-validation', version=1,
                   status='failed', commands=[], source_preservation_proved=False,
-                  production_comparison_enabled=False)
+                  production_comparison_enabled=True)
     with tempfile.TemporaryDirectory(prefix='qleisli-mode-views-') as temporary:
         environment = os.environ | {'QLEISLI_KERNEL': str(kernel),
                                     'QLEISLI_HIERARCHY_VIEW_CAPTURE': temporary}
@@ -61,7 +62,9 @@ def main():
                 if args.record:
                     args.record.write_text(json.dumps(report, indent=2) + '\n')
                 return 1
-        report.update(status='passed', modes=5, invalid_originals=3,
+        native_checks = hierarchy(kernel, Path(temporary))
+        print(f'QLV2 native hierarchy checks: {native_checks} passed', flush=True)
+        report.update(status='passed', modes=5, invalid_originals=3, native_checks=native_checks,
                       input_sha256=hashlib.sha256((ROOT / FIXTURE).read_bytes()).hexdigest(),
                       kernel_sha256=hashlib.sha256(kernel.read_bytes()).hexdigest(),
                       captures={p.name: hashlib.sha256(p.read_bytes()).hexdigest()

@@ -215,6 +215,7 @@ fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
         kernel.executable(),
         decoded.bridge,
         crate::interchange::hierarchical::Mode::Inspect,
+        Some(&description),
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();
@@ -276,6 +277,7 @@ fn non_executable_inspection_retains_its_original_prepared_failure() {
         kernel.executable(),
         decoded.bridge,
         crate::interchange::hierarchical::Mode::Inspect,
+        None,
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();

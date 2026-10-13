@@ -3,7 +3,7 @@
   "tasks": [
     {
       "id": "execution-view-encoding",
-      "name": "Independent execution-view data and pure comparison gates; production binding pending",
+      "name": "Native QLV2 execution-view binding and independent data comparisons",
       "commands": [
         [
           "lake",
@@ -38,6 +38,10 @@
         [
           "python3",
           "scripts/test_hierarchy_mode_views.py"
+        ],
+        [
+          "python3",
+          "scripts/test_native_execution_protocol.py"
         ]
       ]
     },

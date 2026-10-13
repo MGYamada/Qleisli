@@ -15,57 +15,18 @@ and exactness obligations retain their recorded scopes and status.
   `0.3.0-beta` without changing dependency versions. Python wheel metadata
   normalizes this prerelease to `0.3.0b0`.
 - Ignore repository-root `/bin` outputs.
-- Specify and independently exercise QDV1 execution-view encoding and typed
-  finite data walkers for #362, retaining first sources and real diagnostics.
-  Derive retained function circuit views independently in Lean and compare
-  exact caches with ten shared function vectors, including composed branch routes.
-  Retain the complete actual finite graph and fresh Lean root receipts; compare
-  seven independent graph vectors covering original dependency indices and
-  ordered derived metadata. Prove the original inspection projection preserves
-  successes, failures and remaining work.
-  Add the pure finite comparison gate with original-packet/root binding and
-  ownership/scope proofs; reject 71 mutated candidates over seven valid
-  originals, with bounded framing and independent-request controls.
-  Retain all six native contract profiles' typed requests and fresh core
-  results, with universal computation projections and core-stage binding proofs.
-  Describe typed obligations for all six profiles and actual literal caller
-  circuits; compare nine shared vectors and retain the initial authoring refusals.
-  Bind every returned native-contract field and the exact request-stage result
-  to the original packet and continuous decoder/checker execution in Lean.
-  Add a pure comparison gate for complete contract data, including both fresh
-  observing graphs, with eight shared cases and 1,152 individual data refusals.
-  Rust walks actual retained request/graph data with one bounded writer.
-  Collect every distinct original caller evidence Arc, including children
-  hidden by snapshot deduplication and references in both branch arms and
-  certified use/logical circuits; exercise four independent complete descriptions.
-  Attach pure Lean caller comparison to the same finite/native-contract core
-  result, with original receipt-slot and continuous-work binding proofs.
-  Bound repeated alias descriptions before accumulating them. Production
-  alias integration, hierarchy execution and protocol cutover remain pending.
-  Retain one owned exact hierarchy runtime plan for execution and fresh shots,
-  including literal dyadic phase parameters and ordered preparation/readout
-  positions. Independent small-system coefficients, work and seeded outcomes
-  are unchanged; native comparison of the actual hierarchy plan remains pending.
-  Specify the hierarchy plan records and independently derive them in Rust and
-  Lean, with four shared cases and a pure fresh-inspection gate. Prove binding
-  to its original structural/finite results and reject 112 divergent descriptions.
-  The production comparison, complete execution profiles and native protocol
-  cutover remain pending; these helpers confer no execution authority.
-  Prepare finite and finite-leaf runtime graphs before native checking and
-  retain their exact root/dependency allocations through private binding.
-  Separate immutable invocation inputs from native decisions; reject binding
-  with another invocation, including equal bytes. Native refusals remain
-  authoritative, and production QDV1 comparison is still pending.
-  Prepare owned hierarchy plans before fresh native decisions on inspection,
-  independent-request, instrument and QPE paths. Retain the original plan or
-  execution-preparation failure without lazy recompilation; complete finite
-  coverage and original-body checks remain required. Production comparison
-  and the protocol cutover remain pending.
-  Extend the pure Lean hierarchy gate to all five modes, retaining original
-  typed packets and fresh independent pair/H checks. Compare actual owned Rust
-  plans for five small native inputs; reject 2,683 changed descriptions and
-  three invalid original requests. Replay and preserve the two scoped QLV1
-  guarantees. Native CLI integration and the protocol cutover remain pending.
+- Bind retained Rust execution data to Lean's freshly checked data through the
+  QLV2 native protocol (#362). Finite graphs, dependency caches, literal caller
+  aliases, typed contracts and both instrument roots use exact QDV1 comparison;
+  all five hierarchy modes compare their actual retained execution plans.
+  Inspection remains explicit and cannot authorize an execution view. Reject
+  divergent views with `decoded_view` and reject old external request/reply
+  frames without fallback. Original artifact formats and independent checks
+  remain in force. Pure-gate proofs connect the actual new ordinary entry to
+  the original root's ownership and classical-scope properties. Shared small
+  vectors, adversarial native requests and retained allocation tests distinguish
+  byte binding from the pending source, compiler, walker and runtime proofs.
+  Preserve original sources, diagnostics and the two admitted scoped guarantees.
 - Gate native-dependent Rust tests explicitly when no `QLEISLI_KERNEL` is
   selected (#367), retain ordinary independent tests, and compile the crate
   example without running it. Native CI rejects any conditional native skip;

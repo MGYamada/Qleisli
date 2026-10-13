@@ -42,7 +42,7 @@ impl Program {
 }
 
 impl Plan {
-    pub(super) fn view(&self) -> Result<Vec<u8>> {
+    pub(in crate::interchange::hierarchical) fn view(&self) -> Result<Vec<u8>> {
         without_dependencies(|w| {
             w.record("hierarchy-plan", 1, |w| match &self.inner {
                 Executable::Pure(program) => w.record("pure", 1, |w| program.write_view(w)),

@@ -101,10 +101,10 @@ class PublicNative(unittest.TestCase):
 
     def test_missing_rejecting_and_failed_native_block_every_output(self):
         kernels = [self.directory / "absent",
-                   self.fake_kernel("reject", "qleisli.qirf-native 1\nerror\ncontract\n", 1),
-                   self.fake_kernel("capacity", "qleisli.qirf-native 1\nerror\nlimit\n", 1),
-                   self.fake_kernel("failed", "qleisli.qirf-native 1\naccepted\n0\n0\n", 1),
-                   self.fake_kernel("malformed", "qleisli.qirf-native 1\naccepted\n0\n0\ntrailing\n")]
+                   self.fake_kernel("reject", "qleisli.qirf-native 2\nerror\ncontract\n", 1),
+                   self.fake_kernel("capacity", "qleisli.qirf-native 2\nerror\nlimit\n", 1),
+                   self.fake_kernel("failed", "qleisli.qirf-native 2\naccepted\nexecution\n0\n0\n", 1),
+                   self.fake_kernel("malformed", "qleisli.qirf-native 2\naccepted\nexecution\n0\n0\ntrailing\n")]
         for kernel in kernels:
             for format, path in self.inputs:
                 for action in ACTIONS:
@@ -173,7 +173,7 @@ class PublicNative(unittest.TestCase):
                             f"os.execv({str(KERNEL)!r}, [{str(KERNEL)!r}, *sys.argv[1:]])\n")
         forwarder.chmod(0o700)
         program = Client(BINARY, lean_kernel=forwarder).from_ir(self.artifact)
-        self.fake_kernel("replaced-kernel", "qleisli.qirf-native 1\nerror\ninvalid_ir\n", 1)
+        self.fake_kernel("replaced-kernel", "qleisli.qirf-native 2\nerror\ninvalid_ir\n", 1)
         malformed = replace(program, client=Client(BINARY, lean_kernel=KERNEL), artifact=b"{}")
         for current in (program, malformed):
             for method, kwargs in [("check", {}), ("run", {}), ("sample", dict(shots=8, seed=7)),

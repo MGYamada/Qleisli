@@ -5,9 +5,10 @@
 
 use super::{Error, Result};
 
-const MAX_BYTES: usize = 64 << 20;
+pub(super) const MAX_BYTES: usize = 64 << 20;
 const MAX_DEPTH: usize = 128;
 
+#[cfg(test)]
 #[derive(Clone, Debug)]
 pub(super) enum Value {
     Null,
@@ -58,6 +59,7 @@ impl Writer {
         self.append(value.as_bytes())
     }
 
+    #[cfg(test)]
     fn value(&mut self, value: &Value, depth: usize) -> Result<()> {
         if depth > MAX_DEPTH {
             return Err(Error::limit(
@@ -87,10 +89,12 @@ impl Writer {
     }
 }
 
+#[cfg(test)]
 pub(super) fn encode(value: &Value) -> Result<Vec<u8>> {
     encode_with_limit(value, MAX_BYTES)
 }
 
+#[cfg(test)]
 fn encode_with_limit(value: &Value, limit: usize) -> Result<Vec<u8>> {
     let mut writer = Writer {
         bytes: Vec::new(),
