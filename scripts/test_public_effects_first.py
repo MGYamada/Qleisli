@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+README = ROOT / 'tests/fixtures/authoring_sessions/public-effects-v030/README.md'
 STUDY = ROOT / 'tests/fixtures/authoring_sessions/public-effects-v030/first'
 FREEZE = '7751de012818e1ca02a6997161a12a2eb100c33a22112922649beb9ed5a58258'
 CONTRAST = ROOT / 'tests/fixtures/authoring_sessions/public-effects-v030/quantum-use-contrast'
@@ -37,6 +38,15 @@ def check_inventory(directory, digest, count):
 
 
 def main():
+    note = README.read_text()
+    for disclosure in (
+        'first/freeze.json',
+        'quantum-use-contrast/freeze.json',
+        'does not identify an exact model build or a checked Git source revision',
+        'It never executes recorded commands.',
+        'supplies no general source/runtime proof, guarantee admission or release claim.',
+    ):
+        assert disclosure in note
     check_inventory(STUDY, FREEZE, 163)
     check_inventory(CONTRAST, CONTRAST_FREEZE, 12)
     source = json.loads((STUDY / 'first-sources.json').read_text())

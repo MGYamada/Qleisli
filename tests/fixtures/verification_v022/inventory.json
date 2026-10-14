@@ -4224,7 +4224,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "eda117493bcee766f2426c86d4edf7fbf8349b960a13b973f2c37095cd836be0",
+      "sha256": "239d8396e73205e076e0cd1a7e8b32a41b26b2aab84f982b732693ae486b74fd",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4826,7 +4826,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "f7802b69855989241381eaec183a8670fbbc44e6732b86b6bacbf347c5b3e896",
+      "sha256": "e82f331e82d9a1b319852ea7a6d9fb3736d69c98945f25891fde6a5abf1081a7",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4860,7 +4860,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
-      "sha256": "4495d625e6e07af29f8ebb2e9e9c21895374602d2d5f9720491e1af1cd78a70f",
+      "sha256": "62f7b32d498ff1899d290e11e7d98c688313b1de969300d0d7d05eec6b32f571",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4921,7 +4921,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "c8c3493cf5c57e227c5d9997c0f6fc3d1fe8c16f6b573a0ba31d76f9d8b1680c",
+      "sha256": "a6174477f136ef9f2a3685afa216513d43aa09e94dfed63f904836726dbc2ad3",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4991,7 +4991,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "187bf6a74a2ecc9e712c60e079363043dc11da3fe2a873f862026962317bc85e",
+      "sha256": "7b460fef9aea0da398e096c487b6421766775e7cf06a80c91a853fbf485b6de3",
       "group": "sized-source",
       "surface": {
         "declarations": [],

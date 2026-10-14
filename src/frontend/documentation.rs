@@ -198,9 +198,7 @@ fn render(
         if let Some(fact) = effect(&decl.name.text) {
             if decl.public {
                 if let Some(public) = fact.public_effect() {
-                    output.push_str(&format!(
-                        "Public quantum effect: `{public:?}`.\n\n"
-                    ));
+                    output.push_str(&format!("Public quantum effect: `{public:?}`.\n\n"));
                 }
             } else {
                 output.push_str(&format!(

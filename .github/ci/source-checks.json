@@ -185,6 +185,11 @@
           "python3",
           "scripts/test_cli_json.py",
           "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_public_effects.py",
+          "{compiler}"
         ]
       ],
       "prepare": []

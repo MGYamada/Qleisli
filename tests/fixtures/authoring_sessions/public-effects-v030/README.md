@@ -22,6 +22,11 @@ The study is neither a blind benchmark nor native process attestation.
 `scripts/test_public_effects_first.py` checks inert historical identities and
 record consistency. It never executes recorded commands. Current source/API,
 provider, transformation and actual-operation regressions are separate tests.
+`scripts/test_public_effects.py` constructs 38 new current CLI checks with
+independently specified expectations over the unchanged 19 projects. It reads
+only their frozen source inventory, never historical commands or predictions;
+current checks retain the concrete reset-profile refusal and check actual scope
+disclosures. Its results are separate from the preserved first observations.
 No historical source, prediction or diagnostic is repaired, and the study
 supplies no general source/runtime proof, guarantee admission or release claim.
 

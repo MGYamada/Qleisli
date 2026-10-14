@@ -2215,7 +2215,7 @@ mod tests {
             "use std::quantum::h; use std::observe::measure_z;
             fn reference(q:Q<Bit>)->Bit{measure_z(q)}
             fn implementation(q:Q<Bit>)->Bit{measure_z(h(h(q)))}
-            pub fn main(q:Q<Bit>)->Bit{apply_contract(implementation,reference,q)}",
+            pub observe fn main(q:Q<Bit>)->Bit{apply_contract(implementation,reference,q)}",
             "main::main",
         );
         let source = source
@@ -2530,7 +2530,7 @@ mod tests {
             fn invoke[const U:Op<((Bit,Bit),Bit) -> (Bit,(Bit,Bit))>](
                 q:Q<((Bit,Bit),Bit)>,r:Q<Bit>)->(Q<(Bit,(Bit,Bit))>,Q<Bit>)
                 requires Applicable(U){(U(q),r)}
-            pub fn main(q:Q<((Bit,Bit),Bit)>,r:Q<Bit>)->(Q<(Bit,(Bit,Bit))>,Q<Bit>){
+            pub isometry fn main(q:Q<((Bit,Bit),Bit)>,r:Q<Bit>)->(Q<(Bit,(Bit,Bit))>,Q<Bit>){
                 invoke[adjoint(regroup)](q,r)}",
             "main::main",
         );
@@ -2595,7 +2595,7 @@ mod tests {
         ] {
             let text = format!("{prefix}
                 fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}> requires Applicable(U){{U(q)}}
-                pub fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[{operation}](q)}}");
+                pub unitary fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[{operation}](q)}}");
             let source = elaborate(&text, "main::main");
             let proposal = source.lower_raw().unwrap();
             let accepted = kernel().accept(proposal.proposal()).unwrap();

@@ -2290,14 +2290,30 @@ mod tests {
     use crate::frontend::compile::ParsedProgram;
     use crate::ir::RawOp;
 
+    fn current_source_text(path: impl AsRef<std::path::Path>) -> String {
+        let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+        let output = std::process::Command::new("python3")
+            .args(["-B", "-c", script])
+            .arg(path.as_ref())
+            .current_dir(env!("CARGO_MANIFEST_DIR"))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    }
+
     #[cfg_attr(
         not(qleisli_native_tests),
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     #[test]
     fn control_audit_collects_new_meanings_in_the_expanded_original_graph() {
-        let text = include_str!(
-            "../../../tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli"
+        let text = current_source_text(
+            "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli",
         );
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
             .unwrap()
@@ -2328,7 +2344,7 @@ mod tests {
     )]
     #[test]
     fn finite_meaning_replay_charges_control_sectors_to_the_callers_budget() {
-        let text = "use std::quantum::z;pub fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
+        let text = "use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -2380,7 +2396,7 @@ mod tests {
             "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
             meaning X:Bit=permutation_by(flip); fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
             fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
-            pub fn main(q:Q<Bit>)->Q<Bit>{apply[checked_op(direct,X)](q)}",
+            pub unitary fn main(q:Q<Bit>)->Q<Bit>{apply[checked_op(direct,X)](q)}",
         );
         let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
         let checked = source
@@ -2392,7 +2408,7 @@ mod tests {
         // artifact. The substituted identity leaves also have genuine fresh
         // native equations, but cannot establish the actual X intervals.
         raw.validate_source_steps(&accepted).unwrap();
-        let identity = elaborate("pub fn main(q:Q<Bit>)->Q<Bit>{q}")
+        let identity = elaborate("pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}")
             .lower_raw()
             .unwrap();
         let required = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
@@ -2437,7 +2453,7 @@ mod tests {
             "reordered-tensor-inverse",
             "hidden-controlled-swap",
         ] {
-            let text = std::fs::read_to_string(
+            let text = current_source_text(
                 directory
                     .with_file_name(if name == "hidden-controlled-swap" {
                         "attempt-02"
@@ -2445,8 +2461,7 @@ mod tests {
                         "attempt-01"
                     })
                     .join(format!("{name}.qli")),
-            )
-            .unwrap();
+            );
             let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
                 .unwrap()
                 .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
