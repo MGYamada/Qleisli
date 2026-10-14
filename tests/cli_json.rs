@@ -273,8 +273,17 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         "  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n"
     );
     assert_eq!(historical.matches(retired_documentation).count(), 1);
+    let verify_ir = "  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n";
+    assert_eq!(historical.matches(verify_ir).count(), 1);
     let usage = historical
         .replace(retired, "")
+        .replace(
+            verify_ir,
+            &format!(concat!(
+                "{verify_ir}  qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
+                "  qleisli engineering compare-instrument ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n"
+            ), verify_ir = verify_ir),
+        )
         .replace(
             retired_documentation,
             "  Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md\n",

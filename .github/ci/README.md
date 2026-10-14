@@ -446,7 +446,7 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 68 groups and 97 commands. Local module and fold
+The current manifest contains 70 groups and 103 commands. Local module and fold
 shadowing regressions run in the sized-corpus group. Preparation/readout
 transport tests require the exact product version, exercise both dynamic modes,
 and distinguish version rejection from malformed or semantically invalid frames.

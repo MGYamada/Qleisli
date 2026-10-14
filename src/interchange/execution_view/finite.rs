@@ -637,6 +637,8 @@ pub(in crate::interchange) fn graph(
 
 pub(in crate::interchange) mod caller;
 pub(in crate::interchange) mod contracts;
+pub(in crate::interchange) mod engineering_instrument;
+pub(in crate::interchange) mod engineering_pure;
 
 /// Reuse the one bounded QDV1 writer and exact-matrix vocabulary for a view
 /// that contains no finite dependency references.

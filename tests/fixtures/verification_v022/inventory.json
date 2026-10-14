@@ -753,6 +753,48 @@
         "path": "src/interchange/execution_view.rs",
         "test": "incomplete_over_capacity_and_over_depth_values_never_return_bytes"
       }
+    },
+    {
+      "id": "engineering-pure",
+      "producer": "Two immutable original pure QIRF artifacts, independent exact matrix/ordered-port requests and a closed canonical dyadic engineering budget",
+      "consumer": "Separate --engineering-pure-check native mode and private EngineeringPureReport; explicit engineering compare-pure CLI",
+      "obligation": "Fresh exact PureLeaf checks of each original body and its own requested matrix/Gram; a phase-sensitive Euclidean operator bound using a sufficient exact R8 Frobenius witness; typed QDV1 comparison binds both decoded graphs and the full request. Engineering bounds, including epsilon zero, grant no exact cross-body correspondence, accepted-program conversion, inverse/control capability, cleanup, instrument or target-resource evidence, or constitutional discharge.",
+      "reference": "docs/src/reference/realization.md#native-pure-engineering-comparison; governance/proposals/exactness-2026.md",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
+        "VM-29"
+      ],
+      "positive": {
+        "path": "src/interchange/engineering_pure/tests.rs",
+        "test": "native_bound_retains_original_bodies_and_zero_stays_engineering"
+      },
+      "negative": {
+        "path": "src/interchange/engineering_pure/tests.rs",
+        "test": "native_refuses_tight_bounds_stale_meanings_phase_and_owner_substitution"
+      }
+    },
+    {
+      "id": "engineering-instrument",
+      "producer": "Both immutable original observing QIRF artifacts, full requested signature/source identity and closed canonical dyadic epsilon/ordered coefficient majorants",
+      "consumer": "Separate --qirf-engineering-instrument-native execution-only native mode, allocation-bound EngineeringInstrumentReport and explicit engineering compare-instrument CLI",
+      "obligation": "Fresh exact original-root/interface and complete Kraus checks for both graphs; complete reference-safe adjoint norm bound from sufficient R8 Choi coefficient majorants; typed QDV1 binds full request and both original graphs. Preserve every ordered public output, hidden unnormalized history and residual coherence. Epsilon zero grants no exact accepted-program/Meaning, pure-phase, inverse/control, cleanup, target-resource or constitutional promotion. Internal Gram/contraction, pure 2-delta, feed-forward and ordered tensor lemmas are not native composed certificates or source/QIRF preservation.",
+      "reference": "docs/src/reference/realization.md; governance/proposals/exactness-2026.md",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
+        "VM-29"
+      ],
+      "positive": {
+        "path": "src/interchange/engineering_instrument/tests.rs",
+        "test": "native_nonzero_and_zero_reports_keep_original_bytes_and_engineering_status"
+      },
+      "negative": {
+        "path": "src/interchange/engineering_instrument/tests.rs",
+        "test": "native_refuses_tight_incomplete_reordered_witnesses_and_hidden_observation_labels"
+      }
     }
   ],
   "enums": [
@@ -2191,6 +2233,36 @@
           "group": "source-excl"
         }
       }
+    },
+    {
+      "path": "src/contract/instrument.rs",
+      "name": "InstrumentResult",
+      "members": {
+        "Unit": {
+          "declaration": "Unit",
+          "group": "engineering-instrument"
+        },
+        "Bit": {
+          "declaration": "Bit",
+          "group": "engineering-instrument"
+        },
+        "Bits": {
+          "declaration": "Bits(u32)",
+          "group": "engineering-instrument"
+        },
+        "Quantum": {
+          "declaration": "Quantum(BasisType)",
+          "group": "engineering-instrument"
+        },
+        "Pair": {
+          "declaration": "Pair",
+          "group": "engineering-instrument"
+        },
+        "Tuple": {
+          "declaration": "Tuple(usize)",
+          "group": "engineering-instrument"
+        }
+      }
     }
   ],
   "sources": [
@@ -2204,6 +2276,12 @@
       "path": "lean-kernel/Cli/Common.lean",
       "sha256": "a06429168fedf0a5997fadeac786ad4d0ca9fc259d2a10fd460a701c51488c8c",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Cli/EngineeringPure.lean",
+      "sha256": "5efa14fc1f2970b092524eed830175f40cfc263250f558458794749c9e941b25",
+      "group": "engineering-pure",
       "surface": null
     },
     {
@@ -2226,13 +2304,13 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "ab8b5eaff420cc732aae9858919619b259aad252e9da05a94b666648a0ea2631",
+      "sha256": "a55033b94ac09f9eaecc3fac237616457d397c622a6e61598c4882821a7feb94",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol.lean",
-      "sha256": "6d8da093f740b80d92cee67c3294c13418713d9ba7591caed530dd8b83422e51",
+      "sha256": "938b6cbd0bf266cac7f9b5e0a4101a4f9d4d89119545ecff20ada63f4813777f",
       "group": "hierarchy",
       "surface": null
     },
@@ -2246,6 +2324,12 @@
       "path": "lean-kernel/Protocol/Core.lean",
       "sha256": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/EngineeringPure.lean",
+      "sha256": "8014e7576703e4f7284dbb91a1fff22e1a5dc37b5a9b3f32fc36ef7200cd44fd",
+      "group": "engineering-pure",
       "surface": null
     },
     {
@@ -2273,6 +2357,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean",
+      "sha256": "0b99111b78c4a249a1c1830505e7da15d3e60d1bde67097e3798dcd24b00e72d",
+      "group": "engineering-pure",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean",
       "sha256": "0b574fd1b1e55dbf7b1664423907ffd9b3c9121b160ef9048998fb11fe2f68a1",
       "group": "execution-view-encoding",
@@ -2288,6 +2378,12 @@
       "path": "lean-kernel/Protocol/ExecutionView/Contracts.lean",
       "group": "execution-view-encoding",
       "sha256": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringPure.lean",
+      "sha256": "d5b1ede341ca7474a46778bab649c4e5679c594bb0cac193d97d23d1420027fa",
+      "group": "engineering-pure",
       "surface": null
     },
     {
@@ -2322,7 +2418,7 @@
     },
     {
       "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
-      "sha256": "3303732fa3937b990648103de53e8b8a16626d99f9156b514798df73087bcc43",
+      "sha256": "4286a265d41e3d86cf38bb91470365b9b2fbcf6e10d98c7f678f17fc6ac4d3fd",
       "group": "execution-view-encoding",
       "surface": null
     },
@@ -2406,7 +2502,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "fa06da4caf4973acee4ec7fb5d0d101febeb44f380cc21ed22b691d40b7bdcae",
+      "sha256": "25110baa713855b449e51494f2341c2beae038ee167e4c42e70d7fbf85e7172f",
       "group": "hierarchy",
       "surface": null
     },
@@ -2429,8 +2525,14 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Engineering/Instrument.lean",
+      "sha256": "1963f4daed2a06973f62358ef1af8022dd13665ac7e84c6fbe959ba4511c5205",
+      "group": "scalar",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Engineering/Pure.lean",
-      "sha256": "8513036bd29e1e06a314c342da95cee90e6b64170a5aab2187816fafd3a6b82f",
+      "sha256": "b8e88c4c2d32a4571b9b2a21b1977b14926c78d7da501d8bd4a6988f06ef4889",
       "group": "scalar",
       "surface": null
     },
@@ -2747,8 +2849,14 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringInstrument.lean",
+      "sha256": "e7cb9641489d49f1e9916bcb259e9c44693f946f3dc0d55e8197ae9757fde8e1",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPure.lean",
-      "sha256": "fe680527e737b914d92c4e5972953bf3bf29e91395dcdef8954f7c2f65edc055",
+      "sha256": "f3bb2318fec4030010e55d9413b2b2fc7160056f07f264087ec93dd282f059f9",
       "group": "finite-leaf",
       "surface": null
     },
@@ -3012,13 +3120,13 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "81a95e67b9c628e9bc54d702dc714699684e58b53bc29537050f8672e7db9efb",
+      "sha256": "05961e76c99a3fe2b118a58bd6267d025771e5b3f548a4259be50a7d24a377da",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "a5db0a24b8145963feb7699ec5590d9f3141b0082c59e655279bc5021ea555d8",
+      "sha256": "1f917bb371b5d0717c803c61645e9a6875e8e33e2258ebea52ca02862dd45266",
       "group": "raw-core",
       "surface": null
     },
@@ -3029,9 +3137,21 @@
       "surface": null
     },
     {
-      "path": "lean/Qleisli/EngineeringPure.lean",
-      "sha256": "ebac1908394bd2db37e6d55d06438f462e9a7710ca3e503f7058882bee3cd96e",
+      "path": "lean/Qleisli/EngineeringInstrument.lean",
+      "sha256": "5681679fffe26f2c8a66d8ded6015e5e5b8cc35149b301594b51e518793dda99",
       "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringPure.lean",
+      "sha256": "663efd8285aa67d9a9b7c01d3c3cabca1350a24f0d8a806a422bfb3dff1dea14",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringPureComposition.lean",
+      "sha256": "18ab90c50691d731b07acb47845acecfaa4d9be77b5b1d69274d5e3b553b3169",
+      "group": "engineering-pure",
       "surface": null
     },
     {
@@ -3047,9 +3167,21 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/NativeEngineeringInstrument.lean",
+      "sha256": "d35334b1d7aa10db14cdf43b29e63e205ebe471a25d88749850b839bc280525e",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/NativeEngineeringPure.lean",
-      "sha256": "9c0ba10fa5b7cae3b93b446215fc1735a2af1dcdc22b83202cccdaabaa56a232",
+      "sha256": "e146d4630bb280af2a787ec4a9fbfb7cf53f267321c6a28ab1daf5d46e6b4d31",
       "group": "finite-leaf",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringPureProtocol.lean",
+      "sha256": "9b05516125eaa743fc4c8430c4f6951ef99de170578af582a6a175530b8169aa",
+      "group": "engineering-pure",
       "surface": null
     },
     {
@@ -3170,6 +3302,12 @@
       "path": "lean/Qleisli/RoutedControlCommutation.lean",
       "sha256": "b0a940328561899330b31b35961c22feefb2104ef719082e115a8f70ae2d64b9",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/EngineeringInstrument.lean",
+      "sha256": "73c3b22a86ce269f18379e823ffe649d865cdb8a86795e73575e63999d1ddc2b",
+      "group": "scalar",
       "surface": null
     },
     {
@@ -3299,6 +3437,18 @@
       "surface": null
     },
     {
+      "path": "scripts/test_engineering_boundary_baseline.py",
+      "sha256": "0693be3eed280566ee87154c12cc9a48715c01a26d5425be0e5e225dbaa0f35d",
+      "group": "source",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_pure_cli.py",
+      "sha256": "b1db5f62c76300de07d47ad0bc43ab0489ec46e8ac354e7500cba98cc0c90678",
+      "group": "engineering-pure",
+      "surface": null
+    },
+    {
       "path": "scripts/test_instrument_host.py",
       "sha256": "29b7ba3c5f786e1c4ba5863f9d50ad88edc5fbe481c3c71b407a92ec8db121cf",
       "group": "instrument",
@@ -3336,7 +3486,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "61dda0f22d4a422aebd5fe3d85cc816f56a658d79d025ced2f0f6a77f8b59ba8",
+      "sha256": "b44a0d456be5a08ac03c753976c871a813342796f4b32c3e54467153b0e51d2e",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3365,6 +3515,26 @@
       }
     },
     {
+      "path": "src/bin/qleisli/digest.rs",
+      "sha256": "819aa07eaac71cc2a1ddb41dbb4bb311a48ae91c7230b74e1457bf47cd1d48a5",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/engineering.rs",
+      "sha256": "384f185ec183e2cb588671c648841b3a715bfa0378ffcfcb9f42104e0653fe0f",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/bin/qleisli/interop.rs",
       "sha256": "bf1235cbb7dcf394ed1e0385a6064c3e4165040064704367314279b63cf1accc",
       "group": "foreign",
@@ -3386,7 +3556,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "254694ac9ee8fd1453dcf7f3ebe7bdcaa90aae4125187a546688c8215ad7f0c4",
+      "sha256": "905edf534e221cb1aad8d6ff9f6068fb64f7db1927205bcbfa444559918097c3",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -3516,11 +3686,18 @@
     },
     {
       "path": "src/contract/instrument.rs",
-      "sha256": "656baf2221102d25f3ffa20bf1a875a4e102227d917e713d27d122284af45c46",
+      "sha256": "07f1ccaa78aa2e431c609b0afd36ce612f547d194d12c861284838ba82134936",
       "group": "function-evidence",
       "surface": {
-        "declarations": [],
-        "functions": [],
+        "declarations": [
+          "InstrumentResult",
+          "InstrumentSignature"
+        ],
+        "functions": [
+          "pub fn input(&self) -> &BasisType",
+          "pub fn new(input: BasisType, result: Vec<InstrumentResult>) -> Result<Self, ContractError>",
+          "pub fn result(&self) -> &[InstrumentResult]"
+        ],
         "capacity_constants": [
           "const MAX_DEPTH: usize = 64;",
           "const MAX_NODES: usize = 4096;"
@@ -3554,7 +3731,7 @@
     },
     {
       "path": "src/contract/mod.rs",
-      "sha256": "f26a30728be22cc7141c8e23393ebff519a5da8c444ac668da8c22015beb269c",
+      "sha256": "4c5126775a3f25583dd9ee3b5d032aedff8d0524a80168ae2d21ab98da2013b8",
       "group": "finite-contract",
       "surface": {
         "declarations": [
@@ -4897,6 +5074,67 @@
       }
     },
     {
+      "path": "src/interchange/engineering_pure.rs",
+      "sha256": "f43fd9ff2fecba6bf3104f627c5829ff92c731509df37cd6479d4c716a5585f9",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [
+          "DyadicBound",
+          "EngineeringPureReport",
+          "EngineeringPureRequest"
+        ],
+        "functions": [
+          "pub fn actual_artifact(&self) -> &[u8]",
+          "pub fn actual_boundary(&self) -> &PureBoundary",
+          "pub fn actual_meaning(&self) -> &Matrix",
+          "pub fn check( actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringPureRequest, ) -> Result<EngineeringPureReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringPureReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringPureRequest, ) -> Result<EngineeringPureReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn denominator_bits(self) -> u32",
+          "pub fn epsilon(&self) -> DyadicBound",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn ideal_artifact(&self) -> &[u8]",
+          "pub fn ideal_boundary(&self) -> &PureBoundary",
+          "pub fn ideal_meaning(&self) -> &Matrix",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new( actual_boundary: PureBoundary, actual_meaning: Matrix, ideal_boundary: PureBoundary, ideal_meaning: Matrix, epsilon: DyadicBound, ) -> Result<Self>",
+          "pub fn new(numerator: i128, denominator_bits: u32) -> Result<Self>",
+          "pub fn numerator(self) -> i128",
+          "pub fn request(&self) -> &EngineeringPureRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_pure/runtime.rs",
+      "sha256": "4a5d26a2c81de5adc32284fad9c8487517a39ea78f5c279e3d3eca9b63ecf5b7",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_pure/tests.rs",
+      "sha256": "0517d8be4d98d01ced912fae4680b22f73e4986ca427f4c91f201e5c14334d98",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/execution_view.rs",
       "group": "execution-view-encoding",
       "sha256": "6b90d5ec9528c8cc95666d81c81ab4fd1745821341273743ec569cf41adc446a",
@@ -4912,7 +5150,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "ee32d334c8b5db9216ed69db50ab30529481fe9211788bd8428d5d5b8917321f",
+      "sha256": "b5dc661cc6e93ab66365d0c1fc60fabfc56f98bca2bd7fdd33f6e776b2054527",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4953,6 +5191,16 @@
       "path": "src/interchange/execution_view/finite/contracts/tests.rs",
       "group": "execution-view-encoding",
       "sha256": "6c148fc492644a1cf1d642bbaee515c1906625518a5e7410b89a7fe83bc25e12",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/engineering_pure.rs",
+      "sha256": "d955f4bd3340d6d9b56f20201da0639269895fde7f85e567ef98ce8d4225ed9b",
+      "group": "engineering-pure",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5189,7 +5437,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "06def895f168cfb48f212dedc5c64d36558abbcb0044cc84dfa1fbca80348420",
+      "sha256": "8d1cb4e9f66f4eb01ae07e0dc2b59d0c1ab201c28d7747841d429cfd12bb40c9",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5197,6 +5445,8 @@
           "Imported",
           "RootInterface",
           "Version",
+          "engineering_instrument",
+          "engineering_pure",
           "finite_leaf",
           "finite_matrix",
           "hierarchical",
@@ -5218,7 +5468,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "a1e843764aef84acfe296a957b8f9909753ef566128066193188a6d9b29cb3c8",
+      "sha256": "bba6eb4a3e227db089acd9850fe7eb9e30ec925361609094c1a0f818a6bb6ce6",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5280,7 +5530,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "c64ab5cf6e9620e83f1858643c5d5540f688e7d20d77a1bdc5bef83e2f737ec3",
+      "sha256": "b6bb22c89caa8bb4db25c9dc1de6d0c7a1752e6a62954a263964d639faf9ab1e",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -5310,7 +5560,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "06c250f9168d991898c953b0849a6bf58480ea27d7b7773d04aca8c3f814efb3",
+      "sha256": "59b26314af1430aa20f2d768762c0e6612d018ecc9ae2a3a61535d8275d01543",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5618,6 +5868,164 @@
       "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "tests/engineering_pure_cli.rs",
+      "sha256": "6663994570ebc384bccc8bc8fe68971ecc1906ae2504725b1573a74f725a0af7",
+      "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/Cli/EngineeringInstrument.lean",
+      "sha256": "83cc395f41eff8060888b9c6d6554e477f87b3e2befdf847caec47ff590f688d",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/EngineeringInstrument.lean",
+      "sha256": "d4e9dfdced0837199cb79b76bdb3fb2f7d1b3f989930a2b73ed8559d7171e804",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
+      "sha256": "175f5cb215575f064e570dca327d13e294b2cccf9ec814b4b28d60c7876b190b",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean",
+      "sha256": "1dfa9cc648062143483ec5ef06faeab79538f59f67ccf4b2ce843ffde834201c",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentComposition.lean",
+      "sha256": "35d2996a883e34aaadd48c1a919d8c4e9e92b3f84a451455df10390a04f0dc1d",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentPureComparison.lean",
+      "sha256": "e5770e336691d3725108f008d3601876a80ab0361166921ea3459414506c9ab4",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentTensor.lean",
+      "sha256": "67d8c86d7254bddda19abffd7547a3b5ffbb9b4598f998b17a0392311037016e",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean",
+      "sha256": "0e64ae57c0c15ff0bc30ae5940c52f7caa43e852c18d07e49b6463adb517a22e",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/EngineeringInstrumentComposition.lean",
+      "sha256": "eba35fd7c85a4ff1aeb2623dcfdaeb1ee50f9da9f1d4c111f24fd4d07f996493",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_instrument_cli.py",
+      "sha256": "cabcdcd81cdee829e4b710033eed8714e29841ea21cafcd2d0c5487f1a530106",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "src/bin/qleisli/engineering_instrument.rs",
+      "sha256": "920bc7c146a4b402910681faa7fec441d88596716ee4cab7dca85f2d081e9d56",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_instrument.rs",
+      "sha256": "7c36c1d1fcca8b1565174b44e1395bfd9d361f4710b62ab2ae0680c5fc7bd876",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [
+          "EngineeringInstrumentReport",
+          "EngineeringInstrumentRequest"
+        ],
+        "functions": [
+          "pub fn actual_artifact(&self) -> &[u8]",
+          "pub fn actual_signature(&self) -> &InstrumentSignature",
+          "pub fn check( actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringInstrumentReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn epsilon(&self) -> DyadicBound",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn expected_signature(&self) -> &InstrumentSignature",
+          "pub fn ideal_artifact(&self) -> &[u8]",
+          "pub fn identity(&self) -> &FunctionIdentity",
+          "pub fn instrument_bound_verified(&self) -> bool",
+          "pub fn majorants(&self) -> &[DyadicBound]",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new( actual_signature: InstrumentSignature, expected_signature: InstrumentSignature, identity: FunctionIdentity, epsilon: DyadicBound, majorants: Vec<DyadicBound>, ) -> Result<Self>",
+          "pub fn request(&self) -> &EngineeringInstrumentRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_instrument/runtime.rs",
+      "sha256": "a74003e5b63c5530253f2a5abc7257af470ecf4838c4161c5db71ec822874af6",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_instrument/tests.rs",
+      "sha256": "11ce671f0c710c974c108d9ea51e43a4a5a7b941191741fb6199c25a0e69b9f6",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/engineering_instrument.rs",
+      "sha256": "45606418bfb9eecf6a0eeef33480646c6e2bb8c037b1dc29e872f97f01d45d30",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "tests/engineering_instrument_cli.rs",
+      "sha256": "b87ea69a3a429f0af9f7873c1487713cfae04c3817a4468850449221df1dffa3",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -6049,6 +6457,52 @@
       "limits": "Existing packet/JSON/native work bounds and reference execution limits",
       "failure": "Explicit native rejection/transport error or unsupported execution view; never legacy fallback",
       "replacement": [
+        "VM-29"
+      ]
+    },
+    {
+      "id": "engineering-pure",
+      "group": "engineering-pure",
+      "entry_points": [
+        "interchange::engineering_pure::{DyadicBound,EngineeringPureRequest}",
+        "interchange::engineering_pure::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringPureReport original-artifact/request/profile accessors",
+        "qleisli engineering compare-pure ACTUAL --against=REQUEST"
+      ],
+      "status": "Separate native engineering check only; no exact cross-body or constitutional acceptance",
+      "request": "Strict qleisli.engineering-pure-request v1: engineering claim kind, pure-euclidean-operator-norm-v1 metric, frobenius-r8-pure-leaf-v1 checker profile, qirf-r8-pure-v1 IR profile, single-component-v1 composition and implementation-distance category; identical full domain/codomain trees, independent ordered ports/matrices, closed nonnegative canonical dyadic epsilon and original ideal QIRF text",
+      "binding": "One execution-only QLV2 invocation retains original actual QIRF and request bytes, freshly decodes both original graphs, independently checks each exact PureLeaf request, then checks the engineering inequality and exact typed QDV1 equality. Private allocation-bound report has no exact accepted-program/Meaning/capability/cleanup/resource conversion; zero retains the same engineering claim kind.",
+      "encoding": "QLV2 execution scope with QLV1 original actual body/request and independently walked QDV1 typed request plus both retained graphs; distinct qleisli.engineering-pure-native 1 / engineering-checked response. Inspection/caller scope and exact acceptance responses are rejected.",
+      "domain": "Existing bounded rectangular R8 pure isometries with exact phase, complete type trees, original dependencies and zero-width owners; qirf-r8-pure-v1 is an IR domain, not a hardware realization. No instrument, public composite-request, source-preservation or resource certificate profile.",
+      "limits": "Existing 16 MiB per-file and 64 MiB QLV2 envelope limits, exact matrices of dimension at most 64, i128 canonical dyadics with denominator exponent at most 126, one shared 10M native checker-work budget and 60s process timeout. Checker work is not emitted quantum resource cost.",
+      "failure": "Reject unknown/missing context, noncanonical/open/negative budget, incorrect original-body equation/Gram/effect/dependency/port/type tree, tight bound, stale or changed typed graph/request, wrong scope/version/response and exceeded capacity; missing/failed/timed-out checker has no acceptance fallback.",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
+        "VM-29"
+      ]
+    },
+    {
+      "id": "engineering-instrument",
+      "group": "engineering-instrument",
+      "entry_points": [
+        "interchange::engineering_instrument::EngineeringInstrumentRequest",
+        "interchange::engineering_instrument::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringInstrumentReport original-artifact/request/profile accessors",
+        "qleisli engineering compare-instrument ACTUAL --against=REQUEST"
+      ],
+      "status": "Separate native engineering instrument check only; no exact cross-body or constitutional acceptance",
+      "request": "Strict 14-field qleisli.engineering-instrument-request v1: engineering-instrument-bound claim, complete-adjoint-euclidean-operator-norm-v1 metric, choi-l1-r8-instrument-v1 checker, qirf-r8-instrument-v1 IR profile, single-component-v1 composition and implementation-distance category; complete actual/expected input and result signature trees, source identity, closed nonnegative canonical dyadic epsilon and ordered coefficient majorants in unsquared norm units, original expected QIRF text. No supplied outcome labels, matrices, probabilities or success flags.",
+      "binding": "One execution-only QLV2 invocation retains original actual QIRF and request bytes, freshly decodes both original graphs, checks both full interfaces and complete Kraus reconstructions, then checks the coefficient bound and exact typed QDV1 equality for the full request and both retained graphs. Private allocation-bound report has no exact accepted-program/Meaning, pure-phase, inverse/control, cleanup or resource conversion; epsilon zero retains the same engineering claim kind.",
+      "encoding": "QLV2 execution scope with QLV1 original body/request and independently walked QDV1 engineering-instrument-request/engineering-instrument records; distinct qleisli.engineering-instrument-native 1 / engineering-checked / execution response. Inspection/caller scope, old outer QLV1 and other native response kinds reject.",
+      "domain": "Existing bounded R8 observing instruments with one quantum input owner, empty classical inputs, complete signature trees including zero-width owners, original dependencies, ordered public results, all unnormalized hidden histories and arbitrary finite references. qirf-r8-instrument-v1 names an IR profile, not hardware realization. Independent feed-forward/tensor and pure-to-instrument lemmas do not certify original source/QIRF composition or a native composed request.",
+      "limits": "Unchanged 16 MiB per-file/request and 64 MiB QLV2 envelope/view limits, existing six-bit dense reconstruction, i128 canonical dyadics with denominator exponent at most 126, one shared 10M native checker-work budget and 60s process timeout. Checker work is not emitted resource cost.",
+      "failure": "Reject missing/unknown/cross-kind context, noncanonical/negative/open budgets, incomplete/extra/reordered majorants, incorrect full signature/effect/owner/dependency/public projection, tight bounds, changed original graphs or typed view, wrong scope/version/response and exceeded capacity. Missing/failed/timed-out checker has no fallback; exact InstrumentContract remains unchanged.",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
         "VM-29"
       ]
     }

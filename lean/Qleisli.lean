@@ -83,3 +83,13 @@ import Qleisli.ControlAccess
 import Qleisli.Semantics.EngineeringPure
 import Qleisli.EngineeringPure
 import Qleisli.NativeEngineeringPure
+import Qleisli.NativeEngineeringPureProtocol
+import Qleisli.EngineeringPureComposition
+import Qleisli.Semantics.EngineeringInstrument
+import Qleisli.EngineeringInstrument
+import Qleisli.Semantics.EngineeringInstrumentComposition
+import Qleisli.EngineeringInstrumentPureComparison
+import Qleisli.EngineeringInstrumentComposition
+import Qleisli.EngineeringInstrumentTensor
+import Qleisli.NativeEngineeringInstrument
+import Qleisli.NativeEngineeringInstrumentProtocol

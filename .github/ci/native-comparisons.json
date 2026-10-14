@@ -945,6 +945,74 @@
       "env": {
         "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
       }
+    },
+    {
+      "id": "engineering-pure",
+      "name": "Separate pure engineering bounds, original-body/view binding and exact-acceptance firewall",
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "engineering_pure",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "engineering_pure_cli",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--doc",
+          "engineering_pure"
+        ]
+      ],
+      "env": {
+        "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      }
+    },
+    {
+      "id": "engineering-instrument",
+      "name": "Complete instrument engineering bounds, both original graphs, residual/reference maps and exact-acceptance firewall",
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "engineering_instrument",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "engineering_instrument_cli",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--doc",
+          "engineering_instrument"
+        ]
+      ],
+      "env": {
+        "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      }
     }
   ]
 }

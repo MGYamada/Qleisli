@@ -322,7 +322,10 @@ impl Kernel {
 
 // Called only after bounded prefix/basis validation. The JSON uses the exact
 // nested protocol representation; the older flattened contract basis differs.
-fn instrument_signature(signature: &Signature, encoder: &mut Encoder) -> Result<Value> {
+pub(in crate::interchange) fn instrument_signature(
+    signature: &Signature,
+    encoder: &mut Encoder,
+) -> Result<Value> {
     fn result(atoms: &[ResultAtom], cursor: &mut usize, encoder: &mut Encoder) -> Result<Value> {
         let atom = &atoms[*cursor];
         *cursor += 1;

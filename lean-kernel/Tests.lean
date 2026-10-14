@@ -817,3 +817,113 @@ example : accepts rectangular = true := by decide +kernel
 example : accepts {rectangular with codomain := [.bits 1]} = false := by decide +kernel
 
 end EngineeringArtifactTests
+
+/- Complete instrument engineering checks are separate from exact equality,
+pure capabilities, cleanup, resource evidence and native/public acceptance. -/
+namespace EngineeringInstrumentTests
+open QleisliKernel.Semantics.Exact QleisliKernel.Engineering.Instrument
+
+private def oneCell (value : Scalar) : Matrix := ⟨1,1,[value]⟩
+private def half : Scalar := ⟨⟨1,1⟩,.integer 0,.integer 0,.integer 0⟩
+private def actualUnit : List Raw.InstrumentEquality.History :=
+  [⟨[false],oneCell half⟩,⟨[false],oneCell half⟩,
+   ⟨[false],oneCell half⟩,⟨[true],oneCell half⟩]
+private def idealUnit : List Raw.InstrumentEquality.History :=
+  [⟨[false],oneCell Scalar.one⟩,⟨[true],oneCell Scalar.zero⟩]
+private def quarter : Coefficient := ⟨1,2⟩
+private def acceptsUnit (epsilon : Coefficient) (majorants : List Coefficient)
+    (work : Nat := 2000000) : Bool :=
+  ((checkHistories 1 1 1 actualUnit idealUnit epsilon majorants).run work).1.isOk
+
+-- Unnormalized branch probabilities are 3/4 and 1/4, against 1 and 0.
+-- The independently predicted sufficient bound is 1/2, not a squared budget.
+example : acceptsUnit ⟨1,1⟩ [quarter,quarter] = true := by decide +kernel
+example : acceptsUnit quarter [quarter,quarter] = false := by decide +kernel
+example : acceptsUnit ⟨1,1⟩ [quarter,.integer 0] = false := by decide +kernel
+example : acceptsUnit (.integer 0) [.integer 0,.integer 0] = false := by decide +kernel
+example : acceptsUnit (.integer 2) [quarter] = false := by decide +kernel
+example : acceptsUnit (.integer 2) [quarter,quarter,quarter] = false := by decide +kernel
+example : acceptsUnit (.integer 2) [⟨2,3⟩,quarter] = false := by decide +kernel
+example : acceptsUnit (.integer 2) [.integer (-1),quarter] = false := by decide +kernel
+example : acceptsUnit (.integer (-1)) [quarter,quarter] = false := by decide +kernel
+example : acceptsUnit ⟨0,1⟩ [quarter,quarter] = false := by decide +kernel
+example : acceptsUnit (.integer (2^126)) [.integer (2^126),quarter] = false := by decide +kernel
+example : acceptsUnit ⟨1,1⟩ [quarter,quarter] 0 = false := by decide +kernel
+
+-- All four coordinates matter. The two off-diagonal Choi coefficients of T
+-- differ from identity by conjugate nonreal values, each bounded by 7/8.
+private def id2 : Matrix := ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩
+private def t : Matrix :=
+  ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,QleisliKernel.Exact.Scalar.phase 1]⟩
+private def phaseMajorants (budget : Coefficient) : List Coefficient :=
+  (cells 2 2 [[false]]).map fun cell =>
+    if (cell.row == 0 && cell.col == 0 && cell.otherRow == 1 && cell.otherCol == 1) ||
+       (cell.row == 1 && cell.col == 1 && cell.otherRow == 0 && cell.otherCol == 0)
+    then budget else .integer 0
+private def phaseAccepts (budget epsilon : Coefficient) : Bool :=
+  ((checkHistories 2 2 1 [⟨[false],t⟩] [⟨[false],id2⟩]
+      epsilon (phaseMajorants budget)).run 2000000).1.isOk
+example : phaseAccepts ⟨7,3⟩ ⟨7,2⟩ = true := by decide +kernel
+example : phaseAccepts ⟨1,1⟩ ⟨7,2⟩ = false := by decide +kernel
+example : phaseAccepts ⟨7,3⟩ ⟨7,3⟩ = false := by decide +kernel
+private def minusId : Matrix := ⟨2,2,[
+  QleisliKernel.Exact.Scalar.phase 4,Scalar.zero,Scalar.zero,QleisliKernel.Exact.Scalar.phase 4]⟩
+-- Equal instruments may have different pure global phases: this success
+-- supplies no pure phase agreement or coherent-control permission.
+example : ((checkHistories 2 2 1 [⟨[false],minusId⟩] [⟨[false],id2⟩]
+    (.integer 0) (List.replicate 16 (.integer 0))).run 2000000).1.isOk = true := by decide +kernel
+private def halfId : Matrix := ⟨2,2,[half,Scalar.zero,Scalar.zero,half]⟩
+private def residualActual : List Raw.InstrumentEquality.History :=
+  [⟨[false],halfId⟩,⟨[false],halfId⟩,⟨[false],halfId⟩,⟨[true],halfId⟩]
+private def residualMajorants : List Coefficient :=
+  (cells 2 2 [[false],[true]]).map fun cell =>
+    if cell.row == cell.col && cell.otherRow == cell.otherCol then quarter else .integer 0
+-- Every residual density-matrix coordinate remains present. This sufficient
+-- coefficient bound is conservative: its sum is 2, while the exact norm is 1/2.
+example : ((checkHistories 2 2 1 residualActual [⟨[false],id2⟩]
+    (.integer 2) residualMajorants).run 2000000).1.isOk = true := by decide +kernel
+example : ((checkHistories 2 2 1 residualActual [⟨[false],id2⟩]
+    (.integer 1) residualMajorants).run 2000000).1.isOk = false := by decide +kernel
+private def resetHistories : List Raw.InstrumentEquality.History :=
+  [⟨[false],⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.zero]⟩⟩,
+   ⟨[false],⟨2,2,[Scalar.zero,Scalar.one,Scalar.zero,Scalar.zero]⟩⟩]
+-- Reset and identity both return false with probability one; an entangled
+-- input distinguishes their residual channels, so zero distance must refuse.
+example : ((checkHistories 2 2 1 resetHistories [⟨[false],id2⟩]
+    (.integer 0) (List.replicate 16 (.integer 0))).run 2000000).1.isOk = false := by decide +kernel
+-- Invalid matrices, public labels, and omitted/impossible outcomes refuse.
+example : ((checkHistories 1 1 1 [] idealUnit (.integer 2) [quarter,quarter]).run 2000000).1.isOk =
+    false := by decide +kernel
+example : ((checkHistories 1 1 1 [⟨[],oneCell half⟩] idealUnit (.integer 2) [quarter,quarter]).run
+    2000000).1.isOk = false := by decide +kernel
+example : ((checkHistories 1 1 1 [⟨[false],⟨1,1,[]⟩⟩] idealUnit (.integer 2) [quarter,quarter]).run
+    2000000).1.isOk = false := by decide +kernel
+
+open QleisliKernel.Semantics.Observation
+private def randomBody : Program := ⟨[⟨0,[],0⟩],[],
+  [.pure (.unpackUnit 0),.pure (.init0 1 1),.pure (.gate .h 1 2),.measure 2 0,
+   .pure (.init0 3 2),.pure (.gate .h 3 4),.measure 4 1,.and 0 1 2],[],[2],.observe⟩
+private def falseBody : Program := ⟨[⟨0,[],0⟩],[],
+  [.pure (.unpackUnit 0),.pure (.init0 1 1),.measure 1 2],[],[2],.observe⟩
+private def artifact (body : Program) : Qirf.Artifact := ⟨#[body],#[],#[],0,none⟩
+private def request : Qirf.EngineeringInstrument.Request :=
+  ⟨artifact randomBody,#[0],artifact falseBody,#[0],⟨[.unit],[.bit]⟩,
+    ⟨[.unit],[.bit]⟩,⟨"actual","ideal",[]⟩,⟨1,1⟩,[quarter,quarter]⟩
+private def originalAccepts (value : Qirf.EngineeringInstrument.Request) : Bool :=
+  ((Qirf.EngineeringInstrument.check value).run 2000000).1.isOk
+example : originalAccepts request = true := by decide +kernel
+example : originalAccepts {request with epsilon := quarter} = false := by decide +kernel
+example : originalAccepts {request with expectedSignature := ⟨[.bits 0],[.bit]⟩} = false := by decide +kernel
+example : originalAccepts {request with expectedSignature := ⟨[.unit],[.bits 1]⟩} = false := by decide +kernel
+example : originalAccepts {request with actualOrder := #[]} = false := by decide +kernel
+example : originalAccepts {request with actual := artifact {randomBody with effect := .unitary}} =
+    false := by decide +kernel
+example : originalAccepts {request with actual := artifact {randomBody with effect := .iso}} =
+    false := by decide +kernel
+example : originalAccepts {request with actual := artifact {randomBody with operations := randomBody.operations.drop 1}} =
+    false := by decide +kernel
+-- The unchanged exact gate still rejects this nonzero difference.
+example : ((Qirf.InstrumentContract.check request.actual request.actualOrder request.expected
+    request.expectedOrder request.actualSignature request.expectedSignature request.identity).run
+    2000000).1.isOk = false := by decide +kernel
+end EngineeringInstrumentTests

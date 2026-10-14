@@ -5,6 +5,22 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [instrument native client](engineering-instrument-native-v030/README.md)
+retains first source/command diagnostics and original mathematical study failures.
+Its history is inert; new native and CLI checks use separately authored commands.
+
+The [instrument engineering study](engineering-instrument-v030/README.md)
+preserves first import/name failures, separate translations, original binary
+packets and exact residual/reference counterexamples. The
+[exact pi/8 profile study](exact-pi8-v030/README.md) retains symbolic integers,
+explicit unsupported-profile refusals and an observer's command-only repair.
+History is inert; fresh checks and general proofs remain separate.
+
+The [native engineering client](engineering-pure-native-v030/README.md) retains
+the first command refusal, original invalid Basis request, actual new diagnostic
+and separate successful repair. Its one-qubit bound is engineering evidence;
+exact correspondence, composition, instruments and resources remain separate.
+
 The [exact/approximate boundary study](exact-approx-boundary-v030/README.md)
 retains six first projects, a separate phase translation, a residual-output
 counterexample and 34 actual CLI observations. Its seven exact host calculations

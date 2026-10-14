@@ -153,7 +153,7 @@ artifact does not supply its missing exact correspondence to the source.
 No new interpretation, guarantee admission or broader QS/PR/RS discharge
 follows from either engineering validation or this clarification.
 
-The current internal pure component checks a sufficient squared Frobenius
+The pure component checks a sufficient squared Frobenius
 witness over canonical rectangular R8 matrices and a closed nonnegative dyadic
 budget. Its proof bounds the explicitly selected Euclidean operator norm,
 including arbitrary finite external references and literal scalar phase.
@@ -161,10 +161,165 @@ Witness failure does not establish that no approximation or synthesis exists.
 The original-artifact component runs the existing exact PureLeaf check on each
 body against its own independent matrix request before comparing those matrices;
 both complete type trees and ordered ports remain checked. Neither component
-changes the exact equality gate. The components are not connected to a native
-protocol, public engineering handle or target-resource gate. Checked composition
-and the complete instrument contract remain unfinished under #31/#163; the
-internal pure proof does not complete those Issues or source/target preservation.
+changes the exact equality gate. A separate native engineering protocol binds
+these components to the actual invocation and both retained host graphs. The
+complete instrument contract, target-resource gate and compiler consumption of
+composed engineering claims remain unfinished under #31/#163. The pure result
+does not complete those Issues or establish source/target preservation.
+
+### Native pure engineering comparison
+
+```text
+qleisli engineering compare-pure ACTUAL --against=REQUEST --lean-kernel=PATH --format=json
+```
+
+`ACTUAL` is an original finite QIRF artifact. `REQUEST` is a UTF-8 JSON request
+containing the separate original ideal artifact, both independently specified
+matrices and ordered ports, common complete domain/codomain type trees and a
+closed canonical nonnegative dyadic budget. Each file is bounded to 16 MiB;
+the QLV2 envelope retains its existing 64 MiB limit. The exact finite-matrix
+carrier remains R8; no arbitrary-angle syntax or coefficient extension follows.
+
+The request has exactly these fields:
+
+| Field | Value |
+| --- | --- |
+| `format`, `version` | `qleisli.engineering-pure-request`, `1` |
+| `claim_kind` | `engineering` |
+| `metric` | `pure-euclidean-operator-norm-v1` |
+| `checker_profile` | `frobenius-r8-pure-leaf-v1` |
+| `target_profile` | `qirf-r8-pure-v1`, an IR profile rather than a hardware claim |
+| `composition` | `single-component-v1` |
+| `error_category` | `implementation-distance` |
+| `domain`, `codomain` | Full QIRF Basis objects, for example `{"tag":"bit"}` |
+| `actual`, `ideal` | Objects with exactly `input`, `output` and `matrix` |
+| `epsilon` | `{"numerator":"7","denominator_bits":3}` means 7/8; use reduced signed decimal data, with zero encoded as `"0"` and exponent 0 |
+| `expected_artifact` | Original UTF-8 ideal QIRF text, including its original byte spelling |
+
+Ports and matrices use the existing native pure-leaf request encodings.
+Unknown or missing fields, unsupported profiles, malformed or open budgets,
+false body matrices and insufficient arithmetic/work capacity refuse. A
+successful conservative witness is an inequality, not a completeness claim.
+Hidden observation, reset or discard cannot acquire a pure label through this
+path, even when the requested budget is large.
+
+The Rust `interchange::engineering_pure` API constructs data-only requests and
+returns a private, allocation-bound `EngineeringPureReport` after a fresh
+native check. Its serialized convenience entry independently decodes the same
+typed request. Both original artifacts receive their ordinary checks and then
+fresh independent pure checks against their own matrices; Lean compares the
+typed context and both fresh graphs with the actual retained Rust execution
+description. Inspection and caller scopes refuse this mode. The engineering
+response uses a distinct header and cannot enter an exact accepted-handle
+constructor. The report has no conversion to `AcceptedProgram`, Meaning,
+control/inverse access, cleanup or resource evidence, including at epsilon 0.
+Serialized CLI output is an inert report, never reusable native acceptance.
+
+Text and JSON identify the engineering metric, bound, profiles, composition,
+original artifact/request digests and selected checker path. Checker identity
+remains unpinned under the existing provenance limitation. Hashes identify
+reported bytes, not native binary correctness or human authority. Sampling,
+algorithmic resolution and numerical-runtime errors are separately `not-claimed`;
+they are not silently zero. Source preservation, exact source correspondence,
+instrument bounds and target-resource bounds remain explicitly unestablished.
+
+Pure composition proofs establish additive sequential and ordered tensor error
+rules for the same Euclidean metric under the stated exact isometry premises,
+including arbitrary references. The coherent-control corollary additionally
+requires equal domain/codomain and the existing independent access meanings.
+These mathematical rules do not implement a composed native receipt, change
+the single-component profile or supply compiler/lowering preservation.
+
+### Instrument engineering comparison
+
+The instrument component uses a **complete adjoint Euclidean operator
+bound**. For actual and ideal Kraus families, it bounds the difference between
+their adjoint actions on every joint observable family `B`, for every finite
+external reference `R` and classical input `x`:
+
+```text
+norm(sum_y,h (K_actual[x,y,h] tensor I_R)^dagger B[y]
+             (K_actual[x,y,h] tensor I_R)
+   - sum_y,k (K_ideal[x,y,k] tensor I_R)^dagger B[y]
+             (K_ideal[x,y,k] tensor I_R)) <= epsilon * norm(B)_infinity
+```
+
+The norms on operators are explicitly Euclidean operator norms; the family
+norm is the supremum over public outcomes. Hidden-history sets may differ.
+This quantifies joint observables, including reference correlations, without
+a reference-dimension factor or branch renormalization. The metric is not
+advertised as a diamond norm without a separate norm-duality proof.
+
+The sufficient witness assigns a canonical nonnegative closed dyadic `q` to
+every complex CP-coefficient difference, in fixed order: public outcome,
+output row, input column, other output row, other input column. All actual and
+ideal public labels contribute; absent labels denote zero. Each coefficient
+is freshly reconstructed from all matching hidden histories. Existing exact
+R8 arithmetic checks its squared magnitude against `q*q`, and exact summation
+checks `sum(q) <= epsilon`. Both `q` and `epsilon` have unsquared norm units.
+Witness length is exact. Malformed dimensions/coefficients, noncanonical or
+negative budgets, insufficient witnesses and arithmetic/work exhaustion refuse.
+A remaining-work preflight precedes Cartesian witness allocation. Its work
+counter bounds verification, separately from program or target resources.
+
+The original-graph wrapper reuses ordinary root/dependency checks, requested
+complete signature equality, ordered result projection, principal Observe
+checks and complete Kraus/Gram reconstruction on both bodies. Its current
+profile has one quantum input owner, empty classical inputs and the existing
+bounded dense reconstruction. Requested source/type trees remain distinct
+from source-to-IR preservation. The independent metric also defines general
+finite classical input families for subsequent composition work.
+
+The dedicated native request has fourteen fields: `format`, `version`,
+`claim_kind`, `metric`, `checker_profile`, `target_profile`, `composition`,
+`error_category`, `actual_signature`, `expected_signature`, `identity`,
+`epsilon`, `majorants` and `expected_artifact`. Its format is
+`qleisli.engineering-instrument-request`, version `1`, with claim kind
+`engineering-instrument-bound`, metric
+`complete-adjoint-euclidean-operator-norm-v1`, checker profile
+`choi-l1-r8-instrument-v1`, target profile `qirf-r8-instrument-v1`, composition
+`single-component-v1` and error category `implementation-distance`.
+Other profiles and extra/missing fields refuse. Bounds use the existing closed
+dyadic data, for example `{"numerator":"1","denominator_bits":2}` for `1/4`.
+The target names an IR profile, not hardware. No producer-supplied outcome
+labels, matrices, probabilities or success flags replace reconstruction.
+
+The Rust request uses validated `InstrumentSignature`/`InstrumentResult` data,
+and its private `EngineeringInstrumentReport` retains both immutable artifacts,
+the original request and selected checker path. The native QLV2 invocation
+accepts execution scope only and compares both fresh graphs, signatures,
+identity and complete budget/witness data with the Rust execution view.
+Inspection, caller scopes, old outer frames, cross-kind replies and
+missing/incompatible/failed checkers refuse without fallback.
+
+```text
+qleisli engineering compare-instrument actual.qirf --against=comparison.json --lean-kernel=PATH
+```
+
+Text and `--format=json` disclose the complete instrument bound, actual input
+digests and unpinned checker identity. Pure phase agreement, source preservation,
+inverse/control, cleanup, resources and constitutional PR/RS remain
+unestablished, including at epsilon zero. Sampling, algorithmic resolution and
+numerical runtime error are separate unclaimed categories. The pure comparison
+continues to report instrument bounds as unestablished.
+
+Independent mathematical composition uses the actual Kraus families. Full Gram
+completeness implies adjoint contraction at every finite reference. A literal
+pure operator gap `delta` and both pure Gram equations imply the one-way
+instrument bound `2*delta`; no phase information is recovered. Feed-forward
+composition retains public `(y,z)` outcomes and hidden `(h,k)` histories.
+Ordered tensor composition retains the declared left/right input/output,
+public and hidden products through explicit proved reference regrouping.
+Both constructions have additive `epsilon_1 + epsilon_2` bounds under their
+stated component bounds and Gram premises. Separate completeness theorems
+require both original Gram equations; a bound alone does not establish them.
+
+These results provide no source epsilon annotation, compiler consumption or
+original source/QIRF composition-preservation proof. The native profile remains
+single-component: it does not issue a composed certificate. Actual emitted
+artifact/resource certification and other #31/#163 requirements remain open.
+No instrument bound grants pure phase agreement, coherent control, inverse,
+exact release or constitutional PR/RS authority.
 
 ## Quantitative resource claims
 

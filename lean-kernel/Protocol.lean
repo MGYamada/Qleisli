@@ -6,6 +6,7 @@ import Protocol.Hierarchical
 import Protocol.FiniteCodec
 import Protocol.Raw
 import Protocol.Observation
+import Protocol.EngineeringInstrument
 
 /-! Compatibility import for the unproved transport adapters. The pure kernel
 never imports this module or its children.

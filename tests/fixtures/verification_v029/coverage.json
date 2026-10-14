@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "eb8015c610dd884563de40a5361f49c6499e91ac3f46e620c4651641db193f79",
+  "surface_sha256": "995ce249450909011acf9d97af0f96d67b59e5b4b4a74f266f3d4b7c67b4e1c8",
   "groups": [
     {
       "id": "raw-core",
@@ -32,7 +32,11 @@
       "status": "untrusted-host",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/finite_matrix.rs"
+        "tests/finite_matrix.rs",
+        "lean/Qleisli/EngineeringInstrumentComposition.lean",
+        "lean/Qleisli/EngineeringInstrumentPureComparison.lean",
+        "lean/Qleisli/EngineeringInstrumentTensor.lean",
+        "lean/Qleisli/Semantics/EngineeringInstrumentComposition.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -955,6 +959,63 @@
         "MIG-4",
         "MIG-5"
       ]
+    },
+    {
+      "id": "engineering-pure",
+      "status": "engineering-check",
+      "blocker": "Engineering-only comparison; no exact source correspondence, accepted-program/capability/cleanup/resource conversion or guarantee admission. Source/decoder/walker/native-compiler/runtime preservation, deployed-binary attestation, instruments, native composition and actual emitted-resource certification remain open; all S05 gates and broader QS/PR/RS/EXACT duties retain their recorded status.",
+      "evidence": [
+        "src/interchange/engineering_pure.rs",
+        "src/interchange/engineering_pure/tests.rs",
+        "src/interchange/engineering_pure/runtime.rs",
+        "tests/engineering_pure_cli.rs",
+        "scripts/test_engineering_pure_cli.py",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean",
+        "lean/Qleisli/NativeEngineeringPureProtocol.lean",
+        "lean/Qleisli/EngineeringPureComposition.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "engineering-instrument",
+      "status": "engineering-check",
+      "blocker": "Engineering-only instrument comparison; no exact source correspondence, pure-phase agreement, accepted-program/capability/cleanup/resource conversion or guarantee admission, including epsilon zero. The IR profile is not a hardware realization. Source/QIRF composition, native composed certificate consumption, source/decoder/walker/native-compiler/runtime preservation, deployed-binary attestation and actual emitted-resource certification remain open; all S05 gates and broader QS/PR/RS/EXACT duties retain their recorded status.",
+      "evidence": [
+        "src/interchange/engineering_instrument.rs",
+        "src/interchange/engineering_instrument/tests.rs",
+        "src/interchange/engineering_instrument/runtime.rs",
+        "tests/engineering_instrument_cli.rs",
+        "scripts/test_engineering_instrument_cli.py",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
+        "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
     }
   ],
   "boundaries": [
@@ -1750,6 +1811,93 @@
         "host-execution",
         "ordinary-acceptance",
         "raw-proposal"
+      ]
+    },
+    {
+      "id": "engineering-pure",
+      "entry_points": [
+        "interchange::engineering_pure::{DyadicBound,EngineeringPureRequest}",
+        "interchange::engineering_pure::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringPureReport original-artifact/request/profile accessors",
+        "qleisli engineering compare-pure ACTUAL --against=REQUEST"
+      ],
+      "status": "engineering-check",
+      "blocker": "Engineering-only comparison; no exact source correspondence, accepted-program/capability/cleanup/resource conversion or guarantee admission. Source/decoder/walker/native-compiler/runtime preservation, deployed-binary attestation, instruments, native composition and actual emitted-resource certification remain open; all S05 gates and broader QS/PR/RS/EXACT duties retain their recorded status.",
+      "evidence": [
+        "src/interchange/engineering_pure.rs",
+        "src/interchange/engineering_pure/tests.rs",
+        "src/interchange/engineering_pure/runtime.rs",
+        "tests/engineering_pure_cli.rs",
+        "scripts/test_engineering_pure_cli.py",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean",
+        "lean/Qleisli/NativeEngineeringPureProtocol.lean",
+        "lean/Qleisli/EngineeringPureComposition.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "src/interchange/engineering_pure/tests.rs",
+        "test": "native_bound_retains_original_bodies_and_zero_stays_engineering"
+      },
+      "selection": "Only the separate version-paired --engineering-pure-check mode issues a private engineering report after both original PureLeaf checks and exact execution-view comparison. Epsilon zero and a serialized success report do not authorize exact acceptance or promotion.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "engineering-pure-check"
+      ]
+    },
+    {
+      "id": "engineering-instrument",
+      "status": "engineering-check",
+      "blocker": "Engineering-only instrument comparison; no exact source correspondence, pure-phase agreement, accepted-program/capability/cleanup/resource conversion or guarantee admission, including epsilon zero. The IR profile is not a hardware realization. Source/QIRF composition, native composed certificate consumption, source/decoder/walker/native-compiler/runtime preservation, deployed-binary attestation and actual emitted-resource certification remain open; all S05 gates and broader QS/PR/RS/EXACT duties retain their recorded status.",
+      "evidence": [
+        "src/interchange/engineering_instrument.rs",
+        "src/interchange/engineering_instrument/tests.rs",
+        "src/interchange/engineering_instrument/runtime.rs",
+        "tests/engineering_instrument_cli.rs",
+        "scripts/test_engineering_instrument_cli.py",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
+        "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "entry_points": [
+        "interchange::engineering_instrument::EngineeringInstrumentRequest",
+        "interchange::engineering_instrument::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringInstrumentReport original-artifact/request/profile accessors",
+        "qleisli engineering compare-instrument ACTUAL --against=REQUEST"
+      ],
+      "route_test": {
+        "path": "src/interchange/engineering_instrument/tests.rs",
+        "test": "native_nonzero_and_zero_reports_keep_original_bytes_and_engineering_status"
+      },
+      "selection": "Only the separate product-version-paired --qirf-engineering-instrument-native mode issues an allocation-bound engineering report after both original-root/Kraus checks, coefficient bounds and exact typed execution-view comparison. Epsilon zero and serialized success data cannot promote it to exact acceptance.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "engineering-instrument-check"
       ]
     }
   ],
@@ -3780,6 +3928,449 @@
       "checker": "Fresh FunctionEvidence/MeaningEvidence equations and Kernel.check_leaf through existing native contract checks, followed by independent Rust source-step replay",
       "proof_scope": "Existing native finite/function contract theorems bind original implementation/request artifacts and dependencies, complete interfaces and exact operators. Both adapters check closed operation bindings, including unused and zero-count providers. Source-step replay is an independent Rust check; no AST-to-step theorem is supplied.",
       "gaps": "Unclosed generic contracts, general hierarchical operator closure, general AST/source preservation, native compiler/decoder/runtime proof and quantitative RS remain separate obligations. Retained source/request identity and finite reference checks are not a constitutional guarantee."
+    },
+    {
+      "id": "engineering-pure-check",
+      "classification": "engineering-check",
+      "boundaries": [
+        "engineering-pure"
+      ],
+      "native_modes": [
+        "--engineering-pure-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "pub mod engineering_pure;"
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_pure.rs",
+          "markers": [
+            "pub struct DyadicBound",
+            "pub struct EngineeringPureRequest",
+            "pub struct EngineeringPureReport",
+            "pub fn check_with_kernel(",
+            "pub fn check_serialized_with_kernel(",
+            "Arc::ptr_eq(&self, &decision.subject)"
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_pure/runtime.rs",
+          "markers": [
+            "fn response(",
+            "qleisli.engineering-pure-native 1",
+            "\"--engineering-pure-check\"",
+            "\"engineering-checked\", \"execution\""
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite/engineering_pure.rs",
+          "markers": [
+            "pub(in crate::interchange) fn complete(",
+            "\"engineering-pure-request\"",
+            "actual.execution_view_graph().write(w.writer)",
+            "ideal.execution_view_graph().write(w.writer)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli.rs",
+          "markers": [
+            "arg == \"engineering\"",
+            "engineering::run(&args[1..])"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering.rs",
+          "markers": [
+            "fn execute(",
+            "check_serialized_with_kernel(&kernel, &actual, &request)",
+            "source correspondence, instrument bound and target resource bound: not established"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/digest.rs",
+          "markers": [
+            "pub(super) fn sha256("
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/EngineeringPure.lean",
+          "markers": [
+            "def runEngineeringPure ",
+            "CheckedEngineeringPure.run bytes",
+            "qleisli.engineering-pure-native 1",
+            "engineering-checked"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/EngineeringPure.lean",
+          "markers": [
+            "def prepare ",
+            "structure PreparedBinding ",
+            "def checkRetained ",
+            "theorem checkRetained_bound",
+            "Qirf.read prepared.body",
+            "Qirf.read decoded.expectedText.toUTF8",
+            "QleisliKernel.Qirf.EngineeringPure.check request"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/EngineeringPure.lean",
+          "markers": [
+            "def engineeringPureRequest ",
+            "def engineeringPure ",
+            "graph value.actual value.checked.actual.root",
+            "graph value.ideal value.checked.ideal.root"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean",
+          "markers": [
+            "def check ",
+            "theorem check_binding",
+            "supplied.data == expected.data",
+            ".inspection | .caller => throw .packet",
+            "theorem run_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPure.lean",
+          "markers": [
+            "def check ",
+            "PureLeaf.check request.actual.artifact",
+            "PureLeaf.check request.ideal.artifact",
+            "Engineering.Pure.checkMatrices actual.actual ideal.actual"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Engineering/Pure.lean",
+          "markers": [
+            "def checkMatrices ",
+            "normSqDifferenceWork actual ideal"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/Semantics/EngineeringPure.lean",
+          "markers": [
+            "noncomputable def gapCLM ",
+            "def OperatorBound "
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringPure.lean",
+          "markers": [
+            "theorem checkMatrices_bound",
+            "theorem checkMatrices_reference_square"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringPure.lean",
+          "markers": [
+            "theorem check_meaning",
+            "theorem check_reference_square"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringPureProtocol.lean",
+          "markers": [
+            "theorem run_meaning",
+            "theorem run_reference_square"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringPureComposition.lean",
+          "markers": [
+            "theorem checked_sequential_reference_bound",
+            "theorem checked_tensor_reference_bound",
+            "theorem checked_controlled_reference_bound"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/interchange/engineering_pure/tests.rs",
+          "test": "native_bound_retains_original_bodies_and_zero_stays_engineering"
+        },
+        {
+          "path": "src/interchange/engineering_pure/tests.rs",
+          "test": "native_refuses_tight_bounds_stale_meanings_phase_and_owner_substitution"
+        },
+        {
+          "path": "src/interchange/engineering_pure/tests.rs",
+          "test": "every_typed_context_and_both_original_graph_fields_are_compared_by_lean"
+        },
+        {
+          "path": "src/interchange/engineering_pure/tests.rs",
+          "test": "hidden_observation_reset_and_discard_cannot_receive_pure_engineering_labels"
+        },
+        {
+          "path": "src/interchange/engineering_pure/tests.rs",
+          "test": "rectangular_original_preparations_are_compared_at_their_distinct_ports"
+        },
+        {
+          "path": "src/interchange/engineering_pure/runtime.rs",
+          "test": "engineering_reply_is_strict_and_separate_from_exact_acceptance"
+        },
+        {
+          "path": "src/interchange/engineering_pure/runtime.rs",
+          "test": "incompatible_missing_failed_and_timed_out_checkers_never_fall_back"
+        },
+        {
+          "path": "tests/engineering_pure_cli.rs",
+          "test": "engineering_cli_checks_original_artifacts_and_reports_only_the_declared_bound"
+        }
+      ],
+      "entry_path": "interchange::engineering_pure::{check,check_with_kernel,check_serialized_with_kernel}; engineering compare-pure CLI; separate allocation-bound Subject/Decision/EngineeringPureReport",
+      "checked_artifact": "Original actual QIRF bytes, original engineering request bytes and embedded original ideal QIRF text, strict closed pure engineering context, and typed QDV1 request plus both retained execution graphs in QLV2 execution scope",
+      "checker": "Main --engineering-pure-check -> Cli.runEngineeringPure -> CheckedEngineeringPure.run -> Protocol.EngineeringPure.checkRetained -> Qirf.EngineeringPure.check -> both unchanged PureLeaf.check gates and Engineering.Pure.checkMatrices, followed by exact typed QDV1 comparison; separate engineering response parser",
+      "proof_scope": "CheckedEngineeringPure.run_binding retains the actual QLV2 execution packet, the original QLV1 body/request bytes, both freshly decoded graphs and the exact QDV1 comparison. Protocol.EngineeringPure.checkRetained_bound connects those decoded fields to one shared-work engineering computation. NativeEngineeringPureProtocol.run_meaning and run_reference_square bind both original pure bodies, their own independent exact matrix equations and Gram checks to the phase-sensitive Euclidean operator inequality on every finite joint reference input. The sufficient witness is a bounded exact R8 Frobenius-square comparison. Separate pure composition lemmas require their stated isometry and ordered-interface premises; the native request profile remains single-component-v1. The private Rust engineering report retains both original artifacts, request bytes and selected checker path, and grants no exact cross-body equation or accepted-program conversion, including at epsilon zero.",
+      "gaps": "This is an engineering check, not exact source correspondence, an inverse/control capability, cleanup evidence, an instrument bound, a target resource certificate or a constitutional guarantee admission. qirf-r8-pure-v1 names an IR profile, not a physical target. Source/compiler, decoder/walker, deployed-binary/native-compiler and runtime preservation remain separate. The selected checker path is not binary attestation. Native composition, instrument metrics, actual emitted-resource binding and separate sampling/algorithmic/numerical error claims remain open. This path does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
+    },
+    {
+      "id": "engineering-instrument-check",
+      "classification": "engineering-check",
+      "boundaries": [
+        "engineering-instrument"
+      ],
+      "native_modes": [
+        "--qirf-engineering-instrument-native"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "pub mod engineering_instrument;"
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_instrument.rs",
+          "markers": [
+            "pub struct EngineeringInstrumentRequest",
+            "pub struct EngineeringInstrumentReport",
+            "pub fn check_with_kernel(",
+            "pub fn check_serialized_with_kernel(",
+            "Arc::ptr_eq(&self, &decision.subject)",
+            "const CLAIM_KIND: &str = \"engineering-instrument-bound\""
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_instrument/runtime.rs",
+          "markers": [
+            "fn response(",
+            "qleisli.engineering-instrument-native 1",
+            "\"--qirf-engineering-instrument-native\"",
+            "\"engineering-checked\", \"execution\""
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite/engineering_instrument.rs",
+          "markers": [
+            "pub(in crate::interchange) fn complete(",
+            "\"engineering-instrument-request\", 14",
+            "actual.execution_view_graph().write(w.writer)",
+            "expected.execution_view_graph().write(w.writer)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering.rs",
+          "markers": [
+            "arg == \"compare-instrument\"",
+            "super::engineering_instrument::run(args)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering_instrument.rs",
+          "markers": [
+            "fn execute(",
+            "check_serialized_with_kernel(&kernel, &actual, &request)",
+            "pure phase agreement, coherent control, inverse, clean release and target resource bounds: not established"
+          ]
+        },
+        {
+          "path": "scripts/test_engineering_instrument_cli.py",
+          "markers": [
+            "def baseline(",
+            "def live(",
+            "qleisli.engineering-instrument-native-first-capture"
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/EngineeringInstrument.lean",
+          "markers": [
+            "def runEngineeringInstrument ",
+            "Native.engineeringInstrument bytes",
+            "qleisli.engineering-instrument-native 1",
+            "engineering-checked"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/EngineeringInstrument.lean",
+          "markers": [
+            "def prepare ",
+            "structure PreparedBinding ",
+            "def checkRetained ",
+            "theorem checkRetained_bound",
+            "Qirf.read prepared.body",
+            "Qirf.read decoded.expectedText.toUTF8",
+            "QleisliKernel.Qirf.EngineeringInstrument.check request"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean",
+          "markers": [
+            "def engineeringInstrumentRequest ",
+            "def engineeringInstrument ",
+            "graph value.actual value.checked.actual",
+            "graph value.expected value.checked.expected"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
+          "markers": [
+            "def check ",
+            "theorem check_binding",
+            "supplied.data == expected.data",
+            ".inspection | .caller => throw .packet",
+            "theorem run_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Native.lean",
+          "markers": [
+            "def engineeringInstrument ",
+            "theorem engineeringInstrument_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/EngineeringInstrument.lean",
+          "markers": [
+            "def check ",
+            "Validity.checkRoot request.actual",
+            "Validity.checkRoot request.expected",
+            "Raw.Instrument.reconstruct",
+            "Raw.InstrumentEquality.prepare",
+            "Engineering.Instrument.checkHistories",
+            "theorem check_acceptance"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Engineering/Instrument.lean",
+          "markers": [
+            "def checkHistories ",
+            "theorem checkHistories_conditions"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/Semantics/EngineeringInstrument.lean",
+          "markers": [
+            "noncomputable def adjointWithReference ",
+            "def CompleteAdjointBound "
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringInstrument.lean",
+          "markers": [
+            "theorem checkHistories_bound"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringInstrument.lean",
+          "markers": [
+            "structure BodyMeaning ",
+            "structure Meaning ",
+            "theorem check_meaning",
+            "reconstruct_kraus_complete"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean",
+          "markers": [
+            "theorem run_meaning"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/Semantics/EngineeringInstrumentComposition.lean",
+          "markers": [
+            "def GramComplete ",
+            "noncomputable def feedForward ",
+            "noncomputable def tensor "
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringInstrumentPureComparison.lean",
+          "markers": [
+            "theorem pure_gap_completeAdjointBound",
+            "actual_gram : actual.conjTranspose * actual = 1",
+            "ideal_gram : ideal.conjTranspose * ideal = 1"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringInstrumentComposition.lean",
+          "markers": [
+            "theorem gram_completeAdjoint_contraction",
+            "theorem feedForward_gram",
+            "theorem feedForward_bound"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/EngineeringInstrumentTensor.lean",
+          "markers": [
+            "def leftAxes ",
+            "def rightAxes ",
+            "theorem tensor_gram",
+            "theorem tensor_bound"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "native_nonzero_and_zero_reports_keep_original_bytes_and_engineering_status"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "native_refuses_tight_incomplete_reordered_witnesses_and_hidden_observation_labels"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "every_view_context_and_original_graph_field_requires_fresh_native_agreement"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "original_dependency_meanings_are_reconstructed_instead_of_reusing_summaries"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "residual_coherences_and_reference_correlations_are_not_probability_only_bounds"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/tests.rs",
+          "test": "strict_request_rejects_unknown_missing_open_and_cross_kind_data"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/runtime.rs",
+          "test": "engineering_reply_is_strict_and_separate_from_exact_acceptance"
+        },
+        {
+          "path": "src/interchange/engineering_instrument/runtime.rs",
+          "test": "incompatible_missing_failed_and_timed_out_checkers_never_fall_back"
+        },
+        {
+          "path": "tests/engineering_instrument_cli.rs",
+          "test": "original_instrument_api_cli_sources_and_actual_failures_remain_intact"
+        },
+        {
+          "path": "tests/engineering_instrument_cli.rs",
+          "test": "instrument_cli_checks_residual_reference_maps_and_reports_only_declared_bounds"
+        }
+      ],
+      "entry_path": "interchange::engineering_instrument::{check,check_with_kernel,check_serialized_with_kernel}; engineering compare-instrument CLI; separate allocation-bound Subject/Decision/EngineeringInstrumentReport",
+      "checked_artifact": "Original actual QIRF bytes, original strict 14-field instrument engineering request and embedded original expected QIRF text, full typed signatures/source identity/canonical epsilon/ordered majorants, QDV1 request and both retained graphs in QLV2 execution scope",
+      "checker": "Main --qirf-engineering-instrument-native -> Cli.runEngineeringInstrument -> Native.engineeringInstrument -> CheckedEngineeringInstrument.run -> Protocol.EngineeringInstrument.checkRetained -> Qirf.EngineeringInstrument.check -> both unchanged original-root/interface/Kraus gates and Engineering.Instrument.checkHistories, followed by exact QDV1 comparison; dedicated engineering response parser",
+      "proof_scope": "CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding retain the actual QLV2 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed request and exact QDV1 comparison. Protocol.EngineeringInstrument.checkRetained_bound connects them to one continuous-work engineering check. NativeEngineeringInstrumentProtocol.run_meaning binds both original bodies/dependencies, exact Kraus completeness, untruncated dimensions, complete signature equality and ordered public-output projections to CompleteAdjointBound on every finite joint reference and every public-outcome observable family. The sufficient exact R8 Choi coefficient majorants retain all unnormalized hidden histories and residual coherences; no probability-only or postselected comparison is used. Separate internal mathematical lemmas derive complete adjoint contraction from full Kraus Gram equations, pure-to-instrument 2-delta bounds from literal pure gaps and both isometry equations, and additive feed-forward/ordered tensor bounds with explicit reference-axis regrouping. Their complete component Gram and interface premises remain explicit. The native profile remains single-component-v1. Private Rust reports retain both original artifacts, request bytes and selected checker path; epsilon zero grants no exact accepted-program conversion.",
+      "gaps": "This engineering instrument check grants no exact source correspondence, pure phase agreement, inverse/control capability, cleanup, target-resource certificate or constitutional guarantee. qirf-r8-instrument-v1 is an IR profile, not a hardware realization. Independent composition lemmas do not establish original source/QIRF feed-forward or tensor preservation, native composed certificate generation/consumption or actual emitted-resource binding. Source/compiler, decoder/walker, native-compiler/deployed-binary and runtime preservation remain separate; checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime error categories are not claimed. Exact InstrumentContract acceptance remains separate and unchanged. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
     }
   ]
 }

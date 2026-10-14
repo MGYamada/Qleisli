@@ -10,6 +10,7 @@ pub mod function;
 pub(crate) mod instrument;
 pub mod meaning;
 pub use function::{FunctionEvidence, FunctionIdentity};
+pub use instrument::{InstrumentResult, InstrumentSignature};
 
 use std::fmt;
 

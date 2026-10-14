@@ -2,9 +2,9 @@ import QleisliKernel.Finite
 
 /-! Bounded engineering inequalities in the existing exact R8 carrier.
 These components issue no accepted program, Meaning, capability, cleanup,
-constitutional PR/RS evidence or serialized receipt. Original-artifact and
-request binding, protocol/API integration and resource certification are not
-implemented here. Exact PureLeaf/equality acceptance remains unchanged.
+constitutional PR/RS evidence or serialized receipt. Separate adapters bind
+original artifacts, requests and execution views; this arithmetic component
+does not certify resources. Exact PureLeaf/equality acceptance remains unchanged.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Engineering.Pure
 open Semantics.Exact

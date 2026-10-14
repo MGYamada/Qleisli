@@ -1,12 +1,25 @@
 import Protocol.ExecutionView.Packet
 import Protocol.ExecutionView.CheckedCaller
 import Protocol.ExecutionView.CheckedHierarchy
+import Protocol.ExecutionView.CheckedEngineeringInstrument
 
 /-! Actual versioned native dispatch. A scope is a requested checking operation,
 never a caller-supplied success receipt.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.ExecutionView.Native
 open Gate
+
+/-- Engineering instrument requests require the outer execution scope and its
+compared view; inspection, caller requests and old outer packets are refused. -/
+def engineeringInstrument (bytes : ByteArray) : CheckM CheckedEngineeringInstrument.Checked :=
+  CheckedEngineeringInstrument.run bytes
+
+theorem engineeringInstrument_binding (bytes : ByteArray) (checked : CheckedEngineeringInstrument.Checked)
+    (work left : Nat)
+    (ok : (engineeringInstrument bytes).run work = (.ok checked,left)) :
+    ∃ input, Packet.read bytes = .ok input ∧ input.scope = .execution ∧
+      Nonempty (CheckedEngineeringInstrument.Binding input.original input.graph checked work left) :=
+  CheckedEngineeringInstrument.run_binding _ _ _ _ ok
 
 inductive Ordinary where
   | inspection (requested : Bool)

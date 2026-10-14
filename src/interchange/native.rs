@@ -141,6 +141,11 @@ pub struct Checked {
 }
 
 impl Kernel {
+    /// Selected path only; resolving it does not attest the native binary.
+    pub(in crate::interchange) fn checker_path(&self) -> &Path {
+        &self.executable
+    }
+
     /// Explicit environment selection for convenience APIs. No PATH search,
     /// development-tree guess, automatic download or Rust fallback is used.
     pub fn selected() -> Result<Self> {
@@ -370,6 +375,7 @@ impl Checked {
 }
 
 mod contracts;
+pub(in crate::interchange) use contracts::instrument_signature;
 mod view;
 
 /// Immutable untrusted bytes. Constructing or serializing a proposal grants no authority.

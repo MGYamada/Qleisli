@@ -59,6 +59,19 @@ class InventoryTests(unittest.TestCase):
         self.data['enums']=[e for e in self.data['enums'] if e['name']!='ProtectedUse']
         self.bad('missing published constructor')
 
+    def test_new_instrument_result_variant_cannot_hide_behind_an_updated_hash(self):
+        path = self.root/'src/contract/instrument.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace('pub enum InstrumentResult {',
+                                             'pub enum InstrumentResult { UncheckedEvidence,'))
+            for source in self.data['sources']:
+                if source['path'] == 'src/contract/instrument.rs':
+                    source['sha256'] = digest(path)
+            self.bad('constructor coverage drift: InstrumentResult')
+        finally:
+            path.write_text(original)
+
     def test_missing_raw_only_coverage_group_is_rejected(self):
         self.data['groups']=[g for g in self.data['groups'] if g['id']!='raw-QuantumIf']
         self.bad('unmapped constructor')
@@ -105,6 +118,24 @@ class InventoryTests(unittest.TestCase):
     def test_boundary_must_include_independent_request_and_binding(self):
         self.data['boundaries'][0]['request']=''
         self.bad('empty boundary field')
+
+    def test_instrument_engineering_contract_cannot_promote_zero_or_claim_hardware(self):
+        for field, value in (
+            ('status', 'native exact acceptance'),
+            ('binding', 'epsilon zero yields an accepted program and permits exact cleanup'),
+            ('domain', 'qirf-r8-instrument-v1 certifies emitted hardware and resources'),
+            ('request', 'probability tables without original expected artifact or typed interfaces'),
+            ('encoding', 'inspection without a host execution view is sufficient'),
+        ):
+            self.data = copy.deepcopy(self.baseline)
+            boundary = next(row for row in self.data['boundaries'] if row['id'] == 'engineering-instrument')
+            boundary[field] = value
+            with self.subTest(field=field):
+                self.bad('unreviewed engineering-instrument boundary contract')
+
+    def test_instrument_engineering_public_source_requires_its_own_boundary(self):
+        self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'engineering-instrument']
+        self.bad('missing engineering-instrument public boundary')
 
     def test_capacity_test_and_replacement_are_required(self):
         self.data['capacities'][0]['replacement']=[]
