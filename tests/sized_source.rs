@@ -1267,8 +1267,8 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         "iso"
     );
     assert!(preparation.lower().unwrap().is_instrument());
-    // The actual H body remains Unitary, but the host may not use that sharper
-    // fact to select a pure hierarchy hidden by the public Isometry contract.
+    // The public Isometry contract selects the existing empty-readout adapter;
+    // the actual H body and Raw proposal remain Unitary.
     let program = ParsedProgram::parse(sources(
         "use std::quantum::h; pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
     ))
@@ -1283,13 +1283,34 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         .elaborate()
         .unwrap();
     assert_eq!(prepared.definitions()[prepared.root()].effect(), "unitary");
-    let error = prepared.check_lowering_profile().unwrap_err();
-    assert!(error.message().contains("matching checked public effect"));
+    prepared.check_lowering_profile().unwrap();
     assert_eq!(
         prepared.hierarchy_eligibility().unwrap(),
-        HierarchyEligibility::Ineligible(error)
+        HierarchyEligibility::Eligible
     );
-    prepared.lower_raw().unwrap();
+    assert!(prepared.lower().unwrap().is_instrument());
+    assert_eq!(
+        prepared.lower_raw().unwrap().definition().effect(),
+        "unitary"
+    );
+
+    // A public Observe contract over the same pure body still cannot select
+    // either pure hierarchy profile, even when the implementation is visible.
+    let observing = ParsedProgram::parse(sources(
+        "use std::quantum::h; pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
+    ))
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
+    let error = observing.check_lowering_profile().unwrap_err();
+    assert!(error.message().contains("matching checked public effect"));
+    assert_eq!(
+        observing.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Ineligible(error.clone())
+    );
+    assert_eq!(observing.lower().unwrap_err(), error);
 }
 
 #[test]
