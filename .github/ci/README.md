@@ -446,7 +446,7 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 68 groups and 93 commands. Local module and fold
+The current manifest contains 69 groups and 100 commands. Local module and fold
 shadowing regressions run in the sized-corpus group. Preparation/readout
 transport tests require the exact product version, exercise both dynamic modes,
 and distinguish version rejection from malformed or semantically invalid frames.
@@ -465,6 +465,16 @@ including receipt-path coverage, as a distinct command. The obsolete two-verifie
 current Rust adapters are not described as an independent semantic verifier.
 Transport failures never count as matched semantic rejection. Existing pure
 component proofs, independent semantic oracles and audit jobs remain required.
+
+The same group checks the streaming JSON prescan's rejection rules and host
+memory use on macOS/Linux. Long strings and arrays are measured at 1, 4, 8 and
+just below 16 MiB through the parser and original native packet boundary.
+Each child gets a fresh RSS observer; missing measurements and abnormal process
+results fail. The test ceiling is 96 MiB plus 16 times the input byte size,
+separate from all production input/work limits and quantitative RS obligations.
+These are transport payloads, not maximum-size quantum programs. Reproduce with
+`python3 scripts/test_json_prescan.py --record /tmp/qleisli-json-new`; the record
+directory must be new. The source prescan already streamed before this test.
 
 ## Scoped release readiness (Issue #142)
 
