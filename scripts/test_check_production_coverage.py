@@ -17,13 +17,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 42)
-        self.assertEqual(result['public_boundaries'], 21)
+        self.assertEqual(result['groups'], 43)
+        self.assertEqual(result['public_boundaries'], 22)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 23)
-        self.assertEqual(result['native_modes'], 10)
+        self.assertEqual(result['production_paths'], 24)
+        self.assertEqual(result['native_modes'], 11)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -121,6 +121,8 @@ class ProductionCoverage(unittest.TestCase):
         for section, identifier, status in (
             ('groups', 'engineering-pure', 'native-execution'),
             ('boundaries', 'engineering-pure', 'native-execution'),
+            ('groups', 'engineering-instrument', 'native-execution'),
+            ('boundaries', 'engineering-instrument', 'native-execution'),
             ('groups', 'raw-core', 'engineering-check'),
             ('boundaries', 'qirf-native-v029', 'engineering-check'),
         ):
@@ -149,6 +151,57 @@ class ProductionCoverage(unittest.TestCase):
         ):
             with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'source binding changed'):
                 self.check_changed_source(path, marker, 'removed declaration')
+
+    def test_instrument_engineering_route_cannot_reuse_exact_or_inspection_acceptance(self):
+        path = next(row for row in self.data['paths'] if row['id'] == 'engineering-instrument-check')
+        self.assertEqual(path['classification'], 'engineering-check')
+        self.assertEqual(path['native_modes'], ['--qirf-engineering-instrument-native'])
+        for field, value in (
+            ('classification', 'native-acceptance'),
+            ('classification', 'native-hierarchy-check'),
+            ('native_modes', ['--qirf-contract']),
+            ('boundaries', ['engineering-pure']),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == path['id'])[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'classification or binding'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_instrument_scope_cannot_promote_zero_phase_cleanup_resources_or_composition(self):
+        for field, claim in (
+            ('proof_scope', 'epsilon zero grants exact source Meaning and pure phase/control access'),
+            ('proof_scope', 'the Gram contraction and tensor lemmas certify original QIRF native composed handles'),
+            ('gaps', 'None; qirf-r8-instrument-v1 certifies hardware cleanup, resources and QS/PR/RS/EXACT'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'engineering-instrument-check')[field] = claim
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'engineering-instrument proof scope'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_instrument_original_roots_public_view_and_actual_meaning_proof_are_required(self):
+        for path, marker in (
+            ('lean-kernel/Protocol/EngineeringInstrument.lean', 'theorem checkRetained_bound'),
+            ('lean-kernel/Protocol/EngineeringInstrument.lean', 'Qirf.read decoded.expectedText.toUTF8'),
+            ('lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean', 'graph value.expected value.checked.expected'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean', 'supplied.data == expected.data'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean', '.inspection | .caller => throw .packet'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean', 'theorem run_binding'),
+            ('src/interchange/execution_view/finite/engineering_instrument.rs', 'actual.execution_view_graph().write(w.writer)'),
+            ('lean/Qleisli/NativeEngineeringInstrumentProtocol.lean', 'theorem run_meaning'),
+        ):
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed binding')
+
+    def test_internal_instrument_composition_requires_gram_and_axis_proofs(self):
+        for path, marker in (
+            ('lean/Qleisli/EngineeringInstrumentPureComparison.lean', 'actual_gram : actual.conjTranspose * actual = 1'),
+            ('lean/Qleisli/EngineeringInstrumentComposition.lean', 'theorem gram_completeAdjoint_contraction'),
+            ('lean/Qleisli/EngineeringInstrumentComposition.lean', 'theorem feedForward_gram'),
+            ('lean/Qleisli/EngineeringInstrumentTensor.lean', 'def rightAxes '),
+            ('lean/Qleisli/EngineeringInstrumentTensor.lean', 'theorem tensor_gram'),
+        ):
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed premise or proof')
 
     def test_omitted_route_and_boundary_path_reject(self):
         for change in (lambda d: d['paths'].pop(),

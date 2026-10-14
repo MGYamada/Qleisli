@@ -14,13 +14,13 @@ use super::json::{artifact_diagnostic_json, envelope, quoted};
 
 const USAGE: &str = "qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]";
 
-struct Options {
-    actual: PathBuf,
-    request: PathBuf,
-    checker: Option<PathBuf>,
+pub(super) struct Options {
+    pub(super) actual: PathBuf,
+    pub(super) request: PathBuf,
+    pub(super) checker: Option<PathBuf>,
 }
 
-fn parse(args: &[OsString]) -> Option<Options> {
+pub(super) fn parse(args: &[OsString], command: &str) -> Option<Options> {
     let mut positional = Vec::new();
     let (mut request, mut checker, mut json) = (None, None, false);
     for arg in args {
@@ -40,7 +40,7 @@ fn parse(args: &[OsString]) -> Option<Options> {
             _ => return None,
         }
     }
-    if positional.len() != 2 || positional[0] != "compare-pure" {
+    if positional.len() != 2 || positional[0] != command {
         return None;
     }
     Some(Options {
@@ -50,7 +50,7 @@ fn parse(args: &[OsString]) -> Option<Options> {
     })
 }
 
-fn error(code: &'static str, message: impl Into<String>) -> Error {
+pub(super) fn error(code: &'static str, message: impl Into<String>) -> Error {
     Error {
         code,
         message: message.into(),
@@ -58,7 +58,7 @@ fn error(code: &'static str, message: impl Into<String>) -> Error {
     }
 }
 
-fn read(path: &Path) -> Result<Vec<u8>, Error> {
+pub(super) fn read(path: &Path) -> Result<Vec<u8>, Error> {
     let mut bytes = Vec::new();
     File::open(path)
         .map_err(|e| error("io", format!("{}: {e}", path.display())))?
@@ -111,7 +111,7 @@ fn json_report(report: &EngineeringPureReport) -> Result<String, Error> {
     ))
 }
 
-fn checker_text(path: &Path) -> String {
+pub(super) fn checker_text(path: &Path) -> String {
     format!("{path:?}")
 }
 
@@ -128,8 +128,15 @@ fn execute(options: Options) -> Result<EngineeringPureReport, Error> {
 }
 
 pub(super) fn run(args: &[OsString]) -> ExitCode {
+    if args
+        .iter()
+        .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+        .is_some_and(|arg| arg == "compare-instrument")
+    {
+        return super::engineering_instrument::run(args);
+    }
     let json = args.iter().any(|arg| arg == "--format=json");
-    let Some(options) = parse(args) else {
+    let Some(options) = parse(args, "compare-pure") else {
         let failure = error("usage", USAGE);
         if json {
             let diagnostic = artifact_diagnostic_json(failure.code, &failure.message, "");
@@ -177,11 +184,15 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
 }
 
 fn fail(failure: Error, json: bool) -> ExitCode {
+    fail_for_command(failure, json, "engineering compare-pure")
+}
+
+pub(super) fn fail_for_command(failure: Error, json: bool, command: &str) -> ExitCode {
     if json {
         let diagnostic =
             artifact_diagnostic_json(failure.code, &failure.message, &failure.json_pointer);
         let _ = super::write_stdout(
-            envelope("engineering compare-pure", Some(&diagnostic), "null").as_bytes(),
+            envelope(command, Some(&diagnostic), "null").as_bytes(),
             "engineering diagnostic",
         );
     } else {

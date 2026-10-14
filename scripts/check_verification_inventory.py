@@ -16,6 +16,60 @@ ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = 'tests/fixtures/verification_v022/inventory.json'
 PACKETS = {'VM-23', 'VM-24', 'VM-25', 'VM-26', 'VM-27', 'VM-28', 'VM-29'}
 
+# Reviewed metadata for this separate engineering route. Identity checks do not
+# prove these claims; changing the route's contract requires explicit review.
+ENGINEERING_INSTRUMENT_BOUNDARY = {
+    'id': 'engineering-instrument',
+    'group': 'engineering-instrument',
+    'entry_points': [
+        'interchange::engineering_instrument::EngineeringInstrumentRequest',
+        'interchange::engineering_instrument::{check,check_with_kernel,check_serialized_with_kernel}',
+        'EngineeringInstrumentReport original-artifact/request/profile accessors',
+        'qleisli engineering compare-instrument ACTUAL --against=REQUEST',
+    ],
+    'status': 'Separate native engineering instrument check only; no exact cross-body or constitutional acceptance',
+    'request': (
+        'Strict 14-field qleisli.engineering-instrument-request v1: engineering-instrument-bound claim, '
+        'complete-adjoint-euclidean-operator-norm-v1 metric, choi-l1-r8-instrument-v1 checker, '
+        'qirf-r8-instrument-v1 IR profile, single-component-v1 composition and implementation-distance category; '
+        'complete actual/expected input and result signature trees, source identity, closed nonnegative '
+        'canonical dyadic epsilon and ordered coefficient majorants in unsquared norm units, original expected '
+        'QIRF text. No supplied outcome labels, matrices, probabilities or success flags.'
+    ),
+    'binding': (
+        'One execution-only QLV2 invocation retains original actual QIRF and request bytes, freshly decodes '
+        'both original graphs, checks both full interfaces and complete Kraus reconstructions, then checks '
+        'the coefficient bound and exact typed QDV1 equality for the full request and both retained graphs. '
+        'Private allocation-bound report has no exact accepted-program/Meaning, pure-phase, inverse/control, '
+        'cleanup or resource conversion; epsilon zero retains the same engineering claim kind.'
+    ),
+    'encoding': (
+        'QLV2 execution scope with QLV1 original body/request and independently walked QDV1 '
+        'engineering-instrument-request/engineering-instrument records; distinct '
+        'qleisli.engineering-instrument-native 1 / engineering-checked / execution response. '
+        'Inspection/caller scope, old outer QLV1 and other native response kinds reject.'
+    ),
+    'domain': (
+        'Existing bounded R8 observing instruments with one quantum input owner, empty classical inputs, '
+        'complete signature trees including zero-width owners, original dependencies, ordered public results, '
+        'all unnormalized hidden histories and arbitrary finite references. qirf-r8-instrument-v1 names an '
+        'IR profile, not hardware realization. Independent feed-forward/tensor and pure-to-instrument '
+        'lemmas do not certify original source/QIRF composition or a native composed request.'
+    ),
+    'limits': (
+        'Unchanged 16 MiB per-file/request and 64 MiB QLV2 envelope/view limits, existing six-bit dense '
+        'reconstruction, i128 canonical dyadics with denominator exponent at most 126, one shared 10M '
+        'native checker-work budget and 60s process timeout. Checker work is not emitted resource cost.'
+    ),
+    'failure': (
+        'Reject missing/unknown/cross-kind context, noncanonical/negative/open budgets, incomplete/extra/reordered '
+        'majorants, incorrect full signature/effect/owner/dependency/public projection, tight bounds, changed '
+        'original graphs or typed view, wrong scope/version/response and exceeded capacity. '
+        'Missing/failed/timed-out checker has no fallback; exact InstrumentContract remains unchanged.'
+    ),
+    'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29'],
+}
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -187,8 +241,13 @@ def check(root=ROOT, data=None):
             for key in ['status','request','binding','encoding','domain','limits','failure']:
                 if not isinstance(boundary[key],str) or not boundary[key].strip():
                     raise ValueError('empty boundary field: ' + key)
+            if boundary['id'] == 'engineering-instrument' and boundary != ENGINEERING_INSTRUMENT_BOUNDARY:
+                raise ValueError('unreviewed engineering-instrument boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
             raise ValueError('duplicate boundary')
+        if ('src/interchange/engineering_instrument.rs' in paths and
+                'engineering-instrument' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing engineering-instrument public boundary')
         for capacity in data['capacities']:
             if set(capacity) != {'id','scope','value','source','test','replacement'} or capacity['source'] not in paths:
                 raise ValueError('incomplete capacity scope')

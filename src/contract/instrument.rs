@@ -13,9 +13,10 @@ use crate::ir::RawProgram;
 const MAX_NODES: usize = 4096;
 const MAX_DEPTH: usize = 64;
 
-/// Prefix form retains the complete result tree without recursive host drops.
-#[derive(Debug, Eq, PartialEq)]
-pub(crate) enum ResultAtom {
+/// Untrusted prefix result-tree atoms. Validate a complete tree with
+/// [`InstrumentSignature::new`] before using it as request data.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum InstrumentResult {
     Unit,
     Bit,
     Bits(u32),
@@ -24,10 +25,38 @@ pub(crate) enum ResultAtom {
     Tuple(usize),
 }
 
-#[derive(Debug, Eq, PartialEq)]
+pub(crate) type ResultAtom = InstrumentResult;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Signature {
     pub(crate) input: BasisType,
     pub(crate) result: Vec<ResultAtom>,
+}
+
+/// Validated type data for an observing instrument, without semantic evidence.
+/// `result` is a complete prefix tree: `Pair` has two children and `Tuple(n)`
+/// has exactly `n` children. Quantum Unit owners remain distinct from Unit.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InstrumentSignature(Signature);
+
+impl InstrumentSignature {
+    pub fn new(input: BasisType, result: Vec<InstrumentResult>) -> Result<Self, ContractError> {
+        let signature = Signature { input, result };
+        signature.validate(&mut Budget::new(super::DEFAULT_EXACT_WORK))?;
+        Ok(Self(signature))
+    }
+
+    pub fn input(&self) -> &BasisType {
+        &self.0.input
+    }
+
+    pub fn result(&self) -> &[InstrumentResult] {
+        &self.0.result
+    }
+
+    pub(crate) fn inner(&self) -> &Signature {
+        &self.0
+    }
 }
 
 impl Signature {

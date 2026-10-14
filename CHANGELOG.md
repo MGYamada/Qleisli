@@ -53,6 +53,13 @@ and exactness obligations retain their recorded scopes and status.
   retain the existing exact symbolic pi/8 profile and explicit unsupported
   targets. Instrument native/API integration, composition and resource evidence
   remain unfinished; exact phase, cleanup and constitutional gates are unchanged.
+- Connect instrument engineering bounds to a strict native request, both-root
+  execution-view comparison, private Rust report and explicit text/JSON CLI.
+  Prove complete Kraus contraction, the one-way pure-to-instrument bound, and
+  additive feed-forward/ordered-tensor bounds with complete histories and
+  reference regrouping. Native composed certificates, source/QIRF composition
+  preservation and actual target/resource evidence remain unfinished; epsilon
+  zero supplies no exact phase, capability, cleanup or constitutional authority.
 - Consolidate the existing numeric and operation-access obligations in one
   `requires` contract (#47), preserving ordered arithmetic well-formedness,
   exact bounded affine checking and independent capability requirements.

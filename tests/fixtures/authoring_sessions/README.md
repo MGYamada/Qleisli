@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [instrument native client](engineering-instrument-native-v030/README.md)
+retains first source/command diagnostics and original mathematical study failures.
+Its history is inert; new native and CLI checks use separately authored commands.
+
 The [instrument engineering study](engineering-instrument-v030/README.md)
 preserves first import/name failures, separate translations, original binary
 packets and exact residual/reference counterexamples. The

@@ -279,7 +279,10 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         .replace(retired, "")
         .replace(
             verify_ir,
-            &format!("{verify_ir}  qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n"),
+            &format!(concat!(
+                "{verify_ir}  qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
+                "  qleisli engineering compare-instrument ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n"
+            ), verify_ir = verify_ir),
         )
         .replace(
             retired_documentation,

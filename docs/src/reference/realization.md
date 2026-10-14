@@ -230,9 +230,9 @@ requires equal domain/codomain and the existing independent access meanings.
 These mathematical rules do not implement a composed native receipt, change
 the single-component profile or supply compiler/lowering preservation.
 
-### Internal instrument engineering comparison
+### Instrument engineering comparison
 
-The internal instrument component uses a **complete adjoint Euclidean operator
+The instrument component uses a **complete adjoint Euclidean operator
 bound**. For actual and ideal Kraus families, it bounds the difference between
 their adjoint actions on every joint observable family `B`, for every finite
 external reference `R` and classical input `x`:
@@ -270,13 +270,56 @@ bounded dense reconstruction. Requested source/type trees remain distinct
 from source-to-IR preservation. The independent metric also defines general
 finite classical input families for subsequent composition work.
 
-These internal components have no native byte schema, public report, source
-epsilon annotation or compiler consumption. The existing pure CLI continues
-to report instrument bounds as unestablished. Instrument API integration,
-composition and actual target/resource certification remain required under
-#31/#163. An instrument bound supplies no pure phase agreement, coherent
-control, inverse, exact release or constitutional PR/RS authority, including
-at epsilon zero.
+The dedicated native request has fourteen fields: `format`, `version`,
+`claim_kind`, `metric`, `checker_profile`, `target_profile`, `composition`,
+`error_category`, `actual_signature`, `expected_signature`, `identity`,
+`epsilon`, `majorants` and `expected_artifact`. Its format is
+`qleisli.engineering-instrument-request`, version `1`, with claim kind
+`engineering-instrument-bound`, metric
+`complete-adjoint-euclidean-operator-norm-v1`, checker profile
+`choi-l1-r8-instrument-v1`, target profile `qirf-r8-instrument-v1`, composition
+`single-component-v1` and error category `implementation-distance`.
+Other profiles and extra/missing fields refuse. Bounds use the existing closed
+dyadic data, for example `{"numerator":"1","denominator_bits":2}` for `1/4`.
+The target names an IR profile, not hardware. No producer-supplied outcome
+labels, matrices, probabilities or success flags replace reconstruction.
+
+The Rust request uses validated `InstrumentSignature`/`InstrumentResult` data,
+and its private `EngineeringInstrumentReport` retains both immutable artifacts,
+the original request and selected checker path. The native QLV2 invocation
+accepts execution scope only and compares both fresh graphs, signatures,
+identity and complete budget/witness data with the Rust execution view.
+Inspection, caller scopes, old outer frames, cross-kind replies and
+missing/incompatible/failed checkers refuse without fallback.
+
+```text
+qleisli engineering compare-instrument actual.qirf --against=comparison.json --lean-kernel=PATH
+```
+
+Text and `--format=json` disclose the complete instrument bound, actual input
+digests and unpinned checker identity. Pure phase agreement, source preservation,
+inverse/control, cleanup, resources and constitutional PR/RS remain
+unestablished, including at epsilon zero. Sampling, algorithmic resolution and
+numerical runtime error are separate unclaimed categories. The pure comparison
+continues to report instrument bounds as unestablished.
+
+Independent mathematical composition uses the actual Kraus families. Full Gram
+completeness implies adjoint contraction at every finite reference. A literal
+pure operator gap `delta` and both pure Gram equations imply the one-way
+instrument bound `2*delta`; no phase information is recovered. Feed-forward
+composition retains public `(y,z)` outcomes and hidden `(h,k)` histories.
+Ordered tensor composition retains the declared left/right input/output,
+public and hidden products through explicit proved reference regrouping.
+Both constructions have additive `epsilon_1 + epsilon_2` bounds under their
+stated component bounds and Gram premises. Separate completeness theorems
+require both original Gram equations; a bound alone does not establish them.
+
+These results provide no source epsilon annotation, compiler consumption or
+original source/QIRF composition-preservation proof. The native profile remains
+single-component: it does not issue a composed certificate. Actual emitted
+artifact/resource certification and other #31/#163 requirements remain open.
+No instrument bound grants pure phase agreement, coherent control, inverse,
+exact release or constitutional PR/RS authority.
 
 ## Quantitative resource claims
 

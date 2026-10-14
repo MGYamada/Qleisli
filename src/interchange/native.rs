@@ -375,6 +375,7 @@ impl Checked {
 }
 
 mod contracts;
+pub(in crate::interchange) use contracts::instrument_signature;
 mod view;
 
 /// Immutable untrusted bytes. Constructing or serializing a proposal grants no authority.

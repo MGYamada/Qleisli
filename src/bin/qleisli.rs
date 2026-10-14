@@ -13,6 +13,8 @@ mod check_report;
 mod digest;
 #[path = "qleisli/engineering.rs"]
 mod engineering;
+#[path = "qleisli/engineering_instrument.rs"]
+mod engineering_instrument;
 #[path = "qleisli/interop.rs"]
 mod interop;
 #[path = "qleisli/json.rs"]
