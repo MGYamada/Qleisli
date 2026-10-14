@@ -40,8 +40,8 @@ recognizers, lowering, simulation and target emission supply no such authority.
 catalog of **27 distinct names**, preserving their exact static/runtime arity,
 type trees, principal effects and owner transitions. It introduces no new
 native primitive or semantic axiom. Existing concrete catalogs retain
-**17 finite entries and 18 selected entries**, with eight names overlapping:
-`std::quantum::{h,x,cnot,init0,phase_eighth,split,join}` and
+**19 finite entries and 19 selected entries**, with eleven names overlapping:
+`std::quantum::{h,x,z,cnot,init0,phase_eighth,unit,finish,split,join}` and
 `std::observe::measure_z`. These subsets are recorded in
 `src/frontend/core.rs::PRIMITIVES` and `src/frontend/specialize/primitive.rs`.
 A known common name unavailable to a requested emitter yields a located
@@ -64,6 +64,8 @@ and runtime preservation links are already proved.
 
 | Entry | Current signature; effect | Meaning, owners and lowering provenance |
 | --- | --- | --- |
+| `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Evaluates its argument once and introduces one fresh zero-axis owner with coefficient +1. Emits `RawOp::PackUnit`; no physical wire or static argument is added. |
+| `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Consumes exactly one Unit owner while retaining all preceding scalar phase. Emits `RawOp::UnpackUnit`; no measurement, discard or physical-wire removal occurs. |
 | `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Introduces a fresh owner/wire in zero. Emits `RawOp::Init0`; no input-state promise about other owners. |
 | `std::quantum::h` | `Q<Bit> -> Q<Bit>`; Unitary | Exact Hadamard, `H|b> = (|0> + (-1)^b|1>)/√2`; emits `Gate(H)` and a fresh output token on the same wire. |
 | `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ |b xor 1>` with amplitude +1; emits `Gate(X)`. |
@@ -105,13 +107,13 @@ parameters below are static natural arguments.
 | `std::quantum::z` | `Q<Bit> -> Q<Bit>`; Unitary | Exact `diag(1,-1)` on the same axis, through existing finite leaf and Raw `Gate(Z)` proposals. Independent source-step replay retains this action under inverse and control; there is no scalar or same-width type coercion. |
 | `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled X over the ordered control/target owners, followed by explicit owner routing. |
 | `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
-| `std::quantum::phase_eighth` | Source: one `Q<A> -> Q<A>` for any Basis tree; selected concrete support: atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
+| `std::quantum::phase_eighth` | One `Q<A> -> Q<A>` for any supported closed Basis tree, including packaged tuples; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
 | `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Exact coefficient +1 via existing structural `pack_unit`. Evaluates its argument fully once and creates one fresh zero-axis Unit owner. No static arguments; `unit(())` is unary. |
 | `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Exact coefficient +1 via existing structural `unpack_unit`. Consumes exactly that Unit owner, preserving preceding scalar work and any surrounding reference. No static arguments, measurement, discard or implicit conversion. |
 | `std::quantum::split` | `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Exact coefficient +1 via existing structural `split_tuple`. Consumes one binary-product owner and returns two fresh ordered owners, retaining each complete basis tree and its axes. |
 | `std::quantum::join` | Two arguments `(Q<A>,Q<B>) -> Q<(A,B)>`; Unitary | Exact coefficient +1 via existing structural `join_tuple`. Consumes two distinct owners and returns a fresh owner over their ordered concatenated axes. Neither argument need be separable from the other or from a retained reference. |
 | `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
-| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
+| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Fresh-zero preparation in the instrument profile. The hierarchy instrument lowerer rejects initialization after observation where the needed preservation is unavailable. |
 | `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
 | `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>, Q<Bits<n-1>>)`; Unitary | Removes axis `k` into the first returned owner; the remaining axes keep their order. Requires `k < n`. Emits a structural `take_bit` proposal. |
 | `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>, Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Inserts the first owner's axis at position `k` in the remaining ordered axes. Requires `k < n`; emits structural `put_bit`. |
@@ -130,9 +132,9 @@ Common source signatures and input-dependent results are checked in
 exactly one `Q<A>` owner, evaluated once, preserving any complete Basis tree A,
 including a packaged tuple. Ordinary Unit and tuples of separate owners reject.
 Its scalar contract is `ζ I`, not the Bit phase gate. The selected concrete
-`src/frontend/specialize/primitive.rs::quantum_endomorphism` retains its atom support;
-a source-valid packaged tuple can therefore encounter a located concrete
-eligibility refusal. `src/frontend/specialize/bindings.rs` checks closed substitutions
+`src/frontend/specialize/primitive.rs::quantum_endomorphism` preserves the complete
+closed Basis tree, including packaged tuples, subject to the existing concrete
+type and backend-profile limits. `src/frontend/specialize/bindings.rs` checks closed substitutions
 and explicit bindings against the common checked interfaces. The selected
 concrete catalog is `src/frontend/specialize/primitive.rs`;
 `src/frontend/specialize/elaborate.rs::primitive` materializes its concrete
@@ -142,12 +144,12 @@ classical prepend requires `n < 8`. These are current preparation capacities,
 not general-size semantic theorems. Aggregate elaboration and backend-profile
 limits apply in addition.
 
-`unit` and `finish` expose existing independently checked Unit structure; they
-add no native semantic constructor or acceptance authority. Their source
-correspondence remains a separate obligation. They currently require the
-hierarchy path; neither is an alias for a finite observing discard. Both names
-are recognized by common source checking; finite concrete materialization
-remains unavailable. The selected hierarchy's
+`unit` and `finish` expose independently checked Unit structure through
+`RawOp::PackUnit` / `RawOp::UnpackUnit` in finite and selected Raw lowering,
+and `pack_unit` / `unpack_unit` nodes in the selected hierarchy. These paths
+retain the zero-width owner and exact scalar action; neither operation is an
+observing discard or an acceptance exception. Source correspondence remains a
+separate obligation. The selected hierarchy's
 `split`/`join` maps retain exact nested Unit/Bit/Bits/tuple bases, take no static
 arguments and evaluate their arguments once in source order. `split` requires
 an immediate binary tuple; a matching total width does not suffice. Together
@@ -166,13 +168,13 @@ lowering subsets do not establish emitter convergence or source preservation.
 
 ## Core forms and independent meaning
 
-The public Rust `RawOp` in `src/ir.rs` contains **19 constructors**. They are
-untrusted data, not accepted handles or 19 new library functions:
+The public Rust `RawOp` in `src/ir.rs` contains **21 constructors**. They are
+untrusted data, not accepted handles or 21 new library functions:
 
 | Family | Constructors |
 | --- | --- |
 | Preparation and fixed gates | `Init0`, `Gate`, `Cnot`, `Toffoli` |
-| Explicit ownership packaging | `Split`, `Join` |
+| Explicit ownership packaging | `PackUnit`, `UnpackUnit`, `Split`, `Join` |
 | Finite action and basis isometry | `ApplyUnitary`, `LiftBasis` |
 | Coherent selection | `QuantumIf` |
 | Checked computed/cleanup scopes | `CertifiedCompute`, `ComputeUseUncompute` |
