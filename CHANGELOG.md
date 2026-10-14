@@ -11,6 +11,9 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Share Rust toolchain setup and relocated native bundle smoke checks through
+  local CI actions. Preserve each producer's preparation order, pinned tools,
+  complete validation plans, proof lanes, artifacts and release receipts.
 - Separate native process transport settings from acceptance/work budgets
   (#94): finite, hierarchy inspection and hierarchy request profiles retain
   their existing 256/1,100,000/2,200,000-byte replies and 60-second deadlines.

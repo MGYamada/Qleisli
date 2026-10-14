@@ -1,0 +1,21 @@
+name: Check the relocated native bundle
+description: Run native acceptance and source checks against the same relocated checker
+inputs:
+  record:
+    description: Native verification record path
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check the relocated native checker and source route
+      shell: bash
+      env:
+        BUNDLE_KERNEL: ${{ runner.temp }}/qleisli-native-bundle/bin/qleisli-kernel
+        RECORD_PATH: ${{ inputs.record }}
+      run: |
+        if [[ -z "$RECORD_PATH" ]]; then
+          echo 'Missing native verification record path' >&2
+          exit 1
+        fi
+        python3 scripts/test_native_verification.py --kernel "$BUNDLE_KERNEL" --record "$RECORD_PATH"
+        QLEISLI_KERNEL="$BUNDLE_KERNEL" python3 scripts/test_source_kernel.py

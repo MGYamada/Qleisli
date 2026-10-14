@@ -1,0 +1,46 @@
+name: Install the selected Rust toolchain
+description: Install the caller's pinned toolchain and explicitly requested components and target
+inputs:
+  toolchain:
+    description: Exact Rust toolchain to install
+    required: true
+  components:
+    description: Optional space-separated components, retained in the supplied order
+    default: ''
+  target:
+    description: Optional compilation target
+    default: ''
+  set-default:
+    description: Whether to select this toolchain as the Rustup default
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Install the pinned Rust toolchain
+      shell: bash
+      env:
+        TOOLCHAIN: ${{ inputs.toolchain }}
+        COMPONENTS: ${{ inputs.components }}
+        TARGET: ${{ inputs.target }}
+        SET_DEFAULT: ${{ inputs.set-default }}
+      run: |
+        if [[ -z "$TOOLCHAIN" ]]; then
+          echo 'Missing Rust toolchain' >&2
+          exit 1
+        fi
+        case "$SET_DEFAULT" in
+          true|false) ;;
+          *) echo 'Unknown Rust default selection' >&2; exit 1 ;;
+        esac
+        install_args=(toolchain install "$TOOLCHAIN" --profile minimal)
+        read -r -a component_names <<< "$COMPONENTS"
+        for component in "${component_names[@]}"; do
+          install_args+=(--component "$component")
+        done
+        if [[ -n "$TARGET" ]]; then
+          install_args+=(--target "$TARGET")
+        fi
+        rustup "${install_args[@]}"
+        if [[ "$SET_DEFAULT" == 'true' ]]; then
+          rustup default "$TOOLCHAIN"
+        fi

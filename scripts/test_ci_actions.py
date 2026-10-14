@@ -26,6 +26,14 @@ def job(name):
     return re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {name}:\n')[1])[0]
 
 
+def action_step(block, name):
+    steps = [step for step in re.split(r'(?m)^      - ', block)
+             if f'uses: ./.github/actions/{name}\n' in step]
+    if len(steps) != 1:
+        raise AssertionError(f'expected one {name} caller, found {len(steps)}')
+    return steps[0]
+
+
 class CIActions(unittest.TestCase):
     def test_hosted_validation_covers_push_pr_completion_and_release(self):
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
@@ -63,6 +71,172 @@ class CIActions(unittest.TestCase):
                                     capture_output=True, text=True)
             record = root / 'argv'
             return result, json.loads(record.read_text()) if record.exists() else None, env
+
+    def traced_shell(self, name, tool, environment, fail_at=0, code=23):
+        # Trace actual adapter calls, including per-child environment and the
+        # shell's environment after success. A failed call must stop the block.
+        block = action(name).split('      run: |\n')[1].split('    - name:')[0]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fake = root / tool
+            fake.write_text(f'#!{sys.executable}\n' +
+                            'import json,os,sys\n' +
+                            'from pathlib import Path\n' +
+                            "path=Path(os.environ['ARGV_RECORD'])\n" +
+                            "rows=path.read_text().splitlines() if path.exists() else []\n" +
+                            "row=dict(argv=sys.argv[1:],kernel=os.environ.get('QLEISLI_KERNEL'))\n" +
+                            "with path.open('a') as stream: stream.write(json.dumps(row)+'\\n')\n" +
+                            f'raise SystemExit({code} if len(rows)+1 == {fail_at} else 0)\n')
+            fake.chmod(0o755)
+            env = os.environ | dict(PATH=str(root) + os.pathsep + os.environ['PATH'],
+                                   RUNNER_TEMP=str(root / 'temp with spaces'),
+                                   ARGV_RECORD=str(root / 'argv'),
+                                   PARENT_ENV_RECORD=str(root / 'parent-env')) | environment
+            trailer = '\nprintf "%s" "${QLEISLI_KERNEL-}" > "$PARENT_ENV_RECORD"\n'
+            result = subprocess.run(['bash', '--noprofile', '--norc', '-eo', 'pipefail',
+                                     '-c', textwrap.dedent(block) + trailer], cwd=root, env=env,
+                                    capture_output=True, text=True)
+            record, parent = root / 'argv', root / 'parent-env'
+            rows = [json.loads(line) for line in record.read_text().splitlines()] if record.exists() else []
+            self.assertFalse((root / 'injected').exists(), 'input executed as shell code')
+            return result, rows, parent.read_text() if parent.exists() else None
+
+    def test_rust_toolchain_adapter_preserves_arguments_and_default_scope(self):
+        cases = [
+            ('1.98.1', 'rustfmt clippy', '', 'false'),
+            ('1.85.0', 'clippy', '', 'false'),
+            ('1.85.0', '', 'x86_64-apple-darwin', 'false'),
+            ('1.98.1', '', '', 'false'),
+            ('1.98.1', '', '', 'true'),
+            ("compiler path/$(touch injected); 'quoted'", 'rustfmt clippy',
+             "target path/$(touch injected); 'quoted'", 'true'),
+        ]
+        for version, components, target, default in cases:
+            with self.subTest(version=version, components=components, target=target, default=default):
+                result, rows, _ = self.traced_shell('rust-toolchain', 'rustup', dict(
+                    TOOLCHAIN=version, COMPONENTS=components, TARGET=target, SET_DEFAULT=default))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                command = ['toolchain', 'install', version, '--profile', 'minimal']
+                for component in components.split():
+                    command += ['--component', component]
+                if target:
+                    command += ['--target', target]
+                expected = [command]
+                if default == 'true':
+                    expected.append(['default', version])
+                self.assertEqual([row['argv'] for row in rows], expected)
+        shared = action('rust-toolchain')
+        for variable, key in [('TOOLCHAIN', 'toolchain'), ('COMPONENTS', 'components'),
+                              ('TARGET', 'target'), ('SET_DEFAULT', 'set-default')]:
+            self.assertIn(f'{variable}: ${{{{ inputs.{key} }}}}', shared)
+        inputs = shared.split('inputs:\n')[1].split('runs:\n')[0]
+        for key, declaration in [('toolchain', 'required: true'), ('components', "default: ''"),
+                                 ('target', "default: ''"), ('set-default', "default: 'false'")]:
+            declared = re.split(r'(?m)^  [a-z][a-z-]*:\n', inputs.split(f'  {key}:\n')[1])[0]
+            self.assertIn(declaration, declared)
+        self.assertNotIn('      if:', shared)
+        self.assertNotIn('continue-on-error', shared)
+
+    def test_rust_toolchain_adapter_rejects_bad_inputs_and_propagates_each_failure(self):
+        valid = dict(TOOLCHAIN='1.98.1', COMPONENTS='', TARGET='', SET_DEFAULT='true')
+        for change in (dict(TOOLCHAIN=''), dict(SET_DEFAULT=''), dict(SET_DEFAULT='unknown')):
+            with self.subTest(change=change):
+                result, rows, _ = self.traced_shell('rust-toolchain', 'rustup', valid | change)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(rows, [])
+        for failed_call in (1, 2):
+            with self.subTest(failed_call=failed_call):
+                result, rows, _ = self.traced_shell('rust-toolchain', 'rustup', valid,
+                                                     fail_at=failed_call, code=31)
+                self.assertEqual(result.returncode, 31, result.stderr)
+                self.assertEqual(len(rows), failed_call)
+                self.assertEqual(rows[0]['argv'], ['toolchain', 'install', '1.98.1', '--profile', 'minimal'])
+                if failed_call == 2:
+                    self.assertEqual(rows[1]['argv'], ['default', '1.98.1'])
+
+    def test_rust_toolchain_callers_preserve_configuration_and_preparation_order(self):
+        expected = {
+            'check-rust': ('1.98.1', 'rustfmt clippy', '', 'false'),
+            'check-rust-msrv': ('1.85.0', 'clippy', '', 'false'),
+            'check-macos-source': ('1.85.0', '', 'x86_64-apple-darwin', 'false'),
+            'check-interop': ('1.98.1', '', '', 'false'),
+            'check-lean-kernel': ('1.98.1', '', '', 'false'),
+            'check-distribution': ('1.98.1', '', '', 'true'),
+        }
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text()
+        self.assertEqual(workflow.count('uses: ./.github/actions/rust-toolchain'), len(expected))
+        for name, configuration in expected.items():
+            with self.subTest(job=name):
+                block = job(name)
+                step = action_step(block, 'rust-toolchain')
+                values = dict(re.findall(r'(?m)^          ([\w-]+): (.*?)\s*$', step))
+                actual = tuple(values.get(key, default).strip("'\"") for key, default in (
+                    ('toolchain', ''), ('components', ''), ('target', ''), ('set-default', 'false')))
+                self.assertEqual(actual, configuration)
+                self.assertNotIn('        if:', step)
+                self.assertIn("if: needs.changes.outputs.profile == 'full'", block)
+                self.assertLess(block.index('uses: ./.github/actions/cargo-archives'),
+                                block.index('uses: ./.github/actions/rust-toolchain'))
+                self.assertNotIn('        if:', action_step(block, 'native-runtime'))
+                self.assertNotIn('rustup toolchain install', block)
+                self.assertNotIn('rustup default', block)
+                if name == 'check-lean-kernel':
+                    self.assertLess(block.index('uses: ./.github/actions/rust-toolchain'),
+                                    block.index('cargo +1.98.1 fetch'))
+                    self.assertLess(block.index('cargo +1.98.1 fetch'),
+                                    block.index('uses: ./.github/actions/native-runtime'))
+                else:
+                    self.assertLess(block.index('uses: ./.github/actions/native-runtime'),
+                                    block.index('uses: ./.github/actions/cargo-archives'))
+                if name == 'check-distribution':
+                    self.assertLess(block.index('uses: ./.github/actions/rust-toolchain'),
+                                    block.index('cargo +1.98.1 fetch'))
+                    self.assertLess(block.index('cargo +1.98.1 fetch'),
+                                    block.index('scripts/check_distribution.py'))
+                if name in ('check-lean-kernel', 'check-distribution'):
+                    fetch = [step for step in re.split(r'(?m)^      - ', block)
+                             if 'cargo +1.98.1 fetch' in step]
+                    self.assertEqual(len(fetch), 1)
+                    self.assertNotIn('        if:', fetch[0])
+
+    def test_native_bundle_adapter_binds_both_consumers_and_only_the_child_kernel(self):
+        kernel = "/bundle path/$(touch injected); 'quoted'/qleisli-kernel"
+        record = "/record path/$(touch injected); 'quoted'"
+        environment = dict(BUNDLE_KERNEL=kernel, RECORD_PATH=record, QLEISLI_KERNEL='outer checker')
+        result, rows, parent = self.traced_shell('native-bundle-smoke', 'python3', environment)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(rows, [
+            dict(argv=['scripts/test_native_verification.py', '--kernel', kernel, '--record', record],
+                 kernel='outer checker'),
+            dict(argv=['scripts/test_source_kernel.py'], kernel=kernel),
+        ])
+        self.assertEqual(parent, 'outer checker')
+        shared = action('native-bundle-smoke')
+        self.assertIn('BUNDLE_KERNEL: ${{ runner.temp }}/qleisli-native-bundle/bin/qleisli-kernel', shared)
+        self.assertIn('RECORD_PATH: ${{ inputs.record }}', shared)
+        self.assertIn('required: true', shared.split('  record:\n')[1].split('runs:\n')[0])
+        self.assertNotIn('      if:', shared)
+        self.assertNotIn('continue-on-error', shared)
+
+    def test_native_bundle_adapter_refuses_missing_records_and_stops_after_either_failure(self):
+        environment = dict(BUNDLE_KERNEL='/bundle/checker', RECORD_PATH='/records',
+                           QLEISLI_KERNEL='outer checker')
+        result, rows, _ = self.traced_shell('native-bundle-smoke', 'python3',
+                                             environment | dict(RECORD_PATH=''))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(rows, [])
+        for failed_call in (1, 2):
+            with self.subTest(failed_call=failed_call):
+                result, rows, parent = self.traced_shell('native-bundle-smoke', 'python3',
+                                                         environment, fail_at=failed_call, code=37)
+                self.assertEqual(result.returncode, 37, result.stderr)
+                self.assertEqual(len(rows), failed_call)
+                self.assertIsNone(parent)
+                self.assertEqual(rows[0]['argv'], ['scripts/test_native_verification.py',
+                    '--kernel', '/bundle/checker', '--record', '/records'])
+                if failed_call == 2:
+                    self.assertEqual(rows[1], dict(argv=['scripts/test_source_kernel.py'],
+                                                  kernel='/bundle/checker'))
 
     def test_source_adapter_preserves_literal_arguments_and_failures(self):
         compiler = "compiler path/$(touch injected); 'quoted'"

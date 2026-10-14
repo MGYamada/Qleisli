@@ -110,7 +110,10 @@ jobs:
           toolchain: '1.98.1'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
       - name: Install the tested Rust toolchain
-        run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.98.1'
+          components: rustfmt clippy
       - name: Run shared rust-latest checks and retain results
         id: rust-latest
         uses: ./.github/actions/source-check
@@ -172,7 +175,10 @@ jobs:
           toolchain: '1.85.0'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
       - name: Install the minimum supported Rust toolchain
-        run: rustup toolchain install 1.85.0 --profile minimal --component clippy
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.85.0'
+          components: clippy
       - name: Run shared rust-msrv checks and retain results
         id: rust-msrv
         uses: ./.github/actions/source-check
@@ -215,7 +221,10 @@ jobs:
           toolchain: '1.85.0'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
       - name: Install MSRV and Intel macOS compilation target
-        run: rustup toolchain install 1.85.0 --profile minimal --target x86_64-apple-darwin
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.85.0'
+          target: x86_64-apple-darwin
       - name: Exercise descriptor-relative source loading on macOS
         run: cargo +1.85.0 test --locked --lib source_file::tests
       - name: Check source budgets, project loading and edition manifests
@@ -229,9 +238,12 @@ jobs:
         run: |
           python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
           cargo +1.85.0 build --locked --bin qleisli
-          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos"
-          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
-          python3 scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos/interop-native.json"
+      - name: Validate the relocated macOS native bundle
+        uses: ./.github/actions/native-bundle-smoke
+        with:
+          record: ${{ runner.temp }}/native-macos
+      - name: Exercise interop against the same audited macOS bundle
+        run: python3 scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos/interop-native.json"
       - name: Archive the freshly replayed macOS checker for distribution
         if: needs.changes.outputs.proof_lane == 'full'
         run: python3 scripts/archive_lean_kernel.py --bundle "$RUNNER_TEMP/qleisli-native-bundle" --output "$RUNNER_TEMP/native-distribution"
@@ -269,9 +281,12 @@ jobs:
         with:
           toolchain: '1.98.1'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
-      - name: Install validators and the tested Rust toolchain
+      - name: Install the tested Rust toolchain
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.98.1'
+      - name: Install independent validators
         run: |
-          rustup toolchain install 1.98.1 --profile minimal
           sudo apt-get update
           sudo apt-get install -y llvm-18 python3-venv
           python3 -m venv /tmp/qleisli-interop-validation
@@ -351,7 +366,9 @@ jobs:
           toolchain: '1.98.1'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
       - name: Install the tested Rust toolchain for native host comparisons
-        run: rustup toolchain install 1.98.1 --profile minimal
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.98.1'
       - name: Fetch Rust dependencies before offline native host comparisons
         run: cargo +1.98.1 fetch
       - name: Prepare the required native acceptance runtime
@@ -374,10 +391,11 @@ jobs:
         id: native-comparisons
         run: python3 scripts/run_native_ci.py --workers "${{ inputs.native_workers || '4' }}" --output "$RUNNER_TEMP/native-comparisons"
       - name: Build and audit a clean relocated Linux native bundle
-        run: |
-          python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
-          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/native-bundle"
-          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
+        run: python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
+      - name: Validate the relocated Linux native bundle
+        uses: ./.github/actions/native-bundle-smoke
+        with:
+          record: ${{ runner.temp }}/native-comparisons/native-bundle
       - name: Exercise optional QIR/Python paths against the same audited bundle
         run: |
           python3 -m venv "$RUNNER_TEMP/native-qir"
@@ -426,9 +444,10 @@ jobs:
           toolchain: '1.98.1'
           enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
       - name: Install the tested Rust toolchain
-        run: |
-          rustup toolchain install 1.98.1 --profile minimal
-          rustup default 1.98.1
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.98.1'
+          set-default: 'true'
       - name: Fetch package dependencies before offline distribution checks
         run: cargo +1.98.1 fetch
       - name: Verify clean package and complete source archive
