@@ -1,0 +1,22 @@
+{
+  "format": "qleisli.engineering-openqasm-compiled-audit-first-capture",
+  "version": 1,
+  "archive": {
+    "path": "compiled-audit-first.tar.gz",
+    "sha256": "f6cf7762e58afbf07ca77f19f58a770b0a876325e635bf56d8912f709f054870",
+    "bytes": 1088,
+    "members": 2
+  },
+  "files": {
+    "attribution.json": "60552c593ff6fe1cdcf70ad33f1a2e577d20426dad7e301a14f4902efa215117",
+    "schema.json": "aa3aee6cb608b2c141b4a5c14b1a7b36da06b50fe60067c591dc6d87ea616b4f"
+  },
+  "source_in_production_first_archive": "native/first/lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+  "source_sha256": "d7436cc25f2820085940c27770ba341a63601691da96cb36d2dc9a61cd496a1a",
+  "kind": "generated-helper-partial-definition-audit-failure",
+  "before_exit_code": 1,
+  "repair": "Replace recursive word helper with bounded reverse plus standard foldlM; preserve literal grammar, order and capacities. Final compilation/audit/replay is separate required validation.",
+  "named_axiom_audit_was_insufficient": true,
+  "recorded_commands_executed": false,
+  "issue_completion_credit": false
+}

@@ -381,10 +381,90 @@ require both original Gram equations; a bound alone does not establish them.
 
 These results provide no source epsilon annotation, compiler consumption or
 original source/QIRF composition-preservation proof. The native profile remains
-single-component: it does not issue a composed certificate. Actual emitted
-artifact/resource certification and other #31/#163 requirements remain open.
+single-component: it does not issue a composed certificate. Emitted target-byte
+comparisons require the separate bounded profile below. Target-resource
+certification and the other unfinished #31/#163 requirements remain open.
 No instrument bound grants pure phase agreement, coherent control, inverse,
 exact release or constitutional PR/RS authority.
+
+### Literal OpenQASM target comparison
+
+```text
+qleisli engineering compare-openqasm3 TARGET --against=REQUEST --lean-kernel=PATH --format=json
+```
+
+`TARGET` contains the actual emitted bytes. The closed profile accepts this
+literal ASCII structure, with zero to eight ordered gate lines between reset
+and measurement, and a final newline:
+
+```qasm
+OPENQASM 3.0;
+include "stdgates.inc";
+qubit[1] q;
+bit[1] c;
+reset q;
+h q[0];
+c[0] = measure q[0];
+```
+
+Each gate line is exactly `h`, `x`, `y`, `z`, `s`, `sdg`, `t` or `tdg`, followed
+by ` q[0];`. The profile bounds the target to 1,024 bytes and eight gates.
+Changed whitespace, headers, includes, operands, additional results, gates
+after measurement and unsupported syntax refuse. The include line is a fixed
+token; checking loads no external include file. This deliberately bounded
+profile is not a general OpenQASM parser or hardware-conformance claim.
+
+The independent byte reader imports the existing Raw meaning data without
+acceptance definitions. Its ordered gate word constructs the actual instrument:
+consume an explicit zero-width `Q<Unit>` owner, initialize one qubit, apply the
+word, then consume that qubit with terminal Z measurement. The full interface
+is exactly `Unit -> Bit`, with a classical result and principal Observe effect.
+Equal widths do not admit `Bits<0>`, products of Unit or other result trees.
+This closed terminal experiment grants no open pure or controllable map.
+
+The standard gate interpretation is an explicit specification assumption.
+The adapter reuses existing exact Raw/std meanings; it introduces no new
+semantic primitive or constitutional interpretation. Kernel-checked matrices
+and the original-body bridge preserve H's sign, literal Y phase, S/SDG direction
+and T/TDG direction before the terminal observation. This does not adopt a new
+external reference specification or prove general OpenQASM execution semantics.
+
+`REQUEST` has the same fourteen field names and signature/identity/dyadic
+encodings as the instrument request above, with these distinct fixed values:
+
+| Field | Value |
+| --- | --- |
+| `format`, `version` | `qleisli.engineering-openqasm-request`, `1` |
+| `claim_kind` | `engineering-target-instrument-bound` |
+| `metric` | `complete-adjoint-euclidean-operator-norm-v1` |
+| `checker_profile` | `canonical-target-choi-l1-r8-v1` |
+| `target_profile` | `openqasm3-canonical-one-qubit-terminal-r8-v1` |
+| `composition` | `single-component-v1` |
+| `error_category` | `implementation-distance` |
+
+Both complete signatures must equal the fixed interface. `expected_artifact`
+retains the independently supplied original ideal QIRF, including all original
+dependencies; no fixed H ideal or producer-supplied actual matrix substitutes
+for it. The unchanged exact instrument gates reconstruct both complete Kraus
+families and Gram equations before checking the closed epsilon and every Choi
+coefficient majorant. The complete-adjoint bound covers every finite external
+reference and joint observable, without branch normalization.
+
+The native `--engineering-openqasm-check` mode accepts execution scope only.
+Its QLV2 body contains literal target bytes; its QDV1 comparison binds the typed
+request, original byte array, ordered word, generated actual graph and original
+ideal graph. Decoding is charged before traversal and shares remaining work
+with the ideal reader, exact instrument reconstruction and metric check.
+Missing, incompatible, failed or cross-kind checkers cannot fall back.
+
+The private `EngineeringOpenQasmReport` retains immutable target/ideal/request
+bytes, full contract and checker path. Its actual graph is data, without a Rust
+accepted-program constructor. Text/JSON report the target-bound instrument
+inequality and actual digests. Sampling, algorithmic resolution and numerical
+runtime errors remain separately unclaimed. Source/export preservation, exact
+source correspondence, pure phase agreement, inverse/control, exact cleanup,
+target resources and constitutional PR/RS remain unestablished even at epsilon
+zero. This comparison supplies no resource certificate for #163.
 
 ## Quantitative resource claims
 

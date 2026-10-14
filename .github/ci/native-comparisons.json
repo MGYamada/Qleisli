@@ -1053,6 +1053,54 @@
       "env": {
         "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
       }
+    },
+    {
+      "id": "engineering-openqasm",
+      "name": "Literal canonical target decoding, complete original instruments, reference-safe engineering bounds and exact-acceptance firewall",
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "engineering_openqasm",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "engineering_openqasm_cli",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--doc",
+          "engineering_openqasm"
+        ],
+        [
+          "python3",
+          "scripts/test_engineering_openqasm_native.py",
+          "--record",
+          "{record}"
+        ],
+        [
+          "python3",
+          "scripts/test_engineering_openqasm_cli.py",
+          "--cli",
+          "target/debug/qleisli",
+          "--kernel",
+          "lean-kernel/.lake/build/bin/qleisli-kernel"
+        ]
+      ],
+      "env": {
+        "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      }
     }
   ]
 }

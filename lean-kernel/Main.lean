@@ -8,6 +8,7 @@ import Cli.Validity
 import Cli.EngineeringPure
 import Cli.EngineeringPureTensor
 import Cli.EngineeringInstrument
+import Cli.EngineeringOpenQasm
 import Protocol.Product
 import Protocol.ExecutionView.CheckedFinite
 
@@ -20,6 +21,7 @@ private def nativeMode (mode : String) : Option (IO UInt32) :=
   | "--qirf-native" => some QleisliKernel.Cli.runValidity
   | "--qirf-contract" => some (QleisliKernel.Cli.runValidity true)
   | "--engineering-pure-check" => some QleisliKernel.Cli.runEngineeringPure
+  | "--engineering-openqasm-check" => some QleisliKernel.Cli.runEngineeringOpenQasm
   | "--engineering-pure-tensor-check" => some QleisliKernel.Cli.runEngineeringPureTensor
   | "--qirf-engineering-instrument-native" => some QleisliKernel.Cli.runEngineeringInstrument
   | "--qpe-instrument-pending" => some QleisliKernel.Cli.runQpeInstrument
@@ -33,6 +35,7 @@ private def nativeMode (mode : String) : Option (IO UInt32) :=
 
 private def nativeVersionError (mode : String) : IO UInt32 := do
   IO.println ((if mode == "--engineering-pure-check" then "qleisli.engineering-pure-native 1"
+    else if mode == "--engineering-openqasm-check" then "qleisli.engineering-openqasm-native 1"
     else if mode == "--engineering-pure-tensor-check" then "qleisli.engineering-pure-tensor-native 1"
     else if mode == "--qirf-engineering-instrument-native" then "qleisli.engineering-instrument-native 1"
     else "qleisli.qirf-native 2") ++ "\nerror\nversion")

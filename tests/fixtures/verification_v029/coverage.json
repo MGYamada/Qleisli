@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "7ff6f260ceae9e7465183916f0a460ce9a2bf03fc316c4ad3373c0a4c6415da3",
+  "surface_sha256": "07a8120add2ddd5a741febf4cd52f8f935437b70633aea473ebff264d3e2715c",
   "groups": [
     {
       "id": "raw-core",
@@ -1052,6 +1052,49 @@
         "MIG-4",
         "MIG-5"
       ]
+    },
+    {
+      "id": "engineering-openqasm",
+      "status": "engineering-check",
+      "blocker": "Engineering-only canonical closed one-qubit target profile; the declared standard-gate mathematical meaning is an explicit specification assumption. This checks the target-bound complete-adjoint relation, not source/export preservation, exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional admission. Composition and synthesis/resource certificates, source/compiler/export correctness, decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations.",
+      "evidence": [
+        "lean-kernel/Cli/EngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/EngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
+        "lean/Qleisli/CanonicalOpenQasmGates.lean",
+        "lean/Qleisli/NativeEngineeringOpenQasm.lean",
+        "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
+        "scripts/test_engineering_openqasm_cli.py",
+        "scripts/test_engineering_openqasm_native.py",
+        "src/bin/qleisli/engineering.rs",
+        "src/bin/qleisli/engineering_openqasm.rs",
+        "src/interchange/engineering_openqasm.rs",
+        "src/interchange/engineering_openqasm/runtime.rs",
+        "src/interchange/engineering_openqasm/target.rs",
+        "src/interchange/engineering_openqasm/tests.rs",
+        "src/interchange/execution_view/finite/engineering_openqasm.rs",
+        "src/interchange/mod.rs",
+        "tests/engineering_openqasm_cli.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
     }
   ],
   "boundaries": [
@@ -1985,6 +2028,64 @@
       "legacy": "removed; no Rust acceptance fallback",
       "paths": [
         "engineering-pure-tensor-check"
+      ]
+    },
+    {
+      "id": "engineering-openqasm",
+      "status": "engineering-check",
+      "blocker": "Engineering-only canonical closed one-qubit target profile; the declared standard-gate mathematical meaning is an explicit specification assumption. This checks the target-bound complete-adjoint relation, not source/export preservation, exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional admission. Composition and synthesis/resource certificates, source/compiler/export correctness, decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations.",
+      "evidence": [
+        "lean-kernel/Cli/EngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/EngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
+        "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
+        "lean/Qleisli/CanonicalOpenQasmGates.lean",
+        "lean/Qleisli/NativeEngineeringOpenQasm.lean",
+        "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
+        "scripts/test_engineering_openqasm_cli.py",
+        "scripts/test_engineering_openqasm_native.py",
+        "src/bin/qleisli/engineering.rs",
+        "src/bin/qleisli/engineering_openqasm.rs",
+        "src/interchange/engineering_openqasm.rs",
+        "src/interchange/engineering_openqasm/runtime.rs",
+        "src/interchange/engineering_openqasm/target.rs",
+        "src/interchange/engineering_openqasm/tests.rs",
+        "src/interchange/execution_view/finite/engineering_openqasm.rs",
+        "src/interchange/mod.rs",
+        "tests/engineering_openqasm_cli.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "entry_points": [
+        "interchange::engineering_openqasm::EngineeringOpenQasmRequest",
+        "interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringOpenQasmReport original-target/ideal/request/profile accessors",
+        "qleisli engineering compare-openqasm3 TARGET --against=REQUEST"
+      ],
+      "route_test": {
+        "path": "src/interchange/engineering_openqasm/tests.rs",
+        "test": "native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering"
+      },
+      "selection": "Only the dedicated version-paired execution scope freshly decodes literal target bytes, generates the actual original graph, reconstructs the independent ideal and checks both complete instruments, the literal bound and full typed QDV1. Host graph data and cached receipts cannot authorize a different target; epsilon zero remains engineering.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "engineering-openqasm-check"
       ]
     }
   ],
@@ -4610,6 +4711,220 @@
       "checker": "Main --engineering-pure-tensor-check -> Cli.runEngineeringPureTensor -> CheckedEngineeringPureTensor.run -> Protocol.EngineeringPureTensor.checkRetained -> Qirf.EngineeringPureTensor.check -> two fresh EngineeringPure component comparisons, both fresh parent PureLeaf checks, exact ordered tensor equations and literal checked budget sum -> exact QDV1 comparison; separate engineering-only response",
       "proof_scope": "CheckedEngineeringPureTensor.run_binding retains the actual execution-only QLV2 packet, original parent body/request bytes and exact QDV1 comparison of the typed context and six freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning binds all six original bodies/dependencies, complete ordered type trees, exact matrix and Gram equations, both independently computed low-first parent tensors and canonical additive component budgets. NativeEngineeringPureTensorProtocol.run_meaning and run_reference_bound connect the actual native computation to the literal parent Euclidean operator bound for every finite external reference. The explicit total budget equals the checked sum; no whole-parent Frobenius inequality replaces composition. The private immutable Rust report retains all six artifacts, request and selected checker path, including at epsilon zero.",
       "gaps": "Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, accepted-program conversion, inverse/control access, cleanup, instrument bound, actual emitted-target/resource certificate or constitutional admission. Recursive/sequential/control and instrument native composition, source/compiler and emitted-target preservation, decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. The IR target profile is not hardware and checker-path retention is not binary attestation. Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT."
+    },
+    {
+      "classification": "engineering-check",
+      "boundaries": [
+        "engineering-openqasm"
+      ],
+      "native_modes": [
+        "--engineering-openqasm-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "pub mod engineering_openqasm;"
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_openqasm.rs",
+          "markers": [
+            "pub struct EngineeringOpenQasmRequest",
+            "pub struct EngineeringOpenQasmReport",
+            "pub fn check_with_kernel(",
+            "pub fn check_serialized_with_kernel(",
+            "Arc::ptr_eq(&self, &decision.subject)",
+            "target::Decoded::new(target)?",
+            "const CLAIM_KIND: &str = \"engineering-target-instrument-bound\""
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_openqasm/runtime.rs",
+          "markers": [
+            "fn response(",
+            "qleisli.engineering-openqasm-native 1",
+            "\"--engineering-openqasm-check\"",
+            "\"engineering-checked\", \"execution\""
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_openqasm/target.rs",
+          "markers": [
+            "const MAX_TARGET_BYTES: usize = 1024",
+            "const MAX_TARGET_GATES: usize = 8",
+            "fn operation("
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite/engineering_openqasm.rs",
+          "markers": [
+            "pub(in crate::interchange) fn complete(",
+            "\"engineering-openqasm-request\", 14",
+            "w.list(target,",
+            "w.list(gates,",
+            "actual.write(w.writer)?",
+            "ideal.execution_view_graph().write(w.writer)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering.rs",
+          "markers": [
+            "arg == \"compare-openqasm3\""
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering_openqasm.rs",
+          "markers": [
+            "fn execute(",
+            "target_artifact_sha256",
+            "source_preservation_verified"
+          ]
+        },
+        {
+          "path": "scripts/test_engineering_openqasm_native.py",
+          "markers": [
+            "def retained(",
+            "def live(",
+            "def independent_oracle("
+          ]
+        },
+        {
+          "path": "scripts/test_engineering_openqasm_cli.py",
+          "markers": [
+            "def baseline(",
+            "def live("
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/EngineeringOpenQasm.lean",
+          "markers": [
+            "def runEngineeringOpenQasm ",
+            "CheckedEngineeringOpenQasm.run bytes",
+            "qleisli.engineering-openqasm-native 1",
+            "engineering-checked"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
+          "markers": [
+            "def gateOp ",
+            "def program ",
+            "theorem logical_unit_input",
+            "theorem logical_unit_consumed",
+            "theorem terminal_result"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+          "markers": [
+            "def maxBytes : Nat := 1024",
+            "def maxGates : Nat := 8",
+            "def decode ",
+            "theorem decode_original"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
+          "markers": [
+            "theorem gate_matrix",
+            "theorem wrong_y_phase_refused",
+            "theorem wrong_s_direction_refused",
+            "theorem wrong_t_direction_refused"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
+          "markers": [
+            "def actualArtifact ",
+            "def Request.instrument ",
+            "def check ",
+            "exactWork (Exact.charge (1 + request.target.size))",
+            "request.actualSignature == Semantics.CanonicalTerminalQasm.signature",
+            "EngineeringInstrument.check (request.instrument target)",
+            "theorem check_postcondition"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/EngineeringOpenQasm.lean",
+          "markers": [
+            "def decode ",
+            "def Retained.request ",
+            "def checkRetained ",
+            "theorem checkRetained_bound",
+            "Qirf.read decoded.expectedText.toUTF8"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
+          "markers": [
+            "def engineeringOpenQasmRequest ",
+            "def engineeringOpenQasm ",
+            "value.checked.target.original.data.toList",
+            "value.checked.target.gates.map",
+            "graph (Qirf.EngineeringOpenQasm.actualArtifact value.checked.target)",
+            "graph value.expected value.checked.instrument.expected"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
+          "markers": [
+            "def check ",
+            "theorem check_binding",
+            "supplied.data == expected.data",
+            ".inspection | .caller => throw .packet",
+            "theorem run_binding"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/CanonicalOpenQasmGates.lean",
+          "markers": [
+            "theorem gate_meaning"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringOpenQasm.lean",
+          "markers": [
+            "structure Meaning ",
+            "theorem check_meaning"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
+          "markers": [
+            "theorem run_meaning",
+            "theorem run_complete_adjoint_bound"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/interchange/engineering_openqasm/tests.rs",
+          "test": "native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering"
+        },
+        {
+          "path": "src/interchange/engineering_openqasm/tests.rs",
+          "test": "altered_original_ideal_tight_bound_or_cell_witness_refuses_without_fallback"
+        },
+        {
+          "path": "src/interchange/engineering_openqasm/tests.rs",
+          "test": "native_binds_literal_target_gate_word_typed_context_and_both_original_graphs"
+        },
+        {
+          "path": "src/interchange/engineering_openqasm/runtime.rs",
+          "test": "incompatible_missing_failed_and_timed_out_checkers_never_fall_back"
+        },
+        {
+          "path": "tests/engineering_openqasm_cli.rs",
+          "test": "openqasm_cli_checks_literal_target_and_original_ideal_with_honest_scope"
+        }
+      ],
+      "id": "engineering-openqasm-check",
+      "entry_path": "interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}; compare-openqasm3 CLI; separate immutable Subject/Decision/EngineeringOpenQasmReport",
+      "checked_artifact": "Literal actual canonical OpenQASM bytes and original fourteen-field engineering request containing the independent original ideal text; QLV2 execution-only QDV1 full typed context, target bytes, ordered word, generated actual graph and ideal original graph",
+      "checker": "Main --engineering-openqasm-check -> Cli.runEngineeringOpenQasm -> CheckedEngineeringOpenQasm.run -> Protocol.EngineeringOpenQasm.checkRetained -> independent canonical byte decode/generated actual graph and original ideal read -> Qirf.EngineeringOpenQasm.check -> fresh EngineeringInstrument complete original-body/Kraus/coefficient checks -> exact QDV1 comparison; separate engineering-only response",
+      "proof_scope": "CheckedEngineeringOpenQasm.run_binding retains the actual execution-only QLV2 packet, original target body/request bytes and exact QDV1 comparison of the full typed context, literal target bytes, independently decoded ordered word, generated actual graph and freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the original ideal read and target core to one continuous-work computation. Target.CanonicalOpenQasm.decode_original binds the literal target bytes; the independent Semantics.CanonicalTerminalQasm mapping retains and explicitly consumes the zero-width Unit owner. CanonicalOpenQasmGates.gate_matrix and gate_meaning bind all eight literal complex gate matrices before observation. NativeEngineeringOpenQasm.check_meaning and NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit signatures and ordered public outcomes to CompleteAdjointBound on every finite reference and observable at the caller's literal epsilon. The immutable private Rust report retains original target, ideal, request and selected checker path without an accepted-program conversion, including at epsilon zero.",
+      "gaps": "Engineering-only canonical closed one-qubit target profile; the declared standard-gate mathematical meaning is an explicit specification assumption. This checks the target-bound complete-adjoint relation, not source/export preservation, exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional admission. Composition and synthesis/resource certificates, source/compiler/export correctness, decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
     }
   ]
 }

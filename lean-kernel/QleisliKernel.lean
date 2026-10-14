@@ -72,3 +72,7 @@ import QleisliKernel.Engineering.Pure
 import QleisliKernel.Qirf.EngineeringPure
 import QleisliKernel.Qirf.EngineeringPureTensor
 import QleisliKernel.Qirf.EngineeringInstrument
+import QleisliKernel.Semantics.CanonicalTerminalQasm
+import QleisliKernel.Target.CanonicalOpenQasm
+import QleisliKernel.Target.CanonicalOpenQasmGates
+import QleisliKernel.Qirf.EngineeringOpenQasm

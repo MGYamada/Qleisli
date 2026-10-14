@@ -2,6 +2,7 @@
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
 pub mod engineering_instrument;
+pub mod engineering_openqasm;
 pub mod engineering_pure;
 pub mod engineering_pure_tensor;
 mod execution_view;

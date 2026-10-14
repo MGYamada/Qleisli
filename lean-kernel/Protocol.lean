@@ -7,6 +7,7 @@ import Protocol.FiniteCodec
 import Protocol.Raw
 import Protocol.Observation
 import Protocol.EngineeringInstrument
+import Protocol.EngineeringOpenQasm
 import Protocol.EngineeringPureTensor
 
 /-! Compatibility import for the unproved transport adapters. The pure kernel

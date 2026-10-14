@@ -17,13 +17,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 44)
-        self.assertEqual(result['public_boundaries'], 23)
+        self.assertEqual(result['groups'], 45)
+        self.assertEqual(result['public_boundaries'], 24)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 25)
-        self.assertEqual(result['native_modes'], 12)
+        self.assertEqual(result['production_paths'], 26)
+        self.assertEqual(result['native_modes'], 13)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -125,6 +125,8 @@ class ProductionCoverage(unittest.TestCase):
             ('boundaries', 'engineering-instrument', 'native-execution'),
             ('groups', 'engineering-pure-tensor', 'native-execution'),
             ('boundaries', 'engineering-pure-tensor', 'native-execution'),
+            ('groups', 'engineering-openqasm', 'native-execution'),
+            ('boundaries', 'engineering-openqasm', 'native-execution'),
             ('groups', 'raw-core', 'engineering-check'),
             ('boundaries', 'qirf-native-v029', 'engineering-check'),
         ):
@@ -236,6 +238,46 @@ class ProductionCoverage(unittest.TestCase):
             ('lean/Qleisli/NativeEngineeringPureTensorProtocol.lean', 'theorem run_reference_bound'),
         ):
             with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed required binding')
+
+    def test_target_engineering_requires_its_distinct_execution_mode_and_boundary(self):
+        for field, value in (
+            ('classification', 'native-acceptance'),
+            ('native_modes', ['--qirf-native']),
+            ('native_modes', ['--qirf-engineering-instrument-native']),
+            ('boundaries', ['engineering-instrument']),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'engineering-openqasm-check')[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'classification or binding'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_target_engineering_cannot_claim_source_export_resources_or_exact_promotion(self):
+        for field, claim in (
+            ('proof_scope', 'The bound proves exact source/export correspondence and target resources'),
+            ('gaps', 'No remaining obligation; epsilon zero grants accepted programs and control'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'engineering-openqasm-check')[field] = claim
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'engineering-openqasm proof scope'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_target_bytes_word_original_ideal_and_full_reference_binding_are_required(self):
+        for path, marker in (
+            ('lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean', 'theorem decode_original'),
+            ('lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean', 'theorem logical_unit_consumed'),
+            ('lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean', 'exactWork (Exact.charge (1 + request.target.size))'),
+            ('lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean',
+             'request.actualSignature == Semantics.CanonicalTerminalQasm.signature'),
+            ('lean-kernel/Protocol/EngineeringOpenQasm.lean', 'Qirf.read decoded.expectedText.toUTF8'),
+            ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean',
+             'value.checked.target.original.data.toList'),
+            ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean', 'value.checked.target.gates.map'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean',
+             '.inspection | .caller => throw .packet'),
+            ('lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean', 'theorem run_complete_adjoint_bound'),
+        ):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'source binding changed'):
                 self.check_changed_source(path, marker, 'removed required binding')
 
     def test_omitted_route_and_boundary_path_reject(self):

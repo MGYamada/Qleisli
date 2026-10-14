@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.engineering-openqasm-first-capture",
+  "version": 1,
+  "kind": "informed-study",
+  "preserved_archive": {
+    "path": "target-prototype.tar.gz",
+    "sha256": "88d18091827a76662ef32665fb465067b443616aa05cdfdedaf88f40f7c2b40a",
+    "bytes": 26329,
+    "members": 114,
+    "freeze_path": "prototype-freeze.json",
+    "freeze_sha256": "cad0fce4a2fd8fda0e127259b3be26fa22ea9367ffbbe8e41bbd4bc2e6af3fd1"
+  },
+  "maximum_physical_qubits": 1,
+  "recorded_commands_executed": false,
+  "source_export_preservation_established": false,
+  "target_reference_adopted": false,
+  "issue_completion_credit": false,
+  "trusted_constitution_base": "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb",
+  "production_closure_at_study": "143e4495399af77e7f480251dfb56d78b71364be2705445cefb318af3cc3da46"
+}

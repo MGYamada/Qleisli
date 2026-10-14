@@ -49,6 +49,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | `CheckedContract::check`, its checked compositions, and `check_computed` | QIRF root and `qleisli.native-contract` encoded equation | `Kernel::check_encoded` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.checkContract` | `Protocol.NativeContract.check_acceptance` binds the original bytes, decoded request and actual checking states. `Qleisli.NativeContract.check_encoded_sound` / `encoded_meaning` connect success to original-root `BodyMeaning`, the exact Basis interface and requested encoded equation. `Wrapper.circuitMatrix_entries` proves the actual wrapper's coefficient equality with the original matrix; `encoded_reference` extends the equation to any reference amplitude function. Source/compiler, compiled I/O, runtime/export, clean-release and quantitative resource claims remain separate; these theorems are not ledger admissions. |
 | `finite_leaf::{check_unitary,check_serialized_unitary}` | QIRF root, signature, ordered input/output ports and exact matrix request | `Kernel::check_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Validity.checkRoot` and `Qirf.check` | `Qleisli.NativeContract.check_sound` / `leaf_meaning` compose native byte acceptance to original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix, signature and ordered ports. The output port is tied to an actual verification. `leaf_reference_laws` extends both whole-space inverse laws to every finite reference. Source/runtime and broader effect/clean-release claims remain separate. |
 | `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | `pure_leaf_meaning` binds fresh graph/root checking to the original body and exact Gram identity. `pure_leaf_reference` preserves inner products for arbitrary joint reference amplitudes. This grants neither inverse nor control access, source/runtime correspondence, target realization or quantitative resource evidence. |
+| `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | Literal canonical target bytes, original ideal/dependencies, exact Unit/Bit signatures, closed epsilon/majorants and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → independent byte decode and unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is engineering-only, without an actual `AcceptedProgram`, source/export-preservation, pure/control, cleanup, hardware, resources or constitutional PR/RS claim. |
 | `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition remains open. |
 | `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
 | The same methods' Fourier branch | Hierarchy payload and Fourier request, including Hadamard obligations | `--hierarchy-fourier-pending` → `FourierRoot.checkAll`, `checkLeaves` and `checkHadamards` | `NativeHierarchy.hadamard_semantics` and `checkHadamards_semantics` establish finite obligations; complete analytic/source/runtime composition remains open. |
@@ -58,7 +59,8 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
 | `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
 
-`lean-kernel/Main.lean` dispatches the nine explicitly versioned native modes.
+`lean-kernel/Main.lean` dispatches thirteen explicitly versioned native modes,
+including four mechanically separate engineering-only comparisons.
 `lean-kernel/Cli/Validity.lean` selects the ordinary or contract root;
 `lean-kernel/Cli/Hierarchical.lean` composes the dedicated hierarchy checks.
 `lean/Qleisli/NativeValidity.lean`, `lean/Qleisli/NativeContract.lean`,
@@ -404,13 +406,15 @@ runtime correspondence duties remain pending.
 
 `tests/fixtures/verification_v029/coverage.json` separates current implementation,
 published 0.2.9 validation, unpublished development and open proof obligations.
-It retains all 36 coverage groups, 20 boundary entry lists, current constructor
-variants and the 19 RawOp variants. Mixed boundary rows refer to individually
+It retains 45 coverage groups, 24 boundary entry lists, current constructor
+variants and the 19 RawOp variants. The original groups and boundary lists are
+preserved; engineering-only comparisons have distinct classifications.
+Mixed boundary rows refer to individually
 classified paths; a public surface containing a constructor or `doc` is not
 counted wholesale as native acceptance.
 
 `scripts/check_production_coverage.py` checks the reviewed public surface,
-complete path classifications, all nine native modes and dispatch targets,
+complete path classifications, all thirteen native modes and dispatch targets,
 named source/declaration bindings and existing regression functions. It fails
 on an omitted route, a newly exposed boundary, changed dispatch, missing binding
 or a proposal misclassified as acceptance. The native-contract proof scope also

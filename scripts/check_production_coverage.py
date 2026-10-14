@@ -139,6 +139,32 @@ ENGINEERING_PURE_TENSOR_PROOF = {
 }
 
 
+ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'CheckedEngineeringOpenQasm.run_binding retains the actual execution-only QLV2 packet, '
+                'original target body/request bytes and exact QDV1 comparison of the full typed context, '
+                'literal target bytes, independently decoded ordered word, generated actual graph and '
+                'freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the '
+                'original ideal read and target core to one continuous-work computation. '
+                'Target.CanonicalOpenQasm.decode_original binds the literal target bytes; the independent '
+                'Semantics.CanonicalTerminalQasm mapping retains and explicitly consumes the zero-width Unit '
+                'owner. CanonicalOpenQasmGates.gate_matrix and gate_meaning bind all eight literal complex '
+                'gate matrices before observation. NativeEngineeringOpenQasm.check_meaning and '
+                'NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual '
+                'original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit '
+                'signatures and ordered public outcomes to CompleteAdjointBound on every finite reference '
+                "and observable at the caller's literal epsilon. The immutable private Rust report retains "
+                'original target, ideal, request and selected checker path without an accepted-program '
+                'conversion, including at epsilon zero.',
+ 'gaps': 'Engineering-only canonical closed one-qubit target profile; the declared standard-gate '
+         'mathematical meaning is an explicit specification assumption. This checks the target-bound '
+         'complete-adjoint relation, not source/export preservation, exact source correspondence, general '
+         'OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional '
+         'admission. Composition and synthesis/resource certificates, source/compiler/export correctness, '
+         'decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. '
+         'Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and '
+         'numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound '
+         'or close S05-C1-C5, QS, PR, RS or EXACT obligations.'}
+
+
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
                 native_modes=modes.split(),
@@ -608,6 +634,96 @@ PATHS['engineering-pure-tensor-check'] = path_rule(
     ], [('src/interchange/engineering_pure_tensor/tests.rs',
          'native_tensor_composes_component_bounds_without_parent_frobenius')])
 
+PATHS['engineering-openqasm-check'] = path_rule(
+    'engineering-check', 'engineering-openqasm', '--engineering-openqasm-check',
+    [('src/interchange/mod.rs', ['pub mod engineering_openqasm;']),
+ ('src/interchange/engineering_openqasm.rs',
+  ['pub struct EngineeringOpenQasmRequest',
+   'pub struct EngineeringOpenQasmReport',
+   'pub fn check_with_kernel(',
+   'pub fn check_serialized_with_kernel(',
+   'Arc::ptr_eq(&self, &decision.subject)',
+   'target::Decoded::new(target)?',
+   'const CLAIM_KIND: &str = "engineering-target-instrument-bound"']),
+ ('src/interchange/engineering_openqasm/runtime.rs',
+  ['fn response(',
+   'qleisli.engineering-openqasm-native 1',
+   '"--engineering-openqasm-check"',
+   '"engineering-checked", "execution"']),
+ ('src/interchange/engineering_openqasm/target.rs',
+  ['const MAX_TARGET_BYTES: usize = 1024', 'const MAX_TARGET_GATES: usize = 8', 'fn operation(']),
+ ('src/interchange/execution_view/finite/engineering_openqasm.rs',
+  ['pub(in crate::interchange) fn complete(',
+   '"engineering-openqasm-request", 14',
+   'w.list(target,',
+   'w.list(gates,',
+   'actual.write(w.writer)?',
+   'ideal.execution_view_graph().write(w.writer)']),
+ ('src/bin/qleisli/engineering.rs', ['arg == "compare-openqasm3"']),
+ ('src/bin/qleisli/engineering_openqasm.rs',
+  ['fn execute(', 'target_artifact_sha256', 'source_preservation_verified']),
+ ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(']),
+ ('scripts/test_engineering_openqasm_cli.py', ['def baseline(', 'def live(']),
+ ('lean-kernel/Cli/EngineeringOpenQasm.lean',
+  ['def runEngineeringOpenQasm ',
+   'CheckedEngineeringOpenQasm.run bytes',
+   'qleisli.engineering-openqasm-native 1',
+   'engineering-checked']),
+ ('lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean',
+  ['def gateOp ',
+   'def program ',
+   'theorem logical_unit_input',
+   'theorem logical_unit_consumed',
+   'theorem terminal_result']),
+ ('lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean',
+  ['def maxBytes : Nat := 1024', 'def maxGates : Nat := 8', 'def decode ', 'theorem decode_original']),
+ ('lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean',
+  ['theorem gate_matrix',
+   'theorem wrong_y_phase_refused',
+   'theorem wrong_s_direction_refused',
+   'theorem wrong_t_direction_refused']),
+ ('lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean',
+  ['def actualArtifact ',
+   'def Request.instrument ',
+   'def check ',
+   'exactWork (Exact.charge (1 + request.target.size))',
+   'request.actualSignature == Semantics.CanonicalTerminalQasm.signature',
+   'EngineeringInstrument.check (request.instrument target)',
+   'theorem check_postcondition']),
+ ('lean-kernel/Protocol/EngineeringOpenQasm.lean',
+  ['def decode ',
+   'def Retained.request ',
+   'def checkRetained ',
+   'theorem checkRetained_bound',
+   'Qirf.read decoded.expectedText.toUTF8']),
+ ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean',
+  ['def engineeringOpenQasmRequest ',
+   'def engineeringOpenQasm ',
+   'value.checked.target.original.data.toList',
+   'value.checked.target.gates.map',
+   'graph (Qirf.EngineeringOpenQasm.actualArtifact value.checked.target)',
+   'graph value.expected value.checked.instrument.expected']),
+ ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean',
+  ['def check ',
+   'theorem check_binding',
+   'supplied.data == expected.data',
+   '.inspection | .caller => throw .packet',
+   'theorem run_binding']),
+ ('lean/Qleisli/CanonicalOpenQasmGates.lean', ['theorem gate_meaning']),
+ ('lean/Qleisli/NativeEngineeringOpenQasm.lean', ['structure Meaning ', 'theorem check_meaning']),
+ ('lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean',
+  ['theorem run_meaning', 'theorem run_complete_adjoint_bound'])],
+    [('src/interchange/engineering_openqasm/tests.rs',
+  'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering'),
+ ('src/interchange/engineering_openqasm/tests.rs',
+  'altered_original_ideal_tight_bound_or_cell_witness_refuses_without_fallback'),
+ ('src/interchange/engineering_openqasm/tests.rs',
+  'native_binds_literal_target_gate_word_typed_context_and_both_original_graphs'),
+ ('src/interchange/engineering_openqasm/runtime.rs',
+  'incompatible_missing_failed_and_timed_out_checkers_never_fall_back'),
+ ('tests/engineering_openqasm_cli.rs',
+  'openqasm_cli_checks_literal_target_and_original_ideal_with_honest_scope')])
+
 # Each dedicated hierarchy protocol has its own request, checker and result;
 # none is silently covered by the QLV1 ordinary-root theorem.
 for _id, _boundaries, _mode, _method, _cli, _check, _test in [
@@ -629,6 +745,7 @@ for _id, _boundaries, _mode, _method, _cli, _check, _test in [
 NATIVE_DISPATCH = {
     '--qirf-native': 'QleisliKernel.Cli.runValidity',
     '--qirf-contract': '(QleisliKernel.Cli.runValidity true)',
+    '--engineering-openqasm-check': 'QleisliKernel.Cli.runEngineeringOpenQasm',
     '--engineering-pure-check': 'QleisliKernel.Cli.runEngineeringPure',
     '--engineering-pure-tensor-check': 'QleisliKernel.Cli.runEngineeringPureTensor',
     '--qirf-engineering-instrument-native': 'QleisliKernel.Cli.runEngineeringInstrument',
@@ -670,6 +787,8 @@ ROUTES['engineering-instrument'] = ('src/interchange/engineering_instrument/test
                                    'native_nonzero_and_zero_reports_keep_original_bytes_and_engineering_status')
 ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/tests.rs',
                                     'native_tensor_composes_component_bounds_without_parent_frobenius')
+
+ROUTES['engineering-openqasm'] = ('src/interchange/engineering_openqasm/tests.rs', 'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering')
 
 
 def surface_identity(inventory):
@@ -721,7 +840,7 @@ def check(root, data=None, inventory=None):
         require(row['status'] in {'untrusted-host', 'lean-component', 'native-execution', 'mixed-boundary',
                                  'engineering-check'}, 'unknown migration status')
         require((row['status'] == 'engineering-check') == (row['id'] in {
-            'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor'}),
+            'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm'}),
                 'engineering-only status must remain separate from exact production acceptance')
         require(isinstance(row['blocker'], str) and row['blocker'].strip(), 'missing explicit migration blocker')
         require(set(row['proof_gates']) == GATES, 'incomplete proof obligations')
@@ -751,6 +870,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'engineering-instrument-check':
             require({key: row[key] for key in ENGINEERING_INSTRUMENT_PROOF} == ENGINEERING_INSTRUMENT_PROOF,
                     'unreviewed engineering-instrument proof scope')
+        if row['id'] == 'engineering-openqasm-check':
+            require({key: row[key] for key in ENGINEERING_OPENQASM_PROOF} == ENGINEERING_OPENQASM_PROOF,
+                    'unreviewed engineering-openqasm proof scope')
         if row['id'] == 'engineering-pure-tensor-check':
             require({key: row[key] for key in ENGINEERING_PURE_TENSOR_PROOF} == ENGINEERING_PURE_TENSOR_PROOF,
                     'unreviewed engineering-pure-tensor proof scope')

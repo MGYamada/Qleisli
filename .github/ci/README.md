@@ -451,9 +451,13 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 71 groups and 107 commands. The pure tensor group
+The current manifest contains 72 groups and 112 commands. The pure tensor group
 checks all six original artifacts, ordered parent equations, closed additive
-budgets and the independent small-system composition oracle. Local module and fold
+budgets and the independent small-system composition oracle. The OpenQASM group
+binds literal emitted target bytes, the complete original ideal instrument and
+closed engineering bound under its explicit one-qubit terminal profile; exact
+source/export preservation, control, cleanup and resources remain separate.
+Local module and fold
 shadowing regressions run in the sized-corpus group. Preparation/readout
 transport tests require the exact product version, exercise both dynamic modes,
 and distinguish version rejection from malformed or semantically invalid frames.
