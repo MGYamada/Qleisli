@@ -33,6 +33,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
   qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
   qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli engineering compare-instrument ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
   qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]

@@ -112,6 +112,32 @@ ENGINEERING_INSTRUMENT_PROOF = {
     ),
 }
 
+ENGINEERING_PURE_TENSOR_PROOF = {
+    'proof_scope': (
+        'CheckedEngineeringPureTensor.run_binding retains the actual execution-only QLV2 packet, '
+        'original parent body/request bytes and exact QDV1 comparison of the typed context and six '
+        'freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these '
+        'fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning '
+        'binds all six original bodies/dependencies, complete ordered type trees, exact matrix and '
+        'Gram equations, both independently computed low-first parent tensors and canonical additive '
+        'component budgets. NativeEngineeringPureTensorProtocol.run_meaning and run_reference_bound '
+        'connect the actual native computation to the literal parent Euclidean operator bound for '
+        'every finite external reference. The explicit total budget equals the checked sum; no '
+        'whole-parent Frobenius inequality replaces composition. The private immutable Rust report '
+        'retains all six artifacts, request and selected checker path, including at epsilon zero.'
+    ),
+    'gaps': (
+        'Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, '
+        'accepted-program conversion, inverse/control access, cleanup, instrument bound, actual '
+        'emitted-target/resource certificate or constitutional admission. Recursive/sequential/control '
+        'and instrument native composition, source/compiler and emitted-target preservation, '
+        'decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. '
+        'The IR target profile is not hardware and checker-path retention is not binary attestation. '
+        'Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This '
+        'route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT.'
+    ),
+}
+
 
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
@@ -534,6 +560,54 @@ PATHS = {
         ('tests/engineering_instrument_cli.rs', 'instrument_cli_checks_residual_reference_maps_and_reports_only_declared_bounds')]),
 }
 
+PATHS['engineering-pure-tensor-check'] = path_rule(
+    'engineering-check', 'engineering-pure-tensor', '--engineering-pure-tensor-check', [
+        ('src/interchange/mod.rs', ['pub mod engineering_pure_tensor;']),
+        ('src/interchange/engineering_pure_tensor.rs', [
+            'pub struct EngineeringPureTensorRequest', 'pub struct EngineeringPureTensorReport',
+            'pub fn check_with_kernel(', 'pub fn check_serialized_with_kernel(',
+            'Arc::ptr_eq(&self, &decision.subject)',
+            'const CLAIM_KIND: &str = "engineering-pure-tensor-bound"']),
+        ('src/interchange/engineering_pure_tensor/runtime.rs', [
+            'fn response(', 'qleisli.engineering-pure-tensor-native 1',
+            '"--engineering-pure-tensor-check"', '"engineering-checked", "execution"']),
+        ('src/interchange/execution_view/finite/engineering_pure_tensor.rs', [
+            'pub(in crate::interchange) fn complete(', '"engineering-pure-tensor-request", 16',
+            'program.execution_view_graph().write(w.writer)']),
+        ('src/bin/qleisli/engineering.rs', ['arg == "compare-pure-tensor"']),
+        ('src/bin/qleisli/engineering_pure_tensor.rs', ['fn execute(']),
+        ('scripts/test_engineering_pure_tensor_native.py', ['def retained(', 'def live(']),
+        ('lean-kernel/Cli/EngineeringPureTensor.lean', [
+            'def runEngineeringPureTensor ', 'CheckedEngineeringPureTensor.run bytes',
+            'qleisli.engineering-pure-tensor-native 1', 'engineering-checked']),
+        ('lean-kernel/Protocol/EngineeringPureTensor.lean', [
+            'def decode ', 'def Retained.request ', 'def checkRetained ', 'theorem checkRetained_bound',
+            'Qirf.read prepared.body', 'Qirf.read decoded.expectedText.toUTF8',
+            'Qirf.read decoded.left.actualText.toUTF8', 'Qirf.read decoded.left.idealText.toUTF8',
+            'Qirf.read decoded.right.actualText.toUTF8', 'Qirf.read decoded.right.idealText.toUTF8']),
+        ('lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean', [
+            'def engineeringPureTensorRequest ', 'def engineeringPureTensor ',
+            'graph value.actual value.checked.parentActual.root',
+            'graph value.ideal value.checked.parentIdeal.root',
+            'graph value.leftActual value.checked.left.actual.root',
+            'graph value.leftIdeal value.checked.left.ideal.root',
+            'graph value.rightActual value.checked.right.actual.root',
+            'graph value.rightIdeal value.checked.right.ideal.root']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean', [
+            'def check ', 'theorem check_binding', 'supplied.data == expected.data',
+            '.inspection | .caller => throw .packet', 'theorem run_binding']),
+        ('lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean', [
+            'def check ', 'EngineeringPure.check request.left', 'EngineeringPure.check request.right',
+            'PureLeaf.check request.parentActual.artifact', 'PureLeaf.check request.parentIdeal.artifact',
+            'guard (parentActual.actual == actualTensor)', 'guard (parentIdeal.actual == idealTensor)',
+            'guard (epsilon == request.epsilon)', 'theorem check_postcondition']),
+        ('lean/Qleisli/NativeEngineeringPureTensor.lean', [
+            'structure Meaning ', 'theorem check_meaning', 'theorem checked_reference_bound']),
+        ('lean/Qleisli/NativeEngineeringPureTensorProtocol.lean', [
+            'theorem run_meaning', 'theorem run_reference_bound']),
+    ], [('src/interchange/engineering_pure_tensor/tests.rs',
+         'native_tensor_composes_component_bounds_without_parent_frobenius')])
+
 # Each dedicated hierarchy protocol has its own request, checker and result;
 # none is silently covered by the QLV1 ordinary-root theorem.
 for _id, _boundaries, _mode, _method, _cli, _check, _test in [
@@ -556,6 +630,7 @@ NATIVE_DISPATCH = {
     '--qirf-native': 'QleisliKernel.Cli.runValidity',
     '--qirf-contract': '(QleisliKernel.Cli.runValidity true)',
     '--engineering-pure-check': 'QleisliKernel.Cli.runEngineeringPure',
+    '--engineering-pure-tensor-check': 'QleisliKernel.Cli.runEngineeringPureTensor',
     '--qirf-engineering-instrument-native': 'QleisliKernel.Cli.runEngineeringInstrument',
     '--hierarchy-pending': 'QleisliKernel.Cli.runHierarchy',
     '--hierarchy-request-pending': 'QleisliKernel.Cli.runHierarchyRequest',
@@ -593,6 +668,8 @@ ROUTES['engineering-pure'] = ('src/interchange/engineering_pure/tests.rs',
                              'native_bound_retains_original_bodies_and_zero_stays_engineering')
 ROUTES['engineering-instrument'] = ('src/interchange/engineering_instrument/tests.rs',
                                    'native_nonzero_and_zero_reports_keep_original_bytes_and_engineering_status')
+ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/tests.rs',
+                                    'native_tensor_composes_component_bounds_without_parent_frobenius')
 
 
 def surface_identity(inventory):
@@ -643,7 +720,8 @@ def check(root, data=None, inventory=None):
     for row in rows + entries:
         require(row['status'] in {'untrusted-host', 'lean-component', 'native-execution', 'mixed-boundary',
                                  'engineering-check'}, 'unknown migration status')
-        require((row['status'] == 'engineering-check') == (row['id'] in {'engineering-pure', 'engineering-instrument'}),
+        require((row['status'] == 'engineering-check') == (row['id'] in {
+            'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor'}),
                 'engineering-only status must remain separate from exact production acceptance')
         require(isinstance(row['blocker'], str) and row['blocker'].strip(), 'missing explicit migration blocker')
         require(set(row['proof_gates']) == GATES, 'incomplete proof obligations')
@@ -673,6 +751,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'engineering-instrument-check':
             require({key: row[key] for key in ENGINEERING_INSTRUMENT_PROOF} == ENGINEERING_INSTRUMENT_PROOF,
                     'unreviewed engineering-instrument proof scope')
+        if row['id'] == 'engineering-pure-tensor-check':
+            require({key: row[key] for key in ENGINEERING_PURE_TENSOR_PROOF} == ENGINEERING_PURE_TENSOR_PROOF,
+                    'unreviewed engineering-pure-tensor proof scope')
         for source in rule['source_bindings']:
             path = root/source['path']
             require(path.is_file(), 'missing production source: ' + source['path'])

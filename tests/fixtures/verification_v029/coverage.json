@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "995ce249450909011acf9d97af0f96d67b59e5b4b4a74f266f3d4b7c67b4e1c8",
+  "surface_sha256": "7ff6f260ceae9e7465183916f0a460ce9a2bf03fc316c4ad3373c0a4c6415da3",
   "groups": [
     {
       "id": "raw-core",
@@ -1016,6 +1016,42 @@
         "MIG-4",
         "MIG-5"
       ]
+    },
+    {
+      "id": "engineering-pure-tensor",
+      "status": "engineering-check",
+      "blocker": "Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, accepted-program conversion, inverse/control access, cleanup, instrument bound, actual emitted-target/resource certificate or constitutional admission. Recursive/sequential/control and instrument native composition, source/compiler and emitted-target preservation, decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. The IR target profile is not hardware and checker-path retention is not binary attestation. Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT.",
+      "evidence": [
+        "lean-kernel/Cli/EngineeringPureTensor.lean",
+        "lean-kernel/Protocol/EngineeringPureTensor.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean",
+        "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean",
+        "lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean",
+        "lean/Qleisli/NativeEngineeringPureTensor.lean",
+        "lean/Qleisli/NativeEngineeringPureTensorProtocol.lean",
+        "scripts/test_engineering_pure_tensor_cli.py",
+        "scripts/test_engineering_pure_tensor_native.py",
+        "src/bin/qleisli/engineering_pure_tensor.rs",
+        "src/interchange/engineering_pure_tensor.rs",
+        "src/interchange/engineering_pure_tensor/runtime.rs",
+        "src/interchange/engineering_pure_tensor/tests.rs",
+        "src/interchange/execution_view/finite/engineering_pure_tensor.rs",
+        "tests/engineering_pure_tensor_cli.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
     }
   ],
   "boundaries": [
@@ -1898,6 +1934,57 @@
       "legacy": "removed; no Rust acceptance fallback",
       "paths": [
         "engineering-instrument-check"
+      ]
+    },
+    {
+      "id": "engineering-pure-tensor",
+      "status": "engineering-check",
+      "blocker": "Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, accepted-program conversion, inverse/control access, cleanup, instrument bound, actual emitted-target/resource certificate or constitutional admission. Recursive/sequential/control and instrument native composition, source/compiler and emitted-target preservation, decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. The IR target profile is not hardware and checker-path retention is not binary attestation. Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT.",
+      "evidence": [
+        "lean-kernel/Cli/EngineeringPureTensor.lean",
+        "lean-kernel/Protocol/EngineeringPureTensor.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean",
+        "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean",
+        "lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean",
+        "lean/Qleisli/NativeEngineeringPureTensor.lean",
+        "lean/Qleisli/NativeEngineeringPureTensorProtocol.lean",
+        "scripts/test_engineering_pure_tensor_cli.py",
+        "scripts/test_engineering_pure_tensor_native.py",
+        "src/bin/qleisli/engineering_pure_tensor.rs",
+        "src/interchange/engineering_pure_tensor.rs",
+        "src/interchange/engineering_pure_tensor/runtime.rs",
+        "src/interchange/engineering_pure_tensor/tests.rs",
+        "src/interchange/execution_view/finite/engineering_pure_tensor.rs",
+        "tests/engineering_pure_tensor_cli.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "entry_points": [
+        "interchange::engineering_pure_tensor::EngineeringPureTensorRequest",
+        "interchange::engineering_pure_tensor::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringPureTensorReport original-artifact/request/profile accessors",
+        "qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST"
+      ],
+      "route_test": {
+        "path": "src/interchange/engineering_pure_tensor/tests.rs",
+        "test": "native_tensor_composes_component_bounds_without_parent_frobenius"
+      },
+      "selection": "Only the dedicated version-paired execution-only tensor mode freshly checks all six original bodies, both parent equations, closed component and total budgets, and exact typed QDV1. Existing component receipts cannot authorize a different parent; epsilon zero remains engineering.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "engineering-pure-tensor-check"
       ]
     }
   ],
@@ -4371,6 +4458,158 @@
       "checker": "Main --qirf-engineering-instrument-native -> Cli.runEngineeringInstrument -> Native.engineeringInstrument -> CheckedEngineeringInstrument.run -> Protocol.EngineeringInstrument.checkRetained -> Qirf.EngineeringInstrument.check -> both unchanged original-root/interface/Kraus gates and Engineering.Instrument.checkHistories, followed by exact QDV1 comparison; dedicated engineering response parser",
       "proof_scope": "CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding retain the actual QLV2 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed request and exact QDV1 comparison. Protocol.EngineeringInstrument.checkRetained_bound connects them to one continuous-work engineering check. NativeEngineeringInstrumentProtocol.run_meaning binds both original bodies/dependencies, exact Kraus completeness, untruncated dimensions, complete signature equality and ordered public-output projections to CompleteAdjointBound on every finite joint reference and every public-outcome observable family. The sufficient exact R8 Choi coefficient majorants retain all unnormalized hidden histories and residual coherences; no probability-only or postselected comparison is used. Separate internal mathematical lemmas derive complete adjoint contraction from full Kraus Gram equations, pure-to-instrument 2-delta bounds from literal pure gaps and both isometry equations, and additive feed-forward/ordered tensor bounds with explicit reference-axis regrouping. Their complete component Gram and interface premises remain explicit. The native profile remains single-component-v1. Private Rust reports retain both original artifacts, request bytes and selected checker path; epsilon zero grants no exact accepted-program conversion.",
       "gaps": "This engineering instrument check grants no exact source correspondence, pure phase agreement, inverse/control capability, cleanup, target-resource certificate or constitutional guarantee. qirf-r8-instrument-v1 is an IR profile, not a hardware realization. Independent composition lemmas do not establish original source/QIRF feed-forward or tensor preservation, native composed certificate generation/consumption or actual emitted-resource binding. Source/compiler, decoder/walker, native-compiler/deployed-binary and runtime preservation remain separate; checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime error categories are not claimed. Exact InstrumentContract acceptance remains separate and unchanged. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
+    },
+    {
+      "classification": "engineering-check",
+      "boundaries": [
+        "engineering-pure-tensor"
+      ],
+      "native_modes": [
+        "--engineering-pure-tensor-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "pub mod engineering_pure_tensor;"
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_pure_tensor.rs",
+          "markers": [
+            "pub struct EngineeringPureTensorRequest",
+            "pub struct EngineeringPureTensorReport",
+            "pub fn check_with_kernel(",
+            "pub fn check_serialized_with_kernel(",
+            "Arc::ptr_eq(&self, &decision.subject)",
+            "const CLAIM_KIND: &str = \"engineering-pure-tensor-bound\""
+          ]
+        },
+        {
+          "path": "src/interchange/engineering_pure_tensor/runtime.rs",
+          "markers": [
+            "fn response(",
+            "qleisli.engineering-pure-tensor-native 1",
+            "\"--engineering-pure-tensor-check\"",
+            "\"engineering-checked\", \"execution\""
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite/engineering_pure_tensor.rs",
+          "markers": [
+            "pub(in crate::interchange) fn complete(",
+            "\"engineering-pure-tensor-request\", 16",
+            "program.execution_view_graph().write(w.writer)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering.rs",
+          "markers": [
+            "arg == \"compare-pure-tensor\""
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/engineering_pure_tensor.rs",
+          "markers": [
+            "fn execute("
+          ]
+        },
+        {
+          "path": "scripts/test_engineering_pure_tensor_native.py",
+          "markers": [
+            "def retained(",
+            "def live("
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/EngineeringPureTensor.lean",
+          "markers": [
+            "def runEngineeringPureTensor ",
+            "CheckedEngineeringPureTensor.run bytes",
+            "qleisli.engineering-pure-tensor-native 1",
+            "engineering-checked"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/EngineeringPureTensor.lean",
+          "markers": [
+            "def decode ",
+            "def Retained.request ",
+            "def checkRetained ",
+            "theorem checkRetained_bound",
+            "Qirf.read prepared.body",
+            "Qirf.read decoded.expectedText.toUTF8",
+            "Qirf.read decoded.left.actualText.toUTF8",
+            "Qirf.read decoded.left.idealText.toUTF8",
+            "Qirf.read decoded.right.actualText.toUTF8",
+            "Qirf.read decoded.right.idealText.toUTF8"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean",
+          "markers": [
+            "def engineeringPureTensorRequest ",
+            "def engineeringPureTensor ",
+            "graph value.actual value.checked.parentActual.root",
+            "graph value.ideal value.checked.parentIdeal.root",
+            "graph value.leftActual value.checked.left.actual.root",
+            "graph value.leftIdeal value.checked.left.ideal.root",
+            "graph value.rightActual value.checked.right.actual.root",
+            "graph value.rightIdeal value.checked.right.ideal.root"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean",
+          "markers": [
+            "def check ",
+            "theorem check_binding",
+            "supplied.data == expected.data",
+            ".inspection | .caller => throw .packet",
+            "theorem run_binding"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean",
+          "markers": [
+            "def check ",
+            "EngineeringPure.check request.left",
+            "EngineeringPure.check request.right",
+            "PureLeaf.check request.parentActual.artifact",
+            "PureLeaf.check request.parentIdeal.artifact",
+            "guard (parentActual.actual == actualTensor)",
+            "guard (parentIdeal.actual == idealTensor)",
+            "guard (epsilon == request.epsilon)",
+            "theorem check_postcondition"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringPureTensor.lean",
+          "markers": [
+            "structure Meaning ",
+            "theorem check_meaning",
+            "theorem checked_reference_bound"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeEngineeringPureTensorProtocol.lean",
+          "markers": [
+            "theorem run_meaning",
+            "theorem run_reference_bound"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/interchange/engineering_pure_tensor/tests.rs",
+          "test": "native_tensor_composes_component_bounds_without_parent_frobenius"
+        }
+      ],
+      "id": "engineering-pure-tensor-check",
+      "entry_path": "interchange::engineering_pure_tensor::{check,check_with_kernel,check_serialized_with_kernel}; explicit engineering compare-pure-tensor CLI; separate immutable Subject/Decision/EngineeringPureTensorReport",
+      "checked_artifact": "Original parent actual QIRF, original fourteen-field engineering request with embedded five other original texts, two ordered seven-field components and literal total budget; QLV2 execution-only typed QDV1 request and all six retained graphs",
+      "checker": "Main --engineering-pure-tensor-check -> Cli.runEngineeringPureTensor -> CheckedEngineeringPureTensor.run -> Protocol.EngineeringPureTensor.checkRetained -> Qirf.EngineeringPureTensor.check -> two fresh EngineeringPure component comparisons, both fresh parent PureLeaf checks, exact ordered tensor equations and literal checked budget sum -> exact QDV1 comparison; separate engineering-only response",
+      "proof_scope": "CheckedEngineeringPureTensor.run_binding retains the actual execution-only QLV2 packet, original parent body/request bytes and exact QDV1 comparison of the typed context and six freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning binds all six original bodies/dependencies, complete ordered type trees, exact matrix and Gram equations, both independently computed low-first parent tensors and canonical additive component budgets. NativeEngineeringPureTensorProtocol.run_meaning and run_reference_bound connect the actual native computation to the literal parent Euclidean operator bound for every finite external reference. The explicit total budget equals the checked sum; no whole-parent Frobenius inequality replaces composition. The private immutable Rust report retains all six artifacts, request and selected checker path, including at epsilon zero.",
+      "gaps": "Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, accepted-program conversion, inverse/control access, cleanup, instrument bound, actual emitted-target/resource certificate or constitutional admission. Recursive/sequential/control and instrument native composition, source/compiler and emitted-target preservation, decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. The IR target profile is not hardware and checker-path retention is not binary attestation. Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT."
     }
   ]
 }

@@ -163,8 +163,8 @@ body against its own independent matrix request before comparing those matrices;
 both complete type trees and ordered ports remain checked. Neither component
 changes the exact equality gate. A separate native engineering protocol binds
 these components to the actual invocation and both retained host graphs. The
-complete instrument contract, target-resource gate and compiler consumption of
-composed engineering claims remain unfinished under #31/#163. The pure result
+composed instrument contract, target-resource gate and compiler consumption of
+engineering claims remain unfinished under #31/#163. The pure result
 does not complete those Issues or establish source/target preservation.
 
 ### Native pure engineering comparison
@@ -227,8 +227,73 @@ Pure composition proofs establish additive sequential and ordered tensor error
 rules for the same Euclidean metric under the stated exact isometry premises,
 including arbitrary references. The coherent-control corollary additionally
 requires equal domain/codomain and the existing independent access meanings.
-These mathematical rules do not implement a composed native receipt, change
-the single-component profile or supply compiler/lowering preservation.
+These mathematical rules do not change the single-component profile or supply
+compiler/lowering preservation. The separate ordered-tensor profile below
+checks its own original parent artifacts and component comparisons.
+
+### Native ordered pure tensor comparison
+
+```text
+qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST --lean-kernel=PATH --format=json
+```
+
+This profile combines exactly two ordered pure comparisons. It checks six
+original QIRF artifacts afresh: actual and ideal parents, actual and ideal left
+components, and actual and ideal right components. Each body retains its own
+dependency order, exact matrix request, ordered ports and full type trees.
+Both parent interfaces are the complete products of the component interfaces;
+`Unit` nodes are retained even when they occupy no physical wires.
+
+The exact parent equations use the existing low-first coordinates
+`left + left_dimension * right`. Both parent matrices must equal the ordered
+tensors of their respective component matrices. The checker then adds the two
+closed component bounds exactly and requires equality with the explicitly
+requested total bound. It does not repeat the sufficient whole-parent
+Frobenius inequality: an additive component certificate may succeed when that
+whole-matrix witness is too loose. All six body checks, component inequalities,
+parent equations and bounded addition share one remaining-work counter.
+
+The request has exactly fourteen top-level fields:
+
+| Field | Value |
+| --- | --- |
+| `format`, `version` | `qleisli.engineering-pure-tensor-request`, `1` |
+| `claim_kind` | `engineering-pure-tensor-bound` |
+| `metric` | `pure-euclidean-operator-norm-v1` |
+| `checker_profile` | `tensor-additive-r8-pure-leaf-v1` |
+| `target_profile` | `qirf-r8-pure-v1` |
+| `composition` | `ordered-tensor-two-v1` |
+| `error_category` | `implementation-distance` |
+| `actual`, `ideal` | Parent leaf objects with exactly `input`, `output`, `matrix` |
+| `left`, `right` | Component objects described below, in that order |
+| `epsilon` | Canonical nonnegative dyadic, exactly the sum of the two component budgets |
+| `expected_artifact` | Original UTF-8 ideal parent QIRF text |
+
+Each component object has exactly `domain`, `codomain`, `actual`, `ideal`,
+`epsilon`, `actual_artifact` and `expected_artifact`. Types, leaf requests and
+budgets use the single-component encodings; both artifact fields contain the
+original UTF-8 QIRF text. Parent type trees are derived from the ordered
+components, rather than supplied as width-only claims. Missing or extra
+components, altered profiles, noncanonical or open budgets, a stale total
+budget, false body matrices or parent tensor equations, and arithmetic/work
+exhaustion refuse. Existing per-file, envelope, matrix and work limits apply.
+
+The dedicated QLV2 invocation accepts execution scope only. Lean compares its
+freshly decoded typed request and all six graphs with the retained Rust QDV1
+view in parent-actual, parent-ideal, left-actual, left-ideal, right-actual,
+right-ideal order. The private Rust report binds the immutable artifacts,
+original request and selected checker path. A changed component, matrix,
+budget or parent cannot reuse it. Text and JSON report this engineering bound
+and its composition profile, with the same separate unclaimed error categories
+and preservation/resource disclosures as the single-component result.
+
+The checked additive operator bound extends to every finite external reference,
+including entangled inputs, under the freshly checked exact isometry premises.
+It supplies no exact equality between the parents, source preservation,
+controlled/inverse access, cleanup, emitted-target correspondence or resource
+certificate, including at total epsilon zero. Recursive, sequential, controlled
+and instrument native composition remain separate unfinished paths; this
+two-component profile does not complete #31 or #163.
 
 ### Instrument engineering comparison
 

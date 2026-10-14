@@ -84,6 +84,8 @@ import Qleisli.Semantics.EngineeringPure
 import Qleisli.EngineeringPure
 import Qleisli.NativeEngineeringPure
 import Qleisli.NativeEngineeringPureProtocol
+import Qleisli.NativeEngineeringPureTensor
+import Qleisli.NativeEngineeringPureTensorProtocol
 import Qleisli.EngineeringPureComposition
 import Qleisli.Semantics.EngineeringInstrument
 import Qleisli.EngineeringInstrument

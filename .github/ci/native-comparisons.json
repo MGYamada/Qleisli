@@ -1013,6 +1013,46 @@
       "env": {
         "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
       }
+    },
+    {
+      "id": "engineering-pure-tensor",
+      "name": "Ordered pure tensor engineering composition, six original graphs, exact parent equations and closed additive budgets",
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "engineering_pure_tensor",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "engineering_pure_tensor_cli",
+          "--",
+          "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--doc",
+          "engineering_pure_tensor"
+        ],
+        [
+          "python3",
+          "scripts/test_engineering_pure_tensor_native.py",
+          "--record",
+          "{record}"
+        ]
+      ],
+      "env": {
+        "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      }
     }
   ]
 }

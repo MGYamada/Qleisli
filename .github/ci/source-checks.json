@@ -103,6 +103,11 @@
         [
           "python3",
           "scripts/test_execution_view_encoding.py"
+        ],
+        [
+          "python3",
+          "scripts/test_engineering_pure_tensor_native.py",
+          "--baseline-only"
         ]
       ],
       "prepare": []

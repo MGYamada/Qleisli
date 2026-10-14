@@ -3,6 +3,7 @@
 mod codec;
 pub mod engineering_instrument;
 pub mod engineering_pure;
+pub mod engineering_pure_tensor;
 mod execution_view;
 pub mod finite_leaf;
 pub mod finite_matrix;

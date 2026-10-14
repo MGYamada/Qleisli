@@ -137,6 +137,24 @@ class InventoryTests(unittest.TestCase):
         self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'engineering-instrument']
         self.bad('missing engineering-instrument public boundary')
 
+    def test_tensor_engineering_contract_retains_originals_budget_and_claim_kind(self):
+        for field, value in (
+            ('status', 'native exact acceptance'),
+            ('binding', 'two old component receipts are sufficient for any parent'),
+            ('request', 'runtime precision with no explicit total budget'),
+            ('encoding', 'inspection compares only the parent graph'),
+            ('domain', 'epsilon zero supplies clean release and target resources'),
+        ):
+            self.data = copy.deepcopy(self.baseline)
+            boundary = next(row for row in self.data['boundaries'] if row['id'] == 'engineering-pure-tensor')
+            boundary[field] = value
+            with self.subTest(field=field):
+                self.bad('unreviewed engineering-pure-tensor boundary contract')
+
+    def test_tensor_engineering_public_source_requires_its_own_boundary(self):
+        self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'engineering-pure-tensor']
+        self.bad('missing engineering-pure-tensor public boundary')
+
     def test_capacity_test_and_replacement_are_required(self):
         self.data['capacities'][0]['replacement']=[]
         self.bad('incomplete capacity replacement')

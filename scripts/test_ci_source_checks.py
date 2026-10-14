@@ -40,6 +40,7 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_current_source_fixtures.py'],
             ['python3', 'scripts/test_observation_sources.py'],
             ['python3', 'scripts/test_execution_view_encoding.py'],
+            ['python3', 'scripts/test_engineering_pure_tensor_native.py', '--baseline-only'],
         ])
         later = checks.plan('repository-integrity')
         self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)

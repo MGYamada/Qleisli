@@ -70,6 +70,61 @@ ENGINEERING_INSTRUMENT_BOUNDARY = {
     'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29'],
 }
 
+ENGINEERING_PURE_TENSOR_BOUNDARY = {
+    'id': 'engineering-pure-tensor',
+    'group': 'engineering-pure-tensor',
+    'entry_points': [
+        'interchange::engineering_pure_tensor::EngineeringPureTensorRequest',
+        'interchange::engineering_pure_tensor::{check,check_with_kernel,check_serialized_with_kernel}',
+        'EngineeringPureTensorReport original-artifact/request/profile accessors',
+        'qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST',
+    ],
+    'status': 'Separate native ordered-tensor engineering check only; no exact cross-body or constitutional acceptance',
+    'request': (
+        'Strict 14-field qleisli.engineering-pure-tensor-request v1: engineering-pure-tensor-bound claim, '
+        'pure-euclidean-operator-norm-v1 metric, tensor-additive-r8-pure-leaf-v1 checker, qirf-r8-pure-v1 '
+        'IR profile, ordered-tensor-two-v1 composition and implementation-distance category. Parent '
+        'actual/ideal leaf requests, original ideal parent text, two ordered seven-field components '
+        '(full domain/codomain, actual/ideal leaves, epsilon and both original texts), and a closed '
+        'canonical nonnegative total epsilon exactly equal to the checked component sum.'
+    ),
+    'binding': (
+        'One execution-only QLV2 invocation freshly decodes six original artifacts and checks each '
+        'dependency order, full ordered interface, body matrix and exact Gram equation. Both parent '
+        'matrices must equal independently computed low-first tensors. Component inequalities and '
+        'exact budget addition share one work chain; no whole-parent Frobenius substitution. QDV1 '
+        'compares the complete typed request and all six retained graphs. The private allocation-bound '
+        'report grants no exact accepted-program/Meaning, inverse/control, cleanup or resource conversion, '
+        'including epsilon zero.'
+    ),
+    'encoding': (
+        'QLV2 execution scope with original QLV1 parent body/request; QDV1 engineering-pure-tensor '
+        'record contains typed request and parent actual/ideal, left actual/ideal, right actual/ideal '
+        'graphs in that order. Distinct qleisli.engineering-pure-tensor-native 1 / engineering-checked '
+        '/ execution response; old outer frames, inspection/caller scope and cross-kind replies reject.'
+    ),
+    'domain': (
+        'Exactly two bounded rectangular R8 pure comparisons with exact phase, original dependencies, '
+        'complete product type trees and zero-width owners retained. The additive parent bound covers '
+        'arbitrary finite references under freshly checked exact isometry premises. The IR profile '
+        'is not hardware; recursive/sequential/control/instrument native composition and source/target '
+        'preservation remain separate.'
+    ),
+    'limits': (
+        'Unchanged 16 MiB per-file/request, 64 MiB QLV2 envelope/view, dimension-64 exact matrices, '
+        'i128 canonical dyadics with denominator exponent at most 126, one shared 10M checker-work '
+        'budget and 60s process timeout. Checker work is not program/target execution-resource cost.'
+    ),
+    'failure': (
+        'Reject missing/extra components or context, changed profiles, open/noncanonical/negative '
+        'budgets, stale total sum, false original-body matrices/Gram, altered dependencies/full type '
+        'trees/ports/axes, incorrect parent tensor equations, changed typed request or any graph, '
+        'wrong frame/scope/version/response and exceeded capacity. Missing/failed/timed-out checker '
+        'has no fallback; exact native contracts remain unchanged.'
+    ),
+    'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29'],
+}
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -243,11 +298,16 @@ def check(root=ROOT, data=None):
                     raise ValueError('empty boundary field: ' + key)
             if boundary['id'] == 'engineering-instrument' and boundary != ENGINEERING_INSTRUMENT_BOUNDARY:
                 raise ValueError('unreviewed engineering-instrument boundary contract')
+            if boundary['id'] == 'engineering-pure-tensor' and boundary != ENGINEERING_PURE_TENSOR_BOUNDARY:
+                raise ValueError('unreviewed engineering-pure-tensor boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
             raise ValueError('duplicate boundary')
         if ('src/interchange/engineering_instrument.rs' in paths and
                 'engineering-instrument' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-instrument public boundary')
+        if ('src/interchange/engineering_pure_tensor.rs' in paths and
+                'engineering-pure-tensor' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing engineering-pure-tensor public boundary')
         for capacity in data['capacities']:
             if set(capacity) != {'id','scope','value','source','test','replacement'} or capacity['source'] not in paths:
                 raise ValueError('incomplete capacity scope')

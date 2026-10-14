@@ -17,13 +17,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 43)
-        self.assertEqual(result['public_boundaries'], 22)
+        self.assertEqual(result['groups'], 44)
+        self.assertEqual(result['public_boundaries'], 23)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 24)
-        self.assertEqual(result['native_modes'], 11)
+        self.assertEqual(result['production_paths'], 25)
+        self.assertEqual(result['native_modes'], 12)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -123,6 +123,8 @@ class ProductionCoverage(unittest.TestCase):
             ('boundaries', 'engineering-pure', 'native-execution'),
             ('groups', 'engineering-instrument', 'native-execution'),
             ('boundaries', 'engineering-instrument', 'native-execution'),
+            ('groups', 'engineering-pure-tensor', 'native-execution'),
+            ('boundaries', 'engineering-pure-tensor', 'native-execution'),
             ('groups', 'raw-core', 'engineering-check'),
             ('boundaries', 'qirf-native-v029', 'engineering-check'),
         ):
@@ -202,6 +204,39 @@ class ProductionCoverage(unittest.TestCase):
         ):
             with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
                 self.check_changed_source(path, marker, 'removed premise or proof')
+
+    def test_tensor_engineering_route_cannot_reuse_exact_or_single_component_mode(self):
+        for field, value in (
+            ('classification', 'native-acceptance'),
+            ('native_modes', ['--engineering-pure-check']),
+            ('boundaries', ['engineering-pure']),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'engineering-pure-tensor-check')[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'classification or binding'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_tensor_scope_cannot_replace_composition_or_promote_zero(self):
+        for field, claim in (
+            ('proof_scope', 'whole-parent Frobenius checking alone certifies additive composition'),
+            ('proof_scope', 'epsilon zero grants exact Meaning and target RS'),
+            ('gaps', 'None; source, control and emitted-target preservation are complete'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'engineering-pure-tensor-check')[field] = claim
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'engineering-pure-tensor proof scope'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_tensor_originals_total_budget_and_reference_proof_are_required(self):
+        for path, marker in (
+            ('lean-kernel/Protocol/EngineeringPureTensor.lean', 'theorem checkRetained_bound'),
+            ('lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean', 'guard (epsilon == request.epsilon)'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean', 'supplied.data == expected.data'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean', '.inspection | .caller => throw .packet'),
+            ('lean/Qleisli/NativeEngineeringPureTensorProtocol.lean', 'theorem run_reference_bound'),
+        ):
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed required binding')
 
     def test_omitted_route_and_boundary_path_reject(self):
         for change in (lambda d: d['paths'].pop(),
