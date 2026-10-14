@@ -50,8 +50,8 @@ class NativeCI(unittest.TestCase):
 
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
-        self.assertEqual(len(tasks), 70)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 103)
+        self.assertEqual(len(tasks), 71)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 107)
         added = next(task for task in tasks if task['id'] == 'execution-view-encoding')
         self.assertEqual(added['commands'], [[
             'python3', 'scripts/run_native_lean_test.py',
@@ -82,12 +82,12 @@ class NativeCI(unittest.TestCase):
             ["cargo", "+1.98.1", "test", "--test", "sized_review_dialects", "native", "--", "--include-ignored"],
             ["cargo", "+1.98.1", "test", "--lib", "native_named_qpe", "--", "--include-ignored"],
         ]
-        actual = [c for task in tasks if task['id'] not in {'engineering-pure', 'engineering-instrument'}
+        actual = [c for task in tasks if task['id'] not in {'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor'}
                   for c in task["commands"] if "--include-ignored" in c]
         # native-acceptance already used include-ignored before this migration.
         actual = [c for c in actual if "native_acceptance" not in c]
         self.assertEqual(sorted(actual), sorted(migrated))
-        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance", "execution-view-encoding", "engineering-pure", "engineering-instrument"}]
+        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance", "execution-view-encoding", "engineering-pure", "engineering-instrument", "engineering-pure-tensor"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]
@@ -148,6 +148,18 @@ class NativeCI(unittest.TestCase):
             ['cargo', '+1.98.1', 'test', '--lib', 'engineering_instrument', '--', '--include-ignored'],
             ['cargo', '+1.98.1', 'test', '--test', 'engineering_instrument_cli', '--', '--include-ignored'],
             ['cargo', '+1.98.1', 'test', '--doc', 'engineering_instrument'],
+        ])
+        self.assertEqual(task['env'], {
+            'QLEISLI_KERNEL': 'lean-kernel/.lake/build/bin/qleisli-kernel',
+        })
+
+    def test_tensor_engineering_originals_addition_and_no_promotion_have_required_commands(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'engineering-pure-tensor')
+        self.assertEqual(task['commands'], [
+            ['cargo', '+1.98.1', 'test', '--lib', 'engineering_pure_tensor', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'test', '--test', 'engineering_pure_tensor_cli', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'test', '--doc', 'engineering_pure_tensor'],
+            ['python3', 'scripts/test_engineering_pure_tensor_native.py', '--record', '{record}'],
         ])
         self.assertEqual(task['env'], {
             'QLEISLI_KERNEL': 'lean-kernel/.lake/build/bin/qleisli-kernel',

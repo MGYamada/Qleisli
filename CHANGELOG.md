@@ -14,6 +14,10 @@ and exactness obligations retain their recorded scopes and status.
 - Share Rust toolchain setup and relocated native bundle smoke checks through
   local CI actions. Preserve each producer's preparation order, pinned tools,
   complete validation plans, proof lanes, artifacts and release receipts.
+- Check ordered pure tensor engineering bounds through a separate native API
+  and CLI: freshly bind six original bodies, both exact parent tensor equations
+  and the explicit sum of closed component budgets. Preserve arbitrary-reference
+  bounds and the separation from exact Meaning, cleanup and target resources.
 - Separate native process transport settings from acceptance/work budgets
   (#94): finite, hierarchy inspection and hierarchy request profiles retain
   their existing 256/1,100,000/2,200,000-byte replies and 60-second deadlines.

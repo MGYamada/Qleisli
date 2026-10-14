@@ -1,0 +1,34 @@
+{
+  "format": "qleisli.engineering-pure-composition-first-capture",
+  "version": 1,
+  "kind": "informed-study",
+  "preserved_archives": [
+    {
+      "path": "tensor-prototype.tar.gz",
+      "sha256": "5fbbff9fd4218f12188cde5b61b8ee99914b197cb2d9664171c01a6cd4cb3e84",
+      "bytes": 30690,
+      "members": 86,
+      "frozen_files": 85,
+      "freeze_sha256": "c9117046cb92dcc0ade1a403ad884c4035e0ddb5501d33acb3f48b419858f512"
+    },
+    {
+      "path": "shape-budget-supplement.tar.gz",
+      "sha256": "1b0690083fce798ad05ab66309f9385b1bba1a23a103440fb359856e0976bcf9",
+      "bytes": 19284,
+      "members": 45,
+      "frozen_files": 44,
+      "freeze_sha256": "eadc3f349a75218b233cc48556cbd027e417dec671eabaaa3a89ee61b8f27aff"
+    }
+  ],
+  "maximum_physical_qubits": 2,
+  "recorded_commands_executed": false,
+  "source_to_manual_qirf_preservation_established": false,
+  "issue_completion_credit": false,
+  "trusted_constitution_base": "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb",
+  "observer_failures": {
+    "path": "observer-failures.json",
+    "sha256": "31c0e36a0f52ea64a1ef03af2ff2946fa836b5029d39de50ccf21613f5d16129",
+    "bytes": 131938,
+    "files": 7
+  }
+}
