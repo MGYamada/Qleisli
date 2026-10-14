@@ -4826,7 +4826,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "e82f331e82d9a1b319852ea7a6d9fb3736d69c98945f25891fde6a5abf1081a7",
+      "sha256": "55dbba2ac6fac6e75b758f8f460e75203cd2f3b947b099455edad15396339a6f",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4921,7 +4921,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "a6174477f136ef9f2a3685afa216513d43aa09e94dfed63f904836726dbc2ad3",
+      "sha256": "a933f5e6bbb8173455e576ad71c13d80e676ef1dd5f95b3c8788101e70b987cf",
       "group": "sized-source",
       "surface": {
         "declarations": [

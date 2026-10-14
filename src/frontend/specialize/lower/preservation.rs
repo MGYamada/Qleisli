@@ -1460,7 +1460,7 @@ mod tests {
         let source = current_source_text(
             "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli",
         );
-        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
             .unwrap()
             .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
             .unwrap()

@@ -2315,7 +2315,7 @@ mod tests {
         let text = current_source_text(
             "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli",
         );
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()

@@ -64,7 +64,7 @@ fn endomorphic_observing_provider_still_reports_its_inferred_effect() {
         source,
         "effect",
         Span::new(start, start + 1),
-        "inferred body effect must be Unitary",
+        "checked effect in the caller's module must be Unitary",
     );
 }
 
