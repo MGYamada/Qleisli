@@ -155,6 +155,24 @@ class InventoryTests(unittest.TestCase):
         self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'engineering-pure-tensor']
         self.bad('missing engineering-pure-tensor public boundary')
 
+    def test_target_engineering_contract_retains_literal_target_and_scope(self):
+        for field, value in (
+            ('status', 'native exact acceptance'),
+            ('binding', 'A producer target graph and stale ideal receipts suffice'),
+            ('request', 'probability-only comparison without an original ideal'),
+            ('encoding', 'inspection does not need target bytes or ordered gate word'),
+            ('domain', 'arbitrary-input pure coherent target with clean release'),
+            ('limits', 'unbounded target bytes and gate count'),
+        ):
+            self.data = copy.deepcopy(self.baseline)
+            next(row for row in self.data['boundaries'] if row['id'] == 'engineering-openqasm')[field] = value
+            with self.subTest(field=field):
+                self.bad('unreviewed engineering-openqasm boundary contract')
+
+    def test_target_engineering_public_source_requires_its_own_boundary(self):
+        self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'engineering-openqasm']
+        self.bad('missing engineering-openqasm public boundary')
+
     def test_capacity_test_and_replacement_are_required(self):
         self.data['capacities'][0]['replacement']=[]
         self.bad('incomplete capacity replacement')

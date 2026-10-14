@@ -15,6 +15,8 @@ mod digest;
 mod engineering;
 #[path = "qleisli/engineering_instrument.rs"]
 mod engineering_instrument;
+#[path = "qleisli/engineering_openqasm.rs"]
+mod engineering_openqasm;
 #[path = "qleisli/engineering_pure_tensor.rs"]
 mod engineering_pure_tensor;
 #[path = "qleisli/interop.rs"]

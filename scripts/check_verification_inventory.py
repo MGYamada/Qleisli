@@ -126,6 +126,56 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
 }
 
 
+ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
+ 'group': 'engineering-openqasm',
+ 'entry_points': ['interchange::engineering_openqasm::EngineeringOpenQasmRequest',
+                  'interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}',
+                  'EngineeringOpenQasmReport original-target/ideal/request/profile accessors',
+                  'qleisli engineering compare-openqasm3 TARGET --against=REQUEST'],
+ 'status': 'Separate native target-bound engineering instrument check only; no exact source/export or '
+           'constitutional acceptance',
+ 'request': 'Strict 14-field qleisli.engineering-openqasm-request v1: engineering-target-instrument-bound '
+            'claim, complete-adjoint-euclidean-operator-norm-v1 metric, canonical-target-choi-l1-r8-v1 '
+            'checker, openqasm3-canonical-one-qubit-terminal-r8-v1 target profile, single-component-v1 '
+            'composition and implementation-distance category. Both full signature trees must be exactly '
+            'Unit -> classical Bit. Original independent ideal QIRF text, source identity, canonical '
+            'nonnegative closed dyadic epsilon and ordered unsquared coefficient majorants remain explicit; '
+            'no producer matrices or success flags.',
+ 'binding': 'The original QLV1 body contains literal target bytes. One execution-only QLV2 invocation '
+            'independently decodes that canonical byte sequence, constructs its actual Raw graph with an '
+            'explicit zero-width Unit input owner consumed before preparation, freshly reads/checks the '
+            'original ideal and dependencies, and checks both complete Kraus instruments and the coefficient '
+            'bound in one work chain. QDV1 compares the full typed request, literal target bytes, ordered '
+            'gate word, generated actual graph and original ideal graph. A private allocation-bound report '
+            'grants no exact accepted-program, source/export, control/inverse, cleanup, resource or '
+            'constitutional conversion, including epsilon zero.',
+ 'encoding': 'QLV2 execution scope with original QLV1 literal target body/request and QDV1 '
+             'engineering-openqasm record containing typed request, literal byte array, ordered gate-name '
+             'array, generated actual graph and original ideal graph. Distinct '
+             'qleisli.engineering-openqasm-native 1 / engineering-checked / execution response; '
+             'inspection/caller scope, old outer frames and cross-kind replies reject.',
+ 'domain': 'Canonical closed one-qubit OpenQASM 3.0: fixed stdgates.inc declaration, one qubit and one '
+           'classical Bit, explicit reset, at most eight h/x/y/z/s/sdg/t/tdg gates and one terminal ordered '
+           'measurement. The decoder loads no includes. Independent word-to-Raw meaning data reuse existing '
+           'exact gates; literal complex phase equations are checked before observation. The declared '
+           'standard-gate mathematical meaning is a specification assumption, not general OpenQASM or '
+           'hardware certification. Complete-adjoint bounds cover every finite reference to this closed Unit '
+           '-> Bit profile, not an arbitrary-input pure operation.',
+ 'limits': 'Separate fixed target profile: at most 1024 ASCII bytes, eight gates, one physical qubit and one '
+           'terminal Bit; precharge precedes byte traversal. Existing 16 MiB ideal/request, 64 MiB '
+           'envelope/view, six-bit dense R8 reconstruction, canonical i128 dyadics, one shared 10M '
+           'checker-work budget and 60s process timeout are unchanged. Checker work is not a program or '
+           'target resource certificate.',
+ 'failure': 'Reject unsupported or noncanonical target bytes, includes, statements, gates, operands, missing '
+            'reset, post-readout gates, extra readouts, exceeded target-profile capacity, substituted full '
+            'signatures, noncanonical/open/negative budgets, missing/extra/reordered majorants, false '
+            'original ideal/dependencies/Gram, tight bounds, changed literal bytes/word/typed '
+            'context/generated or ideal graph, wrong framing/scope/version/reply and '
+            'missing/failed/timed-out checker. No fallback or epsilon-zero promotion; ordinary exact and '
+            'instrument contracts remain unchanged.',
+ 'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29']}
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -298,6 +348,8 @@ def check(root=ROOT, data=None):
                     raise ValueError('empty boundary field: ' + key)
             if boundary['id'] == 'engineering-instrument' and boundary != ENGINEERING_INSTRUMENT_BOUNDARY:
                 raise ValueError('unreviewed engineering-instrument boundary contract')
+            if boundary['id'] == 'engineering-openqasm' and boundary != ENGINEERING_OPENQASM_BOUNDARY:
+                raise ValueError('unreviewed engineering-openqasm boundary contract')
             if boundary['id'] == 'engineering-pure-tensor' and boundary != ENGINEERING_PURE_TENSOR_BOUNDARY:
                 raise ValueError('unreviewed engineering-pure-tensor boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
@@ -305,6 +357,9 @@ def check(root=ROOT, data=None):
         if ('src/interchange/engineering_instrument.rs' in paths and
                 'engineering-instrument' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-instrument public boundary')
+        if ('src/interchange/engineering_openqasm.rs' in paths and
+                'engineering-openqasm' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing engineering-openqasm public boundary')
         if ('src/interchange/engineering_pure_tensor.rs' in paths and
                 'engineering-pure-tensor' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-pure-tensor public boundary')

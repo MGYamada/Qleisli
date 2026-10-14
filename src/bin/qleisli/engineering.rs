@@ -131,6 +131,13 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     if args
         .iter()
         .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+        .is_some_and(|arg| arg == "compare-openqasm3")
+    {
+        return super::engineering_openqasm::run(args);
+    }
+    if args
+        .iter()
+        .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
         .is_some_and(|arg| arg == "compare-pure-tensor")
     {
         return super::engineering_pure_tensor::run(args);

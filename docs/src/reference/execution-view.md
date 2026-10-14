@@ -482,6 +482,32 @@ original requests separately exercise independent finite-pair phase checks and
 the named-QPE phase-fixed H check. This is bounded cross-implementation evidence;
 the generated graph/request structures are not independent source semantics.
 
+## Engineering target execution view
+
+The separate `--engineering-openqasm-check` mode accepts execution scope only.
+Its original QLV1 body is the literal canonical OpenQASM byte array, and its
+request is the fourteen-field closed engineering instrument contract described
+in [realization](realization.md#literal-openqasm-target-comparison). The outer
+QDV1 record `engineering-openqasm` has five ordered fields:
+
+| Field | Retained data |
+| --- | --- |
+| 1 | Typed engineering request, including complete signatures, identity, epsilon and ordered majorants |
+| 2 | Literal target bytes as an array of natural byte values |
+| 3 | Ordered decoded gate-name strings |
+| 4 | Complete generated actual graph, including its explicit Unit owner, unpack, initialization, terminal measurement and Observe effect |
+| 5 | Complete original ideal graph and its fresh dependency checking results |
+
+Lean independently decodes the same target bytes and ideal QIRF, checks their
+complete instruments and bound, derives this view from that same result and
+compares exact bytes. A stale word, graph, full type, identity or budget refuses
+even when the submitted original remains individually valid. The Rust actual
+graph is retained data, without an accepted-program constructor or fallback.
+The private report authorizes only the declared engineering inequality; it
+does not authorize simulation, source/export preservation, control, exact
+cleanup or resources, including at epsilon zero. Existing envelope/view work
+and size limits remain; the target profile separately limits bytes and gates.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

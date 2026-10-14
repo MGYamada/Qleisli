@@ -816,6 +816,27 @@
         "path": "src/interchange/engineering_pure_tensor/tests.rs",
         "test": "changed_parent_component_total_budget_or_original_invalidates_the_claim"
       }
+    },
+    {
+      "id": "engineering-openqasm",
+      "producer": "Literal actual canonical OpenQASM target bytes, independent original ideal QIRF and complete typed engineering request",
+      "consumer": "Dedicated execution-only --engineering-openqasm-check native mode, private EngineeringOpenQasmReport and compare-openqasm3 CLI",
+      "obligation": "Independently decode actual target bytes and construct its original closed instrument; freshly check ideal dependencies, exact Kraus completeness, complete Unit -> Bit signatures and conservative complete-adjoint coefficient bounds. Bind literal target, ordered gate word, typed request and both graphs through QDV1. Preserve literal complex gate phases before observation; epsilon zero grants no exact source/export, accepted-program, control/cleanup, resource or constitutional promotion.",
+      "reference": "docs/src/reference/realization.md#native-canonical-openqasm-target-comparison; governance/proposals/exactness-2026.md",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
+        "VM-29"
+      ],
+      "positive": {
+        "path": "src/interchange/engineering_openqasm/tests.rs",
+        "test": "native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering"
+      },
+      "negative": {
+        "path": "src/interchange/engineering_openqasm/tests.rs",
+        "test": "altered_original_ideal_tight_bound_or_cell_witness_refuses_without_fallback"
+      }
     }
   ],
   "enums": [
@@ -2325,13 +2346,13 @@
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "afdcf342beb7e411c4d6db2b2664672ee8efe6ba22dac8a398bd1a2ba87a8924",
+      "sha256": "d1d33ce7902ca66da7fcdfcbce25544b6a9701c097ba87c8411ddbc0725ef72f",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol.lean",
-      "sha256": "e26f54083c5b715b1919a055ccb0ced91830df2506de1136bd7a8c549359e39b",
+      "sha256": "48048379d47de42fa86829f4daeaf4e55dc3f24df600da2d893d3727e3ada897",
       "group": "hierarchy",
       "surface": null
     },
@@ -2523,7 +2544,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "dc9463f7d9a88475ec63af6a2e438d6e7168047ad0b204a5cb2de891806d68e5",
+      "sha256": "57b503631a86c6e479e13513edf594944a4d492d9bcbe43e173c0916bb93dd3b",
       "group": "hierarchy",
       "surface": null
     },
@@ -3147,7 +3168,7 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "cb48566c01b9fe5e09b076e172b441f99bb6aa16bf8b4dc34f8f5549c76b7381",
+      "sha256": "aaf8ba7380bee84eb73b5094c76bbe9be8eff3dcd04efdbbbcee041d8bacfbd4",
       "group": "raw-core",
       "surface": null
     },
@@ -3507,7 +3528,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "4e6c8545af4fa9e06f5ddddcf9d984f1a815a9193d7c90d5475d2b176ce7f2c9",
+      "sha256": "d8505c088e59511017cf6d1dc43800fc500958d3fa5df923d52bd1a459370d42",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3547,7 +3568,7 @@
     },
     {
       "path": "src/bin/qleisli/engineering.rs",
-      "sha256": "f83dfb7f5962c60ff60a9f1a92c649cf19dea058ec0dc1a70bcfd1a804a6e721",
+      "sha256": "2e191d64ba0bb5223a329c142f7472c43957b8f7ef34fe362b9ccedf3591f2f8",
       "group": "engineering-pure",
       "surface": {
         "declarations": [],
@@ -3577,7 +3598,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "a53ce2d4f0969dac53ba2aceed5d64e89bdf769d4ec323c82fadf29457854c43",
+      "sha256": "e628c70f2f828ae4a6caea89069fc72e4e46daac8fe7678dc37d8d9103299b00",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5171,7 +5192,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "7fa3f45df2b5fef43ea4ac5c7699404bb05f7b9907e00abe1de5c4916d29f20a",
+      "sha256": "1c3eb8f393e1598eb87e43f5e9a2f14a97b2c04ee905ca9e78c3144d9ee1d334",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5458,7 +5479,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "79bf92b22bd42e3bb6eba2a27bbe464532d39c3fb3659c584670df4adf2c4bf1",
+      "sha256": "a99dda6983634756acb4eeb74d53089774229da2d0f0a459245e5d3dfb689d97",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5467,6 +5488,7 @@
           "RootInterface",
           "Version",
           "engineering_instrument",
+          "engineering_openqasm",
           "engineering_pure",
           "engineering_pure_tensor",
           "finite_leaf",
@@ -5973,7 +5995,7 @@
     },
     {
       "path": "src/interchange/engineering_instrument.rs",
-      "sha256": "7c36c1d1fcca8b1565174b44e1395bfd9d361f4710b62ab2ae0680c5fc7bd876",
+      "sha256": "487a51f8cd21624fd828ffbbc8ec6066866ea77d56589247417630dfa0ac0a19",
       "group": "engineering-instrument",
       "surface": {
         "declarations": [
@@ -6181,6 +6203,171 @@
       "path": "tests/engineering_pure_tensor_cli.rs",
       "sha256": "b5777b426b95dd51cf83f94313ecb211158571d0ed5437566983656e40c45e6e",
       "group": "engineering-pure-tensor",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "lean-kernel/Cli/EngineeringOpenQasm.lean",
+      "sha256": "99c6c92f2f2ec37b468b431ccf20166762f2edfdba88ec0b3d13f4da44a444c5",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/EngineeringOpenQasm.lean",
+      "sha256": "91349f0708e392cfba7ffbdf71ba9d4d177d41e077df6a5d004de6cda586aa00",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
+      "sha256": "4189f0b706029e007d4cd18d60d11fac8b6c6d06f9550d2f3f5eded1e2c73195",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
+      "sha256": "fabdd0a28a00405357b29530cf20cfc052f4b4ee642602f412b85ea910a58cac",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
+      "sha256": "25909334d60fbb8b1406ab7d2b418b969d2cb3c755c99302ed3b9154070d65b5",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
+      "sha256": "98230e97bc32d9238b9999d786ac0e23198b2387d287a1ba883b40d6445c1fc9",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+      "sha256": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
+      "sha256": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/CanonicalOpenQasmGates.lean",
+      "sha256": "33a87fb22ef4bd251bee119b2b37668997273a2453b8c04b486a7c2819fe3c2a",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringOpenQasm.lean",
+      "sha256": "fe8510160756d89b08f410862c37d13076cd4315da8309cad14f025fc814505d",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
+      "sha256": "47768fa115a35a2805d095d1afab42df60ae48756e7728f0a6955955ad94e1a0",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_openqasm_cli.py",
+      "sha256": "e0a6e03a0cd965646b5ef4052baf12a071fcca4ff064175e118496cc7a7c5cb1",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_openqasm_native.py",
+      "sha256": "8c6ae7ad55c0725beec81e34c20f499ef5019688ffc29cb1a047adffcbcfd9b1",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "src/bin/qleisli/engineering_openqasm.rs",
+      "sha256": "84edec1b63e3382d919804cbf171a5953afe90f84319275057f2c52f08f242a2",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm.rs",
+      "sha256": "ef615954157901d4551775787cef88bc24684bb16baceb6d615258cc1e285896",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [
+          "EngineeringOpenQasmReport",
+          "EngineeringOpenQasmRequest"
+        ],
+        "functions": [
+          "pub fn check( target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, target: &[u8], request_bytes: &[u8], ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn contract(&self) -> &EngineeringInstrumentRequest",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn gate_word(&self) -> impl ExactSizeIterator<Item = &'static str> + '_",
+          "pub fn ideal_artifact(&self) -> &[u8]",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new(contract: EngineeringInstrumentRequest) -> Result<Self>",
+          "pub fn request(&self) -> &EngineeringOpenQasmRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn target_bytes(&self) -> &[u8]",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/runtime.rs",
+      "sha256": "61ce133aea43069a4eef15cef8dde171adc55c96cf7c1f693b002931e47ff619",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/target.rs",
+      "sha256": "3d230e6b4847bc578de4b4003ee808f8b35a41dc5e804fe1d4dd5216fff208fa",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "pub(super) const MAX_TARGET_BYTES: usize = 1024;",
+          "pub(super) const MAX_TARGET_GATES: usize = 8;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/tests.rs",
+      "sha256": "4df3f9be4fdc399c1a8c055f3643eaa1bea689e960cb7f424a2ff4af3131016d",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/engineering_openqasm.rs",
+      "sha256": "e5bf7a14c3f40efe8e5cef93e3df5a5a2c29d24f9cba98d6f73ad29b559008fa",
+      "group": "engineering-openqasm",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -6688,6 +6875,29 @@
         "VM-28",
         "VM-29"
       ]
+    },
+    {
+      "id": "engineering-openqasm",
+      "group": "engineering-openqasm",
+      "entry_points": [
+        "interchange::engineering_openqasm::EngineeringOpenQasmRequest",
+        "interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}",
+        "EngineeringOpenQasmReport original-target/ideal/request/profile accessors",
+        "qleisli engineering compare-openqasm3 TARGET --against=REQUEST"
+      ],
+      "status": "Separate native target-bound engineering instrument check only; no exact source/export or constitutional acceptance",
+      "request": "Strict 14-field qleisli.engineering-openqasm-request v1: engineering-target-instrument-bound claim, complete-adjoint-euclidean-operator-norm-v1 metric, canonical-target-choi-l1-r8-v1 checker, openqasm3-canonical-one-qubit-terminal-r8-v1 target profile, single-component-v1 composition and implementation-distance category. Both full signature trees must be exactly Unit -> classical Bit. Original independent ideal QIRF text, source identity, canonical nonnegative closed dyadic epsilon and ordered unsquared coefficient majorants remain explicit; no producer matrices or success flags.",
+      "binding": "The original QLV1 body contains literal target bytes. One execution-only QLV2 invocation independently decodes that canonical byte sequence, constructs its actual Raw graph with an explicit zero-width Unit input owner consumed before preparation, freshly reads/checks the original ideal and dependencies, and checks both complete Kraus instruments and the coefficient bound in one work chain. QDV1 compares the full typed request, literal target bytes, ordered gate word, generated actual graph and original ideal graph. A private allocation-bound report grants no exact accepted-program, source/export, control/inverse, cleanup, resource or constitutional conversion, including epsilon zero.",
+      "encoding": "QLV2 execution scope with original QLV1 literal target body/request and QDV1 engineering-openqasm record containing typed request, literal byte array, ordered gate-name array, generated actual graph and original ideal graph. Distinct qleisli.engineering-openqasm-native 1 / engineering-checked / execution response; inspection/caller scope, old outer frames and cross-kind replies reject.",
+      "domain": "Canonical closed one-qubit OpenQASM 3.0: fixed stdgates.inc declaration, one qubit and one classical Bit, explicit reset, at most eight h/x/y/z/s/sdg/t/tdg gates and one terminal ordered measurement. The decoder loads no includes. Independent word-to-Raw meaning data reuse existing exact gates; literal complex phase equations are checked before observation. The declared standard-gate mathematical meaning is a specification assumption, not general OpenQASM or hardware certification. Complete-adjoint bounds cover every finite reference to this closed Unit -> Bit profile, not an arbitrary-input pure operation.",
+      "limits": "Separate fixed target profile: at most 1024 ASCII bytes, eight gates, one physical qubit and one terminal Bit; precharge precedes byte traversal. Existing 16 MiB ideal/request, 64 MiB envelope/view, six-bit dense R8 reconstruction, canonical i128 dyadics, one shared 10M checker-work budget and 60s process timeout are unchanged. Checker work is not a program or target resource certificate.",
+      "failure": "Reject unsupported or noncanonical target bytes, includes, statements, gates, operands, missing reset, post-readout gates, extra readouts, exceeded target-profile capacity, substituted full signatures, noncanonical/open/negative budgets, missing/extra/reordered majorants, false original ideal/dependencies/Gram, tight bounds, changed literal bytes/word/typed context/generated or ideal graph, wrong framing/scope/version/reply and missing/failed/timed-out checker. No fallback or epsilon-zero promotion; ordinary exact and instrument contracts remain unchanged.",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-28",
+        "VM-29"
+      ]
     }
   ],
   "capacities": [
@@ -7010,6 +7220,17 @@
       "test": "src/interchange/process.rs#each_transport_profile_accepts_its_exact_byte_limit_and_rejects_one_more",
       "replacement": [
         "VM-28"
+      ]
+    },
+    {
+      "id": "engineering-openqasm-target-profile",
+      "scope": "Only the closed canonical one-qubit terminal engineering target profile; independent byte/gate capacities, not emitted resources or a global limit increase",
+      "value": "At most 1024 ASCII target bytes, eight supported gate lines, one physical qubit and one terminal classical Bit; exact fixed header/reset/readout syntax",
+      "source": "src/interchange/engineering_openqasm/target.rs",
+      "test": "src/interchange/engineering_openqasm/tests.rs#canonical_target_is_literal_closed_unit_data_with_exact_ordered_gate_expansions",
+      "replacement": [
+        "VM-28",
+        "VM-29"
       ]
     }
   ],

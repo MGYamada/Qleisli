@@ -95,3 +95,6 @@ import Qleisli.EngineeringInstrumentComposition
 import Qleisli.EngineeringInstrumentTensor
 import Qleisli.NativeEngineeringInstrument
 import Qleisli.NativeEngineeringInstrumentProtocol
+import Qleisli.CanonicalOpenQasmGates
+import Qleisli.NativeEngineeringOpenQasm
+import Qleisli.NativeEngineeringOpenQasmProtocol

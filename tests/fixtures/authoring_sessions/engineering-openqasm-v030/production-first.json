@@ -1,0 +1,62 @@
+{
+  "format": "qleisli.engineering-openqasm-production-first-capture",
+  "version": 1,
+  "archive": {
+    "path": "production-first.tar.gz",
+    "bytes": 22743,
+    "sha256": "34d8dd2047d303a6f4ef090d5ccb12b5ef33f490b2bcfeb4ab517f2c2e93f0e2",
+    "members": 26
+  },
+  "files": {
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt01.json": "5f89c76c31b95a2ae5f8d07779d4387b96db6c9c96b602c2be023b262e330e2e",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt01.lean": "c8fa28e5c6335e2f024746d385d43b03ffdc34f476f63cfe158c188597f411ce",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt01.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt01.stdout.txt": "cc19f20ff3f1d61da63a3f9d9eaaa0e9b08a9ca430fd0b86627640d0f145f6ba",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt02.json": "841fe52bf332f68abb96fbe2e03ff677e2c2a820aee7bf1dbf8b97d0ce578b1d",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt02.lean": "25909334d60fbb8b1406ab7d2b418b969d2cb3c755c99302ed3b9154070d65b5",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt02.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native/QleisliKernel_Qirf_EngineeringOpenQasm.lean.attempt02.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native/first-sources.json": "3898abe6e039554805cfd69698f8da195c2697011be178705487f53d6bfb819b",
+    "native/first/lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean": "a3bb72fab0395f2a6a6f25c8b8c4128dc88c591d92ebf401dff8109e9c5d88d0",
+    "native/first/lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean": "98230e97bc32d9238b9999d786ac0e23198b2387d287a1ba883b40d6445c1fc9",
+    "native/first/lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "d7436cc25f2820085940c27770ba341a63601691da96cb36d2dc9a61cd496a1a",
+    "rust/after-observer-before-clippy.tests.rs": "7d0df60f49a95d3063293329f9feda2ecbff031a4d617175a4d1040c51fee94b",
+    "rust/clippy-failure.log": "0e6f42b416e416e0a9d821076290d11facf5a899b54565878c3bfb771742f030",
+    "rust/compile-01-attempt01.log": "f64cb1f94dc7d08a99be25f581f5f37bb1917c04e496d106186ffc0ffb58b59a",
+    "rust/compile-02-attempt01.log": "e7dce20a57984ba8258d05a8d4b51026630d1885716fa9a5e5030a9fab0f4b65",
+    "rust/compile.json": "159961886568767d0ae7b1e9ec243d41b6eec374bde90f14b7e0b01f2b26bfda",
+    "rust/first/src/bin/qleisli/engineering_openqasm.rs": "84edec1b63e3382d919804cbf171a5953afe90f84319275057f2c52f08f242a2",
+    "rust/first/src/interchange/engineering_openqasm.rs": "ef615954157901d4551775787cef88bc24684bb16baceb6d615258cc1e285896",
+    "rust/first/src/interchange/engineering_openqasm/runtime.rs": "61ce133aea43069a4eef15cef8dde171adc55c96cf7c1f693b002931e47ff619",
+    "rust/first/src/interchange/engineering_openqasm/target.rs": "3d230e6b4847bc578de4b4003ee808f8b35a41dc5e804fe1d4dd5216fff208fa",
+    "rust/first/src/interchange/engineering_openqasm/tests.rs": "53ddbb843e573c9706662775ff8ddee84b6d9fe30fa76a68e2432bdfd88534a8",
+    "rust/first/src/interchange/execution_view/finite/engineering_openqasm.rs": "e5bf7a14c3f40efe8e5cef93e3df5a5a2c29d24f9cba98d6f73ad29b559008fa",
+    "rust/first/tests/engineering_openqasm_cli.rs": "21b14f002c80528081958c5526d489345eefbcf828397a472458a253a1e87c91",
+    "rust/observer-failure.log": "0b547e6758f8f47e974e0124578c712448955420f914dfe3c6c78654024a19c7",
+    "rust/source.json": "55140ac3b3dd8b449d8c07773b4242d99758d54fce2f3d7dc2d3e48c12690e28"
+  },
+  "native_failure": {
+    "kind": "mechanical-import-namespace-error",
+    "before_exit_code": 1,
+    "after_exit_code": 0,
+    "acceptance_rule_changed": false
+  },
+  "rust_compilation": {
+    "first_checks_passed": true,
+    "toolchain": "1.98.1"
+  },
+  "observer_failure": {
+    "kind": "test-observer-no-op-mutation",
+    "source": "rust/first/src/interchange/engineering_openqasm/tests.rs",
+    "repair": "Replace already-null root-interface with boolean true, instead of null. The unchanged valid packet was correctly accepted.",
+    "semantic_counterexample": false
+  },
+  "clippy_failure": {
+    "kind": "test-spelling-lint",
+    "source": "rust/after-observer-before-clippy.tests.rs",
+    "repair": "Use byte-string slice syntax instead of a one-element byte-character slice.",
+    "production_semantic_change": false
+  },
+  "recorded_commands_executed": false,
+  "issue_completion_credit": false
+}

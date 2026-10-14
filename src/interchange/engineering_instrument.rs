@@ -325,7 +325,10 @@ fn dyadic_value(value: DyadicBound) -> Value {
     ])
 }
 
-fn encode_request(request: &EngineeringInstrumentRequest, expected: &[u8]) -> Result<Vec<u8>> {
+pub(super) fn encode_request(
+    request: &EngineeringInstrumentRequest,
+    expected: &[u8],
+) -> Result<Vec<u8>> {
     let expected = std::str::from_utf8(expected)
         .map_err(|_| Error::format("engineering ideal artifact requires UTF-8"))?;
     let mut encoder = Encoder::new(Version::V2);
@@ -473,7 +476,7 @@ fn signature(value: &Value) -> Result<InstrumentSignature> {
     InstrumentSignature::new(input, result).map_err(super::contract_error)
 }
 
-fn decode_request(bytes: &[u8]) -> Result<(EngineeringInstrumentRequest, String)> {
+pub(super) fn decode_request(bytes: &[u8]) -> Result<(EngineeringInstrumentRequest, String)> {
     let value = json::parse(bytes)?;
     value.fields(&[
         "format",
