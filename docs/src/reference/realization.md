@@ -132,9 +132,10 @@ interface, target/profile, metric, finite bound, input/reference domain and
 composition assumptions. Instrument claims must retain the complete public
 outcomes and residual outputs with arbitrary external references. Sampling,
 algorithmic resolution, synthesis and numerical-runtime information remain
-distinct; an absent claim does not mean zero error. These are implementation
-obligations under #31 and #163, not a declaration that a current certificate
-or universal approximation metric exists.
+distinct; an absent claim does not mean zero error. The bounded engineering
+profiles below implement these contracts within their stated domains. They
+define no universal approximation metric; target-resource certificates remain
+separate work under #163.
 
 Engineering receipts and their API/CLI claim kinds must remain mechanically
 distinct from exact correspondence and resource evidence. Neither a small
@@ -163,9 +164,10 @@ body against its own independent matrix request before comparing those matrices;
 both complete type trees and ordered ports remain checked. Neither component
 changes the exact equality gate. A separate native engineering protocol binds
 these components to the actual invocation and both retained host graphs. The
-composed instrument contract, target-resource gate and compiler consumption of
-engineering claims remain unfinished under #31/#163. The pure result
-does not complete those Issues or establish source/target preservation.
+native composed instrument profile, target-resource gate and source-compiler
+consumption of engineering claims remain unsupported. Mathematical instrument
+composition and native ordered pure tensor composition are described below.
+An engineering result does not establish source/target preservation.
 
 ### Native pure engineering comparison
 
@@ -292,8 +294,8 @@ including entangled inputs, under the freshly checked exact isometry premises.
 It supplies no exact equality between the parents, source preservation,
 controlled/inverse access, cleanup, emitted-target correspondence or resource
 certificate, including at total epsilon zero. Recursive, sequential, controlled
-and instrument native composition remain separate unfinished paths; this
-two-component profile does not complete #31 or #163.
+and instrument native composition remain separate unsupported paths; this
+two-component profile supplies only its stated additive engineering bound.
 
 ### Instrument engineering comparison
 
@@ -383,7 +385,7 @@ These results provide no source epsilon annotation, compiler consumption or
 original source/QIRF composition-preservation proof. The native profile remains
 single-component: it does not issue a composed certificate. Emitted target-byte
 comparisons require the separate bounded profile below. Target-resource
-certification and the other unfinished #31/#163 requirements remain open.
+certification remains unfinished under #163; this profile supplies no such claim.
 No instrument bound grants pure phase agreement, coherent control, inverse,
 exact release or constitutional PR/RS authority.
 
