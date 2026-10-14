@@ -530,6 +530,16 @@ same-attempt receipt and distribution check below remains required. Other
 versions still use the complete-feature requirements gate. Hashes preserve
 the recorded approval; they do not independently authenticate its human author.
 
+The complete-feature criterion review includes the
+[primitive admission and replacement policy](../../docs/src/reference/primitive-boundary.md#admission-and-replacement-process)
+from #154: any new sealed semantic authority needs its expressibility,
+independent contract, QS/PR/RS impact, actual human specification review and
+applicable proofs before admission. Current source/constructor inventory and
+production-route checks detect drift; refreshing their hashes is not admission.
+A release requirement referencing this policy does not assert that the release
+has passed, create a new human act or authorize publication. The actual full
+same-commit package, installation, proof and CI gates remain separate.
+
 The requirements schema is `qleisli.release-requirements`, integer version 1,
 with `release_line`, `identities`, `groups`, `review`, and `issues`. Each Issue
 has `id`, a `snapshot` file reference and nonempty `criteria`; each criterion

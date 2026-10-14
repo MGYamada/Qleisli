@@ -18,6 +18,14 @@ and exactness obligations retain their recorded scopes and status.
   separate. Migrate ordinary bundled/client source and public documentation,
   preserving original first observations and recorded fixture migration chains.
 
+- Define the five-role production architecture and generic-contract bindings
+  (#131), including root/dependency identity, current all-source loading and
+  compatibility obligations. Complete the primitive admission/replacement policy
+  (#154), distinguish derived code and implementation intrinsics, and connect
+  the policy to inventory review and release criteria. Preserve current checking
+  paths, proof gaps and human authority; this admits no new primitive or guarantee.
+  Align the beta audit with the approved #39/#63 exclusions: 125 applicable
+  Issues and two exclusions among the retained 127 entries.
 - Compare literal emitted OpenQASM bytes with an independent original ideal
   through a separate engineering API/CLI and native complete-adjoint bound.
   The explicit closed profile supports one reset qubit, up to eight exact

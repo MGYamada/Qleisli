@@ -214,9 +214,15 @@ source, elaboration, a verified transformation or target lowering is
 insufficient, and state the effects on the trusted boundary and all three
 obligations. Performance or popularity alone is insufficient. A backend
 intrinsic that implements an existing meaning does not thereby acquire a new
-primitive meaning. The admission work in
-[Issue #154](https://github.com/MGYamada/Qleisli/issues/154) must preserve the
-current policy against project axioms and unchecked acceptance paths. This
+primitive meaning. The
+[primitive admission and replacement policy](primitive-boundary.md#admission-and-replacement-process)
+provides the checklist, derived-code presumption, rejected performance-only
+example, edition-aware migration and inventory obligations for
+[Issue #154](https://github.com/MGYamada/Qleisli/issues/154). It preserves the
+current ban on project axioms and unchecked acceptance paths. New independent
+semantic meanings still require actual human specification review; a new
+constitutional case requires the responsible human Guardian judgment. Ordinary
+preserving implementation choices need no invented adoption event. This
 chapter admits no new primitive or trusted assumption.
 
 ## Conflicts and corrections

@@ -284,6 +284,50 @@ whole-root inspection still reports no independent requested meaning. Source,
 decoder, native compilation/runtime and emitted-artifact preservation remain
 separate obligations; these lemmas admit no constitutional guarantee.
 
+## Root loading and compatibility during generic migration
+
+`frontend::project::Project` loads every `.qli` module beneath its selected
+source root and all bundled ordinary sources. Ordinary project compilation
+checks every materialized concrete ordinary function root, including unused
+functions. Classical bodies and Meaning declarations have their separate
+preparation/checking obligations. Common source checking covers every declaration,
+including unused declarations and both branch bodies.
+`QrateSource` in `src/frontend/project/manifest.rs` provides opt-in selection of
+an explicitly declared `[source].root`. That selection chooses the source tree;
+it does not introduce reachable-only loading or exempt unused siblings inside
+it. Explicit module-map `ParsedProgram::parse` checks every supplied module and
+the bundled registry before selecting a concrete entry.
+
+A future reachable-module policy in
+[#273](https://github.com/MGYamada/Qleisli/issues/273) must specify entry roots,
+transitive imports/providers/Meaning dependencies, independent checking of the
+selected graph, bundled-library validation and the treatment of unused sources.
+It must retain original module/root/dependency identities and reject stale,
+missing or replaced references. Preserve the current permitted import-only
+cycles; imports have no runtime action. Forbidden call, Meaning and provider
+dependency cycles retain the rules of their actual profiles, including any
+explicitly admitted decreasing recursion. Diagnostics and source-selection
+migration need review before changing the current all-source behavior. This
+chapter enables no such change.
+
+The [five-role architecture](primitive-boundary.md#generic-acceptance-and-library-owned-algorithms)
+assigns compatibility duties for flat Raw IR, both QIRF profiles, finite
+contracts, all five hierarchy modes, component protocols, source/qrate and
+module-map entrypoints, Rust/Python clients, foreign adapters and research
+comparisons. A later migration must preserve each supported contract or state
+its explicit versioned replacement, unsupported cases and migration tests.
+Keep replaced wrappers and their proofs built/audited until their supported
+callers and obligations migrate. Missing/incompatible native checking must
+continue to reject through every route.
+
+Already retired APIs are not compatibility promises to resurrect:
+`frontend::sized` moved to `frontend::compile`, and the `qleisli sized` command
+prefix was removed with explicit migration diagnostics. The separate research
+and Python comparison readers do not restore that production namespace or
+supply alternative source acceptance. Edition 2026 continues to identify the
+constitutional regime; source/API/protocol compatibility is versioned
+separately.
+
 ## CLI success reports and requested meaning
 
 Without an explicit `--entry`, `qleisli check <source-root>` and
