@@ -15,7 +15,9 @@ and exactness obligations retain their recorded scopes and status.
   callers and public host providers use the public contract; same-module
   inference preserves precision without erasing further external boundaries.
   Keep actual Raw effects, operations, native checking and capability evidence
-  separate. Migrate ordinary bundled/client source and public documentation,
+  separate. Preserve supported Isometry hierarchy transport for public Isometry
+  roots with actually Unitary bodies, without granting Unitary source access.
+  Migrate ordinary bundled/client source and public documentation,
   preserving original first observations and recorded fixture migration chains.
 
 - Define the five-role production architecture and generic-contract bindings

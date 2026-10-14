@@ -63,8 +63,9 @@ impl HierarchyProposal {
         &self.precursor
     }
     /// Whether the proposal uses initialization/unitary/readout transport.
-    /// This includes principal Isometry roots with no measurements and does not
-    /// classify the source effect or establish an isometry theorem.
+    /// This includes checked public Isometry roots with no measurements, even
+    /// when their actual bodies are Unitary. It does not reclassify the source
+    /// operations or establish an isometry theorem.
     pub fn is_instrument(&self) -> bool {
         self.instrument
     }
@@ -1877,9 +1878,11 @@ pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
     }
 }
 
-/// Classify only explicit profile mismatches without narrowing generic source
-/// typing. Body lowering still checks each operation and concrete capability.
-pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<HierarchyEligibility> {
+/// Select the existing hierarchy adapter from the checked exported permission
+/// and actual retained operations separately. A Unitary implementation satisfies
+/// a public Isometry bound through empty-readout transport; it does not grant the
+/// externally stronger Unitary profile or change any actual effect label.
+fn root_profile(source: &ElaboratedProgram) -> Result<Effect> {
     let root = &source.definitions()[source.root()];
     let unsupported = |message: &str| {
         Error::new("unsupported", root.span(), message).in_module(
@@ -1897,16 +1900,31 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
         instance.entry_id,
     )
     .ok_or_else(|| unsupported("selected entry has no checked public effect contract"))?;
-    // Keep the actual original-operation classification used by the Raw/native
-    // profile. It cannot sharpen the source contract of a host-selected root.
-    // This hierarchy adapter has no separate conservative-bound representation.
-    if (root.effect() == "unitary" && public_effect != Effect::Unitary)
-        || (root.effect() == "iso" && public_effect == Effect::Observe)
-    {
-        return Ok(HierarchyEligibility::Ineligible(unsupported(
+    match (public_effect, root.effect()) {
+        (Effect::Unitary, "unitary") => Ok(Effect::Unitary),
+        (Effect::Isometry, "unitary" | "iso") => Ok(Effect::Isometry),
+        (Effect::Observe, "observe") => Ok(Effect::Observe),
+        _ => Err(unsupported(
             "selected pure hierarchy profile requires a matching checked public effect; a sharper implementation effect cannot replace the entry contract; select the Raw profile",
-        )));
+        )),
     }
+}
+
+/// Classify only explicit profile mismatches without narrowing generic source
+/// typing. Body lowering still checks each operation and concrete capability.
+pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<HierarchyEligibility> {
+    let root = &source.definitions()[source.root()];
+    let unsupported = |message: &str| {
+        Error::new("unsupported", root.span(), message).in_module(
+            root.path()
+                .rsplit_once("::")
+                .map_or(root.path(), |(module, _)| module),
+        )
+    };
+    let profile = match root_profile(source) {
+        Ok(profile) => profile,
+        Err(error) => return Ok(HierarchyEligibility::Ineligible(error)),
+    };
     if source
         .definitions()
         .iter()
@@ -1927,7 +1945,7 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
             "selected sized lowering profile requires quantum entry values; classical entry values are unsupported",
         )));
     }
-    if root.effect() == "iso" {
+    if profile == Effect::Isometry {
         let classical: Vec<_> = leaves(root.output())
             .into_iter()
             .filter(|output| !output.ty().is_quantum())
@@ -1942,7 +1960,7 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
             )));
         }
     }
-    if root.effect() == "unitary"
+    if profile == Effect::Unitary
         && leaves(root.output())
             .iter()
             .any(|output| !output.ty().is_quantum())
@@ -1951,7 +1969,7 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
             "selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported",
         )));
     }
-    if root.effect() == "observe" {
+    if profile == Effect::Observe {
         let classical: Vec<_> = leaves(root.output())
             .into_iter()
             .filter(|output| !output.ty().is_quantum())
@@ -2027,6 +2045,7 @@ fn lower_inner<'a>(
 ) -> Result<HierarchyProposal> {
     source.require_function_contracts()?;
     check_profile(source)?;
+    let profile = root_profile(source)?;
     let mut lower = Lower {
         source,
         native_operations,
@@ -2072,7 +2091,7 @@ fn lower_inner<'a>(
     let root = &source.definitions()[source.root()];
     let mut events = vec![];
     let precursor;
-    let (payload, comparison, graph, instrument) = if root.effect() == "unitary" {
+    let (payload, comparison, graph, instrument) = if profile == Effect::Unitary {
         let id = lower.pure_definition(source.root())?;
         let id = lower.factor_fourier(id)?;
         precursor = lower.graph.artifact(id);
@@ -2111,7 +2130,7 @@ fn lower_inner<'a>(
             .into_iter()
             .filter(|v| !v.ty().is_quantum())
             .collect();
-        let isometry = root.effect() == "iso";
+        let isometry = profile == Effect::Isometry;
         if isometry {
             if !state.measured.is_empty()
                 || (!classical.is_empty() && classical != [Vec::<u32>::new()])

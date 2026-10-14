@@ -791,8 +791,10 @@ impl ElaboratedProgram {
     pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility> {
         super::lower::hierarchy_eligibility(self)
     }
-    /// Preflight the root signature and declared effect against the selected
-    /// hierarchical transport profile, including ordinary Boolean steps.
+    /// Preflight the root signature, public contract and actual body against
+    /// the selected hierarchical transport profile, including Boolean steps.
+    /// A supported public Isometry root may have an actually Unitary body;
+    /// transport selection does not rewrite its source-step or Raw effects.
     /// Generic source checking is separate;
     /// `lower` performs body and operation-specific capability checks before
     /// generating a proposal. This preflight issues no acceptance evidence.

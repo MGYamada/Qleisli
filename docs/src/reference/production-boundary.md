@@ -429,18 +429,21 @@ source-step comparison nor general lowering preservation follows merely from
 an accepted proposal. See [selected-source execution](type-model.md#selected-source-execution)
 for the remaining invocation and checking-profile boundaries.
 
-Isometry source roots whose public contracts and actual specialized artifacts
-both satisfy that profile use the existing
+Source roots with a checked public Isometry contract and an actual Unitary or
+Isometry body use the supported Isometry profile through the existing
 `check_instrument_native` boundary for fresh-zero preparation, checked unitary
-evolution and a readout with zero measurements. The quantum entry/result trees,
-zero-width owners and complete live frame remain part of the proposal and its
-initialization-move comparison. At most one ordinary `Bits<0>` result may
+evolution and a readout with zero measurements. A unitary body needs
+no preparation step. This transport selection preserves the public bound and
+does not rewrite its actual source-step or Raw effect to Isometry. The quantum
+entry/result trees, zero-width owners and complete live frame remain part of
+the proposal and its initialization-move comparison. At most one ordinary `Bits<0>` result may
 accompany the quantum results; the transport's empty outcome does not create
 a source Observe effect. Isometry execution returns its single unnormalized branch
 with scalar phase retained. Sampling requires a checked public Observe contract
 and an actually observing supported artifact. Conservative public bounds cannot
 recover sharper source eligibility or fabricate actual operations; the Raw
-profile keeps its actual classification and explicit support limits.
+profile keeps its actual classification and explicit support limits. A public
+Observe contract over a pure body remains outside this hierarchy profile.
 
 This adapter reuses component checks and introduces no new native primitive,
 accepted-handle authority, formal theorem or constitutional guarantee. The

@@ -246,6 +246,113 @@ fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() 
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
+    use qleisli::frontend::compile::HierarchyEligibility;
+    use qleisli::interchange::{hierarchical, native};
+
+    let source = "use std::quantum::{split,finish,phase_eighth};
+        pub isometry fn entry(q:Q<(Unit,Bit)>)->Q<Bit>{
+            let(u,b)=split(q);finish(u);phase_eighth(b)
+        }";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let fact = parsed.function_effect("main::entry").unwrap();
+    assert_eq!(fact.inferred(), Effect::Unitary);
+    assert_eq!(fact.public_effect(), Some(Effect::Isometry));
+    let elaborated = parsed
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    assert_eq!(
+        elaborated.definitions()[elaborated.root()].effect(),
+        "unitary"
+    );
+    assert!(matches!(
+        elaborated.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Eligible
+    ));
+
+    let raw = elaborated.lower_raw().unwrap();
+    let accepted = native::Kernel::new(kernel())
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    assert_eq!(accepted.raw().declared_effect, Effect::Unitary);
+    assert_eq!(accepted.derived_effect(), Effect::Unitary);
+    let hierarchy = elaborated.lower().unwrap();
+    assert!(hierarchy.is_instrument());
+    let checked = hierarchical::Kernel::new(kernel())
+        .check_instrument_native(hierarchy.payload(), hierarchy.comparison_request())
+        .unwrap();
+    hierarchy
+        .validate_initialization_moves_native(&checked)
+        .unwrap();
+
+    // The open quantum input stays on the existing empty-readout adapter in
+    // both automatic and explicit hierarchy selection. Preserve exact phase.
+    let root = SourceRoot::new(source);
+    for profile in ["auto", "hierarchy"] {
+        for action in ["check", "run"] {
+            let bases: &[usize] = if action == "run" { &[0, 1] } else { &[0] };
+            for &basis in bases {
+                let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                command
+                    .args(["--format=json", action, "--entry=main::entry"])
+                    .arg(format!("--ir-profile={profile}"))
+                    .arg(format!(
+                        "--module=main={}",
+                        root.0.join("main.qli").display()
+                    ))
+                    .arg(format!("--lean-kernel={}", kernel().display()));
+                if action == "run" {
+                    command.arg(format!("--basis={basis}"));
+                }
+                let text = result(command.output().unwrap(), action, true, true);
+                hierarchy_scope(&text);
+                if action == "check" {
+                    assert!(text.contains("\"profile\":\"sized-isometry\""), "{text}");
+                    assert!(!text.contains("sized-unitary"), "{text}");
+                    assert!(!text.contains("sized-instrument"), "{text}");
+                } else {
+                    let mut expected = [[0.0; 2]; 2];
+                    expected[basis] = [std::f64::consts::FRAC_1_SQRT_2; 2];
+                    amplitudes(&text, &expected);
+                    assert!(!text.contains("\"measured_bits\""), "{text}");
+                }
+            }
+        }
+    }
+
+    // A public Observe bound still cannot select either pure hierarchy
+    // adapter merely because its concrete implementation happens to be pure.
+    let observing = source.replace("pub isometry fn", "pub observe fn");
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), observing)])).unwrap();
+    assert_eq!(
+        parsed.public_function_effect("main::entry"),
+        Some(Effect::Observe)
+    );
+    let elaborated = parsed
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    assert_eq!(
+        elaborated.definitions()[elaborated.root()].effect(),
+        "unitary"
+    );
+    let HierarchyEligibility::Ineligible(error) = elaborated.hierarchy_eligibility().unwrap()
+    else {
+        panic!("public Observe cannot select an empty-readout pure adapter");
+    };
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.message().contains("matching checked public effect"));
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn adopted_isometry_cli_retains_scalar_phase_and_the_actual_scope() {
     let text = "use std::quantum::{init0,phase_eighth};pub isometry fn main()->Q<Bit>{phase_eighth(init0())}";
     let root = SourceRoot::new(text);

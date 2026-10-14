@@ -1202,7 +1202,12 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
             }
         })
         .collect();
-    let isometry = proposal.source.definitions()[proposal.source.root()].effect() == "iso";
+    // Recompute the adapter permission from the immutable checked source and
+    // actual operations. No producer flag or sharper implementation effect
+    // chooses the externally visible source profile during replay.
+    let isometry = super::root_profile(&proposal.source)
+        .map_err(|error| invalid(error.message()))?
+        == crate::ir::Effect::Isometry;
     let return_matches = if isometry {
         replay.measured.is_empty() && (classical.is_empty() || classical == [Vec::<u32>::new()])
     } else {

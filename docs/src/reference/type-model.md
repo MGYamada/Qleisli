@@ -885,16 +885,19 @@ request or named-QPE provider fixes the hierarchy route; combining one with
 explicit Raw rejects before native checking. After a route is selected, its
 lowering or native failure propagates without retrying a weaker route.
 
-The selected hierarchy admits an Isometry root whose checked public contract
-and actual specialized artifact both have that effect, with quantum entry values
-and quantum results, optionally accompanied by one ordinary `Bits<0>` result.
+The selected hierarchy admits a root with checked public Isometry and actual
+Unitary or Isometry effect, with quantum entry values and quantum results,
+optionally accompanied by one ordinary `Bits<0>` result.
 Ordinary Unit result ports remain omitted as described above. The body must
 fit the existing preparation and pure-operation profile: fresh zero
-initialization, followed by checked unitary hierarchy operations, with no
-observation. Lowering uses the existing initialization/evolution/readout
-transport with zero measurements. Its single empty outcome is a transport
-carrier; it introduces no source Observe effect, measurement or conversion
-between `Unit` and `Bits<0>`. A public Observe bound over that implementation
+initialization where needed, followed by checked unitary hierarchy operations,
+with no observation. A unitary implementation needs no fresh preparation;
+its actual `SourceDefinition`, `SourceStep` and Raw effects remain Unitary.
+The public Isometry bound still governs external provider, Meaning and
+inverse/control eligibility. Lowering uses the existing
+initialization/evolution/readout transport with zero measurements. Its single
+empty outcome is a transport carrier; it introduces no source Observe effect,
+measurement or conversion between `Unit` and `Bits<0>`. A public Observe bound over that implementation
 cannot recover the sharper hierarchy eligibility. Raw retains its own actual
 classification; unsupported source/profile combinations refuse explicitly.
 

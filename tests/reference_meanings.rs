@@ -358,7 +358,7 @@ fn reference_arguments_and_visibility_are_exact() {
         BTreeMap::from([
             (
                 "dependency".into(),
-                format!("{public} fn f(q:Q<Bit>)->Q<Bit>{{q}}"),
+                format!("{public} unitary fn f(q:Q<Bit>)->Q<Bit>{{q}}"),
             ),
             (
                 "main".into(),

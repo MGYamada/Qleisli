@@ -265,8 +265,8 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
         );
     }
     // The reserved std namespace cannot be injected as a sized source module.
-    let error = ParsedProgram::parse(BTreeMap::from([("std::ordinary".into(), source.into())]))
-        .unwrap_err();
+    let error =
+        ParsedProgram::parse(BTreeMap::from([("std::ordinary".into(), source)])).unwrap_err();
     assert_eq!(error.code(), "module");
     for (source, code) in [
         (

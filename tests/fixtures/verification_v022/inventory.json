@@ -3636,7 +3636,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "7f4466841eb0cd94063ebc883f5aadc3fb18cfb5e958f029a0065745eea2dab3",
+      "sha256": "090553ee11eb81cd1dca9c3c0e657f982732ebe2daf27d66ea78b460e21783d0",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4706,7 +4706,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "c681e63e6b5170a8c8b3767cb8823e767b067c2faa30417cd6eae7626aa22fb6",
+      "sha256": "7cfbd3cf0cad6fad82598f1dabe1306c46ec476717529f0eec37765acdc2b63f",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4803,7 +4803,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "7d4f941bbe9fe92c7a7b9610ef2e431091bf0350c58b0223d5b1cd973ca30853",
+      "sha256": "b8f0c51b84d8ec6b71a88c5feb0deeae09e01b3305e93e89c0a30824c3743e9a",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4826,7 +4826,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "55dbba2ac6fac6e75b758f8f460e75203cd2f3b947b099455edad15396339a6f",
+      "sha256": "cee837723bdba07cf9484a2d4a728ddb6143a7b95fd7751666b886688b52c6db",
       "surface": {
         "declarations": [
           "FramePort",
