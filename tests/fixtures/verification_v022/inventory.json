@@ -5405,7 +5405,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "1f9a859fed686c80070df7d780bac3209ba7e8b5196fc26ba1c8ea4210e34e3c",
+      "sha256": "559a601826a0c4fb20a12ea17d8d6484ae9f45708cb562863bbee15f3b4d9415",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5560,7 +5560,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "ffe91328a5c9d02d38b9b2772e69927bf3d7613453b83d9c8be45b1168cc1b3e",
+      "sha256": "59b26314af1430aa20f2d768762c0e6612d018ecc9ae2a3a61535d8275d01543",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5590,7 +5590,17 @@
     },
     {
       "path": "src/interchange/process.rs",
-      "sha256": "e8463ffdf26dc96a62df47d9452196b5d7f789cdb64711d12baff83232df517c",
+      "sha256": "2a9f5ba01f5955701385490c376ef68cd53540e77c856d681449cb3692d2db75",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/process/limits.rs",
+      "sha256": "0c012aa384db166869f42fcc7bf3337283ae33cd7aa49324179e231ffa0c6438",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -6805,6 +6815,16 @@
       "value": "1000000 project-wide common work units for original visits, resolution/index/interfaces/owner/type/effect/dependency storage, copied trees and solver contexts; selected additionally retains16384 live-scope cells, finite does not acquire that scope ceiling; finite separate1000000 lowering/evidence work remains",
       "source": "src/frontend/check.rs",
       "test": "tests/sized_source.rs#symbolic_capacity_errors_keep_obligation_spans_and_causes",
+      "replacement": [
+        "VM-28"
+      ]
+    },
+    {
+      "id": "native-process-transport",
+      "scope": "Host transport for finite and hierarchical adapters only; named TransportLimits invocation cannot accept arithmetic or acceptance work counts; low-level transport remains available to independent protocols; no program resource guarantee",
+      "value": "TransportLimits::FINITE 256 bytes; HIERARCHY_INSPECTION 1100000 bytes; HIERARCHY_REQUEST 2200000 bytes; each has a 60-second deadline; unchanged compatibility ceilings",
+      "source": "src/interchange/process/limits.rs",
+      "test": "src/interchange/process.rs#each_transport_profile_accepts_its_exact_byte_limit_and_rejects_one_more",
       "replacement": [
         "VM-28"
       ]

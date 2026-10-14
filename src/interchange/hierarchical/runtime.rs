@@ -1,10 +1,10 @@
 //! Bounded native process transport and strict response framing.
 //! A decoded response proposes reconstruction obligations; it is not evidence.
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 
 use super::{Error, Result};
 use crate::interchange::native_packet::{self, Scope, View};
+use crate::interchange::process::TransportLimits;
 
 #[derive(Clone, Copy)]
 pub(super) enum Mode {
@@ -42,10 +42,12 @@ impl Mode {
             Self::QpeInstrument => "qleisli.qpe-instrument-pending 4",
         }
     }
-    fn maximum(self) -> usize {
+    fn transport_limits(self) -> TransportLimits {
         match self {
-            Self::Inspect => 1_100_000,
-            Self::Request | Self::Fourier | Self::Instrument | Self::QpeInstrument => 2_200_000,
+            Self::Inspect => TransportLimits::HIERARCHY_INSPECTION,
+            Self::Request | Self::Fourier | Self::Instrument | Self::QpeInstrument => {
+                TransportLimits::HIERARCHY_REQUEST
+            }
         }
     }
 }
@@ -187,14 +189,10 @@ pub(super) fn check(
     )?;
     let checker = std::fs::canonicalize(executable)
         .map_err(|error| Error::new("io", format!("cannot start Lean native checker: {error}")))?;
-    crate::interchange::process::invoke(
-        &checker,
-        bytes,
-        mode.argument(),
-        Duration::from_secs(60),
-        mode.maximum(),
-        |bytes| response_bound(bytes, mode, scope, &checker),
-    )
+    mode.transport_limits()
+        .invoke(&checker, bytes, mode.argument(), |bytes| {
+            response_bound(bytes, mode, scope, &checker)
+        })
 }
 
 #[cfg(test)]
@@ -291,16 +289,17 @@ mod response_diagnostics_tests {
                 ("extra", "format"),
                 ("missing-newline", "format"),
             ] {
-                let error = crate::interchange::process::invoke(
-                    &executable,
-                    format!("{case}\n").into_bytes(),
-                    mode.argument(),
-                    std::time::Duration::from_secs(5),
-                    mode.maximum(),
-                    |bytes| response_indices(bytes, mode),
-                )
-                .err()
-                .unwrap();
+                let error = mode
+                    .transport_limits()
+                    .with_timeout(std::time::Duration::from_secs(5))
+                    .invoke(
+                        &executable,
+                        format!("{case}\n").into_bytes(),
+                        mode.argument(),
+                        |bytes| response_indices(bytes, mode),
+                    )
+                    .err()
+                    .unwrap();
                 assert_eq!(error.code, expected, "{}", error.message);
             }
         }
