@@ -403,12 +403,17 @@ scratch cleanup. Each caller retains its own source binding, toolchain checks,
 selection and coverage requirements. Moving this shared mechanism does not
 cache acceptance decisions or remove any native comparison.
 
-Hosted steps use four small local composite actions under `.github/actions/`:
+Hosted steps use six small local composite actions under `.github/actions/`:
 `source-check` executes a manifest group and retains its report even on failure;
 `native-runtime` installs Lean and delegates build/audit to that same manifest;
 `cargo-archives` retains only the registry index/download cache and reports its
 actual status; `release-receipt` binds and uploads the successful calling job's
-evidence. Rust groups own their native preparation, so their setup action uses
+evidence. `rust-toolchain` installs the caller's exact Rust version, components
+and target at the existing preparation point; only distribution selects a
+Rustup default. `native-bundle-smoke` runs acceptance and source checks against
+the same relocated checker. Packaging, the macOS CLI rebuild, optional interop,
+full-lane archive/upload and receipts remain explicit in their producer jobs.
+Rust groups own their native preparation, so their setup action uses
 `prepare: 'false'`; the four other native consumers use the default preparation.
 The mathematical Lean job retains its separate model/full proof work.
 

@@ -5,6 +5,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import contextlib
 import io
 from pathlib import Path
+import re
 import subprocess
 import sys
 import unittest
@@ -81,9 +82,41 @@ class NativeBundleLanes(unittest.TestCase):
         self.assertEqual(len(package_lines), 2)
         for line in package_lines:
             self.assertIn('--validation "${{ needs.changes.outputs.proof_lane }}"', line)
-        for name, following in (("check-macos-source", "check-interop"), ("check-lean-kernel", "check-distribution")):
-            job = workflow.split(f"  {name}:\n")[1].split(f"  {following}:\n")[0]
-            self.assertIn('test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel"', job)
+        self.assertEqual(workflow.count('uses: ./.github/actions/native-bundle-smoke'), 2)
+        for name, following, record in (
+            ('check-macos-source', 'check-interop', '${{ runner.temp }}/native-macos'),
+            ('check-lean-kernel', 'check-distribution', '${{ runner.temp }}/native-comparisons/native-bundle'),
+        ):
+            with self.subTest(job=name):
+                job = workflow.split(f"  {name}:\n")[1].split(f"  {following}:\n")[0]
+                steps = re.split(r'(?m)^      - ', job)
+                smoke = [step for step in steps if 'uses: ./.github/actions/native-bundle-smoke\n' in step]
+                self.assertEqual(len(smoke), 1)
+                self.assertIn(f'          record: {record}\n', smoke[0])
+                self.assertNotIn('        if:', smoke[0])
+                package = job.index('scripts/package_lean_kernel.py ')
+                check = job.index('uses: ./.github/actions/native-bundle-smoke')
+                self.assertLess(package, check)
+                if name == 'check-macos-source':
+                    compiler = job.index('cargo +1.85.0 build --locked --bin qleisli')
+                    self.assertLess(package, compiler)
+                    self.assertLess(compiler, check)
+                    self.assertLess(check, job.index('scripts/test_interop_native.py'))
+                    self.assertIn('--record "$RUNNER_TEMP/native-macos/interop-native.json"', job)
+                else:
+                    self.assertLess(check, job.index('python3 -m venv "$RUNNER_TEMP/native-qir"'))
+                    self.assertIn('"$RUNNER_TEMP/native-qir/bin/pip" install -r scripts/qir-reader-requirements.txt', job)
+                    self.assertIn('"$RUNNER_TEMP/native-qir/bin/python" scripts/test_interop_native.py', job)
+                    self.assertIn('--record "$RUNNER_TEMP/native-comparisons/native-bundle/interop-native.json"', job)
+                archive = [step for step in steps if 'scripts/archive_lean_kernel.py ' in step]
+                self.assertEqual(len(archive), 1)
+                self.assertIn("if: needs.changes.outputs.proof_lane == 'full'", archive[0])
+                self.assertLess(check, job.index('scripts/archive_lean_kernel.py '))
+        shared = (ROOT / '.github/actions/native-bundle-smoke/action.yml').read_text()
+        self.assertIn('BUNDLE_KERNEL: ${{ runner.temp }}/qleisli-native-bundle/bin/qleisli-kernel', shared)
+        self.assertIn('RECORD_PATH: ${{ inputs.record }}', shared)
+        self.assertIn('python3 scripts/test_native_verification.py --kernel "$BUNDLE_KERNEL" --record "$RECORD_PATH"', shared)
+        self.assertIn('QLEISLI_KERNEL="$BUNDLE_KERNEL" python3 scripts/test_source_kernel.py', shared)
 
 
 if __name__ == "__main__":
