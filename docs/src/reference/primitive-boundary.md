@@ -263,24 +263,99 @@ alias/re-export syntax in #65 is not admitted here.
 
 ## Generic acceptance and library-owned algorithms
 
-The architecture in #131 separates the following responsibilities:
+The 0.3.0 architectural contract in
+[#131](https://github.com/MGYamada/Qleisli/issues/131) assigns five distinct
+roles to each path below. A role is a responsibility, not a claim that every
+required proof already exists. The
+[production boundary](production-boundary.md#entrypoints-and-actual-checked-representations)
+records the actual predicates, native modes and current theorem limits.
 
-| Responsibility | Boundary |
-| --- | --- |
-| Producer | Source elaboration, recognizers, search and Rust/Python construction produce candidates. An algorithm name or recognizer match is not acceptance. |
-| Independent acceptance | Check actual gates/operations, root, dependencies, ordered interface and encodings under the enabled profile. When an independent meaning is requested, bind and check that request; otherwise disclose its absence. Changing a name cannot grant semantic evidence. |
-| Mathematical specification and proof | Keep algorithm meaning and its mathematical theorems on the library/specification/proof side. Separate intended specification review from conformance proof. Mathlib proofs do not replace the Mathlib-free executable checker. |
-| Execution and emission | Consume the checked artifact within its recorded scope; separately establish actual runtime/export/target correspondence for claims about those outputs. |
-| Compatibility | Bind source selection, roots, dependencies and profile/checker identity; version syntax/API/schema changes through release policy. Edition identifies the constitutional regime. |
+| Path and source | Producer | Independent acceptance | Specification and proof | Execution or emission | Compatibility responsibility |
+| --- | --- | --- | --- | --- | --- |
+| Project/qrate source: `frontend::project`, `frontend::check`, `frontend::compile` | Load original sources and produce typed/lowered proposals. | Fresh ordinary native checking of every materialized concrete ordinary function root and its retained obligations. | Reviewed source rules and library meanings; source preservation remains separate. | Simulate or export the privately retained accepted artifact. | Preserve source selection, diagnostics, unused declarations and complete interfaces through explicit versioned changes. |
+| Explicit module-map source: `frontend::compile::ParsedProgram`, internal `frontend::specialize` | Close explicit bindings, retain original source identities and select a concrete profile before checking. Fourier/QPE recognizers discover candidates only. | Ordinary Raw or the required dedicated hierarchy/request gate; failed checking cannot select another route. | Source-step comparisons and finite contract lemmas retain their bounded scopes. | Run the checked selected root; `emit-proposal` still emits untrusted data. | Retain module/entry/binding identity and the supported finite/hierarchical contracts. The retired public sized namespace is not restored. |
+| Flat Raw IR and QIRF: `ir::RawProgram`, `interchange::{native,codec}` | Construct original operations, evidence DAGs and versioned bytes. | `Kernel` checks actual root/dependencies and, for execution, the complete retained QLV2/QDV1 view. | Independent Raw/Observation meanings and ordinary native bridge theorems. | Consume the exact checked graph; output validity alone is not translation preservation. | Retain published flat IR and QIRF `finite-v0` / `finite-meaning-v1` profiles, or publish an explicit versioned mapping before changing them. |
+| Finite contracts and leaves: `contract`, `finite_leaf`, `pure_leaf` | Construct independent requested equations and untrusted implementation candidates. | Native contract gate binds original bodies, complete interfaces, encodings and exact equations. | Library/operator equations and arbitrary-reference lemmas under their actual premises. | A private checked contract is usable only for its retained artifacts and capabilities. | Preserve square leaf, rectangular pure leaf and encoded/control contract distinctions; no same-width or effect substitution. |
+| Hierarchy inspection: `interchange::hierarchical::Kernel::inspect_native` | Produce the hierarchy and finite obligations. | `--hierarchy-pending` checks conditional structure and required finite leaves. | Structural/finite bridges; complete analytic operator composition remains open. | Inspection alone grants no execution; require a fresh execution-scope view comparison before running. | Preserve this distinct request-free scope and its original root/dependency identity. |
+| Hierarchy composition request: `check_against_native` | Propose an actual graph and a separately supplied composition request. | `--hierarchy-request-pending` checks root, leaves and requested pairs. | Generic composition equations under stated premises; producer consistency is not source preservation. | Retain and execute the same graph/request pair. | Preserve request grammar, ordered ports and finite obligations. |
+| Hierarchy Fourier request: `check_against_native` Fourier branch | Rust/Python factoring proposes the original trace and Fourier request. | `--hierarchy-fourier-pending` checks root, leaves and Hadamard obligations. | Fourier mathematics belongs to the library/proof role; current specialized bridges remain built. | Use the retained checked graph, without granting a new QFT primitive. | Preserve exact phase, axes and current profile limits until a reviewed generic replacement exists. |
+| Hierarchy instrument: `check_instrument_native` | Propose preparation, evolution, readout and the request. | `--instrument-pending` checks all stages, leaves and pairs. | Complete instrument/reference specifications and the stated component results. | Retain all permitted branches and ordered public results. | Preserve observation, initialization, zero-width owners and boundary identity. |
+| Named-QPE instrument: `check_qpe_instrument_native` | Discover actual provider/routing/power components and a candidate binding. | `--qpe-instrument-pending` checks the original request, candidate, all stages and finite/Hadamard obligations. | Provider, Fourier and QPE semantic theorems remain separate from recognition. | Execute the same checked instrument, not a name-selected replacement. | Preserve all original provider, root, dependency, phase and readout bindings. |
+| Component protocols: readout, preparation, phase/layout and their DAGs | Propose bounded component descriptions. | Their existing dedicated independent component checks. | Component lemmas do not automatically certify an enclosing program. | No component success alone constructs a complete program handle. | Retain each component's version, scope, capacities and caller obligations. |
+| Python client and foreign adapters: `python/qleisli`, `interop` | Translate host/foreign inputs and propose IR or target text. | Production imports reach the same native gate; no Python/foreign receipt confers acceptance. | Translation and runtime preservation remain distinct proof duties. | Export consumes an accepted input; target correctness requires its own correspondence. | Preserve public host contracts, supported foreign subsets and explicit unsupported-format refusals. |
+| Python sized producers/oracles: `scripts/compile_sized_corpus.py`, `compile_sized_instrument.py` | Independently construct proposals and small-system comparison results. | No producer or numerical oracle issues production acceptance. | Differential results are tests, not generic checker soundness. | Use proposals only after the applicable production gate. | Retain historical inputs and the comparison role; do not revive their grammar as a production frontend. |
+| Research: `research/semantic-kernel` | Explore symbolic contracts and proof candidates. | Its research DAG result has no production authority; Raw input still requires native checking. | Research rules and bounded comparison evidence remain explicitly experimental. | No research receipt grants execution, cleanup or device authority. | Keep the independent comparison and its notices/tests; production migration requires separate review. |
+| Executable package: `lean-kernel/` | Decode untrusted bytes and compute the enabled checks. | Mathlib-free total executable definitions implement production acceptance. | Actual-definition soundness is proved separately; the implementation language is not a proof of the pipeline. | Native IO/compilation/runtime assumptions remain explicit. | Retain dispatch/profile compatibility, source policy, compiled audit and fixed capacities. |
+| Specification/proof package: `lean/` | Formalize independent meanings and construct checked proofs. | Does not replace the native executable or issue a host accepted handle. | Mathlib-backed specifications, bridge theorems, semantic transport and proof audits. | No theorem name alone authorizes execution or a target artifact. | Keep applicable VM-22–VM-29 proofs and protected guarantee bindings current during migration. |
+| Engineering comparisons: `engineering_{pure,instrument,pure_tensor,openqasm}` | Propose actual/ideal artifacts, closed budgets and target bytes where supported. | Separate fresh native inequality checks bind the complete actual request and retained view. | Engineering bounds retain their exact metric/domain/reference premises. | Private reports confer only their stated engineering claim. | Preserve distinct claim kinds; epsilon zero cannot grant exact Meaning, control, cleanup, PR or quantitative RS. |
 
-The current hierarchy still exposes specialized Fourier/QPE profiles. This
-responsibility table does not claim their algorithm-specific acceptance and
-proof organization has already been replaced by a general contract calculus.
-The architectural Issue's later implementation consolidation is tracked in
-[#273](https://github.com/MGYamada/Qleisli/issues/273); the separately approved
-0.3.0 common-frontend work does not itself prove generic acceptance or source
-preservation. Keep supported paths and their proofs until reviewed replacements
-cover their contracts.
+### Required generic-contract bindings
+
+A later generic rule must bind all the following data independently of a QFT,
+QPE or other algorithm name. The list is a contract for the migration in #273,
+not a newly enabled serialized schema or a claim of generic completeness:
+
+1. **Original implementation.** Retain the original artifact bytes, complete
+   operation bodies, selected root and checked dependency graph/order. Bind
+   called providers, shared nodes and zero-count or otherwise unused obligations
+   required by the profile. A stale index, equal name, matching digest without
+   correspondence, or native-valid replacement is insufficient.
+2. **Complete interfaces.** Retain separate domain/codomain type trees, classical
+   result trees, ordered quantum ports, owner identities, wire coordinates and
+   explicit input/output encodings. Unit, Bit, atomic Bits and product trees
+   remain distinct even at equal width. State and check encoding dimensions,
+   isometry premises and entry/exit compatibility; composition matches the
+   complete intermediate contract, not just its bit count.
+3. **Actual semantic action.** Check the actual gates, exact coefficients and
+   phase, axis order, controls, ownership/effect transitions and permitted
+   branches. For instruments retain every unnormalized hidden history and the
+   ordered public projection. State the arbitrary-input/reference premises;
+   distinct owners are not evidence of separability.
+4. **Independent expected meaning.** Fix the requested library/operator or
+   instrument meaning before candidate search. Retain its original definition,
+   request bytes, source/specification identity and dependencies. A recognizer's
+   match or an implementation-derived probability table cannot define it.
+   Review intended mathematical meaning separately from proving conformance.
+5. **Capabilities and workspace.** Bind forward, adjoint and control access
+   separately from semantic unitarity, together with owners, effects, clean/dirty
+   workspace and exact restoration premises. Observing/reset/discard bodies
+   cannot obtain a pure label by hiding those operations. A resource claim must
+   additionally bind its actual target, cost model, workspace and artifact.
+6. **Actual checking execution.** Identify the protocol, schema, profile and
+   checker compatibility separately from edition and product version. Retain
+   original byte decoding, requested root, derived obligations and continuous
+   checking states. Independently compare the complete retained host execution
+   representation where it crosses the Lean boundary. A serialized success
+   flag or old receipt cannot replace a fresh decision.
+7. **Consumed or emitted artifact.** Bind a checked conclusion to the actual
+   immutable object consumed by execution or emission. Claims about source,
+   runtime or targets require their own preservation links; independently
+   accepting both endpoints does not prove correspondence between them.
+8. **Declared domain and failure.** State every finite/coefficient/phase,
+   depth/work and interface limit. The current symbolic phase-word model has
+   modulus 256; its exact sufficient checks are not a complete semantic normal
+   form or a general phase-domain theorem. Generalization requires its own
+   specification/proof and profile migration. Reject unsupported forms,
+   changed contracts and exhausted budgets without an authority fallback.
+
+The generic checker may establish a reusable composition or contract rule.
+The Fourier sum, QPE distribution and other algorithm-specific mathematical
+results belong to library/specification/proof modules that instantiate those
+rules. Adding an algorithm must not require granting its name a new trusted
+semantic rule. Intended definitions must remain independent of acceptance.
+`PathSum.compile_sound` proves correspondence of individual path states; alone
+it proves neither the complete complex sum nor a Fourier/QPE specification,
+source preservation, completeness, control or observation integration.
+
+Current `QleisliKernel.Qft`, `Qpe` and the hierarchy Fourier/QPE checks and their
+`lean/Qleisli` bridge proofs remain implemented, specialized components. This
+architectural rule does not move or delete them, claim a completed independent
+library decomposition, or add generic QFT to the 0.3.0 scope. Keep supported
+checks, exact finite contracts, VM-22–VM-29 authority gates and existing proof
+coverage until reviewed replacements cover them. Consolidation, a generic
+prototype and later compatibility-path migration remain in
+[#273](https://github.com/MGYamada/Qleisli/issues/273). The 0.3.0 common frontend
+and its already specified namespace migration remain separate.
 
 ## Admission and replacement process
 
@@ -343,13 +418,40 @@ not every primitive edit changes the constitutional regime. If a constitutional
 amendment is needed, follow its actual edition procedure. Retain historical
 artifacts and records rather than rewriting them to match the replacement.
 
+### Edition-aware deprecation and replacement
+
+A proposal must distinguish retiring a spelling or implementation from
+changing the primitive's meaning. Record the exact old and new source/Core
+forms, semantic contracts, profile/API mapping, release compatibility and
+proof/guarantee dependencies. An equivalent derived replacement needs checked
+correspondence for the full recorded domain, including phase, references,
+owners/effects and workspace; a few matching examples are insufficient.
+
+Keep each historical primitive set recoverable from its exact Git revision and
+reviewed inventories, with its original edition/profile and applicable meaning.
+Do not rewrite old manifests or adoption records to describe a replacement.
+A later edition may deprecate source access under its explicit migration policy,
+but cannot erase or weaken an accumulated guarantee for its historical scope.
+Within edition 2026, implementation evolution preserves the old intended
+meaning; an incompatible source removal requires the ordinary breaking-release
+process even when it preserves the safety implication. A genuinely changed
+constitutional regime follows the Constitution's actual amendment procedure.
+Neither an edition increment nor a new primitive name waives non-weakening.
+
 ## Existing guardrails and their limits
 
 `scripts/check_verification_inventory.py` freezes source identities including
-both catalogs, public constructor families and their fields. It discovers
+the common and concrete catalogs, public constructor families and their fields. It discovers
 unlisted production checking sources. `scripts/check_production_coverage.py`
 checks classified public routes and native dispatch. These checks detect drift;
-refreshing their metadata is not primitive admission or proof.
+refreshing their metadata is not primitive admission or proof. The inventory
+pins the common and concrete sealed catalog sources, discovers new checking
+files, and separately records public Raw/finite/hierarchy constructor families
+and fields. Its mutation suite rejects a new Raw constructor even if its
+source digest is refreshed. Production coverage independently binds public
+routes and native dispatch. Review the source, catalog/constructor inventory
+and affected acceptance/proof contracts together; updated hashes cannot supply
+human specification review or a constitutional judgment.
 
 The existing regression sources include:
 
@@ -358,8 +460,8 @@ The existing regression sources include:
   and `concrete_phase_and_repeat_limits_check_zero_and_unused_providers`;
 - `tests/project.rs::std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules`,
   `unknown_sealed_name_is_not_reinterpreted_as_user_code`,
-  `algorithm_routines_are_bundled_source_with_private_helpers` and
-  `import_cycles_and_name_collisions_are_rejected`;
+  `semantic_stdlib_modules_are_bundled_source_with_private_helpers` and
+  `import_only_cycles_load_but_call_cycles_and_name_collisions_reject`;
 - `tests/semantic_contracts.rs::primitive_evidence_preserves_exact_phase`,
   `unit_has_scalar_phase_and_a_distinct_owned_type` and
   `tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference`.

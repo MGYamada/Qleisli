@@ -222,14 +222,22 @@ the schema registry and separate edition/schema/protocol identities. Only
 reviewed requirements can mark a criterion `explicit-later-version`; a
 candidate cannot reduce scope. The complete-feature inventory is the 127 Issues
 in the 2026-10-12 beta plan under #142; the original 111 remain recorded as
-history. #83 and #39 require completion after their explicit resumption, so
-an older reviewed deferral cannot authorize beta readiness. Closed Issues still
-require current evidence. The maintainer reaffirmed #63's all-v0.3.0 exclusion:
-127 entries require audit, with 126 subject to applicable completion criteria
-and #63 recorded as an exclusion, never implementation credit. The approved
-generic-QFT exclusion remains separate.
+history. #83 requires completion after its explicit resumption, so an older
+reviewed deferral cannot authorize beta readiness. Closed Issues still require
+current evidence. The maintainer excludes #39 and #63 from all v0.3.0, including
+beta and the current goal, superseding #39's earlier resumption. Retain all 127
+audit entries as 125 applicable Issues and two approved exclusions, without
+implementation credit for either exclusion. The approved generic-QFT exclusion
+remains separate.
 GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
+The criterion review references the
+[primitive admission and replacement policy](docs/src/reference/primitive-boundary.md#admission-and-replacement-process)
+for any new sealed semantic authority, including its independent contract,
+QS/PR/RS impact, human specification review, inventory and migration obligations.
+Source/constructor and production-route checks detect drift; no candidate hash
+or successful release receipt supplies that human review or admits a primitive.
+Referencing this policy is distinct from satisfying the full release gate.
 
 For `0.3.0-alpha` alone, the maintainer separately approved the
 [development-snapshot scope](release/alpha-scope-proposal.md), with the
