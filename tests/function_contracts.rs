@@ -177,12 +177,12 @@ fn observing_reference_source_replacement_requires_a_fresh_equation() {
     ));
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
+        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
     );
     let original = compile_project(&root.0).unwrap();
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
+        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,

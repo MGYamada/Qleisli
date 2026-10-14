@@ -54,6 +54,13 @@ family's independently requested mathematical meaning and conventions before
 comparing implementations. A proof of implementation conformance does not show
 that the chosen specification is the intended one; review that choice separately.
 
+Public quantum definitions use explicit checked `unitary`, `isometry` or
+`observe` contracts. Their bodies are checked independently, and external
+callers use only those public effects. Same-module inference retains its own
+precision and any further external boundary. Bundled source follows the
+same [ordinary effect rules](docs/src/reference/source-text.md#ordinary-function-effects-and-assertions)
+as user source; library placement grants no annotation or capability privilege.
+
 | Initial rule | Contribution obligation |
 | --- | --- |
 | **SC-01: contract first** | Record a source contract before proposing standard adoption. State the whole-input operator or complete instrument, exact type tree, owner transitions, encodings and premises. Give totality/domain rules for basis functions. A name such as "QFT" is not a contract. |

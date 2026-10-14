@@ -309,15 +309,15 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
 )]
 #[test]
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
-    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjointable(U){adjoint(U)(q)} pub fn main()->Unit{()}";
+    let inverse = "pub unitary fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjointable(U){adjoint(U)(q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(inverse).0).unwrap();
     ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
 
     // Both finite spellings reach the same declared Controlled slot. The
     // canonical application below also drives the independent native oracle.
-    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub unitary fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(finite_control).0).unwrap();
-    let control = "pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
+    let control = "pub unitary fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(control).0).unwrap();
 
     // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).

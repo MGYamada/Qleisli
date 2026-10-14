@@ -140,7 +140,7 @@
       "id": "source",
       "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
       "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
-      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation",
+      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate.",
       "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
@@ -630,7 +630,7 @@
       "id": "sized-source",
       "producer": "Retained ordinary sized-source modules and explicit natural/operation bindings",
       "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and ordinary explicit-entry CLI; source-bound finite ordinary Raw proposals with independent step replay",
-      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation.",
+      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation. Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate.",
       "reference": "docs/sized-corpus-source.md",
       "replacement": [
         "VM-28"
@@ -685,7 +685,7 @@
       "id": "source-excl",
       "producer": "Original shared source AST with explicit whole-owner excl call arguments",
       "consumer": "Common original-body judgment, finite lowering and selected projection; fresh native acceptance of emitted artifacts",
-      "obligation": "Actual Unitary body effect; distinct live lexical Q<A> owners; exact ordered return partition; retain updated values without reviving spent/shadowed owners. General access and ctrl source lowering remain pending.",
+      "obligation": "Caller-visible checked Unitary effect with independent complete-body checking; distinct live lexical Q<A> owners; exact ordered return partition; retain updated values without reviving spent/shadowed owners. General access and ctrl source lowering remain pending.",
       "reference": "docs/src/reference/rust-boundary.md#whole-owner-exclusive-calls and docs/src/reference/elaboration.md#whole-owner-exclusive-calls; lookup-model premises in lean/Qleisli/ExclusiveScope.lean",
       "replacement": [
         "VM-29"
@@ -3874,7 +3874,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "bf261cb616c869c565e316d5d31d9cb944f4db7d4b3a36ecc5bb2e7a70ad91ae",
+      "sha256": "a1dc75d36b587c71925a49ac18d8190dd76eed2045acccb9a712a86aa43ffeb4",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3892,7 +3892,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "27b550a6c95abfad511b783ee7b8826ea42e589d5243ebb0345d2d25dd9e1de7",
+      "sha256": "0f19dfb4233f8c379a46644e0d19e6bf6351fd1d2b2c15df2854ac7c21a20ba0",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3902,7 +3902,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "593c2651db3cbe2bc43e8b9905feaf1a1042f8a09b04afe59a9827ecbdaab145",
+      "sha256": "69b0f927f6b569f9fb94b350a3b47eebfa7cc0ccf2769d235bad4e959e322864",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4011,7 +4011,7 @@
     },
     {
       "path": "src/frontend/compile/lower/branch.rs",
-      "sha256": "123fa3537170f92c4e81181beec07563b159cacb4aed12aeaa2245a3e5482caa",
+      "sha256": "66cb53e0571afd809827949456328855fd1bfc82b5007488c2e4834e16b8fb74",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4021,7 +4021,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "e24d2040312abb6ffb10e7b3cac364988789fe4ae85c84f8968dd18b8cbca7a7",
+      "sha256": "1b037887b4898052bba626f9cb1e09fa579164bad21f31face94025ccac07860",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4041,7 +4041,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "214cc2304bb72db7741cd6950c78e744256bd6749a05fe6aa815229f9010ead8",
+      "sha256": "7a4da1259f6fe961dd3534400c2a726ef8529dffe93196684dda194b8a35543b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4051,7 +4051,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "5f59133016c448a50f39b936f5b809451382b5fcd94484bdcc0ebb4afe32ce67",
+      "sha256": "5cca45f812a4a6a6bd8e6ebb84ec7b16f02cc3e7ee4413de7ee8892c113f2ae0",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4061,7 +4061,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "c66cee6e8b49cd0b34d271cc27031da324679cc8b03f465f75087e3797d2833a",
+      "sha256": "d0bda30780c91d6b0cb33a96a606dfa4152c040555d5c05b70fb276733d0c3d2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4091,7 +4091,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "d55b844def57f866750df3960ea58e020aba70f4fc82421b9f704d38f70ff225",
+      "sha256": "89c7b347f416ccdee3255f80919d9de748ca0cf36c15c50192cbbade8d660417",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4111,7 +4111,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "2a3eb35a30ddc461f5463fcae8dd4e1a9ce04ff21004f9187cef4177c59b4a10",
+      "sha256": "3c1db839ede4a95aa7dce54c6da841c38e15c92198f2b7897b0f22c1ab5d0eb0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4136,7 +4136,8 @@
           "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>",
           "pub fn documentation(&self, module: &str) -> Option<Result<String, super::parser::ParseError>>",
           "pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect>",
-          "pub fn project_effects_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<ProjectEffects, Diagnostic>"
+          "pub fn project_effects_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<ProjectEffects, Diagnostic>",
+          "pub fn public_function_effect(&self, path: &str) -> Option<crate::ir::Effect>"
         ],
         "capacity_constants": [
           "const MAX_BITS: usize = 12;",
@@ -4149,7 +4150,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "c8a80c2f694150445e68c23262b5078c259afa6ccd585f6aa713c04734aeac05",
+      "sha256": "1f2c33dac7e225f0e0576d2620f13e68f3adcb3577b037a5fcfc0d21a49120d3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4159,7 +4160,7 @@
     },
     {
       "path": "src/frontend/compile/operations/pure.rs",
-      "sha256": "0d3e8f110e241006bd54d3dc70127a87efdd16f7990b9b9f2f0f9fdeef6a2ab5",
+      "sha256": "d8c6eeff5a32180175325aa4bc07782d4834d84ae14d9ebdf1120669fe0a529f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4223,7 +4224,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "239495d8a77186891cfb148955a57504a288fcd03b3743259608a3c56696d9c8",
+      "sha256": "eda117493bcee766f2426c86d4edf7fbf8349b960a13b973f2c37095cd836be0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4242,7 +4243,7 @@
     },
     {
       "path": "src/frontend/effects.rs",
-      "sha256": "11f14b59895e6e273214f6aed6fda1d6b8750d25b84df6863045a4843c44044d",
+      "sha256": "0e3d44d709e248279e9fbac054e57edbb9ca1cdccd1ae242c75820d82450b1df",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4254,11 +4255,14 @@
           "pub fn call(&mut self, id: DefId, span: Span)",
           "pub fn inferred(self) -> Effect",
           "pub fn inferred_with(&self, effects: &BTreeMap<DefId, Effect>) -> Option<Effect>",
+          "pub fn mark_quantum(&mut self)",
           "pub fn merge(&mut self, body: &Self)",
           "pub fn new(span: Span) -> Self",
           "pub fn origin(&self, effects: &BTreeMap<DefId, Effect>) -> Span",
+          "pub fn public_effect(self) -> Option<Effect>",
           "pub fn require_unitary(&mut self, id: DefId, span: Span)",
-          "pub fn storage_cells(&self) -> usize"
+          "pub fn storage_cells(&self) -> usize",
+          "pub fn uses_quantum(self) -> bool"
         ],
         "capacity_constants": []
       }
@@ -4631,7 +4635,7 @@
     },
     {
       "path": "src/frontend/specialize.rs",
-      "sha256": "981aaa5652c4273f8324d10aade84d2d8dc90feffcf07b1b56caa8946024d2b3",
+      "sha256": "4b008b9191a053be2453015010595ec9f7aef6c2750e1a27eddec2e8b0d75e49",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4658,6 +4662,7 @@
           "pub fn parse(source: &str) -> Result<Self>",
           "pub fn parse(sources: BTreeMap<String, String>) -> Result<Self>",
           "pub fn program(&self) -> &ParsedProgram",
+          "pub fn public_function_effect(&self, path: &str) -> Option<crate::ir::Effect>",
           "pub fn source(&self, module: &str) -> Option<&str>",
           "pub fn syntax(&self, module: &str) -> Option<&super::ast::Module>",
           "pub fn ty(&self) -> &SourceType",
@@ -4689,7 +4694,7 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "4bae3d8aea86d27eb3715ecfa3a0e42519eaf8d14d44780189b1d4f2d126f7ad",
+      "sha256": "b8ece78a7b37528878e27c18a816bc54ef3982dad157d4c38c6d17276926f1ef",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4701,7 +4706,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "0f8f26a653ec6ff7f259a36ec9966dab7d385614b6a62e73f3d5b3f3e6106630",
+      "sha256": "c681e63e6b5170a8c8b3767cb8823e767b067c2faa30417cd6eae7626aa22fb6",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4798,7 +4803,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "b8745c8c31e7b528b226ca21326ca2495eb1ff2f303b14137e2ffa7b9042caa4",
+      "sha256": "7d4f941bbe9fe92c7a7b9610ef2e431091bf0350c58b0223d5b1cd973ca30853",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4966,7 +4971,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "e3335a5a6f2a98c1b4218b3a231446b453982dc0bab13e1b6e33fab953c29925",
+      "sha256": "884b23e87d2edf4a9d03fb72244ddc2bfdea188e73ac69c1eec7729affa047c7",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5897,19 +5902,19 @@
     },
     {
       "path": "stdlib/src/measurement.qli",
-      "sha256": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
+      "sha256": "415c15304945ae98bc6645377c1bae3dd7b3d979e717aef98e3b6c6b6b6053d9",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/reflection.qli",
-      "sha256": "4a983705c170a3ba30787e2a0f92797cc26b4306fd66924036f4e57da6cae512",
+      "sha256": "29f8e70cecd719fdd0c26ca483722846e4434dc7ae71530a60b73a5352893de1",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/transform.qli",
-      "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
+      "sha256": "92e9405ddd93974faf488ae95f3bb336bf3725df7b165253fe680f3cacffdeec",
       "group": "source",
       "surface": null
     },
@@ -6387,7 +6392,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -6409,7 +6414,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -6430,7 +6435,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -6451,7 +6456,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -6475,7 +6480,7 @@
       "binding": "Fresh native check of immutable original QIRF/dependency bytes and request. Square leaf retains two-sided unitarity; pure-leaf reconstructs the original body and exact Gram identity. Private source sidecars retain separately checked reference/implementation leaves and source provenance, without a source-preservation or inverse-access claim.",
       "encoding": "Exact trees and ordered quantum ports, including zero-width owners; pure-leaf accepts Unit -> A preparation and different input/output widths",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
       "failure": "Reject shape, effect, hidden observation, phase, request, dependency or identity mismatch and exceeded capacity; no receipt or fallback",
       "replacement": [
         "VM-23",
@@ -6498,9 +6503,9 @@
       ],
       "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
-      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation.",
+      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate.",
       "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
-      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
+      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -6522,7 +6527,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
+      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -7029,7 +7034,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -7071,7 +7076,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [

@@ -240,8 +240,11 @@ basis tree. The complete result tree uses these exact objects:
 
 The signatures must agree as entire trees, including Unit, Bits<0>, zero-width
 quantum owners and product nodes. The ordered quantum owners and classical
-projection must match the original roots. Both bodies must have principal
-Observe effects; an Observe annotation on a pure body supplies no evidence.
+projection must match the original roots. Source consumers select this contract
+using caller-visible Observe effects. The current native profile additionally
+requires genuinely observing original artifacts; a conservative Observe bound
+on a pure body neither rewrites its Raw classification nor authorizes a pure
+contract fallback. Unsupported concrete pairs refuse, including unused ones.
 The first profile has one quantum input and no runtime classical inputs.
 Signatures are requested type data: native widths alone do not reconstruct
 or prove preservation of the source's full types.
@@ -382,15 +385,18 @@ source-step comparison nor general lowering preservation follows merely from
 an accepted proposal. See [selected-source execution](type-model.md#selected-source-execution)
 for the remaining invocation and checking-profile boundaries.
 
-Principal Isometry source roots in the selected hierarchy use the existing
+Isometry source roots whose public contracts and actual specialized artifacts
+both satisfy that profile use the existing
 `check_instrument_native` boundary for fresh-zero preparation, checked unitary
 evolution and a readout with zero measurements. The quantum entry/result trees,
 zero-width owners and complete live frame remain part of the proposal and its
 initialization-move comparison. At most one ordinary `Bits<0>` result may
 accompany the quantum results; the transport's empty outcome does not create
 a source Observe effect. Isometry execution returns its single unnormalized branch
-with scalar phase retained. Sampling requires a principal Observe source root,
-independently of the chosen native transport or optional source annotation.
+with scalar phase retained. Sampling requires a checked public Observe contract
+and an actually observing supported artifact. Conservative public bounds cannot
+recover sharper source eligibility or fabricate actual operations; the Raw
+profile keeps its actual classification and explicit support limits.
 
 This adapter reuses component checks and introduces no new native primitive,
 accepted-handle authority, formal theorem or constitutional guarantee. The

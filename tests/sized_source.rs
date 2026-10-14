@@ -1267,17 +1267,29 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         "iso"
     );
     assert!(preparation.lower().unwrap().is_instrument());
-    // A broader assertion on H does not make its body an Isometry root.
-    ParsedProgram::parse(sources(
+    // The actual H body remains Unitary, but the host may not use that sharper
+    // fact to select a pure hierarchy hidden by the public Isometry contract.
+    let program = ParsedProgram::parse(sources(
         "use std::quantum::h; pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
     ))
-    .unwrap()
-    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-    .unwrap()
-    .elaborate()
-    .unwrap()
-    .check_lowering_profile()
     .unwrap();
+    assert_eq!(
+        program.public_function_effect("main::f"),
+        Some(qleisli::ir::Effect::Isometry)
+    );
+    let prepared = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    assert_eq!(prepared.definitions()[prepared.root()].effect(), "unitary");
+    let error = prepared.check_lowering_profile().unwrap_err();
+    assert!(error.message().contains("matching checked public effect"));
+    assert_eq!(
+        prepared.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Ineligible(error)
+    );
+    prepared.lower_raw().unwrap();
 }
 
 #[test]

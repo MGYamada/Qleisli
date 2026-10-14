@@ -124,13 +124,17 @@ general source-preservation theorem or a proof of an optimizer.
 | Source | `U(excl q)` or a call whose arguments all mark distinct whole lexical `Q<A>` owners; finite project compilation and native-checked selected Raw lowering admit retained concrete `ctrl` calls after fresh native sector checking |
 | Target | The existing consuming call, followed by replacement of each argument binder's value by its exact ordered returned owner; the access expression returns ordinary Unit |
 | Evaluation order | Resolve original source occurrences; supply owners once in argument order and execute the callee once. No copied AST occurrence acquires a second lexical identity. |
-| Owners | Keep the same lexical owner identities with returned values. Require actual inferred Unitary effect and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
+| Owners | Keep the same lexical owner identities with returned values. Require caller-visible checked Unitary effect, independent body checking and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
 | Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
 | Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
 | Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed ordinary/access arguments, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free Raw and hierarchical `ctrl` remain unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
 | Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
+The [public-effect rule](source-text.md#ordinary-function-effects-and-assertions)
+uses the checked public contract outside the callee's original module and
+internal inference inside it. Specialization, inlining and cache reuse cannot
+turn a sharper actual body effect into external source eligibility.
 
 ### Static ordered-axis places
 

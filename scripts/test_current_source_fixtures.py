@@ -33,6 +33,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
         self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
+        self.public_effects_manifest = self.root / "public-effect-source-map.json"
+        self.public_effects_manifest.write_text(json.dumps(dict(format="qleisli.public-effect-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -68,7 +70,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
                             ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
-                            ("ISOMETRY_MAP", self.isometry_manifest.name)):
+                            ("ISOMETRY_MAP", self.isometry_manifest.name),
+                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -130,6 +133,57 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.assertEqual((self.original / "main.qli").read_bytes(), before)
         self.assertEqual(fixtures.source_hashes(self.current), {
             file["path"]: file["current_sha256"] for file in self.entry["files"]})
+
+    def public_effect_project(self):
+        for directory in (self.original, self.current):
+            (directory / "main.qli").write_text("pub fn f(q:Q<Bit>)->Q<Bit>{q}\n")
+        for file in self.entry["files"]:
+            file["historical_sha256"] = self.sha(self.original / file["path"])
+            file["current_sha256"] = self.sha(self.current / file["path"])
+        self.write_map([self.entry])
+        selected = self.root / "public-effect-current"
+        shutil.copytree(self.current, selected)
+        source = selected / "main.qli"
+        source.write_bytes(source.read_bytes().replace(b"pub fn f", b"pub unitary fn f"))
+        entry = dict(before_path="current", current_path=selected.name, files=[
+            dict(path=name, before_sha256=self.sha(self.current / name),
+                 current_sha256=self.sha(selected / name))
+            for name in ("Qargo.toml", "main.qli")])
+        self.public_effects_manifest.write_text(json.dumps(dict(
+            format="qleisli.public-effect-source-map", version=1,
+            projects=[entry], files=[])))
+        return selected
+
+    def test_public_effect_project_preserves_original_and_complete_final_inputs(self):
+        selected = self.public_effect_project()
+        original = (self.original / "main.qli").read_bytes()
+        self.assertEqual(fixtures.current_source_fixture(self.original), selected)
+        self.assertEqual((self.original / "main.qli").read_bytes(), original)
+        for directory in (self.original, self.current, selected):
+            for name in ("main.qli", "Qargo.toml"):
+                with self.subTest(directory=directory.name, file=name):
+                    path = directory / name
+                    before = path.read_bytes()
+                    path.write_bytes(before + b"\nchanged")
+                    try:
+                        with self.assertRaisesRegex(ValueError, "identity changed"):
+                            fixtures.current_source_fixture(self.original)
+                    finally:
+                        path.write_bytes(before)
+        for directory in (self.current, selected):
+            extra = directory / "unexpected.qli"
+            extra.write_text("pub unitary fn unexpected()->Unit{()}")
+            try:
+                with self.assertRaisesRegex(ValueError, "identity changed"):
+                    fixtures.current_source_fixture(self.original)
+            finally:
+                extra.unlink()
+
+    def test_missing_public_effect_project_stage_has_no_previous_project_fallback(self):
+        self.public_effect_project()
+        self.public_effects_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing public effect source map"):
+            fixtures.current_source_fixture(self.original)
 
     def test_stale_original_rejects(self):
         (self.original / "main.qli").write_text("changed historical source")
@@ -418,6 +472,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
         self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
+        self.public_effects_manifest = self.root / "public-effect-source-map.json"
+        self.public_effects_manifest.write_text(json.dumps(dict(format="qleisli.public-effect-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -442,7 +498,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
                             ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
-                            ("ISOMETRY_MAP", self.isometry_manifest.name)):
+                            ("ISOMETRY_MAP", self.isometry_manifest.name),
+                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -466,6 +523,59 @@ class SourceFileIdentity(unittest.TestCase):
                  [self.checked_entry] if checked is None else checked)):
             path.write_text(json.dumps(dict(format=format_name, version=1,
                                            files=entries, projects=[])))
+
+    def public_effect_file(self):
+        for path in (self.original, self.namespace, self.coherent, self.current):
+            path.write_bytes(path.read_bytes().replace(b"fn f(", b"pub fn f("))
+        self.namespace_entry = self.entry(self.original, self.namespace)
+        self.coherent_entry = self.entry(self.namespace, self.coherent)
+        self.checked_entry = self.entry(self.coherent, self.current)
+        self.write_maps()
+        selected = self.root / "public-effect.qli"
+        selected.write_bytes(self.current.read_bytes().replace(
+            b"pub fn f", b"pub unitary fn f"))
+        entry = self.entry(self.current, selected)
+        self.public_effects_manifest.write_text(json.dumps(dict(
+            format="qleisli.public-effect-source-map", version=1,
+            files=[entry], projects=[])))
+        return selected, entry
+
+    def test_public_effect_file_checks_every_predecessor_and_final_identity(self):
+        selected, _ = self.public_effect_file()
+        paths = (self.original, self.namespace, self.coherent, self.current, selected)
+        originals = {path: path.read_bytes() for path in paths}
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        for path in paths:
+            with self.subTest(source=path.name):
+                path.write_bytes(originals[path] + b"\nchanged")
+                try:
+                    with self.assertRaisesRegex(ValueError, "identity changed"):
+                        fixtures.current_source_file(self.original)
+                finally:
+                    path.write_bytes(originals[path])
+        self.assertEqual({path: path.read_bytes() for path in paths}, originals)
+
+    def test_missing_public_effect_file_stage_has_no_unannotated_fallback(self):
+        self.public_effect_file()
+        self.public_effects_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing public effect source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_public_effect_stage_rejects_duplicate_hash_and_escaping_records(self):
+        _, entry = self.public_effect_file()
+        for mutation in ("duplicate", "before_sha256", "current_sha256", "before_path", "current_path"):
+            with self.subTest(mutation=mutation):
+                changed = dict(entry)
+                if mutation.endswith("_sha256"):
+                    changed[mutation] = "not-a-sha256"
+                elif mutation.endswith("_path"):
+                    changed[mutation] = "../escape.qli"
+                entries = [entry, changed] if mutation == "duplicate" else [changed]
+                self.public_effects_manifest.write_text(json.dumps(dict(
+                    format="qleisli.public-effect-source-map", version=1,
+                    files=entries, projects=[])))
+                with self.assertRaises(ValueError):
+                    fixtures.current_source_file(self.original)
 
     def test_complete_file_chain_keeps_all_predecessors(self):
         originals = {path: path.read_bytes() for path in (self.original, self.namespace, self.coherent)}
@@ -725,6 +835,67 @@ class SourceFileIdentity(unittest.TestCase):
 
 
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_public_effect_map_changes_only_recorded_named_annotation_prefixes(self):
+        import re
+        root = fixtures.ROOT
+        directory = root / "tests/fixtures/frontend_v030/public-effects"
+        review = fixtures._read_map(directory / "source-map.json")
+        entries = fixtures._file_entries(review, "public effect")
+        projects = fixtures._projects(review, "before_path", "public effect")
+        translations = json.loads((directory / "translation-review.json").read_text())
+        self.assertEqual(translations["format"], "qleisli.public-effect-source-translations")
+        self.assertEqual(translations["version"], 1)
+        self.assertEqual(translations["status"], "generated-unvalidated")
+        self.assertEqual(len(entries), 62)
+        self.assertEqual(len(projects), 11)
+        self.assertEqual(len(translations["files"]), len(entries))
+        recorded = set()
+        prior = fixtures._migration_maps(stop_before=fixtures.PUBLIC_EFFECTS_MAP)
+        expected_inputs = set()
+        for item in translations["files"]:
+            logical = root / item["logical_path"]
+            self.assertEqual(hashlib.sha256(logical.read_bytes()).hexdigest(),
+                             item["logical_sha256"])
+            selected = item["logical_path"]
+            for stage, _ in prior:
+                if selected in stage:
+                    selected = stage[selected]["current_path"]
+            self.assertEqual(selected, item["before_path"])
+            self.assertNotIn(selected, recorded)
+            recorded.add(selected)
+            entry = entries[selected]
+            self.assertEqual(entry["current_path"], item["current_path"])
+            before, current = root / selected, root / item["current_path"]
+            # This edit allowlist grants no authority to the prefixes: source
+            # consumers must still independently check them against the bodies.
+            transformed = before.read_bytes()
+            for name, effect in item["inserted_public_prefixes"].items():
+                self.assertIn(effect, ("unitary", "isometry", "observe"))
+                self.assertRegex(name, r"^[A-Za-z_][A-Za-z_0-9]*$")
+                transformed, count = re.subn(
+                    rb"\bpub(?P<gap>\s+)fn(?=\s+" + name.encode() + rb"\b)",
+                    lambda match: b"pub" + match["gap"] + effect.encode() + b" fn",
+                    transformed,
+                )
+                self.assertEqual(count, 1)
+            self.assertEqual(current.read_bytes(), transformed)
+            self.assertNotEqual(current.read_bytes(), before.read_bytes())
+            self.assertEqual(fixtures.current_source_file(logical), current)
+            self.assertEqual(fixtures.current_source_file(before), current)
+            expected_inputs.add(current)
+        self.assertEqual(recorded, set(entries))
+        for entry in projects.values():
+            before, current = root / entry["before_path"], root / entry["current_path"]
+            fixtures._verify_pair(before, current, entry, "before_sha256")
+            self.assertEqual((before / "Qargo.toml").read_bytes(),
+                             (current / "Qargo.toml").read_bytes())
+            expected_inputs.add(current / "Qargo.toml")
+        self.assertEqual({p for p in (directory / "current").rglob("*") if p.is_file()},
+                         expected_inputs)
+        broad = root / "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/empty-classical/main.qli"
+        self.assertEqual(fixtures.current_source_file(broad), broad)
+        self.assertIn(b"pub observe fn entry", broad.read_bytes())
+
     def test_isometry_map_covers_selected_clients_and_changes_only_effect_prefixes(self):
         import re
         prior = fixtures._migration_maps(stop_before=fixtures.ISOMETRY_MAP)
@@ -807,7 +978,8 @@ class RepositoryMigrationTests(unittest.TestCase):
         self.assertTrue(files and projects)
         for entry in files.values():
             before, current = (fixtures.ROOT / entry[key] for key in ('before_path', 'current_path'))
-            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
             self.assertNotEqual(before.read_bytes(), current.read_bytes())
             compare(before.read_bytes(), current.read_bytes())
         for entry in projects.values():

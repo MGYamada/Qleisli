@@ -1888,6 +1888,25 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                 .map_or(root.path(), |(module, _)| module),
         )
     };
+    let instance = source.instantiation();
+    let checked = &instance.program.checked;
+    let public_effect = crate::frontend::effects::effect_at(
+        &checked.resolution,
+        &checked.effects,
+        crate::frontend::effects::EffectContext::External,
+        instance.entry_id,
+    )
+    .ok_or_else(|| unsupported("selected entry has no checked public effect contract"))?;
+    // Keep the actual original-operation classification used by the Raw/native
+    // profile. It cannot sharpen the source contract of a host-selected root.
+    // This hierarchy adapter has no separate conservative-bound representation.
+    if (root.effect() == "unitary" && public_effect != Effect::Unitary)
+        || (root.effect() == "iso" && public_effect == Effect::Observe)
+    {
+        return Ok(HierarchyEligibility::Ineligible(unsupported(
+            "selected pure hierarchy profile requires a matching checked public effect; a sharper implementation effect cannot replace the entry contract; select the Raw profile",
+        )));
+    }
     if source
         .definitions()
         .iter()

@@ -157,15 +157,19 @@ request, with original source/dependency and provider identities retained.
 ### Reference programs
 
 `meaning H: Bit = reference(reference_h);` names one closed ordinary function
-whose principal effect is Unitary and whose exact interface is
+whose caller-visible checked effect is Unitary and whose exact interface is
 `Q<Bit> -> Q<Bit>`. A rectangular declaration
 `meaning M: A -> B = reference(f);` instead requires `f: Q<A> -> Q<B>`
-with independently inferred effect at most Isometry. The equal-tree shorthand
+with caller-visible checked effect at most Isometry. The equal-tree shorthand
 retains its Unitary provider requirement. The argument is a single resolved function identifier; static arguments,
 constructed operations, classical/static functions and other Meaning names
 are not accepted. Visibility and all-declaration dependency-cycle checks apply,
 including cycles through `apply_contract` and `checked_op`. A declared effect
-assertion cannot replace inference of the actual principal effect.
+assertion cannot replace independent checking of the complete body and its
+dependencies. The [public-effect rule](source-text.md#ordinary-function-effects-and-assertions)
+uses the checked public effect outside the provider's original module and
+internal inference inside it. Reference selection, specialization and cached
+evidence cannot recover a sharper external eligibility from the body.
 
 ```qli
 use std::quantum::h;

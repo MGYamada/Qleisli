@@ -2,7 +2,12 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::contract::{FunctionEvidence, function::RetainedIdentity, meaning::MeaningEvidence};
-use crate::frontend::{ast::FnKind, check::ObligationKind, resolve::DefId};
+use crate::frontend::{
+    ast::FnKind,
+    check::ObligationKind,
+    effects::{EffectContext, effect_at},
+    resolve::{DefId, ModuleId},
+};
 use crate::ir::{CircuitAction, CircuitStep, RawOp, TokenId, WireId};
 
 type Key = (DefId, DefId);
@@ -55,9 +60,7 @@ pub(in crate::frontend::specialize) fn check(
                     .checked
                     .resolution
                     .declaration(obligation.definition)
-                    .name
-                    .0
-                    .clone();
+                    .module;
                 Some(((implementation, specification), obligation.span, module))
             } else {
                 None
@@ -131,9 +134,17 @@ pub(in crate::frontend::specialize) fn check(
         collector.target(id, Span::default())?;
     }
     for (key, span, module) in requests {
-        collector
-            .pair(key, span)
-            .map_err(|e| e.in_module(&module))?;
+        collector.pair(key, span, module).map_err(|e| {
+            e.in_module(
+                collector
+                    .source
+                    .instantiation()
+                    .program
+                    .checked
+                    .resolution
+                    .module_name(module),
+            )
+        })?;
     }
     source.require_function_contracts()?;
     Ok(source)
@@ -231,9 +242,51 @@ impl Collector<'_> {
             .position(|d| d.original == original)
             .ok_or_else(|| invalid(span, "original closed contract function is absent"))
     }
-    fn pair(&mut self, key: Key, span: Span) -> Result<()> {
-        self.charge(1, span)?;
-        if self.source.contracts.contains_key(&key) || self.source.instruments.contains_key(&key) {
+    fn pair(&mut self, key: Key, span: Span, owner: ModuleId) -> Result<()> {
+        self.charge(3, span)?;
+        let checked = &self.source.instantiation().program.checked;
+        let context = EffectContext::Module(owner);
+        let visible = |id| effect_at(&checked.resolution, &checked.effects, context, id);
+        let source_effect = visible(key.0).ok_or_else(|| {
+            Error::new(
+                "effect",
+                span,
+                "contract implementation has no visible checked source effect",
+            )
+        })?;
+        let observing = source_effect == Effect::Observe;
+        let specification_is_meaning = checked.interface(key.1).kind == FnKind::Meaning;
+        if (observing && visible(key.1) != Some(Effect::Observe))
+            || (!observing
+                && (source_effect != Effect::Unitary
+                    || (!specification_is_meaning && visible(key.1) != Some(Effect::Unitary))))
+        {
+            return Err(Error::new(
+                "effect",
+                span,
+                "function contract pair exceeds its original caller-visible source effects",
+            ));
+        }
+        // Contextual eligibility and the actual native profile precede every
+        // cache hit. An internal pure pair cannot satisfy an external Observe
+        // obligation merely because its concrete body happens to be unitary.
+        let id = self.definition(key.0, span)?;
+        if observing {
+            let expected = self.definition(key.1, span)?;
+            if [id, expected]
+                .iter()
+                .any(|id| self.source.definitions()[*id].effect() != "observe")
+            {
+                return Err(Error::new(
+                    "unsupported",
+                    span,
+                    super::super::elaborate::OBSERVING_CONTRACT_PROFILE,
+                ));
+            }
+        }
+        if (observing && self.source.instruments.contains_key(&key))
+            || (!observing && self.source.contracts.contains_key(&key))
+        {
             return Ok(());
         }
         if self.active.len() >= MAX_DEPTH || !self.active.insert(key) {
@@ -244,9 +297,8 @@ impl Collector<'_> {
             ));
         }
         let (implementation_id, specification_id) = key;
-        let id = self.definition(implementation_id, span)?;
         let definition = &self.source.definitions()[id];
-        if definition.effect() == "observe" {
+        if observing {
             self.instrument_pair(key, id, span)?;
             self.active.remove(&key);
             return Ok(());
@@ -414,9 +466,10 @@ impl Collector<'_> {
         let signature = |id: usize, budget: &mut Budget| {
             let definition = &self.source.definitions()[id];
             if definition.effect() != "observe" {
-                return Err(invalid(
+                return Err(Error::new(
+                    "unsupported",
                     span,
-                    "instrument functions require principal Observe",
+                    super::super::elaborate::OBSERVING_CONTRACT_PROFILE,
                 ));
             }
             let params = definition
@@ -538,11 +591,21 @@ impl Collector<'_> {
             .filter_map(|step| {
                 step.contract()
                     .or_else(|| step.instrument_contract())
-                    .map(|key| (key, step.span()))
+                    .map(|key| {
+                        let owner = self
+                            .source
+                            .instantiation()
+                            .program
+                            .checked
+                            .resolution
+                            .module(step.module())
+                            .expect("retained contract caller module");
+                        (key, step.span(), owner)
+                    })
             })
             .collect::<Vec<_>>();
-        for (key, at) in requests {
-            self.pair(key, at)?;
+        for (key, at, owner) in requests {
+            self.pair(key, at, owner)?;
         }
         let meanings = check_operation_meanings_selected(
             self.source,

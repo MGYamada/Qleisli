@@ -340,9 +340,14 @@ retained, rather than inferred from channel equality.
 
 A transparent ordinary source provider must have the exact quantum interface
 and all its instantiated premises checked. General pure application permits
-a principal Isometry body. Reverse access additionally requires principal
-Unitary and usable inverse evidence; control additionally requires equal exact
-ports. For a specialized principal-Unitary source provider with operation actuals `U_i`, the conservative
+a caller-visible effect at most Isometry. Reverse access additionally requires
+caller-visible Unitary and usable inverse evidence; control additionally requires
+equal exact ports. Under the [public-effect rule](source-text.md#ordinary-function-effects-and-assertions),
+the checked public effect governs external callers and host-selected public
+providers; same-module calls retain independently checked internal inference.
+Eligibility is checked before specialization, inlining or cache reuse, while
+the actual body and artifact still undergo their separate checks.
+For a source provider with caller-visible Unitary and operation actuals `U_i`, the conservative
 common rule is `(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))`. This includes
 unused operation actuals and makes no claim of maximal inference. With no such
 actuals it gives forward/reverse paths, plus control for equal ports. The provider's own declared premises

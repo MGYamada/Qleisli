@@ -196,7 +196,7 @@ struct Compiler<'a> {
     function_sources: Option<Arc<Vec<(String, String)>>>,
     pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
-    providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
+    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::Operation>,
     instances: Vec<(Key, Vec<operations::Operation>)>,
     work: usize,
     checking: Option<Key>,
@@ -205,6 +205,18 @@ struct Compiler<'a> {
 }
 
 impl Compiler<'_> {
+    // Source eligibility follows the original caller and callee modules, even
+    // when concrete lowering later inlines the callee's checked body.
+    fn effect_in_module(&self, module: &str, callee: Key) -> Option<crate::ir::Effect> {
+        let module = self.resolution.module(module)?;
+        super::effects::effect_at(
+            &self.resolution,
+            &self.effects,
+            super::effects::EffectContext::Module(module),
+            callee,
+        )
+    }
+
     fn error(
         &self,
         module: &str,
@@ -705,12 +717,23 @@ pub struct ProjectEffects {
 }
 
 impl ProjectEffects {
+    /// Inspect the implementation principal, assertion and checked public effect.
+    /// `inferred()` is diagnostic/internal information; external callers and
+    /// host-selected public providers must use `public_effect()` for eligibility.
+    /// These facts confer no native acceptance, Meaning or operation access.
     pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
         self.functions.get(path).copied()
     }
 
-    /// Render the retained checked source, including inferred effects on
-    /// ordinary functions. Basis/Meaning declarations have no quantum fact.
+    /// The checked exported effect of a public source declaration.
+    /// Private, absent or unchecked declarations have no exported contract.
+    /// This grants no inverse/control, Meaning, cleanup or execution evidence.
+    pub fn public_function_effect(&self, path: &str) -> Option<crate::ir::Effect> {
+        self.function_effect(path)?.public_effect()
+    }
+
+    /// Render checked public contracts and private inferred diagnostics from
+    /// the retained source. Basis/Meaning declarations have no quantum fact.
     pub fn documentation(&self, module: &str) -> Option<Result<String, super::parser::ParseError>> {
         self.project.modules.get(module).map(|source| {
             super::documentation::render_checked_markdown(&source.source, |name| {
@@ -910,7 +933,9 @@ fn process_loaded_project_details(
                 .name
                 .0
                 .clone();
-            if compiler.effects[&implementation].inferred() == crate::ir::Effect::Observe {
+            if compiler.effect_in_module(&module, implementation)
+                == Some(crate::ir::Effect::Observe)
+            {
                 compiler.instrument_contract_evidence(
                     &module,
                     obligation.span,

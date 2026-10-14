@@ -1,4 +1,4 @@
-//! Principal effect facts and false-annotation diagnostics, with no new evidence.
+//! Internal effect facts, checked public bounds and false-annotation diagnostics.
 mod common;
 
 use std::collections::BTreeMap;
@@ -73,7 +73,7 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
+fn private_broad_assertions_preserve_same_module_precision() {
     for prefix in ["", "unitary ", "isometry ", "observe "] {
         let source = format!(
             "{prefix}fn g(q:Q<Bit>)->Q<Bit>{{q}} pub unitary fn f(q:Q<Bit>)->Q<Bit>{{g(q)}}"
@@ -82,6 +82,8 @@ fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
         let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
         let fact = sized.function_effect("main::g").unwrap();
         assert_eq!(fact.inferred(), Effect::Unitary);
+        assert_eq!(fact.public_effect(), None);
+        assert!(fact.uses_quantum());
         assert_eq!(
             fact.asserted(),
             match prefix {
@@ -94,6 +96,10 @@ fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
         assert_eq!(
             sized.function_effect("main::f").unwrap().inferred(),
             Effect::Unitary
+        );
+        assert_eq!(
+            sized.function_effect("main::f").unwrap().public_effect(),
+            Some(Effect::Unitary)
         );
     }
 }
@@ -187,7 +193,7 @@ fn all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects() {
             sized.function_effect("main::f").unwrap().inferred(),
             Effect::Observe
         );
-        let asserted = source.replace("pub fn f", "pub unitary fn f");
+        let asserted = source.replace("pub observe fn f", "pub unitary fn f");
         let error = ParsedProgram::parse(BTreeMap::from([("main".into(), asserted)])).unwrap_err();
         assert_eq!(error.code(), "effect");
         explanation(error.message(), "Observe", "Unitary");
@@ -202,25 +208,25 @@ fn all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects() {
 fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
     for (source, effect) in [
         (
-            include_str!(
-                "fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
             ),
             Effect::Unitary,
         ),
         (
-            include_str!(
-                "fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
             ),
             Effect::Isometry,
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/scalar-unit/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/scalar-unit/main.qli",
             ),
             Effect::Unitary,
         ),
     ] {
-        let root = SourceRoot::new(source);
+        let root = SourceRoot::new(&source);
         let finite = project_effects_with_kernel(
             &root.0,
             SourcePolicy::Legacy,
@@ -231,17 +237,25 @@ fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
             finite.function_effect("main::f").unwrap().inferred(),
             effect
         );
-        assert_eq!(finite.function_effect("main::f").unwrap().asserted(), None);
+        assert_eq!(
+            finite.function_effect("main::f").unwrap().asserted(),
+            Some(effect)
+        );
+        assert_eq!(
+            finite.function_effect("main::f").unwrap().public_effect(),
+            Some(effect)
+        );
     }
 }
 
 #[test]
 fn names_and_module_paths_do_not_grant_body_effects_or_access() {
-    let source = include_str!(
-        "fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
     );
     for module in ["main", "library::ordinary", "user::nested"] {
-        let sized = ParsedProgram::parse(BTreeMap::from([(module.into(), source.into())])).unwrap();
+        let sized =
+            ParsedProgram::parse(BTreeMap::from([(module.into(), source.clone())])).unwrap();
         assert_eq!(
             sized
                 .function_effect(&format!("{module}::f"))
@@ -284,7 +298,7 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
+fn derived_stdlib_exports_explicit_checked_public_effects() {
     let root = SourceRoot::new("fn main()->Unit{()}");
     let report =
         project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
@@ -307,20 +321,23 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
                 .function_effect(&format!("std::{module}::{function}"))
                 .unwrap();
             assert_eq!(fact.inferred(), effect, "{module}::{function}");
-            assert_eq!(fact.asserted(), None, "{module}::{function}");
+            assert_eq!(fact.asserted(), Some(effect), "{module}::{function}");
+            assert_eq!(fact.public_effect(), Some(effect), "{module}::{function}");
+            assert!(fact.uses_quantum(), "{module}::{function}");
         }
         let documentation = report
             .documentation(&format!("std::{module}"))
             .unwrap()
             .unwrap();
-        assert!(documentation.contains("Inferred quantum effect:"));
-        assert!(!documentation.contains("Checked upper-bound assertion:"));
+        assert!(documentation.contains("Public quantum effect:"));
     }
     // Total classical functions now have ordinary runtime calls. Their pure
     // body participates in effect inference without an annotation/access grant.
     let classical = report.function_effect("std::reflection::nonzero2").unwrap();
     assert_eq!(classical.inferred(), Effect::Unitary);
     assert_eq!(classical.asserted(), None);
+    assert_eq!(classical.public_effect(), None);
+    assert!(!classical.uses_quantum());
 
     root.write(
         "arithmetic.qli",
@@ -334,7 +351,12 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
             .function_effect(&format!("arithmetic::{name}"))
             .unwrap();
         assert_eq!(fact.inferred(), Effect::Unitary, "arithmetic::{name}");
-        assert_eq!(fact.asserted(), None, "arithmetic::{name}");
+        assert_eq!(fact.asserted(), Some(Effect::Unitary), "arithmetic::{name}");
+        assert_eq!(
+            fact.public_effect(),
+            Some(Effect::Unitary),
+            "arithmetic::{name}"
+        );
         assert!(
             report
                 .function_effect(&format!("std::arithmetic::{name}"))
@@ -342,7 +364,7 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
         );
     }
     let documentation = report.documentation("arithmetic").unwrap().unwrap();
-    assert!(documentation.contains("Inferred quantum effect:"));
+    assert!(documentation.contains("Public quantum effect:"));
     assert!(!documentation.contains("Checked upper-bound assertion:"));
 }
 
@@ -351,8 +373,8 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn operation_providers_use_principal_effects_and_cannot_hide_measurement() {
-    let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)} pub fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
+fn same_module_operation_providers_preserve_precision_and_cannot_hide_measurement() {
+    let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
     for (provider, accepted) in [
         (
             "use std::quantum::x; observe fn g(q:Q<Bit>)->Q<Bit>{x(q)}",
@@ -390,45 +412,39 @@ fn host_selected_providers_distinguish_unsupported_effects_from_shape_errors() {
             common::current_source_text(
                 "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
             ),
-            Some("effect"),
+            "effect",
         ),
         (
             common::current_source_text(
                 "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
             ),
-            None,
+            "effect",
         ),
         (
             common::current_source_text(
                 "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
             ),
-            Some("type"),
+            "type",
         ),
     ] {
         let program = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
-        let result = program.instantiate(
-            "main::entry",
-            BTreeMap::new(),
-            BTreeMap::from([(
-                "U".into(),
-                OperationBinding::new("main::provider", BTreeMap::new()),
-            )]),
-        );
-        if let Some(code) = expected {
-            let error = result.unwrap_err();
-            assert_eq!(error.code(), code, "{error}");
-            if code == "effect" {
-                assert!(error.message().contains("inferred body effect `Observe`"));
-                assert!(error.message().contains(UNSUPPORTED));
-                assert!(!error.message().contains("github.com"));
-            } else {
-                assert!(!error.message().contains(UNSUPPORTED));
-            }
+        let error = program
+            .instantiate(
+                "main::entry",
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::provider", BTreeMap::new()),
+                )]),
+            )
+            .unwrap_err();
+        assert_eq!(error.code(), expected, "{error}");
+        if expected == "effect" {
+            assert!(error.message().contains("Observe"));
+            assert!(error.message().contains(UNSUPPORTED));
+            assert!(!error.message().contains("github.com"));
         } else {
-            result.unwrap();
-            let fact = program.function_effect("main::provider").unwrap();
-            assert_eq!(fact.inferred(), Effect::Unitary);
-            assert_eq!(fact.asserted(), Some(Effect::Observe));
+            assert!(!error.message().contains(UNSUPPORTED));
         }
     }
 }
@@ -464,10 +480,7 @@ fn host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json() {
         } else {
             String::from_utf8(output.stderr).unwrap()
         };
-        assert!(
-            message.contains("inferred body effect `Observe`"),
-            "{message}"
-        );
+        assert!(message.contains("Observe"), "{message}");
         assert!(message.contains(UNSUPPORTED), "{message}");
         assert!(!message.contains("github.com"), "{message}");
         assert!(!message.contains("#283"), "{message}");
@@ -518,12 +531,13 @@ fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
 }
 
 #[test]
-fn fn_suggestions_do_not_require_a_redundant_effect_annotation() {
+fn private_wrapper_suggestions_do_not_require_an_effect_annotation() {
     let parse = qleisli::frontend::parser::parse_module("pub nonsense").unwrap_err();
     assert!(parse.message.contains("expected `fn`"), "{parse}");
-    let root = SourceRoot::new(&common::current_source_text(
+    let source = common::current_source_text(
         "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
-    ));
+    );
+    let root = SourceRoot::new(&source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
     assert!(error.message.contains("inferred Unitary body effect"));

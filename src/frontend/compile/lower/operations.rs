@@ -28,6 +28,7 @@ impl Lowerer<'_, '_> {
         if !op.needs_raw() {
             let steps = op.steps(module, span, access, self.compiler)?;
             self.apply_circuit(slot, steps);
+            self.add_contract_effect(module, span, op.effect);
             return Ok(value);
         }
         let body = op.raw(module, span, access, self.compiler)?;
@@ -64,6 +65,7 @@ impl Lowerer<'_, '_> {
         )
         .map_err(|e| self.compiler.op_error(module, span, e))?;
         self.add_effect(module, span, emitted.declared_effect);
+        self.add_contract_effect(module, span, op.effect);
         self.raw.registers.insert(
             slot,
             Register {
@@ -117,6 +119,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
+        self.add_contract_effect(module, span, op.effect);
         let joined = self.sealed(module, span, "std::quantum", "join", vec![c, q])?;
         let slot = self.quantum(module, span, &joined, false)?;
         self.apply_circuit(slot, steps);
@@ -320,6 +323,7 @@ impl Lowerer<'_, '_> {
                 format!("operation and input have different exact basis trees: expected `Q<{}>`, found `Q<{basis}>`", op.basis),
             ));
         }
+        self.add_contract_effect(module, name.span, op.effect);
         Ok(Some(op.steps(module, name.span, access, self.compiler)?))
     }
 

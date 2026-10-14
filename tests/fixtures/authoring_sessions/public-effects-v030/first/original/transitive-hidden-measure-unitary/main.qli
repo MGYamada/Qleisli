@@ -1,0 +1,5 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+fn hidden() -> Unit { let _ = measure_z(init0()); () }
+pub unitary fn f() -> Unit { hidden() }
+pub observe fn main() -> Unit { f() }

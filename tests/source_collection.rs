@@ -9,10 +9,10 @@ use std::collections::BTreeMap;
 fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
     let unsupported = "pub fn sibling(c:Bit)->Bit{if c {1} else {0}}";
     for (supported, effect) in [
-        ("pub fn f(q:Q<Bit>)->Q<Bit>{let q=q;q}", "unitary"),
-        ("pub fn f()->Q<Bit>{let q=init0();q}", "iso"),
+        ("pub unitary fn f(q:Q<Bit>)->Q<Bit>{let q=q;q}", "unitary"),
+        ("pub isometry fn f()->Q<Bit>{let q=init0();q}", "iso"),
         (
-            "pub fn f(q:Q<Bit>)->Bit{let bit=measure_z(q);let bit=not bit;bit}",
+            "pub observe fn f(q:Q<Bit>)->Bit{let bit=measure_z(q);let bit=not bit;bit}",
             "observe",
         ),
     ] {

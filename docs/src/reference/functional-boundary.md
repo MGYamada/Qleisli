@@ -50,7 +50,11 @@ caller even when an ordinary result is ignored. Function bodies, unused
 declarations, both branch arms and zero-iteration fold bodies undergo the
 common source judgment. Checking both arms does not mean executing both arms.
 The [source rules](source-text.md#ordinary-function-effects-and-assertions)
-specify principal effects and assertion checking.
+separate internal principal effects, independent body checking and checked
+public effects. Caller-visible effects use the public contract outside the
+callee's original module and internal inference inside it. Eligibility checks
+precede specialization, inlining and cache reuse; inspecting the actual body
+cannot sharpen an external contract.
 
 Total finite `classical fn` declarations also have ordinary runtime calls.
 Their restricted pure expression bodies use the same ordered ordinary argument
@@ -133,7 +137,7 @@ by a profile.
 
 | Form | Required interface and access |
 | --- | --- |
-| Resolved provider or explicit specialization | A permitted principal-Unitary `Q<A> -> Q<A>` provider with its checked static bindings and access; no runtime capture. |
+| Resolved provider or explicit specialization | A permitted `Q<A> -> Q<A>` provider with caller-visible Unitary effect, checked static bindings and access; no runtime capture. |
 | `then_op(U,V)` | The same exact basis A on both descriptions; sequential application on one owner. |
 | `tensor_op(U,V)` | An ordered packed basis `(A,B)`; no implicit join of separate owners. |
 | `adjoint(U)` | Requires Adjointable(U) to construct the description, then exchanges its Applicable/Adjointable availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
@@ -196,8 +200,8 @@ path. Outer control does not waive the bare adjoint's construction premise.
 Composition currently drops the attached Meaning refinement in the common
 judgment as specified above; the table does not infer a new refinement law.
 
-A transparent ordinary provider must have an independently checked body with
-principal Unitary effect and the required exact interface. Its Applicable path is
+A transparent ordinary provider must have an independently checked body,
+caller-visible Unitary effect and the required exact interface. Its Applicable path is
 available after all declared actual-argument requirements are checked. Its
 Adjointable path additionally requires both A and D for **every** actual Op
 argument, including unused ones; its Controllable path requires all three
@@ -221,7 +225,7 @@ these same rules and the same phase-sensitive checking boundary.
 
 [Checked operations](checked-operations.md) separates the common judgment's
 pending Meaning-equality obligation from finite materialization. The latter
-requires closed principal-Unitary declarations, retains source dependencies,
+requires closed declarations with caller-visible Unitary effects, retains source dependencies,
 exact basis and ordered ports, and checks the implementation against the exact
 finite Meaning through the selected native checker. An abstract formal cannot
 bypass the closed-declaration refusal. Equal probabilities or equality up to

@@ -153,15 +153,33 @@ assumptions; the core failure contract does not prove host panic freedom.
 ## Ordinary function effects and assertions
 
 An ordinary body-bearing function may use `fn`, `unitary fn`, `isometry fn` or
-`observe fn`. Its principal quantum effect is derived from the completely
-checked body and checked callees at fixed ordinary inputs. The order is
+`observe fn`. A public function that processes quantum values or operations
+must explicitly use `unitary`, `isometry` or `observe`. This includes closed
+functions, zero-width owners, quantum intermediates and operation formals;
+ordinary classical public functions may retain inference. The order is
 `Unitary <= Isometry <= Observe`; composition takes the least upper bound. Copying
 an ordinary Bit does not copy a quantum owner or add a quantum effect.
 
-An optional prefix is a checked upper-bound assertion, never an inference
-seed. A body inferred as Observe cannot assert Unitary or Isometry. A body inferred
-as Unitary may carry an Isometry or Observe assertion, but its principal effect
-remains Unitary for calls, provider eligibility and checked interface metadata.
+An explicit effect prefix permits quantum processing even behind an entirely
+classical signature. External quantum-use checking conservatively retains that
+public permission instead of inspecting the implementation's current use flag.
+An unannotated public classical API cannot acquire hidden quantum work without
+changing its public declaration and passing the complete checks again.
+
+The complete body is checked independently. Its inferred effect must fit the
+declared upper bound; a prefix is never an inference seed. An Observe body
+cannot assert Unitary or Isometry, and an Isometry body cannot assert Unitary.
+An implementation inferred as Unitary may expose Isometry or Observe, but
+external callers use only that checked public effect, even with source
+available, inlining, specialization or a cached provider. Changing the public
+effect is an API change; a body-only edit cannot silently regenerate it.
+
+Same-module calls use the checked internal inference of the original callee.
+Calls across original module identities use its checked public effect;
+an import alias does not change that identity. Internal inference itself
+retains any further external boundary: an internal wrapper cannot wash an
+external Observe call into Unitary. Private functions retain inference.
+All branches, zero-count fold bodies and unused declarations are checked.
 Type, ownership, access and termination checks still apply independently;
 an annotation cannot supply a missing check or arbitrary mathematical Meaning.
 
@@ -232,20 +250,37 @@ is unavailable. Externally isometric justification is likewise unsupported.
 
 The Rust interface exposes immutable `ProjectEffects` from
 `project_effects_with_kernel` for finite projects, and `ParsedProgram` facts
-for sized source. `function_effect` separates the principal effect from an
-optional checked assertion. Their `documentation` methods render those facts
-from the retained source bytes; changing a source file afterward cannot rebind
+for selected source. `function_effect` exposes the internal inferred effect,
+checked assertion, typed quantum-use flag and distinct `public_effect()` for
+inspection. Only `public_effect()` (also `public_function_effect(path)`) is an
+exported effect contract; inspecting internal inference grants no eligibility.
+Their `documentation` methods render the public contract for public functions
+and inferred/asserted diagnostic facts for private functions from retained
+source bytes; changing a source file afterward cannot rebind
 the report. Concrete finite declarations still undergo native verification;
 generic facts remain conditional on their checked source premises. The
 source-only `doc` command and `render_markdown` keep their explicit lack of
 semantic checking and do not manufacture inferred facts.
 
-An operation provider selected by the host has the same principal-Unitarity
-requirement as a source-selected provider. An Observe or Isometry body rejects with
-an effect/semantic error and the unsupported external-justification explanation.
-A principal-Unitary body with a broader assertion remains eligible, subject to
-its separate type, ownership, access and native checks. A provider input/output
+Source-selected providers use the checked effect visible in the caller's
+original module. Host-selected public providers always use the public contract,
+including unused bindings; the host cannot claim same-module status. Explicit
+private provider bindings supported in the selected entry's own module retain
+their existing internal visibility. Generic bodies use formal bounds and cannot
+sharpen them from a fortunate later provider. Adjoint/control and pure contracts
+still require their separate evidence and a visible Unitary effect; other
+general arrows obey their declared effect ceiling. A provider input/output
 shape mismatch remains a type error; it is not external effect justification.
+
+Source contract effects and actual artifact effects are distinct. A conservative
+Observe contract does not rewrite a genuinely pure Raw body as observing, nor
+does that Raw body's sharper classification grant an external source capability.
+Actual operations and histories still reach fresh native checking. Concrete
+profiles may refuse otherwise source-valid contracts: the current observing
+FunctionEquality profile requires genuinely observing original artifacts, so
+conservative Observe annotations on pure bodies cannot select a pure-contract
+fallback. Such refusals disclose a concrete-profile limit, not a false pure
+label, source effect error or general preservation theorem.
 
 ## Total classical declarations
 

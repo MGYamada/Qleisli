@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "07a8120add2ddd5a741febf4cd52f8f935437b70633aea473ebff264d3e2715c",
+  "surface_sha256": "d75d9d0fa9c3ada40e8b028e7d1112759129ab59b228e530f7ba8908f8e081b1",
   "groups": [
     {
       "id": "raw-core",
@@ -186,7 +186,10 @@
         "tests/reference_meanings.rs",
         "tests/pure_leaf.rs",
         "tests/rectangular_meanings.rs",
-        "tests/check_scope_report.rs"
+        "tests/check_scope_report.rs",
+        "tests/body_effects.rs",
+        "tests/public_effects.rs",
+        "scripts/test_public_effects_first.py"
       ],
       "proof_gates": [
         "S05-C1",
@@ -792,7 +795,10 @@
         "tests/basis_polymorphism.rs",
         "tests/reference_meanings.rs",
         "tests/pure_leaf.rs",
-        "tests/rectangular_meanings.rs"
+        "tests/rectangular_meanings.rs",
+        "tests/body_effects.rs",
+        "tests/public_effects.rs",
+        "scripts/test_public_effects_first.py"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1314,7 +1320,10 @@
         "scripts/test_source_kernel.py",
         "tests/ordinary_booleans.rs",
         "tests/check_scope_report.rs",
-        "tests/check_scope_cli.rs"
+        "tests/check_scope_cli.rs",
+        "tests/body_effects.rs",
+        "tests/public_effects.rs",
+        "scripts/test_public_effects_first.py"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2449,6 +2458,18 @@
         {
           "path": "tests/exclusive_access.rs",
           "test": "finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "public_observe_identity_retains_actual_unitary_raw_and_same_module_precision"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "classical_public_interface_body_replacement_keeps_both_source_paths_stable"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "explicit_pure_labels_never_hide_observation_reset_or_discard"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2797,6 +2818,14 @@
         {
           "path": "tests/reference_meanings.rs",
           "test": "fixed_fourier_reference_meanings_match_independent_exact_coefficients"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "internal_pure_contract_remains_usable_under_broader_public_provider_bounds"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "dormant_external_observe_obligations_cannot_reuse_an_internal_pure_pair"
         }
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
@@ -3339,6 +3368,18 @@
         {
           "path": "tests/exclusive_access.rs",
           "test": "closed_static_branches_and_empty_fold_thread_updated_carry"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "external_quantum_annotation_needs_are_fixed_by_the_public_contract"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate"
+        },
+        {
+          "path": "tests/public_effects.rs",
+          "test": "host_selected_public_providers_use_public_bounds_even_when_unused"
         }
       ],
       "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",

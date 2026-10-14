@@ -224,6 +224,16 @@ fn bind_name(
 pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<(DefId, Span)>)> {
     let declaration = p.decl(id);
     let interface = &p.interfaces[&id];
+    let mut quantum_interface = false;
+    for ty in interface.params.iter().chain([&interface.result]) {
+        p.budget.ty(declaration.span, ty)?;
+        quantum_interface |= ty.linear();
+    }
+    p.budget.charge(declaration.span, interface.statics.len())?;
+    quantum_interface |= interface
+        .statics
+        .iter()
+        .any(|formal| matches!(formal.kind, StaticKind::Operation { .. }));
     let mut scope = declarations::scope(interface, &p.helpers, &p.budget, declaration.span)?;
     let index = &p.indices[&id];
     for (parameter, ty) in declaration.params.iter().zip(&interface.params) {
@@ -253,6 +263,9 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         edges: Vec::new(),
         depth: 0,
     };
+    if quantum_interface {
+        checker.effects.mark_quantum();
+    }
     for formal in &checker.program.interfaces[&id].statics {
         checker.program.budget.charge(declaration.span, 1)?;
         if let StaticKind::Operation {
@@ -847,6 +860,9 @@ impl Checker<'_, '_> {
             )?,
         };
         self.program.budget.ty(span, &result)?;
+        if result.linear() {
+            self.effects.mark_quantum();
+        }
         if let Some(expected) = expected {
             normalize::expect(
                 &result,

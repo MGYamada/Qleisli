@@ -855,7 +855,8 @@ fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
 #[test]
 fn unsupported_method_receivers_keep_text_json_spans_before_native_dispatch() {
     for ty in ["Bit", "Q<Bit>"] {
-        let source = format!("// 日本語\r\npub fn main(q:{ty})->{ty}{{q.h();q}}");
+        let effect = if ty.contains("Q<") { "unitary " } else { "" };
+        let source = format!("// 日本語\r\npub {effect}fn main(q:{ty})->{ty}{{q.h();q}}");
         let files = SourceRoot::new(&source);
         let absent = files.0.join("must-not-start-a-native-checker");
         let start = source.rfind('.').unwrap();
@@ -912,7 +913,8 @@ fn unrestricted_capture_keeps_text_json_identity_and_original_location() {
             "runtime closure values are unsupported",
         ),
     ] {
-        let source = format!("// 日本語\r\npub fn main(q:{ty})->{ty}{{let f={body};q}}");
+        let effect = if ty.contains("Q<") { "unitary " } else { "" };
+        let source = format!("// 日本語\r\npub {effect}fn main(q:{ty})->{ty}{{let f={body};q}}");
         let files = SourceRoot::new(&source);
         let start = source.find("let f=").unwrap() + "let f=".len();
         let (start, end) = if code == "ownership" {

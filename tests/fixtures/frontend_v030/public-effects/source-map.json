@@ -1,0 +1,556 @@
+{
+  "format": "qleisli.public-effect-source-map",
+  "version": 1,
+  "projects": [
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/primitive-like-local-name",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "6e7740648b1e8ccc8683d57dcd27b0b11deea71805c8a7e9fbcea0b0da2608d6",
+          "current_sha256": "6e7740648b1e8ccc8683d57dcd27b0b11deea71805c8a7e9fbcea0b0da2608d6"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "b52f07446b31cd0d7a52659126b0de1ed8dc53ed37893d28d23883da747bcbce",
+          "current_sha256": "7f1fa00b9360d2cc421ce1550a84aae2d93326688a0508150178a147bfb93edf"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/scalar-unit",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/scalar-unit",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "9f7772ccdde76c6fcb0ea7d00891f13bab13aac2ab7076a6e3fd213dae13c28f",
+          "current_sha256": "9f7772ccdde76c6fcb0ea7d00891f13bab13aac2ab7076a6e3fd213dae13c28f"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "25e672cd459528e1682152c7c0d9143c8987a4a7a6ce47e763b6cfd525e1ca0f",
+          "current_sha256": "16d6f627d74971c06631c75b5c88f9d4bef0cfbc37591be12fc7732776d0bce9"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/direct-arrow-adjoint-v030/attempt-02",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/direct-arrow-adjoint-v030/attempt-02",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "0c463c50f37175837a85ffb3a8c00acdb3cacf35cba4b07ceeaf71398499fe03",
+          "current_sha256": "0c463c50f37175837a85ffb3a8c00acdb3cacf35cba4b07ceeaf71398499fe03"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c",
+          "current_sha256": "69f2e9daa1207ac628a43a9e144e4fe17784e22badddfe0811ddc0d09b53362b"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/caller-frame",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/caller-frame",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "afac6c14d605a65372998cc75cc23f587c4a4b81d278d6683b252640f901f48d",
+          "current_sha256": "f4b70e9cffa440836bd3c2d4f94e82d4634e87e695519b19fa25c0fe71bb8378"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/closed-zero",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/closed-zero",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "9b3409bf9dcd7e5b48248e9abfc78135dc28bdd830ee62146a2992a97818c910",
+          "current_sha256": "a16d02132f76469ed4b0c691681d26531a23cd0a651af6f3068708bd931b98f2"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/fresh-unit-phase",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/fresh-unit-phase",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "bda33116357e98524b460d2cda82774214b6cdd6f22d9f348ead500e0a73b422",
+          "current_sha256": "6ad1d50240f61f41aa56f04f9c4e9c32b93695cf31b533e6198e913683085e76"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/helper-phase",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/helper-phase",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "1f0addd28f5d31dfee0e2fb4024859cd6299532edb4c52c711b2925eca9c7e43",
+          "current_sha256": "e749cbcf69c11cf520415e9aa405493d55b868f99440c754fbb36dbf26a857c5"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/pure-control",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/pure-control",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "4f03fbb5df6f926e46592d0a746ccbb3c6551fb46a3f239a3994fbb673a5fce3",
+          "current_sha256": "b3a928aba4571924ebdbad20980806efd04c1fee2ad6e442372d95860d87d132"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/retained-unit",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/retained-unit",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "b3f83eda513f5fde8436b4375352d1ca419337d7e2bdb8713c892379e9d6ea9c",
+          "current_sha256": "886287b6297441d345687fb110bda81c3411f5f5f06781036638691bee5722e5"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/unit-phase",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-phase",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "4c81bebf3a2f3cded0dcabce0f15d8a199b04802b965b90ecc4862d10bd6da41",
+          "current_sha256": "310fbcc1cdb13b5980ff7671268306dbfab150058cac9085315185b26154f994"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/unit-zero",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-zero",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "d530cf128c4d9e7ae9e651245c78a72364f438b7d6118d5916db3154c6e9815b",
+          "current_sha256": "c2add39f166b5361b5ffaccf1b066357d4ee069bd087c27a6a8a4f4b7cc84d85"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/direct-preparation.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/direct-preparation.qli",
+      "before_sha256": "b127a54201d9a6c24946c7e61d0a90aaf2cbd9cec51de27a88457af12b81a0a2",
+      "current_sha256": "1cb218e12f99e88a219578ab3916e373f9d96322d1faf8092b59ff883a8276a7"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/endomorphic-control.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/endomorphic-control.qli",
+      "before_sha256": "9fe160ecb965d7c6f29416f8e103002f4aeeb9d9b74296db089d4d29ebc29487",
+      "current_sha256": "3c0648fce8fb188b68f08d913a70bcedb3fa32ed8df8e9abb0e0fcb39b155ee9"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/endomorphic-unitor-refusal.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/endomorphic-unitor-refusal.qli",
+      "before_sha256": "8322c8b757c68c5c1a25a39f5033fb0ec8ddf33e041436f68413b5072fa08e20",
+      "current_sha256": "d745b515023da71ba7a07461139fd0907e65a7755613becda6a8a686eb6c9ef9"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-003.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
+      "before_sha256": "eefe81b5be19b64ee58dd4b906164112b389a66ca67e60a4414cd01f6e0f0ce3",
+      "current_sha256": "458aa2cb072eae063eed88f5ba4952068301aa8b983e5810a5b1293b222462f1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-004.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
+      "before_sha256": "fca773163af4175bd078f20f08fb317ebc593d20613ae2889e6c36001420f4a8",
+      "current_sha256": "8daf1cac76173bea149c12f34302fdb56b12c5ef1468211eb1558c557367d5fa"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-005.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
+      "before_sha256": "9cde722b70f1b591c46c937b67846b121a3dac571c7de3d635bd9b8d7d0a05dd",
+      "current_sha256": "4b4a6c375acc2037850847a856556b69e22e2557f36811a43cc8925422bd8004"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-006.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+      "before_sha256": "31d68f4dbd4c35f454d42c3203b44c539c2e0b979e673d713a540b392144bc87",
+      "current_sha256": "f10b1caa9d77a2d53b7d59b9e2f30b0ce647f4ff25b565396cdd9a543069f979"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/dead-static-observation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/dead-static-observation/main.qli",
+      "before_sha256": "71d069bf591012a4d5e7fdbef14cec0d25f4b92d9c9a3e22ef4851e8b69ed4a9",
+      "current_sha256": "7a6e8c3298c9254e68cff6357c07b480a5d8194df4062e40833308ee70d871fb"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "before_sha256": "d25a0438ebd907b94458ccd31abe66304cd79af4fa8090d83345683abf9041d4",
+      "current_sha256": "dcc5f4986faa12b12cfd3377b594e903205823d491bd602dc72f5d7ff9a600c8"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "before_sha256": "c6a0f119e37346a62a05fdcba3f4bbeaef2e0b5abcd0487fdefd9151dba4fbfb",
+      "current_sha256": "540a3f91046640ada1e109327493bc7d1145c7dc6f574d4fa6cd440f8c890430"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
+      "before_sha256": "b52f07446b31cd0d7a52659126b0de1ed8dc53ed37893d28d23883da747bcbce",
+      "current_sha256": "7f1fa00b9360d2cc421ce1550a84aae2d93326688a0508150178a147bfb93edf"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/recursive-observation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/recursive-observation/main.qli",
+      "before_sha256": "c56e366fbb9d5fa606d555715cbfc8a0233294f7fd13ee52eaaf45e53fd4a7cc",
+      "current_sha256": "1a6a78119e0cd3cfeef4ff99b8787f3450e1e21c6712c00a03399e067ce02b34"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/scalar-unit/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/scalar-unit/main.qli",
+      "before_sha256": "25e672cd459528e1682152c7c0d9143c8987a4a7a6ce47e763b6cfd525e1ca0f",
+      "current_sha256": "16d6f627d74971c06631c75b5c88f9d4bef0cfbc37591be12fc7732776d0bce9"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+      "before_sha256": "4133d7df2512f0599f0ce31f3bda5478ebee3b24260bc0814b7ea81b2064f2e3",
+      "current_sha256": "b665e464024d5cd8695daf00dda9eea1799b648f2b7beab3d8e9ddb3399d7a7b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-059.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli",
+      "before_sha256": "b6f7ec852be2a99840b41945886e544d334dfffed32d61f9b8d050f5f24c8e65",
+      "current_sha256": "637b57e782046a9114f973ea37f6ea69b6b32708b8bad9fb40a4e32f2767264f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-060.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli",
+      "before_sha256": "9bf546c243c07fdc9cfdceeb0fd756c13781963c043e42fc24cecad9795447b0",
+      "current_sha256": "7d1a003a949aa1625501a3c200163eb6d0c5de72a99d30c1028ddbcb2fd12959"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-009.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/all-paths-controlled/main.qli",
+      "before_sha256": "c5531e0c2adbc3b95ac2b285225f4835f26aa2c62030d70077da047afee32362",
+      "current_sha256": "2570ab044d586956a3bbc6e23dcbbcb24c6fe5c4b440fdb870550b44835e4018"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-061.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli",
+      "before_sha256": "94410e0c48016fa6764f5f56bbad0f07c203a0b098b7b2d169258b4a1c866c2d",
+      "current_sha256": "cda99cc0d73df9327e5ef57b57153c7d5d9dde77b6932eb56545596f25ee412b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-010.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/apply-only-controlled/main.qli",
+      "before_sha256": "4f57f1c1813f0109585ba90f576ed306231249d1dd749e8d523888343a9d369e",
+      "current_sha256": "5b39633ad1a36c757c0ffaa1d08ac3a8d97cc39c274143d6f06ed3e2132fa36e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-011.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/apply-only-forward/main.qli",
+      "before_sha256": "147fb1f8646416888da337e0e9c9c3a150d63e46e25ec9b81ccda37341a856b2",
+      "current_sha256": "8687f799e1cd1640d89173a403a5198744b704878d2eb7a225a6ed91da2f6a79"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-062.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli",
+      "before_sha256": "24f0b658e519a800f68620094b437580f367a49b6b3a64535d1becbc799282f3",
+      "current_sha256": "176216e307a9cee53cca8414ce75c5f82e1cbb357661c1181433523d6e4ec44d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-012.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/closed-provider-controlled/main.qli",
+      "before_sha256": "9648b893f0fd8fa5ca6d286ab7e4ebd81e8005ea1e72843cef332c19a801b94b",
+      "current_sha256": "40c62ec40a5454f68cb4e947fdc10fae26eed94b15ae4867cb04b0f2bfba42a1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-013.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/unused-op-controlled/main.qli",
+      "before_sha256": "2570afb2e5d0393fdedec52479863c977a07eda32375173e94a59cd44f02c612",
+      "current_sha256": "8f708c399fc3941a290a57b2906b8d9bb9faa8b2111613939ff54d6eda11beec"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-063.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
+      "before_sha256": "5927bd8568ba799af88f2aaa373d236c31f8a5b7d1b0a34b151de0c2559cad65",
+      "current_sha256": "6bcc2698037e1a52ce887acff8599376017c4c927ac5dedd3938db9611a41ed7"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/direct-arrow-adjoint-v030/attempt-02/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/direct-arrow-adjoint-v030/attempt-02/main.qli",
+      "before_sha256": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c",
+      "current_sha256": "69f2e9daa1207ac628a43a9e144e4fe17784e22badddfe0811ddc0d09b53362b"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/adjoint.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/adjoint.qli",
+      "before_sha256": "f8e0743eb00b0c32bbe2d55cff462416da7a1030b255f68216b9d909955d17a0",
+      "current_sha256": "4209b4a1397f702c12433e9ea20894ebc445842b0a2779aefda194e4aa52bfe4"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/endomorphic-sequence.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/endomorphic-sequence.qli",
+      "before_sha256": "ce21c15f60c6f3ce6a6be2f13845aef2622c31550322b4126b1afe36839ee3f4",
+      "current_sha256": "fb894b49bc1db6ed2b0393c0891ca6e30f1e05b95c67588ec37f9c4143de056a"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/sequence.qli",
+      "before_sha256": "f811f0f18fd800a99241cd5e18ac4b3340115db823eaf517300792308a4e3270",
+      "current_sha256": "052916d621651b098743a1c6a291cd82ec44b5dd9e38b7f0f942579a0bdcc6c8"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/tensor.qli",
+      "before_sha256": "230cb17a032ace90a01fccad957709f92d6bea4180014277a786e985994e9354",
+      "current_sha256": "efc9303227a4e35fabf6bb557ac8acb79f20240534f5ae2dae543e5c4faae527"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/wrong-middle.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/wrong-middle.qli",
+      "before_sha256": "cc9fdcd8f924741b8b42257ebc92712866c799d4116b3ba56472310c6f2c145f",
+      "current_sha256": "08c7e896fe6a62e8dbd3305d08967731c5f0ea1fc22901c2cc0ae50915f8431e"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli",
+      "before_sha256": "8621440a71925bed7d9a91afea195a81d0d39528275ea240f9a28639e48ab156",
+      "current_sha256": "8642fa71371887d77ef2b848f76508dfa73686f0813faf4f90185e0649b784d4"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-then.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/repeat-then.qli",
+      "before_sha256": "7a5bc8f848bf6601f4fad44344fb9d25fc08e5bd12d5a810f38f1c3ef393cca3",
+      "current_sha256": "335dac68401778ec231d43b08b0f97be14c9f8b38b3b4e9060d78d927ee77cc7"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
+      "before_sha256": "d8664e3324a116b4f8b967eacb74d2a3e0ec870b3dd87decf835b398b2bab2be",
+      "current_sha256": "0c0eda7505629565ab9d7ba2246b10b9bf75d326f8907d2f8b45ba1872c8583e"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
+      "before_sha256": "09b664c012a4882de4e5f0382e0384a7344ca6233f087f5bb1574936b05eafbc",
+      "current_sha256": "928bef0cbddd8adbc1c32b29bec11ee4b5e9dd5f52e25b74734d7adccef2f90d"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/sequence.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/sequence.qli",
+      "before_sha256": "f81c71fc4df3762399e10f10e5ab5071ee52fcce15923d4eab2ecd7dc65d6853",
+      "current_sha256": "9dc29d8b1f26b3b5d61a9bd25f0a522116d70ee6d94e45663f08e483be43e71c"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/zero-bad-child.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/zero-bad-child.qli",
+      "before_sha256": "4f71240281a6a1c80bf15349f67672bbcecc65e1455e5f860e258aa95e559c5c",
+      "current_sha256": "4dd8ad9d982d00b70ad57863fa3800c10e87d8991212377c2264e4ad08b0551a"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-02/tensor.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-02/tensor.qli",
+      "before_sha256": "a3be4431f7d10a86999af60a1652d4655ab3e1fce99c46de2a628f770ce1f604",
+      "current_sha256": "4f5942d56d2414da53f99a232c2fd82ab76553fcdec7234ea9aede2d7d6c61fb"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-02/wrong-tensor.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-02/wrong-tensor.qli",
+      "before_sha256": "0163d2d8993608bbd69bee98f0d8171d5459faf160aba5ab1ce3cd36061bc7c4",
+      "current_sha256": "489544aa0a2ed881c979c2f715322f9e9de8c3813f3d2ef473b70f0f948d848f"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/false-unitary.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/false-unitary.qli",
+      "before_sha256": "c73d36522d3b2ce3295349885360e1c65c98b6efccaa95d0bbca00223a020d98",
+      "current_sha256": "308b841b391345b8eea219eefc6c235b1b6fa091dfef4378924b3c4e752f64ab"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/preparation.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/preparation.qli",
+      "before_sha256": "85d51ba59ccd3f68631ebe60b0e0bda863388faeb1fd417f3f80f6fe4528b201",
+      "current_sha256": "3aed101bb81156613bd2e12e02c40f7943be570a119ef8f01bf3867cdae1630f"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/unitor.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/unitor.qli",
+      "before_sha256": "30f4b9ef7775d357c6695abefb7e3300fd178cefd12c91c0fb806d222a0b490e",
+      "current_sha256": "2950ed4dea089be75db8bb4fa777601f37d023a30d0b50f318d1449f6ae34ee9"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/wrong-input.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/wrong-input.qli",
+      "before_sha256": "082571142672e764e11d14ff49965e1992ae095e5dc59d9c6a88fb8f41f0b040",
+      "current_sha256": "f87744d343e928169f838dc056b9efef70d7c6d415a55042cd331212c3a1ca02"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/zero-power.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/zero-power.qli",
+      "before_sha256": "a1aeca87b8129740d9aa0705649121c3f0d9517574cb323c78626d08762ce2a2",
+      "current_sha256": "6a4d2a9d75151b05079272d2ad7f044f1628bbd65e6b0e174b8de536008c1dbb"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/caller-frame/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/caller-frame/main.qli",
+      "before_sha256": "afac6c14d605a65372998cc75cc23f587c4a4b81d278d6683b252640f901f48d",
+      "current_sha256": "f4b70e9cffa440836bd3c2d4f94e82d4634e87e695519b19fa25c0fe71bb8378"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/closed-zero/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/closed-zero/main.qli",
+      "before_sha256": "9b3409bf9dcd7e5b48248e9abfc78135dc28bdd830ee62146a2992a97818c910",
+      "current_sha256": "a16d02132f76469ed4b0c691681d26531a23cd0a651af6f3068708bd931b98f2"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/fresh-unit-phase/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/fresh-unit-phase/main.qli",
+      "before_sha256": "bda33116357e98524b460d2cda82774214b6cdd6f22d9f348ead500e0a73b422",
+      "current_sha256": "6ad1d50240f61f41aa56f04f9c4e9c32b93695cf31b533e6198e913683085e76"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/helper-phase/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/helper-phase/main.qli",
+      "before_sha256": "1f0addd28f5d31dfee0e2fb4024859cd6299532edb4c52c711b2925eca9c7e43",
+      "current_sha256": "e749cbcf69c11cf520415e9aa405493d55b868f99440c754fbb36dbf26a857c5"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/pure-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/pure-control/main.qli",
+      "before_sha256": "4f03fbb5df6f926e46592d0a746ccbb3c6551fb46a3f239a3994fbb673a5fce3",
+      "current_sha256": "b3a928aba4571924ebdbad20980806efd04c1fee2ad6e442372d95860d87d132"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/retained-unit/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/retained-unit/main.qli",
+      "before_sha256": "b3f83eda513f5fde8436b4375352d1ca419337d7e2bdb8713c892379e9d6ea9c",
+      "current_sha256": "886287b6297441d345687fb110bda81c3411f5f5f06781036638691bee5722e5"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/unit-phase/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-phase/main.qli",
+      "before_sha256": "4c81bebf3a2f3cded0dcabce0f15d8a199b04802b965b90ecc4862d10bd6da41",
+      "current_sha256": "310fbcc1cdb13b5980ff7671268306dbfab150058cac9085315185b26154f994"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/unit-zero/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-zero/main.qli",
+      "before_sha256": "d530cf128c4d9e7ae9e651245c78a72364f438b7d6118d5916db3154c6e9815b",
+      "current_sha256": "c2add39f166b5361b5ffaccf1b066357d4ee069bd087c27a6a8a4f4b7cc84d85"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/controlled-scalar.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/controlled-scalar.qli",
+      "before_sha256": "62f1e7b6261e5b7ae94b5f4124c020fe2e1a4860045ea8f397f4ff0dcefa67e0",
+      "current_sha256": "d837b2825cdc2915d3d381b4ea234521ee994c602d95a8e43fee97c1f777f2dc"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/hidden-inverse.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/hidden-inverse.qli",
+      "before_sha256": "483e92b54f33b092bc9892f97bfcac09285d5baeeb342a7fe508dd5886b29045",
+      "current_sha256": "ab7d3ee16463da34e04ea6be09ed9b3338a0f26a5af09a837b1252dcfd6abfed"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/nested-control-inverse.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/nested-control-inverse.qli",
+      "before_sha256": "2e602a011f77a6b91a3e811800f55cbfbdbcba48fbb6fbb5b790d1c80f13ee90",
+      "current_sha256": "8097e0117565d26a65f3c3e2c5368c42ac651ada0641e89e9c51016c1f04f0fa"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01/reordered-tensor-inverse.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/reordered-tensor-inverse.qli",
+      "before_sha256": "fc644b9a5ee1cf82ce218b49a80cd94e11e0c309bff6dbe8468c0d592839f5b9",
+      "current_sha256": "3f5c77acf75232ba4513d4e1f81fc2d50e2b52858a3b654d17f2e01bab25c708"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-02/hidden-controlled-swap.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-02/hidden-controlled-swap.qli",
+      "before_sha256": "42cf7c4e03278394e54b8bb40c367d960ca171fdf0f30be0decd816010cb58e8",
+      "current_sha256": "4783dc2a89caff8d35548912e08ec800b8a608669e44b6eb066086e672ad52a3"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/bad-control.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/bad-control.qli",
+      "before_sha256": "5c1ae156329404590c64ae8593969020fd77b959d7cfa611c64852413f50e98d",
+      "current_sha256": "d263a06c51707c619544f63e7a5a5bb7a2a6ec7d9216ef09fc78b538603e948e"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/control-provider.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/control-provider.qli",
+      "before_sha256": "50411040a4a81169831025d91152e2677195fef95444c3779426aa503f1a942a",
+      "current_sha256": "460bb701e4fa4934da837cedc06c47348f3f8fc6115c79fae256d0c2d7031e9b"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/false-meaning.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/false-meaning.qli",
+      "before_sha256": "504eda493573a1cd4bd3bdaa7f9ce5579895f22776b002cf83b3a72979227503",
+      "current_sha256": "d8d33151a1b8afb51998b71a59670894ad48e4d31b044f8ce0fe6d5a8e907a95"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-false.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/unused-false.qli",
+      "before_sha256": "49cee22fbc58276c614ee0b2b9761d43d224ab3f8668ef4f733f3305a47758cc",
+      "current_sha256": "cf9adb2a7887fe5fbe57ab4fe05148883ee624b55a1ba2dc64c428e0dff09c89"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/unused-valid.qli",
+      "before_sha256": "831cea44ed05dec23ea8f310396f22b4f1e850d6ce4f9d57a0063b53c335000f",
+      "current_sha256": "3ea01e5c3c5ed091f9fae2dd47f3706aa7fa63a6f720ee7d0ca79a529b2e0e36"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/valid-combined.qli",
+      "current_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/valid-combined.qli",
+      "before_sha256": "b2cccfb0b248369388c8066da54bb07025c34cc1316985dba82bd2c3639fa634",
+      "current_sha256": "c06c24210f9e70d00c028d6734e43bd423a6f78a0a75acb12d723bd84fcf4a95"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+use library::f; pub fn g(x:Bit)->Bit{f(x)} fn main()->Bit{g(0)}

@@ -348,6 +348,31 @@ pub(super) fn closed_interface_budgeted(
     })
 }
 
+/// A host binding names a public provider from outside the source module.
+/// The explicitly supported private binding remains governed by the entry's
+/// module visibility; it cannot be used to sharpen a public provider contract.
+pub(super) fn host_provider_effect(
+    program: &ParsedProgram,
+    entry: DefId,
+    provider: DefId,
+    span: Span,
+) -> Result<crate::ir::Effect> {
+    let resolution = &program.checked.resolution;
+    let context = if resolution.declaration(provider).public {
+        crate::frontend::effects::EffectContext::External
+    } else {
+        crate::frontend::effects::EffectContext::Module(resolution.declaration(entry).module)
+    };
+    crate::frontend::effects::effect_at(resolution, &program.checked.effects, context, provider)
+        .ok_or_else(|| {
+            Error::new(
+                "effect",
+                span,
+                "provider has no visible checked source effect",
+            )
+        })
+}
+
 pub(super) fn instantiate(
     program: &ParsedProgram,
     entry: &str,
@@ -428,7 +453,7 @@ pub(super) fn instantiate(
                     span,
                     &mut charge,
                 )?;
-                let effect = program.checked.effects[&provider_id].inferred();
+                let effect = host_provider_effect(program, entry_id, provider_id, span)?;
                 let required = &closed.operations[&formal.key];
                 if effect > required.ceiling {
                     return Err(Error::new(
@@ -436,12 +461,12 @@ pub(super) fn instantiate(
                         span,
                         if required.ceiling == crate::ir::Effect::Unitary {
                             crate::frontend::effects::unitary_required(&format!(
-                                "operation provider {} has inferred body effect `{effect:?}`; Unitary is required",
+                                "operation provider {} has caller-visible effect `{effect:?}`; Unitary is required",
                                 resolution.path(provider_id)
                             ))
                         } else {
                             format!(
-                                "pure operation provider {} has inferred body effect `{effect:?}`; at most Isometry is required",
+                                "pure operation provider {} has caller-visible effect `{effect:?}`; at most Isometry is required",
                                 resolution.path(provider_id)
                             )
                         },

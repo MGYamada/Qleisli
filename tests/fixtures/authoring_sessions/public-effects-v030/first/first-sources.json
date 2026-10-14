@@ -1,0 +1,455 @@
+{
+  "format": "qleisli.public-effect-first-source-study",
+  "version": 1,
+  "issue": 355,
+  "stage": "informed-original-sources-frozen-before-source-checks",
+  "frozen_at_utc": "2026-10-14T06:17:46.262358+00:00",
+  "scope": "Temporary preparation only; no implementation, closure, quantum semantic theorem, source/runtime proof, target realization or guarantee admission.",
+  "cases": [
+    {
+      "id": "external-identity-unitary",
+      "files": [
+        "library.qli",
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "reject",
+      "reason": "External caller must use public Observe regardless of independently checked implementation precision.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-identity-unitary"
+    },
+    {
+      "id": "external-reset-unitary",
+      "files": [
+        "library.qli",
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "External caller must use public Observe regardless of independently checked implementation precision.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-reset-unitary"
+    },
+    {
+      "id": "external-identity-observe",
+      "files": [
+        "library.qli",
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "accept",
+      "reason": "External caller must use public Observe regardless of independently checked implementation precision.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-identity-observe"
+    },
+    {
+      "id": "external-reset-observe",
+      "files": [
+        "library.qli",
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "accept",
+      "reason": "External caller must use public Observe regardless of independently checked implementation precision.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-reset-observe"
+    },
+    {
+      "id": "same-module-precision",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "accept",
+      "reason": "Proposed same-module rule retains independently checked principal precision; external callers still see public Observe.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/same-module-precision"
+    },
+    {
+      "id": "missing-public-quantum-effect",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "reject",
+      "reason": "The adopted beta plan requires an explicit checked public effect for a public quantum-processing function, including inferred Unitary.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/missing-public-quantum-effect"
+    },
+    {
+      "id": "missing-public-closed-quantum-effect",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "reject",
+      "reason": "Quantum processing requires an explicit public effect even without quantum input/output ports.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/missing-public-closed-quantum-effect"
+    },
+    {
+      "id": "private-inference-control",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "accept",
+      "reason": "Private ordinary body inference remains available.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/private-inference-control"
+    },
+    {
+      "id": "public-classical-inference-control",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "accept",
+      "reason": "This classical function has no quantum processing; the proposed mandatory quantum annotation does not apply to it.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/public-classical-inference-control"
+    },
+    {
+      "id": "hidden-measure-unitary",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Ignoring an ordinary measurement outcome never hides the body Observe effect.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/hidden-measure-unitary"
+    },
+    {
+      "id": "reset-unitary",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Reset remains Observe despite returning a quantum owner.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/reset-unitary"
+    },
+    {
+      "id": "discard-unitary",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Explicit discard remains Observe even when the result is ordinary Unit.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/discard-unitary"
+    },
+    {
+      "id": "hidden-measure-isometry",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Ignoring an ordinary measurement outcome never hides the body Observe effect.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/hidden-measure-isometry"
+    },
+    {
+      "id": "reset-isometry",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Reset remains Observe despite returning a quantum owner.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/reset-isometry"
+    },
+    {
+      "id": "discard-isometry",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Explicit discard remains Observe even when the result is ordinary Unit.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/discard-isometry"
+    },
+    {
+      "id": "transitive-hidden-measure-unitary",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Transitive internal observation must remain in the principal body effect.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/transitive-hidden-measure-unitary"
+    },
+    {
+      "id": "transitive-reset-isometry",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Transitive reset cannot acquire a pure public label.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/transitive-reset-isometry"
+    },
+    {
+      "id": "transitive-discard-unitary",
+      "files": [
+        "main.qli"
+      ],
+      "predicted_current": "reject-effect",
+      "required_policy": "reject",
+      "reason": "Transitive discard cannot acquire a pure public label.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/transitive-discard-unitary"
+    },
+    {
+      "id": "external-missing-public-effect",
+      "files": [
+        "library.qli",
+        "main.qli"
+      ],
+      "predicted_current": "accept",
+      "required_policy": "reject",
+      "reason": "A missing public quantum effect cannot silently export an implementation-derived contract.",
+      "max_live_physical_qubits": 1,
+      "source_root": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-missing-public-effect"
+    }
+  ],
+  "files": [
+    {
+      "path": "original/external-identity-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/external-identity-unitary/library.qli",
+      "sha256": "66bb9b5344036b4189d97bf4dbc8fc112703871b2a65211553f5a1710344fb07",
+      "bytes": 118
+    },
+    {
+      "path": "original/external-identity-unitary/main.qli",
+      "sha256": "d4e0960a88347b8d5ba1029cb158976d17b4a7391bc581b1abcbb9a7f051712c",
+      "bytes": 192
+    },
+    {
+      "path": "original/external-reset-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/external-reset-unitary/library.qli",
+      "sha256": "583b250f7b1a2b5325c957752018d293a285873e55ad391d11d4555829ba3150",
+      "bytes": 125
+    },
+    {
+      "path": "original/external-reset-unitary/main.qli",
+      "sha256": "d4e0960a88347b8d5ba1029cb158976d17b4a7391bc581b1abcbb9a7f051712c",
+      "bytes": 192
+    },
+    {
+      "path": "original/external-identity-observe/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/external-identity-observe/library.qli",
+      "sha256": "66bb9b5344036b4189d97bf4dbc8fc112703871b2a65211553f5a1710344fb07",
+      "bytes": 118
+    },
+    {
+      "path": "original/external-identity-observe/main.qli",
+      "sha256": "b61156b1cd0a33f0621491ccb72aef785be5dc60459b8f3a815a571ece3b53bb",
+      "bytes": 192
+    },
+    {
+      "path": "original/external-reset-observe/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/external-reset-observe/library.qli",
+      "sha256": "583b250f7b1a2b5325c957752018d293a285873e55ad391d11d4555829ba3150",
+      "bytes": 125
+    },
+    {
+      "path": "original/external-reset-observe/main.qli",
+      "sha256": "b61156b1cd0a33f0621491ccb72aef785be5dc60459b8f3a815a571ece3b53bb",
+      "bytes": 192
+    },
+    {
+      "path": "original/same-module-precision/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/same-module-precision/main.qli",
+      "sha256": "833c5753cdab715c7a58a90b1700aaa304af3d61e0d8edd148e4914b35a3cb4a",
+      "bytes": 220
+    },
+    {
+      "path": "original/missing-public-quantum-effect/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/missing-public-quantum-effect/main.qli",
+      "sha256": "4edd36aeeb9224d927dba6b74983a17696dce1449aa9030eff79ea5c407711cf",
+      "bytes": 168
+    },
+    {
+      "path": "original/missing-public-closed-quantum-effect/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/missing-public-closed-quantum-effect/main.qli",
+      "sha256": "2a22bac5f98c9831ee64048275ac6f8b9793d154e89f685e00ca9f57c00fa2a8",
+      "bytes": 152
+    },
+    {
+      "path": "original/private-inference-control/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/private-inference-control/main.qli",
+      "sha256": "450636f5dea9503877d5fd56b98c4a21fcd923b2eacd1a706e9ae9ca2e86f880",
+      "bytes": 164
+    },
+    {
+      "path": "original/public-classical-inference-control/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/public-classical-inference-control/main.qli",
+      "sha256": "75a5706d3c38acfbbf6b489e364198b79a349b45bfc9c9064f96bdf1fccd9d11",
+      "bytes": 159
+    },
+    {
+      "path": "original/hidden-measure-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/hidden-measure-unitary/main.qli",
+      "sha256": "9d0cbb07012caf8144ebac2b42e7133d27111326c681d3a5dcceb3c49fde0c3c",
+      "bytes": 174
+    },
+    {
+      "path": "original/reset-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/reset-unitary/main.qli",
+      "sha256": "20440bceeb55ae1edd09ca6eca36b72a0bb52d5968976546f86bb2adae44673f",
+      "bytes": 180
+    },
+    {
+      "path": "original/discard-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/discard-unitary/main.qli",
+      "sha256": "840f9935546626537882a5747721f064bb41474d0950daf736bc089a0398aa9e",
+      "bytes": 170
+    },
+    {
+      "path": "original/hidden-measure-isometry/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/hidden-measure-isometry/main.qli",
+      "sha256": "fa0b225110bb113e810f92625f9bd7f68a25c647fb429bee561d0e055d9f56ed",
+      "bytes": 175
+    },
+    {
+      "path": "original/reset-isometry/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/reset-isometry/main.qli",
+      "sha256": "5f193fc95eaddd7172af916f9bbf5bdd3c40eac41dfc9783fb3ef5843520c5db",
+      "bytes": 181
+    },
+    {
+      "path": "original/discard-isometry/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/discard-isometry/main.qli",
+      "sha256": "fb5c6f49d3ca24711f29223cf6cabc52cacc37bfc7c013557a0d9e1b69c9a04c",
+      "bytes": 171
+    },
+    {
+      "path": "original/transitive-hidden-measure-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/transitive-hidden-measure-unitary/main.qli",
+      "sha256": "3573f595c6be21811d823d2fe8467349182f15b96d1d6e371fa06e97c7fed88a",
+      "bytes": 207
+    },
+    {
+      "path": "original/transitive-reset-isometry/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/transitive-reset-isometry/main.qli",
+      "sha256": "fc481b4f37be54f5f2148773c77135771a26f1259f3c158c11bef743bf6b66ed",
+      "bytes": 226
+    },
+    {
+      "path": "original/transitive-discard-unitary/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/transitive-discard-unitary/main.qli",
+      "sha256": "f5f29c414992e3b9858534a379b34b64fc7950d21822402b17fd6acfa337b52c",
+      "bytes": 213
+    },
+    {
+      "path": "original/external-missing-public-effect/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    {
+      "path": "original/external-missing-public-effect/library.qli",
+      "sha256": "bf8aca4e8a5f5d13c776c696bb3058d5ef4052b145ae21549ba4257c37a6bcd6",
+      "bytes": 36
+    },
+    {
+      "path": "original/external-missing-public-effect/main.qli",
+      "sha256": "d4e0960a88347b8d5ba1029cb158976d17b4a7391bc581b1abcbb9a7f051712c",
+      "bytes": 192
+    }
+  ],
+  "binaries": [
+    {
+      "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sha256": "2024c99b4c81573dd5ea0a72282bac56e3dbf07468c41d5826347da624e8e6ff",
+      "bytes": 34534008
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+      "bytes": 92433136
+    }
+  ],
+  "source_revisions": 0,
+  "observation_plan": "For each unchanged original project: normal finite project check and selected-source check with explicit module map, closed main entry and raw IR profile. JSON output; explicit kernel path. Preserve all real streams and errors. Never overwrite originals on observer mistakes. No runs, sampling or new maximum cases."
+}

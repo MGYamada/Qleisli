@@ -113,6 +113,10 @@
           "python3",
           "scripts/test_engineering_openqasm_native.py",
           "--baseline-only"
+        ],
+        [
+          "python3",
+          "scripts/test_public_effects_first.py"
         ]
       ],
       "prepare": []

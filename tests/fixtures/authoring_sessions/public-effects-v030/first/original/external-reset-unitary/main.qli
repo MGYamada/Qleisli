@@ -1,0 +1,5 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+use library::f;
+pub unitary fn g(q: Q<Bit>) -> Q<Bit> { f(q) }
+pub observe fn main() -> Bit { measure_z(g(init0())) }

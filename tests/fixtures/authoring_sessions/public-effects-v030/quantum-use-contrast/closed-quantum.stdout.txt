@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"effect","severity":"error","message":"public quantum function `g` requires an explicit `unitary`, `isometry` or `observe` effect annotation","primary":{"path":"main.qli","start":23,"end":24,"line":1,"column":24},"related":[]}],"result":null}

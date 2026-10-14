@@ -11,6 +11,13 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Require explicit checked effects on public quantum functions (#355). External
+  callers and public host providers use the public contract; same-module
+  inference preserves precision without erasing further external boundaries.
+  Keep actual Raw effects, operations, native checking and capability evidence
+  separate. Migrate ordinary bundled/client source and public documentation,
+  preserving original first observations and recorded fixture migration chains.
+
 - Compare literal emitted OpenQASM bytes with an independent original ideal
   through a separate engineering API/CLI and native complete-adjoint bound.
   The explicit closed profile supports one reset qubit, up to eight exact

@@ -31,6 +31,7 @@ impl Lowerer<'_, '_> {
         let outer_ops = std::mem::take(&mut self.raw.operations);
         let outer_sources = std::mem::take(&mut self.operation_sources);
         let entry_effect = self.effect;
+        let entry_contract_effect = self.contract_effect;
         let entry_effect_source = self.effect_source.clone();
         let mut then_env = env.clone();
         let then_result = self.block(module, then_block, &mut then_env)?;
@@ -39,18 +40,21 @@ impl Lowerer<'_, '_> {
         let mut then_registers =
             std::mem::replace(&mut self.raw.registers, entry_registers.clone());
         let then_effect = self.effect;
+        let then_contract_effect = self.contract_effect;
         let then_effect_source = self.effect_source.take();
         self.effect = entry_effect;
+        self.contract_effect = entry_contract_effect;
         self.effect_source = entry_effect_source;
         let mut else_env = env.clone();
         let else_result = self.block(module, else_block, &mut else_env)?;
         let else_ops = std::mem::replace(&mut self.raw.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
         let mut else_registers = std::mem::take(&mut self.raw.registers);
-        if then_effect >= self.effect {
+        if then_contract_effect >= self.contract_effect {
             self.effect_source = then_effect_source;
         }
         self.effect = self.effect.max(then_effect);
+        self.contract_effect = self.contract_effect.max(then_contract_effect);
         if then_env != else_env {
             return Err(self.error(
                 module,

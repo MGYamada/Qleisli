@@ -8,6 +8,10 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::Command;
 
+fn read_current_fixture(path: impl AsRef<Path>) -> std::io::Result<String> {
+    std::fs::read_to_string(common::current_namespace_fixture(path.as_ref()))
+}
+
 fn parsed(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
 }
@@ -66,10 +70,10 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn retained_first_sources_reach_native_checking_and_complex_execution() {
+fn current_annotations_of_retained_sources_reach_native_checking_and_complex_execution() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02");
-    let preparation = std::fs::read_to_string(directory.join("preparation.qli")).unwrap();
+    let preparation = read_current_fixture(directory.join("preparation.qli")).unwrap();
     assert_eq!(
         parsed(&preparation)
             .function_effect("main::main")
@@ -82,7 +86,7 @@ fn retained_first_sources_reach_native_checking_and_complex_execution() {
         &selected(&preparation, "run", 0),
         &[[std::f64::consts::FRAC_1_SQRT_2, 0.0]; 2],
     );
-    let unitor = std::fs::read_to_string(directory.join("unitor.qli")).unwrap();
+    let unitor = read_current_fixture(directory.join("unitor.qli")).unwrap();
     for basis in 0..=1 {
         let mut expected = [[0.0; 2]; 2];
         expected[basis] = [1.0, 0.0];
@@ -104,7 +108,7 @@ fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);phase[1,3](b)}
         fn invoke[const A:Basis,const B:Basis,const U:Op<A -> B>](q:Q<A>)->Q<B>
             requires Applicable(U){U(q)}
-        pub fn main(q:Q<(Unit,Bit)>)->Q<Bit>{invoke[type((Unit,Bit)),type(Bit),strip](q)}";
+        pub isometry fn main(q:Q<(Unit,Bit)>)->Q<Bit>{invoke[type((Unit,Bit)),type(Bit),strip](q)}";
     let omega = std::f64::consts::FRAC_1_SQRT_2;
     amplitudes(&selected(source, "run", 0), &[[1.0, 0.0], [0.0, 0.0]]);
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [omega, omega]]);
@@ -116,9 +120,9 @@ fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
 #[test]
 fn entry_provider_bindings_check_both_ports_and_actual_effect() {
     let source = "use std::quantum::{finish,init0};
-        pub fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
-        pub fn wrong(q:Q<Bit>)->Q<Bit>{q}
-        pub fn main[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}";
+        pub isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+        pub unitary fn wrong(q:Q<Bit>)->Q<Bit>{q}
+        pub isometry fn main[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}";
     let program = parsed(source);
     for (provider, success) in [("main::prepare", true), ("main::wrong", false)] {
         let instance = program.instantiate(
@@ -144,7 +148,7 @@ fn explicit_endomorphism_keeps_abbreviation_effect_and_provider_rules() {
             "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
              unitary fn invoke[const U:{kind}](q:Q<Bit>)->Q<Bit>
                 requires Applicable(U){{U(q)}}
-             pub fn main(q:Q<Bit>)->Q<Bit>{{invoke[had](q)}}"
+             pub unitary fn main(q:Q<Bit>)->Q<Bit>{{invoke[had](q)}}"
         );
         let program = parsed(&source);
         assert_eq!(
@@ -165,7 +169,7 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
         ("zero-power", "type"),
         ("controlled", "type"),
     ] {
-        let source = std::fs::read_to_string(directory.join(format!("{name}.qli"))).unwrap();
+        let source = read_current_fixture(directory.join(format!("{name}.qli"))).unwrap();
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
         assert_eq!(error.code(), code, "{name}: {error}");
@@ -209,9 +213,9 @@ fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01");
     let source = |name: &str| {
-        std::fs::read_to_string(directory.join(format!("{name}.qli")))
+        read_current_fixture(directory.join(format!("{name}.qli")))
             .unwrap()
-            .replace("pub fn entry", "pub fn main")
+            .replace("fn entry", "fn main")
     };
     let omega = std::f64::consts::FRAC_1_SQRT_2;
     amplitudes(&selected(&source("sequence"), "run", 0), &[[omega, 0.0]; 2]);
@@ -247,7 +251,7 @@ fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
         fn unitor(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[power(then_op(then_op(adjoint(unitor),unitor),twist),2)](q)}";
+        pub unitary fn main(q:Q<Bit>)->Q<Bit>{invoke[power(then_op(then_op(adjoint(unitor),unitor),twist),2)](q)}";
     amplitudes(&selected(source, "run", 0), &[[1.0, 0.0], [0.0, 0.0]]);
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [0.0, 1.0]]);
 }
@@ -275,19 +279,19 @@ fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
         ),
     ] {
         let source = format!("{prefix} fn invoke[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){{U(q)}}
-            pub fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{invoke[{operation}](q)}}");
+            pub unitary fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{invoke[{operation}](q)}}");
         amplitudes(&selected(&source, "run", basis), &expected);
     }
     let source = format!(
         "{prefix} fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
-        pub fn main(q:Q<Bit>)->Q<Bit>{{invoke[conjugate_op(twist,had)](q)}}"
+        pub unitary fn main(q:Q<Bit>)->Q<Bit>{{invoke[conjugate_op(twist,had)](q)}}"
     );
     amplitudes(&selected(&source, "run", 0), &[[omega, 0.0], [0.5, 0.5]]);
     let source = "use std::quantum::{split,join,finish,phase};
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         fn middle(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,b)=split(q);join(u,phase[1,3](b))}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[conjugate_op(strip,middle)](q)}";
+        pub unitary fn main(q:Q<Bit>)->Q<Bit>{invoke[conjugate_op(strip,middle)](q)}";
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [omega, omega]]);
 }
 
@@ -306,7 +310,7 @@ fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
             source.push_str(&format!("fn f{n}[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{f{}[then_op(U,U)](q)}}",n-1));
         }
         source.push_str(&format!(
-            "pub fn main(q:Q<Bit>)->Q<Bit>{{f{depth}[had](q)}}"
+            "pub unitary fn main(q:Q<Bit>)->Q<Bit>{{f{depth}[had](q)}}"
         ));
         source
     };
@@ -337,7 +341,7 @@ fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
 fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     let source = "fn id(q:Q<Bit>)->Q<Bit>{q}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[then_op(id,id)](q)}";
+        pub unitary fn main(q:Q<Bit>)->Q<Bit>{invoke[then_op(id,id)](q)}";
     let elaborate = |source: &str| {
         parsed(source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -394,7 +398,7 @@ fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
         meaning X:Bit=permutation_by(flip);
         fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
         fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);let a=apply[checked_op(direct,X)](a);let b=phase[1,3](b);join(a,b)}";
+        pub unitary fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);let a=apply[checked_op(direct,X)](a);let b=phase[1,3](b);join(a,b)}";
     let source = parsed(source)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -448,13 +452,14 @@ fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
 
 #[test]
 fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused() {
-    let source = include_str!(
-        "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
     );
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(
-        check_project(&SourceRoot::new(source).0).unwrap_err().code,
+        check_project(&SourceRoot::new(&source).0).unwrap_err().code,
         ErrorCode::TypeMismatch
     );
 }
@@ -466,14 +471,14 @@ fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused(
 #[test]
 fn constructors_preserve_the_existing_nested_repetition_product_bound() {
     for source in [
-        include_str!(
-            "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-then.qli"
+        common::current_source_text(
+            "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-then.qli",
         ),
-        include_str!(
-            "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli"
+        common::current_source_text(
+            "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli",
         ),
     ] {
-        let source = source.replace("pub fn entry", "pub fn main");
+        let source = source.replace("fn entry", "fn main");
         let instance = parsed(&source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap();
@@ -496,7 +501,7 @@ fn constructors_preserve_the_existing_nested_repetition_product_bound() {
              fn id(q:Q<Bit>)->Q<Bit>{{q}}
              fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
                 requires Applicable(U){{U(q)}}
-             pub fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[power({constructor},2)](q)}}"
+             pub unitary fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[power({constructor},2)](q)}}"
         );
         let instance = parsed(&source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -519,7 +524,7 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030");
     let read = |attempt: &str, name: &str| {
-        std::fs::read_to_string(directory.join(attempt).join(format!("{name}.qli"))).unwrap()
+        read_current_fixture(directory.join(attempt).join(format!("{name}.qli"))).unwrap()
     };
     let omega = std::f64::consts::FRAC_1_SQRT_2;
     amplitudes(
@@ -648,7 +653,7 @@ fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order
         vec![0; 8],
     );
     for (name, signature, permutation, phases) in cases.into_iter().chain([extra]) {
-        let text = std::fs::read_to_string(
+        let text = read_current_fixture(
             directory
                 .with_file_name(if name == "hidden-controlled-swap" {
                     "attempt-02"
@@ -731,7 +736,7 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
         ("unused-valid", [0, 1], [0, 0]),
         ("control-provider", [0, 1], [0, 4]),
     ] {
-        let text = std::fs::read_to_string(directory.join(format!("{name}.qli"))).unwrap();
+        let text = read_current_fixture(directory.join(format!("{name}.qli"))).unwrap();
         let source = parsed(&text)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -795,7 +800,7 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
         assert!(result.status.success(), "{name}: {result:?}");
     }
     for name in ["bad-control", "false-meaning", "unused-false"] {
-        let text = std::fs::read_to_string(directory.join(format!("{name}.qli"))).unwrap();
+        let text = read_current_fixture(directory.join(format!("{name}.qli"))).unwrap();
         let source = parsed(&text)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -816,12 +821,13 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
 )]
 #[test]
 fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference() {
-    let source =
-        include_str!("fixtures/authoring_sessions/direct-arrow-adjoint-v030/attempt-02/main.qli");
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/direct-arrow-adjoint-v030/attempt-02/main.qli",
+    );
     for basis in 0..=1 {
         let mut expected = [[0.0; 2]; 2];
         expected[basis] = [1.0, 0.0];
-        amplitudes(&selected(source, "run", basis), &expected);
+        amplitudes(&selected(&source, "run", basis), &expected);
     }
     let constructed = source.replace(
         "reverse[strip](q)",
@@ -836,7 +842,7 @@ fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference()
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);phase[1,3](b)}
         fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
             requires Adjointable(U){adjoint(U)(q)}
-        pub fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{
+        pub unitary fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{
             let(b,r)=split(q);join(reverse[strip](b),r)}";
     // The first bit acquires the inverse phase; the second is an untouched
     // reference. All four joint columns distinguish reversed axes and phase.
@@ -851,7 +857,7 @@ fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference()
         amplitudes(&selected(source, "run", basis), &expected);
     }
     let source = source.replace(
-        "pub fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
+        "pub unitary fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
         "fn open(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
     ) + "use std::quantum::{init0,h}; use std::observe::measure_z;
          pub observe fn main()->Bit{
@@ -910,7 +916,7 @@ fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
             fn prep(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
             fn reverse[const U:Op<Unit -> Bit>](q:Q<Bit>)->Q<Unit>
                 requires Adjointable(U){adjoint(U)(q)}
-            pub fn main(q:Q<Bit>)->Q<Unit>{reverse[prep](q)}",
+            pub unitary fn main(q:Q<Bit>)->Q<Unit>{reverse[prep](q)}",
             "effect",
         ),
     ] {
@@ -941,7 +947,7 @@ fn direct_formal_adjoint_preserves_original_nested_meaning_obligations() {
                  let(u,b)=split(q);finish(u);apply[checked_op(direct,Z)](b)}}
              fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
                  requires Adjointable(U){{adjoint(U)(q)}}
-             pub fn main(q:Q<Bit>)->Q<(Unit,Bit)>{{reverse[strip](q)}}"
+             pub unitary fn main(q:Q<Bit>)->Q<(Unit,Bit)>{{reverse[strip](q)}}"
         );
         let program = parsed(&source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())

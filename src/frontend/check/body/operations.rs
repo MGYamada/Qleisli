@@ -39,6 +39,9 @@ impl Checker<'_, '_> {
             CallArguments::Source(args) => self.expr(args.get(index), scope, expected),
             CallArguments::Places(args) => {
                 let arg = &args[index];
+                if arg.ty.linear() {
+                    self.effects.mark_quantum();
+                }
                 if let Some(expected) = expected {
                     normalize::expect(
                         &arg.ty,
@@ -615,6 +618,7 @@ impl Checker<'_, '_> {
                 .map(|ty| self.program.budget.copy_ty(span, ty))
                 .transpose()?;
             let effect = operation.effect;
+            self.effects.mark_quantum();
             self.call_argument(runtime, 0, scope, Some(&ty))?;
             self.effects.add(effect, span);
             return Ok(output.map(Ty::quantum).unwrap_or(ty));

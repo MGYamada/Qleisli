@@ -1,0 +1,3 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+pub observe fn f(q: Q<Bit>) -> Q<Bit> { reset(q) }
