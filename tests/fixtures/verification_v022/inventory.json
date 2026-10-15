@@ -4711,7 +4711,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "4d68ebc5e6ac48a73457dbb0a91cc1291be84818715cfbbee8ec8c36944c9f87",
+      "sha256": "fe795b1a20cbbeff700612395aa1d0e9d9c34b616b818b17c76db37273caa04c",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4789,7 +4789,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate/basis.rs",
-      "sha256": "25cf4e8b83646d4ffdd78a0934c3afb88e5e663e38adb276f359e3abb5338e64",
+      "sha256": "ea3aae544adb2a354c9474865510d8e3443d6e16143533c4c2e9afa7cec7b5f7",
       "group": "sized-source",
       "surface": {
         "declarations": [],

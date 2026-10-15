@@ -12,6 +12,57 @@ struct Label {
 type Labels = BTreeMap<BinderKey, Label>;
 
 impl Builder<'_> {
+    // Keep these temporaries out of every recursive expression frame in debug
+    // builds. The enclosing expression already entered the shared depth guard;
+    // this dispatch helper changes neither its accounting nor evaluation order.
+    pub(super) fn coherent_lift(
+        &mut self,
+        expression: &Expr,
+        scope: &mut Scope,
+        frame: &mut Frame,
+        depth: usize,
+    ) -> Result<SourceValue> {
+        let ExprKind::CoherentLift {
+            input,
+            pattern,
+            body,
+        } = &expression.kind
+        else {
+            unreachable!("coherent-lift expression dispatch")
+        };
+        let span = expression.span;
+        let value = self.expr(input, scope, frame, depth)?;
+        let input_basis = value.ty.quantum_basis().ok_or_else(|| {
+            error(
+                "type",
+                span,
+                "coherent lift requires one whole quantum owner",
+            )
+        })?;
+        let (output_basis, table) =
+            self.basis_table(input_basis, pattern, body, &frame.lexical, span)?;
+        let input_width = self.basis_width(input_basis, span)?;
+        let output_width = self.basis_width(&output_basis, span)?;
+        let input_cells = self.basis_cells(&value.ty, span)?;
+        let output_cells = self.basis_cells(&output_basis, span)?;
+        self.charge_cells(4 + input_cells + output_cells, span)?;
+        let input_type = value.ty.clone();
+        self.step(
+            StepKind::LiftBasis(Arc::new(table)),
+            vec![input_type],
+            SourceType::quantum(output_basis),
+            if input_width == output_width {
+                Effect::Unitary
+            } else {
+                Effect::Isometry
+            },
+            vec![value],
+            frame,
+            span,
+            0,
+        )
+    }
+
     pub(super) fn basis_cells(&mut self, ty: &SourceType, span: Span) -> Result<usize> {
         crate::frontend::check::type_size_budgeted(
             ty,

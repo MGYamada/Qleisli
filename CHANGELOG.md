@@ -21,6 +21,8 @@ and exactness obligations retain their recorded scopes and status.
   acceptance rules unchanged. Retain the first zero-register sources and real
   diagnostics as inert archives. This is further #369/#167 prerequisite work,
   not completion of their primitive/derived source migration or proof gates.
+  Isolate coherent-map materialization from recursive expression dispatch,
+  retaining the existing depth guard and 2 MiB stack regression.
 
 - Connect current finite runtime/classical signatures to the same exact closed
   interface helper as selected-source lowering. Retain the original complete
