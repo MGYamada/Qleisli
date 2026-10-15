@@ -507,6 +507,16 @@ impl<'a> Compiler<'a> {
         definition: Key,
         span: Span,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
+        self.close_instance_interface(definition, BTreeMap::new(), BTreeMap::new(), span)
+    }
+
+    fn close_instance_interface(
+        &mut self,
+        definition: Key,
+        bases: BTreeMap<BinderKey, super::types::Type<u32>>,
+        naturals: BTreeMap<BinderKey, u32>,
+        span: Span,
+    ) -> Result<super::closed::ClosedInterface, CompileError> {
         let module = &self.source.resolution.declaration(definition).name.0;
         let mut work = self.work;
         let mut charge_error = None;
@@ -527,12 +537,10 @@ impl<'a> Compiler<'a> {
                 span,
                 &mut charge,
             )?;
-            let bases = BTreeMap::<String, super::types::Type<u32>>::new();
-            let substitution = super::closed::ClosedSubstitution::named_budgeted(
+            let substitution = super::closed::ClosedSubstitution::binders_budgeted(
                 checked,
-                &bases,
-                &BTreeMap::new(),
-                |ty| ty,
+                bases,
+                naturals,
                 "finite runtime function",
                 &mut charge,
             )?;
@@ -541,7 +549,7 @@ impl<'a> Compiler<'a> {
             super::closed::close_interface_budgeted(
                 substitution,
                 "finite runtime function",
-                charge,
+                &mut charge,
                 |_, _| Ok(()),
             )
         })();

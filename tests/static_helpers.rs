@@ -230,6 +230,18 @@ fn runtime_dependencies_cycles_unused_invalid_bodies_and_arity_reject() {
             "static",
         ),
         (
+            "static fn number[const n:Nat]()->Nat{n} pub observe fn main()->Bit{for static i in number[]()..0 carry b=0{yield b;}}",
+            "static",
+        ),
+        (
+            "static fn number[const n:Nat]()->Nat{n} pub observe fn main()->Bit{for static i in 0..number[]() carry b=0{yield b;}}",
+            "static",
+        ),
+        (
+            "static fn number[const n:Nat]()->Nat{n} pub observe fn main()->Bit{if static number[]()==0{0}else{0}}",
+            "static",
+        ),
+        (
             "static fn nonlinear[const n:Nat]()->Nat{n*n} pub observe fn main()->Bit{0}",
             "unsupported",
         ),

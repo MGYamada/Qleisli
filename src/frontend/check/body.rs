@@ -262,6 +262,9 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         effects: BodyEffects::new(declaration.span),
         edges: Vec::new(),
         depth: 0,
+        current_node: None,
+        natural_plans: BTreeMap::new(),
+        plan_regions: Vec::new(),
     };
     if quantum_interface {
         checker.effects.mark_quantum();
@@ -347,6 +350,9 @@ struct Checker<'p, 'ast> {
     effects: BodyEffects,
     edges: Vec<(DefId, Span)>,
     depth: usize,
+    current_node: Option<super::super::resolve::locals::NodeId>,
+    natural_plans: BTreeMap<BinderKey, plans::NaturalBindingPlan>,
+    plan_regions: Vec<plans::StaticRegion>,
 }
 impl Checker<'_, '_> {
     fn index(&self) -> &Index<'_> {
@@ -463,12 +469,128 @@ impl Checker<'_, '_> {
         self.edges.push((id, span));
         Ok(())
     }
-    fn obligation(&mut self, span: Span, kind: ObligationKind) -> Result<()> {
+    fn capture(&self) -> plans::Capture<'_, '_> {
+        plans::Capture {
+            index: self.index(),
+            helpers: &self.program.helpers,
+            budget: &self.program.budget,
+        }
+    }
+    fn plan_environment(&self, scope: &Scope, span: Span) -> Result<Arc<plans::StaticEnvironment>> {
+        plans::environment(
+            self.definition,
+            self.program.resolution.declaration(self.definition).module,
+            scope,
+            &self.natural_plans,
+            &self.plan_regions,
+            span,
+            &self.program.budget,
+        )
+    }
+    fn original_node(&self, span: Span) -> Result<super::super::resolve::locals::NodeId> {
+        self.current_node.ok_or_else(|| {
+            SourceError::new(
+                "source",
+                span,
+                "evidence lacks its original expression occurrence",
+            )
+        })
+    }
+    fn record_static_call(
+        &mut self,
+        name: &Ident,
+        arguments: &[StaticOp],
+        scope: &Scope,
+        parameters: &[Ty],
+        result: &Ty,
+        access: [bool; 3],
+    ) -> Result<super::super::resolve::locals::UseSiteId> {
+        let callee = self.capture().reference(name)?;
+        let ResolvedUse::Global(Target::Declaration(target)) = callee.target else {
+            return Err(SourceError::new(
+                "source",
+                name.span,
+                "static call plan lacks its original declaration",
+            ));
+        };
+        let interface = &self.program.interfaces[&target];
+        if arguments.len() != interface.statics.len() {
+            return Err(SourceError::new(
+                "source",
+                name.span,
+                "static call plan argument arity differs",
+            ));
+        }
+        self.program
+            .budget
+            .charge(name.span, 4 + arguments.len() + parameters.len())?;
+        let mut actuals = Vec::with_capacity(arguments.len());
+        for (formal, value) in interface.statics.iter().zip(arguments) {
+            let category = match formal.kind {
+                StaticKind::Basis => plans::StaticCategory::Basis,
+                StaticKind::Natural => plans::StaticCategory::Natural,
+                StaticKind::Operation { .. } => plans::StaticCategory::Operation,
+            };
+            self.program.budget.charge(value.span, 2)?;
+            actuals.push(plans::StaticActual {
+                formal: self.program.budget.key(value.span, &formal.key)?,
+                category,
+                value: Arc::new(self.capture().operation(value)?),
+            });
+        }
+        let plan = plans::StaticCallPlan {
+            owner: self.definition,
+            module: self.program.resolution.declaration(self.definition).module,
+            node: self.original_node(name.span)?,
+            callee,
+            target,
+            arguments: actuals,
+            parameters: parameters
+                .iter()
+                .map(|ty| self.program.budget.copy_ty(name.span, ty))
+                .collect::<Result<_>>()?,
+            result: self.program.budget.copy_ty(name.span, result)?,
+            access,
+            source_effect: None,
+            environment: self.plan_environment(scope, name.span)?,
+        };
+        let site = plan.callee.site;
+        if self.program.static_calls.contains_key(&site) {
+            return Err(SourceError::new(
+                "source",
+                name.span,
+                "duplicate original static call plan occurrence",
+            ));
+        }
+        self.program.static_calls.insert(site, plan);
+        Ok(site)
+    }
+    fn obligation(&mut self, span: Span, kind: ObligationKind, scope: &Scope) -> Result<()> {
+        self.obligation_subject(span, kind, scope, plans::EvidenceSubject::Expression)
+    }
+    fn obligation_subject(
+        &mut self,
+        span: Span,
+        kind: ObligationKind,
+        scope: &Scope,
+        subject: plans::EvidenceSubject,
+    ) -> Result<()> {
         self.tick(span)?;
+        self.program.budget.charge(span, 4)?;
+        let plan = plans::EvidencePlan {
+            node: self.original_node(span)?,
+            environment: self.plan_environment(scope, span)?,
+            subject,
+        };
         self.program.obligations.push(Obligation {
+            id: plans::ObligationId {
+                definition: self.definition,
+                ordinal: self.program.obligations.len(),
+            },
             definition: self.definition,
             span,
             kind,
+            plan,
         });
         Ok(())
     }
@@ -490,11 +612,19 @@ impl Checker<'_, '_> {
                             "static binding cannot shadow a visible lexical binding",
                         ));
                     }
-                    let value =
+                    let normalized =
                         normalize::natural(value, self.index(), scope, None, &self.program.budget)?;
+                    // Preserve the original source diagnostic before retaining
+                    // a plan whose helper/reference invariants assume it passed.
+                    self.program.budget.charge(name.span, 3)?;
+                    let original = Arc::new(self.capture().natural(value)?);
                     let key = self.program.budget.key(name.span, &info.key)?;
                     self.program.budget.charge(name.span, key.name.len() + 2)?;
-                    scope.naturals.insert(key.clone(), value);
+                    scope.naturals.insert(key.clone(), normalized);
+                    self.natural_plans.insert(
+                        self.program.budget.key(name.span, &key)?,
+                        plans::NaturalBindingPlan::Initializer(original),
+                    );
                     local_naturals.push(key);
                 }
                 StmtKind::Let { pattern, value } => {
@@ -596,7 +726,10 @@ impl Checker<'_, '_> {
             ));
         }
         self.depth += 1;
+        let node = self.index().node_id_expr(expr);
+        let previous_node = self.current_node.replace(node);
         let result = self.expr_inner(expr, scope, expected);
+        self.current_node = previous_node;
         self.depth -= 1;
         result
     }
@@ -736,7 +869,7 @@ impl Checker<'_, '_> {
                         span,
                     )?;
                 }
-                self.obligation(span, ObligationKind::TransformedMeaning)?;
+                self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
                 target
             }
             ExprKind::Adjoint { operation, input } => {
@@ -749,7 +882,7 @@ impl Checker<'_, '_> {
                     input.span,
                     span,
                 )?;
-                self.obligation(span, ObligationKind::TransformedMeaning)?;
+                self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
                 result
             }
             ExprKind::Controlled { operation, args } => {
@@ -771,7 +904,7 @@ impl Checker<'_, '_> {
                     args[1].span,
                     span,
                 )?;
-                self.obligation(span, ObligationKind::TransformedMeaning)?;
+                self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
                 Ty::pair(control, target)
             }
             ExprKind::If {
@@ -822,7 +955,7 @@ impl Checker<'_, '_> {
                 })?;
                 let op = self.target_operation(function, basis, scope)?;
                 access(&op, Access::Apply, span)?;
-                self.obligation(span, ObligationKind::TransformedMeaning)?;
+                self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
                 input
             }
             ExprKind::ApplyContract {
@@ -928,8 +1061,47 @@ impl Checker<'_, '_> {
             b.context =
                 normalize::predicate(predicate, self.index(), scope, false, &self.program.budget)?;
         }
-        let a_ty = self.block(yes, &mut a, expected)?;
-        let b_ty = self.block(no, &mut b, expected)?;
+        let region = if let Some(predicate) = predicate {
+            self.program.budget.charge(span, 4)?;
+            Some((
+                self.original_node(span)?,
+                Arc::new(self.capture().natural(&predicate.left)?),
+                predicate.comparison,
+                Arc::new(self.capture().natural(&predicate.right)?),
+            ))
+        } else {
+            None
+        };
+        if let Some((node, left, comparison, right)) = &region {
+            self.program.budget.charge(span, 4)?;
+            self.plan_regions.push(plans::StaticRegion::Predicate {
+                node: *node,
+                left: Arc::clone(left),
+                comparison: *comparison,
+                right: Arc::clone(right),
+                truth: true,
+            });
+        }
+        let a_result = self.block(yes, &mut a, expected);
+        if region.is_some() {
+            self.plan_regions.pop();
+        }
+        let a_ty = a_result?;
+        if let Some((node, left, comparison, right)) = &region {
+            self.program.budget.charge(span, 4)?;
+            self.plan_regions.push(plans::StaticRegion::Predicate {
+                node: *node,
+                left: Arc::clone(left),
+                comparison: *comparison,
+                right: Arc::clone(right),
+                truth: false,
+            });
+        }
+        let b_result = self.block(no, &mut b, expected);
+        if region.is_some() {
+            self.plan_regions.pop();
+        }
+        let b_ty = b_result?;
         if !self.same_frame(&a.values, &b.values, span)? {
             return Err(SourceError::new(
                 "ownership",
@@ -1006,6 +1178,8 @@ impl Checker<'_, '_> {
             ));
         }
         let key = self.program.budget.key(index.span, &info.key)?;
+        let source_start = start;
+        let source_end = end;
         let start = normalize::natural(start, self.index(), scope, None, &self.program.budget)?;
         let end = normalize::natural(end, self.index(), scope, None, &self.program.budget)?;
         if !scope.context.proves_le_budgeted(
@@ -1051,8 +1225,19 @@ impl Checker<'_, '_> {
             .push_budgeted(&bounds, span, &mut |span, cells| {
                 self.program.budget.preparation_charge(span, cells)
             })?;
+        self.program.budget.charge(span, 2)?;
+        let original_start = Arc::new(self.capture().natural(source_start)?);
+        let original_end = Arc::new(self.capture().natural(source_end)?);
         self.program.budget.charge(index.span, 1)?;
-        inner.naturals.insert(key, i);
+        self.program.budget.charge(span, 6 + key.name.len())?;
+        inner.naturals.insert(key.clone(), i);
+        self.natural_plans.insert(
+            self.program.budget.key(span, &key)?,
+            plans::NaturalBindingPlan::FoldIndex {
+                start: Arc::clone(&original_start),
+                end: Arc::clone(&original_end),
+            },
+        );
         bind(
             carry,
             self.program.budget.copy_ty(span, &carry_ty)?,
@@ -1060,7 +1245,16 @@ impl Checker<'_, '_> {
             &mut inner,
             &self.program.budget,
         )?;
-        self.block(body, &mut inner, Some(&carry_ty))?;
+        self.program.budget.charge(span, 4)?;
+        self.plan_regions.push(plans::StaticRegion::Fold {
+            node: self.original_node(span)?,
+            index: self.program.budget.key(span, &key)?,
+            start: original_start,
+            end: original_end,
+        });
+        let checked_body = self.block(body, &mut inner, Some(&carry_ty));
+        self.plan_regions.pop();
+        checked_body?;
         if inner.values.values().any(|b| b.ty.linear()) {
             return Err(SourceError::new(
                 "ownership",

@@ -11,6 +11,18 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Retain original structural identities and complete static/evidence plans in
+  the common source judgment, including original Nat expressions and checked
+  helper call templates, original
+  bindings, both operation ports, Meaning requests and zero-power children.
+  Validate each plan against the original lexical collection within existing
+  budgets. Keep source checks before plan capture so invalid Nat helper
+  arguments retain their original diagnostics. Add private original-BinderKey
+  interface closure and retain six
+  first generic/dormant studies and fourteen actual checks as inert archives.
+  This prepares #369/#167 integration; finite generic admission and concrete
+  dormant evidence discharge remain unfinished. No plan is accepted evidence.
+
 - Admit exact closed `Bits<0>` values and owners in finite project lowering,
   preserving their distinct tags, zero-width linear owners, complete contracts
   and eager unused-declaration checks. Uniformly allow the existing ordinary

@@ -326,7 +326,7 @@ PATHS = {
     'sized-proposal': path_rule('untrusted-proposal', 'sized-source-proposal', '', [
         ('src/frontend/check/body/places.rs', ['fn selected_place(', 'fn disjoint_places(',
          'self.require_access_unitary(name, scope, span)?',
-         'CallArguments::Places(&prepared)', 'self.obligation(span, ObligationKind::ControlSectors)?']),
+         'CallArguments::Places(&prepared)', 'self.obligation(span, ObligationKind::ControlSectors, scope)?']),
         ('src/frontend/specialize/elaborate/places.rs', ['fn partition_step(', 'fn place_call(', 'RuntimeInputs::Values(values)', 'records.into_iter().zip(returned).rev()']),
         ('src/bin/qleisli.rs', ['source_plan::run(&args)']),
         ('src/frontend/compile/mod.rs', ['pub use super::specialize::{']),
@@ -428,7 +428,7 @@ PATHS = {
          'self.raw.operations[first..self.cursor].to_vec()',
          '.check_control_owners(&call, &signatures, &axes, self.control_work)']),
         ('src/interchange/finite_leaf.rs', ['pub(crate) fn check_with_kernel(', 'kernel.check_leaf(payload, boundary, meaning)']),
-        ('src/frontend/check/body/operations.rs', ['self.obligation(span, ObligationKind::ControlSectors)?']),
+        ('src/frontend/check/body/operations.rs', ['self.obligation(span, ObligationKind::ControlSectors, scope)?']),
         ('src/frontend/specialize/elaborate.rs', ['pub fn check_operation_meanings', 'pub(super) fn require_unrefined',
          'pub(super) fn require_control_evidence', 'checked.obligations.iter().find',
          'pub fn check_function_contracts(', 'pub fn has_function_contracts(', 'fn require_function_contracts(']),

@@ -18,15 +18,117 @@ pub(in crate::frontend) struct BinderId {
     definition: DefId,
     ordinal: usize,
 }
+impl BinderId {
+    pub fn definition(self) -> DefId {
+        self.definition
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::frontend) struct UseSiteId {
     definition: DefId,
     ordinal: usize,
 }
+impl UseSiteId {
+    pub fn definition(self) -> DefId {
+        self.definition
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in crate::frontend) struct ScopeId {
     definition: DefId,
     ordinal: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::frontend) enum NodeKind {
+    Expr,
+    StaticOp,
+    Natural,
+    Type,
+    Block,
+    BasisExpr,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::frontend) struct NodeId {
+    definition: DefId,
+    ordinal: usize,
+    kind: NodeKind,
+}
+impl NodeId {
+    pub fn definition(self) -> DefId {
+        self.definition
+    }
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::frontend) struct NodeInfo {
+    pub span: Span,
+    pub kind: NodeKind,
+}
+
+/// Borrowed syntax for common plan association only. These references neither
+/// escape the original Index nor become evidence in the checked program.
+#[derive(Clone, Copy)]
+pub(in crate::frontend) enum OriginalNode<'ast> {
+    Expression(&'ast Expr),
+    Operation(&'ast StaticOp),
+    Natural(&'ast Natural),
+    Type(&'ast Type),
+    Block(&'ast Block),
+    Basis(&'ast BasisExpr),
+}
+impl OriginalNode<'_> {
+    pub fn kind(self) -> NodeKind {
+        match self {
+            Self::Expression(_) => NodeKind::Expr,
+            Self::Operation(_) => NodeKind::StaticOp,
+            Self::Natural(_) => NodeKind::Natural,
+            Self::Type(_) => NodeKind::Type,
+            Self::Block(_) => NodeKind::Block,
+            Self::Basis(_) => NodeKind::BasisExpr,
+        }
+    }
+    pub fn span(self) -> Span {
+        match self {
+            Self::Expression(n) => n.span,
+            Self::Operation(n) => n.span,
+            Self::Natural(n) => n.span,
+            Self::Type(n) => n.span,
+            Self::Block(n) => n.span,
+            Self::Basis(n) => n.span,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::frontend) enum OriginalRegion {
+    Predicate { node: NodeId, truth: bool },
+    Fold { node: NodeId },
+}
+struct RegionLink {
+    region: OriginalRegion,
+    parent: Option<usize>,
+}
+/// A borrowed inner-to-outer chain from the original structural walk. No
+/// captured plan supplies its links or controls which ancestors are visited.
+pub(in crate::frontend) struct OriginalRegions<'a> {
+    links: &'a [RegionLink],
+    next: Option<usize>,
+}
+impl Iterator for OriginalRegions<'_> {
+    type Item = Result<OriginalRegion, ()>;
+    fn next(&mut self) -> Option<Self::Item> {
+        let ordinal = self.next.take()?;
+        let Some(link) = self.links.get(ordinal) else {
+            return Some(Err(()));
+        };
+        // Parents are earlier arena entries. Refuse malformed private metadata
+        // rather than silently truncate the chain or permit a cyclic walk.
+        if link.parent.is_some_and(|parent| parent >= ordinal) {
+            return Some(Err(()));
+        }
+        self.next = link.parent;
+        Some(Ok(link.region))
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -80,12 +182,21 @@ pub(in crate::frontend) struct Table {
     binders: Vec<BinderInfo>,
     uses: Vec<UseInfo>,
     scopes: Vec<Option<ScopeId>>,
+    nodes: Vec<NodeInfo>,
 }
 impl Table {
     /// Original resolved occurrences, including references in inactive branches.
     /// Callers must bound traversal; diagnostic candidates are not resolution.
     pub(in crate::frontend) fn resolved_uses(&self) -> &[UseInfo] {
         &self.uses
+    }
+
+    /// Fallible lookup for retained metadata, including IDs from another index.
+    pub fn try_binder(&self, id: BinderId) -> Option<&BinderInfo> {
+        if id.definition != self.definition {
+            return None;
+        }
+        self.binders.get(id.ordinal)
     }
 
     pub fn binder(&self, id: BinderId) -> &BinderInfo {
@@ -98,12 +209,29 @@ impl Table {
     pub fn key(&self, id: BinderId) -> &BinderKey {
         &self.binder(id).key
     }
+    /// Fallible lookup for retained metadata, including IDs from another index.
+    pub fn try_usage(&self, id: UseSiteId) -> Option<&UseInfo> {
+        if id.definition != self.definition {
+            return None;
+        }
+        self.uses.get(id.ordinal)
+    }
+
     pub fn usage(&self, id: UseSiteId) -> &UseInfo {
         assert_eq!(
             id.definition, self.definition,
             "use belongs to another declaration"
         );
         &self.uses[id.ordinal]
+    }
+    pub fn node(&self, id: NodeId) -> &NodeInfo {
+        assert_eq!(
+            id.definition, self.definition,
+            "node belongs to another declaration"
+        );
+        let node = &self.nodes[id.ordinal];
+        assert_eq!(id.kind, node.kind, "node has another syntax kind");
+        node
     }
 
     /// Post-rejection diagnostic lookup, never lexical resolution or evidence.
@@ -137,6 +265,10 @@ pub(in crate::frontend) struct Index<'ast> {
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
     natural_references: BTreeMap<usize, UseSiteId>,
+    nodes: BTreeMap<(NodeKind, usize), NodeId>,
+    originals: Vec<OriginalNode<'ast>>,
+    region_heads: Vec<Option<usize>>,
+    region_links: Vec<RegionLink>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Index<'ast> {
@@ -154,10 +286,15 @@ impl<'ast> Index<'ast> {
                     binders: vec![],
                     uses: vec![],
                     scopes: vec![None],
+                    nodes: vec![],
                 },
                 bindings: BTreeMap::new(),
                 references: BTreeMap::new(),
                 natural_references: BTreeMap::new(),
+                nodes: BTreeMap::new(),
+                originals: Vec::new(),
+                region_heads: Vec::new(),
+                region_links: Vec::new(),
                 _syntax: PhantomData,
             },
             global,
@@ -172,18 +309,41 @@ impl<'ast> Index<'ast> {
                 },
                 undo: vec![],
             }],
+            region: None,
         };
         builder.declaration(declaration)?;
         Ok(builder.index)
     }
-    /// Transfer the finite consumer's occurrence lookup, retaining the one
-    /// authoritative Table and the natural addresses needed by source checking.
+    /// Transfer occurrence lookups after source checking has finished using
+    /// this Index. The authoritative Table remains with the source judgment.
     pub fn take_occurrences(&mut self) -> Occurrences<'ast> {
         Occurrences {
             bindings: std::mem::take(&mut self.bindings),
             references: std::mem::take(&mut self.references),
+            natural_references: std::mem::take(&mut self.natural_references),
+            nodes: std::mem::take(&mut self.nodes),
             _syntax: PhantomData,
         }
+    }
+    /// Fallible association for retained plans, before occurrence transfer.
+    /// Numeric IDs from a different owner/kind/ordinal are never indexed.
+    pub fn original_node(&self, id: NodeId) -> Option<OriginalNode<'ast>> {
+        if id.definition != self.table.definition {
+            return None;
+        }
+        let info = self.table.nodes.get(id.ordinal)?;
+        let original = *self.originals.get(id.ordinal)?;
+        (id.kind == info.kind && original.kind() == id.kind).then_some(original)
+    }
+    pub fn original_nodes(&self) -> &[OriginalNode<'ast>] {
+        &self.originals
+    }
+    pub fn enclosing_regions(&self, node: NodeId) -> Option<OriginalRegions<'_>> {
+        self.original_node(node)?;
+        Some(OriginalRegions {
+            links: &self.region_links,
+            next: *self.region_heads.get(node.ordinal)?,
+        })
     }
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.bindings[&(std::ptr::from_ref(name) as usize)]
@@ -191,8 +351,41 @@ impl<'ast> Index<'ast> {
     pub fn usage(&self, name: &Ident) -> UseSiteId {
         self.references[&(std::ptr::from_ref(name) as usize)]
     }
+    #[cfg(test)]
+    pub fn reference_site(&self, name: &Ident) -> UseSiteId {
+        self.usage(name)
+    }
     pub fn natural_usage(&self, natural: &Natural) -> UseSiteId {
         self.natural_references[&(std::ptr::from_ref(natural) as usize)]
+    }
+    #[cfg(test)]
+    pub fn natural_site(&self, natural: &Natural) -> UseSiteId {
+        self.natural_usage(natural)
+    }
+    fn node_id(&self, kind: NodeKind, address: usize) -> NodeId {
+        let id = self.nodes[&(kind, address)];
+        self.table.node(id);
+        id
+    }
+    pub fn node_id_expr(&self, node: &Expr) -> NodeId {
+        self.node_id(NodeKind::Expr, std::ptr::from_ref(node) as usize)
+    }
+    pub fn node_id_static_op(&self, node: &StaticOp) -> NodeId {
+        self.node_id(NodeKind::StaticOp, std::ptr::from_ref(node) as usize)
+    }
+    pub fn node_id_natural(&self, node: &Natural) -> NodeId {
+        self.node_id(NodeKind::Natural, std::ptr::from_ref(node) as usize)
+    }
+    pub fn node_id_ty(&self, node: &Type) -> NodeId {
+        self.node_id(NodeKind::Type, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg(test)]
+    pub fn node_id_block(&self, node: &Block) -> NodeId {
+        self.node_id(NodeKind::Block, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg(test)]
+    pub fn node_id_basis_expr(&self, node: &BasisExpr) -> NodeId {
+        self.node_id(NodeKind::BasisExpr, std::ptr::from_ref(node) as usize)
     }
     #[cfg(test)]
     pub fn resolve(&self, name: &Ident) -> ResolvedUse {
@@ -204,12 +397,16 @@ impl<'ast> Index<'ast> {
 pub(in crate::frontend) struct Occurrences<'ast> {
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
+    natural_references: BTreeMap<usize, UseSiteId>,
+    nodes: BTreeMap<(NodeKind, usize), NodeId>,
     _syntax: PhantomData<&'ast Decl>,
 }
 #[derive(Default)]
 pub(in crate::frontend) struct OccurrencesForest<'ast> {
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
+    natural_references: BTreeMap<usize, UseSiteId>,
+    nodes: BTreeMap<(NodeKind, usize), NodeId>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> OccurrencesForest<'ast> {
@@ -226,6 +423,8 @@ impl<'ast> OccurrencesForest<'ast> {
             .bindings
             .len()
             .checked_add(occurrences.references.len())
+            .and_then(|n| n.checked_add(occurrences.natural_references.len()))
+            .and_then(|n| n.checked_add(occurrences.nodes.len()))
             .and_then(|n| n.checked_mul(2))
             .unwrap_or(usize::MAX);
         charge(span, cells)?;
@@ -234,6 +433,12 @@ impl<'ast> OccurrencesForest<'ast> {
         }
         for (address, id) in occurrences.references {
             self.references.insert(address, id);
+        }
+        for (address, id) in occurrences.natural_references {
+            self.natural_references.insert(address, id);
+        }
+        for (address, id) in occurrences.nodes {
+            self.nodes.insert(address, id);
         }
         Ok(())
     }
@@ -245,6 +450,18 @@ impl<'ast> OccurrencesForest<'ast> {
 pub(in crate::frontend) struct Forest<'ast> {
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
+    // MSRV and current rustc differ on whether reads from unused adapter
+    // methods satisfy dead-code checking of these fields and shared helpers.
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "retained for the next original-plan adapter")
+    )]
+    natural_references: BTreeMap<usize, UseSiteId>,
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "retained for the next original-plan adapter")
+    )]
+    nodes: BTreeMap<(NodeKind, usize), NodeId>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Forest<'ast> {
@@ -252,6 +469,8 @@ impl<'ast> Forest<'ast> {
         Self {
             bindings: occurrences.bindings,
             references: occurrences.references,
+            natural_references: occurrences.natural_references,
+            nodes: occurrences.nodes,
             _syntax: PhantomData,
         }
     }
@@ -283,8 +502,83 @@ impl<'view> Lookup<'view, '_> {
         self.tables[&id.definition].key(id)
     }
     pub fn usage(&self, name: &Ident) -> &'view UseInfo {
-        let id = self.occurrences.references[&(std::ptr::from_ref(name) as usize)];
+        let id = self.reference_site(name);
         self.tables[&id.definition].usage(id)
+    }
+    pub fn reference_site(&self, name: &Ident) -> UseSiteId {
+        self.occurrences.references[&(std::ptr::from_ref(name) as usize)]
+    }
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "original natural lookup for the next plan adapter"
+        )
+    )]
+    pub fn natural_usage(&self, natural: &Natural) -> &'view UseInfo {
+        let id = self.natural_site(natural);
+        self.tables[&id.definition].usage(id)
+    }
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "original natural lookup for the next plan adapter"
+        )
+    )]
+    pub fn natural_site(&self, natural: &Natural) -> UseSiteId {
+        self.occurrences.natural_references[&(std::ptr::from_ref(natural) as usize)]
+    }
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    fn node_id(&self, kind: NodeKind, address: usize) -> NodeId {
+        let id = self.occurrences.nodes[&(kind, address)];
+        self.tables[&id.definition].node(id);
+        id
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_expr(&self, node: &Expr) -> NodeId {
+        self.node_id(NodeKind::Expr, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_static_op(&self, node: &StaticOp) -> NodeId {
+        self.node_id(NodeKind::StaticOp, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_natural(&self, node: &Natural) -> NodeId {
+        self.node_id(NodeKind::Natural, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_ty(&self, node: &Type) -> NodeId {
+        self.node_id(NodeKind::Type, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_block(&self, node: &Block) -> NodeId {
+        self.node_id(NodeKind::Block, std::ptr::from_ref(node) as usize)
+    }
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "original node lookup for the next plan adapter")
+    )]
+    pub fn node_id_basis_expr(&self, node: &BasisExpr) -> NodeId {
+        self.node_id(NodeKind::BasisExpr, std::ptr::from_ref(node) as usize)
     }
     pub fn local_key(&self, name: &Ident) -> Option<&'view BinderKey> {
         match self.usage(name).target {
@@ -306,11 +600,14 @@ struct Builder<'ast, F, C> {
     names: BTreeMap<String, BinderId>,
     static_parameters: BTreeMap<String, BinderId>,
     frames: Vec<Frame>,
+    region: Option<usize>,
 }
 enum Task<'a> {
     Enter,
     EnterBasis,
     Leave,
+    Region(&'a Expr, Option<bool>),
+    LeaveRegion,
     Reference(&'a Ident),
     Bind(&'a Ident, BindingKind),
     Pattern(&'a Pattern, BindingKind),
@@ -322,7 +619,37 @@ enum Task<'a> {
     Block(&'a Block),
     Expression(&'a Expr),
 }
-impl Task<'_> {
+impl<'ast> Task<'ast> {
+    fn original(&self) -> Option<OriginalNode<'ast>> {
+        Some(match self {
+            Self::Expression(node) => OriginalNode::Expression(node),
+            Self::Operation(node) => OriginalNode::Operation(node),
+            Self::Natural(node) => OriginalNode::Natural(node),
+            Self::Type(node) => OriginalNode::Type(node),
+            Self::Block(node) => OriginalNode::Block(node),
+            Self::Basis(node) => OriginalNode::Basis(node),
+            _ => return None,
+        })
+    }
+    fn node(&self) -> Option<(NodeKind, usize)> {
+        Some(match self {
+            Self::Expression(node) => (NodeKind::Expr, std::ptr::from_ref(*node) as usize),
+            Self::Operation(node) => (NodeKind::StaticOp, std::ptr::from_ref(*node) as usize),
+            Self::Natural(node) => (NodeKind::Natural, std::ptr::from_ref(*node) as usize),
+            Self::Type(node) => (NodeKind::Type, std::ptr::from_ref(*node) as usize),
+            Self::Block(node) => (NodeKind::Block, std::ptr::from_ref(*node) as usize),
+            Self::Basis(node) => (NodeKind::BasisExpr, std::ptr::from_ref(*node) as usize),
+            Self::Enter
+            | Self::EnterBasis
+            | Self::Leave
+            | Self::Region(..)
+            | Self::LeaveRegion
+            | Self::Reference(_)
+            | Self::Bind(..)
+            | Self::Pattern(..)
+            | Self::Predicate(_) => return None,
+        })
+    }
     fn span(&self, origin: Span) -> Span {
         match self {
             Self::Reference(n) | Self::Bind(n, _) => n.span,
@@ -334,7 +661,8 @@ impl Task<'_> {
             Self::Basis(n) => n.span,
             Self::Block(n) => n.span,
             Self::Expression(n) => n.span,
-            Self::Enter | Self::EnterBasis | Self::Leave => origin,
+            Self::Region(n, _) => n.span,
+            Self::Enter | Self::EnterBasis | Self::Leave | Self::LeaveRegion => origin,
         }
     }
     fn children<E>(
@@ -342,7 +670,13 @@ impl Task<'_> {
         charge: &mut impl FnMut(Span, usize) -> Result<(), E>,
     ) -> Result<usize, E> {
         Ok(match self {
-            Self::Enter | Self::EnterBasis | Self::Leave | Self::Reference(_) | Self::Bind(..) => 0,
+            Self::Enter
+            | Self::EnterBasis
+            | Self::Leave
+            | Self::Region(..)
+            | Self::LeaveRegion
+            | Self::Reference(_)
+            | Self::Bind(..) => 0,
             Self::Pattern(p, _) => match &p.kind {
                 PatternKind::Tuple(f) => f.len(),
                 _ => 0,
@@ -425,10 +759,10 @@ impl Task<'_> {
                 | ExprKind::ApplyStatic { .. }
                 | ExprKind::Adjoint { .. }
                 | ExprKind::RepeatStatic { .. } => 2,
-                ExprKind::If { .. }
-                | ExprKind::StaticIf { .. }
-                | ExprKind::ApplyContract { .. } => 3,
-                ExprKind::StaticFold { .. } | ExprKind::CertifiedComputed { .. } => 8,
+                ExprKind::If { .. } | ExprKind::ApplyContract { .. } => 3,
+                ExprKind::StaticIf { .. } => 7,
+                ExprKind::StaticFold { .. } => 10,
+                ExprKind::CertifiedComputed { .. } => 8,
                 ExprKind::CoherentLift { .. } => 5,
                 ExprKind::WithComputed { .. } => 6,
                 ExprKind::Controlled { args, .. } => args.len().saturating_add(1),
@@ -504,6 +838,21 @@ where
         }
         Ok(())
     }
+    fn enter_region(&mut self, expression: &'ast Expr, truth: Option<bool>) -> Result<(), E> {
+        (self.charge)(expression.span, 1)?;
+        let node = self.index.node_id_expr(expression);
+        let region = match truth {
+            Some(truth) => OriginalRegion::Predicate { node, truth },
+            None => OriginalRegion::Fold { node },
+        };
+        let next = self.index.region_links.len();
+        self.index.region_links.push(RegionLink {
+            region,
+            parent: self.region,
+        });
+        self.region = Some(next);
+        Ok(())
+    }
     fn bind(&mut self, name: &Ident, kind: BindingKind) -> Result<(), E> {
         (self.charge)(
             name.span,
@@ -568,6 +917,27 @@ where
             static_parameter: self.static_parameters.get(name).copied(),
         });
         Ok(id)
+    }
+    fn record_node(
+        &mut self,
+        kind: NodeKind,
+        address: usize,
+        original: OriginalNode<'ast>,
+        span: Span,
+    ) -> Result<(), E> {
+        // Metadata, address lookup, borrowed syntax and its original region
+        // head are charged before allocation. An address never determines ID.
+        (self.charge)(span, 4)?;
+        let id = NodeId {
+            definition: self.index.table.definition,
+            ordinal: self.index.table.nodes.len(),
+            kind,
+        };
+        self.index.table.nodes.push(NodeInfo { span, kind });
+        self.index.nodes.insert((kind, address), id);
+        self.index.originals.push(original);
+        self.index.region_heads.push(self.region);
+        Ok(())
     }
     fn declaration(&mut self, declaration: &'ast Decl) -> Result<(), E> {
         (self.charge)(declaration.span, 1)?;
@@ -650,10 +1020,25 @@ where
             (self.charge)(span, 1)?;
             let children = task.children(&mut self.charge)?;
             (self.charge)(span, children)?;
+            if let Some((kind, address)) = task.node() {
+                self.record_node(
+                    kind,
+                    address,
+                    task.original().expect("indexed syntax"),
+                    span,
+                )?;
+            }
             match task {
                 Task::Enter => self.enter()?,
                 Task::EnterBasis => self.enter_basis()?,
                 Task::Leave => self.leave()?,
+                Task::Region(expression, truth) => {
+                    self.enter_region(expression, truth)?;
+                }
+                Task::LeaveRegion => {
+                    let current = self.region.expect("entered original static region");
+                    self.region = self.index.region_links[current].parent;
+                }
                 Task::Reference(name) => {
                     let id = self.record_use(&name.text, name.span)?;
                     (self.charge)(name.span, 1)?;
@@ -815,8 +1200,12 @@ where
                         then_branch,
                         else_branch,
                     } => tasks.extend([
+                        Task::LeaveRegion,
                         Task::Block(else_branch),
+                        Task::Region(expression, Some(false)),
+                        Task::LeaveRegion,
                         Task::Block(then_branch),
+                        Task::Region(expression, Some(true)),
                         Task::Predicate(predicate),
                     ]),
                     ExprKind::StaticFold {
@@ -829,7 +1218,9 @@ where
                         ..
                     } => tasks.extend([
                         Task::Leave,
+                        Task::LeaveRegion,
                         Task::Block(body),
+                        Task::Region(expression, None),
                         Task::Pattern(carry, BindingKind::Runtime),
                         Task::Bind(index, BindingKind::FoldIndex),
                         Task::Enter,
@@ -994,6 +1385,52 @@ mod tests {
     }
 
     #[test]
+    fn fallible_binder_and_use_lookup_reject_foreign_owner_and_ordinal() {
+        let small = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let large = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{let a=q;let b=a;b}").unwrap();
+        let original = index(DefId(7), &small.decls[0], |_| None);
+        let same_owner = index(DefId(7), &large.decls[0], |_| None);
+        let other_owner = index(DefId(8), &small.decls[0], |_| None);
+        let FnBody::Quantum(small_body) = &small.decls[0].body else {
+            panic!("quantum body");
+        };
+        let FnBody::Quantum(large_body) = &large.decls[0].body else {
+            panic!("quantum body");
+        };
+        let StmtKind::Let { pattern, .. } = &large_body.statements[1].kind else {
+            panic!("second local binding");
+        };
+        let valid_binder = original.binder(name(&small.decls[0].params[0].pattern));
+        let valid_use = original.usage(expression_name(&small_body.result));
+        assert!(std::ptr::eq(
+            original.table.try_binder(valid_binder).unwrap(),
+            original.table.binder(valid_binder)
+        ));
+        assert!(std::ptr::eq(
+            original.table.try_usage(valid_use).unwrap(),
+            original.table.usage(valid_use)
+        ));
+
+        // These are legitimate IDs from a different original collection, not
+        // fabricated fields. Matching DefId alone cannot make ordinals valid.
+        let foreign_binder = same_owner.binder(name(pattern));
+        let foreign_use = same_owner.usage(expression_name(&large_body.result));
+        assert_eq!(foreign_binder.definition(), valid_binder.definition());
+        assert_eq!(foreign_use.definition(), valid_use.definition());
+        assert!(foreign_binder.ordinal >= original.table.binders.len());
+        assert!(foreign_use.ordinal >= original.table.uses.len());
+        assert!(original.table.try_binder(foreign_binder).is_none());
+        assert!(original.table.try_usage(foreign_use).is_none());
+
+        let foreign_binder = other_owner.binder(name(&small.decls[0].params[0].pattern));
+        let foreign_use = other_owner.usage(expression_name(&small_body.result));
+        assert_eq!(foreign_binder.ordinal, valid_binder.ordinal);
+        assert_eq!(foreign_use.ordinal, valid_use.ordinal);
+        assert!(original.table.try_binder(foreign_binder).is_none());
+        assert!(original.table.try_usage(foreign_use).is_none());
+    }
+
+    #[test]
     fn cloned_and_relocated_syntax_keeps_structural_ids_but_rebuilds_lookup() {
         let original =
             parse_module("use std::quantum::h;unitary fn f(q:Q<Bit>)->Q<Bit>{let q=h(q);q}")
@@ -1010,6 +1447,7 @@ mod tests {
                 .keys()
                 .all(|key| !b.references.contains_key(key))
         );
+        assert!(a.nodes.keys().all(|key| !b.nodes.contains_key(key)));
         let owned = b.table.clone();
         drop(b);
         drop(cloned);
@@ -1019,6 +1457,317 @@ mod tests {
             a.binder(name(&original.decls[0].params[0].pattern)),
             other.binder(name(&original.decls[0].params[0].pattern))
         );
+    }
+
+    #[test]
+    fn syntax_nodes_keep_distinct_structural_ids_when_spans_match() {
+        let mut module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{let q=q;q}").unwrap();
+        let declaration = &mut module.decls[0];
+        let FnBody::Quantum(body) = &mut declaration.body else {
+            panic!()
+        };
+        let StmtKind::Let { value, .. } = &mut body.statements[0].kind else {
+            panic!()
+        };
+        value.span = Span::default();
+        body.result.span = Span::default();
+        let relocated = declaration.clone();
+        let original = index(DefId(7), declaration, |_| None);
+        let copied = index(DefId(7), &relocated, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!()
+        };
+        let StmtKind::Let { value, .. } = &body.statements[0].kind else {
+            panic!()
+        };
+        let first = original.node_id_expr(value);
+        let second = original.node_id_expr(&body.result);
+        assert_ne!(first, second);
+        assert_eq!(original.table.node(first), original.table.node(second));
+        assert_eq!(original.table, copied.table);
+        let Some(OriginalNode::Expression(retained)) = original.original_node(first) else {
+            panic!("original borrowed expression");
+        };
+        assert!(std::ptr::eq(retained, value));
+        assert!(
+            copied
+                .original_node(NodeId {
+                    definition: DefId(8),
+                    ..first
+                })
+                .is_none()
+        );
+        assert!(
+            original
+                .original_node(NodeId {
+                    kind: NodeKind::Natural,
+                    ..first
+                })
+                .is_none()
+        );
+        assert!(
+            original
+                .original_node(NodeId {
+                    ordinal: usize::MAX,
+                    ..first
+                })
+                .is_none()
+        );
+        assert!(
+            original
+                .nodes
+                .keys()
+                .all(|key| !copied.nodes.contains_key(key))
+        );
+        assert_eq!(original.node_id_block(body).kind, NodeKind::Block);
+        assert_eq!(
+            original.node_id_ty(&declaration.return_type).kind,
+            NodeKind::Type
+        );
+
+        let mut foreign = first;
+        foreign.definition = DefId(8);
+        assert!(std::panic::catch_unwind(|| original.table.node(foreign)).is_err());
+        let mut wrong_kind = first;
+        wrong_kind.kind = NodeKind::Natural;
+        assert!(std::panic::catch_unwind(|| original.table.node(wrong_kind)).is_err());
+    }
+
+    #[test]
+    fn original_node_cell_is_charged_before_any_parallel_collection_changes() {
+        let module = parse_module("static fn one()->Nat{1}").unwrap();
+        let declaration = &module.decls[0];
+        let FnBody::Natural(natural) = &declaration.body else {
+            panic!("natural body");
+        };
+        let original = index(DefId(0), declaration, |_| None);
+        let before = (
+            original.table.nodes.len(),
+            original.nodes.len(),
+            original.originals.len(),
+            original.region_heads.len(),
+        );
+        let mut builder = Builder {
+            index: original,
+            global: |_: &str| None,
+            charge: |_, cells| {
+                assert_eq!(cells, 4, "metadata, address, borrowed node and region head");
+                Err(())
+            },
+            origin: declaration.span,
+            names: BTreeMap::new(),
+            static_parameters: BTreeMap::new(),
+            frames: Vec::new(),
+            region: None,
+        };
+        assert!(
+            builder
+                .record_node(
+                    NodeKind::Natural,
+                    std::ptr::from_ref(natural) as usize,
+                    OriginalNode::Natural(natural),
+                    natural.span,
+                )
+                .is_err()
+        );
+        assert_eq!(
+            before,
+            (
+                builder.index.table.nodes.len(),
+                builder.index.nodes.len(),
+                builder.index.originals.len(),
+                builder.index.region_heads.len()
+            )
+        );
+    }
+
+    #[test]
+    fn original_regions_include_inactive_empty_arms_and_zero_fold_body_only() {
+        let module = parse_module(
+            "unitary fn f(q:Q<Bit>)->Q<Bit>{
+                 if static 0==1 {qfor static i in 0..0 carry r=q {yield r;}}else{q}
+             }
+             unitary fn empty()->Unit{if static 0==1 {}else{}}",
+        )
+        .unwrap();
+        let declaration = &module.decls[0];
+        let original = index(DefId(0), declaration, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            unreachable!()
+        };
+        let ExprKind::StaticIf {
+            then_branch,
+            else_branch,
+            ..
+        } = &body.result.kind
+        else {
+            unreachable!()
+        };
+        let conditional = original.node_id_expr(&body.result);
+        let ExprKind::StaticFold {
+            start,
+            initial,
+            body: fold_body,
+            ..
+        } = &then_branch.result.kind
+        else {
+            unreachable!()
+        };
+        let fold = original.node_id_expr(&then_branch.result);
+        let chain = |node| {
+            original
+                .enclosing_regions(node)
+                .unwrap()
+                .map(|region| region.unwrap())
+                .collect::<Vec<_>>()
+        };
+        assert!(chain(conditional).is_empty());
+        assert_eq!(
+            chain(fold),
+            vec![OriginalRegion::Predicate {
+                node: conditional,
+                truth: true
+            }]
+        );
+        assert_eq!(chain(original.node_id_natural(start)), chain(fold));
+        assert_eq!(chain(original.node_id_expr(initial)), chain(fold));
+        assert_eq!(
+            chain(original.node_id_expr(&fold_body.result)),
+            vec![
+                OriginalRegion::Fold { node: fold },
+                OriginalRegion::Predicate {
+                    node: conditional,
+                    truth: true
+                },
+            ]
+        );
+        assert_eq!(
+            chain(original.node_id_expr(&else_branch.result)),
+            vec![OriginalRegion::Predicate {
+                node: conditional,
+                truth: false
+            }]
+        );
+
+        let empty = &module.decls[1];
+        let mut original = index(DefId(1), empty, |_| None);
+        let FnBody::Quantum(body) = &empty.body else {
+            unreachable!()
+        };
+        let ExprKind::StaticIf {
+            then_branch,
+            else_branch,
+            ..
+        } = &body.result.kind
+        else {
+            unreachable!()
+        };
+        let conditional = original.node_id_expr(&body.result);
+        for (block, truth) in [(then_branch, true), (else_branch, false)] {
+            assert!(block.implicit_result);
+            assert_eq!(
+                original
+                    .enclosing_regions(original.node_id_expr(&block.result))
+                    .unwrap()
+                    .map(|region| region.unwrap())
+                    .collect::<Vec<_>>(),
+                vec![OriginalRegion::Predicate {
+                    node: conditional,
+                    truth
+                }]
+            );
+        }
+        original.region_links[0].parent = Some(0);
+        assert!(
+            original
+                .enclosing_regions(original.node_id_expr(&then_branch.result))
+                .unwrap()
+                .next()
+                .unwrap()
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn original_region_link_is_charged_before_head_or_arena_changes() {
+        let module = parse_module("unitary fn f()->Unit{if static 0==1 {}else{}}").unwrap();
+        let declaration = &module.decls[0];
+        let FnBody::Quantum(body) = &declaration.body else {
+            unreachable!()
+        };
+        let original = index(DefId(0), declaration, |_| None);
+        let before = original.region_links.len();
+        let mut builder = Builder {
+            index: original,
+            global: |_: &str| None,
+            charge: |_, cells| {
+                assert_eq!(cells, 1);
+                Err(())
+            },
+            origin: declaration.span,
+            names: BTreeMap::new(),
+            static_parameters: BTreeMap::new(),
+            frames: Vec::new(),
+            region: None,
+        };
+        assert!(builder.enter_region(&body.result, Some(true)).is_err());
+        assert_eq!(builder.index.region_links.len(), before);
+        assert!(builder.region.is_none());
+    }
+
+    #[test]
+    fn every_static_and_basis_node_kind_has_an_original_occurrence() {
+        let module = parse_module(
+            "unitary fn f[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{let q=g[type(Bits<n+0>)](q);basis q as b {b}}",
+        )
+        .unwrap();
+        let declaration = &module.decls[0];
+        let mut original = index(DefId(0), declaration, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!()
+        };
+        let StmtKind::Let { value, .. } = &body.statements[0].kind else {
+            panic!()
+        };
+        let ExprKind::Call {
+            callee,
+            static_args,
+            ..
+        } = &value.kind
+        else {
+            panic!()
+        };
+        let operation = &static_args[0];
+        let StaticOpKind::Type(ty) = &operation.kind else {
+            panic!()
+        };
+        let TypeKind::Bits(natural) = &ty.kind else {
+            panic!()
+        };
+        let ExprKind::CoherentLift { basis, .. } = &body.result.kind else {
+            panic!()
+        };
+        assert_eq!(original.reference_site(callee), original.usage(callee));
+        let operation_node = original.node_id_static_op(operation);
+        let basis_node = original.node_id_basis_expr(basis);
+        assert_eq!(operation_node.kind, NodeKind::StaticOp);
+        assert_eq!(original.node_id_ty(ty).kind, NodeKind::Type);
+        assert_eq!(original.node_id_natural(natural).kind, NodeKind::Natural);
+        assert_eq!(basis_node.kind, NodeKind::BasisExpr);
+        let relocated = declaration.clone();
+        let copied = index(DefId(0), &relocated, |_| None);
+        assert_eq!(original.table, copied.table);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, std::convert::Infallible>(())
+            })
+            .unwrap_or_else(|never| match never {});
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        let lookup = forest.lookup(&tables);
+        assert_eq!(lookup.node_id_static_op(operation), operation_node);
+        assert_eq!(lookup.node_id_basis_expr(basis), basis_node);
     }
 
     #[test]
@@ -1067,15 +1816,23 @@ mod tests {
             panic!()
         };
         let natural_site = original.natural_usage(natural);
+        assert_eq!(original.natural_site(natural), natural_site);
+        assert_eq!(natural_site.definition(), DefId(0));
+        let natural_node = original.node_id_natural(natural);
+        assert_eq!(natural_node.definition(), DefId(0));
+        let result_node = original.node_id_expr(&body.result);
+        let block_node = original.node_id_block(body);
+        let parameter_type_node = original.node_id_ty(&decl.params[0].ty);
         let mut occurrences = OccurrencesForest::default();
         occurrences
             .insert_budgeted(original.take_occurrences(), decl.span, |_, _| {
                 Ok::<_, std::convert::Infallible>(())
             })
             .unwrap_or_else(|never| match never {});
-        // The finite consumer moves runtime addresses only; the common Index
-        // still owns its authoritative natural lookup until source finishing.
-        assert_eq!(original.natural_usage(natural), natural_site);
+        // Transfer happens only after common source checking. All occurrence
+        // maps move; the one authoritative Table remains with its judgment.
+        assert!(original.natural_references.is_empty());
+        assert!(original.nodes.is_empty());
         let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
         let forest = Forest::from_occurrences(occurrences);
         let table = &tables[&DefId(0)];
@@ -1085,8 +1842,44 @@ mod tests {
         assert!(std::ptr::eq(lookup.info(binder), table.binder(binder)));
         assert!(std::ptr::eq(lookup.key(binder), table.key(binder)));
         assert!(std::ptr::eq(lookup.usage(result), table.usage(result_site)));
+        assert!(std::ptr::eq(
+            lookup.natural_usage(natural),
+            table.usage(natural_site)
+        ));
+        assert_eq!(lookup.reference_site(result), result_site);
+        assert_eq!(lookup.natural_site(natural), natural_site);
+        assert_eq!(lookup.node_id_natural(natural), natural_node);
+        assert_eq!(lookup.node_id_expr(&body.result), result_node);
+        assert_eq!(lookup.node_id_block(body), block_node);
+        assert_eq!(lookup.node_id_ty(&decl.params[0].ty), parameter_type_node);
         assert_eq!(lookup.local_key(result), Some(table.key(binder)));
         assert_eq!(Arc::strong_count(table), 1);
+    }
+
+    #[test]
+    fn all_moved_occurrence_cells_are_charged_before_the_merge() {
+        let module =
+            parse_module("unitary fn f[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let mut original = index(DefId(0), declaration, |_| None);
+        let occurrences = original.take_occurrences();
+        let expected = 2
+            * (occurrences.bindings.len()
+                + occurrences.references.len()
+                + occurrences.natural_references.len()
+                + occurrences.nodes.len());
+        let mut forest = OccurrencesForest::default();
+        assert_eq!(
+            forest.insert_budgeted(occurrences, declaration.span, |_, cells| {
+                assert_eq!(cells, expected);
+                Err(())
+            }),
+            Err(())
+        );
+        assert!(forest.bindings.is_empty());
+        assert!(forest.references.is_empty());
+        assert!(forest.natural_references.is_empty());
+        assert!(forest.nodes.is_empty());
     }
 
     #[test]

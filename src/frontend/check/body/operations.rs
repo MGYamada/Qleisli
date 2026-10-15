@@ -125,6 +125,7 @@ impl Checker<'_, '_> {
                 }
                 let (mut inputs, result, mask) =
                     self.specialize(id, arguments, scope, name.span, true)?;
+                let parameter_count = inputs.len();
                 if inputs.is_empty() {
                     return Err(SourceError::new(
                         "type",
@@ -196,9 +197,18 @@ impl Checker<'_, '_> {
                 )?;
                 self.tick(name.span)?;
                 self.effects.require_unitary(id, name.span);
-                self.obligation(
+                let parameters = if parameter_count == 1 {
+                    std::slice::from_ref(&group)
+                } else {
+                    group.tuple_fields().expect("checked complete input group")
+                };
+                let site =
+                    self.record_static_call(name, arguments, scope, parameters, &result, mask)?;
+                self.obligation_subject(
                     name.span,
                     ObligationKind::RuntimeGroupProvider { provider: id },
+                    scope,
+                    plans::EvidenceSubject::Call { site, requested },
                 )?;
                 return Ok(group);
             }
@@ -463,13 +473,34 @@ impl Checker<'_, '_> {
                     access(&operation, capability, arg.span)?;
                 }
             }
-            if let Some(required) = meaning {
-                self.obligation(
+            if let Some(required_meaning) = meaning {
+                self.program.budget.charge(arg.span, 3)?;
+                let subject = plans::EvidenceSubject::Operation {
+                    operation: Arc::new(self.capture().operation(arg)?),
+                    required: Some(plans::OperationContract {
+                        input: self.program.budget.copy_ty(arg.span, &basis)?,
+                        codomain: codomain
+                            .as_ref()
+                            .map(|ty| self.program.budget.copy_ty(arg.span, ty))
+                            .transpose()?,
+                        effect: mode.ceiling,
+                        access: required,
+                        meaning: Some(required_meaning),
+                    }),
+                    actual: Some(plans::operation_contract(
+                        &operation,
+                        arg.span,
+                        &self.program.budget,
+                    )?),
+                };
+                self.obligation_subject(
                     arg.span,
                     ObligationKind::MeaningEquality {
-                        required,
+                        required: required_meaning,
                         supplied: operation.meaning,
                     },
+                    scope,
+                    subject,
                 )?;
             }
             target.operations.insert(key, operation);
@@ -710,8 +741,9 @@ impl Checker<'_, '_> {
                         "Meaning declarations are not ordinary runtime callees",
                     ));
                 }
-                let (inputs, result, _) =
+                let (inputs, result, access) =
                     self.specialize(id, static_args, scope, span, kind != FnKind::Classical)?;
+                self.record_static_call(name, static_args, scope, &inputs, &result, access)?;
                 self.tick(span)?;
                 self.effects.call(id, span);
                 if inputs.len() != runtime.len() {
@@ -872,7 +904,7 @@ impl Checker<'_, '_> {
         {
             // Retain the original obligation even when specialization never
             // visits this declaration, branch, loop body or provider call.
-            self.obligation(span, ObligationKind::ControlSectors)?;
+            self.obligation(span, ObligationKind::ControlSectors, scope)?;
         }
         for (key, binding) in owners {
             scope.moved.remove(&binding.identity);
@@ -1042,12 +1074,24 @@ impl Checker<'_, '_> {
                 };
                 self.tick(name.span)?;
                 self.effects.require_effect(id, mode.ceiling, name.span);
-                self.obligation(
+                // Retain the same effective capability mask returned below.
+                // A rectangular provider never inherits controlled access
+                // from the endomorphic transparent-provider conjunction.
+                if mode.arrows && !endomorphic {
+                    access[2] = false;
+                }
+                let site = self.record_static_call(name, args, scope, &inputs, &result, access)?;
+                self.obligation_subject(
                     name.span,
                     ObligationKind::Provider {
                         provider: id,
                         ceiling: mode.ceiling,
                         meaning: None,
+                    },
+                    scope,
+                    plans::EvidenceSubject::Call {
+                        site,
+                        requested: Access::Apply,
                     },
                 )?;
                 let Kind::Q(basis) = result.kind else {
@@ -1063,9 +1107,6 @@ impl Checker<'_, '_> {
                 } else {
                     (*basis, None)
                 };
-                if codomain.is_some() {
-                    access[2] = false;
-                }
                 Ok(Operation {
                     basis,
                     codomain,
@@ -1142,12 +1183,27 @@ impl Checker<'_, '_> {
                     op.span,
                     &self.program.budget,
                 )?;
-                self.obligation(
+                self.program.budget.charge(op.span, 3)?;
+                let mut required =
+                    plans::operation_contract(&operation, op.span, &self.program.budget)?;
+                required.meaning = Some(meaning);
+                let subject = plans::EvidenceSubject::Operation {
+                    operation: Arc::new(self.capture().operation(op)?),
+                    required: Some(required),
+                    actual: Some(plans::operation_contract(
+                        &operation,
+                        op.span,
+                        &self.program.budget,
+                    )?),
+                };
+                self.obligation_subject(
                     op.span,
                     ObligationKind::MeaningEquality {
                         required: meaning,
                         supplied: operation.meaning,
                     },
+                    scope,
+                    subject,
                 )?;
                 operation.meaning = Some(meaning);
                 Ok(operation)
