@@ -1582,8 +1582,8 @@ impl Builder<'_> {
                 let operation = &operations[&key.name];
                 let (ports, effect, _) =
                     operation_signature(operation, &self.definitions, function.span)?;
-                if operation.source_effect > required.ceiling
-                    || effect > required.ceiling
+                if operation.source_effect > required.ceiling()
+                    || effect > required.ceiling()
                     || ports.input != &required.input
                     || ports.output != required.output()
                 {
@@ -1594,16 +1594,8 @@ impl Builder<'_> {
                     ));
                 }
                 self.charge_cells(interface.statics.len(), function.span)?;
-                let formal = interface
-                    .statics
-                    .iter()
-                    .find(|formal| formal.key == *key)
-                    .expect("closed operation retains original formal");
-                if let crate::frontend::check::StaticKind::Operation {
-                    meaning: Some(id), ..
-                } = &formal.kind
-                {
-                    let target = &program.meaning_targets[id];
+                if let Some(id) = required.meaning {
+                    let target = &program.meaning_targets[&id];
                     self.charge_cells(target.cells(), function.span)?;
                     // The provider check above retained both exact ports. No
                     // owned output-only type stands in for this signature.

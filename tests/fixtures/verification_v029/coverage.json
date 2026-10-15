@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "cecb20106b7b4a3a0639a53270b86657ea010995a92ac708ed894b6899d3a911",
+  "surface_sha256": "ab7d01eadaa98fd6fd26c7dc8c3cf8cdcb3e9400714fbdfe5e2f20a1fbf3589c",
   "groups": [
     {
       "id": "raw-core",
@@ -798,7 +798,8 @@
         "tests/rectangular_meanings.rs",
         "tests/body_effects.rs",
         "tests/public_effects.rs",
-        "scripts/test_public_effects_first.py"
+        "scripts/test_public_effects_first.py",
+        "src/frontend/closed.rs"
       ],
       "proof_gates": [
         "S05-C1",
