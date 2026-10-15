@@ -121,6 +121,10 @@
         [
           "python3",
           "scripts/test_stdlib_boundary_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_empty_basis_first.py"
         ]
       ],
       "prepare": []

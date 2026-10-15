@@ -11,6 +11,17 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Admit exact closed `Bits<0>` values and owners in finite project lowering,
+  preserving their distinct tags, zero-width linear owners, complete contracts
+  and eager unused-declaration checks. Uniformly allow the existing ordinary
+  empty-label constructor in basis expressions. Connect selected coherent
+  maps to bounded original-identity label evaluation, existing Raw `LiftBasis`
+  and independent source-step replay; retain explicit unsupported hierarchy
+  conversion. Keep nonzero/generic finite registers, all budgets and native
+  acceptance rules unchanged. Retain the first zero-register sources and real
+  diagnostics as inert archives. This is further #369/#167 prerequisite work,
+  not completion of their primitive/derived source migration or proof gates.
+
 - Connect current finite runtime/classical signatures to the same exact closed
   interface helper as selected-source lowering. Retain the original complete
   source judgment and borrow its lexical tables without copying them. Keep

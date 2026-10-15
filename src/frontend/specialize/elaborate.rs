@@ -46,6 +46,7 @@ impl RuntimeInputs<'_> {
     }
 }
 
+mod basis;
 mod places;
 
 /// A typed untrusted adapter step, implemented only by existing structural IR.
@@ -392,6 +393,9 @@ enum StepKind {
     Contract(DefId, DefId),
     Adjoint(SourceOperation),
     Controlled(SourceOperation),
+    // Shared immutable storage avoids uncharged table copies when the retained
+    // source graph is cloned for transport/contract checking.
+    LiftBasis(Arc<Vec<u16>>),
 }
 impl SourceStep {
     pub(super) fn access_roles(&self) -> &[crate::frontend::ast::QuantumAccess] {
@@ -458,6 +462,7 @@ impl SourceStep {
             StepKind::Contract(..) => "contract",
             StepKind::Adjoint(_) => "adjoint",
             StepKind::Controlled(_) => "controlled",
+            StepKind::LiftBasis(_) => "lift_basis",
         }
     }
     pub(super) fn partition(&self) -> Option<PlacePartition> {
@@ -469,6 +474,14 @@ impl SourceStep {
     pub fn primitive(&self) -> Option<&str> {
         match &self.kind {
             StepKind::Primitive(name, _) => Some(name.signature().path),
+            _ => None,
+        }
+    }
+    /// Complete coefficient-+1 label map from the original checked basis body.
+    /// This is untrusted source data, not native acceptance or source-meaning evidence.
+    pub fn basis_table(&self) -> Option<&[u16]> {
+        match &self.kind {
+            StepKind::LiftBasis(table) => Some(table.as_slice()),
             _ => None,
         }
     }
@@ -885,6 +898,7 @@ struct Builder<'a> {
     steps: usize,
     cells: usize,
     active_frames: usize,
+    basis_work: usize,
 }
 #[derive(Clone)]
 struct Binding {
@@ -999,6 +1013,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
         steps: 0,
         cells: 0,
         active_frames: 0,
+        basis_work: 0,
     };
     let mut operations = BTreeMap::new();
     // Eager validation prevents an unused entry operation from concealing an
@@ -2528,6 +2543,42 @@ impl Builder<'_> {
         let span = expr.span;
         match &expr.kind {
             ExprKind::Unit => Ok(SourceValue::unit()),
+            ExprKind::CoherentLift {
+                input,
+                pattern,
+                body,
+            } => {
+                let value = self.expr(input, scope, frame, depth)?;
+                let input_basis = value.ty.quantum_basis().ok_or_else(|| {
+                    error(
+                        "type",
+                        span,
+                        "coherent lift requires one whole quantum owner",
+                    )
+                })?;
+                let (output_basis, table) =
+                    self.basis_table(input_basis, pattern, body, &frame.lexical, span)?;
+                let input_width = self.basis_width(input_basis, span)?;
+                let output_width = self.basis_width(&output_basis, span)?;
+                let input_cells = self.basis_cells(&value.ty, span)?;
+                let output_cells = self.basis_cells(&output_basis, span)?;
+                self.charge_cells(4 + input_cells + output_cells, span)?;
+                let input_type = value.ty.clone();
+                self.step(
+                    StepKind::LiftBasis(Arc::new(table)),
+                    vec![input_type],
+                    SourceType::quantum(output_basis),
+                    if input_width == output_width {
+                        Effect::Unitary
+                    } else {
+                        Effect::Isometry
+                    },
+                    vec![value],
+                    frame,
+                    span,
+                    0,
+                )
+            }
             ExprKind::Boolean(operation, operands) => {
                 use crate::frontend::ordinary::{self, OperandFailure};
                 let values = ordinary::evaluate(

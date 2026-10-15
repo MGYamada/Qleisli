@@ -277,9 +277,10 @@ The pattern in `basis q as () { () }` describes the ordinary Unit basis of its
 quantum input. The [coherent basis map](coherent-basis.md) consumes and returns
 a `Q<Unit>` owner with coefficient `+1`, retaining any scalar already present
 on its input; it is not runtime `let () = q` or an implicit owner elimination.
-This source rule does not supply the selected concrete projection with
-CoherentLift support, or remove the finite profile's existing quantum Unit
-limitations. Sized lowering omits
+Selected Raw implements this explicit map through the existing `LiftBasis`
+proposal and separate source-step comparison; general hierarchy conversion
+remains unsupported. Its existing quantum Unit, depth and work limitations
+still apply. Sized lowering omits
 ordinary Unit value ports while retaining the exact source interface and all
 executed operations. A computation returning Unit can still consume owners or
 perform observable work; omitting its result port does not omit its body.
@@ -772,8 +773,12 @@ retain the full source tree and use an explicit representation mapping or
 reject an unsupported lowering profile. It must not silently map `Bits<1>` to
 Bit or `Bits<0>` to Unit to obtain evidence.
 
-The current finite profile supports ordinary Unit/Bit values and products, but
-does not yet lower Bits atoms. Both profiles use the same exact Bit judgment
+The current finite profile supports ordinary Unit/Bit values, exact closed
+`Bits<0>` atoms and products, together with their supported quantum owners.
+Normalized closed zero sizes retain the Bits tag; nonzero registers and
+generic Basis/Nat materialization remain unsupported. The ordinary empty value
+is copyable and emits no classical identity; `Q<Bits<0>>` retains a distinct
+linear owner and branch phi even with no wires. Both profiles use the same exact Bit judgment
 and eager, left-to-right operand evaluation for `0`, `1`, `not`, `and` and `xor`.
 Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
@@ -841,8 +846,11 @@ are reusable as ordinary runtime computations: supported Unit/Bit/product calls
 use the same checked expression nodes and eager ordinary operations in both
 consumers. Runtime argument effects remain in the caller, and an ordinary call
 does not grant coherent injectivity or Meaning evidence. Selected Raw additionally
-transports ordinary Bits values; the finite project consumer and selected coherent
-lifting retain their explicit profile limitations. These are implementation limits,
+transports ordinary Bits values; finite project lowering admits exact closed
+`Bits<0>` only. Selected coherent lifting evaluates complete bounded ordinary
+label bodies and emits Raw `LiftBasis`, with separate native acceptance and
+source-step comparison; its general hierarchy bridge remains unsupported.
+These are implementation limits,
 not source-type prohibitions: ordinary `Bits<0>` is a copyable singleton basis
 distinct from `Unit`. All original declarations and bodies
 are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the

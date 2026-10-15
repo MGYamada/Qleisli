@@ -140,7 +140,7 @@
       "id": "source",
       "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
       "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
-      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate.",
+      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation. Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate. The finite emitter admits only normalized closed Bits<0> atoms, retaining Unit/product tags and linear zero-width quantum owners; nonzero registers and Nat/Basis-generic declarations remain outside that profile. Ordinary empty_bits construction introduces no owner. Inert retained first-study packets do not execute recorded commands or establish source meaning.",
       "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
@@ -375,7 +375,7 @@
       "id": "raw-LiftBasis",
       "producer": "basis do/pure lowering/raw",
       "consumer": "verify; raw extractor; simulation",
-      "obligation": "Total injection, input axes retained; growing width is Iso",
+      "obligation": "Total injection, input axes retained; growing width is Iso. Finite and selected source producers retain exact Unit/Bits<0>/product trees and zero-width owner identities; independent native validation checks emitted LiftBasis operations, while source elaboration and semantic preservation remain separate obligations.",
       "reference": "docs/ir-prototype.md; docs/interoperability-roadmap.md",
       "replacement": [
         "VM-25"
@@ -630,7 +630,7 @@
       "id": "sized-source",
       "producer": "Retained ordinary sized-source modules and explicit natural/operation bindings",
       "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and ordinary explicit-entry CLI; source-bound finite ordinary Raw proposals with independent step replay",
-      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation. Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate.",
+      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation. Public quantum declarations require explicit checked effects; external consumers use only the public bound, same-original-module inference remains precise, and actual Raw effects and native validation remain separate. Selected coherent basis lifts evaluate original isolated ordinary label bodies into bounded injective tables with complete input/result trees, then emit existing Raw LiftBasis operations. Exact Raw replay checks the retained table and owner transition; the hierarchy profile still refuses coherent tables, and neither elaboration nor replay is an AST-to-IR preservation proof.",
       "reference": "docs/sized-corpus-source.md",
       "replacement": [
         "VM-28"
@@ -667,7 +667,7 @@
       "id": "finite-bits-interface",
       "producer": "Atomic BasisType::Bits(u32), finite Meaning and retained root interfaces",
       "consumer": "Native finite/QIRF decoders and independent exact contract checking",
-      "obligation": "Keep Bits<0>, Bits<1> and wider registers structurally distinct from Unit, Bit and same-width product trees; retain exact phase under coherent control; reject malformed or out-of-capacity widths",
+      "obligation": "Keep Bits<0>, Bits<1> and wider registers structurally distinct from Unit, Bit and same-width product trees; retain exact phase under coherent control; reject malformed or out-of-capacity widths. The ordinary finite source profile now admits normalized closed Bits<0> only; this neither admits nonzero/generic finite register declarations nor changes native acceptance or constitutional proof status.",
       "reference": "docs/src/reference/type-model.md; tests/meaning_evidence.rs; tests/interchange.rs",
       "replacement": [
         "VM-24"
@@ -3479,6 +3479,12 @@
       "surface": null
     },
     {
+      "path": "scripts/test_empty_basis_first.py",
+      "sha256": "77ce1fe9a160388e4c7c170bf4eb2f72ae1ddfbede7e44aab3d72b4f76a83a3b",
+      "group": "source",
+      "surface": null
+    },
+    {
       "path": "scripts/test_engineering_boundary_baseline.py",
       "sha256": "0693be3eed280566ee87154c12cc9a48715c01a26d5425be0e5e225dbaa0f35d",
       "group": "source",
@@ -3922,7 +3928,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "fdcb5bbb5ce50ffe8c8d84292e38a20b2f4b776df09763b17551936f67ff0746",
+      "sha256": "c693f7ac019949ff9b41ed0714bc2b089495c19dc23c73008a30df952c8fec46",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3991,7 +3997,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "d0caada957b3ea9a4cfe6e1ef4db1f65b5f4fd6fd0758bdac8a0d4462f9f37f4",
+      "sha256": "c6678a41ef7a2e665976f9942fc615fdaaed21d3310f04ff08bf526fac2b92e6",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4011,7 +4017,7 @@
     },
     {
       "path": "src/frontend/compile/lower/branch.rs",
-      "sha256": "66cb53e0571afd809827949456328855fd1bfc82b5007488c2e4834e16b8fb74",
+      "sha256": "d7031c4f9c2780b4f7d8571239f9e09e32427d228e2b25a0d9068c5a805d6d27",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4031,7 +4037,7 @@
     },
     {
       "path": "src/frontend/compile/lower/classical.rs",
-      "sha256": "aebc8089f9941d9dccac4cb6f178e1f0fe7ab5d12b1bc06f968d11e98e9ded74",
+      "sha256": "adc9e3e05ebd5786f81551f76c2c02d787fe07f9a26acfb6bf3d206786589c8b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4041,7 +4047,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "76a87e8cd976b8dcda954199f529d2c037a995b019ced90a2efd9376989bd267",
+      "sha256": "4469aa5904cf5dcc8424ad4e208673cbd4a0ba551860decf3811d7a856a69f25",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4051,7 +4057,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "448b4d27d2afe572596f899db40bfdf98eb9c370c78b787172fbfd03c02dbd9d",
+      "sha256": "43c1cc9a1d8e64a2626ac6b657341dc7cef0c86bfcf391fc1aa13401dfabb50b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4071,7 +4077,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "cf72836eb875b6f0852f24dc9c60a14f062321d061780faf9fa43799f2b01539",
+      "sha256": "2b2ebf58fb36da0ccbb6dc6731c45b82700e13470beba14fd34b2c3c322421e5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4101,7 +4107,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "5fe243278e0d7f7fb06ef9bb241f0cb350dce5d9a25e79c93e6238861c34a84d",
+      "sha256": "1d3097f5ee987b66bf6871391add7ee49288786071b69e987b1c462220e8d93d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4111,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "37b8aa0b330b952fa1bcaa071612e4e81caca4019af9ece683df49407243a143",
+      "sha256": "da17763c88af07ec750ba50d276eaf78fdf2e115e8539814ab910c6599e4837f",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4150,7 +4156,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "6e7c5667da3dd82a90aac67dc5bcddc91741a246b51ea7bf7da0021c64e813f5",
+      "sha256": "d3033d3c19d0bcc9aefee4492f2ceb1cae3a222e5c60046c3ccfbd90d5713eec",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4170,7 +4176,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "8ebc2e509acb4542b35c2ddfbf297ff6940e53b1a3f126cfc7b0d462e15a35e5",
+      "sha256": "46d3aaabc49688d2528c4fc7fc998369fdbe5a79ab62dbba543a42b1c7388c20",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4680,7 +4686,7 @@
     },
     {
       "path": "src/frontend/specialize/ast.rs",
-      "sha256": "a7c78742a1a92ce68e76fc44a39b8c03397a962aa4273cbcad4b50926475c660",
+      "sha256": "57f57e94e1c4bb43592550fe3de7585df5aab17e358241630de3bf98bd313833",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4705,7 +4711,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "b6cd22a6465341112cf552d39e7852d08cf29d1586b1923f16e8da84e6f548a2",
+      "sha256": "4d68ebc5e6ac48a73457dbb0a91cc1291be84818715cfbbee8ec8c36944c9f87",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4718,6 +4724,7 @@
           "SourceValue"
         ],
         "functions": [
+          "pub fn basis_table(&self) -> Option<&[u16]>",
           "pub fn boolean_literal(&self) -> Option<bool>",
           "pub fn boolean_operator(&self) -> Option<&'static str>",
           "pub fn call_instances(&self) -> usize",
@@ -4781,6 +4788,16 @@
       }
     },
     {
+      "path": "src/frontend/specialize/elaborate/basis.rs",
+      "sha256": "25cf4e8b83646d4ffdd78a0934c3afb88e5e663e38adb276f359e3abb5338e64",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/specialize/elaborate/places.rs",
       "sha256": "125a17491c21d9038fbe4cc8f96fd6f90467003ee16ded305268dc114e2deda0",
       "group": "source-excl",
@@ -4802,7 +4819,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "b8f0c51b84d8ec6b71a88c5feb0deeae09e01b3305e93e89c0a30824c3743e9a",
+      "sha256": "238e0d4c91f3b11890e60d7f557301bcbbabf25268cbc6300010fa32e7a9f38d",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4894,7 +4911,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "7a053ddd6223a5e72034c47e175c057665324d3461a32f4f6a5c939744fceb84",
+      "sha256": "8a83aacc3b7310fc2599c7a3cf5f472e817fb41dcf3a5a5584cd0d97d4ccf8cb",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4920,7 +4937,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "a933f5e6bbb8173455e576ad71c13d80e676ef1dd5f95b3c8788101e70b987cf",
+      "sha256": "c560ecb79dbc59c573db4e80d674d9227330d45efe9284e0e880afba369c70c4",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4960,7 +4977,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/circuit.rs",
-      "sha256": "8ed00e01432bd5b63c0d0dd65d25bd8b700d46c8abc9cb95c72cc5a38debb7b0",
+      "sha256": "f1ee12ec15c7062fc0143d42c6b53e4ad2ff1ba2c5508d0e4d7182c873fac5b6",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4990,7 +5007,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "7b460fef9aea0da398e096c487b6421766775e7cf06a80c91a853fbf485b6de3",
+      "sha256": "c316cc70c23ea612d71867dde345ddff915ffd6843d4762d0bdcf527134d641a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5006,7 +5023,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "1abfb76068a6482bcbe4ae9823c1ced035a57235bf291d0d7ff178f0068b9485",
+      "sha256": "bd450a5b1243c6ccbc09c7020acf39ac2cf05db87c7f362b9d61f0f0ae66896c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -6515,8 +6532,8 @@
       ],
       "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
-      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate.",
-      "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
+      "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending. Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate. Zero-register eligibility does not skip eager concrete-root checks or fresh native acceptance. Bounded first-study archive/stream identity checking is inert retention, not source preservation or a constitutional discharge.",
+      "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate Finite normalized closed Bits<0> retains its atom distinct from Unit, including complete operation/Meaning ports and observing result schemas; ordinary empty_bits introduces no quantum owner.",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
@@ -6709,10 +6726,10 @@
       ],
       "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
       "request": "Original module bytes, selected public entry and complete explicit Basis/Nat/operation bindings; provider Basis substitutions belong to the provider declaration and do not select runtime input",
-      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation. Opaque Basis substitutions retain resolved lexical identity, exact closed tags/tuple tree and provider-local bindings; cache keys include the complete exact type tree, not only width. Generic declarations are checked before any concrete binding or specialization.",
-      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
-      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Finite unit/finish and selected coherent lifts are still unsupported, with no implicit profile retry. The selected preparation profile implements ordered static A:Basis, contextual type(T) call arguments and resolved type forwarding, with no reflection, decomposition or preparation of opaque bases. General Meaning refinements and final common project-profile convergence remain pending.",
-      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged. Every type substitution is checked against the expanded 4096-node/depth-64 tree before cloning; specialization type metadata is charged to the existing aggregate cell budget. Host Basis bindings retain the same eight-bit selected-profile limit.",
+      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation. Opaque Basis substitutions retain resolved lexical identity, exact closed tags/tuple tree and provider-local bindings; cache keys include the complete exact type tree, not only width. Generic declarations are checked before any concrete binding or specialization. Selected coherent basis tables retain original isolated ordinary occurrences, exact input/result trees, source-order input evaluation and fresh logical owners. Existing Raw LiftBasis and Unit pack/unpack emissions undergo native acceptance and exact retained-step replay; this does not prove the earlier AST-to-step translation.",
+      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Bits<n>/Q<A>/product Raw adapter; no implicit same-width coercions",
+      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Bits<n>/Q<A>/products, ordinary calls, init0/H/X/CNOT/measure_z, explicit Unit pack/unpack and exactly representable eighth-turn phases under their existing closed-type and width limits. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit coherent basis tables use the Raw profile; the hierarchy profile rejects them explicitly. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Selected Raw unit/finish preserve the exact Unit owner, and coherent lifts preserve complete exact basis trees; neither admits an implicit profile retry. The selected preparation profile implements ordered static A:Basis, contextual type(T) call arguments and resolved type forwarding, with no reflection, decomposition or preparation of opaque bases. General Meaning refinements and final common project-profile convergence remain pending.",
+      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged. Every type substitution is checked against the expanded 4096-node/depth-64 tree before cloning; specialization type metadata is charged to the existing aggregate cell budget. Host Basis bindings retain the same eight-bit selected-profile limit. Coherent table domains/results use at most eight bits, 4096 basis nodes/depth64 and the existing combined call, depth, step and cell ceilings; table storage and label traversal are charged before allocation/evaluation.",
       "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
       "replacement": [
         "VM-28"

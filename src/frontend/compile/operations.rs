@@ -69,6 +69,7 @@ pub(super) fn contract_basis(ty: &Ty) -> BasisType {
     match &ty.kind {
         Kind::Unit => BasisType::Unit,
         Kind::Bit => BasisType::Bit,
+        Kind::Bits(EmptyRegister) => BasisType::Bits(0),
         Kind::Tuple(fields) if fields.len() == 2 => {
             BasisType::pair(contract_basis(&fields[0]), contract_basis(&fields[1]))
         }

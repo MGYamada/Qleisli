@@ -314,7 +314,7 @@ admitted omitted-arm `qif` rewrite.
 | Field | Contract |
 | --- | --- |
 | Source | `basis q as pattern { expression }` |
-| Target | Finite `LiftBasis` with complete supported label map; selected CoherentLift projection remains unsupported |
+| Target | Existing finite/selected Raw `LiftBasis` with complete supported label map; general selected hierarchy bridge remains unsupported |
 | Evaluation order | Evaluate q once before binding labels; evaluate restricted total expression in separate basis scope. |
 | Owners | Consume one `Q<A>`, return one `Q<B>`. Label patterns do not split runtime owners; separate inputs are not implicitly joined. |
 | Exact phase | Each transition has coefficient +1, linearly with identity on arbitrary external reference. Retain amplitudes and ordered output labels. |

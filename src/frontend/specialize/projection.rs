@@ -272,13 +272,16 @@ impl Projection<'_, '_> {
         self.charge(pattern.span, 1)?;
         Ok(match &pattern.kind {
             source::PatternKind::Name(name) => Pattern::Name(self.binding(name)?, name.span),
-            source::PatternKind::Tuple(fields) => Pattern::Tuple(
-                fields
-                    .iter()
-                    .map(|value| self.pattern(value))
-                    .collect::<Result<_>>()?,
-                pattern.span,
-            ),
+            source::PatternKind::Tuple(fields) => {
+                self.charge(pattern.span, fields.len())?;
+                Pattern::Tuple(
+                    fields
+                        .iter()
+                        .map(|value| self.pattern(value))
+                        .collect::<Result<_>>()?,
+                    pattern.span,
+                )
+            }
             source::PatternKind::Wildcard => Pattern::Wildcard(pattern.span),
         })
     }
@@ -429,6 +432,15 @@ impl Projection<'_, '_> {
                     .map(|value| self.expr(value))
                     .collect::<Result<_>>()?,
             ),
+            source::ExprKind::CoherentLift {
+                binder,
+                input,
+                basis,
+            } => ExprKind::CoherentLift {
+                input: Box::new(self.expr(input)?),
+                pattern: self.pattern(binder)?,
+                body: Box::new(self.classical_expression(basis)?),
+            },
             source::ExprKind::StaticIf {
                 predicate,
                 then_branch,

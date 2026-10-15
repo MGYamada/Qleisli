@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [empty-basis first studies](empty-basis-v030/README.md) retain four original
+source/observation packets, including four wrapper and seventeen finite checks.
+Desired drafts remain uncompiled; wrapper typing, finite register refusals,
+ownership errors and producer-origin hierarchy checking retain distinct scopes.
+The prior CLI and observed dirty source are separately identified; history is inert.
+
 The [stdlib boundary first studies](stdlib-boundary-v030/README.md) retain six
 informed source/observation packets, including 128 first checks, v2's missing
 manifest failures and v3's separate exact artifact requests. Compressed history

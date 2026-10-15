@@ -144,6 +144,11 @@ pub(super) enum ExprKind {
     ApplyContract(Reference, Reference, Box<Expr>),
     Adjoint(Argument, Box<Expr>),
     Controlled(Argument, Vec<Expr>),
+    CoherentLift {
+        input: Box<Expr>,
+        pattern: Pattern,
+        body: Box<Expr>,
+    },
     If(Predicate, Block, Block),
     Fold {
         index: BindingName,

@@ -2125,7 +2125,7 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
         parser::parse_module,
     };
     for source in [
-        "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{q}",
+        "pub unitary fn f(q:Q<Bits<1>>)->Q<Bits<1>>{q}",
         "pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{q}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {q}}",
     ] {

@@ -978,14 +978,46 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
         &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
     )
     .unwrap();
-    // Coherent lifting is a separate selected-source capability even though
-    // the same exact Q<tuple> now passes common source type classification.
-    let error = parsed(&coherent)
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert_eq!(error.module(), Some("main"));
-    assert!(error.span().end > error.span().start && error.span().end <= coherent.len());
+    // The explicit coherent unitor now lowers to Raw and retains both trees.
+    // Its standalone Raw proposal does not yet bind a rectangular rootInterface;
+    // an external pure-leaf request must refuse rather than equate the widths.
+    let coherent = elaborate(&coherent, "main::f");
+    let definition = &coherent.definitions()[coherent.root()];
+    assert_eq!(
+        basis_view(definition.inputs()[0].ty().quantum_basis().unwrap()),
+        "(Unit,Bit)"
+    );
+    assert_eq!(
+        basis_view(definition.output().ty().quantum_basis().unwrap()),
+        "Bit"
+    );
+    assert_eq!(definition.steps()[0].basis_table(), Some(&[0, 1][..]));
+    let raw = coherent.lower_raw().unwrap();
+    let native = qleisli::interchange::native::Kernel::selected().unwrap();
+    let accepted = native.accept(raw.proposal()).unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    let input = accepted.raw().quantum_inputs[0].clone();
+    let output = qleisli::ir::QuantumPort {
+        token: accepted.raw().quantum_outputs[0],
+        wires: input.wires.clone(),
+        shape: input.shape,
+    };
+    let boundary = qleisli::interchange::pure_leaf::PureBoundary::new(
+        BasisType::pair(BasisType::Unit, BasisType::Bit),
+        BasisType::Bit,
+        input,
+        output,
+    )
+    .unwrap();
+    let identity = Matrix::identity(2).unwrap();
+    let error = qleisli::interchange::pure_leaf::check_pure(
+        raw.payload(),
+        &boundary,
+        &identity,
+        &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+    )
+    .unwrap_err();
+    assert_eq!(error.code, "contract");
 
     let historical = study("finite-coherent-unitors");
     let start = historical.find("do ((),x)").unwrap();

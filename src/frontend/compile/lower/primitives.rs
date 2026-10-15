@@ -3,7 +3,7 @@
 //! This is the source-side check. The independent verifier rechecks emitted IR
 //! without calling these methods or trusting frontend ownership bookkeeping.
 
-use super::super::{CompileError, ErrorCode, MAX_BITS, Ty};
+use super::super::{CompileError, ErrorCode, MAX_BITS, Ty, empty_bits_primitive};
 use super::{Lowerer, Slot, Value};
 use crate::frontend::ast::{Expr, ExprKind, RuntimeArguments, Span};
 use crate::ir::{Effect, RawOp, SingleGate};
@@ -103,6 +103,20 @@ impl Lowerer<'_, '_> {
         mut args: Vec<Value>,
         source_args: RuntimeArguments<'_>,
     ) -> Result<Value, CompileError> {
+        // This existing total ordinary constructor creates no quantum owner
+        // or operation. Its resolved primitive identity is shared with basis
+        // evaluation; a same-spelled ordinary declaration never enters here.
+        if empty_bits_primitive(namespace, name) {
+            if !args.is_empty() {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Arity,
+                    "empty_bits requires 0 arguments",
+                ));
+            }
+            return Ok(Value::EmptyBits);
+        }
         let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
             if crate::frontend::check::primitive::Primitive::lookup(&format!("{namespace}::{name}"))
                 .is_some()

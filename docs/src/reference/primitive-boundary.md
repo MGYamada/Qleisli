@@ -39,11 +39,14 @@ recognizers, lowering, simulation and target emission supply no such authority.
 `src/frontend/check/primitive.rs::Primitive::ALL` is the typed common-source
 catalog of **27 distinct names**, preserving their exact static/runtime arity,
 type trees, principal effects and owner transitions. It introduces no new
-native primitive or semantic axiom. Existing concrete catalogs retain
-**19 finite entries and 19 selected entries**, with eleven names overlapping:
+native primitive or semantic axiom. Concrete finite lowering supports
+**20 entries**: the 19-entry legacy finite catalog and the existing ordinary
+empty-label constructor selected by the common typed catalog. Selected lowering
+supports **19 entries**, with twelve names overlapping:
 `std::quantum::{h,x,z,cnot,init0,phase_eighth,unit,finish,split,join}` and
-`std::observe::measure_z`. These subsets are recorded in
-`src/frontend/core.rs::PRIMITIVES` and `src/frontend/specialize/primitive.rs`.
+`std::observe::measure_z` and `std::classical::empty_bits`. These subsets are recorded in
+`src/frontend/core.rs::PRIMITIVES`, the canonical EmptyBits guard in finite
+lowering, and `src/frontend/specialize/primitive.rs`.
 A known common name unavailable to a requested emitter yields a located
 unsupported concrete-profile error, not another source grammar or fallback.
 
@@ -83,6 +86,7 @@ and runtime preservation links are already proved.
 | `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Destructive Z measurement. Consumes the quantum owner and creates an ordinary result; emits `MeasureZ`. The complete unnormalized outcome family is relevant with references. |
 | `std::observe::reset` | `Q<Bit> -> Q<Bit>`; Observe | Ends the input logical wire and returns a fresh logical owner/wire in zero. Emits `Reset`; it is an observing reset channel, not pure inverse computation or clean-release evidence. |
 | `std::observe::discard` | `Q<A> -> Unit`; Observe | Explicitly consumes the owner with discard semantics. Emits `Discard`; it is not implicit scope cleanup or proof of a zero state. |
+| `std::classical::empty_bits` | `() -> Bits<0>`; Unitary | Existing total ordinary empty-label constructor, selected by its canonical typed identity. Produces a distinct copyable value without a classical identity, quantum owner or Raw operation. The same constructor is usable in restricted classical/basis bodies. |
 
 Declarations and source-side effect/owner transitions are in
 `src/frontend/core.rs` and `src/frontend/compile/lower/primitives.rs`.

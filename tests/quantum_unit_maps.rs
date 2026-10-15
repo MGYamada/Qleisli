@@ -848,13 +848,22 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
         );
         let text =
             format!("pub unitary fn f(q:{input})->Q<Bit>{{basis q as {pattern} {{ {output} }}}}");
-        // The common source judgment checks the coherent pattern. The selected
-        // concrete projection still cannot instantiate this source form.
-        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))
+        // The explicit map consumes and returns an owner with a different
+        // exact tree. Identity passage above performs no such conversion.
+        let graph = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap_err();
-        located(&error, &text, "unsupported");
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let body = &graph.definitions()[graph.root()];
+        assert_ne!(body.inputs()[0].ty(), body.output().ty());
+        assert_ne!(body.inputs()[0].identity(), body.output().identity());
+        assert_eq!(body.steps()[0].basis_table(), Some(&[0, 1][..]));
+        graph.lower_raw().unwrap();
+        let error = graph.lower().unwrap_err();
+        assert_eq!(error.code(), "unsupported");
+        assert!(error.message().contains("coherent basis tables"));
     }
 }
 

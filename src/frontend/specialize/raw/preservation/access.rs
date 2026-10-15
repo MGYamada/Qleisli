@@ -508,6 +508,43 @@ impl Trace<'_, '_, '_> {
                     axes.splice(p.start as usize..p.start as usize, selected);
                     vec![Logical::Quantum(axes)]
                 }
+            } else if let Some(table) = step.basis_table() {
+                let [input] = inputs.as_slice() else {
+                    return Err(self
+                        .site
+                        .invalid("basis access changes its unary owner interface"));
+                };
+                let [Logical::Quantum(axes)] = input.as_slice() else {
+                    return Err(self
+                        .site
+                        .invalid("basis access loses its whole quantum owner"));
+                };
+                if axes.len() > 8
+                    || quantum_width(step.output().ty()) != Some(axes.len())
+                    || table.len() != 1usize << axes.len()
+                    || table.iter().any(|label| usize::from(*label) >= table.len())
+                {
+                    return Err(self
+                        .site
+                        .invalid("basis access requires its complete square map"));
+                }
+                self.charge(257 + 2 * axes.len() + 2 * table.len())?;
+                let mut seen = [false; 256];
+                for label in table {
+                    if seen[usize::from(*label)] {
+                        return Err(self.site.invalid("basis access table is noninjective"));
+                    }
+                    seen[usize::from(*label)] = true;
+                }
+                self.push(CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Monomial {
+                        indices: axes.clone(),
+                        permutation: table.to_vec(),
+                        phases: vec![0; table.len()],
+                    },
+                })?;
+                vec![Logical::Quantum(axes.clone())]
             } else if let Some(child) = step.called_definition() {
                 let callee = source
                     .definitions()

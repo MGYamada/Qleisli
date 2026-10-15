@@ -191,6 +191,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         match (a, b) {
             (Value::Unit, Value::Unit) => Ok(Value::Unit),
+            (Value::EmptyBits, Value::EmptyBits) => Ok(Value::EmptyBits),
             (Value::Classical(a), Value::Classical(b)) => {
                 if a == b {
                     return Ok(Value::Classical(a));

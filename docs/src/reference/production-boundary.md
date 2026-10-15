@@ -362,12 +362,16 @@ expansions occur within enclosing concrete roots; they are not additional roots
 merely because a specialization was registered. Constructing or declaring an
 unused Meaning does not imply that Lean checked a corresponding equation.
 Pure/function/instrument contract requests have their individual native scopes.
-Their successful decisions contribute to `requests_checked` without asserting
+When supplied as separate external requests, their successful decisions contribute to `requests_checked` without asserting
 a whole-entry Meaning or general source preservation. In particular, a positive
 aggregate request count can accompany `entry.request_checked: false`.
 These request fields describe the separate external request payload, not
 Meaning entries embedded in an ordinary QIRF artifact. A zero request count
-does not claim that no embedded Meaning was checked. Request data can itself be
+does not claim that no embedded Meaning was checked. A reachable
+`FunctionEvidence` dependency is checked with its ordinary QIRF root; that
+invocation contributes to the decision count but has no separate request
+payload. Its exact dependency equation is not identified or proved merely by
+reading these counters. Request data can itself be
 producer generated; checking it does not establish an independent specification
 of the original source.
 

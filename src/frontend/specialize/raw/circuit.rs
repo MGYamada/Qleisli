@@ -194,6 +194,54 @@ pub(super) fn flatten(
                 }
                 owners.insert(*output, wires);
             }
+            RawOp::LiftBasis {
+                input,
+                output,
+                output_wires,
+                table,
+            } => {
+                let wires = owners.remove(input).ok_or_else(fail)?;
+                if wires.len() > 8
+                    || output_wires != &wires
+                    || table.len() != 1usize << wires.len()
+                    || table.iter().any(|label| usize::from(*label) >= table.len())
+                {
+                    return Err(Error::new(
+                        "unsupported",
+                        span,
+                        "source operation access requires a complete square basis permutation",
+                    ));
+                }
+                // The table and zero phases are charged before either copy.
+                *cells = cells.saturating_add(257 + wires.len() + 2 * table.len());
+                if *cells > MAX_CELLS || steps.len() >= MAX_OPERATIONS {
+                    return Err(Error::new(
+                        "limit",
+                        span,
+                        "basis access exceeds existing circuit bounds",
+                    ));
+                }
+                let mut seen = [false; 256];
+                for label in table {
+                    if seen[usize::from(*label)] {
+                        return Err(fail());
+                    }
+                    seen[usize::from(*label)] = true;
+                }
+                let axes = wires
+                    .iter()
+                    .map(|wire| indices.get(wire).copied().ok_or_else(fail))
+                    .collect::<Result<Vec<_>>>()?;
+                steps.push(CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Monomial {
+                        indices: axes,
+                        permutation: table.to_vec(),
+                        phases: vec![0; table.len()],
+                    },
+                });
+                owners.insert(*output, wires);
+            }
             RawOp::ClassicalConst { .. }
             | RawOp::ClassicalNot { .. }
             | RawOp::ClassicalAnd { .. }
@@ -207,7 +255,10 @@ pub(super) fn flatten(
             }
         }
         // ApplyUnitary children were charged before cloning their storage.
-        if !matches!(operation, RawOp::ApplyUnitary { .. }) {
+        if !matches!(
+            operation,
+            RawOp::ApplyUnitary { .. } | RawOp::LiftBasis { .. }
+        ) {
             charge(&steps[before..], cells, span)?;
         }
         if steps.len() > MAX_OPERATIONS {

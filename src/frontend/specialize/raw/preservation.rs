@@ -1369,6 +1369,77 @@ impl Replay<'_, '_> {
         }
     }
 
+    fn lift_basis(
+        &mut self,
+        step: &SourceStep,
+        inputs: &[Argument<'_>],
+        table: &[u16],
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        let [argument] = inputs else {
+            return Err(site.invalid("basis lift loses its one whole input"));
+        };
+        let [Atom::Quantum(token, original_wires)] = argument.atoms.as_slice() else {
+            return Err(site.invalid("basis lift input is not one quantum owner"));
+        };
+        let input_width = quantum_width(argument.ty)
+            .filter(|width| *width <= 8)
+            .ok_or_else(|| site.invalid("basis lift input has no bounded exact basis"))?;
+        let output_width = quantum_width(step.output().ty())
+            .filter(|width| *width <= 8)
+            .ok_or_else(|| site.invalid("basis lift output has no bounded exact basis"))?;
+        if original_wires.len() != input_width
+            || output_width < input_width
+            || table.len() != 1usize << input_width
+            || step.effect()
+                != if input_width == output_width {
+                    "unitary"
+                } else {
+                    "iso"
+                }
+        {
+            return Err(site.invalid("basis lift changes its exact owner/effect interface"));
+        }
+        self.charge(256 + table.len() + output_width, site)?;
+        let mut seen = vec![false; 256];
+        for label in table {
+            let label = usize::from(*label);
+            if label >= 1usize << output_width || seen[label] {
+                return Err(site.invalid("source basis table is incomplete or noninjective"));
+            }
+            seen[label] = true;
+        }
+        let Some(RawOp::LiftBasis {
+            input,
+            output,
+            output_wires,
+            table: actual,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("Raw program omits the source basis lift"));
+        };
+        if input != token
+            || actual != table
+            || output_wires.len() != output_width
+            || output_wires[..input_width] != **original_wires
+        {
+            return Err(site.invalid("Raw basis lift substitutes its table, owner or ordered axes"));
+        }
+        let output = *output;
+        let wires = output_wires.clone();
+        if wires[input_width..]
+            .iter()
+            .any(|wire| !self.wires.insert(*wire))
+        {
+            return Err(site.invalid("Raw basis lift reuses an issued extension axis"));
+        }
+        if self.live.remove(token).as_deref() != Some(original_wires.as_ref()) {
+            return Err(site.invalid("Raw basis lift consumes an unavailable owner"));
+        }
+        self.cursor += 1;
+        Ok(vec![self.introduce_owner(output, &wires, false, site)?])
+    }
+
     fn operation(
         &mut self,
         operation: &SourceOperation,
@@ -1838,6 +1909,8 @@ impl Replay<'_, '_> {
                     return Err(site.invalid("place partition changes its structural effect"));
                 }
                 self.partition_register(partition, step, &inputs, site)?
+            } else if let Some(table) = step.basis_table() {
+                self.lift_basis(step, &inputs, table, site)?
             } else if let Some(kind) = step.primitive_kind() {
                 self.primitive(kind, step, &inputs, site)?
             } else if let Some(key) = step.contract() {
@@ -3207,5 +3280,65 @@ mod tests {
         let valid_fault = kernel().accept_raw(fault).unwrap();
         assert!(validate(&source, valid_fault.raw()).is_err());
         assert!(proposal.validate_source_steps(&valid_fault).is_err());
+    }
+
+    #[test]
+    fn coherent_basis_replay_binds_the_complete_table_and_ordered_owner_frame() {
+        let source = elaborate(
+            "pub isometry fn f(q:Q<Bit>,r:Q<Bit>)->(Q<(Bit,Bit)>,Q<Bit>){
+                (basis q as x {(x,x)},r)}",
+            "main::f",
+        );
+        let raw = RawProgram {
+            quantum_inputs: vec![
+                QuantumPort {
+                    token: TokenId(10),
+                    wires: vec![WireId(7)],
+                    shape: BasisShape::BIT,
+                },
+                QuantumPort {
+                    token: TokenId(20),
+                    wires: vec![WireId(9)],
+                    shape: BasisShape::BIT,
+                },
+            ],
+            classical_inputs: vec![],
+            operations: vec![RawOp::LiftBasis {
+                input: TokenId(10),
+                output: TokenId(11),
+                output_wires: vec![WireId(7), WireId(12)],
+                table: vec![0, 3],
+            }],
+            quantum_outputs: vec![TokenId(11), TokenId(20)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Isometry,
+        };
+        validate(&source, &raw).unwrap();
+        for (table, wires) in [
+            (vec![0, 1], vec![WireId(7), WireId(12)]),
+            (vec![3, 0], vec![WireId(7), WireId(12)]),
+            (vec![0, 3], vec![WireId(12), WireId(7)]),
+            (vec![0, 3], vec![WireId(7), WireId(9)]),
+        ] {
+            let mut fault = raw.clone();
+            fault.operations[0] = RawOp::LiftBasis {
+                input: TokenId(10),
+                output: TokenId(11),
+                output_wires: wires,
+                table,
+            };
+            assert_eq!(
+                validate(&source, &fault).unwrap_err().code(),
+                "preservation"
+            );
+        }
+        let mut fault = raw.clone();
+        fault.quantum_outputs.reverse();
+        assert!(validate(&source, &fault).is_err());
+        let mut fault = raw;
+        fault.operations.push(RawOp::PackUnit {
+            output: TokenId(21),
+        });
+        assert!(validate(&source, &fault).is_err());
     }
 }
