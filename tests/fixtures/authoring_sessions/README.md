@@ -5,6 +5,15 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [original interface Nat study](interface-naturals-v030/README.md) preserves
+two desired sources with parser refusals and two separate ordinary-function
+translations with finite generic-profile refusals. Private closed-signature
+experiments distinguish ordinary u32 intermediates from checked affine helpers;
+they grant no generic or native admission.
+The separate [closed runtime study](closed-interface-naturals-v030/README.md)
+retains an ordinary u32 capacity refusal and an accepted checked-helper control,
+with actual native scope disclosed independently of source preservation.
+
 The [generic/dormant first study](generic-dormant-v030/README.md) retains six
 first projects and fourteen checks. Selected-main validity remains distinct from
 dormant Meaning discharge; actual helper/zero-repeat controls refuse. Prior-build

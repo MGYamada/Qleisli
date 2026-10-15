@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.interface-naturals-first-retention",
+  "version": 1,
+  "scope": "Original sources, separate translations and actual prior-binary refusals. Inert history, not generic admission or source preservation.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1638,
+      "mode": 420,
+      "sha256": "0317acd4fa5b0a3f57069c4d37b314f2caba229fbc50770ce9fdaa22cd5d3b4d"
+    },
+    {
+      "path": "first-observations.json",
+      "bytes": 2619,
+      "mode": 420,
+      "sha256": "abb7201ffdd328c7ba34f5d95e132f63881ad519a0b7d6561505027b09680fa9"
+    },
+    {
+      "path": "first-plan.json",
+      "bytes": 695,
+      "mode": 420,
+      "sha256": "b983430b228fc5ecc8b6278e10de2f7bda13237bd057b32a04d6be7477b39d87"
+    },
+    {
+      "path": "helper/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "helper/main.qli",
+      "bytes": 240,
+      "mode": 420,
+      "sha256": "f8e1a1604839fe60ee27f42ec35d9c9746950b9a047b154cd09e69aad3cd639f"
+    },
+    {
+      "path": "helper.first.stderr.txt",
+      "bytes": 163,
+      "mode": 420,
+      "sha256": "de8373daa8a61100d46d819f19796e900501d8d2e30b84c76a565d653b2485fd"
+    },
+    {
+      "path": "helper.first.stdout.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "helper.translation.stderr.txt",
+      "bytes": 176,
+      "mode": 420,
+      "sha256": "6eb89be2783768bd7a84b448a04b8e39614700f8ffeef213a4b4d502d4cb7368"
+    },
+    {
+      "path": "helper.translation.stdout.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "ordinary/main.qli",
+      "bytes": 182,
+      "mode": 420,
+      "sha256": "92333131d17531705956081e62ffbe6e5554a582235537b7352c093a1cb1715a"
+    },
+    {
+      "path": "ordinary.first.stderr.txt",
+      "bytes": 165,
+      "mode": 420,
+      "sha256": "bb0982546434feb4a3f9588edb1bd06329a0381d47159f3603747098cd919105"
+    },
+    {
+      "path": "ordinary.first.stdout.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary.translation.stderr.txt",
+      "bytes": 178,
+      "mode": 420,
+      "sha256": "277f41c449f59fc498e229de95b15603ce7ce719f585074a1bb795f1deca5d53"
+    },
+    {
+      "path": "ordinary.translation.stdout.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "translation-observations.json",
+      "bytes": 2368,
+      "mode": 420,
+      "sha256": "ebbe25a6a73db1830f434f28bd3ccd5f012c0b3077ad3024238f83717060d061"
+    },
+    {
+      "path": "translations/helper/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "translations/helper/main.qli",
+      "bytes": 238,
+      "mode": 420,
+      "sha256": "4e7489a0fe5e9ba460364eb01cd2448eb303d313628c388a7693032dcc73f3c2"
+    },
+    {
+      "path": "translations/ordinary/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "translations/ordinary/main.qli",
+      "bytes": 180,
+      "mode": 420,
+      "sha256": "688a1ed0f2779828c396540006be0e1a1b21ec8f9a775a4d292da7945c33f68d"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+/private/tmp/qleisli-generic-plan-validation-ji3399kg/signature-nat-first/helper/main.qli:3:19: parse: classical functions cannot have static operation parameters

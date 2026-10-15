@@ -1,0 +1,18 @@
+{
+  "scope": "desired source before signature-plan connection; not executable admission evidence",
+  "execution": "not run; current finite generic profile still refuses",
+  "cases": [
+    {
+      "case": "ordinary",
+      "sha256": "92333131d17531705956081e62ffbe6e5554a582235537b7352c093a1cb1715a",
+      "authored_qubits": 0,
+      "prediction": "original ordinary n+n must refuse checked-u32 intermediate overflow"
+    },
+    {
+      "case": "helper",
+      "sha256": "f8e1a1604839fe60ee27f42ec35d9c9746950b9a047b154cd09e69aad3cd639f",
+      "authored_qubits": 0,
+      "prediction": "existing checked affine helper uses i128 intermediate and result 0; no u32 source-body replay"
+    }
+  ]
+}

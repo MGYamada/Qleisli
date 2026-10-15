@@ -4057,7 +4057,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "43c1cc9a1d8e64a2626ac6b657341dc7cef0c86bfcf391fc1aa13401dfabb50b",
+      "sha256": "172d930606ac5fcc6cc3f350d2c45069bc69fd09f4ce90ae6a71aa901e6b05f5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "85a65d2ea1e2ccac6809c461aaf2f047c7011ec2a4045c0e5e048799c29d0e91",
+      "sha256": "7e8f21493d110fcc1a55fac9522601c8c28f340ee0760d090879b754d86572fc",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4543,7 +4543,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "8cec720c14c5929abbccd3842fccf62c1d930fdef2f1f400685e29c96016452a",
+      "sha256": "deaa0747bdc9dd593c9fafd501c35cba9dadb2585dfbf3bcb20ce452c7d1a313",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4564,6 +4564,7 @@
           "pub fn set_scope(&mut self, module: ModuleId, scope: Scope)",
           "pub fn set_scope_budgeted<E>( &mut self, module: ModuleId, scope: Scope, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
           "pub fn target_path(&self, target: Target) -> String",
+          "pub fn try_declaration(&self, id: DefId) -> Option<&Declaration>",
           "pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool"
         ],
         "capacity_constants": []
@@ -4571,7 +4572,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "602a7a758b2eff57827b741a040b7885d1b87d4beaabfe07f54e5d8ea4bfb04e",
+      "sha256": "927d364000b2edd5689798d225e9f31eba47b9d125a01a383cdc52d9a3634a0f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4610,6 +4611,7 @@
           "pub fn node_id_ty(&self, node: &Type) -> NodeId",
           "pub fn node_id_ty(&self, node: &Type) -> NodeId",
           "pub fn original_node(&self, id: NodeId) -> Option<OriginalNode<'ast>>",
+          "pub fn original_node_budgeted<E>( &self, id: NodeId, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Option<OriginalNode<'ast>>, E>",
           "pub fn original_nodes(&self) -> &[OriginalNode<'ast>]",
           "pub fn reference_site(&self, name: &Ident) -> UseSiteId",
           "pub fn reference_site(&self, name: &Ident) -> UseSiteId",
@@ -4617,7 +4619,13 @@
           "pub fn span(self) -> Span",
           "pub fn take_occurrences(&mut self) -> Occurrences<'ast>",
           "pub fn try_binder(&self, id: BinderId) -> Option<&BinderInfo>",
+          "pub fn try_binder(&self, name: &Ident) -> Option<BinderId>",
+          "pub fn try_natural_usage(&self, natural: &Natural) -> Option<UseSiteId>",
+          "pub fn try_node(&self, id: NodeId) -> Option<&NodeInfo>",
+          "pub fn try_node_id_natural(&self, node: &Natural) -> Option<NodeId>",
+          "pub fn try_node_id_ty(&self, node: &Type) -> Option<NodeId>",
           "pub fn try_usage(&self, id: UseSiteId) -> Option<&UseInfo>",
+          "pub fn try_usage(&self, name: &Ident) -> Option<UseSiteId>",
           "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
           "pub fn usage(&self, name: &Ident) -> &'view UseInfo",
           "pub fn usage(&self, name: &Ident) -> UseSiteId"
@@ -6438,7 +6446,7 @@
     },
     {
       "path": "src/frontend/check/plans.rs",
-      "sha256": "d3133b03a93deb47787e8abcfe749343276b86ecc8d4a339b99e2d2cfa94631c",
+      "sha256": "2591d86baf67e5c7559aefe94c63c0ae5147da2a021101c235e117a9889afa6f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6456,6 +6464,76 @@
     {
       "path": "src/frontend/check/plans/tests.rs",
       "sha256": "e6727f8d6eeae76b7a5564f531cb684ce82a6d7805dc38d8ba14ed6fd1acd5c9",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/interface_naturals.rs",
+      "sha256": "c61c5a3629b8aaf259a74cdaf4bae3949b7ab0102f3b75791272311ac1d8a18b",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/interfaces.rs",
+      "sha256": "d3da64080ac7bb1f1e448f2546c1b646dc9391112680297aa981586aa90f9a81",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/interfaces/tests.rs",
+      "sha256": "9f1e9b85ef24ec87f407540e1cd82b680161e7f580fbaea0e454362386c28bd3",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/naturals.rs",
+      "sha256": "0c733623103cff31accc3a49c7899caec9e8f87ece6edb868571f3840b2d6c50",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/naturals/tests.rs",
+      "sha256": "ce7a9d83a3d6ca46bdfa2e1eec0e38966e9002747d01ecada169a6f5e79e22ef",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/types.rs",
+      "sha256": "953267a33bee6519b6bb26b8fee644962d076b9f87d822f9cf9f59e91bedefce",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/call_state_tests.rs",
+      "sha256": "e6d2d0f60790f289b80cf35d2dbae900c4e1c95f91d32f3e97cd5a5ecad95699",
       "group": "source",
       "surface": {
         "declarations": [],

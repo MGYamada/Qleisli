@@ -3,8 +3,10 @@
 //! IDs are assigned in structural traversal order, independently of source
 //! spans and allocation addresses. An Index borrows one immovable declaration:
 //! its address map only locates AST occurrences during that borrow. Projections
-//! retain the numeric IDs and Table, never this map. Dynamic binding/owner IDs
-//! remain separate: one source binder can execute many times in a fold or call.
+//! retain the numeric IDs and Table. The finite adapter can move the original
+//! borrowed occurrences after common checking; it cannot reconstruct a pointer
+//! from an address. Dynamic binding/owner IDs remain separate: one source binder
+//! can execute many times in a fold or call.
 
 use std::collections::BTreeMap;
 use std::marker::PhantomData;
@@ -65,8 +67,10 @@ pub(in crate::frontend) struct NodeInfo {
     pub kind: NodeKind,
 }
 
-/// Borrowed syntax for common plan association only. These references neither
-/// escape the original Index nor become evidence in the checked program.
+/// Borrowed syntax for original plan association. References stay in the Index
+/// through common validation, then can move with its occurrences while the same
+/// original Project AST is borrowed. They are not semantic evidence or part of
+/// the immutable checked program.
 #[derive(Clone, Copy)]
 pub(in crate::frontend) enum OriginalNode<'ast> {
     Expression(&'ast Expr),
@@ -77,6 +81,16 @@ pub(in crate::frontend) enum OriginalNode<'ast> {
     Basis(&'ast BasisExpr),
 }
 impl OriginalNode<'_> {
+    fn address(self) -> usize {
+        match self {
+            Self::Expression(n) => std::ptr::from_ref(n) as usize,
+            Self::Operation(n) => std::ptr::from_ref(n) as usize,
+            Self::Natural(n) => std::ptr::from_ref(n) as usize,
+            Self::Type(n) => std::ptr::from_ref(n) as usize,
+            Self::Block(n) => std::ptr::from_ref(n) as usize,
+            Self::Basis(n) => std::ptr::from_ref(n) as usize,
+        }
+    }
     pub fn kind(self) -> NodeKind {
         match self {
             Self::Expression(_) => NodeKind::Expr,
@@ -176,6 +190,14 @@ pub(in crate::frontend) struct UseInfo {
     // A runtime shadow still resolves to Local(runtime) and must be rejected.
     pub static_parameter: Option<BinderId>,
 }
+
+/// A private association between one original Index and its retained Table.
+/// Value equality deliberately preserves structural Table equality; only the
+/// borrowed reverse lookup compares Arc identity. This is neither cryptographic
+/// authentication nor semantic evidence, and never determines numeric IDs.
+#[derive(Debug, PartialEq, Eq)]
+struct OriginalAssociation;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(in crate::frontend) struct Table {
     definition: DefId,
@@ -183,6 +205,14 @@ pub(in crate::frontend) struct Table {
     uses: Vec<UseInfo>,
     scopes: Vec<Option<ScopeId>>,
     nodes: Vec<NodeInfo>,
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "original syntax association for the dormant adapter"
+        )
+    )]
+    association: Arc<OriginalAssociation>,
 }
 impl Table {
     /// Original resolved occurrences, including references in inactive branches.
@@ -233,6 +263,13 @@ impl Table {
         assert_eq!(id.kind, node.kind, "node has another syntax kind");
         node
     }
+    pub fn try_node(&self, id: NodeId) -> Option<&NodeInfo> {
+        if id.definition != self.definition {
+            return None;
+        }
+        let node = self.nodes.get(id.ordinal)?;
+        (id.kind == node.kind).then_some(node)
+    }
 
     /// Post-rejection diagnostic lookup, never lexical resolution or evidence.
     /// A duplicate occurrence span is ambiguous even if its targets agree.
@@ -267,6 +304,7 @@ pub(in crate::frontend) struct Index<'ast> {
     natural_references: BTreeMap<usize, UseSiteId>,
     nodes: BTreeMap<(NodeKind, usize), NodeId>,
     originals: Vec<OriginalNode<'ast>>,
+    original_association: Option<Arc<OriginalAssociation>>,
     region_heads: Vec<Option<usize>>,
     region_links: Vec<RegionLink>,
     _syntax: PhantomData<&'ast Decl>,
@@ -278,7 +316,11 @@ impl<'ast> Index<'ast> {
         global: impl Fn(&str) -> Option<Target>,
         mut charge: impl FnMut(Span, usize) -> Result<(), E>,
     ) -> Result<Self, E> {
-        charge(declaration.span, 2)?;
+        // Root scope/frame storage, token heap and both retained token handles
+        // are charged before allocation. The move-side handle is not cloned at
+        // occurrence transfer; the checked Table keeps the other handle.
+        charge(declaration.span, 5)?;
+        let association = Arc::new(OriginalAssociation);
         let mut builder = Builder {
             index: Self {
                 table: Table {
@@ -287,12 +329,14 @@ impl<'ast> Index<'ast> {
                     uses: vec![],
                     scopes: vec![None],
                     nodes: vec![],
+                    association: Arc::clone(&association),
                 },
                 bindings: BTreeMap::new(),
                 references: BTreeMap::new(),
                 natural_references: BTreeMap::new(),
                 nodes: BTreeMap::new(),
                 originals: Vec::new(),
+                original_association: Some(association),
                 region_heads: Vec::new(),
                 region_links: Vec::new(),
                 _syntax: PhantomData,
@@ -318,6 +362,9 @@ impl<'ast> Index<'ast> {
     /// this Index. The authoritative Table remains with the source judgment.
     pub fn take_occurrences(&mut self) -> Occurrences<'ast> {
         Occurrences {
+            definition: self.table.definition,
+            association: self.original_association.take(),
+            originals: std::mem::take(&mut self.originals),
             bindings: std::mem::take(&mut self.bindings),
             references: std::mem::take(&mut self.references),
             natural_references: std::mem::take(&mut self.natural_references),
@@ -328,10 +375,7 @@ impl<'ast> Index<'ast> {
     /// Fallible association for retained plans, before occurrence transfer.
     /// Numeric IDs from a different owner/kind/ordinal are never indexed.
     pub fn original_node(&self, id: NodeId) -> Option<OriginalNode<'ast>> {
-        if id.definition != self.table.definition {
-            return None;
-        }
-        let info = self.table.nodes.get(id.ordinal)?;
+        let info = self.table.try_node(id)?;
         let original = *self.originals.get(id.ordinal)?;
         (id.kind == info.kind && original.kind() == id.kind).then_some(original)
     }
@@ -348,8 +392,21 @@ impl<'ast> Index<'ast> {
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.bindings[&(std::ptr::from_ref(name) as usize)]
     }
+    /// Fallible original occurrence lookup; callers charge their lookup work.
+    pub fn try_binder(&self, name: &Ident) -> Option<BinderId> {
+        let id = *self.bindings.get(&(std::ptr::from_ref(name) as usize))?;
+        self.table.try_binder(id)?;
+        Some(id)
+    }
     pub fn usage(&self, name: &Ident) -> UseSiteId {
         self.references[&(std::ptr::from_ref(name) as usize)]
+    }
+    /// Fallible original occurrence lookup; callers charge their lookup work.
+    /// Foreign or transferred syntax has no address entry in this Index.
+    pub fn try_usage(&self, name: &Ident) -> Option<UseSiteId> {
+        let id = *self.references.get(&(std::ptr::from_ref(name) as usize))?;
+        self.table.try_usage(id)?;
+        Some(id)
     }
     #[cfg(test)]
     pub fn reference_site(&self, name: &Ident) -> UseSiteId {
@@ -357,6 +414,14 @@ impl<'ast> Index<'ast> {
     }
     pub fn natural_usage(&self, natural: &Natural) -> UseSiteId {
         self.natural_references[&(std::ptr::from_ref(natural) as usize)]
+    }
+    /// Fallible original occurrence lookup; callers charge their lookup work.
+    pub fn try_natural_usage(&self, natural: &Natural) -> Option<UseSiteId> {
+        let id = *self
+            .natural_references
+            .get(&(std::ptr::from_ref(natural) as usize))?;
+        self.table.try_usage(id)?;
+        Some(id)
     }
     #[cfg(test)]
     pub fn natural_site(&self, natural: &Natural) -> UseSiteId {
@@ -367,6 +432,14 @@ impl<'ast> Index<'ast> {
         self.table.node(id);
         id
     }
+    fn try_node_id(&self, kind: NodeKind, address: usize) -> Option<NodeId> {
+        let id = *self.nodes.get(&(kind, address))?;
+        if id.kind != kind {
+            return None;
+        }
+        self.table.try_node(id)?;
+        Some(id)
+    }
     pub fn node_id_expr(&self, node: &Expr) -> NodeId {
         self.node_id(NodeKind::Expr, std::ptr::from_ref(node) as usize)
     }
@@ -376,8 +449,16 @@ impl<'ast> Index<'ast> {
     pub fn node_id_natural(&self, node: &Natural) -> NodeId {
         self.node_id(NodeKind::Natural, std::ptr::from_ref(node) as usize)
     }
+    /// Fallible original occurrence lookup; callers charge their lookup work.
+    pub fn try_node_id_natural(&self, node: &Natural) -> Option<NodeId> {
+        self.try_node_id(NodeKind::Natural, std::ptr::from_ref(node) as usize)
+    }
     pub fn node_id_ty(&self, node: &Type) -> NodeId {
         self.node_id(NodeKind::Type, std::ptr::from_ref(node) as usize)
+    }
+    /// Fallible original occurrence lookup; callers charge their lookup work.
+    pub fn try_node_id_ty(&self, node: &Type) -> Option<NodeId> {
+        self.try_node_id(NodeKind::Type, std::ptr::from_ref(node) as usize)
     }
     #[cfg(test)]
     pub fn node_id_block(&self, node: &Block) -> NodeId {
@@ -393,20 +474,43 @@ impl<'ast> Index<'ast> {
     }
 }
 
-/// Address-only lookup moves independently of the authoritative lexical Table.
+/// Original borrowed occurrences move independently of the authoritative
+/// lexical Table, retaining their private association with that judgment.
 pub(in crate::frontend) struct Occurrences<'ast> {
+    definition: DefId,
+    association: Option<Arc<OriginalAssociation>>,
+    originals: Vec<OriginalNode<'ast>>,
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
     natural_references: BTreeMap<usize, UseSiteId>,
     nodes: BTreeMap<(NodeKind, usize), NodeId>,
     _syntax: PhantomData<&'ast Decl>,
 }
+
+struct OriginalDeclaration<'ast> {
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "retained original association for the dormant adapter"
+        )
+    )]
+    association: Option<Arc<OriginalAssociation>>,
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "retained original syntax for the dormant adapter")
+    )]
+    originals: Vec<OriginalNode<'ast>>,
+    ambiguous: bool,
+}
+
 #[derive(Default)]
 pub(in crate::frontend) struct OccurrencesForest<'ast> {
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
     natural_references: BTreeMap<usize, UseSiteId>,
     nodes: BTreeMap<(NodeKind, usize), NodeId>,
+    originals: BTreeMap<DefId, OriginalDeclaration<'ast>>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> OccurrencesForest<'ast> {
@@ -419,7 +523,7 @@ impl<'ast> OccurrencesForest<'ast> {
         // Insert moved keys individually: do not rebuild/copy the existing
         // aggregate tree as append may do. Precharge each incoming visit and
         // new address cell before consuming its original map iterator.
-        let cells = occurrences
+        let moved_cells = occurrences
             .bindings
             .len()
             .checked_add(occurrences.references.len())
@@ -427,7 +531,43 @@ impl<'ast> OccurrencesForest<'ast> {
             .and_then(|n| n.checked_add(occurrences.nodes.len()))
             .and_then(|n| n.checked_mul(2))
             .unwrap_or(usize::MAX);
+        // Each original visit and forward association check, then the owner
+        // lookup/map cell and retained Vec/token headers. The existing Vec and
+        // its AST borrows move intact; no second node vector is allocated.
+        let original_cells = occurrences
+            .originals
+            .len()
+            .checked_mul(2)
+            .and_then(|n| n.checked_add(4))
+            .unwrap_or(usize::MAX);
+        let cells = moved_cells.saturating_add(original_cells);
         charge(span, cells)?;
+        let mut ambiguous = occurrences.association.is_none()
+            || occurrences.originals.len() != occurrences.nodes.len();
+        for (ordinal, original) in occurrences.originals.iter().enumerate() {
+            let id = NodeId {
+                definition: occurrences.definition,
+                ordinal,
+                kind: original.kind(),
+            };
+            if occurrences.nodes.get(&(id.kind, original.address())) != Some(&id) {
+                ambiguous = true;
+            }
+        }
+        match self.originals.entry(occurrences.definition) {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(OriginalDeclaration {
+                    association: occurrences.association,
+                    originals: occurrences.originals,
+                    ambiguous,
+                });
+            }
+            std::collections::btree_map::Entry::Occupied(mut entry) => {
+                // Preserve the first association, but neither original can be
+                // selected after an ambiguous duplicate owner was supplied.
+                entry.get_mut().ambiguous = true;
+            }
+        }
         for (address, id) in occurrences.bindings {
             self.bindings.insert(address, id);
         }
@@ -462,6 +602,11 @@ pub(in crate::frontend) struct Forest<'ast> {
         allow(dead_code, reason = "retained for the next original-plan adapter")
     )]
     nodes: BTreeMap<(NodeKind, usize), NodeId>,
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "original syntax borrows for the dormant adapter")
+    )]
+    originals: BTreeMap<DefId, OriginalDeclaration<'ast>>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Forest<'ast> {
@@ -471,6 +616,7 @@ impl<'ast> Forest<'ast> {
             references: occurrences.references,
             natural_references: occurrences.natural_references,
             nodes: occurrences.nodes,
+            originals: occurrences.originals,
             _syntax: PhantomData,
         }
     }
@@ -491,7 +637,53 @@ pub(in crate::frontend) struct Lookup<'view, 'ast> {
     occurrences: &'view Forest<'ast>,
     tables: &'view BTreeMap<DefId, Arc<Table>>,
 }
-impl<'view> Lookup<'view, '_> {
+impl<'view, 'ast> Lookup<'view, 'ast> {
+    /// Borrow the actual original node after checking its judgment association.
+    /// Every lookup/comparison is charged first. Addresses are obtained only
+    /// from safe references and compared to the original forward map; they are
+    /// never converted back into pointers or used as semantic evidence.
+    #[cfg_attr(
+        not(test),
+        allow(dead_code, reason = "original syntax borrow for the dormant adapter")
+    )]
+    pub fn original_node_budgeted<E>(
+        &self,
+        id: NodeId,
+        mut charge: impl FnMut(Span, usize) -> Result<(), E>,
+    ) -> Result<Option<OriginalNode<'ast>>, E> {
+        charge(Span::default(), 1)?;
+        let Some(table) = self.tables.get(&id.definition) else {
+            return Ok(None);
+        };
+        charge(Span::default(), 1)?;
+        let Some(info) = table.try_node(id) else {
+            return Ok(None);
+        };
+        charge(info.span, 1)?;
+        let Some(declaration) = self.occurrences.originals.get(&id.definition) else {
+            return Ok(None);
+        };
+        charge(info.span, 1)?;
+        let Some(association) = &declaration.association else {
+            return Ok(None);
+        };
+        if declaration.ambiguous || !Arc::ptr_eq(association, &table.association) {
+            return Ok(None);
+        }
+        charge(info.span, 1)?;
+        let Some(original) = declaration.originals.get(id.ordinal).copied() else {
+            return Ok(None);
+        };
+        charge(info.span, 1)?;
+        if original.kind() != id.kind || original.span() != info.span {
+            return Ok(None);
+        }
+        charge(info.span, 1)?;
+        if self.occurrences.nodes.get(&(id.kind, original.address())) != Some(&id) {
+            return Ok(None);
+        }
+        Ok(Some(original))
+    }
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.occurrences.bindings[&(std::ptr::from_ref(name) as usize)]
     }
@@ -1337,6 +1529,65 @@ mod tests {
         name
     }
 
+    fn original_node<'ast>(lookup: &Lookup<'_, 'ast>, id: NodeId) -> Option<OriginalNode<'ast>> {
+        lookup
+            .original_node_budgeted(id, |_, _| Ok::<_, std::convert::Infallible>(()))
+            .unwrap_or_else(|never| match never {})
+    }
+
+    #[test]
+    fn fallible_original_getters_refuse_foreign_and_transferred_syntax() {
+        let module =
+            parse_module("unitary fn f[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let relocated = declaration.clone();
+        let mut original = index(DefId(0), declaration, |_| None);
+        fn get_nodes(declaration: &Decl) -> (&Type, &Natural, &Ident) {
+            let FnBody::Quantum(body) = &declaration.body else {
+                panic!("quantum body");
+            };
+            let TypeKind::Q(basis) = &declaration.params[0].ty.kind else {
+                panic!("quantum parameter");
+            };
+            let TypeKind::Bits(natural) = &basis.kind else {
+                panic!("sized basis");
+            };
+            (
+                &declaration.params[0].ty,
+                natural,
+                expression_name(&body.result),
+            )
+        }
+        let (ty, natural, reference) = get_nodes(declaration);
+        let (foreign_ty, foreign_natural, foreign_reference) = get_nodes(&relocated);
+        assert_eq!(original.try_node_id_ty(ty), Some(original.node_id_ty(ty)));
+        assert_eq!(
+            original.try_node_id_natural(natural),
+            Some(original.node_id_natural(natural))
+        );
+        assert_eq!(
+            original.try_natural_usage(natural),
+            Some(original.natural_usage(natural))
+        );
+        assert_eq!(
+            original.try_usage(reference),
+            Some(original.usage(reference))
+        );
+        let binder = &declaration.static_params[0].name;
+        assert_eq!(original.try_binder(binder), Some(original.binder(binder)));
+        assert_eq!(original.try_node_id_ty(foreign_ty), None);
+        assert_eq!(original.try_node_id_natural(foreign_natural), None);
+        assert_eq!(original.try_natural_usage(foreign_natural), None);
+        assert_eq!(original.try_usage(foreign_reference), None);
+        assert_eq!(original.try_binder(&relocated.static_params[0].name), None);
+        let _occurrences = original.take_occurrences();
+        assert_eq!(original.try_node_id_ty(ty), None);
+        assert_eq!(original.try_node_id_natural(natural), None);
+        assert_eq!(original.try_natural_usage(natural), None);
+        assert_eq!(original.try_usage(reference), None);
+        assert_eq!(original.try_binder(binder), None);
+    }
+
     #[test]
     fn equal_spans_do_not_merge_initializer_and_rebinding_identities() {
         let mut module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{let q=q;q}").unwrap();
@@ -1768,6 +2019,16 @@ mod tests {
         let lookup = forest.lookup(&tables);
         assert_eq!(lookup.node_id_static_op(operation), operation_node);
         assert_eq!(lookup.node_id_basis_expr(basis), basis_node);
+        let Some(OriginalNode::Operation(retained_operation)) =
+            original_node(&lookup, operation_node)
+        else {
+            panic!("original static operation");
+        };
+        let Some(OriginalNode::Basis(retained_basis)) = original_node(&lookup, basis_node) else {
+            panic!("original basis expression");
+        };
+        assert!(std::ptr::eq(retained_operation, operation));
+        assert!(std::ptr::eq(retained_basis, basis));
     }
 
     #[test]
@@ -1823,6 +2084,7 @@ mod tests {
         let result_node = original.node_id_expr(&body.result);
         let block_node = original.node_id_block(body);
         let parameter_type_node = original.node_id_ty(&decl.params[0].ty);
+        let original_storage = original.originals.as_ptr();
         let mut occurrences = OccurrencesForest::default();
         occurrences
             .insert_budgeted(original.take_occurrences(), decl.span, |_, _| {
@@ -1833,8 +2095,14 @@ mod tests {
         // maps move; the one authoritative Table remains with its judgment.
         assert!(original.natural_references.is_empty());
         assert!(original.nodes.is_empty());
+        assert!(original.originals.is_empty());
+        assert!(original.original_association.is_none());
         let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
         let forest = Forest::from_occurrences(occurrences);
+        assert_eq!(
+            forest.originals[&DefId(0)].originals.as_ptr(),
+            original_storage
+        );
         let table = &tables[&DefId(0)];
         assert_eq!(Arc::strong_count(table), 1);
         let lookup = forest.lookup(&tables);
@@ -1854,6 +2122,25 @@ mod tests {
         assert_eq!(lookup.node_id_ty(&decl.params[0].ty), parameter_type_node);
         assert_eq!(lookup.local_key(result), Some(table.key(binder)));
         assert_eq!(Arc::strong_count(table), 1);
+        let Some(OriginalNode::Expression(retained_result)) = original_node(&lookup, result_node)
+        else {
+            panic!("original expression");
+        };
+        let Some(OriginalNode::Natural(retained_natural)) = original_node(&lookup, natural_node)
+        else {
+            panic!("original natural");
+        };
+        let Some(OriginalNode::Type(retained_type)) = original_node(&lookup, parameter_type_node)
+        else {
+            panic!("original type");
+        };
+        let Some(OriginalNode::Block(retained_block)) = original_node(&lookup, block_node) else {
+            panic!("original block");
+        };
+        assert!(std::ptr::eq(retained_result, body.result.as_ref()));
+        assert!(std::ptr::eq(retained_natural, natural));
+        assert!(std::ptr::eq(retained_type, &decl.params[0].ty));
+        assert!(std::ptr::eq(retained_block, body));
     }
 
     #[test]
@@ -1867,7 +2154,9 @@ mod tests {
             * (occurrences.bindings.len()
                 + occurrences.references.len()
                 + occurrences.natural_references.len()
-                + occurrences.nodes.len());
+                + occurrences.nodes.len())
+            + 2 * occurrences.originals.len()
+            + 4;
         let mut forest = OccurrencesForest::default();
         assert_eq!(
             forest.insert_budgeted(occurrences, declaration.span, |_, cells| {
@@ -1880,6 +2169,219 @@ mod tests {
         assert!(forest.references.is_empty());
         assert!(forest.natural_references.is_empty());
         assert!(forest.nodes.is_empty());
+        assert!(forest.originals.is_empty());
+    }
+
+    #[test]
+    fn original_lookup_rejects_foreign_kind_ordinal_and_reindexed_equal_table() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let relocated = declaration.clone();
+        let larger = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{let a=q;let b=a;b}").unwrap();
+        let mut original = index(DefId(7), declaration, |_| None);
+        let other = index(DefId(7), &relocated, |_| None);
+        let larger_index = index(DefId(7), &larger.decls[0], |_| None);
+        let FnBody::Quantum(larger_body) = &larger.decls[0].body else {
+            panic!("larger quantum body");
+        };
+        let larger_node = larger_index.node_id_expr(&larger_body.result);
+        assert_eq!(original.table, other.table);
+        assert!(!Arc::ptr_eq(
+            &original.table.association,
+            &other.table.association
+        ));
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!("quantum body");
+        };
+        let node = original.node_id_expr(&body.result);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        let tables = BTreeMap::from([(DefId(7), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        let lookup = forest.lookup(&tables);
+        assert!(original_node(&lookup, node).is_some());
+        for invalid in [
+            NodeId {
+                definition: DefId(8),
+                ..node
+            },
+            NodeId {
+                kind: NodeKind::Natural,
+                ..node
+            },
+            NodeId {
+                ordinal: usize::MAX,
+                ..node
+            },
+            NodeId {
+                ordinal: tables[&DefId(7)].nodes.len(),
+                ..node
+            },
+            larger_node,
+        ] {
+            assert!(original_node(&lookup, invalid).is_none());
+        }
+        let unrelated_tables = BTreeMap::from([(DefId(7), Arc::new(other.table))]);
+        assert!(original_node(&forest.lookup(&unrelated_tables), node).is_none());
+    }
+
+    #[test]
+    fn original_lookup_refuses_mismatched_table_and_forward_association() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let mut original = index(DefId(0), declaration, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!("quantum body");
+        };
+        let node = original.node_id_expr(&body.result);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        let mut changed = original.table.clone();
+        changed.nodes[node.ordinal].span = Span::default();
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let changed_tables = BTreeMap::from([(DefId(0), Arc::new(changed))]);
+        let mut forest = Forest::from_occurrences(occurrences);
+        assert!(original_node(&forest.lookup(&changed_tables), node).is_none());
+        assert!(original_node(&forest.lookup(&tables), node).is_some());
+        forest
+            .nodes
+            .remove(&(node.kind, std::ptr::from_ref(body.result.as_ref()) as usize));
+        assert!(original_node(&forest.lookup(&tables), node).is_none());
+    }
+
+    #[test]
+    fn duplicate_original_owner_is_ambiguous_without_overwriting_first_borrow() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let relocated = declaration.clone();
+        let mut original = index(DefId(0), declaration, |_| None);
+        let mut duplicate = index(DefId(0), &relocated, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!("quantum body");
+        };
+        let node = original.node_id_expr(&body.result);
+        let storage = original.originals.as_ptr();
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        occurrences
+            .insert_budgeted(duplicate.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        let retained = &occurrences.originals[&DefId(0)];
+        assert!(retained.ambiguous);
+        assert_eq!(retained.originals.as_ptr(), storage);
+        assert!(Arc::ptr_eq(
+            retained.association.as_ref().unwrap(),
+            &original.table.association
+        ));
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        assert!(original_node(&forest.lookup(&tables), node).is_none());
+    }
+
+    #[test]
+    fn failed_duplicate_merge_preserves_the_original_association() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let mut original = index(DefId(0), declaration, |_| None);
+        let mut duplicate = index(DefId(0), declaration, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!("quantum body");
+        };
+        let node = original.node_id_expr(&body.result);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        assert_eq!(
+            occurrences.insert_budgeted(
+                duplicate.take_occurrences(),
+                declaration.span,
+                |_, _| Err(())
+            ),
+            Err(())
+        );
+        assert!(!occurrences.originals[&DefId(0)].ambiguous);
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        assert!(original_node(&forest.lookup(&tables), node).is_some());
+    }
+
+    #[test]
+    fn reverse_lookup_charges_each_access_and_propagates_budget_failure() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let declaration = &module.decls[0];
+        let mut original = index(DefId(0), declaration, |_| None);
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!("quantum body");
+        };
+        let node = original.node_id_expr(&body.result);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), declaration.span, |_, _| {
+                Ok::<_, ()>(())
+            })
+            .unwrap();
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        let lookup = forest.lookup(&tables);
+        for allowance in 0..7 {
+            let mut visits = 0;
+            let result = lookup.original_node_budgeted(node, |_, cells| {
+                assert_eq!(cells, 1);
+                visits += 1;
+                if visits > allowance { Err(()) } else { Ok(()) }
+            });
+            assert!(matches!(result, Err(())));
+            assert_eq!(visits, allowance + 1);
+        }
+        let mut visits = 0;
+        assert!(
+            lookup
+                .original_node_budgeted(node, |_, cells| {
+                    visits += cells;
+                    Ok::<_, ()>(())
+                })
+                .unwrap()
+                .is_some()
+        );
+        assert_eq!(visits, 7);
+    }
+
+    #[test]
+    fn initial_association_is_charged_before_original_traversal() {
+        let module = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let mut charges = 0;
+        let result = Index::new_budgeted(
+            DefId(0),
+            &module.decls[0],
+            |_| {
+                panic!("must not resolve before the initial reservation");
+            },
+            |span, cells| {
+                charges += 1;
+                assert_eq!(span, module.decls[0].span);
+                assert_eq!(cells, 5);
+                Err(())
+            },
+        );
+        assert!(matches!(result, Err(())));
+        assert_eq!(charges, 1);
     }
 
     #[test]

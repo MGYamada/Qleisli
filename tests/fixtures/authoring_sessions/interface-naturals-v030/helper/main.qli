@@ -1,0 +1,4 @@
+use std::classical::empty_bits;
+static fn cancel[const n: Nat]() -> Nat { (n+n)-n-n }
+classical fn keep[const n: Nat](b: Bits<cancel[n]()>) -> Bits<cancel[n]()> { b }
+unitary fn main() -> Unit { let _ = keep[2147483648](empty_bits()); () }

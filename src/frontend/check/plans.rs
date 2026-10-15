@@ -12,6 +12,12 @@ use crate::frontend::resolve::locals::{
     BindingKind, NodeId, NodeKind, OriginalNode, OriginalRegion, ResolvedUse, UseSiteId,
 };
 
+mod interface_naturals;
+pub(in crate::frontend) use interface_naturals::{
+    InterfaceNaturalContext, InterfaceNaturals, InterfaceSlot, TypeChild,
+    capture_interface_naturals_budgeted,
+};
+
 #[derive(Clone, Debug)]
 pub(in crate::frontend) struct ResolvedReference {
     pub site: UseSiteId,

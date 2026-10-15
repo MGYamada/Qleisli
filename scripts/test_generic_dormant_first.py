@@ -9,9 +9,11 @@ import hashlib
 import io
 import json
 import math
+import os
 from pathlib import Path, PurePosixPath
 import re
 import tarfile
+import tempfile
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -469,6 +471,231 @@ def main():
         require(disclosure in note, 'missing retention disclosure: ' + disclosure)
     print('Generic/dormant history: two packets / 70 unchanged original files / '
           '4,044,578 expanded bytes; 14 checks, 3 accepted / 11 refused. No command executed.')
+    check_interface_naturals_first()
+    check_closed_interface_naturals_first()
+
+
+def check_signature_tree(packet, files):
+    """Visit only manifest-derived children; reject extras before traversing them."""
+    files = {PurePosixPath(local_name(name)) for name in files}
+    directories = {PurePosixPath('.')}
+    for path in files:
+        directories.update(path.parents)
+    require(not files & directories, 'signature file/directory collision')
+    children = {directory: {} for directory in directories}
+    for directory in directories - {PurePosixPath('.')}:
+        children[directory.parent][directory.name] = True
+    for path in files:
+        children[path.parent][path.name] = False
+    pending = [PurePosixPath('.')]
+    while pending:
+        relative = pending.pop()
+        path = packet / relative
+        require(not path.is_symlink() and path.is_dir(), 'nonlocal signature directory')
+        expected, seen = children[relative], set()
+        with os.scandir(path) as entries:
+            for entry in entries:
+                require(entry.name in expected and entry.name not in seen,
+                        'unlisted signature packet entry')
+                is_directory = expected[entry.name]
+                require(not entry.is_symlink()
+                        and (entry.is_dir(follow_symlinks=False) if is_directory
+                             else entry.is_file(follow_symlinks=False)),
+                        'nonregular signature packet path')
+                seen.add(entry.name)
+                if is_directory:
+                    pending.append(relative / entry.name)
+        require(seen == set(expected), 'missing signature packet entry')
+
+
+def check_synthetic_signature_trees():
+    """Tiny temporary inventories exercise traversal guards, never retained data."""
+    with tempfile.TemporaryDirectory() as temporary:
+        packet = Path(temporary) / 'packet'
+        packet.mkdir()
+        nested = packet / 'nested'
+        nested.mkdir()
+        (nested / 'kept.txt').write_bytes(b'x')
+        files = {'nested/kept.txt'}
+        check_signature_tree(packet, files)
+
+        def refused(message):
+            try:
+                check_signature_tree(packet, files)
+            except ValueError as error:
+                require(str(error) == message, 'unexpected signature inventory rejection')
+            else:
+                raise ValueError('malformed synthetic signature inventory accepted')
+
+        extra = packet / 'extra.txt'
+        extra.write_bytes(b'')
+        refused('unlisted signature packet entry')
+        extra.unlink()
+        extra = packet / 'empty'
+        extra.mkdir()
+        refused('unlisted signature packet entry')
+        extra.rmdir()
+        (nested / 'kept.txt').unlink()
+        nested.rmdir()
+        target = Path(temporary) / 'target'
+        target.mkdir()
+        (target / 'kept.txt').write_bytes(b'x')
+        nested.symlink_to(target, target_is_directory=True)
+        refused('nonregular signature packet path')
+
+
+def read_signature_packet(packet, manifest_sha, file_count, total_bytes):
+    """Read a fixed, reviewed signature inventory as bounded inert bytes."""
+    require(packet.is_dir() and not packet.is_symlink()
+            and packet.resolve().is_relative_to(ROOT.resolve()), 'nonlocal signature study')
+
+    def bounded(name):
+        path = packet / local_name(name)
+        require(path.is_file() and not path.is_symlink()
+                and path.resolve().is_relative_to(packet.resolve()), 'nonlocal signature member')
+        current = packet
+        for component in PurePosixPath(name).parts:
+            current /= component
+            require(not current.is_symlink(), 'signature member traverses symlink')
+        require(path.stat().st_size <= 16384, 'signature member exceeds read bound')
+        with path.open('rb') as stream:
+            raw = stream.read(16385)
+        require(len(raw) <= 16384, 'signature member grew beyond read bound')
+        return raw
+
+    raw = bounded('retention.json')
+    require(sha(raw) == manifest_sha,
+            'reviewed signature retention manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'files'}
+            and manifest['format'] == 'qleisli.interface-naturals-first-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown signature retention format')
+    rows = manifest['files']
+    require(type(rows) is list and len(rows) == file_count, 'signature inventory count differs')
+    retained = {}
+    for row in rows:
+        require(set(row) == {'path', 'bytes', 'mode', 'sha256'}, 'signature member fields differ')
+        name = local_name(row['path'])
+        require(name not in retained and integer(row['bytes'], 16384)
+                and row['mode'] == 0o644 and HEX.fullmatch(row['sha256']),
+                'invalid signature member record')
+        content = bounded(name)
+        require(len(content) == row['bytes'] and sha(content) == row['sha256']
+                and (packet / name).stat().st_mode & 0o777 == row['mode'],
+                'original signature member bytes or mode differ')
+        retained[name] = content
+    require(sum(map(len, retained.values())) == total_bytes, 'signature retained byte count differs')
+    check_signature_tree(packet, set(retained) | {'retention.json'})
+    return retained
+
+
+def check_interface_naturals_first():
+    """Read the small signature study as inert bytes, including first failures."""
+    check_synthetic_signature_trees()
+    retained = read_signature_packet(
+        ROOT / 'tests/fixtures/authoring_sessions/interface-naturals-v030',
+        '1bba39eed405f899afad6156a3d6889cb733f4f82caad22f370b28eb56f0bd4e', 20, 9018)
+    for case in ('ordinary', 'helper'):
+        original = retained[case + '/main.qli']
+        translation = retained['translations/' + case + '/main.qli']
+        require(translation == original.replace(b'classical fn keep', b'unitary fn keep'),
+                'separate signature translation differs')
+        for prefix in ('', 'translations/'):
+            declaration = tomllib.loads(retained[prefix + case + '/Qargo.toml'].decode())
+            require(declaration == {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                    'signature source edition differs')
+    for name, expected in [('first-observations.json', 'parse: classical functions cannot have static operation parameters'),
+                           ('translation-observations.json', 'unsupported: finite profile does not support static Nat parameters')]:
+        observation = load_json(retained[name])
+        require(observation['cli_sha256'] == 'c4ce6f86e6c452594f021be8abb0f20c333a78033e5754bf94060eda6deaa28c'
+                and observation['kernel_sha256'] == KERNEL_SHA
+                and observation['observed_head'] == '3b2df9b6f688251e66ca2df4286674d1e0b34f81'
+                and observation['inputs_stable'] is True and observation['binary_stable'] is True
+                and observation['kernel_stable'] is True
+                and observation['inputs_before'] == observation['inputs_after'],
+                'signature observation identity or stability differs')
+        for path, digest in observation['inputs_before'].items():
+            require(sha(retained[local_name(path)]) == digest, 'signature input window differs')
+        require([row['case'] for row in observation['observations']] == ['ordinary', 'helper'],
+                'signature observation order differs')
+        for row in observation['observations']:
+            require(type(row['exit_code']) is int and row['exit_code'] == 1
+                    and retained[local_name(row['stdout'])] == b''
+                    and expected in retained[local_name(row['stderr'])].decode(),
+                    'first signature refusal changed or acquired acceptance authority')
+    initial = load_json(retained['first-plan.json'])
+    require(initial['execution'] == 'not run; current finite generic profile still refuses',
+            'initial signature freeze was rewritten after observation')
+    note = ' '.join(retained['README.md'].decode().split())
+    for disclosure in ('not a blind benchmark', 'not a clean commit-to-binary build attestation',
+                       'No source-preservation theorem', 'never executes recorded commands'):
+        require(disclosure in note, 'missing signature retention disclosure: ' + disclosure)
+    print('Interface Nat first history: 20 unchanged original files / 9,018 bytes; '
+          'four actual refusals, zero admitted generic sources. No command executed.')
+
+
+def check_closed_interface_naturals_first():
+    """Preserve concrete capacity refusal and the separately native-checked control."""
+    retained = read_signature_packet(
+        ROOT / 'tests/fixtures/authoring_sessions/closed-interface-naturals-v030',
+        '25340276d56c41c23b03671f512569c36cdd44d0cc75ac8cc8cf36f4418971cc', 11, 5467)
+    cases = ('ordinary', 'helper')
+    inputs = {case + '/' + name for case in cases for name in ('Qargo.toml', 'main.qli')}
+    for case in cases:
+        declaration = tomllib.loads(retained[case + '/Qargo.toml'].decode())
+        require(declaration == {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                'closed signature source edition differs')
+    initial = load_json(retained['first-plan.json'])
+    require([row['case'] for row in initial['cases']] == list(cases),
+            'closed signature prediction order differs')
+    for row in initial['cases']:
+        require(type(row['authored_qubits']) is int and row['authored_qubits'] == 0
+                and row['execution'] == 'not run'
+                and row['source_sha256'] == sha(retained[row['case'] + '/main.qli']),
+                'closed signature initial source freeze differs')
+    observation = load_json(retained['first-observations.json'])
+    require(observation['cli_sha256'] ==
+            'e47c22d58acc237880301f99315db871ef234cdeca8a9bf1f06824f14eff36d3'
+            and observation['kernel_sha256'] == KERNEL_SHA
+            and observation['observed_head'] == '3b2df9b6f688251e66ca2df4286674d1e0b34f81'
+            and observation['inputs_stable'] is True and observation['binary_stable'] is True
+            and observation['kernel_stable'] is True
+            and observation['inputs_before'] == observation['inputs_after']
+            and set(observation['inputs_before']) == inputs,
+            'closed signature observation identity or stability differs')
+    for name, digest in observation['inputs_before'].items():
+        require(sha(retained[local_name(name)]) == digest, 'closed signature input window differs')
+    rows = observation['observations']
+    require([row['case'] for row in rows] == list(cases),
+            'closed signature observation order differs')
+    for row, expected_exit in zip(rows, (1, 0)):
+        require(type(row['exit_code']) is int and row['exit_code'] == expected_exit
+                and row['stdout'] == row['case'] + '.first.stdout.txt'
+                and row['stderr'] == row['case'] + '.first.stderr.txt',
+                'closed signature observation result or stream association differs')
+    require(retained['ordinary.first.stdout.txt'] == b''
+            and 'limit: concrete natural arithmetic exceeds u32 or has negative subtraction'
+            in retained['ordinary.first.stderr.txt'].decode(),
+            'ordinary signature capacity refusal differs')
+    require(retained['helper.first.stderr.txt'] == b'', 'closed helper acquired a diagnostic')
+    output = retained['helper.first.stdout.txt'].decode().splitlines()
+    for line in ('native checks: IR structure, ownership, interface, classical scope and '
+                 'decoded execution view; 2 concrete local roots, 9 bundled roots',
+                 'checker identity: unpinned',
+                 'native decisions: 20; independent requests checked: 0',
+                 'entry request checked: false', 'source preservation: not proved'):
+        require(line in output, 'closed helper native checking scope differs: ' + line)
+    note = ' '.join(retained['README.md'].decode().split())
+    for disclosure in ('non-generic runtime functions', 'representation-capacity failure',
+                       'not wrapping arithmetic or a different mathematical Nat meaning',
+                       'not a clean commit-to-binary build attestation', 'No generic admission',
+                       'retention reader never executes the recorded commands or source'):
+        require(disclosure in note, 'missing closed signature disclosure: ' + disclosure)
+    print('Closed interface Nat first history: 11 unchanged retained files / 5,467 bytes; '
+          'one u32 capacity refusal, one concrete helper control checked; '
+          '20 native decisions / zero independent requests. '
+          'No generic admission or source-preservation proof. No command executed.')
 
 
 if __name__ == '__main__':
