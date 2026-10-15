@@ -130,6 +130,38 @@ pub(super) fn check_named_bindings_budgeted<V>(
 }
 
 impl<'a> ClosedSubstitution<'a> {
+    /// Consume already charged bindings from original source occurrences.
+    /// Unlike host names, these keys must belong to this exact interface.
+    pub(super) fn binders_budgeted(
+        checked: CheckedInterface<'a>,
+        bases: BTreeMap<BinderKey, ClosedType>,
+        naturals: BTreeMap<BinderKey, u32>,
+        subject: &str,
+        mut charge: impl FnMut(Span, usize) -> Result<()>,
+    ) -> Result<Self> {
+        let interface = checked.interface;
+        let span = checked.span;
+        charge(
+            span,
+            interface.statics.len().checked_mul(3).ok_or_else(|| {
+                SourceError::new("limit", span, "closed binding accounting overflow")
+            })?,
+        )?;
+        validate_bound_keys(&bases, interface, true, subject, span, &mut charge)?;
+        validate_bound_keys(&naturals, interface, false, subject, span, &mut charge)?;
+        for formal in &interface.statics {
+            charge(span, formal.key.name.len() + 1)?;
+        }
+        for ty in bases.values() {
+            validate_closed_basis(ty, span, &mut charge)?;
+        }
+        Ok(Self {
+            checked,
+            naturals,
+            bases,
+        })
+    }
+
     pub(super) fn named_budgeted<B>(
         checked: CheckedInterface<'a>,
         types: &BTreeMap<String, B>,
@@ -176,41 +208,7 @@ impl<'a> ClosedSubstitution<'a> {
             charge(span, formal.key.name.len() + 1)?;
         }
         for value in types.values() {
-            let ty = basis(value);
-            let size = type_size_budgeted(ty, 4096, 64, true, span, &mut charge)?;
-            // Unlike a selected BasisBinding, a profile-neutral caller has no
-            // prior closed-Basis wrapper. Bound this borrowed validation before
-            // allocating its traversal stack or copying a replacement tree.
-            charge(
-                span,
-                size.nodes.checked_mul(2).ok_or_else(|| {
-                    SourceError::new("limit", span, "closed Basis accounting overflow")
-                })?,
-            )?;
-            let mut pending = vec![ty];
-            while let Some(node) = pending.pop() {
-                match &node.kind {
-                    Kind::Parameter(_) => {
-                        return Err(SourceError::new(
-                            "type",
-                            span,
-                            "a Basis binding must be a closed ordinary type",
-                        ));
-                    }
-                    Kind::Tuple(fields) if fields.len() < 2 => {
-                        return Err(SourceError::new(
-                            "type",
-                            span,
-                            "a Basis binding tuple requires at least two fields",
-                        ));
-                    }
-                    Kind::Tuple(fields) => pending.extend(fields),
-                    // type_size_budgeted already rejected every Q subtree.
-                    Kind::Q(_) => unreachable!("ordinary Basis preflight"),
-                    _ => {}
-                }
-            }
-            charge(span, size.nodes)?;
+            validate_closed_basis(basis(value), span, &mut charge)?;
         }
         let resolved_naturals = interface
             .statics
@@ -230,6 +228,90 @@ impl<'a> ClosedSubstitution<'a> {
             bases: resolved_bases,
         })
     }
+}
+
+fn validate_bound_keys<V>(
+    values: &BTreeMap<BinderKey, V>,
+    interface: &Interface,
+    bases: bool,
+    subject: &str,
+    span: Span,
+    charge: &mut impl FnMut(Span, usize) -> Result<()>,
+) -> Result<()> {
+    let category_matches = |kind: &StaticKind| {
+        if bases {
+            matches!(kind, StaticKind::Basis)
+        } else {
+            matches!(kind, StaticKind::Natural)
+        }
+    };
+    let mut expected = 0usize;
+    for formal in &interface.statics {
+        charge(span, 1)?;
+        expected += usize::from(category_matches(&formal.kind));
+    }
+    let mut matching = values.len() == expected;
+    for key in values.keys() {
+        charge(span, key.name.len() + 1)?;
+        let mut found = false;
+        for formal in &interface.statics {
+            charge(span, 1)?;
+            if key == &formal.key && category_matches(&formal.kind) {
+                found = true;
+                break;
+            }
+        }
+        matching &= found;
+    }
+    if !matching {
+        charge(span, subject.len() + 128)?;
+        let category = if bases { "Basis" } else { "natural" };
+        return Err(SourceError::new(
+            "static",
+            span,
+            format!(
+                "concrete {category} bindings for {subject} must belong to the original declaration"
+            ),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_closed_basis(
+    ty: &ClosedType,
+    span: Span,
+    charge: &mut impl FnMut(Span, usize) -> Result<()>,
+) -> Result<()> {
+    let size = type_size_budgeted(ty, 4096, 64, true, span, charge)?;
+    charge(
+        span,
+        size.nodes
+            .checked_mul(2)
+            .ok_or_else(|| SourceError::new("limit", span, "closed Basis accounting overflow"))?,
+    )?;
+    let mut pending = vec![ty];
+    while let Some(node) = pending.pop() {
+        match &node.kind {
+            Kind::Parameter(_) => {
+                return Err(SourceError::new(
+                    "type",
+                    span,
+                    "a Basis binding must be a closed ordinary type",
+                ));
+            }
+            Kind::Tuple(fields) if fields.len() < 2 => {
+                return Err(SourceError::new(
+                    "type",
+                    span,
+                    "a Basis binding tuple requires at least two fields",
+                ));
+            }
+            Kind::Tuple(fields) => pending.extend(fields),
+            Kind::Q(_) => unreachable!("ordinary Basis preflight"),
+            _ => {}
+        }
+    }
+    charge(span, size.nodes)
 }
 
 fn closed_linear(
@@ -540,5 +622,316 @@ mod tests {
         );
         assert!(error.message.contains("n >= 1"));
         assert!(error.message.contains("evaluated 0 >= 1"));
+    }
+
+    fn original_formal(program: &CheckedProgram, function: &str, name: &str) -> BinderKey {
+        let definition = program
+            .resolution
+            .qualified(&format!("main::{function}"))
+            .unwrap();
+        program
+            .interface(definition)
+            .statics
+            .iter()
+            .find(|formal| formal.key.name == name)
+            .unwrap()
+            .key
+            .clone()
+    }
+
+    fn binder_closed(
+        program: &CheckedProgram,
+        name: &str,
+        bases: BTreeMap<BinderKey, ClosedType>,
+        naturals: BTreeMap<BinderKey, u32>,
+    ) -> Result<ClosedInterface> {
+        let definition = program
+            .resolution
+            .qualified(&format!("main::{name}"))
+            .unwrap();
+        let original =
+            CheckedInterface::original(program, definition, Span::default(), &mut |_, _| Ok(()))?;
+        let substitution =
+            ClosedSubstitution::binders_budgeted(original, bases, naturals, "test", |_, _| Ok(()))?;
+        close_interface_budgeted(substitution, "test", |_, _| Ok(()), |_, _| Ok(()))
+    }
+
+    #[test]
+    fn binder_substitution_rejects_foreign_categories_and_cardinality() {
+        let program = checked(
+            "fn first[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
+             requires n >= 1,Applicable(U){q}
+             fn second[const A:Basis,const n:Nat](q:Q<A>)->Q<A> requires n >= 1{q}",
+        );
+        let a = original_formal(&program, "first", "A");
+        let n = original_formal(&program, "first", "n");
+        let u = original_formal(&program, "first", "U");
+        let other_a = original_formal(&program, "second", "A");
+        let other_n = original_formal(&program, "second", "n");
+        assert_eq!(a.name, other_a.name);
+        assert_ne!(a, other_a);
+        assert_eq!(n.name, other_n.name);
+        assert_ne!(n, other_n);
+        let valid_bases = BTreeMap::from([(a.clone(), ClosedType::unit())]);
+        let valid_naturals = BTreeMap::from([(n.clone(), 1)]);
+        assert!(
+            binder_closed(
+                &program,
+                "first",
+                valid_bases.clone(),
+                valid_naturals.clone()
+            )
+            .is_ok()
+        );
+        for bases in [
+            BTreeMap::new(),
+            BTreeMap::from([(other_a.clone(), ClosedType::unit())]),
+            BTreeMap::from([(n.clone(), ClosedType::unit())]),
+            BTreeMap::from([(u, ClosedType::unit())]),
+            BTreeMap::from([
+                (a.clone(), ClosedType::unit()),
+                (other_a, ClosedType::unit()),
+            ]),
+        ] {
+            let error = binder_closed(&program, "first", bases, valid_naturals.clone())
+                .err()
+                .expect("foreign, wrong-category, missing or extra Basis key accepted");
+            assert_eq!(error.code, "static");
+        }
+        for naturals in [
+            BTreeMap::new(),
+            BTreeMap::from([(other_n.clone(), 1)]),
+            BTreeMap::from([(a, 1)]),
+            BTreeMap::from([(n, 1), (other_n, 1)]),
+        ] {
+            let error = binder_closed(&program, "first", valid_bases.clone(), naturals)
+                .err()
+                .expect("foreign, wrong-category, missing or extra natural key accepted");
+            assert_eq!(error.code, "static");
+        }
+    }
+
+    fn same_closed_interface(named: &ClosedInterface, bound: &ClosedInterface) {
+        assert_eq!(named.bases, bound.bases);
+        assert_eq!(named.naturals, bound.naturals);
+        assert_eq!(named.parameters, bound.parameters);
+        assert_eq!(named.result, bound.result);
+        assert_eq!(
+            named.operations.keys().collect::<Vec<_>>(),
+            bound.operations.keys().collect::<Vec<_>>()
+        );
+        for (key, expected) in &named.operations {
+            let actual = &bound.operations[key];
+            assert_eq!(actual.input, expected.input);
+            assert_eq!(actual.codomain, expected.codomain);
+            assert_eq!(actual.access, expected.access);
+            assert_eq!(actual.meaning, expected.meaning);
+            assert_eq!(actual.ceiling(), expected.ceiling());
+        }
+    }
+
+    #[test]
+    fn named_and_binder_closure_keep_separate_ports_meaning_and_premises() {
+        let program = checked(
+            "fn route[const A:Basis,const B:Basis,const n:Nat,const U:Op<A -> B>](q:Q<A>)->Q<B>
+             requires n >= 1,Applicable(U){U(q)}
+             unitary fn same(q:Q<Bit>)->Q<Bit>{q}
+             meaning M:Bit=reference(same);
+             fn refined[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit>
+             requires Applicable(U),Adjointable(U){U(q)}",
+        );
+        let a = original_formal(&program, "route", "A");
+        let b = original_formal(&program, "route", "B");
+        let n = original_formal(&program, "route", "n");
+        let input = ClosedType::unit();
+        let output = ClosedType::pair(ClosedType::bits(0), ClosedType::bit());
+        let named_bases =
+            BTreeMap::from([("A".into(), input.clone()), ("B".into(), output.clone())]);
+        let bound_bases = BTreeMap::from([(a, input.clone()), (b, output.clone())]);
+        let named = closed(
+            &program,
+            "route",
+            named_bases.clone(),
+            BTreeMap::from([("n".into(), 1)]),
+        )
+        .unwrap();
+        let bound = binder_closed(
+            &program,
+            "route",
+            bound_bases.clone(),
+            BTreeMap::from([(n.clone(), 1)]),
+        )
+        .unwrap();
+        same_closed_interface(&named, &bound);
+        let operation = bound.operations.values().next().unwrap();
+        assert_eq!(operation.input, ClosedType::quantum(input));
+        assert_eq!(operation.output(), &ClosedType::quantum(output));
+        assert_eq!(operation.ceiling(), crate::ir::Effect::Isometry);
+
+        let named = closed(&program, "refined", BTreeMap::new(), BTreeMap::new()).unwrap();
+        let bound = binder_closed(&program, "refined", BTreeMap::new(), BTreeMap::new()).unwrap();
+        same_closed_interface(&named, &bound);
+        let operation = bound.operations.values().next().unwrap();
+        assert_eq!(operation.access, [true, true, false]);
+        assert_eq!(
+            operation.meaning,
+            Some(program.resolution.qualified("main::M").unwrap())
+        );
+
+        let named = closed(
+            &program,
+            "route",
+            named_bases,
+            BTreeMap::from([("n".into(), 0)]),
+        )
+        .err()
+        .expect("false named premise accepted");
+        let bound = binder_closed(&program, "route", bound_bases, BTreeMap::from([(n, 0)]))
+            .err()
+            .expect("false binder premise accepted");
+        assert_eq!(named.code, "size");
+        assert_eq!(bound.code, named.code);
+        assert_eq!(bound.module, named.module);
+        assert_eq!(bound.span, named.span);
+        assert_eq!(bound.message, named.message);
+    }
+
+    #[test]
+    fn both_substitution_paths_reject_nonordinary_or_unclosed_basis_trees() {
+        let program = checked("unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}");
+        let a = original_formal(&program, "id", "A");
+        let parameter = ClosedType::parameter(super::super::types::TypeParameter {
+            key: Some(a.clone()),
+            name: "A".into(),
+            span: Span::default(),
+        });
+        for (basis, message) in [
+            (ClosedType::quantum(ClosedType::unit()), "quantum ownership"),
+            (
+                ClosedType::pair(ClosedType::unit(), ClosedType::quantum(ClosedType::bit())),
+                "quantum ownership",
+            ),
+            (parameter, "closed ordinary type"),
+            (ClosedType::tuple(vec![]), "at least two fields"),
+            (
+                ClosedType::pair(
+                    ClosedType::unit(),
+                    ClosedType::tuple(vec![ClosedType::unit()]),
+                ),
+                "at least two fields",
+            ),
+        ] {
+            let named = closed(
+                &program,
+                "id",
+                BTreeMap::from([("A".into(), basis.clone())]),
+                BTreeMap::new(),
+            )
+            .err()
+            .expect("invalid named Basis accepted");
+            let bound = binder_closed(
+                &program,
+                "id",
+                BTreeMap::from([(a.clone(), basis)]),
+                BTreeMap::new(),
+            )
+            .err()
+            .expect("invalid bound Basis accepted");
+            for error in [named, bound] {
+                assert_eq!(error.code, "type");
+                assert!(error.message.contains(message), "{error:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn binder_closure_preserves_distinct_zero_width_basis_tags() {
+        let program = checked("unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}");
+        let a = original_formal(&program, "id", "A");
+        let mut results = Vec::new();
+        for basis in [ClosedType::unit(), ClosedType::bits(0)] {
+            assert_eq!(basis.basis_width(), Some(0));
+            let result = binder_closed(
+                &program,
+                "id",
+                BTreeMap::from([(a.clone(), basis.clone())]),
+                BTreeMap::new(),
+            )
+            .unwrap();
+            assert_eq!(result.parameters, [ClosedType::quantum(basis.clone())]);
+            assert_eq!(result.result, ClosedType::quantum(basis));
+            results.push(result.result);
+        }
+        assert_ne!(results[0], results[1]);
+    }
+
+    #[test]
+    fn basis_validation_stops_at_preallocation_charge_failures() {
+        let span = Span::default();
+        let mut calls = 0;
+        let error = validate_closed_basis(&ClosedType::unit(), span, &mut |_, _| {
+            calls += 1;
+            Err(SourceError::new(
+                "limit",
+                span,
+                "initial traversal reservation",
+            ))
+        })
+        .unwrap_err();
+        assert_eq!(calls, 1);
+        assert_eq!(error.message, "initial traversal reservation");
+
+        // Three ordinary nodes require a bounded first walk. Refuse its next
+        // reservation before the second walk can reach the unresolved node.
+        let unresolved = ClosedType::pair(
+            ClosedType::unit(),
+            ClosedType::parameter(super::super::types::TypeParameter {
+                key: None,
+                name: "unresolved".into(),
+                span,
+            }),
+        );
+        let mut remaining = 6usize;
+        let mut declined = None;
+        let error = validate_closed_basis(&unresolved, span, &mut |_, cells| {
+            remaining = remaining.checked_sub(cells).ok_or_else(|| {
+                declined = Some(cells);
+                SourceError::new("limit", span, "second traversal reservation")
+            })?;
+            Ok(())
+        })
+        .unwrap_err();
+        assert_eq!(remaining, 0);
+        assert_eq!(declined, Some(6));
+        assert_eq!(error.code, "limit");
+        assert_eq!(error.message, "second traversal reservation");
+    }
+
+    #[test]
+    fn binder_mismatch_stops_before_constructing_its_diagnostic() {
+        let program = checked("unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}");
+        let definition = program.resolution.qualified("main::id").unwrap();
+        let interface = program.interface(definition);
+        let span = Span::default();
+        let subject = "mismatch control";
+        let mut declined = false;
+        let error = validate_bound_keys(
+            &BTreeMap::<BinderKey, ClosedType>::new(),
+            interface,
+            true,
+            subject,
+            span,
+            &mut |_, cells| {
+                if cells > 1 {
+                    declined = true;
+                    return Err(SourceError::new("limit", span, "diagnostic reservation"));
+                }
+                Ok(())
+            },
+        )
+        .unwrap_err();
+        assert!(declined);
+        assert_eq!(error.code, "limit");
+        assert_eq!(error.message, "diagnostic reservation");
     }
 }

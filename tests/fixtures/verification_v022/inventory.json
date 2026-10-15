@@ -3880,7 +3880,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "a1dc75d36b587c71925a49ac18d8190dd76eed2045acccb9a712a86aa43ffeb4",
+      "sha256": "d6cd4cbe42f468aca7976b17f57a6351e06ae6318b13f408f62afe46fd360cec",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3898,7 +3898,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "0f19dfb4233f8c379a46644e0d19e6bf6351fd1d2b2c15df2854ac7c21a20ba0",
+      "sha256": "69e474a15fc0aa93e0e0e7672f2888d4b9c8bd6be179d2bbec06f810bd10f352",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3908,7 +3908,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "69b0f927f6b569f9fb94b350a3b47eebfa7cc0ccf2769d235bad4e959e322864",
+      "sha256": "2058367da0fd98a029db500e1a21df36775da2dc27708b3f2e8162c67fffc43d",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3918,7 +3918,7 @@
     },
     {
       "path": "src/frontend/check/body/places.rs",
-      "sha256": "4d040f60878b3236ab8a728c7684a28d749c92fbdcd5a8e15cbef392f4eac7fe",
+      "sha256": "7ab3790d98d73824cacbcb63673b9860755429957d126f40bbb366ca06cde8e9",
       "group": "source-excl",
       "surface": {
         "declarations": [],
@@ -3928,7 +3928,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "c693f7ac019949ff9b41ed0714bc2b089495c19dc23c73008a30df952c8fec46",
+      "sha256": "f7aa48e445fdd89aa4c282b7421fbb09665d70434feb802b0a5fb2d5fe531a24",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "da17763c88af07ec750ba50d276eaf78fdf2e115e8539814ab910c6599e4837f",
+      "sha256": "85a65d2ea1e2ccac6809c461aaf2f047c7011ec2a4045c0e5e048799c29d0e91",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4571,7 +4571,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "5eaee0b465c2bb386e9f020fc42e4e9aeacd12a892a385ff979208a02f0143e5",
+      "sha256": "602a7a758b2eff57827b741a040b7885d1b87d4beaabfe07f54e5d8ea4bfb04e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4579,17 +4579,45 @@
           "pub fn binder(&self, id: BinderId) -> &BinderInfo",
           "pub fn binder(&self, name: &Ident) -> BinderId",
           "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn definition(self) -> DefId",
+          "pub fn definition(self) -> DefId",
+          "pub fn definition(self) -> DefId",
+          "pub fn enclosing_regions(&self, node: NodeId) -> Option<OriginalRegions<'_>>",
           "pub fn from_occurrences(occurrences: OccurrencesForest<'ast>) -> Self",
           "pub fn info(&self, id: BinderId) -> &'view BinderInfo",
           "pub fn insert_budgeted<E>( &mut self, occurrences: Occurrences<'ast>, span: Span, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
           "pub fn key(&self, id: BinderId) -> &'view BinderKey",
           "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn kind(self) -> NodeKind",
           "pub fn local_key(&self, name: &Ident) -> Option<&'view BinderKey>",
           "pub fn lookup<'view>( &'view self, tables: &'view BTreeMap<DefId, Arc<Table>>, ) -> Lookup<'view, 'ast>",
+          "pub fn natural_site(&self, natural: &Natural) -> UseSiteId",
+          "pub fn natural_site(&self, natural: &Natural) -> UseSiteId",
+          "pub fn natural_usage(&self, natural: &Natural) -> &'view UseInfo",
           "pub fn natural_usage(&self, natural: &Natural) -> UseSiteId",
           "pub fn new_budgeted<E>( definition: DefId, declaration: &'ast Decl, global: impl Fn(&str) -> Option<Target>, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Self, E>",
+          "pub fn node(&self, id: NodeId) -> &NodeInfo",
+          "pub fn node_id_basis_expr(&self, node: &BasisExpr) -> NodeId",
+          "pub fn node_id_basis_expr(&self, node: &BasisExpr) -> NodeId",
+          "pub fn node_id_block(&self, node: &Block) -> NodeId",
+          "pub fn node_id_block(&self, node: &Block) -> NodeId",
+          "pub fn node_id_expr(&self, node: &Expr) -> NodeId",
+          "pub fn node_id_expr(&self, node: &Expr) -> NodeId",
+          "pub fn node_id_natural(&self, node: &Natural) -> NodeId",
+          "pub fn node_id_natural(&self, node: &Natural) -> NodeId",
+          "pub fn node_id_static_op(&self, node: &StaticOp) -> NodeId",
+          "pub fn node_id_static_op(&self, node: &StaticOp) -> NodeId",
+          "pub fn node_id_ty(&self, node: &Type) -> NodeId",
+          "pub fn node_id_ty(&self, node: &Type) -> NodeId",
+          "pub fn original_node(&self, id: NodeId) -> Option<OriginalNode<'ast>>",
+          "pub fn original_nodes(&self) -> &[OriginalNode<'ast>]",
+          "pub fn reference_site(&self, name: &Ident) -> UseSiteId",
+          "pub fn reference_site(&self, name: &Ident) -> UseSiteId",
           "pub fn resolve(&self, name: &Ident) -> ResolvedUse",
+          "pub fn span(self) -> Span",
           "pub fn take_occurrences(&mut self) -> Occurrences<'ast>",
+          "pub fn try_binder(&self, id: BinderId) -> Option<&BinderInfo>",
+          "pub fn try_usage(&self, id: UseSiteId) -> Option<&UseInfo>",
           "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
           "pub fn usage(&self, name: &Ident) -> &'view UseInfo",
           "pub fn usage(&self, name: &Ident) -> UseSiteId"
@@ -6397,7 +6425,7 @@
     },
     {
       "path": "src/frontend/closed.rs",
-      "sha256": "c8670f783680fe3c12ead0df48bf23ad87f23ad890f866bc957f923b48ac7415",
+      "sha256": "1ce1066e9788f116539f0c3665e53f64701487225aae5c1789ee487eae8828a6",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6405,6 +6433,33 @@
           "pub fn ceiling(&self) -> crate::ir::Effect",
           "pub fn output(&self) -> &ClosedType"
         ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans.rs",
+      "sha256": "d3133b03a93deb47787e8abcfe749343276b86ecc8d4a339b99e2d2cfa94631c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn classify_budgeted( &self, environment: &StaticEnvironment, bound: &BTreeSet<BinderKey>, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<PlanClosure>",
+          "pub fn named(&self, name: &ast::Ident, arguments: &[ast::StaticOp]) -> Result<ResolvedStatic>",
+          "pub fn natural(&self, source: &ast::Natural) -> Result<ResolvedNatural>",
+          "pub fn operation(&self, source: &ast::StaticOp) -> Result<ResolvedStatic>",
+          "pub fn output(&self) -> &Ty",
+          "pub fn reference(&self, name: &ast::Ident) -> Result<ResolvedReference>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/tests.rs",
+      "sha256": "e6727f8d6eeae76b7a5564f531cb684ce82a6d7805dc38d8ba14ed6fd1acd5c9",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
         "capacity_constants": []
       }
     }

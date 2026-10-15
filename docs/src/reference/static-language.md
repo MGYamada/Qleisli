@@ -467,6 +467,23 @@ capabilities. A concrete instance separately checks complete closed bindings,
 actual provider identities, substitutions and supported interfaces. Neither
 stage issues a native accepted handle.
 
+The common judgment retains static calls and evidence obligations by their
+original structural occurrence identities. Each plan keeps the resolved
+callee and formal identities, ordered Basis/Nat/Op actuals, both operation
+ports, Meaning requests, lexical static bindings and predicate/fold regions.
+Ordinary natural-expression plans retain their original arithmetic alongside
+normalized facts, preserving their concrete intermediate-overflow and work
+checks. Helper calls retain their original arguments and shared checked affine
+templates, with the signed-128-bit template and unsigned-32-bit result rules
+specified above. A zero power retains its child operation and its requests.
+
+These private plans consume the existing preparation budget. They are source
+metadata, not independently checked evidence. Retention alone does not
+discharge an unmaterialized generic obligation or widen a concrete profile.
+In particular, selected-specialization validity of a harmless entry does not
+check a false Meaning request in an unselected generic body. Full dormant
+plan materialization remains a concrete adapter obligation.
+
 The current common judgment has a 1,000,000-unit work allowance. Its selected
 profile also limits retained scope storage to 16,384 cells. Natural-expression
 depth is limited to 128; type trees have separate 4,096-cell, depth-64 and

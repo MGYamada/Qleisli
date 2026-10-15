@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "e8510e65e46132f7ada46966f81820335ae8d123b0a61262773b25a597318de7",
+  "surface_sha256": "520e5eddec00cee0a46022baf0f3b84c5fce21477f04542ae8b91e2f469e0e3d",
   "groups": [
     {
       "id": "raw-core",
@@ -3057,7 +3057,7 @@
             "fn disjoint_places(",
             "self.require_access_unitary(name, scope, span)?",
             "CallArguments::Places(&prepared)",
-            "self.obligation(span, ObligationKind::ControlSectors)?"
+            "self.obligation(span, ObligationKind::ControlSectors, scope)?"
           ]
         },
         {
@@ -3976,7 +3976,7 @@
         {
           "path": "src/frontend/check/body/operations.rs",
           "markers": [
-            "self.obligation(span, ObligationKind::ControlSectors)?"
+            "self.obligation(span, ObligationKind::ControlSectors, scope)?"
           ]
         },
         {

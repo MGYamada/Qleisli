@@ -224,7 +224,7 @@ impl Checker<'_, '_> {
             .iter()
             .any(|argument| argument.access == QuantumAccess::Ctrl)
         {
-            self.obligation(span, ObligationKind::ControlSectors)?;
+            self.obligation(span, ObligationKind::ControlSectors, scope)?;
         }
         for (key, binding) in owners {
             scope.moved.remove(&binding.identity);

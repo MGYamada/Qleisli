@@ -125,6 +125,10 @@
         [
           "python3",
           "scripts/test_empty_basis_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_generic_dormant_first.py"
         ]
       ],
       "prepare": []

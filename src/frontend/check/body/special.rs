@@ -421,7 +421,7 @@ impl Checker<'_, '_> {
             let op = self.target_operation(name, basis, scope)?;
             access(&op, Access::Controlled, name.span)?;
         }
-        self.obligation(span, ObligationKind::TransformedMeaning)?;
+        self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
         Ok(Ty::pair(control_ty, target_ty))
     }
     pub(super) fn coherent(
@@ -480,7 +480,7 @@ impl Checker<'_, '_> {
         if !equal {
             self.effects.add(Effect::Isometry, span);
         }
-        self.obligation(span, ObligationKind::Injectivity)?;
+        self.obligation(span, ObligationKind::Injectivity, scope)?;
         Ok(Ty::quantum(output))
     }
     fn basis_width(&self, ty: &Ty, span: Span) -> Result<Option<Linear>> {
@@ -566,12 +566,19 @@ impl Checker<'_, '_> {
                 id
             }
         };
-        self.obligation(
+        self.program.budget.charge(span, 2)?;
+        let subject = plans::EvidenceSubject::FunctionPair {
+            implementation: self.capture().reference(implementation)?,
+            specification: self.capture().reference(specification)?,
+        };
+        self.obligation_subject(
             span,
             ObligationKind::FunctionEquality {
                 implementation: implementation_id,
                 specification: specification_id,
             },
+            scope,
+            subject,
         )?;
         Ok(result)
     }
@@ -743,7 +750,26 @@ impl Checker<'_, '_> {
                     ));
                 }
             };
-            self.obligation(span, ObligationKind::CertifiedClean { logical: identity })?;
+            self.program.budget.charge(span, 3)?;
+            let subject = plans::EvidenceSubject::Operation {
+                operation: Arc::new(self.capture().named(logical, &[])?),
+                required: Some(plans::operation_contract(
+                    &operation,
+                    span,
+                    &self.program.budget,
+                )?),
+                actual: Some(plans::operation_contract(
+                    &operation,
+                    span,
+                    &self.program.budget,
+                )?),
+            };
+            self.obligation_subject(
+                span,
+                ObligationKind::CertifiedClean { logical: identity },
+                scope,
+                subject,
+            )?;
             inner.values.clear();
             bind_name(
                 data,
@@ -756,7 +782,7 @@ impl Checker<'_, '_> {
             Ty::pair(self.program.budget.copy_ty(span, &source_ty)?, ancilla_ty)
         } else {
             inner.values.retain(|_, value| !value.ty.linear());
-            self.obligation(span, ObligationKind::ProtectedClean)?;
+            self.obligation(span, ObligationKind::ProtectedClean, scope)?;
             ancilla_ty
         };
         bind_name(

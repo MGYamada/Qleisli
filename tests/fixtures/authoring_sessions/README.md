@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [generic/dormant first study](generic-dormant-v030/README.md) retains six
+first projects and fourteen checks. Selected-main validity remains distinct from
+dormant Meaning discharge; actual helper/zero-repeat controls refuse. Prior-build
+binary identity, complete input windows and early finite profile refusals are inert history.
+
 The [empty-basis first studies](empty-basis-v030/README.md) retain four original
 source/observation packets, including four wrapper and seventeen finite checks.
 Desired drafts remain uncompiled; wrapper typing, finite register refusals,

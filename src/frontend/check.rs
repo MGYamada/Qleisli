@@ -7,6 +7,7 @@
 mod body;
 mod declarations;
 mod normalize;
+pub(super) mod plans;
 pub(super) mod primitive;
 #[cfg(test)]
 mod rectangular_meaning_tests;
@@ -369,9 +370,11 @@ pub(super) enum OperationIdentity {
 }
 #[derive(Clone, Debug)]
 pub(super) struct Obligation {
+    pub id: plans::ObligationId,
     pub definition: DefId,
     pub span: Span,
     pub kind: ObligationKind,
+    pub plan: plans::EvidencePlan,
 }
 
 /// Immutable identities and checked facts from one current original collection.
@@ -382,6 +385,14 @@ pub(super) struct CheckedProgram {
     pub effects: BTreeMap<DefId, FunctionEffect>,
     pub lexical: BTreeMap<DefId, Arc<Table>>,
     pub obligations: Vec<Obligation>,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "original call templates await finite generic materialization"
+        )
+    )]
+    pub static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
     pub dependency_order: Vec<DefId>,
 }
 impl CheckedProgram {
@@ -504,6 +515,7 @@ struct Program<'a> {
     indices: BTreeMap<DefId, Index<'a>>,
     interfaces: BTreeMap<DefId, Interface>,
     obligations: Vec<Obligation>,
+    static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
     unitary_regions: Vec<(DefId, Span, BodyEffects)>,
     budget: Rc<Budget>,
 }
@@ -776,6 +788,7 @@ pub(super) fn program_with<'a, R>(
         indices: BTreeMap::new(),
         interfaces: BTreeMap::new(),
         obligations: Vec::new(),
+        static_calls: BTreeMap::new(),
         unitary_regions: Vec::new(),
         budget,
     };
@@ -909,6 +922,7 @@ pub(super) fn program_with<'a, R>(
         }
     }
     program.validate_pending_bindings(&effects)?;
+    plans::validate_and_finish(&mut program, &effects)?;
     let output = finish(
         &program.resolution,
         &program.interfaces,
@@ -933,6 +947,7 @@ pub(super) fn program_with<'a, R>(
             effects,
             lexical,
             obligations: program.obligations,
+            static_calls: program.static_calls,
             dependency_order,
         },
         output,
