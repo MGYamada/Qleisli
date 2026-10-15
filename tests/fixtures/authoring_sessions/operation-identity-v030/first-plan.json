@@ -1,0 +1,11 @@
+{
+  "status": "not-run",
+  "kind": "informed bounded study",
+  "expected": "current finite Op sources accept; no generic Basis/Nat admission",
+  "authored_qubits": 0,
+  "sources": {
+    "src/frontend/compile/mod.rs": "7e8f21493d110fcc1a55fac9522601c8c28f340ee0760d090879b754d86572fc",
+    "src/frontend/compile/operations.rs": "d3033d3c19d0bcc9aefee4492f2ceb1cae3a222e5c60046c3ccfbd90d5713eec",
+    "src/frontend/compile/lower/operations.rs": "aebd28a84dbe7465e2327a0917b24fd2b5b8f97fc32571f4aa2866d0f98d363d"
+  }
+}

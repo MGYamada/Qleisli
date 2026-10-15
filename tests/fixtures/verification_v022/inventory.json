@@ -3880,7 +3880,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "d6cd4cbe42f468aca7976b17f57a6351e06ae6318b13f408f62afe46fd360cec",
+      "sha256": "953ec71d8b12cf14c4d47722a03fc8df9359e9f5a8ab85c62c71c580a7b8e50d",
       "surface": {
         "declarations": [],
         "functions": [
@@ -4057,7 +4057,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "172d930606ac5fcc6cc3f350d2c45069bc69fd09f4ce90ae6a71aa901e6b05f5",
+      "sha256": "0b769230d385d9d68545cce78edea52a548b581ff9503b6553d515b779c6b440",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4067,7 +4067,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "aebd28a84dbe7465e2327a0917b24fd2b5b8f97fc32571f4aa2866d0f98d363d",
+      "sha256": "b92d41bc2f7b3e79ab51546ff36585ee07ab62b48f5ab6ea66aa18a2f273bbc3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "7e8f21493d110fcc1a55fac9522601c8c28f340ee0760d090879b754d86572fc",
+      "sha256": "dae8bfc38a062b1ac40a56f56caf4565568c5ed7c162d13454e9199001382a44",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4156,7 +4156,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "d3033d3c19d0bcc9aefee4492f2ceb1cae3a222e5c60046c3ccfbd90d5713eec",
+      "sha256": "a15dbab6632028ed0dd06fdaea9a10916b7241c3983cc8e8ec9730b951917a29",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4572,7 +4572,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "927d364000b2edd5689798d225e9f31eba47b9d125a01a383cdc52d9a3634a0f",
+      "sha256": "120da41322ff11f4c4bfb8ea47cbae73a3dca5533feaf5d322c854dcc7d4cbdb",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4622,8 +4622,10 @@
           "pub fn try_binder(&self, name: &Ident) -> Option<BinderId>",
           "pub fn try_natural_usage(&self, natural: &Natural) -> Option<UseSiteId>",
           "pub fn try_node(&self, id: NodeId) -> Option<&NodeInfo>",
+          "pub fn try_node_id_expr(&self, node: &Expr) -> Option<NodeId>",
           "pub fn try_node_id_natural(&self, node: &Natural) -> Option<NodeId>",
           "pub fn try_node_id_ty(&self, node: &Type) -> Option<NodeId>",
+          "pub fn try_reference_site(&self, name: &Ident) -> Option<UseSiteId>",
           "pub fn try_usage(&self, id: UseSiteId) -> Option<&UseInfo>",
           "pub fn try_usage(&self, name: &Ident) -> Option<UseSiteId>",
           "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
@@ -6534,6 +6536,36 @@
     {
       "path": "src/frontend/compile/lower/call_state_tests.rs",
       "sha256": "e6d2d0f60790f289b80cf35d2dbae900c4e1c95f91d32f3e97cd5a5ecad95699",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/calls.rs",
+      "sha256": "908d419088d140395e34dff009a493eff24dc2fdba5a3da11c1ec8f5dfa9b6b7",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/calls/tests.rs",
+      "sha256": "3cc4c11e4a68cf627db1d96b7dcbf47c398273ccc5ab889c528cbf037f937d2b",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations/identity_tests.rs",
+      "sha256": "917218a5d0e5fb1e178da1fa36b5cbff80f3e30e21a2f22ed566305b367e9f7d",
       "group": "source",
       "surface": {
         "declarations": [],

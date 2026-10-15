@@ -740,8 +740,9 @@ impl Lowerer<'_, '_> {
         static_args: &[StaticOp],
         arguments: &[AccessArgument],
         env: &mut Env,
-        span: Span,
+        source: &Expr,
     ) -> Result<Value, CompileError> {
+        let span = source.span;
         self.compiler
             .charge(module, span, arguments.len().saturating_mul(3))?;
         let mut owners = Vec::new();
@@ -828,7 +829,7 @@ impl Lowerer<'_, '_> {
             static_args,
             RuntimeArguments::Accesses(arguments),
             env,
-            span,
+            source,
         )?;
         let returned = if owners.len() == 1 {
             vec![result]
@@ -911,6 +912,86 @@ impl Lowerer<'_, '_> {
         Ok(Value::Unit)
     }
 
+    fn original_runtime_call(
+        &mut self,
+        module: &str,
+        expression: &Expr,
+        callee: &Ident,
+        static_arguments: &[StaticOp],
+        runtime_arguments: RuntimeArguments<'_>,
+        target: Key,
+    ) -> Result<(), CompileError> {
+        let span = expression.span;
+        let mut work = self.compiler.work;
+        let result = (|| {
+            macro_rules! refuse {
+                ($message:literal) => {{
+                    self.compiler.charge_at(
+                        &mut work,
+                        module,
+                        span,
+                        $message.len().saturating_add(1),
+                    )?;
+                    return Err(self.compiler.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        $message,
+                    ));
+                }};
+            }
+            self.compiler.charge_at(&mut work, module, span, 6)?;
+            let lookup = self.compiler.locals();
+            let Some(node) = lookup.try_node_id_expr(expression) else {
+                refuse!("runtime call is not an original source occurrence");
+            };
+            self.compiler.charge_at(&mut work, module, span, 1)?;
+            let Some(owner) = self
+                .compiler
+                .source
+                .resolution
+                .try_declaration(node.definition())
+            else {
+                refuse!("runtime call lacks its original source owner");
+            };
+            self.compiler.charge_at(
+                &mut work,
+                module,
+                span,
+                owner
+                    .name
+                    .0
+                    .len()
+                    .saturating_add(module.len())
+                    .saturating_add(1),
+            )?;
+            if owner.name.0 != module {
+                refuse!("runtime call lacks its original source module");
+            }
+            let checked = super::calls::CheckedCall::original(
+                &self.compiler.source,
+                &lookup,
+                super::calls::OriginalCall {
+                    owner: node.definition(),
+                    module: owner.module,
+                    expression,
+                    callee,
+                    static_arguments,
+                    runtime_arguments,
+                },
+                &mut |at, cells| self.compiler.charge_at(&mut work, module, at, cells),
+                &|at, code, message| self.compiler.error(module, at, code, message),
+            )?;
+            self.compiler.charge_at(&mut work, module, span, 1)?;
+            if checked.plan().target != target {
+                refuse!("runtime callee differs from its original call plan target");
+            }
+            Ok(())
+        })();
+        self.compiler.work = work;
+        result
+    }
+
     fn runtime_call(
         &mut self,
         module: &str,
@@ -918,8 +999,9 @@ impl Lowerer<'_, '_> {
         static_args: &[StaticOp],
         args: RuntimeArguments<'_>,
         env: &mut Env,
-        span: Span,
+        source: &Expr,
     ) -> Result<Value, CompileError> {
+        let span = source.span;
         // Keep legacy ordinary-call resolution and diagnostics. New
         // static calls resolve descriptions after runtime arguments.
         let legacy_target = if static_args.is_empty() && self.bound_operation(callee).is_none() {
@@ -971,6 +1053,7 @@ impl Lowerer<'_, '_> {
             .unwrap_or_else(|| self.compiler.resolve(module, callee))?
         {
             Callee::User(key) => {
+                self.original_runtime_call(module, source, callee, static_args, args, key)?;
                 let bindings = self.bind_operations(&key, static_args, env, site)?;
                 self.call_bound(&key, values, Some(site), bindings)
             }
@@ -1223,13 +1306,13 @@ impl Lowerer<'_, '_> {
                 static_args,
                 RuntimeArguments::Values(args),
                 env,
-                expr.span,
+                expr,
             ),
             ExprKind::AccessCall {
                 callee,
                 static_args,
                 args,
-            } => self.exclusive_call(module, callee, static_args, args, env, expr.span),
+            } => self.exclusive_call(module, callee, static_args, args, env, expr),
             ExprKind::If {
                 condition,
                 then_branch,

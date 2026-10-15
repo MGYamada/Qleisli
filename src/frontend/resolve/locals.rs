@@ -700,6 +700,25 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
     pub fn reference_site(&self, name: &Ident) -> UseSiteId {
         self.occurrences.references[&(std::ptr::from_ref(name) as usize)]
     }
+    /// Fallible original occurrence lookup; callers charge the bounded lookups.
+    pub fn try_reference_site(&self, name: &Ident) -> Option<UseSiteId> {
+        let id = *self
+            .occurrences
+            .references
+            .get(&(std::ptr::from_ref(name) as usize))?;
+        let table = self.associated_table(id.definition)?;
+        table.try_usage(id)?;
+        Some(id)
+    }
+    fn associated_table(&self, definition: DefId) -> Option<&'view Table> {
+        let table = self.tables.get(&definition)?;
+        let declaration = self.occurrences.originals.get(&definition)?;
+        let association = declaration.association.as_ref()?;
+        if declaration.ambiguous || !Arc::ptr_eq(association, &table.association) {
+            return None;
+        }
+        Some(table)
+    }
     #[cfg_attr(
         not(test),
         expect(
@@ -736,6 +755,18 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
     )]
     pub fn node_id_expr(&self, node: &Expr) -> NodeId {
         self.node_id(NodeKind::Expr, std::ptr::from_ref(node) as usize)
+    }
+    /// Foreign same-shaped syntax has no original address association.
+    pub fn try_node_id_expr(&self, node: &Expr) -> Option<NodeId> {
+        let id = *self
+            .occurrences
+            .nodes
+            .get(&(NodeKind::Expr, std::ptr::from_ref(node) as usize))?;
+        if id.kind != NodeKind::Expr {
+            return None;
+        }
+        self.associated_table(id.definition)?.try_node(id)?;
+        Some(id)
     }
     #[cfg_attr(
         not(test),

@@ -484,6 +484,17 @@ In particular, selected-specialization validity of a harmless entry does not
 check a false Meaning request in an unselected generic body. Full dormant
 plan materialization remains a concrete adapter obligation.
 
+Finite ordinary runtime calls additionally bind the borrowed plan to the exact
+original expression, callee and ordered static/runtime operand slices. A cloned
+same-shaped AST is not an original occurrence. The finite distinct-specialization
+counter compares complete operation descriptions within its shared work budget:
+both exact ports, phase, source effect, access, constructors, ordered children,
+repetition counts and issued native dependency identities. A zero power retains
+its child identity. Matching matrices alone do not identify two descriptions.
+This counter is not an executable cache, and a refused comparison is not a
+cache miss. These checks do not enable a generic concrete profile or discharge
+the outstanding dormant plans.
+
 The current common judgment has a 1,000,000-unit work allowance. Its selected
 profile also limits retained scope storage to 16,384 cells. Natural-expression
 depth is limited to 128; type trees have separate 4,096-cell, depth-64 and

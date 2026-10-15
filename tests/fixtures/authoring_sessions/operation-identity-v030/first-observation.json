@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "/private/tmp/qleisli-generic-plan-validation-ji3399kg/instance-key-first"
+  ],
+  "observed_head": "c14c0cbbfb3527384f68a770191774b2b1b16603",
+  "build_attestation": false,
+  "identities": {
+    "cli": "e47c22d58acc237880301f99315db871ef234cdeca8a9bf1f06824f14eff36d3",
+    "kernel": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07"
+  },
+  "inputs_stable": true,
+  "binary_stable": true,
+  "kernel_stable": true,
+  "exit_code": 0,
+  "seconds": 0.5503964999224991,
+  "stdout": "first.stdout.txt",
+  "stderr": "first.stderr.txt",
+  "input_sha256": {
+    "main.qli": "1939e480eb06b87e30181036393f1c861a84a1401b2b6b29cd8639eca145bea3",
+    "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first-plan.json": "3bcebbcf26d57105ddee7d8468a28e9a2334d9bc30ce706861f9ea990a355ba4"
+  }
+}

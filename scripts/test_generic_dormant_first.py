@@ -473,6 +473,7 @@ def main():
           '4,044,578 expanded bytes; 14 checks, 3 accepted / 11 refused. No command executed.')
     check_interface_naturals_first()
     check_closed_interface_naturals_first()
+    check_operation_identity_first()
 
 
 def check_signature_tree(packet, files):
@@ -544,7 +545,8 @@ def check_synthetic_signature_trees():
         refused('nonregular signature packet path')
 
 
-def read_signature_packet(packet, manifest_sha, file_count, total_bytes):
+def read_signature_packet(packet, manifest_sha, file_count, total_bytes,
+                          packet_format='qleisli.interface-naturals-first-retention'):
     """Read a fixed, reviewed signature inventory as bounded inert bytes."""
     require(packet.is_dir() and not packet.is_symlink()
             and packet.resolve().is_relative_to(ROOT.resolve()), 'nonlocal signature study')
@@ -568,7 +570,7 @@ def read_signature_packet(packet, manifest_sha, file_count, total_bytes):
             'reviewed signature retention manifest differs')
     manifest = load_json(raw)
     require(set(manifest) == {'format', 'version', 'scope', 'files'}
-            and manifest['format'] == 'qleisli.interface-naturals-first-retention'
+            and manifest['format'] == packet_format
             and type(manifest['version']) is int and manifest['version'] == 1,
             'unknown signature retention format')
     rows = manifest['files']
@@ -696,6 +698,49 @@ def check_closed_interface_naturals_first():
           'one u32 capacity refusal, one concrete helper control checked; '
           '20 native decisions / zero independent requests. '
           'No generic admission or source-preservation proof. No command executed.')
+
+
+def check_operation_identity_first():
+    """Preserve one existing Op-only control; never replay recorded commands."""
+    retained = read_signature_packet(
+        ROOT / 'tests/fixtures/authoring_sessions/operation-identity-v030',
+        '2122f6574f045a7af04f8ee47babd10090bd892fc4ec50c166020a1fcc68d693',
+        8, 4992, 'qleisli.operation-identity-first-retention')
+    declaration = tomllib.loads(retained['Qargo.toml'].decode())
+    require(declaration == {'schema-version': 2, 'qrate': {'edition': '2026'}},
+            'operation identity source edition differs')
+    initial = load_json(retained['first-plan.json'])
+    require(initial['status'] == 'not-run' and initial['authored_qubits'] == 0,
+            'operation identity initial prediction differs')
+    observation = load_json(retained['first-observation.json'])
+    require(observation['observed_head'] == 'c14c0cbbfb3527384f68a770191774b2b1b16603'
+            and observation['build_attestation'] is False
+            and observation['identities']['cli'] ==
+            'e47c22d58acc237880301f99315db871ef234cdeca8a9bf1f06824f14eff36d3'
+            and observation['identities']['kernel'] == KERNEL_SHA
+            and observation['inputs_stable'] is True
+            and observation['binary_stable'] is True and observation['kernel_stable'] is True
+            and observation['exit_code'] == 0
+            and observation['stdout'] == 'first.stdout.txt'
+            and observation['stderr'] == 'first.stderr.txt',
+            'operation identity observed inputs or checking scope differs')
+    require(set(observation['input_sha256']) == {'main.qli', 'Qargo.toml', 'first-plan.json'},
+            'operation identity original input window differs')
+    for name, digest in observation['input_sha256'].items():
+        require(sha(retained[local_name(name)]) == digest,
+                'operation identity source or prediction differs')
+    require(retained['first.stderr.txt'] == b'', 'operation identity acquired a diagnostic')
+    lines = retained['first.stdout.txt'].decode().splitlines()
+    for line in ('native checks: IR structure, ownership, interface, classical scope and '
+                 'decoded execution view; 4 concrete local roots, 9 bundled roots',
+                 'checker identity: unpinned',
+                 'native decisions: 23; independent requests checked: 0',
+                 'entry: absent; entry request checked: not applicable',
+                 'source preservation: not proved'):
+        require(line in lines, 'operation identity native observation differs: ' + line)
+    print('Operation identity first history: 8 unchanged files / 4,992 bytes; '
+          '23 native decisions / zero independent requests; '
+          'no generic admission or source-preservation proof. No command executed.')
 
 
 if __name__ == '__main__':

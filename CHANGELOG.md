@@ -11,6 +11,14 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Bind finite runtime calls to their original checked plans and exact source
+  operand slices, refusing foreign same-shaped syntax. Charge complete
+  operation-description comparisons before specialization counting, including
+  both ports, phase, ordered children, zero powers and issued native dependency
+  identities. Keep the 256-instance and shared work limits, eager unused roots
+  and generic profile refusals. This is further #369/#167 preparation, not
+  completed generic materialization or dormant evidence discharge.
+
 - Retain original Nat occurrences in every signature slot, including both Op
   ports, with independently checked source associations and formal-only scopes.
   Connect finite runtime signature closure to ordinary u32 intermediate checks

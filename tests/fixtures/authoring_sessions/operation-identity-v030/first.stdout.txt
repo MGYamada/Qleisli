@@ -1,0 +1,7 @@
+checked source: /private/tmp/qleisli-generic-plan-validation-ji3399kg/instance-key-first
+native checks: IR structure, ownership, interface, classical scope and decoded execution view; 4 concrete local roots, 9 bundled roots
+checker: /Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+checker identity: unpinned
+native decisions: 23; independent requests checked: 0
+entry: absent; entry request checked: not applicable
+source preservation: not proved
