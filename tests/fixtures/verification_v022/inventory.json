@@ -3919,7 +3919,7 @@
     {
       "path": "src/frontend/check/body/places.rs",
       "sha256": "7ab3790d98d73824cacbcb63673b9860755429957d126f40bbb366ca06cde8e9",
-      "group": "source",
+      "group": "source-excl",
       "surface": {
         "declarations": [],
         "functions": [],
