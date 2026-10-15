@@ -38,7 +38,7 @@ impl Lowerer<'_, '_> {
         }
         if self
             .compiler
-            .locals
+            .locals()
             .local_key(function)
             .is_some_and(|key| env.contains_key(key))
             || self.bound_operation(function).is_some()

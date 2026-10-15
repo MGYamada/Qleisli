@@ -147,9 +147,9 @@ impl Compiler<'_> {
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
         let decl = self.declarations[key];
-        let key_name = self.resolution.declaration(*key).name.clone();
+        let key_name = self.source.resolution.declaration(*key).name.clone();
         let (_, codomain) = self.signature(key)?;
-        let interface = &self.interfaces[key];
+        let interface = &self.source.interfaces[key];
         let mut work = self.work;
         let basis = finite_type(
             self,
@@ -279,7 +279,7 @@ impl Compiler<'_> {
         target: crate::frontend::meaning::Target,
     ) -> Result<(), CompileError> {
         let declaration = self.declarations[key];
-        let name = self.resolution.declaration(*key).name.clone();
+        let name = self.source.resolution.declaration(*key).name.clone();
         let span = declaration.span;
         let (raw, matrix, pure) = if let Ok(finite) = target.finite() {
             let raw = finite
@@ -291,7 +291,7 @@ impl Compiler<'_> {
             (raw, matrix, None)
         } else {
             let sources = self.retained_sources(&name.0, span)?;
-            let path = self.resolution.path(*key);
+            let path = self.source.resolution.path(*key);
             let identity = || RetainedIdentity::shared(path.clone(), path.clone(), sources.clone());
             let mut references = BTreeMap::new();
             for id in target.references() {
@@ -348,7 +348,7 @@ impl Compiler<'_> {
         key: &Key,
     ) -> Result<BTreeMap<BinderKey, RequiredOperation>, CompileError> {
         let decl = self.declarations[key];
-        let key_name = self.resolution.declaration(*key).name.clone();
+        let key_name = self.source.resolution.declaration(*key).name.clone();
         self.signature(key)?;
         let mut bindings = BTreeMap::new();
         for (ordinal, parameter) in decl.static_params.iter().enumerate() {
@@ -365,7 +365,7 @@ impl Compiler<'_> {
                     "finite profile does not support Nat or Basis parameters",
                 ));
             };
-            let formal = &self.interfaces[key].statics[ordinal];
+            let formal = &self.source.interfaces[key].statics[ordinal];
             let StaticKind::Operation {
                 basis: checked_basis,
                 codomain: checked_codomain,
@@ -375,7 +375,7 @@ impl Compiler<'_> {
             else {
                 unreachable!("checked finite static category differs");
             };
-            let binder = self.locals.info(self.locals.binder(&parameter.name));
+            let binder = self.locals().info(self.locals().binder(&parameter.name));
             assert_eq!(
                 binder.kind,
                 BindingKind::StaticOperation,
@@ -422,7 +422,7 @@ impl Compiler<'_> {
                     .as_ref()
                     .expect("paired Meaning refinement");
                 assert_eq!(
-                    self.locals.usage(original_meaning).target,
+                    self.locals().usage(original_meaning).target,
                     ResolvedUse::Global(Target::Declaration(meaning_key)),
                     "checked Meaning declaration identity"
                 );
@@ -475,7 +475,7 @@ impl Compiler<'_> {
             }
         };
         let decl = self.declarations[&key];
-        let key_name = self.resolution.declaration(key).name.clone();
+        let key_name = self.source.resolution.declaration(key).name.clone();
         let effect = self.effect_in_module(module, key).ok_or_else(|| {
             self.error(
                 module,
@@ -572,7 +572,7 @@ impl Compiler<'_> {
             format!("{}::{}", key_name.0, key_name.1),
             mkey.as_ref().map_or_else(
                 || format!("{}::{}", key_name.0, key_name.1),
-                |m| format!("meaning {}", self.resolution.path(*m)),
+                |m| format!("meaning {}", self.source.resolution.path(*m)),
             ),
             sources,
         );

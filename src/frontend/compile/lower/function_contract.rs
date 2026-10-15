@@ -49,7 +49,7 @@ impl Lowerer<'_, '_> {
             if let Some(key) = declared_meaning {
                 if self
                     .compiler
-                    .locals
+                    .locals()
                     .local_key(specification)
                     .is_some_and(|key| env.contains_key(key))
                     || self.bound_operation(specification).is_some()
@@ -102,7 +102,7 @@ impl Lowerer<'_, '_> {
         for name in [implementation, specification] {
             if self
                 .compiler
-                .locals
+                .locals()
                 .local_key(name)
                 .is_some_and(|key| env.contains_key(key))
                 || self.bound_operation(name).is_some()
@@ -215,7 +215,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<Key, CompileError> {
         if self
             .compiler
-            .locals
+            .locals()
             .local_key(name)
             .is_some_and(|key| env.contains_key(key))
             || self.bound_operation(name).is_some()
@@ -358,8 +358,8 @@ impl Compiler<'_> {
         }
         let sources = self.retained_sources(module, span)?;
         let identity = RetainedIdentity::shared(
-            self.resolution.path(implementation),
-            self.resolution.path(specification),
+            self.source.resolution.path(implementation),
+            self.source.resolution.path(specification),
             sources,
         );
         let implementation = self.checked.get(&implementation).ok_or_else(|| {
@@ -452,8 +452,8 @@ impl Compiler<'_> {
             // comparisons. External evidence still uses check_binding.
             Arc::clone(evidence)
         } else {
-            let implementation_name = self.resolution.path(implementation_key);
-            let specification_name = self.resolution.path(specification_key);
+            let implementation_name = self.source.resolution.path(implementation_key);
+            let specification_name = self.source.resolution.path(specification_key);
             let sources = self.retained_sources(module, span)?;
             let snapshot_size = total_size(
                 [&implementation_key, &specification_key]

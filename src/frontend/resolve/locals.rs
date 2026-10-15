@@ -239,40 +239,54 @@ impl<'ast> OccurrencesForest<'ast> {
     }
 }
 
-/// Borrowed source occurrences share the single checked lexical Table allocation.
+/// Source-address lookup remains tied to the original borrowed syntax. Checked
+/// lexical Tables stay with their original whole-program judgment.
 #[derive(Default)]
 pub(in crate::frontend) struct Forest<'ast> {
-    tables: BTreeMap<DefId, Arc<Table>>,
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Forest<'ast> {
-    pub fn from_occurrences(
-        tables: BTreeMap<DefId, Arc<Table>>,
-        occurrences: OccurrencesForest<'ast>,
-    ) -> Self {
+    pub fn from_occurrences(occurrences: OccurrencesForest<'ast>) -> Self {
         Self {
-            tables,
             bindings: occurrences.bindings,
             references: occurrences.references,
             _syntax: PhantomData,
         }
     }
-    pub fn binder(&self, name: &Ident) -> BinderId {
-        self.bindings[&(std::ptr::from_ref(name) as usize)]
+    pub fn lookup<'view>(
+        &'view self,
+        tables: &'view BTreeMap<DefId, Arc<Table>>,
+    ) -> Lookup<'view, 'ast> {
+        Lookup {
+            occurrences: self,
+            tables,
+        }
     }
-    pub fn info(&self, id: BinderId) -> &BinderInfo {
+}
+
+/// A temporary view borrows the original checked Tables without copying their
+/// map or Arc handles. Returned records borrow those Tables, not this view.
+pub(in crate::frontend) struct Lookup<'view, 'ast> {
+    occurrences: &'view Forest<'ast>,
+    tables: &'view BTreeMap<DefId, Arc<Table>>,
+}
+impl<'view> Lookup<'view, '_> {
+    pub fn binder(&self, name: &Ident) -> BinderId {
+        self.occurrences.bindings[&(std::ptr::from_ref(name) as usize)]
+    }
+    pub fn info(&self, id: BinderId) -> &'view BinderInfo {
         self.tables[&id.definition].binder(id)
     }
-    pub fn key(&self, id: BinderId) -> &BinderKey {
+    pub fn key(&self, id: BinderId) -> &'view BinderKey {
         self.tables[&id.definition].key(id)
     }
-    pub fn usage(&self, name: &Ident) -> &UseInfo {
-        let id = self.references[&(std::ptr::from_ref(name) as usize)];
+    pub fn usage(&self, name: &Ident) -> &'view UseInfo {
+        let id = self.occurrences.references[&(std::ptr::from_ref(name) as usize)];
         self.tables[&id.definition].usage(id)
     }
-    pub fn local_key(&self, name: &Ident) -> Option<&BinderKey> {
+    pub fn local_key(&self, name: &Ident) -> Option<&'view BinderKey> {
         match self.usage(name).target {
             ResolvedUse::Local(id) => Some(self.key(id)),
             ResolvedUse::Global(_) | ResolvedUse::Unresolved => None,
@@ -1031,6 +1045,48 @@ mod tests {
             resolved.table.usage(site).target,
             ResolvedUse::Local(parameter)
         );
+    }
+
+    #[test]
+    fn forest_lookup_borrows_original_tables_and_preserves_natural_occurrences() {
+        let module =
+            parse_module("unitary fn f[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}").unwrap();
+        let decl = &module.decls[0];
+        let mut original = index(DefId(0), decl, |_| None);
+        let parameter = name(&decl.params[0].pattern);
+        let binder = original.binder(parameter);
+        let FnBody::Quantum(body) = &decl.body else {
+            panic!()
+        };
+        let result = expression_name(&body.result);
+        let result_site = original.usage(result);
+        let TypeKind::Q(basis) = &decl.params[0].ty.kind else {
+            panic!()
+        };
+        let TypeKind::Bits(natural) = &basis.kind else {
+            panic!()
+        };
+        let natural_site = original.natural_usage(natural);
+        let mut occurrences = OccurrencesForest::default();
+        occurrences
+            .insert_budgeted(original.take_occurrences(), decl.span, |_, _| {
+                Ok::<_, std::convert::Infallible>(())
+            })
+            .unwrap_or_else(|never| match never {});
+        // The finite consumer moves runtime addresses only; the common Index
+        // still owns its authoritative natural lookup until source finishing.
+        assert_eq!(original.natural_usage(natural), natural_site);
+        let tables = BTreeMap::from([(DefId(0), Arc::new(original.table))]);
+        let forest = Forest::from_occurrences(occurrences);
+        let table = &tables[&DefId(0)];
+        assert_eq!(Arc::strong_count(table), 1);
+        let lookup = forest.lookup(&tables);
+        assert_eq!(lookup.binder(parameter), binder);
+        assert!(std::ptr::eq(lookup.info(binder), table.binder(binder)));
+        assert!(std::ptr::eq(lookup.key(binder), table.key(binder)));
+        assert!(std::ptr::eq(lookup.usage(result), table.usage(result_site)));
+        assert_eq!(lookup.local_key(result), Some(table.key(binder)));
+        assert_eq!(Arc::strong_count(table), 1);
     }
 
     #[test]

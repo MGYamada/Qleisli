@@ -90,7 +90,7 @@ fn verification_error(
         match &compiler.checking {
             Some(key) => format!(
                 "{failure} while checking {}",
-                compiler.resolution.path(*key)
+                compiler.source.resolution.path(*key)
             ),
             None => failure.to_string(),
         },
@@ -142,14 +142,14 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
     }
 
     fn bind_name(&mut self, name: &Ident, _span: Span, value: Value) -> Result<(), CompileError> {
-        let binder = self.lowerer.compiler.locals.binder(name);
+        let binder = self.lowerer.compiler.locals().binder(name);
         if self
             .lowerer
             .compiler
-            .locals
+            .locals()
             .info(binder)
             .shadowed
-            .and_then(|old| self.env.get(self.lowerer.compiler.locals.key(old)))
+            .and_then(|old| self.env.get(self.lowerer.compiler.locals().key(old)))
             .and_then(Binding::as_ref)
             .is_some_and(Value::owns_quantum)
         {
@@ -215,11 +215,11 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
 
 impl Lowerer<'_, '_> {
     fn bind_env(&self, name: &Ident, value: Binding, env: &mut Env) {
-        let id = self.compiler.locals.binder(name);
-        if let Some(old) = self.compiler.locals.info(id).shadowed {
-            env.remove(self.compiler.locals.key(old));
+        let id = self.compiler.locals().binder(name);
+        if let Some(old) = self.compiler.locals().info(id).shadowed {
+            env.remove(self.compiler.locals().key(old));
         }
-        env.insert(self.compiler.locals.key(id).clone(), value);
+        env.insert(self.compiler.locals().key(id).clone(), value);
     }
 
     fn add_effect(&mut self, module: &str, span: Span, effect: Effect) {
@@ -327,7 +327,13 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
-        let key_name = self.compiler.resolution.declaration(*key).name.clone();
+        let key_name = self
+            .compiler
+            .source
+            .resolution
+            .declaration(*key)
+            .name
+            .clone();
         if self.depth >= MAX_DEPTH {
             return Err(self.error(
                 &key_name.0,
@@ -354,7 +360,13 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
-        let key_name = self.compiler.resolution.declaration(*key).name.clone();
+        let key_name = self
+            .compiler
+            .source
+            .resolution
+            .declaration(*key)
+            .name
+            .clone();
         self.compiler.tick(&key_name.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
         if decl.kind == FnKind::Meaning {
@@ -478,7 +490,7 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        let source_fact = self.compiler.effects[key];
+        let source_fact = self.compiler.source.effects[key];
         if inferred > source_fact.inferred() || contract_effect > source_fact.inferred() {
             return Err(self.error(
                 &key_name.0,
@@ -587,7 +599,7 @@ impl Lowerer<'_, '_> {
             self.compiler.charge(module, block.span, env_size(&entry))?;
         }
         scope::close_scope_with_updates(&mut entry, &local, self.access_updates.last().expect("block updates")).map_err(|name| {
-            let span = self.compiler.locals.info(name.id).span;
+            let span = self.compiler.locals().info(name.id).span;
             self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
         *env = entry;
@@ -739,7 +751,7 @@ impl Lowerer<'_, '_> {
                     "exclusive access requires a whole lexical Q<A> owner",
                 ));
             };
-            let key = self.compiler.locals.local_key(name).ok_or_else(|| {
+            let key = self.compiler.locals().local_key(name).ok_or_else(|| {
                 self.error(
                     module,
                     name.span,
@@ -902,7 +914,7 @@ impl Lowerer<'_, '_> {
         let legacy_target = if static_args.is_empty() && self.bound_operation(callee).is_none() {
             if self
                 .compiler
-                .locals
+                .locals()
                 .local_key(callee)
                 .is_some_and(|key| env.contains_key(key))
             {
@@ -1243,7 +1255,7 @@ impl Lowerer<'_, '_> {
                 let source = self.expr(module, source, env)?;
                 if self
                     .compiler
-                    .locals
+                    .locals()
                     .local_key(function)
                     .is_some_and(|key| env.contains_key(key))
                     || self.bound_operation(function).is_some()
@@ -1301,7 +1313,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<Vec<CircuitStep>, CompileError> {
         if self
             .compiler
-            .locals
+            .locals()
             .local_key(name)
             .is_some_and(|key| env.contains_key(key))
             || self.bound_operation(name).is_some()
@@ -1645,7 +1657,7 @@ fn lower_function_inner(
     bindings: super::operations::Bindings,
 ) -> Result<AcceptedProgram, CompileError> {
     let decl = compiler.declarations[key];
-    let key_name = compiler.resolution.declaration(*key).name.clone();
+    let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
         compiler,

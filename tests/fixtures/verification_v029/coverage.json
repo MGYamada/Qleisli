@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "ab7d01eadaa98fd6fd26c7dc8c3cf8cdcb3e9400714fbdfe5e2f20a1fbf3589c",
+  "surface_sha256": "2e965c45126e50daba8319c03b6c08f44f8b043723f7e0f8b13c17e93f2b28b7",
   "groups": [
     {
       "id": "raw-core",
@@ -189,7 +189,9 @@
         "tests/check_scope_report.rs",
         "tests/body_effects.rs",
         "tests/public_effects.rs",
-        "scripts/test_public_effects_first.py"
+        "scripts/test_public_effects_first.py",
+        "src/frontend/closed.rs",
+        "src/frontend/resolve/locals.rs"
       ],
       "proof_gates": [
         "S05-C1",

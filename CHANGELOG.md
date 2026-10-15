@@ -11,6 +11,13 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Connect current finite runtime/classical signatures to the same exact closed
+  interface helper as selected-source lowering. Retain the original complete
+  source judgment and borrow its lexical tables without copying them. Keep
+  separate Meaning domains and every existing finite profile, eager-root,
+  provider and native gate; generic finite materialization remains pending.
+  Charge closure work within unchanged limits.
+
 - Extract closed source-interface substitution into a private frontend helper,
   preserving original binder identities, normalized premises and both operation
   ports. Keep selected profile checks at their existing boundaries; explicitly
