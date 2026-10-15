@@ -74,21 +74,39 @@ impl Checker<'_, '_> {
                         "a basis value is not callable",
                     ));
                 }
-                let Target::Declaration(id) = self.resolve(callee)? else {
-                    return Err(SourceError::new(
-                        "type",
-                        callee.span,
-                        "basis expression requires a classical function",
-                    ));
+                let (params, result) = match self.resolve(callee)? {
+                    Target::Declaration(id) if self.program.decl(id).kind == FnKind::Classical => {
+                        let (params, result, _) =
+                            self.specialize(id, &[], scope, callee.span, false)?;
+                        (params, result)
+                    }
+                    Target::Primitive(id) => {
+                        self.program
+                            .budget
+                            .charge(callee.span, id.module.len() + id.name.len() + 2)?;
+                        let path = format!("{}::{}", id.module, id.name);
+                        let primitive =
+                            primitive::Primitive::lookup(&path).expect("typed primitive target");
+                        // This existing total ordinary constructor introduces no
+                        // quantum owner. Other sealed calls retain their normal
+                        // quantum/static obligations outside the basis grammar.
+                        if primitive != primitive::Primitive::EmptyBits {
+                            return Err(SourceError::new(
+                                "type",
+                                callee.span,
+                                "basis expression requires a classical function",
+                            ));
+                        }
+                        primitive.fixed(&[], &scope.context, callee.span, &self.program.budget)?
+                    }
+                    _ => {
+                        return Err(SourceError::new(
+                            "type",
+                            callee.span,
+                            "basis expression requires a classical function",
+                        ));
+                    }
                 };
-                if self.program.decl(id).kind != FnKind::Classical {
-                    return Err(SourceError::new(
-                        "type",
-                        callee.span,
-                        "basis expression requires a classical function",
-                    ));
-                }
-                let (params, result, _) = self.specialize(id, &[], scope, callee.span, false)?;
                 if params.len() != args.len() {
                     return Err(SourceError::new(
                         "arity",

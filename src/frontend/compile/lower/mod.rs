@@ -103,7 +103,7 @@ fn verification_error(
 // Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
-    raw: RawState<std::convert::Infallible>,
+    raw: RawState<EmptyRegister>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
@@ -126,7 +126,7 @@ struct PatternBinding<'a, 'c, 'p> {
 }
 impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
     type Value = Value;
-    type Size = std::convert::Infallible;
+    type Size = EmptyRegister;
     type Error = CompileError;
 
     fn linear(&self, value: &Value) -> bool {
@@ -308,7 +308,7 @@ impl Lowerer<'_, '_> {
                     .map(|field| self.input(field, module, span, quantum, classical))
                     .collect::<Result<_, _>>()?,
             ),
-            Kind::Bits(n) => match *n {},
+            Kind::Bits(EmptyRegister) => Value::EmptyBits,
             Kind::Parameter(_) => {
                 return Err(self.error(
                     module,

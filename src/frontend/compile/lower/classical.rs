@@ -179,23 +179,26 @@ impl Lowerer<'_, '_> {
                     .iter()
                     .map(|arg| self.classical_expr(module, arg, env))
                     .collect::<Result<Vec<_>, _>>()?;
-                let Callee::User(key) = target else {
-                    return Err(self.error(
+                match target {
+                    Callee::User(key) => self.call_user(
+                        &key,
+                        values,
+                        Some(CallSite {
+                            module,
+                            span: expr.span,
+                            args: CallArguments::Classical(args),
+                        }),
+                    ),
+                    Callee::Sealed(namespace, name) if empty_bits_primitive(&namespace, &name) => {
+                        self.sealed(module, expr.span, &namespace, &name, values)
+                    }
+                    Callee::Sealed(_, _) => Err(self.error(
                         module,
                         callee.span,
                         ErrorCode::TypeMismatch,
                         "classical expressions call classical functions only",
-                    ));
-                };
-                self.call_user(
-                    &key,
-                    values,
-                    Some(CallSite {
-                        module,
-                        span: expr.span,
-                        args: CallArguments::Classical(args),
-                    }),
-                )
+                    )),
+                }
             }
         }
     }

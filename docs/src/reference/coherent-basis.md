@@ -27,8 +27,12 @@ static-name collisions retain the ordinary pattern checks.
 
 The braces contain exactly one existing `BasisExpr`, not an ordinary block.
 The admitted forms are bound labels, `()`, `0`/`1`, grouping, ordered tuples,
-`not`, `and`, `xor`, and calls to declared `classical fn` functions with their exact
-argument-list arity and types. There is no `let`, statement sequence, semicolon,
+`not`, `and`, `xor`, calls to declared `classical fn` functions with their exact
+argument-list arity and types, and the existing nullary ordinary
+`empty_bits()` constructor imported from `std::classical`. The constructor produces the exact
+`Bits<0>` label; it introduces no quantum owner. Its resolved primitive identity
+and checked signature are required, so an ordinary same-spelled function gains
+no special permission. Other sealed quantum calls remain excluded. There is no `let`, statement sequence, semicolon,
 measurement, ordinary runtime call or nested coherent map in this body.
 `classical fn` declares total ordinary computations. Its body can also be called
 on ordinary runtime values, including measured Bits, under the
@@ -144,12 +148,26 @@ Qleisli CLI test alone does not establish that integration.
 ## Concrete profiles and proof boundary
 
 Both finite and selected loading parse this form into the same original
-`CoherentLift` AST and apply the same complete source judgment. The current
-selected concrete projection still refuses CoherentLift when requested.
-Successful common checking therefore does not promise a selected emitter,
-general generic lift, or concrete `Q<Unit>` lift/control support. The finite
-profile retains its existing basis-shape, quantum Unit, depth and work limits;
-the Unit source rule above does not remove them. A lowering or native failure
+`CoherentLift` AST and apply the same complete source judgment. Selected
+elaboration retains the original binder, use-site and declaration identities
+and evaluates the complete bounded label domain, including closed classical
+helpers. Selected Raw lowering emits the existing `LiftBasis`; its separate
+source-step comparison binds the exact retained table, ordered wires, owner
+transitions and effects to the emitted instructions. The opaque `SourceStep`
+exposes `kind() == "lift_basis"` and a read-only `basis_table()` view of the
+untrusted coefficient-+1 labels. This view supplies no accepted handle or proof
+of the preceding source elaboration.
+
+Selected tables require at most eight input/output bits and preserve the
+existing type-tree, depth, work, call and storage bounds. Square maps may use
+the existing independently checked finite operation-access path; unitarity
+alone grants no inverse or control. Selected hierarchy table transport
+remains unsupported for square and rectangular maps, including a zero-width type change whose faithful
+hierarchy bridge is unavailable. Finite project lowering now admits exact
+closed `Bits<0>` atoms, ordinary and quantum, while nonzero registers and
+generic Basis/Nat materialization remain outside its profile. `Bits<0>` is
+never replaced by Unit, and its quantum owner remains linear. Every concrete
+unused finite declaration still requires checking. A lowering or native failure
 cannot fall back to a weaker acceptance route.
 
 This migration creates no new semantic primitive, native schema, accepted

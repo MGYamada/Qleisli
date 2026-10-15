@@ -3,11 +3,13 @@
 use super::*;
 
 type Failure = (Span, &'static str);
-pub(super) fn check(declaration: &Decl, _interface: &Interface) -> Result<(), Failure> {
+pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Failure> {
+    assert_eq!(declaration.static_params.len(), interface.statics.len());
+    assert_eq!(declaration.params.len(), interface.params.len());
     if let Some(domain) = &declaration.meaning_domain {
-        ty(domain)?;
+        ty(domain, interface.meaning_input())?;
     }
-    for parameter in &declaration.static_params {
+    for (parameter, formal) in declaration.static_params.iter().zip(&interface.statics) {
         match &parameter.kind {
             StaticParamKind::Basis => {
                 return Err((
@@ -24,9 +26,22 @@ pub(super) fn check(declaration: &Decl, _interface: &Interface) -> Result<(), Fa
             StaticParamKind::Operation {
                 basis, codomain, ..
             } => {
-                ty(basis)?;
+                let StaticKind::Operation {
+                    basis: checked_basis,
+                    codomain: checked_codomain,
+                    ..
+                } = &formal.kind
+                else {
+                    unreachable!("checked finite static category differs")
+                };
+                ty(basis, checked_basis)?;
                 if let Some(codomain) = codomain {
-                    ty(codomain)?;
+                    ty(
+                        codomain,
+                        // Common checking canonicalizes A -> A to its
+                        // endomorphic form while retaining the original span.
+                        checked_codomain.as_ref().unwrap_or(checked_basis),
+                    )?;
                 }
             }
         }
@@ -45,16 +60,16 @@ pub(super) fn check(declaration: &Decl, _interface: &Interface) -> Result<(), Fa
             ));
         }
     }
-    for parameter in &declaration.params {
-        ty(&parameter.ty)?;
+    for (parameter, checked) in declaration.params.iter().zip(&interface.params) {
+        ty(&parameter.ty, checked)?;
     }
-    ty(&declaration.return_type)?;
+    ty(&declaration.return_type, &interface.result)?;
     if let FnBody::Quantum(body) = &declaration.body {
         block(body)?;
     }
     Ok(())
 }
-fn ty(ty: &Type) -> Result<(), Failure> {
+fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
     match &ty.kind {
         TypeKind::Named(_) => {
             return Err((
@@ -62,12 +77,16 @@ fn ty(ty: &Type) -> Result<(), Failure> {
                 "named Basis types are outside the finite lowering profile",
             ));
         }
-        TypeKind::Bits(_) => {
-            return Err((
-                ty.span,
-                "register types are outside the finite lowering profile",
-            ));
-        }
+        TypeKind::Bits(_) => match &checked.kind {
+            Kind::Bits(size) if size.is_exact_zero() => {}
+            Kind::Bits(_) => {
+                return Err((
+                    ty.span,
+                    "nonzero register types are outside the finite lowering profile; only Bits<0> is supported",
+                ));
+            }
+            _ => unreachable!("checked register constructor differs"),
+        },
         TypeKind::Tuple(fields) => {
             if fields.is_empty() {
                 return Err((
@@ -75,11 +94,20 @@ fn ty(ty: &Type) -> Result<(), Failure> {
                     "empty tuple type syntax is outside the finite profile; use Unit",
                 ));
             }
-            for field in fields {
-                self::ty(field)?;
+            let Kind::Tuple(checked) = &checked.kind else {
+                unreachable!("checked tuple constructor differs")
+            };
+            assert_eq!(fields.len(), checked.len(), "checked tuple arity");
+            for (field, checked) in fields.iter().zip(checked) {
+                self::ty(field, checked)?;
             }
         }
-        TypeKind::Q(inner) => self::ty(inner)?,
+        TypeKind::Q(inner) => {
+            let Kind::Q(checked) = &checked.kind else {
+                unreachable!("checked quantum constructor differs")
+            };
+            self::ty(inner, checked)?;
+        }
         _ => {}
     }
     Ok(())

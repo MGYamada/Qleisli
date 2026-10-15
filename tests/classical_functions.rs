@@ -1433,9 +1433,9 @@ fn rejected_before_native(source: &str, selected: &str, finite: &str) {
     assert!(location.span.end <= source.len());
 }
 
-fn selected_coherent_unsupported(source: &str, entry: &str) {
-    // The complete source judgment succeeds. Concrete projection has a narrower
-    // profile: this is not evidence that the selected path verified injectivity.
+fn selected_elaboration_rejected(source: &str, entry: &str, code: &str, message: &str) {
+    // Original source formation is separate from concrete injectivity/profile
+    // checking. A valid total classical body need not define a coherent map.
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     // A selected root's projection is checked during instantiation; a helper's
     // unsupported projection is reached later while elaborating its caller.
@@ -1443,10 +1443,11 @@ fn selected_coherent_unsupported(source: &str, entry: &str) {
         Err(error) => error,
         Ok(instance) => match instance.elaborate() {
             Err(error) => error,
-            Ok(_) => panic!("expected the explicitly unsupported coherent projection"),
+            Ok(_) => panic!("expected the concrete source refusal"),
         },
     };
-    assert_eq!(error.code(), "unsupported", "{error}");
+    assert_eq!(error.code(), code, "{error}");
+    assert!(error.message().contains(message), "{error}");
     assert!(error.span().end > error.span().start, "{error}");
     assert!(error.span().end <= source.len(), "{error}");
 }
@@ -1471,8 +1472,10 @@ fn canonical_declaration_retains_expression_ast_and_old_spelling_has_migration_e
 #[test]
 fn frozen_flip_is_reused_coherently_and_ordinarily_with_explicit_profile_limit() {
     let source = first_source!("shared-flip");
-    closed(&finite(source), &[true, false]);
-    selected_coherent_unsupported(source, "main::main");
+    let graph = both_closed(source, &[true, false]);
+    // Raw now implements this actual coherent body. The separate hierarchy
+    // profile still refuses its classical results/table transport.
+    assert_eq!(graph.lower().unwrap_err().code(), "unsupported");
     both_closed(
         "classical fn flip(x: Bit) -> Bit { not x }
          pub fn main() -> (Bit,Bit) { let b = flip(0); (b,flip(b)) }",
@@ -1589,7 +1592,7 @@ fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
     let error = check_project_with_kernel(&root.0, SourcePolicy::default(), &kernel()).unwrap_err();
     assert_eq!(error.code, "ownership", "{error:?}");
     assert!(error.message.contains("not injective"), "{error:?}");
-    selected_coherent_unsupported(source, "main::collapse");
+    selected_elaboration_rejected(source, "main::collapse", "type", "cannot shrink its domain");
 }
 
 #[cfg_attr(
@@ -1624,7 +1627,12 @@ fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
             .iter()
             .any(|operation| { matches!(operation, RawOp::ComputeUseUncompute { .. }) })
     );
-    selected_coherent_unsupported(source, "main::oracle");
+    selected_elaboration_rejected(
+        source,
+        "main::oracle",
+        "unsupported",
+        "unsupported runtime expression",
+    );
 }
 
 #[cfg_attr(

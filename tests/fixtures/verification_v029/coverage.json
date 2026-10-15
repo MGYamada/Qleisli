@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "2e965c45126e50daba8319c03b6c08f44f8b043723f7e0f8b13c17e93f2b28b7",
+  "surface_sha256": "e8510e65e46132f7ada46966f81820335ae8d123b0a61262773b25a597318de7",
   "groups": [
     {
       "id": "raw-core",
@@ -191,7 +191,11 @@
         "tests/public_effects.rs",
         "scripts/test_public_effects_first.py",
         "src/frontend/closed.rs",
-        "src/frontend/resolve/locals.rs"
+        "src/frontend/resolve/locals.rs",
+        "tests/finite_empty_bits.rs",
+        "tests/selected_coherent_basis.rs",
+        "scripts/test_empty_basis_first.py",
+        "src/frontend/specialize/elaborate/basis.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -479,7 +483,9 @@
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/function_evidence.rs",
-        "tests/native_raw.rs"
+        "tests/native_raw.rs",
+        "tests/finite_empty_bits.rs",
+        "tests/selected_coherent_basis.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -801,7 +807,10 @@
         "tests/body_effects.rs",
         "tests/public_effects.rs",
         "scripts/test_public_effects_first.py",
-        "src/frontend/closed.rs"
+        "src/frontend/closed.rs",
+        "tests/selected_coherent_basis.rs",
+        "src/frontend/specialize/elaborate/basis.rs",
+        "scripts/test_empty_basis_first.py"
       ],
       "proof_gates": [
         "S05-C1",
@@ -850,7 +859,9 @@
         "tests/ordinary_booleans.rs",
         "tests/bits_cli.rs",
         "lean/Qleisli/FiniteBasisTransport.lean",
-        "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+        "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean",
+        "tests/finite_empty_bits.rs",
+        "tests/selected_coherent_basis.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1326,7 +1337,10 @@
         "tests/check_scope_cli.rs",
         "tests/body_effects.rs",
         "tests/public_effects.rs",
-        "scripts/test_public_effects_first.py"
+        "scripts/test_public_effects_first.py",
+        "tests/finite_empty_bits.rs",
+        "tests/selected_coherent_basis.rs",
+        "scripts/test_empty_basis_first.py"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -1677,7 +1691,10 @@
       "evidence": [
         "tests/sized_source.rs",
         "tests/ordinary_booleans.rs",
-        "tests/mixed_booleans.rs"
+        "tests/mixed_booleans.rs",
+        "tests/selected_coherent_basis.rs",
+        "src/frontend/specialize/elaborate/basis.rs",
+        "scripts/test_empty_basis_first.py"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2478,8 +2495,8 @@
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
       "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
       "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
-      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
-      "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem."
+      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted. Newly eligible closed Bits<0> source roots use the same ordinary native gate; complete source type trees and observing schemas remain frontend/evidence obligations, not a new theorem admission.",
+      "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem. Passing finite zero-register tests does not prove source lowering, effect/CPTP semantics, PR, quantitative RS or EXACT discharge."
     },
     {
       "id": "contract-acceptance",
@@ -3388,8 +3405,8 @@
       "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
       "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata; complete exact type/provider substitutions and original generic module bytes are retained",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
-      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
-      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete. Opaque type checking and bounded phase/reference tests do not prove generic/source preservation or admit a guarantee; Op<A,M> and final project-profile integration remain pending."
+      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation. Bounded selected coherent-basis tables and explicit Unit owner maps use existing Raw constructors and independent retained-step replay; native acceptance remains a separate requirement.",
+      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete. Opaque type checking and bounded phase/reference tests do not prove generic/source preservation or admit a guarantee; Op<A,M> and final project-profile integration remain pending. Coherent-table injectivity and exact Raw event/table replay do not establish AST-to-step preservation or a general source theorem; hierarchy coherent-table support remains refused."
     },
     {
       "id": "checked-views",

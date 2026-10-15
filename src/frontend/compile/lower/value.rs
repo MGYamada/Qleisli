@@ -9,11 +9,11 @@
 
 use std::collections::BTreeMap;
 
-use super::super::{TreeSize, Ty, total_size};
+use super::super::{EmptyRegister, TreeSize, Ty, total_size};
 use crate::ir::ClassicalId;
 
 pub(super) use crate::frontend::raw_state::Slot;
-pub(super) type Register = crate::frontend::raw_state::Register<std::convert::Infallible>;
+pub(super) type Register = crate::frontend::raw_state::Register<EmptyRegister>;
 pub(super) type Env = BTreeMap<crate::frontend::resolve::locals::BinderKey, Binding>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -61,6 +61,7 @@ pub(super) fn env_size(env: &Env) -> usize {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) enum Value {
     Unit,
+    EmptyBits,
     Classical(ClassicalId),
     /// Retains the complete Q type, including zero-width basis owners.
     Quantum(Slot, Ty),
@@ -87,7 +88,7 @@ impl Value {
                     field.outputs(registers, quantum, classical);
                 }
             }
-            Self::Unit => {}
+            Self::Unit | Self::EmptyBits => {}
         }
     }
 
@@ -117,6 +118,7 @@ impl Value {
     pub(super) fn ty(&self) -> Ty {
         match self {
             Self::Unit => Ty::unit(),
+            Self::EmptyBits => Ty::empty_bits(),
             Self::Classical(_) => Ty::bit(),
             Self::Quantum(_, ty) => ty.clone(),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),

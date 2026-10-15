@@ -321,13 +321,30 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
                 "a basis value is not callable",
             ));
         }
-        let Callee::User(key) = self.compiler.resolve(self.module, callee)? else {
-            return Err(self.compiler.error(
-                self.module,
-                callee.span,
-                ErrorCode::TypeMismatch,
-                "quantum operation in a basis expression",
-            ));
+        let key = match self.compiler.resolve(self.module, callee)? {
+            Callee::User(key) => key,
+            Callee::Sealed(namespace, name) if empty_bits_primitive(&namespace, &name) => {
+                if !args.is_empty() {
+                    return Err(self.compiler.error(
+                        self.module,
+                        span,
+                        ErrorCode::Arity,
+                        "empty_bits requires 0 arguments",
+                    ));
+                }
+                return Ok(BasisValue {
+                    ty: Ty::empty_bits(),
+                    label: 0,
+                });
+            }
+            Callee::Sealed(_, _) => {
+                return Err(self.compiler.error(
+                    self.module,
+                    callee.span,
+                    ErrorCode::TypeMismatch,
+                    "quantum operation in a basis expression",
+                ));
+            }
         };
         let function = self.compiler.basis.get(&key).ok_or_else(|| {
             self.compiler.error(

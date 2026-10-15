@@ -638,7 +638,10 @@ fn check_profile(
                     "finite source lowering requires supported intermediate value types",
                 ));
             }
-            if step.boolean().is_some() || step.partition().is_some() {
+            if step.boolean().is_some()
+                || step.partition().is_some()
+                || step.basis_table().is_some()
+            {
                 continue;
             }
             if step.called_definition().is_some()
@@ -1167,6 +1170,87 @@ impl Emitter<'_> {
     fn charge_value(&mut self, value: &SourceValue, span: Span) -> Result<()> {
         self.charge_type(value.ty(), span)
     }
+    fn lift_basis(
+        &mut self,
+        step: &super::SourceStep,
+        inputs: &[Vec<Atom>],
+        table: &[u16],
+    ) -> Result<Vec<Atom>> {
+        let span = step.span();
+        let [input] = inputs else {
+            return Err(invalid(span, "basis lift requires one owner"));
+        };
+        let slot = quantum(input, span)?;
+        let register = &self.raw.registers[&slot];
+        let basis = step
+            .output()
+            .ty()
+            .quantum_basis()
+            .ok_or_else(|| invalid(span, "basis lift output is not one quantum owner"))?;
+        let width = basis
+            .basis_width()
+            .filter(|n| *n <= 8)
+            .ok_or_else(|| invalid(span, "basis lift output exceeds the bounded profile"))?
+            as usize;
+        let input_width = register.wires.len();
+        if input_width > 8
+            || width < input_width
+            || table.len() != 1usize << input_width
+            || step.inputs()[0].ty().quantum_basis() != Some(&register.basis)
+            || step.effect()
+                != if width == input_width {
+                    "unitary"
+                } else {
+                    "iso"
+                }
+        {
+            return Err(invalid(
+                span,
+                "basis lift differs from its exact owner/effect interface",
+            ));
+        }
+        let live: usize = self.raw.registers.values().map(|r| r.wires.len()).sum();
+        if live.saturating_add(width - input_width) > MAX_LIVE_QUBITS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "basis lift exceeds 16 globally live quantum wires",
+            ));
+        }
+        // Precharge both wire copies, complete table, and exact result tree.
+        self.cells = self
+            .cells
+            .saturating_add(8 + 2 * width + table.len() + basis.owner_shape_size().nodes);
+        if self.cells > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "basis lift exceeds 100000 value cells",
+            ));
+        }
+        let input_token = register.token;
+        let mut wires = register.wires.clone();
+        self.reserve_operations(1, span)?;
+        for _ in input_width..width {
+            wires.push(self.raw.wire());
+        }
+        let output = self.raw.token();
+        self.raw.operations.push(crate::ir::RawOp::LiftBasis {
+            input: input_token,
+            output,
+            output_wires: wires.clone(),
+            table: table.to_vec(),
+        });
+        self.raw.registers.insert(
+            slot,
+            crate::frontend::raw_state::Register {
+                token: output,
+                wires,
+                basis: basis.clone(),
+            },
+        );
+        Ok(vec![Atom::Quantum(slot)])
+    }
     fn charge_type(&mut self, ty: &SourceType, span: Span) -> Result<()> {
         // Ordinary register elements occupy transport storage even when the
         // type has only one node. Bound every allocation before emission.
@@ -1498,6 +1582,8 @@ impl Emitter<'_> {
                         )]
                     } else if let Some(partition) = step.partition() {
                         self.partition_register(partition, step, &inputs)?
+                    } else if let Some(table) = step.basis_table() {
+                        self.lift_basis(step, &inputs, table)?
                     } else if let Some(key) = step.contract() {
                         let checked = self.source.contracts.get(&key).ok_or_else(|| {
                             invalid(span, "source contract has no freshly checked original pair")

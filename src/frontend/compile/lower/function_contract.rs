@@ -147,7 +147,7 @@ impl Lowerer<'_, '_> {
         let signature = crate::frontend::instrument::signature(
             &parameters,
             &result_type,
-            |n| match *n {},
+            |_| Some(0),
             &mut self.compiler.exact_work,
         )
         .map_err(|error| self.compiler.instrument_error(module, span, error))?;
@@ -339,14 +339,14 @@ impl Compiler<'_> {
         let signature = crate::frontend::instrument::signature(
             &parameters,
             &result,
-            |n| match *n {},
+            |_| Some(0),
             &mut self.exact_work,
         )
         .map_err(|error| self.instrument_error(module, span, error))?;
         let expected_signature = crate::frontend::instrument::signature(
             &expected_parameters,
             &expected_result,
-            |n| match *n {},
+            |_| Some(0),
             &mut self.exact_work,
         )
         .map_err(|error| self.instrument_error(module, span, error))?;

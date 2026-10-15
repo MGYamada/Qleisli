@@ -291,7 +291,9 @@ They have no runtime interface, effect or accepted-handle authority.
 `classical fn f(pattern: T, ...) -> U { expression }` declares a total, pure
 finite function on ordinary values. Its body is one restricted label expression:
 names, `()`, `0`/`1`, ordered products, eager `not`/`and`/`xor`, and acyclic calls
-to other classical functions. It has no runtime statements, observation or
+to other classical functions, plus the existing nullary ordinary
+`empty_bits()` constructor imported from `std::classical`, with its exact `Bits<0>` signature.
+Other sealed quantum calls remain excluded. It has no runtime statements, observation or
 quantum capture. Parameter/result trees and argument-list arity remain exact;
 noninjective functions are permitted.
 
@@ -313,10 +315,11 @@ Coherent lifting independently requires injectivity of the complete map;
 computed predicates retain their separate exact cleanup contracts. A classical
 declaration or its name grants no inverse/control access, Meaning evidence or
 native acceptance. Meaning declarations remain descriptions, not runtime
-callees. Supported Unit/Bit/product runtime calls lower their original
+callees. Supported Unit/Bit/product and exact closed empty-register runtime calls lower their original
 expression nodes through ordinary operations in both concrete consumers;
-ordinary execution does not evaluate a precomputed truth table. Existing Bits,
-selected coherent-lift and target-profile limitations remain separate.
+ordinary execution does not evaluate a precomputed truth table. Nonzero finite
+registers and general selected hierarchy coherent-lift conversion retain their
+separate profile refusals; selected Raw supports bounded complete label maps.
 
 The retired declaration spelling `basis fn` rejects with a located migration
 diagnostic directing authors to `classical fn`; there is no compatibility alias.

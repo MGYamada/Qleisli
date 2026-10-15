@@ -240,8 +240,9 @@ gate described in the [type model](type-model.md#direct-runtime-transforms-and-o
 Exact Unit/Bit/Bits/product quantum interfaces are retained; unsupported
 constructors retain explicit refusals. Ordinary `Bits<n>` values have separate
 [selected Raw transport rules](type-model.md#one-finite-type-universe), including
-copyable `Bits<0>`; the ordinary finite project and hierarchy retain their
-concrete limitations. Static operation construction does not erase those limits.
+copyable `Bits<0>`; ordinary finite project lowering admits exact closed zero
+registers only, and hierarchy retains its separate concrete limitations.
+Static operation construction does not erase those limits.
 A successful common judgment
 or pending obligation does not supply a missing emitter or an accepted handle.
 The [type model](type-model.md#direct-runtime-transforms-and-opaque-operations)

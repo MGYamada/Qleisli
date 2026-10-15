@@ -117,9 +117,32 @@ impl fmt::Display for CompileError {
 impl std::error::Error for CompileError {}
 
 use super::types::{Kind, Stage, TreeSize};
-// Registers are outside the finite source profile; the uninhabited size keeps
-// that restriction explicit while using the same exact type tree as sized code.
-type Ty = super::types::Type<std::convert::Infallible>;
+// Finite lowering admits the exact empty register only. This private size
+// representation cannot contain a nonzero register or erase its Bits tag.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct EmptyRegister;
+
+impl fmt::Display for EmptyRegister {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("0")
+    }
+}
+
+trait FiniteRegisterSize {
+    fn is_exact_zero(&self) -> bool;
+}
+impl FiniteRegisterSize for u32 {
+    fn is_exact_zero(&self) -> bool {
+        *self == 0
+    }
+}
+impl FiniteRegisterSize for check::Linear {
+    fn is_exact_zero(&self) -> bool {
+        self.constant == 0 && self.terms.is_empty()
+    }
+}
+
+type Ty = super::types::Type<EmptyRegister>;
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -131,7 +154,7 @@ impl Ty {
         match &self.kind {
             Kind::Unit => Some(0),
             Kind::Bit => Some(1),
-            Kind::Bits(n) => match *n {},
+            Kind::Bits(EmptyRegister) => Some(0),
             Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
@@ -141,8 +164,11 @@ impl Ty {
     fn classical(&self) -> bool {
         !self.linear()
     }
-    fn runtime(&self) -> super::types::DisplayType<'_, std::convert::Infallible> {
+    fn runtime(&self) -> super::types::DisplayType<'_, EmptyRegister> {
         self.display(Stage::Runtime)
+    }
+    fn empty_bits() -> Self {
+        Self::bits(EmptyRegister)
     }
 }
 
@@ -154,6 +180,13 @@ fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
 enum Callee {
     User(Key),
     Sealed(String, String),
+}
+
+fn empty_bits_primitive(namespace: &str, name: &str) -> bool {
+    super::check::primitive::Primitive::EmptyBits
+        .path()
+        .rsplit_once("::")
+        .is_some_and(|(module, primitive)| namespace == module && name == primitive)
 }
 
 #[derive(Clone)]
@@ -525,7 +558,7 @@ impl<'a> Compiler<'a> {
 /// Convert the checked symbolic interface, preserving its exact type tree.
 /// Original types supply locations only; this is finite eligibility and copying,
 /// never another source type/ownership judgment.
-fn finite_type<N>(
+fn finite_type<N: FiniteRegisterSize>(
     compiler: &Compiler<'_>,
     work: &mut usize,
     module: &str,
@@ -570,12 +603,16 @@ fn finite_type<N>(
             charge_node(work)?;
             Ty::tuple(fields)
         }
+        (_, Kind::Bits(size)) if size.is_exact_zero() => {
+            charge_node(work)?;
+            Ty::empty_bits()
+        }
         (_, Kind::Bits(_)) => {
             return Err(compiler.error(
                 module,
                 original.span,
                 ErrorCode::Unsupported,
-                "register types are outside the finite lowering profile",
+                "nonzero register types are outside the finite lowering profile; only Bits<0> is supported",
             ));
         }
         (_, Kind::Parameter(_)) => {
@@ -1116,6 +1153,47 @@ fn source_error(project: &Project, root: &Path, error: SourceError) -> CompileEr
         line,
         column,
         message: error.message,
+    }
+}
+
+#[cfg(test)]
+mod empty_register_tests {
+    use super::*;
+    use crate::contract::instrument::ResultAtom;
+
+    #[test]
+    fn complete_instrument_result_schema_preserves_empty_register_unit_and_owner_tags() {
+        let input = Ty::quantum(Ty::empty_bits());
+        let output = Ty::tuple(vec![
+            Ty::empty_bits(),
+            Ty::bit(),
+            Ty::unit(),
+            Ty::quantum(Ty::empty_bits()),
+        ]);
+        let signature = crate::frontend::instrument::signature(
+            &[input],
+            &output,
+            |_| Some(0),
+            &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        assert_eq!(signature.input, crate::contract::BasisType::Bits(0));
+        assert_eq!(
+            signature.result,
+            vec![
+                ResultAtom::Tuple(4),
+                ResultAtom::Bits(0),
+                ResultAtom::Bit,
+                ResultAtom::Unit,
+                ResultAtom::Quantum(crate::contract::BasisType::Bits(0)),
+            ]
+        );
+        assert_ne!(Ty::empty_bits(), Ty::unit());
+        assert_eq!(Ty::empty_bits().to_string(), "Bits<0>");
+        assert_eq!(
+            Ty::quantum(Ty::empty_bits()).runtime().to_string(),
+            "Q<Bits<0>>"
+        );
     }
 }
 
