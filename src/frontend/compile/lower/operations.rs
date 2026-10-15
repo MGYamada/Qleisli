@@ -236,13 +236,34 @@ impl Lowerer<'_, '_> {
             return Ok(Bindings::new());
         }
         let expected = self.compiler.required_bindings(key)?;
+        self.compiler
+            .charge(site.module, site.span, args.len().saturating_mul(2))?;
         let mut bindings = Bindings::new();
-        let mut identity = Vec::new();
+        let mut identity = Vec::with_capacity(args.len());
         for (param, arg) in decl.static_params.iter().zip(args) {
             let actual = self.operation(site.module, arg, env)?;
             let binding = self.compiler.locals().binder(&param.name);
             let required = &expected[self.compiler.locals().key(binding)];
-            if actual.basis != required.basis || actual.codomain != required.codomain {
+            let mut work = self.compiler.work;
+            let same_ports = (|| {
+                let mut charge = |cells| {
+                    self.compiler
+                        .charge_at(&mut work, site.module, arg.span, cells)
+                };
+                Ok::<_, CompileError>(
+                    super::super::operations::same_port_budgeted(
+                        &actual.basis,
+                        &required.basis,
+                        &mut charge,
+                    )? && super::super::operations::same_port_budgeted(
+                        &actual.codomain,
+                        &required.codomain,
+                        &mut charge,
+                    )?,
+                )
+            })();
+            self.compiler.work = work;
+            if !same_ports? {
                 return Err(self.error(
                     site.module,
                     arg.span,
@@ -250,11 +271,20 @@ impl Lowerer<'_, '_> {
                     format!("static argument has a different exact basis tree: expected `Op<{}>`, found `Op<{}>`", required.basis, actual.basis),
                 ));
             }
-            if required
-                .meaning
-                .as_ref()
-                .is_some_and(|m| actual.meaning.as_ref() != Some(m))
-            {
+            let mut work = self.compiler.work;
+            let same_meaning = match required.meaning.as_ref() {
+                Some(meaning) => super::super::operations::same_meaning_budgeted(
+                    Some(meaning),
+                    actual.meaning.as_ref(),
+                    &mut |cells| {
+                        self.compiler
+                            .charge_at(&mut work, site.module, arg.span, cells)
+                    },
+                ),
+                None => Ok(true),
+            };
+            self.compiler.work = work;
+            if !same_meaning? {
                 return Err(self.error(
                     site.module,
                     arg.span,
@@ -272,28 +302,20 @@ impl Lowerer<'_, '_> {
                     }
                 }
             }
-            self.compiler
-                .charge(site.module, arg.span, actual.copy_size().saturating_mul(2))?;
+            self.compiler.charge(
+                site.module,
+                arg.span,
+                actual
+                    .copy_size()
+                    .saturating_mul(2)
+                    .saturating_add(self.compiler.locals().key(binding).name.len())
+                    .saturating_add(1),
+            )?;
             identity.push(actual.clone());
             bindings.insert(self.compiler.locals().key(binding).clone(), actual);
         }
-        if !identity.is_empty()
-            && !self
-                .compiler
-                .instances
-                .iter()
-                .any(|(k, v)| k == key && *v == identity)
-        {
-            if self.compiler.instances.len() >= 256 {
-                return Err(self.error(
-                    site.module,
-                    site.span,
-                    ErrorCode::Limit,
-                    "project exceeds 256 distinct operation specializations",
-                ));
-            }
-            self.compiler.instances.push((*key, identity));
-        }
+        self.compiler
+            .record_operation_instance(*key, identity, site.module, site.span)?;
         Ok(bindings)
     }
 

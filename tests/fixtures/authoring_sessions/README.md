@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [operation identity first study](operation-identity-v030/README.md) preserves
+one unchanged zero-qubit Op-only source and its actual prior native observation.
+Its first predictions and later comparison experiments remain distinct; matching
+matrices do not identify descriptions or complete dormant generic obligations.
+
 The [original interface Nat study](interface-naturals-v030/README.md) preserves
 two desired sources with parser refusals and two separate ordinary-function
 translations with finite generic-profile refusals. Private closed-signature

@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.operation-identity-first-retention",
+  "version": 1,
+  "scope": "Original zero-qubit Op-only study and first actual native observations; no source preservation or generic admission.",
+  "files": [
+    {
+      "path": "Qargo.toml",
+      "bytes": 45,
+      "mode": 420,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1856,
+      "mode": 420,
+      "sha256": "01931c5e32aff99a2cb5d8e48d06395dbd4b1f31aadb5404ba5d4168d081373d"
+    },
+    {
+      "path": "first-integrated-rust.json",
+      "bytes": 872,
+      "mode": 420,
+      "sha256": "0d107e6a6f0c7ab20223a580c083b1bc3c4f879b73dec9791a320f0db6b07977"
+    },
+    {
+      "path": "first-observation.json",
+      "bytes": 915,
+      "mode": 420,
+      "sha256": "5c439810f26d75a6f23d802c8d02ba4e358d936b6b37c4f77b62d90f97eaf1fa"
+    },
+    {
+      "path": "first-plan.json",
+      "bytes": 516,
+      "mode": 420,
+      "sha256": "3bcebbcf26d57105ddee7d8468a28e9a2334d9bc30ce706861f9ea990a355ba4"
+    },
+    {
+      "path": "first.stderr.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "first.stdout.txt",
+      "bytes": 466,
+      "mode": 420,
+      "sha256": "c98c22859659439046e3c39ea469b4d935918b3f8e4213caa5436cd6a083fbf2"
+    },
+    {
+      "path": "main.qli",
+      "bytes": 322,
+      "mode": 420,
+      "sha256": "1939e480eb06b87e30181036393f1c861a84a1401b2b6b29cd8639eca145bea3"
+    }
+  ]
+}

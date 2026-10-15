@@ -11,6 +11,7 @@
 //! ```
 
 mod basis;
+mod calls;
 mod circuit;
 mod interfaces;
 mod lower;

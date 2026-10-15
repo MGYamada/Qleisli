@@ -1,0 +1,5 @@
+unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
+unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){U(q)}
+unitary fn direct(q:Q<Unit>)->Q<Unit>{hold[identity](q)}
+unitary fn zero(q:Q<Unit>)->Q<Unit>{hold[power(identity,0)](q)}
+unitary fn nested(q:Q<Unit>)->Q<Unit>{hold[power(power(identity,0),0)](q)}

@@ -20,7 +20,7 @@ pub(super) struct DeclaredMeaning {
     pub matrix: Matrix,
     pub pure: Option<Arc<crate::interchange::pure_leaf::CheckedPureLeaf>>,
 }
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub(super) struct Operation {
     pub basis: Ty,
     pub codomain: Ty,
@@ -31,7 +31,7 @@ pub(super) struct Operation {
     depth: usize,
     nodes: usize,
 }
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 enum Node {
     Provider(Arc<FunctionEvidence>),
     Pure(PureProvider),
@@ -47,11 +47,8 @@ struct PureProvider {
     leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
     inverse: Option<Arc<FunctionEvidence>>,
 }
-impl PartialEq for PureProvider {
-    fn eq(&self, other: &Self) -> bool {
-        Arc::ptr_eq(&self.leaf, &other.leaf)
-    }
-}
+#[cfg(test)]
+mod identity_tests;
 mod pure;
 pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
 
@@ -111,6 +108,63 @@ pub(super) fn control_matrix(m: &Matrix, budget: &mut Budget) -> Result<Matrix, 
     Ok(Matrix::new(2 * d, 2 * d, entries)?)
 }
 impl Compiler<'_> {
+    /// This registry counts distinct descriptions; it is not an executable
+    /// cache. Callers discharge actual ports/access/Meaning before every visit.
+    pub(super) fn record_operation_instance(
+        &mut self,
+        definition: Key,
+        identity: Vec<Operation>,
+        module: &str,
+        span: Span,
+    ) -> Result<(), CompileError> {
+        if identity.is_empty() {
+            return Ok(());
+        }
+        let mut work = self.work;
+        let found = (|| {
+            for (candidate, operations) in &self.instances {
+                self.charge_at(&mut work, module, span, 1)?;
+                if *candidate != definition || operations.len() != identity.len() {
+                    continue;
+                }
+                let mut equal = true;
+                for (left, right) in operations.iter().zip(&identity) {
+                    self.charge_at(&mut work, module, span, 1)?;
+                    if !left.same_descriptor_budgeted(right, &mut |cells| {
+                        self.charge_at(&mut work, module, span, cells)
+                    })? {
+                        equal = false;
+                        break;
+                    }
+                }
+                if equal {
+                    return Ok(true);
+                }
+            }
+            Ok::<_, CompileError>(false)
+        })();
+        // A refused comparison is neither inequality nor a cache miss.
+        self.work = work;
+        if found? {
+            return Ok(());
+        }
+        if self.instances.len() >= 256 {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "project exceeds 256 distinct operation specializations",
+            ));
+        }
+        if self.instances.len() == self.instances.capacity() {
+            self.charge(module, span, self.instances.len().saturating_add(1))?;
+            self.instances.reserve_exact(1);
+        }
+        self.charge(module, span, 1)?;
+        self.instances.push((definition, identity));
+        Ok(())
+    }
+
     pub(super) fn narrow_u8(
         &self,
         module: &str,
@@ -845,6 +899,63 @@ impl Node {
     }
 }
 impl Operation {
+    /// Compare complete private descriptions without expanding their issued
+    /// native receipts. Equal matrices alone do not identify an operation.
+    /// Construction bounds description depth/nodes before this traversal;
+    /// every visited field and temporary type-stack entry is charged first.
+    pub(super) fn same_descriptor_budgeted<E>(
+        &self,
+        other: &Self,
+        charge: &mut impl FnMut(usize) -> Result<(), E>,
+    ) -> Result<bool, E> {
+        charge(1)?;
+        if self.access != other.access
+            || self.effect != other.effect
+            || self.depth != other.depth
+            || self.nodes != other.nodes
+        {
+            return Ok(false);
+        }
+        if !same_port_budgeted(&self.basis, &other.basis, charge)?
+            || !same_port_budgeted(&self.codomain, &other.codomain, charge)?
+            || !same_meaning_budgeted(self.meaning.as_ref(), other.meaning.as_ref(), charge)?
+        {
+            return Ok(false);
+        }
+        charge(1)?;
+        if Arc::ptr_eq(&self.node, &other.node) {
+            // The shared node is immutable, including every child and issued
+            // dependency. Root ports/effect/access/Meaning were still checked.
+            return Ok(true);
+        }
+        Ok(match (&*self.node, &*other.node) {
+            (Node::Provider(a), Node::Provider(b)) => {
+                charge(1)?;
+                a == b // FunctionEvidence compares issued proof identity only.
+            }
+            (Node::Pure(a), Node::Pure(b)) => {
+                charge(2)?;
+                Arc::ptr_eq(&a.leaf, &b.leaf) && a.inverse == b.inverse
+            }
+            (Node::Inverse(a), Node::Inverse(b)) | (Node::Controlled(a), Node::Controlled(b)) => {
+                charge(1)?;
+                a.same_descriptor_budgeted(b, charge)?
+            }
+            (Node::Repeat(n, a), Node::Repeat(m, b)) => {
+                charge(2)?;
+                // Zero repetitions retain the original child and dependency.
+                n == m && a.same_descriptor_budgeted(b, charge)?
+            }
+            (Node::Then(a, b), Node::Then(c, d))
+            | (Node::Tensor(a, b), Node::Tensor(c, d))
+            | (Node::Conjugate(a, b), Node::Conjugate(c, d)) => {
+                charge(2)?;
+                a.same_descriptor_budgeted(c, charge)? && b.same_descriptor_budgeted(d, charge)?
+            }
+            _ => false,
+        })
+    }
+
     /// Cloning shares the description DAG/receipt, but copies its root matrix
     /// and exact type tree. Charge these before populating binding caches.
     pub(super) fn copy_size(&self) -> usize {
@@ -1013,6 +1124,36 @@ impl Operation {
             return Err(ContractError::Limit("static circuit exceeds 1024 steps"));
         }
         Ok(steps)
+    }
+}
+
+pub(super) fn same_port_budgeted<E>(
+    left: &Ty,
+    right: &Ty,
+    charge: &mut impl FnMut(usize) -> Result<(), E>,
+) -> Result<bool, E> {
+    left.equivalent_by_budgeted(right, &mut |a, b| Ok(a == b), charge)
+}
+
+pub(super) fn same_meaning_budgeted<E>(
+    left: Option<&Matrix>,
+    right: Option<&Matrix>,
+    charge: &mut impl FnMut(usize) -> Result<(), E>,
+) -> Result<bool, E> {
+    charge(1)?;
+    match (left, right) {
+        (None, None) => Ok(true),
+        (Some(a), Some(b)) => {
+            charge(1)?;
+            if a.rows() != b.rows() || a.cols() != b.cols() {
+                return Ok(false);
+            }
+            // Exact coefficients have fixed-size fields. Reserve the entire
+            // borrowed cell comparison before comparing any matrix entry.
+            charge(a.entries().len().saturating_add(b.entries().len()))?;
+            Ok(a.entries() == b.entries())
+        }
+        _ => Ok(false),
     }
 }
 #[cfg(test)]

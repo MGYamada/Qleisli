@@ -1,0 +1,10 @@
+{
+  "src/frontend/compile/calls.rs": "908d419088d140395e34dff009a493eff24dc2fdba5a3da11c1ec8f5dfa9b6b7",
+  "src/frontend/compile/calls/tests.rs": "3cc4c11e4a68cf627db1d96b7dcbf47c398273ccc5ab889c528cbf037f937d2b",
+  "src/frontend/compile/lower/mod.rs": "f74ab71e8ad069a50430c6accbe7c4a441063bc37765e9a1be96db7c324bdaab",
+  "src/frontend/compile/lower/operations.rs": "b92d41bc2f7b3e79ab51546ff36585ee07ab62b48f5ab6ea66aa18a2f273bbc3",
+  "src/frontend/compile/mod.rs": "dae8bfc38a062b1ac40a56f56caf4565568c5ed7c162d13454e9199001382a44",
+  "src/frontend/compile/operations.rs": "a15dbab6632028ed0dd06fdaea9a10916b7241c3983cc8e8ec9730b951917a29",
+  "src/frontend/compile/operations/identity_tests.rs": "917218a5d0e5fb1e178da1fa36b5cbff80f3e30e21a2f22ed566305b367e9f7d",
+  "src/frontend/resolve/locals.rs": "120da41322ff11f4c4bfb8ea47cbae73a3dca5533feaf5d322c854dcc7d4cbdb"
+}

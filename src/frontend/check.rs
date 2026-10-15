@@ -385,13 +385,6 @@ pub(super) struct CheckedProgram {
     pub effects: BTreeMap<DefId, FunctionEffect>,
     pub lexical: BTreeMap<DefId, Arc<Table>>,
     pub obligations: Vec<Obligation>,
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "original call templates await finite generic materialization"
-        )
-    )]
     pub static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
     pub dependency_order: Vec<DefId>,
 }
