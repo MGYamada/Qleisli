@@ -11,6 +11,16 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Retain original Nat occurrences in every signature slot, including both Op
+  ports, with independently checked source associations and formal-only scopes.
+  Connect finite runtime signature closure to ordinary u32 intermediate checks
+  and existing signed i128 helper templates. Copy finite types from their closed
+  checked trees, preserving tuple order, Q owners and distinct empty registers.
+  Restore the caller's effect context on failed expansions without rewinding
+  Raw identities or work. Keep generic admission and separate Meaning-domain
+  discharge pending. Preserve first parser/profile refusals and explicit source
+  translations; this is further #369/#167 preparation, not Issue completion.
+
 - Retain original structural identities and complete static/evidence plans in
   the common source judgment, including original Nat expressions and checked
   helper call templates, original

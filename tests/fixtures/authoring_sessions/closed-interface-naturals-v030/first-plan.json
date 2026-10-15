@@ -1,0 +1,19 @@
+{
+  "scope": "Closed non-generic runtime signature experiment; sources authored before the new focused test",
+  "cases": [
+    {
+      "case": "ordinary",
+      "source_sha256": "87de6d5a8bb98d646463f68c07f64722709c306076d299d4559dfa37c75c52bf",
+      "authored_qubits": 0,
+      "prediction": "ordinary intermediate overflow must refuse",
+      "execution": "not run"
+    },
+    {
+      "case": "helper",
+      "source_sha256": "cd2e7065f5e2d5b907bc8a215712eec4627344cce68aa15729c954bbe8a14f11",
+      "authored_qubits": 0,
+      "prediction": "checked helper template returns exact zero; finite source should remain accepted",
+      "execution": "not run"
+    }
+  ]
+}

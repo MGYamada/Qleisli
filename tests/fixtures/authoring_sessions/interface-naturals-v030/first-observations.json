@@ -1,0 +1,50 @@
+{
+  "cli_path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+  "cli_sha256": "c4ce6f86e6c452594f021be8abb0f20c333a78033e5754bf94060eda6deaa28c",
+  "kernel_path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+  "observed_head": "3b2df9b6f688251e66ca2df4286674d1e0b34f81",
+  "observed_status": " M src/frontend/check/plans.rs\n M src/frontend/compile/lower/mod.rs\n M src/frontend/compile/mod.rs\n M src/frontend/resolve/locals.rs\n?? src/frontend/check/plans/interface_naturals.rs\n?? src/frontend/compile/interfaces.rs\n?? src/frontend/compile/lower/call_state_tests.rs\n?? src/frontend/compile/naturals.rs\n?? src/frontend/compile/naturals/\n?? src/frontend/compile/types.rs\n",
+  "scope": "Prior binary, not an attestation that it was built from the observed dirty source. No Cargo build. Zero authored qubits; no successful generic admission is inferred.",
+  "inputs_before": {
+    "ordinary/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "ordinary/main.qli": "92333131d17531705956081e62ffbe6e5554a582235537b7352c093a1cb1715a",
+    "helper/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "helper/main.qli": "f8e1a1604839fe60ee27f42ec35d9c9746950b9a047b154cd09e69aad3cd639f"
+  },
+  "inputs_after": {
+    "ordinary/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "ordinary/main.qli": "92333131d17531705956081e62ffbe6e5554a582235537b7352c093a1cb1715a",
+    "helper/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "helper/main.qli": "f8e1a1604839fe60ee27f42ec35d9c9746950b9a047b154cd09e69aad3cd639f"
+  },
+  "inputs_stable": true,
+  "binary_stable": true,
+  "kernel_stable": true,
+  "observations": [
+    {
+      "case": "ordinary",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-generic-plan-validation-ji3399kg/signature-nat-first/ordinary"
+      ],
+      "exit_code": 1,
+      "seconds": 0.024814584059640765,
+      "stdout": "ordinary.first.stdout.txt",
+      "stderr": "ordinary.first.stderr.txt"
+    },
+    {
+      "case": "helper",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/private/tmp/qleisli-generic-plan-validation-ji3399kg/signature-nat-first/helper"
+      ],
+      "exit_code": 1,
+      "seconds": 0.004274333128705621,
+      "stdout": "helper.first.stdout.txt",
+      "stderr": "helper.first.stderr.txt"
+    }
+  ]
+}

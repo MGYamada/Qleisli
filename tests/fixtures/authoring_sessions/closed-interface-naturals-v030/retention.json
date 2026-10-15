@@ -1,0 +1,73 @@
+{
+  "format": "qleisli.interface-naturals-first-retention",
+  "version": 1,
+  "scope": "Closed runtime first source/CLI observations. One u32 capacity refusal, one native-valid concrete helper control; no source-preservation proof or generic admission.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1417,
+      "mode": 420,
+      "sha256": "0063aecd5406381ce38c5909fd89bf76f6e168073329b03b4df9167474e21249"
+    },
+    {
+      "path": "first-observations.json",
+      "bytes": 2270,
+      "mode": 420,
+      "sha256": "afeaea445bd7dd6bedc3607d072a93623ff57ba29fa4d78c3b726c44a838b59d"
+    },
+    {
+      "path": "first-plan.json",
+      "bytes": 670,
+      "mode": 420,
+      "sha256": "e2e72ac642fd3206806db398cf384a32bc805b98d494a9a1433a2b37fce761fa"
+    },
+    {
+      "path": "helper/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "helper/main.qli",
+      "bytes": 211,
+      "mode": 420,
+      "sha256": "cd2e7065f5e2d5b907bc8a215712eec4627344cce68aa15729c954bbe8a14f11"
+    },
+    {
+      "path": "helper.first.stderr.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "helper.first.stdout.txt",
+      "bytes": 453,
+      "mode": 420,
+      "sha256": "91547bada899ed6192cb8b21657511de74479f51f21a17605aa01138d8f0ad8b"
+    },
+    {
+      "path": "ordinary/Qargo.toml",
+      "bytes": 44,
+      "mode": 420,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+    },
+    {
+      "path": "ordinary/main.qli",
+      "bytes": 182,
+      "mode": 420,
+      "sha256": "87de6d5a8bb98d646463f68c07f64722709c306076d299d4559dfa37c75c52bf"
+    },
+    {
+      "path": "ordinary.first.stderr.txt",
+      "bytes": 176,
+      "mode": 420,
+      "sha256": "b59230f078d7ad5b5cff9d66ecb538f3ea9b3965b34183134c3cd53cc637740b"
+    },
+    {
+      "path": "ordinary.first.stdout.txt",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

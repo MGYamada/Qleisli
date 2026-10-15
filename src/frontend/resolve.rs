@@ -159,6 +159,10 @@ impl Resolution {
     pub fn declaration(&self, id: DefId) -> &Declaration {
         &self.declarations[id.0]
     }
+    /// Fallible original identity lookup; never recover a declaration by name.
+    pub fn try_declaration(&self, id: DefId) -> Option<&Declaration> {
+        self.declarations.get(id.0)
+    }
     pub fn declarations(&self) -> impl Iterator<Item = (DefId, &Declaration)> {
         self.declarations
             .iter()

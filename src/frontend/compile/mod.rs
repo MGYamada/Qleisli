@@ -12,10 +12,15 @@
 
 mod basis;
 mod circuit;
+mod interfaces;
 mod lower;
+mod naturals;
 mod operations;
 mod profile;
 mod report;
+mod types;
+
+use types::finite_type;
 
 pub use report::ProjectCheckReport;
 
@@ -215,6 +220,10 @@ struct Compiler<'a> {
     // Retain the single complete judgment over the original loaded source.
     // Adapters borrow its facts; they neither reconstruct nor replace them.
     source: check::CheckedProgram,
+    // Captured and independently associated while the original indices and
+    // checked helper templates were still available. Normalized sizes cannot
+    // replace the ordinary Nat expression's intermediate checks.
+    interface_naturals: BTreeMap<Key, check::plans::InterfaceNaturals>,
     locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
@@ -557,91 +566,12 @@ impl<'a> Compiler<'a> {
         if let Some(error) = charge_error {
             return Err(error);
         }
-        result.map_err(|error| {
+        let closed = result.map_err(|error| {
             source_error(self.project, &self.project.root, error.in_module(module))
-        })
+        })?;
+        self.validate_interface_naturals(definition, &closed, span)?;
+        Ok(closed)
     }
-}
-
-/// Convert the checked symbolic interface, preserving its exact type tree.
-/// Original types supply locations only; this is finite eligibility and copying,
-/// never another source type/ownership judgment.
-fn finite_type<N: FiniteRegisterSize>(
-    compiler: &Compiler<'_>,
-    work: &mut usize,
-    module: &str,
-    original: &Type,
-    checked: &super::types::Type<N>,
-    stage: Stage,
-) -> Result<Ty, CompileError> {
-    let charge_node = |work: &mut usize| {
-        let size = checked.tree_size();
-        if size.nodes > MAX_TREE_NODES || size.depth > MAX_TREE_DEPTH {
-            return Err(compiler.error(module, original.span, ErrorCode::Limit, format!("internal value or type exceeds the initial {MAX_TREE_NODES}-node / {MAX_TREE_DEPTH}-level limit")));
-        }
-        compiler.charge_at(work, module, original.span, size.nodes)
-    };
-    let ty = match (&original.kind, &checked.kind) {
-        (TypeKind::Unit, Kind::Unit) => {
-            charge_node(work)?;
-            Ty::unit()
-        }
-        (TypeKind::Bit, Kind::Bit) => {
-            charge_node(work)?;
-            Ty::bit()
-        }
-        (TypeKind::Q(original), Kind::Q(checked)) => {
-            let basis = finite_type(compiler, work, module, original, checked, Stage::Basis)?;
-            charge_node(work)?;
-            Ty::quantum(basis)
-        }
-        (TypeKind::Tuple(original), Kind::Tuple(checked)) => {
-            assert_eq!(original.len(), checked.len(), "checked tuple arity");
-            let mut fields = Vec::new();
-            for (ordinal, field) in original.iter().enumerate() {
-                fields.push(finite_type(
-                    compiler,
-                    work,
-                    module,
-                    field,
-                    &checked[ordinal],
-                    stage,
-                )?);
-            }
-            charge_node(work)?;
-            Ty::tuple(fields)
-        }
-        (_, Kind::Bits(size)) if size.is_exact_zero() => {
-            charge_node(work)?;
-            Ty::empty_bits()
-        }
-        (_, Kind::Bits(_)) => {
-            return Err(compiler.error(
-                module,
-                original.span,
-                ErrorCode::Unsupported,
-                "nonzero register types are outside the finite lowering profile; only Bits<0> is supported",
-            ));
-        }
-        (_, Kind::Parameter(_)) => {
-            return Err(compiler.error(
-                module,
-                original.span,
-                ErrorCode::Unsupported,
-                "named Basis types are outside the finite lowering profile",
-            ));
-        }
-        _ => unreachable!("finite source and checked interface constructors differ"),
-    };
-    if stage == Stage::Basis && ty.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
-        return Err(compiler.error(
-            module,
-            original.span,
-            ErrorCode::Limit,
-            "basis type exceeds the initial 12-bit limit",
-        ));
-    }
-    Ok(ty)
 }
 
 /// Load and check every declaration, lower `main::main`, then independently
@@ -899,37 +829,83 @@ pub fn project_effects_with_kernel(
     })
 }
 
-fn process_loaded_project_details(
+struct PreparedSource<'ast> {
+    checked: check::CheckedProgram,
+    occurrences: OccurrencesForest<'ast>,
+    interface_naturals: BTreeMap<Key, check::plans::InterfaceNaturals>,
+}
+
+fn prepare_original_source<'ast>(
     root: &Path,
-    project: &Project,
-    require_entry: bool,
-    kernel: Option<&crate::interchange::native::Kernel>,
-) -> Result<ProjectResult, CompileError> {
+    project: &'ast Project,
+) -> Result<PreparedSource<'ast>, CompileError> {
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
-    let (source, occurrences) = check::program_with(
+    let (source, (occurrences, interface_naturals)) = check::program_with(
         project
             .modules
             .iter()
             .map(|(name, module)| (name.as_str(), &module.ast))
             .collect(),
         SourceLimits::finite(),
-        |resolution, _, _, _, _, indices, budget| {
+        |resolution, interfaces, helpers, _, _, indices, budget| {
+            let mut interface_naturals = BTreeMap::new();
+            // Capture every signature before moving any original occurrence
+            // association out of the common checker's indices.
+            budget.charge(Span::default(), interfaces.len())?;
+            for id in interfaces.keys() {
+                let record = resolution.declaration(*id);
+                let declaration = &project.modules[&record.name.0].ast.decls[record.ast_index];
+                let original = check::plans::capture_interface_naturals_budgeted(
+                    check::plans::InterfaceNaturalContext {
+                        owner: *id,
+                        declaration,
+                        resolution,
+                        interfaces,
+                        indices,
+                        helpers,
+                        budget,
+                    },
+                )
+                .map_err(|error| error.in_module(&record.name.0))?;
+                budget
+                    .charge(declaration.span, 1)
+                    .map_err(|error| error.in_module(&record.name.0))?;
+                interface_naturals.insert(*id, original);
+            }
             let mut occurrences = OccurrencesForest::default();
             for (id, index) in indices {
                 let declaration = resolution.declaration(*id);
                 let span =
                     project.modules[&declaration.name.0].ast.decls[declaration.ast_index].span;
-                occurrences.insert_budgeted(
-                    index.take_occurrences(),
-                    span,
-                    &mut |span, cells| budget.charge(span, cells),
-                )?;
+                occurrences
+                    .insert_budgeted(index.take_occurrences(), span, &mut |span, cells| {
+                        budget.charge(span, cells)
+                    })
+                    .map_err(|error| error.in_module(&declaration.name.0))?;
             }
-            Ok(occurrences)
+            Ok((occurrences, interface_naturals))
         },
     )
     .map_err(|error| source_error(project, root, error))?;
+    Ok(PreparedSource {
+        checked: source,
+        occurrences,
+        interface_naturals,
+    })
+}
+
+fn process_loaded_project_details(
+    root: &Path,
+    project: &Project,
+    require_entry: bool,
+    kernel: Option<&crate::interchange::native::Kernel>,
+) -> Result<ProjectResult, CompileError> {
+    let PreparedSource {
+        checked: source,
+        occurrences,
+        interface_naturals,
+    } = prepare_original_source(root, project)?;
     let declarations: BTreeMap<_, _> = source
         .resolution
         .declarations()
@@ -972,6 +948,7 @@ fn process_loaded_project_details(
         kernel,
         project,
         source,
+        interface_naturals,
         declarations,
         locals,
         basis: BTreeMap::new(),
@@ -1236,23 +1213,30 @@ mod snapshot_tests {
         }
     }
 
-    fn compiler(project: &Project) -> Compiler<'_> {
-        let (source, ()) = check::program_with(
-            project
-                .modules
-                .iter()
-                .map(|(name, module)| (name.as_str(), &module.ast))
-                .collect(),
-            SourceLimits::finite(),
-            |_, _, _, _, _, _, _| Ok(()),
-        )
-        .expect("valid test source judgment");
+    pub(super) fn compiler(project: &Project) -> Compiler<'_> {
+        let PreparedSource {
+            checked: source,
+            occurrences,
+            interface_naturals,
+        } = prepare_original_source(Path::new("main.qli"), project)
+            .expect("valid test source judgment");
+        let declarations = source
+            .resolution
+            .declarations()
+            .map(|(id, record)| {
+                (
+                    id,
+                    &project.modules[&record.name.0].ast.decls[record.ast_index],
+                )
+            })
+            .collect();
         Compiler {
             kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
             project,
             source,
-            declarations: BTreeMap::new(),
-            locals: Forest::default(),
+            interface_naturals,
+            declarations,
+            locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),
             function_evidence: BTreeMap::new(),

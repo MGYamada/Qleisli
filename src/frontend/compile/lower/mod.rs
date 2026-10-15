@@ -5,6 +5,8 @@
 //! the same complete register store and ID supply, including suspended callers.
 
 mod branch;
+#[cfg(test)]
+mod call_state_tests;
 mod certified;
 mod classical;
 mod function_contract;
@@ -431,77 +433,86 @@ impl Lowerer<'_, '_> {
         let previous_effect = self.effect;
         let previous_contract_effect = self.contract_effect;
         let previous_effect_source = self.effect_source.take();
-        self.effect = Effect::Unitary;
-        self.contract_effect = Effect::Unitary;
-        let (value, result_span, body_span) = match &decl.body {
-            FnBody::Quantum(body) => (
-                self.block(&key_name.0, body, &mut env)?,
-                body.result.span,
-                body.span,
-            ),
-            FnBody::Basis(body) if decl.kind == FnKind::Classical => (
-                self.classical_expr(&key_name.0, body, &mut env)?,
-                body.span,
-                body.span,
-            ),
-            _ => unreachable!("complete checked callable declaration"),
-        };
-        self.compiler
-            .charge(&key_name.0, result_span, value.tree_size().nodes)?;
-        if value.ty() != return_ty {
-            return Err(self.error(
-                &key_name.0,
-                result_span,
-                ErrorCode::TypeMismatch,
-                format!(
-                    "result does not match the function return type: expected `{}`, found `{}`",
-                    return_ty.runtime(),
-                    value.ty().runtime()
+        let expanded: Result<_, CompileError> = (|| {
+            self.effect = Effect::Unitary;
+            self.contract_effect = Effect::Unitary;
+            let (value, result_span, body_span) = match &decl.body {
+                FnBody::Quantum(body) => (
+                    self.block(&key_name.0, body, &mut env)?,
+                    body.result.span,
+                    body.span,
                 ),
-            ));
-        }
-        let mut pending: Vec<_> = decl.params.iter().rev().map(|p| &p.pattern).collect();
-        let mut parameter_names = Vec::new();
-        while let Some(pattern) = pending.pop() {
-            match &pattern.kind {
-                PatternKind::Name(name) => parameter_names.push(name),
-                PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
-                PatternKind::Wildcard => {}
+                FnBody::Basis(body) if decl.kind == FnKind::Classical => (
+                    self.classical_expr(&key_name.0, body, &mut env)?,
+                    body.span,
+                    body.span,
+                ),
+                _ => unreachable!("complete checked callable declaration"),
+            };
+            self.compiler
+                .charge(&key_name.0, result_span, value.tree_size().nodes)?;
+            if value.ty() != return_ty {
+                return Err(self.error(
+                    &key_name.0,
+                    result_span,
+                    ErrorCode::TypeMismatch,
+                    format!(
+                        "result does not match the function return type: expected `{}`, found `{}`",
+                        return_ty.runtime(),
+                        value.ty().runtime()
+                    ),
+                ));
             }
-        }
-        self.no_owned_bindings(&key_name.0, body_span, &env, parameter_names)?;
-        let inferred = self.effect;
-        let contract_effect = self.contract_effect;
-        if crate::frontend::effects::FunctionEffect::checked(decl.kind, contract_effect).is_none() {
-            let (module, span) = self
-                .effect_source
-                .as_ref()
-                .map_or((key_name.0.as_str(), decl.span), |(module, span)| {
-                    (module.as_str(), *span)
-                });
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Effect,
-                crate::frontend::effects::assertion_error(
-                    &decl.name.text,
-                    decl.kind,
-                    contract_effect,
-                ),
-            ));
-        }
-        let source_fact = self.compiler.source.effects[key];
-        if inferred > source_fact.inferred() || contract_effect > source_fact.inferred() {
-            return Err(self.error(
-                &key_name.0,
-                result_span,
-                ErrorCode::Effect,
-                "concrete expansion exceeds the complete checked source effect",
-            ));
-        }
+            let mut pending: Vec<_> = decl.params.iter().rev().map(|p| &p.pattern).collect();
+            let mut parameter_names = Vec::new();
+            while let Some(pattern) = pending.pop() {
+                match &pattern.kind {
+                    PatternKind::Name(name) => parameter_names.push(name),
+                    PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+                    PatternKind::Wildcard => {}
+                }
+            }
+            self.no_owned_bindings(&key_name.0, body_span, &env, parameter_names)?;
+            let inferred = self.effect;
+            let contract_effect = self.contract_effect;
+            if crate::frontend::effects::FunctionEffect::checked(decl.kind, contract_effect)
+                .is_none()
+            {
+                let (module, span) = self
+                    .effect_source
+                    .as_ref()
+                    .map_or((key_name.0.as_str(), decl.span), |(module, span)| {
+                        (module.as_str(), *span)
+                    });
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Effect,
+                    crate::frontend::effects::assertion_error(
+                        &decl.name.text,
+                        decl.kind,
+                        contract_effect,
+                    ),
+                ));
+            }
+            let source_fact = self.compiler.source.effects[key];
+            if inferred > source_fact.inferred() || contract_effect > source_fact.inferred() {
+                return Err(self.error(
+                    &key_name.0,
+                    result_span,
+                    ErrorCode::Effect,
+                    "concrete expansion exceeds the complete checked source effect",
+                ));
+            }
+            Ok((value, inferred))
+        })();
+        // A refused callee cannot leave its private effect context in the
+        // suspended caller. Raw owners, fresh IDs and consumed work still
+        // belong to the complete expansion and are never rolled back here.
         self.effect = previous_effect;
         self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
+        let (value, inferred) = expanded?;
         self.add_effect(caller_module, caller_span, inferred);
         self.add_contract_effect(caller_module, caller_span, available);
         Ok(value)
