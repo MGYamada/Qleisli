@@ -1,0 +1,104 @@
+{
+  "format": "qleisli.public-effect-first-analysis",
+  "version": 1,
+  "analyzed_at_utc": "2026-10-14T06:20:46.107080+00:00",
+  "first_sources_sha256": "2234034c87c8fd81fe3ea6b02ac0437b9adf1c38eb148a497a716d3dabc75d9d",
+  "observations_sha256": "32527010ba575eca335dcfe9e45de081662f231d873b321d70d4916a59390206",
+  "cases": 19,
+  "commands": 38,
+  "all_original_sources_unchanged": true,
+  "all_binary_before_after_maps_equal": true,
+  "source_repairs": 0,
+  "current_result_counts": [
+    {
+      "profile": "finite-project",
+      "accepted": 9,
+      "rejected": 10
+    },
+    {
+      "profile": "selected-raw",
+      "accepted": 8,
+      "rejected": 11
+    }
+  ],
+  "policy_gap_acceptances": [
+    {
+      "case": "external-identity-unitary",
+      "profile": "finite-project"
+    },
+    {
+      "case": "external-identity-unitary",
+      "profile": "selected-raw"
+    },
+    {
+      "case": "missing-public-quantum-effect",
+      "profile": "finite-project"
+    },
+    {
+      "case": "missing-public-quantum-effect",
+      "profile": "selected-raw"
+    },
+    {
+      "case": "missing-public-closed-quantum-effect",
+      "profile": "finite-project"
+    },
+    {
+      "case": "missing-public-closed-quantum-effect",
+      "profile": "selected-raw"
+    },
+    {
+      "case": "external-missing-public-effect",
+      "profile": "finite-project"
+    },
+    {
+      "case": "external-missing-public-effect",
+      "profile": "selected-raw"
+    }
+  ],
+  "false_pure_refusals": {
+    "cases": [
+      "hidden-measure-unitary",
+      "reset-unitary",
+      "discard-unitary",
+      "hidden-measure-isometry",
+      "reset-isometry",
+      "discard-isometry",
+      "transitive-hidden-measure-unitary",
+      "transitive-reset-isometry",
+      "transitive-discard-unitary"
+    ],
+    "commands": 18,
+    "actual_code": "effect",
+    "actual_inferred": "Observe",
+    "asserted": [
+      "Unitary",
+      "Isometry"
+    ]
+  },
+  "preserved_wrong_prediction": {
+    "case": "external-reset-observe",
+    "profile": "selected-raw",
+    "predicted_current": "accept",
+    "actual_code": "unsupported",
+    "actual_message": "selected concrete preparation does not support std::observe::reset",
+    "interpretation": "A concrete-profile barrier, not evidence for a public-effect boundary; no original source or prediction repaired."
+  },
+  "body_replacement": {
+    "cases": [
+      "external-identity-unitary",
+      "external-reset-unitary"
+    ],
+    "caller_sources_identical": true,
+    "library_difference_only": "q replaced by reset(q) inside same pub observe signature",
+    "both_profiles_identity_accept": true,
+    "both_profiles_reset_effect_refuse": true
+  },
+  "same_module_rule": "Current precision accepts both; future allowance is a proposed explicit same-module policy, not yet adopted by this study.",
+  "limitations": [
+    "Current baseline only; no implementation or AFTER-behavior comparison.",
+    "Native invocations are reported only where the CLI itself reports them; this observer does not trace or independently attest native processes.",
+    "CLI checker_identity remains unpinned; external before/after executable hashes are observations, not deployed-binary attestation.",
+    "No execution, probability oracle, source/runtime preservation, arbitrary-reference semantic proof, physical realization, resource evidence, full #355 coverage or issue closure.",
+    "Host/source providers, metadata tampering, wrappers/aliases and foreign contracts need their later dedicated tests."
+  ]
+}

@@ -766,6 +766,29 @@ for _id, _mode, _parser, _check, _test in [
     ], [_test])
 
 
+# Public source permissions and actual native artifact effects remain distinct.
+# These ordinary regressions exercise existing routes; no new native mode or
+# acceptance authority is introduced by the public-effect API migration (#355).
+for _path, _tests in {
+    'ordinary-acceptance': [
+        'public_observe_identity_retains_actual_unitary_raw_and_same_module_precision',
+        'classical_public_interface_body_replacement_keeps_both_source_paths_stable',
+        'explicit_pure_labels_never_hide_observation_reset_or_discard',
+    ],
+    'contract-acceptance': [
+        'internal_pure_contract_remains_usable_under_broader_public_provider_bounds',
+        'dormant_external_observe_obligations_cannot_reuse_an_internal_pure_pair',
+    ],
+    'sized-proposal': [
+        'external_quantum_annotation_needs_are_fixed_by_the_public_contract',
+        'provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate',
+        'host_selected_public_providers_use_public_bounds_even_when_unused',
+    ],
+}.items():
+    PATHS[_path]['tests'].extend(
+        {'path': 'tests/public_effects.rs', 'test': name} for name in _tests)
+
+
 def boundary_paths(boundary):
     return sorted(name for name, rule in PATHS.items() if boundary in rule['boundaries'])
 

@@ -1,0 +1,5 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+fn hidden(q: Q<Bit>) -> Q<Bit> { reset(q) }
+pub isometry fn g(q: Q<Bit>) -> Q<Bit> { hidden(q) }
+pub observe fn main() -> Bit { measure_z(g(init0())) }

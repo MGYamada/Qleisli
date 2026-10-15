@@ -26,6 +26,7 @@ pub(super) struct Operation {
     pub codomain: Ty,
     pub access: [bool; 3],
     pub meaning: Option<Matrix>,
+    pub effect: Effect,
     node: Arc<Node>,
     depth: usize,
     nodes: usize,
@@ -166,6 +167,22 @@ impl Compiler<'_> {
             let Callee::User(reference) = self.resolve(&key_name.0, function)? else {
                 unreachable!("common reference judgment requires an ordinary definition")
             };
+            let ceiling = if basis == codomain {
+                Effect::Unitary
+            } else {
+                Effect::Isometry
+            };
+            if self
+                .effect_in_module(&key_name.0, reference)
+                .is_none_or(|effect| effect > ceiling)
+            {
+                return Err(self.error(
+                    &key_name.0,
+                    function.span,
+                    ErrorCode::Effect,
+                    "Meaning reference requires an available pure source effect",
+                ));
+            }
             let target = crate::frontend::meaning::Target::reference(
                 contract_basis(&basis),
                 contract_basis(&codomain),
@@ -459,13 +476,20 @@ impl Compiler<'_> {
         };
         let decl = self.declarations[&key];
         let key_name = self.resolution.declaration(key).name.clone();
-        let effect = self.effects[&key].inferred();
+        let effect = self.effect_in_module(module, key).ok_or_else(|| {
+            self.error(
+                module,
+                name.span,
+                ErrorCode::Effect,
+                "static provider has no available source effect",
+            )
+        })?;
         if effect > Effect::Isometry {
             return Err(self.error(
                 module,
                 name.span,
                 ErrorCode::Effect,
-                "static provider's inferred body effect must be at most Isometry",
+                "static provider's available source effect must be at most Isometry",
             ));
         }
         if !decl.static_params.is_empty() {
@@ -514,7 +538,9 @@ impl Compiler<'_> {
                 ));
             }
         }
-        let cache = (key, mkey);
+        // A same-module Unitary provider must never lend inverse/control access
+        // to a caller whose public contract only promises Isometry.
+        let cache = (key, mkey, effect);
         if let Some(op) = self.providers.get(&cache) {
             let cost = op.copy_size();
             self.charge(module, name.span, cost)?;
@@ -591,6 +617,7 @@ impl Compiler<'_> {
             codomain: (**codomain).clone(),
             access: [true, true, basis == codomain],
             meaning: Some(evidence.meaning().clone()),
+            effect,
             node: Arc::new(Node::Provider(evidence)),
             depth: 1,
             nodes: 1,
@@ -620,6 +647,9 @@ impl Compiler<'_> {
         self.charge(module, span, nodes)?;
         let mut basis = a.basis.clone();
         let mut codomain = a.codomain.clone();
+        let effect = a
+            .effect
+            .max(b.as_ref().map_or(Effect::Unitary, |b| b.effect));
         let caps = a.access;
         if let Some(b) = &b {
             if match kind {
@@ -719,6 +749,7 @@ impl Compiler<'_> {
             codomain,
             access,
             meaning,
+            effect,
             node: Arc::new(node),
             depth,
             nodes,

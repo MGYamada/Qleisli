@@ -8,15 +8,45 @@ use std::path::Path;
 
 fn source(name: &str) -> String {
     if name == "multi-init-order" {
-        return include_str!("../../../../../tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/main.qli").into();
+        let original = current_source_text(
+            "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/main.qli",
+        );
+        let prefix = "pub fn entry(";
+        assert_eq!(original.matches(prefix).count(), 1);
+        // This current test adds an independently checked Isometry contract;
+        // the preserved unannotated first program remains unchanged.
+        let explicitly_annotated = original.replacen(prefix, "pub isometry fn entry(", 1);
+        assert_eq!(
+            explicitly_annotated
+                .matches("pub isometry fn entry(")
+                .count(),
+            1
+        );
+        return explicitly_annotated;
     }
-    std::fs::read_to_string(
+    let original = current_source_text(
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01")
             .join(name)
             .join("main.qli"),
-    )
-    .unwrap()
+    );
+    if name == "empty-classical" {
+        let prefix = "pub observe fn entry(";
+        assert_eq!(original.matches(prefix).count(), 1);
+        // This is a new, narrower public contract for the hierarchy experiment,
+        // not a contract-preserving body edit. The original Observe API still
+        // refuses this pure hierarchy profile in the public-source regressions.
+        let hierarchy_isometry_contract = original.replacen(prefix, "pub isometry fn entry(", 1);
+        assert_eq!(
+            hierarchy_isometry_contract
+                .matches("pub isometry fn entry(")
+                .count(),
+            1
+        );
+        hierarchy_isometry_contract
+    } else {
+        original
+    }
 }
 fn lower(text: &str) -> HierarchyProposal {
     ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
@@ -493,7 +523,7 @@ fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
         "use std::quantum::{finish,init0};
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
+        pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
     );
     // Reuse the independently authored +1 Unit-elimination equation, with
     // fixed reviewed port placement; do not derive a target from this arrow.
@@ -520,7 +550,7 @@ fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request(
     let text = "use std::quantum::{finish,init0,h,x};
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
-        pub fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}";
+        pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}";
     let valid = lower(text);
     let mut wrong = lower(&text.replace("h(init0())", "x(init0())"));
     assert_eq!(valid.events.len(), wrong.events.len());
@@ -630,7 +660,7 @@ fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
         "use std::quantum::finish; use std::quantum::phase_eighth;
          use std::quantum::init0;
          fn changed(q: Q<Unit>) -> Unit { finish(phase_eighth(q)) }
-         pub fn entry(q: Q<Unit>) -> Q<Bit> { changed(q); init0() }",
+         pub isometry fn entry(q: Q<Unit>) -> Q<Bit> { changed(q); init0() }",
     );
     let mut bad = wrong.clone();
     bad.source = valid.source.clone();
@@ -702,8 +732,10 @@ fn isometry_two_moved_initializations_keep_reversed_axes_and_reference() {
 )]
 #[test]
 fn constructor_sequence_matches_independent_exact_equation_and_rejects_gate_substitution() {
-    let source = include_str!("../../../../../tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli")
-        .replace("finish,init0,h,split", "finish,init0,h,x,split");
+    let source = current_source_text(
+        "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
+    )
+    .replace("finish,init0,h,split", "finish,init0,h,x,split");
     let valid = lower(&source);
     // The existing independently authored Unit elimination / H equation fixes
     // +1 structural action, both complex H columns and reviewed port placement.

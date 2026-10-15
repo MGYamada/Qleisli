@@ -453,7 +453,9 @@ fn hierarchy_execute(
     let scope = request.scope();
     let contract = scope.contract();
     let verification = scope.report();
-    let isometry = proposal.source().definitions()[proposal.source().root()].effect() == "iso";
+    let source = proposal.source().instantiation();
+    let isometry = source.program().public_function_effect(source.entry())
+        == Some(qleisli::ir::Effect::Isometry);
     let kernel = hierarchical::Kernel::new(kernel);
     let limits = ExecutionLimits {
         max_amplitudes: 1 << 20,

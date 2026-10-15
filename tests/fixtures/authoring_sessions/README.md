@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [public-effect first study](public-effects-v030/README.md) preserves
+nineteen original projects and 38 checks, including the external Observe
+identity/reset contrast, missing-public-annotation acceptances and eighteen
+false-pure refusals. Its unsupported selected reset prediction remains intact;
+current implementation and semantic checks are separate from this history.
+
 The [instrument native client](engineering-instrument-native-v030/README.md)
 retains first source/command diagnostics and original mathematical study failures.
 Its history is inert; new native and CLI checks use separately authored commands.

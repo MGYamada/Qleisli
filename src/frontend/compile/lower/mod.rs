@@ -109,7 +109,10 @@ struct Lowerer<'c, 'p> {
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
+    // `effect` classifies the emitted Raw operations. Source eligibility keeps
+    // public boundaries independently, even when their bodies inline to less.
     effect: Effect,
+    contract_effect: Effect,
     // Origin of the strongest derived effect; diagnostic metadata only.
     effect_source: Option<(String, Span)>,
     depth: usize,
@@ -220,10 +223,18 @@ impl Lowerer<'_, '_> {
     }
 
     fn add_effect(&mut self, module: &str, span: Span, effect: Effect) {
-        if effect > self.effect {
+        if effect > self.contract_effect {
             self.effect_source = Some((module.to_owned(), span));
         }
         self.effect = self.effect.max(effect);
+        self.contract_effect = self.contract_effect.max(effect);
+    }
+
+    fn add_contract_effect(&mut self, module: &str, span: Span, effect: Effect) {
+        if effect > self.contract_effect {
+            self.effect_source = Some((module.to_owned(), span));
+        }
+        self.contract_effect = self.contract_effect.max(effect);
     }
 
     fn error(
@@ -354,6 +365,20 @@ impl Lowerer<'_, '_> {
                 "Meaning declarations are not ordinary runtime callees",
             ));
         }
+        let (caller_module, caller_span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+            (site.module, site.span)
+        });
+        let available = self
+            .compiler
+            .effect_in_module(caller_module, *key)
+            .ok_or_else(|| {
+                self.error(
+                    caller_module,
+                    caller_span,
+                    ErrorCode::Effect,
+                    "callee has no available source effect",
+                )
+            })?;
         if args.len() != params.len() {
             let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
                 (site.module, site.span)
@@ -392,8 +417,10 @@ impl Lowerer<'_, '_> {
             self.bind(&key_name.0, &param.pattern, value, &mut env, &mut names)?;
         }
         let previous_effect = self.effect;
+        let previous_contract_effect = self.contract_effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
+        self.contract_effect = Effect::Unitary;
         let (value, result_span, body_span) = match &decl.body {
             FnBody::Quantum(body) => (
                 self.block(&key_name.0, body, &mut env)?,
@@ -432,8 +459,8 @@ impl Lowerer<'_, '_> {
         }
         self.no_owned_bindings(&key_name.0, body_span, &env, parameter_names)?;
         let inferred = self.effect;
-        let Some(fact) = crate::frontend::effects::FunctionEffect::checked(decl.kind, inferred)
-        else {
+        let contract_effect = self.contract_effect;
+        if crate::frontend::effects::FunctionEffect::checked(decl.kind, contract_effect).is_none() {
             let (module, span) = self
                 .effect_source
                 .as_ref()
@@ -444,11 +471,15 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::Effect,
-                crate::frontend::effects::assertion_error(&decl.name.text, decl.kind, inferred),
+                crate::frontend::effects::assertion_error(
+                    &decl.name.text,
+                    decl.kind,
+                    contract_effect,
+                ),
             ));
-        };
+        }
         let source_fact = self.compiler.effects[key];
-        if fact.inferred() > source_fact.inferred() {
+        if inferred > source_fact.inferred() || contract_effect > source_fact.inferred() {
             return Err(self.error(
                 &key_name.0,
                 result_span,
@@ -457,11 +488,10 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.effect = previous_effect;
+        self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
-        let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
-            (site.module, site.span)
-        });
-        self.add_effect(module, span, inferred);
+        self.add_effect(caller_module, caller_span, inferred);
+        self.add_contract_effect(caller_module, caller_span, available);
         Ok(value)
     }
 
@@ -757,6 +787,18 @@ impl Lowerer<'_, '_> {
             self.compiler.charge(module, name.span, charge)?;
         }
         let first = self.raw.operations.len();
+        if control && self.bound_operation(callee).is_none() {
+            if let Callee::User(key) = self.compiler.resolve(module, callee)? {
+                if self.compiler.effect_in_module(module, key) != Some(Effect::Unitary) {
+                    return Err(self.error(
+                        module,
+                        callee.span,
+                        ErrorCode::Effect,
+                        "control access requires an available Unitary source effect",
+                    ));
+                }
+            }
+        }
         let result = self.runtime_call(
             module,
             callee,
@@ -1275,15 +1317,13 @@ impl Lowerer<'_, '_> {
         let ty = Ty::quantum(basis.clone());
         match &target {
             Callee::User(key) => {
-                if self.compiler.effects.get(key).map(|fact| fact.inferred())
-                    != Some(Effect::Unitary)
-                {
+                if self.compiler.effect_in_module(module, *key) != Some(Effect::Unitary) {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::Effect,
                         crate::frontend::effects::unitary_required(
-                            "static operation requires a function with inferred Unitary effect",
+                            "static operation requires an available Unitary source effect",
                         ),
                     ));
                 }
@@ -1339,6 +1379,7 @@ impl Lowerer<'_, '_> {
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
+            contract_effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
             bindings: BTreeMap::new(),
@@ -1519,11 +1560,13 @@ impl Lowerer<'_, '_> {
         self.bind_env(binder, Binding::Live(ancilla), &mut local);
         let start = self.raw.operations.len();
         let previous_effect = self.effect;
+        let previous_contract_effect = self.contract_effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
+        self.contract_effect = Effect::Unitary;
         let result = self.block(module, body, &mut local)?;
         self.no_owned_bindings(module, body.span, &local, [binder])?;
-        if self.effect != Effect::Unitary {
+        if self.contract_effect != Effect::Unitary {
             return Err(self.error(
                 module,
                 body.span,
@@ -1532,6 +1575,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.effect = previous_effect;
+        self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
         if result != Value::quantum(ancilla_slot, Ty::bit()) {
             return Err(self.error(
@@ -1611,6 +1655,7 @@ fn lower_function_inner(
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,
+        contract_effect: Effect::Unitary,
         effect_source: None,
         depth: 0,
         bindings,

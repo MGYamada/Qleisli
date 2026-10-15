@@ -106,7 +106,7 @@ fn reference_operation_bindings_retain_requests_in_raw_and_hierarchy() {
         meaning H:Bit=reference(reference_h);
         fn implementation(q:Q<Bit>)->Q<Bit>{{h(h(h(q)))}}
         fn client[const U:Op<Bit,H>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
-        pub fn quantum_client(q:Q<Bit>)->Q<Bit>{{client[implementation](q)}}
+        pub unitary fn quantum_client(q:Q<Bit>)->Q<Bit>{{client[implementation](q)}}
         pub observe fn main()->Bit{{measure_z(quantum_client(init0()))}}"
     );
     let s = Exact::inv_sqrt2();
@@ -358,7 +358,7 @@ fn reference_arguments_and_visibility_are_exact() {
         BTreeMap::from([
             (
                 "dependency".into(),
-                format!("{public} fn f(q:Q<Bit>)->Q<Bit>{{q}}"),
+                format!("{public} unitary fn f(q:Q<Bit>)->Q<Bit>{{q}}"),
             ),
             (
                 "main".into(),
@@ -473,7 +473,7 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
         fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
         meaning S:Unit=reference(scalar);
         fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
-        pub fn main()->Bit{let q=apply_contract(implementation,S,unit(()));finish(q);0}";
+        pub unitary fn main()->Bit{let q=apply_contract(implementation,S,unit(()));finish(q);0}";
     assert_eq!(
         matrix(source),
         Matrix::new(1, 1, vec![Exact::new([0, 1, 0, 1], 1).unwrap()]).unwrap()
@@ -535,7 +535,7 @@ fn fixed_fourier_reference_meanings_match_independent_exact_coefficients() {
             fn fourier(q:Q<{basis}>)->Q<{basis}>{{{body}}}
             meaning Fourier:{basis}=reference(fourier);
             fn implementation(q:Q<{basis}>)->Q<{basis}>{{fourier(q)}}
-            pub fn main()->{output}{{let q=apply_contract(implementation,Fourier,{init});{readout}}}");
+            pub observe fn main()->{output}{{let q=apply_contract(implementation,Fourier,{init});{readout}}}");
         let actual = matrix(&source);
         let dimension = 1usize << width;
         let scale = if width == 2 {

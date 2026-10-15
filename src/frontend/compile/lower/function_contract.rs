@@ -19,8 +19,7 @@ impl Lowerer<'_, '_> {
         env: &Env,
     ) -> Result<Value, CompileError> {
         if let Callee::User(key) = self.compiler.resolve(module, implementation)? {
-            if self.compiler.effects.get(&key).map(|fact| fact.inferred()) == Some(Effect::Observe)
-            {
+            if self.compiler.effect_in_module(module, key) == Some(Effect::Observe) {
                 return self.apply_instrument_contract(
                     module,
                     span,
@@ -155,10 +154,14 @@ impl Lowerer<'_, '_> {
         let evidence = self
             .compiler
             .instrument_contract_evidence(module, span, keys[0], keys[1])?;
+        let actual_effect = self.compiler.checked[&keys[0]].raw().declared_effect;
         let first = self.raw.operations.len();
         // Ordinary inlining consumes the live input once and executes only the
         // implementation. The independently selected reference is not called.
         let result = self.call_user(&keys[0], vec![input], None)?;
+        // The source contract remains Observe even when the independently
+        // checked concrete implementation emits a pure instrument.
+        self.add_contract_effect(module, span, Effect::Observe);
         if result.ty() != result_type {
             return Err(self.error(
                 module,
@@ -188,7 +191,7 @@ impl Lowerer<'_, '_> {
             operations: self.raw.operations[first..].to_vec(),
             quantum_outputs,
             classical_outputs,
-            declared_effect: Effect::Observe,
+            declared_effect: actual_effect,
         };
         let checked = evidence
             .check_call(
@@ -232,13 +235,13 @@ impl Lowerer<'_, '_> {
                 "apply_contract requires ordinary functions with inferred Unitary body effects",
             ));
         };
-        if self.compiler.effects.get(&key).map(|fact| fact.inferred()) != Some(Effect::Unitary) {
+        if self.compiler.effect_in_module(module, key) != Some(Effect::Unitary) {
             return Err(self.error(
                 module,
                 name.span,
                 ErrorCode::Effect,
                 crate::frontend::effects::unitary_required(
-                    "apply_contract requires inferred Unitary functions",
+                    "apply_contract requires available Unitary source effects",
                 ),
             ));
         }
@@ -301,10 +304,26 @@ impl Compiler<'_> {
                 self.declarations[&key].kind,
                 FnKind::Classical | FnKind::Meaning
             ) || !self.declarations[&key].static_params.is_empty()
-                || self.effects[&key].inferred() != Effect::Observe
+                || self.effect_in_module(module, key) != Some(Effect::Observe)
             {
                 return Err(self.error(module, span, ErrorCode::Effect,
-                    "observing contracts require two closed ordinary functions with principal Observe effects"));
+                    "observing contracts require two closed ordinary functions with available Observe source effects"));
+            }
+            let actual = self.checked.get(&key).ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "instrument dependency has not been independently checked",
+                )
+            })?;
+            if actual.raw().declared_effect != Effect::Observe {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "observing function contracts require actual Observe Raw artifacts; a broader public effect cannot replace the implementation classification",
+                ));
             }
         }
         let (parameters, result) = self.signature(&implementation)?;
@@ -395,9 +414,9 @@ impl Compiler<'_> {
             || !self.declarations[&implementation_key]
                 .static_params
                 .is_empty()
-            || self.effects[&implementation_key].inferred() != Effect::Unitary
+            || self.effect_in_module(module, implementation_key) != Some(Effect::Unitary)
         {
-            return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract implementation must be a closed principal-Unitary exact quantum endomorphism"));
+            return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract implementation must be a closed exact quantum endomorphism with an available Unitary source effect"));
         }
         let declared_meaning = self
             .meanings
@@ -419,9 +438,9 @@ impl Compiler<'_> {
                 || !self.declarations[&specification_key]
                     .static_params
                     .is_empty()
-                || self.effects[&specification_key].inferred() != Effect::Unitary
+                || self.effect_in_module(module, specification_key) != Some(Effect::Unitary)
             {
-                return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract specification must have the same closed principal-Unitary exact quantum interface"));
+                return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract specification must have the same closed exact quantum interface with an available Unitary source effect"));
             }
         }
         let cache_key = (implementation_key, specification_key);

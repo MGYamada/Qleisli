@@ -1,0 +1,67 @@
+{
+  "format": "qleisli.public-quantum-use-contrast-freeze",
+  "version": 1,
+  "scope": "Post-observation freeze of the separately authored, existing-first-patch-CLI contrast; no recorded command is executed.",
+  "files": [
+    {
+      "path": "closed-quantum/Qargo.toml",
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "bytes": 44
+    },
+    {
+      "path": "closed-quantum/library.qli",
+      "sha256": "36e079c55ff39431ff696c715b08309356cfe9051a7385cf120f6a7890b1cb45",
+      "bytes": 117
+    },
+    {
+      "path": "closed-quantum/main.qli",
+      "sha256": "ed8a93fe041cdbc4bb6c93edb29a4e4cd966605bc1b2ddca1d59d442a860007d",
+      "bytes": 64
+    },
+    {
+      "path": "closed-quantum.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "closed-quantum.stdout.txt",
+      "sha256": "21cd0c41f6cc246b8b7a2461b7244e638298b84ef5ae1a3e5035331fea07042c",
+      "bytes": 341
+    },
+    {
+      "path": "context-before.json",
+      "sha256": "4b4a6c3fc292ee16dfa17c7fa252a599a6440e2e491daa8a93beeee562429a65",
+      "bytes": 1534
+    },
+    {
+      "path": "observations.json",
+      "sha256": "fe8519062cfb8906f643176bd29ea49560689588e61c2c38d6b38134953e498f",
+      "bytes": 1323
+    },
+    {
+      "path": "ordinary/Qargo.toml",
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "bytes": 44
+    },
+    {
+      "path": "ordinary/library.qli",
+      "sha256": "7b6dabe9bb2f0e8ba3c605d773026360316217824253a076ac1975311061b5ac",
+      "bytes": 32
+    },
+    {
+      "path": "ordinary/main.qli",
+      "sha256": "ed8a93fe041cdbc4bb6c93edb29a4e4cd966605bc1b2ddca1d59d442a860007d",
+      "bytes": 64
+    },
+    {
+      "path": "ordinary.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ordinary.stdout.txt",
+      "sha256": "a5dacef27ff4d51c237def24dd4efe599dfa1b651d88afde12068579c50e2d56",
+      "bytes": 417
+    }
+  ]
+}

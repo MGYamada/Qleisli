@@ -302,8 +302,12 @@ The access call itself has ordinary type `Unit`. A joint call such as
 in argument order. Each argument must name one whole `Q<A>` owner; ordinary
 data and tuples containing several owners are not access places.
 
-The callee must have actual inferred `Unitary` effect. An annotation does not
-override its body. Its result must have exactly the original owner type for
+The callee must have caller-visible checked `Unitary` effect under the
+[public-effect rule](source-text.md#ordinary-function-effects-and-assertions):
+the public contract outside its original module, and independently checked
+internal inference inside it. An annotation does not override body checking;
+inlining or cache reuse cannot sharpen an external contract. Its result must
+have exactly the original owner type for
 one argument, or the ordered tuple of those owner types for several arguments.
 Exact basis trees and owner partition matter, including `Q<Unit>`; equal bit
 width is insufficient. The callee executes once. Access closure inserts no

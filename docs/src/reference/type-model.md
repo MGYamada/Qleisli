@@ -409,10 +409,12 @@ general ports. When the common exact-tree judgment establishes `A = B`, the
 explicit form retains the same Unitary bound as its endomorphic abbreviation.
 Preparation is the ordinary `Unit -> A` case; `Q<Unit>` remains a logical
 owner. A concrete provider must be an ordinary unary quantum function whose
-independently inferred principal effect is at most Isometry. An annotation cannot
+checked effect visible in the caller's original module is at most Isometry.
+External and host-selected public providers use their public effect, while
+same-module private/internal analysis retains checked inference. An annotation cannot
 make an Observe body pure or make an Isometry body Unitary.
 
-`Adjointable(U)` requires a principal-Unitary provider and a supported reverse
+`Adjointable(U)` requires a caller-visible Unitary provider and a supported reverse
 implementation; an adjoint exchanges the ports. For an opaque formal
 `U: Op<A -> B>`, direct `adjoint(U)(q)` consumes `Q<B>` and returns `Q<A>`,
 just as applying the static adjoint through another operation parameter does.
@@ -480,13 +482,13 @@ classical/quantum trees reject; equal width cannot repair a different tree.
 Direct `adjoint` and `power` evaluate their input once and return T. Direct `controlled`
 evaluates control then target once and returns `(Q<Bit>,T)`. Each original
 owner is consumed and returned exactly once; no implicit split, join, packing or
-reassociation occurs. The named body must have principal Unitary effect and
+reassociation occurs. The named body must have caller-visible Unitary effect and
 the required implementation path. Transparent Repeat checks its count and
 child even at zero. Only a directly transformed runtime self-call to the same
 DefId may use the actual checked Nat decrease; this permits neither recursive
 opaque providers nor mutual dependency cycles. A located RuntimeGroupProvider
 obligation retains the original provider DefId, complete runtime interface and
-principal effect. Its source association is not transformed-operator equality,
+visible effect. Its source association is not transformed-operator equality,
 provider correspondence or a source-preservation proof.
 
 This runtime-group rule does not widen an opaque `Op<A>`, static/host provider,
@@ -505,7 +507,7 @@ The direct-group distinction is recorded in the
 Concrete transform/evidence and native checking remain separate obligations.
 
 `apply_contract` evaluates its input first and consumes one exact quantum owner.
-In its pure overload, the implementation and ordinary specification are closed principal-Unitary
+In its pure overload, the implementation and ordinary specification are closed caller-visible Unitary
 `Q<A> -> Q<A>` declarations; a declared finite Meaning may supply the
 specification instead. The common checker records a located FunctionEquality
 obligation binding both exact original DefIds, interface/category/effect and
@@ -518,8 +520,12 @@ fresh native evidence. A declared Meaning supplies the request; it is never
 projected as a runtime function.
 
 The adopted observing overload compares two closed ordinary functions with
-principal Observe effects, one `Q<A>` argument and the same complete finite
-result type. Both concrete adapters obtain a private native instrument
+caller-visible Observe effects, one `Q<A>` argument and the same complete finite
+result type. The current native instrument profile additionally requires
+genuinely observing original bodies. A conservative Observe declaration over
+a pure body does not select pure-contract evidence; that concrete route is
+explicitly unsupported, including dormant obligations. Both concrete adapters
+obtain a private native instrument
 equation for the two original accepted artifacts. Each executes only the
 implementation and freshly compares the actual emitted call interval with
 the selected original reference. Complete result nesting, ordered quantum and
@@ -879,23 +885,29 @@ request or named-QPE provider fixes the hierarchy route; combining one with
 explicit Raw rejects before native checking. After a route is selected, its
 lowering or native failure propagates without retrying a weaker route.
 
-The selected hierarchy admits a principal Isometry root with quantum entry values
-and quantum results, optionally accompanied by one ordinary `Bits<0>` result.
+The selected hierarchy admits a root with checked public Isometry and actual
+Unitary or Isometry effect, with quantum entry values and quantum results,
+optionally accompanied by one ordinary `Bits<0>` result.
 Ordinary Unit result ports remain omitted as described above. The body must
 fit the existing preparation and pure-operation profile: fresh zero
-initialization, followed by checked unitary hierarchy operations, with no
-observation. Lowering uses the existing initialization/evolution/readout
-transport with zero measurements. Its single empty outcome is a transport
-carrier; it introduces no source Observe effect, measurement or conversion
-between `Unit` and `Bits<0>`. The source effect remains Isometry even when an
-optional prefix asserts the broader Observe bound.
+initialization where needed, followed by checked unitary hierarchy operations,
+with no observation. A unitary implementation needs no fresh preparation;
+its actual `SourceDefinition`, `SourceStep` and Raw effects remain Unitary.
+The public Isometry bound still governs external provider, Meaning and
+inverse/control eligibility. Lowering uses the existing
+initialization/evolution/readout transport with zero measurements. Its single
+empty outcome is a transport carrier; it introduces no source Observe effect,
+measurement or conversion between `Unit` and `Bits<0>`. A public Observe bound over that implementation
+cannot recover the sharper hierarchy eligibility. Raw retains its own actual
+classification; unsupported source/profile combinations refuse explicitly.
 
 Isometry `check` reports the `sized-isometry` profile. Isometry `run` returns the residual
 quantum width and the single branch's unnormalized complex coefficients,
 without removing scalar phase. A retained `Q<Unit>` owner, explicit
 `unit`/`finish` work and every live caller frame retain their original
 ownership and phase obligations. `sample` and named-QPE selection require a
-principal Observe entry; a broader annotation does not turn Isometry into Observe.
+public Observe contract and an actually observing supported artifact; a broader
+annotation does not fabricate observing operations or rewrite the Raw effect.
 This adapter introduces no native primitive or new theorem. Raw supports
 retained quantum Unit inputs/returns, exact `phase_eighth` and the explicit
 structural Unit introduction/elimination maps. The latter lower to

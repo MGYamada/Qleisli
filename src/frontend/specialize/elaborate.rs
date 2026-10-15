@@ -68,9 +68,12 @@ impl PlacePartition {
     }
 }
 
+use crate::frontend::effects::{EffectContext, effect_at};
 use crate::frontend::resolve::{DefId, Target};
 use crate::frontend::types::Kind as TypeKind;
 use std::sync::Arc;
+
+pub(super) const OBSERVING_CONTRACT_PROFILE: &str = "the native observing function-contract profile requires actual Observe bodies with observation history for both functions; a conservative public Observe bound cannot reclassify Unitary/Isometry Raw artifacts";
 
 /// Concrete exact source tree. Unit/Bit/Bits kind tags are shared by ordinary and
 /// quantum leaves; `is_quantum` retains their distinct ownership category.
@@ -174,6 +177,9 @@ impl SourceValue {
 #[derive(Clone, Debug)]
 pub struct SourceOperation {
     kind: OperationKind,
+    // Source eligibility is captured where the provider is selected. Actual
+    // body effects below remain independent artifact classification.
+    source_effect: Effect,
     pub(super) meanings: Arc<[ExplicitMeaning]>,
     module: String,
     span: Span,
@@ -213,6 +219,7 @@ pub(super) enum OperationKey {
     Repeat(u32, Box<OperationKey>),
     Constructed(OperationConstructor, Vec<OperationKey>),
     Requested(Vec<DefId>, Box<OperationKey>),
+    SourceEffect(Effect, Box<OperationKey>),
 }
 impl SourceOperation {
     pub fn definition(&self) -> Option<usize> {
@@ -277,6 +284,7 @@ impl SourceOperation {
             }
         };
         action
+            + 1 // retained caller-visible effect in each specialization key
             + if self.meanings.is_empty() {
                 0
             } else {
@@ -292,14 +300,15 @@ impl SourceOperation {
                 op.children.iter().map(Self::key).collect(),
             ),
         };
-        if self.meanings.is_empty() {
+        let requested = if self.meanings.is_empty() {
             action
         } else {
             OperationKey::Requested(
                 self.meanings.iter().map(|m| m.id).collect(),
                 Box::new(action),
             )
-        }
+        };
+        OperationKey::SourceEffect(self.source_effect, Box::new(requested))
     }
     fn has_meanings(&self) -> bool {
         !self.meanings.is_empty() || self.children().iter().any(Self::has_meanings)
@@ -536,6 +545,8 @@ impl SourceStep {
     pub fn span(&self) -> Span {
         self.span
     }
+    /// Actual retained operation classification, not an exported source contract.
+    /// Inspecting this value grants no source capability beyond the public effect.
     pub fn effect(&self) -> &'static str {
         effect_name(self.effect)
     }
@@ -578,6 +589,8 @@ impl SourceDefinition {
     pub fn steps(&self) -> &[SourceStep] {
         &self.steps
     }
+    /// Actual retained operation classification, not an exported source contract.
+    /// Inspecting this value grants no source capability beyond the public effect.
     pub fn effect(&self) -> &'static str {
         effect_name(self.effect)
     }
@@ -778,8 +791,10 @@ impl ElaboratedProgram {
     pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility> {
         super::lower::hierarchy_eligibility(self)
     }
-    /// Preflight the root signature and declared effect against the selected
-    /// hierarchical transport profile, including ordinary Boolean steps.
+    /// Preflight the root signature, public contract and actual body against
+    /// the selected hierarchical transport profile, including Boolean steps.
+    /// A supported public Isometry root may have an actually Unitary body;
+    /// transport selection does not rewrite its source-step or Raw effects.
     /// Generic source checking is separate;
     /// `lower` performs body and operation-specific capability checks before
     /// generating a proposal. This preflight issues no acceptance evidence.
@@ -989,6 +1004,12 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
     // Eager validation prevents an unused entry operation from concealing an
     // invalid concrete source body, even if no executable step invokes it.
     for (name, binding) in &instance.operations {
+        let source_effect = super::bindings::host_provider_effect(
+            &instance.program,
+            instance.entry_id,
+            instance.operation_ids[name],
+            Span::default(),
+        )?;
         let id = builder.function(
             instance.operation_ids[name],
             binding.types.clone(),
@@ -996,11 +1017,12 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             BTreeMap::new(),
             0,
         )?;
-        builder.pure_provider_interface(id, Span::default())?;
+        builder.pure_provider_interface(id, source_effect, Span::default())?;
         operations.insert(
             name.clone(),
             SourceOperation {
                 kind: OperationKind::Definition(id),
+                source_effect,
                 meanings: Arc::from([]),
                 module: instance
                     .program
@@ -1376,6 +1398,35 @@ impl Builder<'_> {
         let (module, function) = self.program.definition(id)?;
         Ok((module.into(), Arc::clone(function)))
     }
+    fn source_effect(&self, definition: DefId, frame: &Frame, span: Span) -> Result<Effect> {
+        let resolution = &self.program.checked.resolution;
+        let module = resolution
+            .module(&frame.module)
+            .expect("retained caller module");
+        effect_at(
+            resolution,
+            &self.program.checked.effects,
+            EffectContext::Module(module),
+            definition,
+        )
+        .ok_or_else(|| {
+            error(
+                "effect",
+                span,
+                "callee has no visible checked source effect",
+            )
+        })
+    }
+    fn require_effect(&self, effect: Effect, frame: &Frame, span: Span) -> Result<()> {
+        if effect > frame.effect {
+            return Err(error(
+                "effect",
+                span,
+                "caller-visible operation exceeds the checked source effect",
+            ));
+        }
+        Ok(())
+    }
     fn function(
         &mut self,
         definition: DefId,
@@ -1423,6 +1474,30 @@ impl Builder<'_> {
         // Include keys, retained definition substitutions and lexical scope
         // copies in the existing aggregate budget, even for unused parameters.
         self.charge_cells(type_cells.saturating_mul(4), Span::default())?;
+        // Every operation key retains its source-effect wrapper, including
+        // ordinary leaves and repeats. Account for the lookup key and its
+        // active/cache/definition copies before allocating any of them, even
+        // when this invocation will hit an existing specialization.
+        let operation_key_cells = operations.iter().try_fold(0usize, |total, (name, op)| {
+            total
+                .checked_add(name.len())
+                .and_then(|cells| cells.checked_add(op.expanded_key_cells()))
+                .ok_or_else(|| {
+                    error(
+                        "limit",
+                        Span::default(),
+                        "operation key accounting overflow",
+                    )
+                })
+        })?;
+        let operation_key_cells = operation_key_cells.checked_mul(4).ok_or_else(|| {
+            error(
+                "limit",
+                Span::default(),
+                "operation key copy accounting overflow",
+            )
+        })?;
+        self.charge_cells(operation_key_cells, Span::default())?;
         let key = Key {
             definition,
             types: types
@@ -1435,6 +1510,30 @@ impl Builder<'_> {
                 .map(|(name, op)| (name.clone(), op.key()))
                 .collect(),
         };
+        // Check source capability before a specialization cache can return a
+        // body whose actual effect is sharper than this provider's contract.
+        for formal in &self.program.checked.interface(definition).statics {
+            if let crate::frontend::check::StaticKind::Operation {
+                codomain, access, ..
+            } = &formal.kind
+            {
+                let ceiling = if codomain.is_some() && !access[1] && !access[2] {
+                    Effect::Isometry
+                } else {
+                    Effect::Unitary
+                };
+                if operations
+                    .get(&formal.key.name)
+                    .is_some_and(|op| op.source_effect > ceiling)
+                {
+                    return Err(error(
+                        "effect",
+                        Span::default(),
+                        "concrete provider's caller-visible effect exceeds the operation ceiling",
+                    ));
+                }
+            }
+        }
         if let Some(id) = self.cache.get(&key) {
             return Ok(*id);
         }
@@ -1483,7 +1582,8 @@ impl Builder<'_> {
                 let operation = &operations[&key.name];
                 let (ports, effect, _) =
                     operation_signature(operation, &self.definitions, function.span)?;
-                if effect > required.ceiling
+                if operation.source_effect > required.ceiling
+                    || effect > required.ceiling
                     || ports.input != &required.input
                     || ports.output != required.output()
                 {
@@ -1587,8 +1687,15 @@ impl Builder<'_> {
                 operations,
                 inputs,
                 output,
+                // A selected static branch or zero-count fold can emit fewer
+                // effects than its fully checked source body. Record the actual
+                // operations only; source eligibility still uses the immutable
+                // common facts and captured provider contracts above.
+                effect: frame
+                    .steps
+                    .iter()
+                    .fold(Effect::Unitary, |effect, step| effect.max(step.effect)),
                 steps: frame.steps,
-                effect: function.effect,
                 span: function.span,
                 peak_quantum: frame.peak,
             };
@@ -1603,6 +1710,7 @@ impl Builder<'_> {
     fn pure_provider_interface(
         &self,
         id: usize,
+        source_effect: Effect,
         span: Span,
     ) -> Result<crate::frontend::types::UnaryInterface<'_, u32>> {
         let definition = &self.definitions[id];
@@ -1613,14 +1721,15 @@ impl Builder<'_> {
                 "pure operation provider requires exactly one quantum input",
             ));
         };
-        if definition.effect > Effect::Isometry
+        if source_effect > Effect::Isometry
+            || definition.effect > Effect::Isometry
             || !input.ty.is_quantum_owner()
             || !definition.output.ty.is_quantum_owner()
         {
             return Err(error(
                 "type",
                 span,
-                "pure operation provider requires quantum input/output and inferred effect at most Isometry",
+                "pure operation provider requires quantum input/output and caller-visible effect at most Isometry",
             ));
         }
         Ok(crate::frontend::types::UnaryInterface {
@@ -1628,7 +1737,12 @@ impl Builder<'_> {
             output: &definition.output.ty,
         })
     }
-    fn runtime_provider_type(&mut self, id: usize, span: Span) -> Result<SourceType> {
+    fn runtime_provider_type(
+        &mut self,
+        id: usize,
+        source_effect: Effect,
+        span: Span,
+    ) -> Result<SourceType> {
         fn preflight(ty: &SourceType, cells: &mut usize, span: Span) -> Result<(usize, usize)> {
             let before = *cells;
             let size = crate::frontend::check::type_size_budgeted(
@@ -1684,7 +1798,11 @@ impl Builder<'_> {
                 }
             }
         }
-        if definition.effect != Effect::Unitary || !preserves_group || !quantum_group {
+        if source_effect != Effect::Unitary
+            || definition.effect != Effect::Unitary
+            || !preserves_group
+            || !quantum_group
+        {
             return Err(error(
                 "type",
                 span,
@@ -1851,7 +1969,7 @@ impl Builder<'_> {
                     )
                 })?;
                 let (ports, effect, _) = operation_signature(&operation, &self.definitions, *span)?;
-                if effect > Effect::Isometry {
+                if operation.source_effect > Effect::Isometry || effect > Effect::Isometry {
                     return Err(error(
                         "effect",
                         *span,
@@ -1922,6 +2040,7 @@ impl Builder<'_> {
                 };
                 Ok(SourceOperation {
                     constructor_cells,
+                    source_effect: child.source_effect,
                     kind: OperationKind::Repeat(count, Box::new(child)),
                     meanings: Arc::from([]),
                     module: frame.module.clone(),
@@ -1980,6 +2099,23 @@ impl Builder<'_> {
         frame: &Frame,
         span: Span,
     ) -> Result<SourceOperation> {
+        let source_effect = children.iter().fold(Effect::Unitary, |effect, child| {
+            effect.max(child.source_effect)
+        });
+        if source_effect > Effect::Isometry
+            || (matches!(
+                constructor,
+                OperationConstructor::Adjoint | OperationConstructor::Controlled
+            ) && source_effect != Effect::Unitary)
+            || (constructor == OperationConstructor::Conjugate
+                && children[0].source_effect != Effect::Unitary)
+        {
+            return Err(error(
+                "effect",
+                span,
+                "operation constructor exceeds its caller-visible source effect contract",
+            ));
+        }
         let signatures = children
             .iter()
             .map(|operation| operation_signature(operation, &self.definitions, span))
@@ -2104,6 +2240,7 @@ impl Builder<'_> {
         self.charge_cells(constructor_cells * 2, span)?;
         Ok(SourceOperation {
             constructor_cells,
+            source_effect,
             kind: OperationKind::Constructed(Arc::new(ConstructedOperation {
                 constructor,
                 children,
@@ -2150,6 +2287,14 @@ impl Builder<'_> {
                 "primitive operation references are outside this preparation profile",
             ));
         };
+        let source_effect = self.source_effect(definition, frame, span)?;
+        if source_effect > Effect::Isometry {
+            return Err(error(
+                "effect",
+                span,
+                "operation provider's caller-visible effect must be pure",
+            ));
+        }
         let (types, naturals, operations) =
             self.arguments(definition, arguments, scope, frame, depth, span)?;
         let id = self.function(definition, types, naturals, operations, depth + 1)?;
@@ -2158,12 +2303,13 @@ impl Builder<'_> {
             && definition.inputs[0].ty.is_quantum_owner()
             && definition.output.ty.is_quantum_owner()
         {
-            self.pure_provider_interface(id, span)?;
+            self.pure_provider_interface(id, source_effect, span)?;
         } else {
-            self.runtime_provider_type(id, span)?;
+            self.runtime_provider_type(id, source_effect, span)?;
         }
         Ok(SourceOperation {
             kind: OperationKind::Definition(id),
+            source_effect,
             meanings: Arc::from([]),
             module: frame.module.clone(),
             span,
@@ -2353,6 +2499,8 @@ impl Builder<'_> {
             let Target::Declaration(definition) = target else {
                 unreachable!("primitive handled above")
             };
+            let source_effect = self.source_effect(definition, frame, span)?;
+            self.require_effect(source_effect, frame, span)?;
             let (types, naturals, operations) =
                 self.arguments(definition, arguments, scope, frame, depth, span)?;
             let id = self.function(definition, types, naturals, operations.clone(), depth + 1)?;
@@ -2570,6 +2718,8 @@ impl Builder<'_> {
                 };
                 let implementation = resolve(implementation)?;
                 let specification = resolve(specification)?;
+                let source_effect = self.source_effect(implementation, frame, span)?;
+                self.require_effect(source_effect, frame, span)?;
                 let id = self.function(
                     implementation,
                     BTreeMap::new(),
@@ -2577,8 +2727,28 @@ impl Builder<'_> {
                     BTreeMap::new(),
                     depth + 1,
                 )?;
-                let definition = &self.definitions[id];
-                if definition.effect == Effect::Observe {
+                if source_effect == Effect::Observe {
+                    if self.source_effect(specification, frame, span)? != Effect::Observe {
+                        return Err(error(
+                            "effect",
+                            span,
+                            "observing contracts require two caller-visible Observe source effects",
+                        ));
+                    }
+                    if self.definitions[id].effect != Effect::Observe {
+                        return Err(error("unsupported", span, OBSERVING_CONTRACT_PROFILE));
+                    }
+                    let expected = self.function(
+                        specification,
+                        BTreeMap::new(),
+                        BTreeMap::new(),
+                        BTreeMap::new(),
+                        depth + 1,
+                    )?;
+                    if self.definitions[expected].effect != Effect::Observe {
+                        return Err(error("unsupported", span, OBSERVING_CONTRACT_PROFILE));
+                    }
+                    let definition = &self.definitions[id];
                     let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
                     let ty = definition.output.ty.clone();
                     let peak = definition.peak_quantum;
@@ -2597,6 +2767,24 @@ impl Builder<'_> {
                         peak,
                     );
                 }
+                if source_effect != Effect::Unitary {
+                    return Err(error(
+                        "unsupported",
+                        span,
+                        "selected pure function-contract lowering requires caller-visible Unitary; a sharper implementation effect cannot replace the public contract",
+                    ));
+                }
+                if self.program.checked.interface(specification).kind
+                    != crate::frontend::ast::FnKind::Meaning
+                    && self.source_effect(specification, frame, span)? != Effect::Unitary
+                {
+                    return Err(error(
+                        "effect",
+                        span,
+                        "pure function contracts require two caller-visible Unitary source effects",
+                    ));
+                }
+                let definition = &self.definitions[id];
                 if definition.effect != Effect::Unitary
                     || definition.inputs.len() != 1
                     || definition.inputs[0].ty != definition.output.ty
@@ -2728,6 +2916,14 @@ impl Builder<'_> {
             StepKind::Controlled(op) => (op, true),
             _ => unreachable!(),
         };
+        self.require_effect(op.source_effect, frame, span)?;
+        if !matches!(kind, StepKind::Apply(_)) && op.source_effect != Effect::Unitary {
+            return Err(error(
+                "effect",
+                span,
+                "operation transform requires caller-visible Unitary effect",
+            ));
+        }
         if op.target().is_none() {
             let (ports, effect, peak) = operation_signature(op, &self.definitions, span)?;
             if !matches!(kind, StepKind::Apply(_)) && effect != Effect::Unitary {
@@ -2783,10 +2979,11 @@ impl Builder<'_> {
         let definition = &self.definitions[target_id];
         if matches!(kind, StepKind::Apply(_))
             && definition.inputs.len() == 1
-            && (definition.effect != Effect::Unitary
+            && (op.source_effect != Effect::Unitary
+                || definition.effect != Effect::Unitary
                 || definition.inputs[0].ty != definition.output.ty)
         {
-            self.pure_provider_interface(target_id, span)?;
+            self.pure_provider_interface(target_id, op.source_effect, span)?;
             let effect = definition.effect;
             let peak = definition.peak_quantum;
             for ty in [&definition.inputs[0].ty, &definition.output.ty] {
@@ -2807,7 +3004,7 @@ impl Builder<'_> {
             let output = definition.output.ty.clone();
             return self.step(kind, vec![input], output, effect, inputs, frame, span, peak);
         }
-        let target = self.runtime_provider_type(target_id, span)?;
+        let target = self.runtime_provider_type(target_id, op.source_effect, span)?;
         let (types, output) = if controlled {
             (vec![bit(), target.clone()], tuple(vec![bit(), target]))
         } else {

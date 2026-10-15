@@ -369,13 +369,25 @@ impl ParsedProgram {
         self.sources.get(module).map(Source::text)
     }
 
-    /// Principal and asserted effects from complete generic source checking.
-    /// Private definitions are inspectable metadata, not selectable entries.
-    /// This does not supply native acceptance or mathematical Meaning evidence.
+    /// Inspect the implementation principal, assertion and checked public effect.
+    /// `inferred()` is diagnostic/internal source information: external callers
+    /// and host-selected public providers must use `public_effect()` exclusively
+    /// for their source contract and eligibility. A sharper inspected body effect
+    /// cannot grant a capability hidden by that public bound. Private definitions
+    /// remain inspectable metadata, not externally selectable entries.
+    /// These facts supply neither native acceptance nor mathematical Meaning.
     pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
         let id = self.checked.resolution.qualified(path).ok()?;
         self.checked.effects.get(&id).copied()
     }
+
+    /// The checked exported effect for one public source declaration.
+    /// Private, absent or unchecked declarations have no exported contract.
+    /// This does not grant inverse/control, Meaning, cleanup or execution evidence.
+    pub fn public_function_effect(&self, path: &str) -> Option<crate::ir::Effect> {
+        self.function_effect(path)?.public_effect()
+    }
+
     pub fn module_names(&self) -> impl Iterator<Item = &str> {
         self.sources.iter().map(|(name, _)| name)
     }

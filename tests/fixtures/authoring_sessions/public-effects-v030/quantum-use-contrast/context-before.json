@@ -1,0 +1,19 @@
+{
+  "kind": "informed-first-quantum-use-contrast",
+  "author": "Codex assistant; exact model build not independently attested",
+  "recorded_before_checks_utc": "2026-10-14T09:54:39.928441+00:00",
+  "scope": "Selected existing CLI from the first #355 patch, before rebuilding the quantum-use repair. Repository source may already contain a later repair; executable identity is observed, not compilation/source attestation. No benchmark, proof or release claim.",
+  "original_sources": {
+    "ordinary/main.qli": "ed8a93fe041cdbc4bb6c93edb29a4e4cd966605bc1b2ddca1d59d442a860007d",
+    "ordinary/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "ordinary/library.qli": "7b6dabe9bb2f0e8ba3c605d773026360316217824253a076ac1975311061b5ac",
+    "closed-quantum/main.qli": "ed8a93fe041cdbc4bb6c93edb29a4e4cd966605bc1b2ddca1d59d442a860007d",
+    "closed-quantum/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "closed-quantum/library.qli": "36e079c55ff39431ff696c715b08309356cfe9051a7385cf120f6a7890b1cb45"
+  },
+  "binaries_before": {
+    "/Users/masa/git/Qleisli/target/debug/qleisli": "6a4611db390e41b6413b234d26a16ee412a59339e282abcc6f379ea6abf87c71",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07"
+  },
+  "expected_policy": "Unannotated public g should refuse in both cases: explicit public unitary f permits quantum processing behind its unchanged ordinary signature."
+}

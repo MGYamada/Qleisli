@@ -1,0 +1,4 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+pub fn f(b: Bit) -> Bit { b }
+pub observe fn main() -> Bit { f(measure_z(init0())) }

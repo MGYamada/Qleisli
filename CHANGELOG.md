@@ -11,6 +11,15 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Require explicit checked effects on public quantum functions (#355). External
+  callers and public host providers use the public contract; same-module
+  inference preserves precision without erasing further external boundaries.
+  Keep actual Raw effects, operations, native checking and capability evidence
+  separate. Preserve supported Isometry hierarchy transport for public Isometry
+  roots with actually Unitary bodies, without granting Unitary source access.
+  Migrate ordinary bundled/client source and public documentation,
+  preserving original first observations and recorded fixture migration chains.
+
 - Define the five-role production architecture and generic-contract bindings
   (#131), including root/dependency identity, current all-source loading and
   compatibility obligations. Complete the primitive admission/replacement policy

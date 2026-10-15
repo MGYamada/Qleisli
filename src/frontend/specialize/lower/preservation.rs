@@ -9,6 +9,23 @@ use std::collections::{BTreeMap, BTreeSet};
 #[cfg(test)]
 mod isometry_tests;
 
+#[cfg(test)]
+fn current_source_text(path: impl AsRef<std::path::Path>) -> String {
+    let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+    let output = std::process::Command::new("python3")
+        .args(["-B", "-c", script])
+        .arg(path.as_ref())
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    String::from_utf8(output.stdout).unwrap()
+}
+
 pub(super) fn invalid(message: impl Into<String>) -> Error {
     Error::new("preservation", Span::default(), message)
 }
@@ -1185,7 +1202,12 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
             }
         })
         .collect();
-    let isometry = proposal.source.definitions()[proposal.source.root()].effect() == "iso";
+    // Recompute the adapter permission from the immutable checked source and
+    // actual operations. No producer flag or sharper implementation effect
+    // chooses the externally visible source profile during replay.
+    let isometry = super::root_profile(&proposal.source)
+        .map_err(|error| invalid(error.message()))?
+        == crate::ir::Effect::Isometry;
     let return_matches = if isometry {
         replay.measured.is_empty() && (classical.is_empty() || classical == [Vec::<u32>::new()])
     } else {
@@ -1440,10 +1462,10 @@ mod tests {
     }
     #[test]
     fn tensor_initialization_replay_rejects_wrong_tree_paths_and_structural_nodes() {
-        let source = include_str!(
-            "../../../../tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli"
+        let source = current_source_text(
+            "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli",
         );
-        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
             .unwrap()
             .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
             .unwrap()

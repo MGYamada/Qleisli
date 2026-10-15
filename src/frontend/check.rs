@@ -13,7 +13,9 @@ mod rectangular_meaning_tests;
 mod static_helpers;
 
 use super::ast::{self, FnKind, Span};
-use super::effects::{BodyEffects, FunctionEffect};
+use super::effects::{
+    BodyEffects, DeclarationEffectError, EffectContext, FunctionEffect, effect_at,
+};
 pub(super) use super::linear::{Context, Linear};
 use super::resolve::locals::{BinderKey, Index, Table};
 use super::resolve::{self, DefId, Resolution};
@@ -537,6 +539,8 @@ impl<'a> Program<'a> {
                 .get(&obligation.definition)
                 .ok_or_else(failure)?;
             let resolved = self.resolution.declaration(obligation.definition);
+            let effect_context = EffectContext::Module(resolved.module);
+            let visible_effect = |id| effect_at(&self.resolution, effects, effect_context, id);
             self.budget
                 .charge(span, interface.module.len() + resolved.name.0.len() + 1)?;
             if interface.ast_index != resolved.ast_index
@@ -586,9 +590,7 @@ impl<'a> Program<'a> {
                     || target.params.len() != 1
                     || !target.params[0].is_quantum_owner()
                     || !target.result.is_quantum_owner()
-                    || effects
-                        .get(&id)
-                        .is_none_or(|fact| fact.inferred() > ceiling)
+                    || visible_effect(id).is_none_or(|effect| effect > ceiling)
                 {
                     return Err(failure().in_module(&interface.module));
                 }
@@ -618,8 +620,7 @@ impl<'a> Program<'a> {
                         || target.kind != original.kind
                         || target.params.len() != original.params.len()
                         || target.params.is_empty()
-                        || effects.get(id).map(|fact| fact.inferred())
-                            != Some(crate::ir::Effect::Unitary)
+                        || visible_effect(*id) != Some(crate::ir::Effect::Unitary)
                         || !runtime_quantum_group(&target.result, span, &self.budget)?
                     {
                         return Err(failure().in_module(&interface.module));
@@ -647,7 +648,7 @@ impl<'a> Program<'a> {
                     specification,
                 } => {
                     let actual = &self.interfaces[implementation];
-                    let effect = effects.get(implementation).map(|fact| fact.inferred());
+                    let effect = visible_effect(*implementation);
                     if effect == Some(crate::ir::Effect::Observe) {
                         let expected = &self.interfaces[specification];
                         if matches!(actual.kind, FnKind::Classical | FnKind::Meaning)
@@ -658,10 +659,10 @@ impl<'a> Program<'a> {
                             || expected.params.len() != 1
                             || !actual.params[0].is_quantum_owner()
                             || !expected.params[0].is_quantum_owner()
-                            || effects.get(specification).map(|fact| fact.inferred()) != effect
+                            || visible_effect(*specification) != effect
                         {
                             return Err(SourceError::new("effect", span,
-                                "observing contracts require two closed ordinary functions with principal Observe effects and the same complete interface")
+                                "observing contracts require two closed ordinary functions with checked Observe effects in the caller's module and the same complete interface")
                                 .in_module(&interface.module));
                         }
                         // Actual substituted type equality was checked at the
@@ -671,7 +672,7 @@ impl<'a> Program<'a> {
                     }
                     if effect != Some(crate::ir::Effect::Unitary) {
                         return Err(SourceError::new("effect", span,
-                            "function contracts require principal Unitary endomorphisms or two principal Observe functions")
+                            "function contracts require checked Unitary endomorphisms or two checked Observe functions in the caller's module")
                             .in_module(&interface.module));
                     }
                     provider(*implementation, crate::ir::Effect::Unitary)?;
@@ -839,51 +840,66 @@ pub(super) fn program_with<'a, R>(
         )
         .in_module(program.module(id))
     })?;
-    let inferred =
-        super::effects::infer_with(&bodies, |span, cells| program.budget.charge(span, cells))?
-            .ok_or_else(|| {
-                SourceError::new(
-                    "effect",
-                    Span::default(),
-                    "unresolved checked effect dependency",
-                )
-            })?;
     let mut effects = BTreeMap::new();
-    for id in &order {
+    // External contracts enter callers only after the callee's complete body
+    // and independent bound checks. The checked decreasing self-edge is the
+    // sole back edge; joining it adds nothing to the least local solution.
+    for id in &dependency_order {
         let decl = program.decl(*id);
-        let fact = if decl.kind == FnKind::Meaning {
-            None
-        } else {
-            Some(
-                FunctionEffect::checked(decl.kind, inferred[id]).ok_or_else(|| {
-                    SourceError::new(
-                        "effect",
-                        bodies[id].origin(&inferred),
-                        super::effects::assertion_error(&decl.name.text, decl.kind, inferred[id]),
-                    )
+        if decl.kind == FnKind::Meaning {
+            continue;
+        }
+        program.budget.charge(decl.span, 1)?;
+        let (inferred, quantum, origin) = bodies[id]
+            .inferred_from(*id, &program.resolution, &effects, |span, cells| {
+                program.budget.charge(span, cells)
+            })?
+            .ok_or_else(|| {
+                SourceError::new("effect", decl.span, "unresolved checked effect dependency")
                     .in_module(program.module(*id))
-                })?,
-            )
-        };
-        if let Some((ceiling, span)) = bodies[id].first_violation(&inferred) {
+            })?;
+        let fact = FunctionEffect::checked_declaration(decl.kind, decl.public, quantum, inferred)
+            .map_err(|error| {
+                let (span, message) = match error {
+                    DeclarationEffectError::MissingPublicAnnotation => (
+                        decl.name.span,
+                        format!(
+                            "public quantum function `{}` requires an explicit `unitary`, `isometry` or `observe` effect annotation",
+                            decl.name.text
+                        ),
+                    ),
+                    DeclarationEffectError::ContradictoryBound => (
+                        origin,
+                        super::effects::assertion_error(&decl.name.text, decl.kind, inferred),
+                    ),
+                };
+                SourceError::new("effect", span, message).in_module(program.module(*id))
+            })?;
+        program.budget.charge(decl.span, 1)?;
+        effects.insert(*id, fact);
+    }
+    for id in &order {
+        let context = EffectContext::Module(program.resolution.declaration(*id).module);
+        if let Some((ceiling, span)) = bodies[id].first_violation_using(|callee| {
+            effect_at(&program.resolution, &effects, context, callee)
+        }) {
             let message = if ceiling == crate::ir::Effect::Unitary {
                 super::effects::unitary_required(
-                    "operation provider's inferred body effect must be Unitary",
+                    "operation provider's checked effect in the caller's module must be Unitary",
                 )
             } else {
                 format!(
-                    "operation provider's inferred body effect exceeds required {ceiling:?} ceiling"
+                    "operation provider's checked effect in the caller's module exceeds required {ceiling:?} ceiling"
                 )
             };
             return Err(SourceError::new("effect", span, message).in_module(program.module(*id)));
         }
-        if let Some(fact) = fact {
-            program.budget.charge(decl.span, 1)?;
-            effects.insert(*id, fact);
-        }
     }
     for (owner, span, region) in &program.unitary_regions {
-        if region.inferred_with(&inferred) != Some(crate::ir::Effect::Unitary) {
+        let context = EffectContext::Module(program.resolution.declaration(*owner).module);
+        if region.inferred_using(|callee| effect_at(&program.resolution, &effects, context, callee))
+            != Some(crate::ir::Effect::Unitary)
+        {
             return Err(SourceError::new(
                 "effect",
                 *span,

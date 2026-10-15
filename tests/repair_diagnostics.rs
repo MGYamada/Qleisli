@@ -105,7 +105,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     root.write(
         "helper.qli",
         "use std::quantum::init0; use std::observe::measure_z;
-         pub fn strong()->Unit{let b=measure_z(init0());()}",
+         pub observe fn strong()->Unit{let b=measure_z(init0());()}",
     );
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.unwrap();

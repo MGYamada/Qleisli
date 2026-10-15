@@ -604,11 +604,11 @@ fn direct_literal_power_keeps_named_function_access_distinct_from_static_provide
 }
 
 fn arrow_study(name: &str) -> String {
-    std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+    std::fs::read_to_string(common::current_namespace_fixture(
+        &std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 

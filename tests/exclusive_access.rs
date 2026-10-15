@@ -776,7 +776,7 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
         let source = format!(
             "{IMPORTS} use std::quantum::split;
             use std::quantum::join;use std::quantum::unit;use std::observe::discard;
-            {definition} pub fn f(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{{change(excl q);q}}"
+            {definition} pub unitary fn f(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{{change(excl q);q}}"
         );
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite.code, finite_code, "{source}\n{finite}");

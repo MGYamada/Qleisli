@@ -42,6 +42,7 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_execution_view_encoding.py'],
             ['python3', 'scripts/test_engineering_pure_tensor_native.py', '--baseline-only'],
             ['python3', 'scripts/test_engineering_openqasm_native.py', '--baseline-only'],
+            ['python3', 'scripts/test_public_effects_first.py'],
         ])
         later = checks.plan('repository-integrity')
         self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)
@@ -116,7 +117,8 @@ class SourceChecksTests(unittest.TestCase):
         self.assertEqual({argv[1] for argv in commands if argv[0] == 'python3'}, {
             'scripts/test_lean_phase_layout.py', 'scripts/test_lean_interference.py',
             'scripts/test_lean_qft.py', 'scripts/test_lean_qpe.py',
-            'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py'})
+            'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py',
+            'scripts/test_public_effects.py'})
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
         self.assertEqual(workflow.count('group: source-contracts\n          compiler: target/debug/qleisli'), 2)
         for group, compiler in [('absent', None), ('source-contracts', None)]:

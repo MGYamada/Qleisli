@@ -1,0 +1,1 @@
+use std::quantum::{unit,phase_eighth,finish}; pub unitary fn f(x:Bit)->Bit{let q=phase_eighth(unit(()));finish(q);x}

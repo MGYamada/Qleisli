@@ -1,0 +1,80 @@
+{
+  "case": "same-module-precision",
+  "profile": "selected-raw",
+  "argv": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--format=json",
+    "--ir-profile=raw",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--module=main=/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/same-module-precision/main.qli"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-14T06:18:56.475338+00:00",
+  "elapsed_seconds": 0.0779127919813618,
+  "exit_code": 0,
+  "timed_out": false,
+  "stdout": {
+    "path": "observations-first/same-module-precision.selected-raw.stdout.txt",
+    "sha256": "d80061fd66c71d032c25bcacb88a8475ec1ee8fcab4de2572a1c503b89c1becd",
+    "bytes": 609
+  },
+  "stderr": {
+    "path": "observations-first/same-module-precision.selected-raw.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "binaries_before": [
+    {
+      "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sha256": "2024c99b4c81573dd5ea0a72282bac56e3dbf07468c41d5826347da624e8e6ff",
+      "bytes": 34534008
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+      "bytes": 92433136
+    }
+  ],
+  "binaries_after": [
+    {
+      "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sha256": "2024c99b4c81573dd5ea0a72282bac56e3dbf07468c41d5826347da624e8e6ff",
+      "bytes": 34534008
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+      "bytes": 92433136
+    }
+  ],
+  "binaries_unchanged": true,
+  "predicted_current": "accept",
+  "required_policy": "accept",
+  "json": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "checker_path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": false,
+      "source_preservation_verified": false,
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  }
+}

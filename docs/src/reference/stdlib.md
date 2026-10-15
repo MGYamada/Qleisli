@@ -88,8 +88,11 @@ correspondence and accounting; zero source gate instructions are not a promise
 of zero physical routing cost.
 
 These rows are interface descriptions, not declaration syntax or new function
-types. Runtime principal effects are derived from checked bodies under
-`Unitary <= Isometry <= Observe`, separately from optional effect assertions.
+types. Public quantum functions have explicit checked effect contracts under
+`Unitary <= Isometry <= Observe`; their bodies are checked independently.
+External callers use those public effects, while same-module inference retains
+its precision and any further external boundary. Ordinary bundled and user
+source follow the [same effect rules](source-text.md#ordinary-function-effects-and-assertions).
 Classical functions have total ordinary meaning and may also receive ordinary
 runtime values, including already measured Bits. They preserve the effects of
 their evaluated arguments and cannot inspect live quantum owners. Their truth

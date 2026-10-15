@@ -1267,17 +1267,50 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         "iso"
     );
     assert!(preparation.lower().unwrap().is_instrument());
-    // A broader assertion on H does not make its body an Isometry root.
-    ParsedProgram::parse(sources(
+    // The public Isometry contract selects the existing empty-readout adapter;
+    // the actual H body and Raw proposal remain Unitary.
+    let program = ParsedProgram::parse(sources(
         "use std::quantum::h; pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
+    ))
+    .unwrap();
+    assert_eq!(
+        program.public_function_effect("main::f"),
+        Some(qleisli::ir::Effect::Isometry)
+    );
+    let prepared = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    assert_eq!(prepared.definitions()[prepared.root()].effect(), "unitary");
+    prepared.check_lowering_profile().unwrap();
+    assert_eq!(
+        prepared.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Eligible
+    );
+    assert!(prepared.lower().unwrap().is_instrument());
+    assert_eq!(
+        prepared.lower_raw().unwrap().definition().effect(),
+        "unitary"
+    );
+
+    // A public Observe contract over the same pure body still cannot select
+    // either pure hierarchy profile, even when the implementation is visible.
+    let observing = ParsedProgram::parse(sources(
+        "use std::quantum::h; pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
     ))
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
     .unwrap()
     .elaborate()
-    .unwrap()
-    .check_lowering_profile()
     .unwrap();
+    let error = observing.check_lowering_profile().unwrap_err();
+    assert!(error.message().contains("matching checked public effect"));
+    assert_eq!(
+        observing.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Ineligible(error.clone())
+    );
+    assert_eq!(observing.lower().unwrap_err(), error);
 }
 
 #[test]

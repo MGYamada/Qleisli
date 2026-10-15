@@ -65,6 +65,11 @@ fn checked_finite_effects(source: &str, expected: &[(&str, Effect)]) {
         let fact = common.function_effect(&path).unwrap();
         assert_eq!(fact.inferred(), *effect, "{source}\n{path}");
         assert_eq!(fact, finite.function_effect(&path).unwrap(), "{path}");
+        assert_eq!(
+            common.public_function_effect(&path),
+            finite.public_function_effect(&path),
+            "{path}"
+        );
     }
 }
 
@@ -85,7 +90,12 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
         "Q<Bits<0>>",
         "(Bit,(Unit,Q<Unit>))",
     ] {
-        let source = format!("// 日本語\r\npub fn client()->{result}{{default()}}");
+        let effect = if result.contains("Q<") {
+            "isometry "
+        } else {
+            ""
+        };
+        let source = format!("// 日本語\r\npub {effect}fn client()->{result}{{default()}}");
         messages.push(shared_rejection(
             &source,
             "name",
@@ -95,7 +105,7 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
         ));
     }
     // All declarations are source checked, including an unused Basis body.
-    let generic = "pub fn unused[const A:Basis]()->Q<A>{default()}\n\
+    let generic = "pub isometry fn unused[const A:Basis]()->Q<A>{default()}\n\
         pub fn client()->Unit{()}";
     messages.push(shared_rejection(
         generic,
@@ -105,7 +115,7 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
         "unresolved function default",
     ));
     // `not q` would fail typing, but unresolved callee lookup still wins.
-    let priority = "pub fn client(q:Q<Bit>)->Q<Bit>{default(not q);q}";
+    let priority = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{default(not q);q}";
     messages.push(shared_rejection(
         priority,
         "name",
@@ -130,7 +140,7 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
             "{message}"
         );
     }
-    let missing = "pub fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}";
+    let missing = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}";
     assert_eq!(
         shared_rejection(
             missing,
@@ -159,11 +169,11 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
     );
     checked_finite_effects(
         "use std::quantum::init0; fn default()->Q<Bit>{init0()}\n\
-         pub fn client()->Q<Bit>{default()}",
+         pub isometry fn client()->Q<Bit>{default()}",
         &[("default", Effect::Isometry), ("client", Effect::Isometry)],
     );
     let generic = "fn default[const A:Basis](q:Q<A>)->Q<A>{q}\n\
-        pub fn client(q:Q<Bit>)->Q<Bit>{default[type(Bit)](q)}";
+        pub unitary fn client(q:Q<Bit>)->Q<Bit>{default[type(Bit)](q)}";
     let common = ParsedProgram::parse(sources(generic)).unwrap();
     for name in ["default", "client"] {
         assert_eq!(
@@ -211,7 +221,7 @@ fn false_unitary_assertions_cannot_hide_default_named_preparation() {
     for (source, marker) in [
         (
             "use std::quantum::init0; unitary fn default()->Q<Bit>{init0()}\n\
-             pub fn client()->Q<Bit>{default()}",
+             pub isometry fn client()->Q<Bit>{default()}",
             "init0()",
         ),
         (
@@ -243,7 +253,7 @@ fn false_unitary_assertions_cannot_hide_default_named_preparation() {
 #[test]
 fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
     let explicit = "use std::quantum::{unit,finish}; fn default()->Q<Unit>{unit(())}\n\
-        pub fn client()->Unit{finish(default())}";
+        pub unitary fn client()->Unit{finish(default())}";
     let common = ParsedProgram::parse(sources(explicit)).unwrap();
     for name in ["default", "client"] {
         assert_eq!(
@@ -262,7 +272,7 @@ fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
         .elaborate()
         .unwrap();
 
-    let implicit = "pub fn default()->Q<Unit>{()}";
+    let implicit = "pub unitary fn default()->Q<Unit>{()}";
     let message = shared_rejection(
         implicit,
         "type",
@@ -286,7 +296,7 @@ fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
             "wildcard would discard quantum ownership",
         ),
     ] {
-        let source = format!("pub fn default(env:(Bit,(Unit,Q<Unit>)))->Unit{{{body}}}");
+        let source = format!("pub unitary fn default(env:(Bit,(Unit,Q<Unit>)))->Unit{{{body}}}");
         let message = shared_rejection(
             &source,
             "ownership",
@@ -301,7 +311,7 @@ fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
         no_default_hint(&message);
     }
 
-    let duplicate = "pub fn default(q:Q<Unit>)->(Q<Unit>,Q<Unit>){(q,q)}";
+    let duplicate = "pub unitary fn default(q:Q<Unit>)->(Q<Unit>,Q<Unit>){(q,q)}";
     let message = shared_rejection(
         duplicate,
         "ownership",

@@ -46,6 +46,16 @@ impl Lowerer<'_, '_> {
                 .clone());
         }
         let target = self.compiler.resolve(module, name)?;
+        if let Callee::User(key) = &target {
+            if self.compiler.effect_in_module(module, *key) != Some(Effect::Unitary) {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Effect,
+                    "static target requires an available Unitary source effect",
+                ));
+            }
+        }
         let key = match &target {
             Callee::User(key) => super::super::MeaningCacheKey::Declaration(*key),
             // The polymorphic sealed aliases have a different dimension for

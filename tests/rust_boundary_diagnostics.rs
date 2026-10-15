@@ -102,7 +102,8 @@ fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
 #[test]
 fn borrow_resource_spelling_has_no_builtin_or_type_inferred_semantics() {
     for ty in ["Bit", "Q<Bit>", "Q<Unit>", "(Bit,Q<Bits<0>>)"] {
-        let source = format!("// 日本語\r\npub fn client(q:{ty})->{ty}{{borrow q;q}}");
+        let effect = if ty.contains("Q<") { "unitary " } else { "" };
+        let source = format!("// 日本語\r\npub {effect}fn client(q:{ty})->{ty}{{borrow q;q}}");
         let message = shared_rejection(
             &source,
             "parse",
@@ -143,8 +144,9 @@ fn unrestricted_closures_locate_actual_live_captures_before_native_dispatch() {
             "|| || packet",
             "|| { let packet=packet; packet }",
         ] {
-            let source =
-                format!("// 日本語\r\npub fn client(packet:{ty})->{ty}{{let f={body};packet}}");
+            let source = format!(
+                "// 日本語\r\npub unitary fn client(packet:{ty})->{ty}{{let f={body};packet}}"
+            );
             let start =
                 source.find("let f=").unwrap() + "let f=".len() + body.find("packet").unwrap();
             // The declaration in let packet=packet is not a captured use.
@@ -183,7 +185,8 @@ fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
         ("Q<Bit>", "|| { let q=0; q }"),
         ("Q<Bit>", "|| { let (q,other)=(0,1); q }"),
     ] {
-        let source = format!("pub fn client(q:{ty})->{ty}{{let f={body};q}}");
+        let effect = if ty.contains("Q<") { "unitary " } else { "" };
+        let source = format!("pub {effect}fn client(q:{ty})->{ty}{{let f={body};q}}");
         let start = source.find("let f=").unwrap() + "let f=".len();
         let message = shared_rejection(
             &source,
@@ -194,7 +197,7 @@ fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
         );
         assert!(!message.contains("cannot capture live quantum"));
     }
-    let source = "pub fn client(q:Q<Bit>)->Q<Bit>{let saved=q;let f=||q;saved}";
+    let source = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{let saved=q;let f=||q;saved}";
     shared_rejection(
         source,
         "ownership",
@@ -244,7 +247,9 @@ fn rejected_closure_syntax_keeps_existing_depth_and_parameter_limits() {
 fn unsupported_references_explain_control_without_guessing_the_expression_type() {
     for ty in ["Q<Bit>", "Bit"] {
         for argument in ["&q", "&mut q", "&ctrl q"] {
-            let source = format!("// π &q\r\npub fn main(q:{ty})->{ty}{{identity({argument});q}}");
+            let effect = if ty.contains("Q<") { "unitary " } else { "" };
+            let source =
+                format!("// π &q\r\npub {effect}fn main(q:{ty})->{ty}{{identity({argument});q}}");
             let span = at(&source, argument, 0, 1);
             let message =
                 shared_rejection(&source, "parse", "parse", span, "unexpected character `&`");

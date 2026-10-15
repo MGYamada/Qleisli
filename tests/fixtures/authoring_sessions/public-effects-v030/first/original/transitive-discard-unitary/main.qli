@@ -1,0 +1,5 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+fn hidden(q: Q<Bit>) -> Unit { discard(q) }
+pub unitary fn f(q: Q<Bit>) -> Unit { hidden(q) }
+pub observe fn main() -> Unit { f(init0()) }

@@ -161,7 +161,7 @@ fn render(
 ) -> Result<String, ParseError> {
     let documented = parse_documented_module(source)?;
     let mut output = String::from(if checked {
-        "# Module documentation\n\nChecked source interface; effects are inferred from typed bodies. This metadata does not establish exact Meaning, access evidence, source preservation or constitutional discharge.\n\n"
+        "# Module documentation\n\nChecked source interface; external callers use only the checked public effect. Bodies are checked independently. This metadata does not establish exact Meaning, access evidence, source preservation or constitutional discharge.\n\n"
     } else {
         "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n"
     });
@@ -196,14 +196,20 @@ fn render(
         };
         render_source(&mut output, source[decl.span.start..end].trim_end());
         if let Some(fact) = effect(&decl.name.text) {
-            output.push_str(&format!(
-                "Inferred quantum effect: `{:?}`.\n\n",
-                fact.inferred()
-            ));
-            if let Some(asserted) = fact.asserted() {
+            if decl.public {
+                if let Some(public) = fact.public_effect() {
+                    output.push_str(&format!("Public quantum effect: `{public:?}`.\n\n"));
+                }
+            } else {
                 output.push_str(&format!(
-                    "Checked upper-bound assertion: `{asserted:?}`.\n\n"
+                    "Inferred quantum effect: `{:?}`.\n\n",
+                    fact.inferred()
                 ));
+                if let Some(asserted) = fact.asserted() {
+                    output.push_str(&format!(
+                        "Checked upper-bound assertion: `{asserted:?}`.\n\n"
+                    ));
+                }
             }
         }
         render_comments(&mut output, docs);

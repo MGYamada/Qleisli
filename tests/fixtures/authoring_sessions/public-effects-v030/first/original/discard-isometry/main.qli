@@ -1,0 +1,4 @@
+use std::quantum::{init0,h};
+use std::observe::{measure_z,reset,discard};
+pub isometry fn f(q: Q<Bit>) -> Unit { discard(q) }
+pub observe fn main() -> Unit { f(init0()) }

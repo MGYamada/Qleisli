@@ -63,12 +63,12 @@ fn observing_specialization_checks_calls_and_unused_original_obligations() {
         fn implementation(q: Q<Bit>) -> Bit { measure_z(phase[1,3](h(h(q)))) }";
     let called = format!(
         "{definitions}
-        pub fn main() -> Bit {{ apply_contract(implementation,reference,init0()) }}"
+        pub observe fn main() -> Bit {{ apply_contract(implementation,reference,init0()) }}"
     );
     selected_zero(&called);
     let source = elaborate(&format!("{definitions}
         fn unused[const U: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(implementation,reference,q) }}
-        pub fn main() -> Bit {{ measure_z(init0()) }}"));
+        pub observe fn main() -> Bit {{ measure_z(init0()) }}"));
     assert!(source.has_function_contracts());
     assert!(source.lower_raw().is_err());
     check(&source).unwrap();
@@ -79,13 +79,13 @@ fn observing_specialization_checks_calls_and_unused_original_obligations() {
         "{definitions}
         fn wrong(q: Q<Bit>) -> Bit {{ not(measure_z(q)) }}
         fn unused[const U: Op<Bit>](q: Q<Bit>) -> Bit {{ apply_contract(wrong,reference,q) }}
-        pub fn main() -> Bit {{ measure_z(init0()) }}"
+        pub observe fn main() -> Bit {{ measure_z(init0()) }}"
     );
     assert_eq!(lower(&elaborate(&unused)).unwrap_err().code(), "contract");
     let zero = format!(
         "{definitions}
         fn wrong(q:Q<Bit>)->Bit{{not(measure_z(q))}}
-        pub fn main()->Bit{{let q=init0();
+        pub observe fn main()->Bit{{let q=init0();
             let q=qfor static i in 0..0 carry q=q {{
                 let b=apply_contract(wrong,reference,q); yield init0();
             }}; measure_z(q)}}"
@@ -142,7 +142,7 @@ fn observing_specialization_keeps_nested_equations_empty_values_and_references()
         }
         fn inner(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) { apply_contract(reference,reference,q) }
         fn implementation(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) { let hidden=measure_z(h(init0())); inner(h(h(q))) }
-        pub fn main() -> (Bit,Bit) {
+        pub observe fn main() -> (Bit,Bit) {
             let (r,q)=cnot(h(init0()),init0());
             let (u,(b,empty))=apply_contract(implementation,reference,q);
             finish(empty); (measure_z(r),b)
@@ -167,7 +167,7 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
         use std::observe::measure_z;
         fn reference(q:Q<Bit>)->(Bits<0>,Bits<2>){let b=measure_z(q); (empty_bits(),prepend_bit[1](b,prepend_bit[0](not(b),empty_bits())))}
         fn candidate(q:Q<Bit>)->(Bits<0>,Bits<2>){reference(q)}
-        pub fn main()->(Bits<0>,Bits<2>){apply_contract(candidate,reference,init0())}";
+        pub observe fn main()->(Bits<0>,Bits<2>){apply_contract(candidate,reference,init0())}";
     let source = elaborate(source);
     let checked = check(&source).unwrap();
     assert!(checked.lower_raw().is_err());
@@ -201,9 +201,9 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
 fn observing_specialization_rechecks_changed_reference_dependencies_and_output_order() {
     let main = "use dependency::reference; use std::quantum::init0; use std::observe::measure_z;
         fn implementation(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}
-        pub fn main()->(Bit,Bit){apply_contract(implementation,reference,init0())}";
+        pub observe fn main()->(Bit,Bit){apply_contract(implementation,reference,init0())}";
     let dependency = "use std::observe::measure_z;
-        pub fn reference(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}";
+        pub observe fn reference(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}";
     let make = |dep: &str| {
         modules(BTreeMap::from([
             ("main".into(), main.into()),

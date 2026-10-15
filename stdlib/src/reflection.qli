@@ -14,7 +14,7 @@ classical fn nonzero2((a, b): (Bit, Bit)) -> Bit { not (not a and not b) }
 /// Consume and return the two data owners with no input-state promise.
 /// The protected computed scope checks zero return of its temporary auxiliary;
 /// the name of this routine and this documentation do not grant that evidence.
-pub fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub unitary fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let q = hadamard2(q);
     let q = with_computed(q, nonzero2) { |ancilla| z(ancilla) };
     hadamard2(q)

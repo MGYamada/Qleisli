@@ -156,6 +156,7 @@ impl Lowerer<'_, '_> {
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
+            contract_effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
             bindings: self.bindings.clone(),
@@ -184,7 +185,7 @@ impl Lowerer<'_, '_> {
         inner.bind_env(ancilla_binder, Binding::Live(*ancilla), &mut local);
         let result = inner.block(module, body, &mut local)?;
         inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
-        if inner.effect != Effect::Unitary {
+        if inner.contract_effect != Effect::Unitary {
             return Err(inner.error(
                 module,
                 body.span,

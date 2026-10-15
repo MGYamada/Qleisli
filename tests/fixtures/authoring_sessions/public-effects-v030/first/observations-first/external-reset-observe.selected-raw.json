@@ -1,0 +1,77 @@
+{
+  "case": "external-reset-observe",
+  "profile": "selected-raw",
+  "argv": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--format=json",
+    "--ir-profile=raw",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--module=library=/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-reset-observe/library.qli",
+    "--module=main=/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-reset-observe/main.qli"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-14T06:18:55.840902+00:00",
+  "elapsed_seconds": 0.05763749999459833,
+  "exit_code": 1,
+  "timed_out": false,
+  "stdout": {
+    "path": "observations-first/external-reset-observe.selected-raw.stdout.txt",
+    "sha256": "99ce2ae1af55d562170a26630699b3447746d74a407148d1e091e96e6756a109",
+    "bytes": 401
+  },
+  "stderr": {
+    "path": "observations-first/external-reset-observe.selected-raw.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "binaries_before": [
+    {
+      "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sha256": "2024c99b4c81573dd5ea0a72282bac56e3dbf07468c41d5826347da624e8e6ff",
+      "bytes": 34534008
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+      "bytes": 92433136
+    }
+  ],
+  "binaries_after": [
+    {
+      "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sha256": "2024c99b4c81573dd5ea0a72282bac56e3dbf07468c41d5826347da624e8e6ff",
+      "bytes": 34534008
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+      "bytes": 92433136
+    }
+  ],
+  "binaries_unchanged": true,
+  "predicted_current": "accept",
+  "required_policy": "accept",
+  "json": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "selected concrete preparation does not support std::observe::reset",
+        "primary": {
+          "module": "library",
+          "path": "/private/tmp/qleisli-355-public-effects-first-auwlqr53/original/external-reset-observe/library.qli",
+          "start": 114,
+          "end": 122
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

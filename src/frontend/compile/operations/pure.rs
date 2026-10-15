@@ -11,6 +11,14 @@ impl Compiler<'_> {
         basis: Ty,
         codomain: Ty,
     ) -> Result<Operation, CompileError> {
+        let effect = self.effect_in_module(module, key).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::Effect,
+                "pure provider has no available source effect",
+            )
+        })?;
         let body = self.checked.get(&key).ok_or_else(|| {
             self.error(
                 module,
@@ -54,7 +62,7 @@ impl Compiler<'_> {
         )
         .map_err(|e| self.error(module, span, ErrorCode::Contract, e.to_string()))?;
         self.pure_equations.push(Arc::new(equation));
-        let inverse = if self.effects[&key].inferred() == Effect::Unitary {
+        let inverse = if effect == Effect::Unitary {
             let sources = self.retained_sources(module, span)?;
             let raw = evidence.program().raw().clone();
             Some(Arc::new(
@@ -84,6 +92,7 @@ impl Compiler<'_> {
             basis,
             codomain,
             access,
+            effect,
             meaning: Some(evidence.meaning().clone()),
             node: Arc::new(Node::Pure(PureProvider {
                 leaf: evidence,

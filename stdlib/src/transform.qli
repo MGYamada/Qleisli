@@ -12,7 +12,7 @@ use std::quantum::join;
 
 /// Apply H tensor H to a two-bit register, preserving both owners and order.
 /// This unitary has no input-state promise and uses no auxiliary.
-pub fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub unitary fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let (a, b) = split(q);
     join(h(a), h(b))
 }
@@ -20,7 +20,7 @@ pub fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
 /// Apply F4: |x> maps to sum_y exp(2*pi*i*x*y/4)|y>/2 for every input.
 /// The leftmost bit has weight 1; output reversal is part of the exact unitary.
 /// Consume and return both owners without measurement or auxiliary allocation.
-pub fn qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub unitary fn qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let (a, b) = split(q);
     let b = h(b);
     let (a, b) = qif(a, b) { 0 => id, 1 => s };
@@ -31,7 +31,7 @@ pub fn qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
 /// Apply F8: |x> maps to sum_y exp(2*pi*i*x*y/8)|y>/sqrt(8) for every input.
 /// For input ((a,b),c), x = a + 2*b + 4*c; output reversal is included.
 /// Consume and return all three owners with no measurement or auxiliary.
-pub fn qft3(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+pub unitary fn qft3(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
     let (ab, c) = split(q);
     let (a, b) = split(ab);
     let c = h(c);
