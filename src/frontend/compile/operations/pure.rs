@@ -50,8 +50,11 @@ impl Compiler<'_> {
             None => evidence.clone(),
         };
         let names = (
-            self.resolution.path(key),
-            meaning.map_or_else(|| self.resolution.path(key), |id| self.resolution.path(id)),
+            self.source.resolution.path(key),
+            meaning.map_or_else(
+                || self.source.resolution.path(key),
+                |id| self.source.resolution.path(id),
+            ),
         );
         let sources = self.retained_sources(module, span)?;
         let equation = crate::interchange::pure_leaf::SourcePureEquation::bind(
@@ -72,8 +75,8 @@ impl Compiler<'_> {
                     raw.clone(),
                     raw,
                     RetainedIdentity::shared(
-                        self.resolution.path(key),
-                        self.resolution.path(key),
+                        self.source.resolution.path(key),
+                        self.source.resolution.path(key),
                         sources,
                     ),
                     &mut self.exact_work,

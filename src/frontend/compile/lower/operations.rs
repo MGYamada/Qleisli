@@ -127,8 +127,8 @@ impl Lowerer<'_, '_> {
     }
 
     pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {
-        let id = self.compiler.locals.usage(name).static_parameter?;
-        self.bindings.get(self.compiler.locals.key(id))
+        let id = self.compiler.locals().usage(name).static_parameter?;
+        self.bindings.get(self.compiler.locals().key(id))
     }
 
     pub(super) fn operation(
@@ -202,7 +202,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<(), CompileError> {
         if self
             .compiler
-            .locals
+            .locals()
             .local_key(name)
             .is_some_and(|key| env.contains_key(key))
         {
@@ -240,8 +240,8 @@ impl Lowerer<'_, '_> {
         let mut identity = Vec::new();
         for (param, arg) in decl.static_params.iter().zip(args) {
             let actual = self.operation(site.module, arg, env)?;
-            let binding = self.compiler.locals.binder(&param.name);
-            let required = &expected[self.compiler.locals.key(binding)];
+            let binding = self.compiler.locals().binder(&param.name);
+            let required = &expected[self.compiler.locals().key(binding)];
             if actual.basis != required.basis || actual.codomain != required.codomain {
                 return Err(self.error(
                     site.module,
@@ -275,7 +275,7 @@ impl Lowerer<'_, '_> {
             self.compiler
                 .charge(site.module, arg.span, actual.copy_size().saturating_mul(2))?;
             identity.push(actual.clone());
-            bindings.insert(self.compiler.locals.key(binding).clone(), actual);
+            bindings.insert(self.compiler.locals().key(binding).clone(), actual);
         }
         if !identity.is_empty()
             && !self

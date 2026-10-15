@@ -12,7 +12,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let binding = self
             .compiler
-            .locals
+            .locals()
             .local_key(name)
             .and_then(|key| env.get_mut(key))
             .ok_or_else(|| {

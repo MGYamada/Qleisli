@@ -66,7 +66,7 @@ impl Compiler<'_> {
                     }
                     self.charge(module, pattern.span, ty.tree_size().nodes)?;
                     env.insert(
-                        self.locals.key(self.locals.binder(name)).clone(),
+                        self.locals().key(self.locals().binder(name)).clone(),
                         BasisValue {
                             ty: ty.clone(),
                             label,
@@ -104,7 +104,7 @@ impl Compiler<'_> {
 
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
-        let key_name = self.resolution.declaration(*key).name.clone();
+        let key_name = self.source.resolution.declaration(*key).name.clone();
         let (params, result) = self.signature(key)?;
         let bits: usize = params
             .iter()
@@ -132,7 +132,7 @@ impl Compiler<'_> {
                     // Retain the existing work accounting for legacy binders.
                     self.charge(&key_name.0, param.span, ty.tree_size().nodes)?;
                     env.insert(
-                        self.locals.key(self.locals.binder(name)).clone(),
+                        self.locals().key(self.locals().binder(name)).clone(),
                         BasisValue {
                             ty: ty.clone(),
                             label,
@@ -210,7 +210,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
     fn name(&mut self, name: &Ident, env: &Self::Environment) -> Result<BasisValue, CompileError> {
         let value = self
             .compiler
-            .locals
+            .locals()
             .local_key(name)
             .and_then(|key| env.get(key))
             .ok_or_else(|| {
@@ -310,7 +310,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
     ) -> Result<BasisValue, CompileError> {
         if self
             .compiler
-            .locals
+            .locals()
             .local_key(callee)
             .is_some_and(|key| env.contains_key(key))
         {

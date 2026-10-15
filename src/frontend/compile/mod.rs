@@ -35,7 +35,7 @@ use super::ast::*;
 use super::check::{self, Interface, SourceError, SourceLimits, StaticKind};
 use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{Project, SourcePolicy};
-use super::resolve::{DefId, Resolution, Target};
+use super::resolve::{DefId, Target};
 use crate::AcceptedProgram;
 
 const MAX_BITS: usize = 12;
@@ -174,18 +174,18 @@ impl BasisFunction {
     }
 }
 
-use super::resolve::locals::{BinderKey, Forest, OccurrencesForest, ResolvedUse};
+use super::resolve::locals::{BinderKey, Forest, Lookup, OccurrencesForest, ResolvedUse};
 
 struct Compiler<'a> {
     kernel: crate::interchange::native::Kernel,
     project: &'a Project,
-    resolution: Resolution,
+    // Retain the single complete judgment over the original loaded source.
+    // Adapters borrow its facts; they neither reconstruct nor replace them.
+    source: check::CheckedProgram,
     locals: Forest<'a>,
-    interfaces: BTreeMap<Key, Interface>,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, AcceptedProgram>,
-    effects: BTreeMap<Key, super::effects::FunctionEffect>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
@@ -204,14 +204,20 @@ struct Compiler<'a> {
     closed_meanings: BTreeMap<MeaningCacheKey, crate::contract::exact::Matrix>,
 }
 
-impl Compiler<'_> {
+impl<'a> Compiler<'a> {
+    // Occurrence addresses borrow the original AST while authoritative tables
+    // remain in the checked collection. The view copies no table or map.
+    fn locals(&self) -> Lookup<'_, 'a> {
+        self.locals.lookup(&self.source.lexical)
+    }
+
     // Source eligibility follows the original caller and callee modules, even
     // when concrete lowering later inlines the callee's checked body.
     fn effect_in_module(&self, module: &str, callee: Key) -> Option<crate::ir::Effect> {
-        let module = self.resolution.module(module)?;
+        let module = self.source.resolution.module(module)?;
         super::effects::effect_at(
-            &self.resolution,
-            &self.effects,
+            &self.source.resolution,
+            &self.source.effects,
             super::effects::EffectContext::Module(module),
             callee,
         )
@@ -258,9 +264,9 @@ impl Compiler<'_> {
             let (line, column) = coordinates(&self.project.modules[module].source, span);
             let (owner, location, context) = match &self.checking {
                 Some(key) => (
-                    self.resolution.declaration(*key).name.0.as_str(),
+                    self.source.resolution.declaration(*key).name.0.as_str(),
                     self.declarations[key].span,
-                    format!(" while checking {}", self.resolution.path(*key)),
+                    format!(" while checking {}", self.source.resolution.path(*key)),
                 ),
                 None => (module, span, String::new()),
             };
@@ -354,7 +360,7 @@ impl Compiler<'_> {
     }
 
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
-        match self.locals.usage(name).target {
+        match self.locals().usage(name).target {
             ResolvedUse::Global(Target::Declaration(id)) => Ok(Callee::User(id)),
             ResolvedUse::Global(Target::Primitive(id)) => {
                 Ok(Callee::Sealed(id.module.into(), id.name.into()))
@@ -373,8 +379,8 @@ impl Compiler<'_> {
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
-        let interface = &self.interfaces[key];
-        let module = self.resolution.declaration(*key).name.0.clone();
+        let interface = &self.source.interfaces[key];
+        let module = self.source.resolution.declaration(*key).name.0.clone();
         assert_eq!(interface.module, module, "checked interface module");
         assert_eq!(interface.kind, decl.kind, "checked declaration kind");
         assert_eq!(
@@ -392,27 +398,58 @@ impl Compiler<'_> {
         } else {
             Stage::Runtime
         };
+        // Meaning has a distinct domain/result contract, not a runtime
+        // interface. Runtime and classical functions share exact closure with
+        // selected-source lowering. The existing whole-source finite profile
+        // still refuses Basis/Nat declarations before this adapter is reached.
+        let closed = if decl.kind == FnKind::Meaning {
+            None
+        } else {
+            Some(self.closed_runtime_interface(*key, decl.span)?)
+        };
+        let interface = &self.source.interfaces[key];
         let mut work = self.work;
         let result: Result<(Vec<Ty>, Ty), CompileError> = (|| {
             let mut params = Vec::new();
             for (ordinal, parameter) in decl.params.iter().enumerate() {
-                params.push(finite_type(
+                let ty = match &closed {
+                    Some(closed) => finite_type(
+                        self,
+                        &mut work,
+                        &module,
+                        &parameter.ty,
+                        &closed.parameters[ordinal],
+                        stage,
+                    ),
+                    None => finite_type(
+                        self,
+                        &mut work,
+                        &module,
+                        &parameter.ty,
+                        &interface.params[ordinal],
+                        stage,
+                    ),
+                }?;
+                params.push(ty);
+            }
+            let result = match &closed {
+                Some(closed) => finite_type(
                     self,
                     &mut work,
                     &module,
-                    &parameter.ty,
-                    &interface.params[ordinal],
+                    &decl.return_type,
+                    &closed.result,
                     stage,
-                )?);
-            }
-            let result = finite_type(
-                self,
-                &mut work,
-                &module,
-                &decl.return_type,
-                &interface.result,
-                stage,
-            )?;
+                ),
+                None => finite_type(
+                    self,
+                    &mut work,
+                    &module,
+                    &decl.return_type,
+                    &interface.result,
+                    stage,
+                ),
+            }?;
             Ok((params, result))
         })();
         self.work = work;
@@ -427,17 +464,73 @@ impl Compiler<'_> {
         }
         Ok((params, result))
     }
+
+    /// Close only already eligible finite runtime interfaces. Empty Basis/Nat
+    /// maps are deliberate: this connection enables no generic instance. All
+    /// Op ports are closed too, but actual provider/access/Meaning obligations
+    /// remain at their existing concrete evidence gates.
+    fn closed_runtime_interface(
+        &mut self,
+        definition: Key,
+        span: Span,
+    ) -> Result<super::closed::ClosedInterface, CompileError> {
+        let module = &self.source.resolution.declaration(definition).name.0;
+        let mut work = self.work;
+        let mut charge_error = None;
+        let result = (|| {
+            // Preserve the adapter's original located work-limit diagnostic.
+            // A temporary source error only propagates out of the closer; the
+            // actual CompileError is returned below, without conversion loss.
+            let mut charge = |span, cells| {
+                self.charge_at(&mut work, module, span, cells)
+                    .map_err(|error| {
+                        charge_error = Some(error);
+                        SourceError::new("limit", span, "finite closed-interface work limit")
+                    })
+            };
+            let checked = super::closed::CheckedInterface::original(
+                &self.source,
+                definition,
+                span,
+                &mut charge,
+            )?;
+            let bases = BTreeMap::<String, super::types::Type<u32>>::new();
+            let substitution = super::closed::ClosedSubstitution::named_budgeted(
+                checked,
+                &bases,
+                &BTreeMap::new(),
+                |ty| ty,
+                "finite runtime function",
+                &mut charge,
+            )?;
+            // The bounded finite copy below still applies this adapter's exact
+            // constructor, tree and width limits. This callback grants nothing.
+            super::closed::close_interface_budgeted(
+                substitution,
+                "finite runtime function",
+                charge,
+                |_, _| Ok(()),
+            )
+        })();
+        self.work = work;
+        if let Some(error) = charge_error {
+            return Err(error);
+        }
+        result.map_err(|error| {
+            source_error(self.project, &self.project.root, error.in_module(module))
+        })
+    }
 }
 
 /// Convert the checked symbolic interface, preserving its exact type tree.
 /// Original types supply locations only; this is finite eligibility and copying,
 /// never another source type/ownership judgment.
-fn finite_type(
+fn finite_type<N>(
     compiler: &Compiler<'_>,
     work: &mut usize,
     module: &str,
     original: &Type,
-    checked: &check::Ty,
+    checked: &super::types::Type<N>,
     stage: Stage,
 ) -> Result<Ty, CompileError> {
     let charge_node = |work: &mut usize| {
@@ -792,9 +885,8 @@ fn process_loaded_project_details(
         },
     )
     .map_err(|error| source_error(project, root, error))?;
-    let order = source.dependency_order;
-    let resolution = source.resolution;
-    let declarations: BTreeMap<_, _> = resolution
+    let declarations: BTreeMap<_, _> = source
+        .resolution
         .declarations()
         .map(|(id, declaration)| {
             (
@@ -805,7 +897,6 @@ fn process_loaded_project_details(
         .collect();
     // These are located pending concrete obligations, not proof discharges.
     // Concrete lowering/evidence gates remain responsible when instantiated.
-    let obligations = source.obligations;
     for (id, declaration) in &declarations {
         if declaration.kind == FnKind::Static {
             continue;
@@ -815,11 +906,11 @@ fn process_loaded_project_details(
                 project,
                 root,
                 SourceError::new("unsupported", span, message)
-                    .in_module(&resolution.declaration(*id).name.0),
+                    .in_module(&source.resolution.declaration(*id).name.0),
             ));
         }
     }
-    let locals = Forest::from_occurrences(source.lexical, occurrences);
+    let locals = Forest::from_occurrences(occurrences);
     let kernel = kernel
         .cloned()
         .map(Ok)
@@ -835,13 +926,11 @@ fn process_loaded_project_details(
     let mut compiler = Compiler {
         kernel,
         project,
-        resolution,
+        source,
         declarations,
         locals,
-        interfaces: source.interfaces,
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
-        effects: source.effects,
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
         function_sources: None,
@@ -854,7 +943,7 @@ fn process_loaded_project_details(
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
         closed_meanings: BTreeMap::new(),
     };
-    let entry = compiler.resolution.qualified("main::main").ok();
+    let entry = compiler.source.resolution.qualified("main::main").ok();
     if let Some((entry, decl)) =
         entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
     {
@@ -891,45 +980,58 @@ fn process_loaded_project_details(
     }
     // Prepare finite descriptions for static/coherent obligations. Ordinary
     // calls lower the original classical body; they do not execute this table.
-    for key in &order {
-        compiler.checking = Some(*key);
-        if compiler.declarations[key].kind == FnKind::Classical {
-            let function = compiler.compile_basis(key)?;
-            compiler.basis.insert(*key, function);
+    for ordinal in 0..compiler.source.dependency_order.len() {
+        // Copy only this immutable identity before mutably lowering its body;
+        // the original dependency collection stays in its checked owner.
+        let key = compiler.source.dependency_order[ordinal];
+        compiler.checking = Some(key);
+        if compiler.declarations[&key].kind == FnKind::Classical {
+            let function = compiler.compile_basis(&key)?;
+            compiler.basis.insert(key, function);
         }
     }
     let mut main = None;
-    for key in &order {
-        compiler.checking = Some(*key);
-        if compiler.declarations[key].kind == FnKind::Meaning {
-            compiler.compile_meaning(key)?;
+    for ordinal in 0..compiler.source.dependency_order.len() {
+        let key = compiler.source.dependency_order[ordinal];
+        compiler.checking = Some(key);
+        if compiler.declarations[&key].kind == FnKind::Meaning {
+            compiler.compile_meaning(&key)?;
             continue;
         }
-        if compiler.declarations[key].static_params.is_empty()
+        if compiler.declarations[&key].static_params.is_empty()
             && !matches!(
-                compiler.declarations[key].kind,
+                compiler.declarations[&key].kind,
                 FnKind::Classical | FnKind::Meaning
             )
         {
-            let program = lower::lower_function(&mut compiler, key)?;
-            if Some(*key) == entry {
+            let program = lower::lower_function(&mut compiler, &key)?;
+            if Some(key) == entry {
                 main = Some(program.clone());
             }
-            compiler.checked.insert(*key, program);
+            compiler.checked.insert(key, program);
         }
     }
     // FunctionEquality names closed pairs even inside an unused generic body
     // or a zero-count branch. Source checking is not their semantic discharge.
-    for obligation in obligations {
+    for ordinal in 0..compiler.source.obligations.len() {
+        let obligation = &compiler.source.obligations[ordinal];
         if let check::ObligationKind::FunctionEquality {
             implementation,
             specification,
-        } = obligation.kind
+        } = &obligation.kind
         {
-            compiler.checking = Some(obligation.definition);
+            // Read the existing record; do not clone or remove its obligation.
+            let (definition, span, implementation, specification) = (
+                obligation.definition,
+                obligation.span,
+                *implementation,
+                *specification,
+            );
+            compiler.checking = Some(definition);
             let module = compiler
+                .source
                 .resolution
-                .declaration(obligation.definition)
+                .declaration(definition)
                 .name
                 .0
                 .clone();
@@ -938,14 +1040,14 @@ fn process_loaded_project_details(
             {
                 compiler.instrument_contract_evidence(
                     &module,
-                    obligation.span,
+                    span,
                     implementation,
                     specification,
                 )?;
             } else {
                 compiler.function_contract_evidence(
                     &module,
-                    obligation.span,
+                    span,
                     implementation,
                     specification,
                 )?;
@@ -953,9 +1055,10 @@ fn process_loaded_project_details(
         }
     }
     let effects = compiler
+        .source
         .effects
         .iter()
-        .map(|(key, fact)| (compiler.resolution.path(*key), *fact))
+        .map(|(key, fact)| (compiler.source.resolution.path(*key), *fact))
         .collect();
     compiler.charge("main", Span::default(), compiler.instrument_evidence.len())?;
     let (concrete_local_roots, concrete_bundled_roots) =
@@ -963,7 +1066,7 @@ fn process_loaded_project_details(
             .checked
             .keys()
             .fold((0, 0), |(local, bundled), key| {
-                let module = &compiler.resolution.declaration(*key).name.0;
+                let module = &compiler.source.resolution.declaration(*key).name.0;
                 match project.modules[module].origin {
                     super::project::ModuleOrigin::Local => (local + 1, bundled),
                     super::project::ModuleOrigin::Bundled => (local, bundled + 1),
@@ -1048,19 +1151,24 @@ mod snapshot_tests {
     }
 
     fn compiler(project: &Project) -> Compiler<'_> {
+        let (source, ()) = check::program_with(
+            project
+                .modules
+                .iter()
+                .map(|(name, module)| (name.as_str(), &module.ast))
+                .collect(),
+            SourceLimits::finite(),
+            |_, _, _, _, _, _, _| Ok(()),
+        )
+        .expect("valid test source judgment");
         Compiler {
             kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
             project,
-            resolution: project
-                .resolution()
-                .map_err(|failure| failure.into_diagnostic())
-                .expect("valid test project"),
+            source,
             declarations: BTreeMap::new(),
             locals: Forest::default(),
-            interfaces: BTreeMap::new(),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),
-            effects: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
             function_sources: None,
@@ -1209,7 +1317,15 @@ mod snapshot_tests {
     )]
     #[test]
     fn metadata_storage_limits_are_preflighted_before_the_source_copy() {
-        for (count, name_bytes, extra_source) in [(127, 4, 0), (1, 4097, 0), (126, 4096, 440_000)] {
+        // Keep each constructed source collection within the common judgment's
+        // work budget, while exceeding the independent snapshot metadata bound.
+        // In the aggregate case, names alone must not exhaust source checking
+        // before retained_sources can exercise its complete-byte preflight.
+        for (count, name_bytes, extra_source, message) in [
+            (127, 4, 0, "at most 128 source modules"),
+            (1, 4097, 0, "4096-byte limit"),
+            (100, 4096, 550_000, "1 MiB including module names"),
+        ] {
             let mut project = project(extra_source);
             let mut empty = project.modules["main"].clone();
             empty.source.clear();
@@ -1218,13 +1334,11 @@ mod snapshot_tests {
                 project.modules.insert(name, empty.clone());
             }
             let mut compiler = compiler(&project);
-            assert_eq!(
-                compiler
-                    .retained_sources("main", Span::default())
-                    .unwrap_err()
-                    .code,
-                ErrorCode::Limit
-            );
+            let error = compiler
+                .retained_sources("main", Span::default())
+                .unwrap_err();
+            assert_eq!(error.code, ErrorCode::Limit);
+            assert!(error.message.contains(message), "{error}");
             assert!(compiler.function_sources.is_none());
         }
     }
