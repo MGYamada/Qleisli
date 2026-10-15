@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [stdlib boundary first studies](stdlib-boundary-v030/README.md) retain six
+informed source/observation packets, including 128 first checks, v2's missing
+manifest failures and v3's separate exact artifact requests. Compressed history
+is inert; source preservation, target resources and broader proofs remain separate.
+
 The [public-effect first study](public-effects-v030/README.md) preserves
 nineteen original projects and 38 checks, including the external Observe
 identity/reset contrast, missing-public-annotation acceptances and eighteen

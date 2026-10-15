@@ -11,6 +11,14 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Extract closed source-interface substitution into a private frontend helper,
+  preserving original binder identities, normalized premises and both operation
+  ports. Keep selected profile checks at their existing boundaries; explicitly
+  charge closed-Basis validation within the existing work limits. Retain the
+  first stdlib boundary studies and their failed and corrected experiments as
+  inert bounded archives. These are prerequisites for #369/#167; their source
+  namespace and derived-library cutover remains unfinished.
+
 - Require explicit checked effects on public quantum functions (#355). External
   callers and public host providers use the public contract; same-module
   inference preserves precision without erasing further external boundaries.

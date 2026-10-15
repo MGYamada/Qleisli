@@ -4364,7 +4364,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "9639774bd57b7e54b795833cdd31978ce5d0a2900603541d4e676a47be3005b2",
+      "sha256": "938b2f1c917ceb9fb8152c070084bc101a0183035266837d60b0079d1599debb",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4694,19 +4694,17 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "b8ece78a7b37528878e27c18a816bc54ef3982dad157d4c38c6d17276926f1ef",
+      "sha256": "487488a96bb05fcc8fe47f37d5324d92ebbce785faa320904c0526492d3eb4a0",
       "group": "sized-source",
       "surface": {
         "declarations": [],
-        "functions": [
-          "pub fn output(&self) -> &SourceType"
-        ],
+        "functions": [],
         "capacity_constants": []
       }
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "7cfbd3cf0cad6fad82598f1dabe1306c46ec476717529f0eec37765acdc2b63f",
+      "sha256": "b6cd22a6465341112cf552d39e7852d08cf29d1586b1923f16e8da84e6f548a2",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -6376,6 +6374,19 @@
       "surface": {
         "declarations": [],
         "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/closed.rs",
+      "sha256": "c8670f783680fe3c12ead0df48bf23ad87f23ad890f866bc957f923b48ac7415",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn ceiling(&self) -> crate::ir::Effect",
+          "pub fn output(&self) -> &ClosedType"
+        ],
         "capacity_constants": []
       }
     }

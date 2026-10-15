@@ -1,32 +1,10 @@
 //! Closed substitutions of common checked interfaces; no second source judgment.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
-use super::{BasisBinding, Error, OperationBinding, ParsedProgram, Result, SourceType, Span};
-use crate::frontend::check::{
-    Interface, Linear, StaticKind, close_type_budgeted, type_size_budgeted,
-};
-use crate::frontend::resolve::locals::BinderKey;
+use super::{BasisBinding, Error, OperationBinding, ParsedProgram, Result, Span};
+use crate::frontend::check::{Interface, StaticKind, type_size_budgeted};
 use crate::frontend::resolve::{DefId, Failure};
 use std::collections::{BTreeMap, BTreeSet};
-
-pub(super) struct ClosedInterface {
-    pub naturals: BTreeMap<BinderKey, u32>,
-    pub bases: BTreeMap<BinderKey, SourceType>,
-    pub parameters: Vec<SourceType>,
-    pub result: SourceType,
-    pub operations: BTreeMap<BinderKey, ClosedOperation>,
-}
-
-pub(super) struct ClosedOperation {
-    pub input: SourceType,
-    pub codomain: Option<SourceType>,
-    pub ceiling: crate::ir::Effect,
-}
-impl ClosedOperation {
-    pub fn output(&self) -> &SourceType {
-        self.codomain.as_ref().unwrap_or(&self.input)
-    }
-}
 
 fn check_bindings<V>(
     actual: &BTreeMap<String, V>,
@@ -36,32 +14,15 @@ fn check_bindings<V>(
     span: Span,
     charge: &mut impl FnMut(Span, usize) -> Result<()>,
 ) -> Result<()> {
-    for name in actual.keys() {
-        charge(span, name.len() + 1)?;
-    }
-    charge(span, expected.len())?;
-    if actual.len() == expected.len() && expected.iter().all(|name| actual.contains_key(*name)) {
-        return Ok(());
-    }
-    let missing = expected
-        .iter()
-        .filter(|name| !actual.contains_key(**name))
-        .copied()
-        .collect::<Vec<_>>()
-        .join(", ");
-    let unexpected = actual
-        .keys()
-        .filter(|name| !expected.contains(name.as_str()))
-        .map(String::as_str)
-        .collect::<Vec<_>>()
-        .join(", ");
-    Err(Error::new(
-        "static",
+    crate::frontend::closed::check_named_bindings_budgeted(
+        actual,
+        expected,
+        category,
+        subject,
         span,
-        format!(
-            "concrete {category} bindings for {subject} must exactly match the declaration; missing [{missing}]; unexpected [{unexpected}]"
-        ),
-    ))
+        &mut |span, cells| charge(span, cells).map_err(crate::frontend::check::SourceError::from),
+    )
+    .map_err(Error::from)
 }
 
 fn visible_definition<'a>(
@@ -105,35 +66,7 @@ fn visible_definition<'a>(
     Ok((id, interface))
 }
 
-fn closed_linear(
-    linear: &Linear,
-    naturals: &BTreeMap<BinderKey, u32>,
-    span: Span,
-    charge: &mut impl FnMut(Span, usize) -> Result<()>,
-) -> Result<i128> {
-    charge(span, 1)?;
-    linear
-        .terms
-        .iter()
-        .try_fold(linear.constant, |sum, (key, coefficient)| {
-            charge(span, 1)?;
-            let n = naturals.get(key).ok_or_else(|| {
-                Error::new(
-                    "static",
-                    span,
-                    format!("missing concrete natural {}", key.name),
-                )
-            })?;
-            let term = coefficient.checked_mul(i128::from(*n)).ok_or_else(|| {
-                Error::new("limit", span, "concrete premise multiplication overflow")
-            })?;
-            sum.checked_add(term)
-                .ok_or_else(|| Error::new("limit", span, "concrete premise addition overflow"))
-        })
-}
-
-/// Consume normalized common facts. The original source is never reclassified
-/// by the temporary concrete lowering representation.
+/// Selected-source capacity remains outside the profile-neutral closer.
 pub(super) fn closed_interface_budgeted(
     program: &ParsedProgram,
     id: DefId,
@@ -142,210 +75,35 @@ pub(super) fn closed_interface_budgeted(
     subject: &str,
     span: Span,
     mut charge: impl FnMut(Span, usize) -> Result<()>,
-) -> Result<ClosedInterface> {
-    let interface = program.checked.interface(id);
-    // Reserve both temporary binding sets before collecting them; copied keys
-    // below retain the original static identities rather than spelling lookup.
-    charge(
+) -> Result<crate::frontend::closed::ClosedInterface> {
+    let mut source_charge =
+        |span, cells| charge(span, cells).map_err(crate::frontend::check::SourceError::from);
+    let checked = crate::frontend::closed::CheckedInterface::original(
+        &program.checked,
+        id,
         span,
-        interface
-            .statics
-            .len()
-            .checked_mul(3)
-            .ok_or_else(|| Error::new("limit", span, "closed binding accounting overflow"))?,
-    )?;
-    let expected_types = interface
-        .statics
-        .iter()
-        .filter_map(|formal| {
-            matches!(formal.kind, StaticKind::Basis).then_some(formal.key.name.as_str())
-        })
-        .collect();
-    let expected_naturals = interface
-        .statics
-        .iter()
-        .filter_map(|formal| {
-            matches!(formal.kind, StaticKind::Natural).then_some(formal.key.name.as_str())
-        })
-        .collect();
-    check_bindings(types, &expected_types, "Basis", subject, span, &mut charge)?;
-    check_bindings(
+        &mut source_charge,
+    )
+    .map_err(Error::from)?;
+    let substitution = crate::frontend::closed::ClosedSubstitution::named_budgeted(
+        checked,
+        types,
         naturals,
-        &expected_naturals,
-        "natural",
+        |basis| &basis.ty,
         subject,
-        span,
-        &mut charge,
-    )?;
-    for formal in &interface.statics {
-        charge(span, formal.key.name.len() + 1)?;
-    }
-    for basis in types.values() {
-        let size = type_size_budgeted(&basis.ty, 4096, 64, true, span, &mut |span, cells| {
-            charge(span, cells).map_err(|error| crate::frontend::check::SourceError {
-                code: error.code,
-                module: error.module,
-                span: error.span,
-                message: error.message,
-                primitive_argument_located: false,
-            })
-        })
-        .map_err(Error::from)?;
-        charge(span, size.nodes)?;
-    }
-    let resolved_naturals = interface
-        .statics
-        .iter()
-        .filter(|formal| matches!(formal.kind, StaticKind::Natural))
-        .map(|formal| (formal.key.clone(), naturals[&formal.key.name]))
-        .collect::<BTreeMap<_, _>>();
-    let resolved_bases = interface
-        .statics
-        .iter()
-        .filter(|formal| matches!(formal.kind, StaticKind::Basis))
-        .map(|formal| (formal.key.clone(), types[&formal.key.name].ty.clone()))
-        .collect::<BTreeMap<_, _>>();
-    let mut satisfied = false;
-    for alternative in &interface.premises.alternatives {
-        charge(span, 1)?;
-        let mut valid = true;
-        for constraint in alternative {
-            if closed_linear(constraint, &resolved_naturals, span, &mut charge)? > 0 {
-                valid = false;
-                break;
-            }
-        }
-        if valid {
-            satisfied = true;
-            break;
-        }
-    }
-    if !satisfied {
-        for premise in &interface.numeric_premises {
-            // These affine expressions were normalized by the complete common
-            // judgment, under the original preceding guards. Evaluate them
-            // only to locate an already rejected closed constraint; never
-            // reparse a predicate or use this diagnostic as acceptance.
-            let checked = (|| {
-                charge(premise.span, 1)?;
-                let left =
-                    closed_linear(&premise.left, &resolved_naturals, premise.span, &mut charge)?;
-                let right = closed_linear(
-                    &premise.right,
-                    &resolved_naturals,
-                    premise.span,
-                    &mut charge,
-                )?;
-                use crate::frontend::ast::Compare;
-                let (valid, comparison) = match premise.comparison {
-                    Compare::Eq => (left == right, "=="),
-                    Compare::Ne => (left != right, "!="),
-                    Compare::Lt => (left < right, "<"),
-                    Compare::Le => (left <= right, "<="),
-                    Compare::Gt => (left > right, ">"),
-                    Compare::Ge => (left >= right, ">="),
-                };
-                if !valid {
-                    // Account for rendering the original normalized names and
-                    // the diagnostic before constructing their owned String.
-                    let cells = premise
-                        .left
-                        .storage_cells()?
-                        .checked_add(premise.right.storage_cells()?)
-                        .and_then(|cells| cells.checked_add(subject.len() + 128))
-                        .ok_or_else(|| {
-                            Error::new(
-                                "limit",
-                                premise.span,
-                                "premise diagnostic accounting overflow",
-                            )
-                        })?;
-                    charge(premise.span, cells)?;
-                    return Err(Error::new(
-                        "size",
-                        premise.span,
-                        format!(
-                            "concrete {subject} premise `{} {comparison} {}` is false (evaluated {left} {comparison} {right})",
-                            premise.left, premise.right,
-                        ),
-                    ));
-                }
-                Ok::<_, Error>(())
-            })();
-            checked.map_err(|error| error.in_module(&interface.module))?;
-        }
-        // Keep the original failure if a rejected Context has no false source
-        // comparison (for example, a future additional implicit constraint).
-        return Err(
-            Error::new("size", span, "concrete function premise is false")
-                .in_module(&interface.module),
-        );
-    }
-    let mut close = |ty: &crate::frontend::check::Ty| -> Result<SourceType> {
-        let closed = close_type_budgeted(
-            ty,
-            &resolved_naturals,
-            &resolved_bases,
-            span,
-            |span, cells| {
-                charge(span, cells).map_err(|error| crate::frontend::check::SourceError {
-                    code: error.code,
-                    module: error.module,
-                    span: error.span,
-                    message: error.message,
-                    primitive_argument_located: false,
-                })
-            },
-        )
-        .map_err(Error::from)?;
-        super::elaborate::concrete_capacity(&closed, span)?;
-        Ok(closed)
-    };
-    let parameters = interface
-        .params
-        .iter()
-        .map(&mut close)
-        .collect::<Result<_>>()?;
-    let result = close(&interface.result)?;
-    let operations = interface
-        .statics
-        .iter()
-        .filter_map(|formal| match &formal.kind {
-            StaticKind::Operation {
-                basis,
-                codomain,
-                access,
-                ..
-            } => Some((|| {
-                let input = SourceType::quantum(close(basis)?);
-                let output = codomain
-                    .as_ref()
-                    .map(|ty| close(ty).map(SourceType::quantum))
-                    .transpose()?;
-                let ceiling = if codomain.is_some() && !access[1] && !access[2] {
-                    crate::ir::Effect::Isometry
-                } else {
-                    crate::ir::Effect::Unitary
-                };
-                Ok((
-                    formal.key.clone(),
-                    ClosedOperation {
-                        input,
-                        codomain: output,
-                        ceiling,
-                    },
-                ))
-            })()),
-            _ => None,
-        })
-        .collect::<Result<_>>()?;
-    Ok(ClosedInterface {
-        naturals: resolved_naturals,
-        bases: resolved_bases,
-        parameters,
-        result,
-        operations,
-    })
+        &mut source_charge,
+    )
+    .map_err(Error::from)?;
+    crate::frontend::closed::close_interface_budgeted(
+        substitution,
+        subject,
+        source_charge,
+        |ty, span| {
+            super::elaborate::concrete_capacity(ty, span)
+                .map_err(crate::frontend::check::SourceError::from)
+        },
+    )
+    .map_err(Error::from)
 }
 
 /// A host binding names a public provider from outside the source module.
@@ -455,11 +213,11 @@ pub(super) fn instantiate(
                 )?;
                 let effect = host_provider_effect(program, entry_id, provider_id, span)?;
                 let required = &closed.operations[&formal.key];
-                if effect > required.ceiling {
+                if effect > required.ceiling() {
                     return Err(Error::new(
                         "effect",
                         span,
-                        if required.ceiling == crate::ir::Effect::Unitary {
+                        if required.ceiling() == crate::ir::Effect::Unitary {
                             crate::frontend::effects::unitary_required(&format!(
                                 "operation provider {} has caller-visible effect `{effect:?}`; Unitary is required",
                                 resolution.path(provider_id)

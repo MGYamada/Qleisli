@@ -5,6 +5,7 @@
 
 pub mod ast;
 mod check;
+mod closed;
 pub mod compile;
 pub mod core;
 pub mod diagnostic;
