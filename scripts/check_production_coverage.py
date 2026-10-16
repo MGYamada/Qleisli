@@ -38,9 +38,9 @@ CONTRACT_PROOF = {
         'For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original '
         'action; control_meaning establishes original BodyMeaning, exact interface, unitarity and '
         'sector preservation. control_reference proves projector commutation for every joint amplitude '
-        'and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted '
-        'call intervals and original ordered owner interfaces; selected-source integration, general '
-        'source preservation and alias/resource obligations remain open. '
+        'and arbitrary reference. Finite project and supported selected Raw ctrl calls bind fresh native '
+        'decisions to actual emitted call intervals and original ordered owner interfaces; general source '
+        'preservation, unsupported hierarchy/operator cases and wider alias/resource obligations remain open. '
         'For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, '
         'complete Kraus sums, untruncated dimensions and requested complete signature equality to exact '
         'unnormalized public outcome maps on every joint matrix and finite external reference. '
@@ -230,7 +230,7 @@ PATHS = {
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', 'fn check_pure_leaf(', 'fn check_instrument(', '"--qirf-contract"']),
         ('src/interchange/pure_leaf.rs', ['pub struct CheckedPureLeaf', 'pub fn check_pure(',
          'pub struct SourcePureEquation', 'kernel.check_pure_leaf(payload, boundary, meaning)?']),
-        ('src/frontend/compile/operations/pure.rs', ['fn pure_provider(', 'SourcePureEquation::bind(',
+        ('src/frontend/compile/operations/pure.rs', ['fn pure_provider_program(', 'SourcePureEquation::bind(',
          'crate::frontend::pure::check(']),
         ('src/frontend/compile/lower/operations.rs', ['fn apply_operation(', 'self.raw.operations[start..].to_vec()',
          'crate::frontend::pure::check(']),
@@ -787,6 +787,120 @@ for _path, _tests in {
 }.items():
     PATHS[_path]['tests'].extend(
         {'path': 'tests/public_effects.rs', 'test': name} for name in _tests)
+
+
+# Closed finite instances, dormant controls and the narrow zero-basis adapter
+# bind to existing reviewed routes. Local computed equations use the existing
+# native leaf gate; their public provenance views issue no fresh acceptance.
+for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': 'src/frontend/check/plans/body_statics.rs',
+                                              'markers': ['fn original_body_static',
+                                                          'locals.original_table_is(owner, '
+                                                          'table)']},
+                                             {'path': 'src/frontend/compile/instances.rs',
+                                              'markers': ['fn prepare_instance(',
+                                                          'conditional_naturals',
+                                                          'fn enter_instance(']},
+                                             {'path': 'src/frontend/compile/instances/bindings.rs',
+                                              'markers': ['fn bind_source_instance_partial(',
+                                                          'fn evaluate_source_static(']},
+                                             {'path': 'src/frontend/compile/instances/provider.rs',
+                                              'markers': ['fn materialize_instance(',
+                                                          'self.check_dormant_instance',
+                                                          'BodyState::Ready']},
+                                             {'path': 'src/frontend/compile/lower/operations.rs',
+                                              'markers': ['fn call_instance(',
+                                                          'check_dormant_instance']},
+                                             {'path': 'src/frontend/compile/lower/statics.rs',
+                                              'markers': ['fn static_branch(', 'fn static_fold(']},
+                                             {'path': 'src/frontend/compile/lower/runtime_transforms.rs',
+                                              'markers': ['fn runtime_transform(',
+                                                          'ResolvedUse::Local',
+                                                          'BodyStaticKind::Operation']}],
+                         'tests': [{'path': 'tests/general_static_runtime.rs',
+                                    'test': 'original_basis_instances_keep_unit_empty_register_bit_and_word_distinct'},
+                                   {'path': 'tests/general_static_runtime.rs',
+                                    'test': 'static_fold_initializes_once_and_uses_original_index_in_selected_arm'},
+                                   {'path': 'tests/general_static_runtime.rs',
+                                    'test': 'direct_symbolic_counts_and_specialized_adjoint_retain_exact_phase'},
+                                   {'path': 'tests/general_static_runtime.rs',
+                                    'test': 'concrete_fold_index_calls_recheck_bound_ctrl_inside_their_empty_callee_fold'},
+                                   {'path': 'tests/general_static_runtime.rs',
+                                    'test': 'outer_zero_repetition_does_not_hide_an_invalid_inner_count'},
+                                   {'path': 'tests/general_static_runtime.rs',
+                                    'test': 'classical_static_headers_keep_their_existing_source_contract'},
+                                   {'path': 'tests/dormant_primitive_access.rs',
+                                    'test': 'dormant_primitive_x_refuses_at_its_original_action_like_a_direct_call'},
+                                   {'path': 'src/frontend/compile/instances/tests.rs',
+                                    'test': 'closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body'},
+                                   {'path': 'src/frontend/compile/dormant/tests.rs',
+                                    'test': 'inactive_carry_checks_bound_ops_with_the_actual_original_nat_owner_type'},
+                                   {'path': 'src/frontend/check/plans/body_statics/tests.rs',
+                                    'test': 'posttransfer_access_rejects_a_different_checked_collection_with_identical_ids'}]},
+ 'sized-proposal': {'source_bindings': [{'path': 'src/frontend/specialize/lower/zero_basis.rs',
+                                         'markers': ['fn classify(',
+                                                     'fn needs_replay(',
+                                                     'fn validate_call_event(',
+                                                     'fn validate(proposal:']},
+                                        {'path': 'src/frontend/specialize/lower/preservation.rs',
+                                         'markers': ['fn validate_pure_definition(',
+                                                     'fn pure_root(',
+                                                     'fn reserve_pure_trace(']}],
+                    'tests': [{'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
+                               'test': 'zero_basis_maps_preserve_distinct_empty_atoms_and_native_owner_obligations'},
+                              {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
+                               'test': 'a_native_valid_extra_scalar_cannot_use_an_unchanged_zero_interval_as_source_evidence'},
+                              {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
+                               'test': 'pure_atomic_helpers_bind_their_original_child_root_and_complete_caller_frame'},
+                              {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
+                               'test': 'original_source_obligations_survive_omitted_interval_and_pure_trace_tables'},
+                              {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
+                               'test': 'zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refusal'},
+                              {'path': 'src/frontend/specialize/lower/preservation/isometry_tests.rs',
+                               'test': 'zero_basis_preparation_keeps_exact_phase_reference_and_physical_initialization'}]},
+ 'contract-acceptance': {'source_bindings': [{'path': 'src/frontend/compile/lower/dormant_access.rs',
+                                              'markers': ['fn check_action(', 'fn refuse(']},
+                                             {'path': 'src/frontend/compile/lower/computed_phase.rs',
+                                              'markers': ['fn computed_phase_proposal(',
+                                                          'fn computed_unitary_leaf(',
+                                                          'fn computed_canonical_witness(',
+                                                          'finite_leaf::check_with_kernel',
+                                                          'SourceUnitaryEquation::bind',
+                                                          'fn '
+                                                          'computed_canonical_transport_bound(']}],
+                         'tests': [{'path': 'tests/dormant_primitive_access.rs',
+                                    'test': 'dormant_zero_width_primitive_actions_each_require_a_fresh_native_request'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'ordinary_z_t_and_unrelated_wrappers_use_native_normalization'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'scalar_on_the_zero_predicate_is_preserved_on_unit_data'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'non_diagonal_and_false_meaning_and_outer_reference_are_refused'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'existing_canonical_t_chain_keeps_its_raw_length_profile'},
+                                   {'path': 'src/frontend/compile/lower/computed_phase.rs',
+                                    'test': 'native_normalization_rejects_same_relative_phase_with_wrong_global_scalar'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use'},
+                                   {'path': 'tests/computed_derived_source.rs',
+                                    'test': 'consecutive_proposal_chunks_compose_in_source_order'},
+                                   {'path': 'src/frontend/compile/lower/computed_phase.rs',
+                                    'test': 'canonical_transport_bound_covers_all_eight_actions_and_u32_ids'},
+                                   {'path': 'src/frontend/compile/lower/computed_phase.rs',
+                                    'test': 'native_canonical_witness_refuses_altered_use_and_owner_frame'}]},
+ 'checked-views': {'source_bindings': [{'path': 'src/interchange/finite_leaf.rs',
+                                        'markers': ['pub struct SourceUnitaryEquation',
+                                                    'pub fn implementation(&self) -> '
+                                                    '&CheckedUnitaryLeaf',
+                                                    'pub fn specification(&self) -> '
+                                                    '&CheckedUnitaryLeaf',
+                                                    'pub fn names(&self)',
+                                                    'pub fn sources(&self)']},
+                                       {'path': 'src/interchange/native.rs',
+                                        'markers': ['pub fn source_computed_normalizations(']}],
+                   'tests': []}}.items():
+    PATHS[_path]['source_bindings'].extend(_extension['source_bindings'])
+    PATHS[_path]['tests'].extend(_extension['tests'])
+PATHS['checked-views']['boundaries'].extend(['source', 'finite-leaf'])
 
 
 def boundary_paths(boundary):

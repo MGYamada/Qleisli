@@ -11,87 +11,49 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
-- Propagate requested access into closed fragments of partially deferred static
-  descriptions. A neighboring unbound Op no longer hides the existing access,
-  exact-circuit and step-limit checks, including beneath zero repetition and
-  inverse/control/conjugate constructors. Whole deferred descriptions remain
-  conditional; closed complete descriptions retain their aggregate checks.
+- Materialize closed Basis/Nat/Op instances through the common original-source
+  plans and ordinary finite lowering, including nonzero registers, static
+  branches/folds and symbolic powers. Keep exact type trees, zero-width owners,
+  axis order, provider identity and caller-visible effects in instance reuse;
+  recheck original actuals, access and the native body. Preserve ordinary u32
+  intermediate checks and signed-i128 helper evaluation, all existing budgets
+  and eager unused roots. No source-preservation theorem is claimed.
 
-- Check closed declaration callees at dormant whole-owner `ctrl` sites through
-  their original call plans, caller-visible Unitary effect and exact ordered
-  interfaces. Recheck the concrete body and send its actual Raw ports/body to
-  the existing independent sector gate, including zero-width owners. Share
-  static-actual validation with ordinary calls; unbound actuals remain
-  conditional. Ordinary calls retain their existing profile. Primitive/local-Op
-  control requests and other dormant expressions remain unfinished; this is
-  further #369/#167 preparation, not Issue or source-preservation completion.
+- Check closed fragments and actual operations in dormant generic bodies,
+  including zero-count children, inactive regions and partially deferred
+  descriptions. Preserve independently closed failures while unbound formals
+  remain conditional. Bind whole-owner Ctrl calls to the original ordered
+  owner interface and fresh native sector checks for declarations, primitives
+  and closed local Ops. Restore caller contexts on failure without refunding
+  work or issued identities.
 
-- Check closed Meaning requests and each closed static actual in uninstantiated
-  finite Op-only bodies, including zero-count children and either side of a
-  deferred formal. Reuse ordinary provider, exact-port, Meaning and requested
-  access gates; check complete concrete bodies without storing specializations
-  in the ordinary-root cache. Meaning comparison does not request an unpromised
-  inverse. Preserve genuinely conditional formals, source-profile refusals and
-  all existing budgets. Dormant runtime-owner obligations and general Basis/Nat
-  materialization remain unfinished #369/#167 prerequisites.
+- Derive identity, T, S/inverses, Z, X, CNOT, Toffoli, controlled phase and
+  physical SWAP as ordinary checked `std::gate` source. T coherently controls
+  the scalar on an explicitly owned Unit target with no additional physical
+  wire and a nonempty controlled phase action. Checked target realization and
+  cost accounting remain separate. Move structural `permute_axes` to ordinary
+  `std::structure`; retain fixed QFT2/QFT3 phase and axis contracts. The final
+  language-owned primitive surface and qualified foundation retirement in
+  #369/#167 remain unfinished. The ordinary T path retains a Contract action
+  that the current terminal OpenQASM/QIR exporters reject; source/IR checking
+  and simulation do not complete that export migration.
 
-- Bind finite runtime calls to their original checked plans and exact source
-  operand slices, refusing foreign same-shaped syntax. Charge complete
-  operation-description comparisons before specialization counting, including
-  both ports, phase, ordered children, zero powers and issued native dependency
-  identities. Keep the 256-instance and shared work limits, eager unused roots
-  and generic profile refusals. This is further #369/#167 preparation, not
-  completed generic materialization or dormant evidence discharge.
+- Normalize supported computed-ancilla bodies through native equations for
+  the complete original one-Bit fragment and a canonical witness built from
+  the exact emitted protected actions. Retain both diagonal phases, immutable
+  dependencies and inert local equation provenance. Chunking constructs only
+  an untrusted matrix proposal; native checking still sees the whole body.
+  Keep the original canonical empty/Z/T path and all source, dependency and
+  shared-work limits. Long expanded-source work refusals remain explicit.
 
-- Retain original Nat occurrences in every signature slot, including both Op
-  ports, with independently checked source associations and formal-only scopes.
-  Connect finite runtime signature closure to ordinary u32 intermediate checks
-  and existing signed i128 helper templates. Copy finite types from their closed
-  checked trees, preserving tuple order, Q owners and distinct empty registers.
-  Restore the caller's effect context on failed expansions without rewinding
-  Raw identities or work. Keep generic admission and separate Meaning-domain
-  discharge pending. Preserve first parser/profile refusals and explicit source
-  translations; this is further #369/#167 preparation, not Issue completion.
-
-- Retain original structural identities and complete static/evidence plans in
-  the common source judgment, including original Nat expressions and checked
-  helper call templates, original
-  bindings, both operation ports, Meaning requests and zero-power children.
-  Validate each plan against the original lexical collection within existing
-  budgets. Keep source checks before plan capture so invalid Nat helper
-  arguments retain their original diagnostics. Add private original-BinderKey
-  interface closure and retain six
-  first generic/dormant studies and fourteen actual checks as inert archives.
-  This prepares #369/#167 integration; finite generic admission and concrete
-  dormant evidence discharge remain unfinished. No plan is accepted evidence.
-
-- Admit exact closed `Bits<0>` values and owners in finite project lowering,
-  preserving their distinct tags, zero-width linear owners, complete contracts
-  and eager unused-declaration checks. Uniformly allow the existing ordinary
-  empty-label constructor in basis expressions. Connect selected coherent
-  maps to bounded original-identity label evaluation, existing Raw `LiftBasis`
-  and independent source-step replay; retain explicit unsupported hierarchy
-  conversion. Keep nonzero/generic finite registers, all budgets and native
-  acceptance rules unchanged. Retain the first zero-register sources and real
-  diagnostics as inert archives. This is further #369/#167 prerequisite work,
-  not completion of their primitive/derived source migration or proof gates.
-  Isolate coherent-map materialization from recursive expression dispatch,
-  retaining the existing depth guard and 2 MiB stack regression.
-
-- Connect current finite runtime/classical signatures to the same exact closed
-  interface helper as selected-source lowering. Retain the original complete
-  source judgment and borrow its lexical tables without copying them. Keep
-  separate Meaning domains and every existing finite profile, eager-root,
-  provider and native gate; generic finite materialization remains pending.
-  Charge closure work within unchanged limits.
-
-- Extract closed source-interface substitution into a private frontend helper,
-  preserving original binder identities, normalized premises and both operation
-  ports. Keep selected profile checks at their existing boundaries; explicitly
-  charge closed-Basis validation within the existing work limits. Retain the
-  first stdlib boundary studies and their failed and corrected experiments as
-  inert bounded archives. These are prerequisites for #369/#167; their source
-  namespace and derived-library cutover remains unfinished.
+- Transport only singleton coefficient-+1 coherent tables between Unit/Bits0
+  owners or into a zero Bit through existing hierarchy constructors. Replay
+  original source steps, complete ordered frames and actual root/child links;
+  reject omitted or extra obligations within the unchanged trace budget.
+  Other tables, table-dependent static transforms and preparation after
+  observation remain unsupported there. Preserve first sources and actual
+  diagnostics as inert bounded archives. These changes prepare #369/#167;
+  native schemas, broader proof obligations and guarantee status are unchanged.
 
 - Require explicit checked effects on public quantum functions (#355). External
   callers and public host providers use the public contract; same-module

@@ -164,9 +164,23 @@ The current two-argument `with_computed(source, predicate)` exposes one private
 computed auxiliary to a scoped body and protects the source data. The predicate
 is a total `classical fn` with one ordinary argument of the data's exact basis
 tree and result `Bit`. The body must return the auxiliary owner and satisfy the
-Unitary requirement. Current finite concrete lowering restricts its expanded
-auxiliary body to identity or the admitted Z/T sequence; it does not synthesize
-an inverse for arbitrary source code.
+Unitary requirement. An already canonical empty/Z/T body retains its complete
+original token chain and existing protected native checking. Other supported
+auxiliary bodies require an exact eighth-root diagonal. A fresh native unitary
+leaf check reconstructs the complete original one-Bit fragment and its
+dependencies against that matrix. A second native leaf checks a canonical
+witness built from the exact scalar/Z/T actions emitted in the protected scope.
+Both diagonal entries and full phase are retained. Chunking only constructs an
+untrusted matrix proposal; the native equation never substitutes checked chunks
+for the original body. Existing native graph, dependency, source and shared-work
+limits still apply, including the separate FunctionEvidence limits on actual
+dependencies. The current shared provenance snapshot retains all loaded modules
+within 128 modules and 1 MiB including names. Ordinary source expansion has its
+unchanged work limit; the normalization does not make every long source fit it.
+The retained `SourceUnitaryEquation` associates the two native leaves, names
+and source snapshot for local inspection only. It is not execution input, a new
+authority flag, a whole-source preservation proof or a target/resource certificate.
+This bounded normalization does not synthesize an inverse for arbitrary source code.
 
 The three-argument form additionally supplies a logical operation and exposes
 data/auxiliary binders. It returns both owners in the required order and checks
@@ -238,7 +252,7 @@ ordinary user-defined identifier with the same spelling.
 | Assignment to initialized places | Quantum-containing places cannot be assigned to, including nested products and zero-width owners. `q = h(q)` is forbidden replacement; `let q = h(q)` consumes the old owner before rebinding. A consumed binding cannot be refilled by assignment. Bare lexical assignments receive a typed refusal before RHS checking; field/index assignment remains unsupported syntax. Ordinary/static assignment is also unsupported in this profile, with a distinct diagnostic. See [#73](https://github.com/MGYamada/Qleisli/issues/73). |
 | Indexing / `Index` / `IndexMut` | Explicit `excl q[i]` / `ctrl q[a..b]` select statically bounded, ordered places under the [selector rules](elaboration.md#static-ordered-axis-places). They do not form ordinary values or references, move owners by bare indexing, or use indexing traits/runtime bounds checks. Existing explicit `take_bit[n,k]` / `put_bit[n,k]` consume/return owners with checked static bounds and ordered axes. |
 | Method-call autoref/autoderef | No method-call syntax or hidden receiver conversion. Quantum autoref, autoderef, `Deref`/`DerefMut` dispatch, receiver coercion and access-contract overload selection never insert or forward `excl`/`ctrl`. Explicit first-order calls keep their declared argument types and access modes; see [receiver access](#explicit-calls-and-receiver-access). |
-| `mem::swap` / exchange / physical SWAP | No builtin swap. Provisional ordinary `std::gate::swap` implements physical two-Bit SWAP; `std::gate::permute_axes` explicitly reorders its two axes with witness `[1,0]`. Neither exchanges live bindings. Matrix equality grants no unchecked routing/cost replacement. General interfaces remain in [#76](https://github.com/MGYamada/Qleisli/issues/76). |
+| `mem::swap` / exchange / physical SWAP | No builtin swap. Ordinary `std::gate::swap` implements physical two-Bit SWAP; `std::structure::permute_axes` explicitly reorders its two axes with witness `[1,0]`. Neither exchanges live bindings. Matrix equality grants no unchecked routing/cost replacement. General interfaces remain in [#76](https://github.com/MGYamada/Qleisli/issues/76). |
 | `mut` | A mutable-binding marker grants no quantum access. `let mut q = ...` rejects for a quantum-containing value; ordinary mutable bindings also remain unsupported, with a separate diagnostic. Gates already change states through consuming calls and explicit returned owners; `excl`/`ctrl` need no marker. The ordinary identifier `mut`, as in `let mut = 0`, retains normal name rules. See [#77](https://github.com/MGYamada/Qleisli/issues/77). |
 | Ordinary `for` / `IntoIterator` over quantum data | No ordinary iterator/trait machinery. Bounded `qfor static ... carry ... yield ...` explicitly threads quantum-containing carry and checks its body even for an empty range. `for static` permits only ordinary carry. Neither has hidden quantum capture or runtime iteration; see [Static language](static-language.md). |
 | `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |

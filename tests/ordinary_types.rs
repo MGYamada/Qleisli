@@ -384,9 +384,8 @@ fn quantum_zero_axis_owners_still_cannot_be_copied_or_dropped() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn existing_execution_profile_limits_remain_explicit() {
-    let finite = check_project(&SourceRoot::new(source!("ordinary-word")).0).unwrap_err();
-    assert_eq!(finite.code, ErrorCode::Unsupported);
+fn finite_words_and_selected_execution_profile_limits_remain_explicit() {
+    check_project(&SourceRoot::new(source!("ordinary-word")).0).unwrap();
     for source in [source!("bit-copy"), source!("ordinary-word")] {
         let error = elaborate(source).lower().unwrap_err();
         assert_eq!(error.code(), "unsupported");

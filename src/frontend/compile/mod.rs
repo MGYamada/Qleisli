@@ -14,6 +14,7 @@ mod basis;
 mod calls;
 mod circuit;
 mod dormant;
+mod instances;
 mod interfaces;
 mod lower;
 mod naturals;
@@ -124,32 +125,33 @@ impl fmt::Display for CompileError {
 impl std::error::Error for CompileError {}
 
 use super::types::{Kind, Stage, TreeSize};
-// Finite lowering admits the exact empty register only. This private size
-// representation cannot contain a nonzero register or erase its Bits tag.
+// Closed sizes retain their exact unsigned representation. Admitting a source
+// form remains the profile's separate decision; this representation grants no
+// generic binding, conversion or accepted handle.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct EmptyRegister;
-
-impl fmt::Display for EmptyRegister {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("0")
-    }
+enum RegisterWidthError {
+    Unresolved,
+    Capacity,
 }
 
 trait FiniteRegisterSize {
-    fn is_exact_zero(&self) -> bool;
+    fn finite_width(&self) -> Result<u32, RegisterWidthError>;
 }
 impl FiniteRegisterSize for u32 {
-    fn is_exact_zero(&self) -> bool {
-        *self == 0
+    fn finite_width(&self) -> Result<u32, RegisterWidthError> {
+        Ok(*self)
     }
 }
 impl FiniteRegisterSize for check::Linear {
-    fn is_exact_zero(&self) -> bool {
-        self.constant == 0 && self.terms.is_empty()
+    fn finite_width(&self) -> Result<u32, RegisterWidthError> {
+        if !self.terms.is_empty() {
+            return Err(RegisterWidthError::Unresolved);
+        }
+        u32::try_from(self.constant).map_err(|_| RegisterWidthError::Capacity)
     }
 }
 
-type Ty = super::types::Type<EmptyRegister>;
+type Ty = super::types::Type<u32>;
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -161,21 +163,21 @@ impl Ty {
         match &self.kind {
             Kind::Unit => Some(0),
             Kind::Bit => Some(1),
-            Kind::Bits(EmptyRegister) => Some(0),
+            Kind::Bits(size) => usize::try_from(*size).ok(),
             Kind::Tuple(fields) => fields
                 .iter()
-                .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
+                .try_fold(0usize, |bits, field| bits.checked_add(field.basis_bits()?)),
             Kind::Q(_) | Kind::Parameter(_) => None,
         }
     }
     fn classical(&self) -> bool {
         !self.linear()
     }
-    fn runtime(&self) -> super::types::DisplayType<'_, EmptyRegister> {
+    fn runtime(&self) -> super::types::DisplayType<'_, u32> {
         self.display(Stage::Runtime)
     }
     fn empty_bits() -> Self {
-        Self::bits(EmptyRegister)
+        Self::bits(0)
     }
 }
 
@@ -239,9 +241,11 @@ struct Compiler<'a> {
     // first needed and charged before allocation. Individual receipts share it.
     function_sources: Option<Arc<Vec<(String, String)>>>,
     pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
+    computed_normalizations: Vec<Arc<crate::interchange::finite_leaf::SourceUnitaryEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
-    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::Operation>,
-    instances: Vec<(Key, Vec<operations::Operation>)>,
+    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::CachedProvider>,
+    instances: Vec<instances::Record>,
+    concrete_context: instances::Context,
     work: usize,
     checking: Option<Key>,
     exact_work: crate::contract::exact::Budget,
@@ -423,8 +427,8 @@ impl<'a> Compiler<'a> {
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
+        let module = self.dormant_module(*key, decl.span)?;
         let interface = &self.source.interfaces[key];
-        let module = self.source.resolution.declaration(*key).name.0.clone();
         assert_eq!(interface.module, module, "checked interface module");
         assert_eq!(interface.kind, decl.kind, "checked declaration kind");
         assert_eq!(
@@ -518,7 +522,37 @@ impl<'a> Compiler<'a> {
         definition: Key,
         span: Span,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
-        self.close_instance_interface(definition, BTreeMap::new(), BTreeMap::new(), span)
+        let module = self.dormant_module(definition, span)?;
+        let current = self
+            .concrete_context
+            .current
+            .as_ref()
+            .filter(|instance| instance.definition == definition);
+        let mut work = self.work;
+        let bindings: Result<_, CompileError> = (|| {
+            if let Some(instance) = current {
+                for (key, ty) in &instance.interface.bases {
+                    self.charge_at(
+                        &mut work,
+                        &module,
+                        span,
+                        key.name.len() + ty.tree_size().nodes + 1,
+                    )?;
+                }
+                for key in instance.interface.naturals.keys() {
+                    self.charge_at(&mut work, &module, span, key.name.len() + 2)?;
+                }
+                Ok((
+                    instance.interface.bases.clone(),
+                    instance.interface.naturals.clone(),
+                ))
+            } else {
+                Ok((BTreeMap::new(), BTreeMap::new()))
+            }
+        })();
+        self.work = work;
+        let (bases, naturals) = bindings?;
+        self.close_instance_interface(definition, bases, naturals, span)
     }
 
     fn close_instance_interface(
@@ -528,48 +562,55 @@ impl<'a> Compiler<'a> {
         naturals: BTreeMap<BinderKey, u32>,
         span: Span,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
-        let module = &self.source.resolution.declaration(definition).name.0;
-        let mut work = self.work;
-        let mut charge_error = None;
+        let module = self.dormant_module(definition, span)?;
+        let work = std::cell::Cell::new(self.work);
+        let charge_error = std::cell::RefCell::new(None);
         let result = (|| {
             // Preserve the adapter's original located work-limit diagnostic.
             // A temporary source error only propagates out of the closer; the
             // actual CompileError is returned below, without conversion loss.
-            let mut charge = |span, cells| {
-                self.charge_at(&mut work, module, span, cells)
+            let charge = |span, cells| {
+                let mut used = work.get();
+                let result = self
+                    .charge_at(&mut used, &module, span, cells)
                     .map_err(|error| {
-                        charge_error = Some(error);
+                        *charge_error.borrow_mut() = Some(error);
                         SourceError::new("limit", span, "finite closed-interface work limit")
-                    })
+                    });
+                work.set(used);
+                result
             };
+            for basis in bases.values() {
+                types::closed_basis_capacity(basis, span, &mut |span, cells| charge(span, cells))?;
+            }
             let checked = super::closed::CheckedInterface::original(
                 &self.source,
                 definition,
                 span,
-                &mut charge,
+                &mut |span, cells| charge(span, cells),
             )?;
             let substitution = super::closed::ClosedSubstitution::binders_budgeted(
                 checked,
                 bases,
                 naturals,
                 "finite runtime function",
-                &mut charge,
+                &mut |span, cells| charge(span, cells),
             )?;
             // The bounded finite copy below still applies this adapter's exact
             // constructor, tree and width limits. This callback grants nothing.
             super::closed::close_interface_budgeted(
                 substitution,
                 "finite runtime function",
-                &mut charge,
-                |_, _| Ok(()),
+                &mut |span, cells| charge(span, cells),
+                |ty, span| types::closed_capacity(ty, span, &mut |span, cells| charge(span, cells)),
             )
         })();
-        self.work = work;
-        if let Some(error) = charge_error {
+        self.work = work.get();
+        if let Some(error) = charge_error.into_inner() {
             return Err(error);
         }
         let closed = result.map_err(|error| {
-            source_error(self.project, &self.project.root, error.in_module(module))
+            source_error(self.project, &self.project.root, error.in_module(&module))
         })?;
         self.validate_interface_naturals(definition, &closed, span)?;
         Ok(closed)
@@ -959,9 +1000,11 @@ fn process_loaded_project_details(
         instrument_evidence: BTreeMap::new(),
         function_sources: None,
         pure_equations: Vec::new(),
+        computed_normalizations: Vec::new(),
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
         instances: vec![],
+        concrete_context: instances::Context::default(),
         work: 0,
         checking: None,
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
@@ -1103,6 +1146,7 @@ fn process_loaded_project_details(
             program
                 .retain_instruments(compiler.instrument_evidence.into_values().collect())
                 .retain_pure_equations(compiler.pure_equations)
+                .retain_computed_normalizations(compiler.computed_normalizations)
         }),
         effects,
         concrete_local_roots,
@@ -1247,9 +1291,11 @@ mod snapshot_tests {
             instrument_evidence: BTreeMap::new(),
             function_sources: None,
             pure_equations: Vec::new(),
+            computed_normalizations: Vec::new(),
             meanings: BTreeMap::new(),
             providers: BTreeMap::new(),
             instances: vec![],
+            concrete_context: instances::Context::default(),
             work: 0,
             checking: None,
             exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),

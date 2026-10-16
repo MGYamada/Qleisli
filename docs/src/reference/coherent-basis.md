@@ -161,11 +161,18 @@ of the preceding source elaboration.
 Selected tables require at most eight input/output bits and preserve the
 existing type-tree, depth, work, call and storage bounds. Square maps may use
 the existing independently checked finite operation-access path; unitarity
-alone grants no inverse or control. Selected hierarchy table transport
-remains unsupported for square and rectangular maps, including a zero-width type change whose faithful
-hierarchy bridge is unavailable. Finite project lowering now admits exact
-closed `Bits<0>` atoms, ordinary and quantum, while nonzero registers and
-generic Basis/Nat materialization remain outside its profile. `Bits<0>` is
+alone grants no inverse or control. Selected hierarchy lowering admits ordinary
+coherent lifts only for the exact singleton coefficient-+1 table `[0]`:
+`Q<Unit>` or `Q<Bits<0>>` to either zero-width type, or to `Q<Bit>` prepared in
+zero. The structural/preparation proposals retain the original source step,
+complete ordered owner frames and actual root/child links, and still require
+independent native acceptance. This bounded untrusted replay is not a proof of
+source elaboration or general source preservation. Other coherent tables and
+table-dependent static operation transforms, including zero repetition, remain
+unsupported. Preparation after observation remains unsupported in this
+hierarchy profile. Finite project lowering admits complete
+closed Basis/Nat instances and ordinary/quantum registers within its twelve-bit
+capacity. `Bits<0>` is
 never replaced by Unit, and its quantum owner remains linear. Every concrete
 unused finite declaration still requires checking. A lowering or native failure
 cannot fall back to a weaker acceptance route.

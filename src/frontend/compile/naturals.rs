@@ -49,7 +49,6 @@ pub(super) fn evaluate(
 
 /// Plain static arguments retain their original reference rather than a
 /// fabricated natural AST. They use precisely the same original alias walk.
-#[cfg(test)]
 pub(super) fn evaluate_reference(
     reference: &ResolvedReference,
     span: Span,

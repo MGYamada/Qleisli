@@ -487,6 +487,115 @@ impl Checker<'_, '_> {
             &self.program.budget,
         )
     }
+    fn record_body_static(
+        &mut self,
+        node: super::super::resolve::locals::NodeId,
+        environment: Arc<plans::StaticEnvironment>,
+        kind: plans::BodyStaticKind,
+        span: Span,
+    ) -> Result<()> {
+        self.program.budget.charge(span, 4)?;
+        if self.program.body_statics.contains_key(&node) {
+            return Err(SourceError::new(
+                "source",
+                span,
+                "duplicate original body static plan",
+            ));
+        }
+        self.program.body_statics.insert(
+            node,
+            plans::BodyStaticPlan {
+                owner: self.definition,
+                module: self.program.resolution.declaration(self.definition).module,
+                node,
+                environment,
+                kind,
+            },
+        );
+        Ok(())
+    }
+    fn retain_expression_statics(&mut self, expression: &Expr, scope: &Scope) -> Result<()> {
+        let roots = plans::expression_natural_roots(expression, &self.program.budget)?;
+        let operation = match &expression.kind {
+            ExprKind::ApplyStatic { operation, .. }
+            | ExprKind::Adjoint { operation, .. }
+            | ExprKind::Controlled { operation, .. } => Some(operation),
+            _ => None,
+        };
+        let primitive = match &expression.kind {
+            ExprKind::Call {
+                callee,
+                static_args,
+                ..
+            }
+            | ExprKind::AccessCall {
+                callee,
+                static_args,
+                ..
+            } if !static_args.is_empty() => {
+                self.program.budget.charge(expression.span, 3)?;
+                matches!(
+                    self.index().table.usage(self.index().usage(callee)).target,
+                    ResolvedUse::Global(Target::Primitive(_))
+                )
+                .then_some((callee, static_args))
+            }
+            _ => None,
+        };
+        if roots.is_empty() && primitive.is_none() && operation.is_none() {
+            return Ok(());
+        }
+        let environment = self.plan_environment(scope, expression.span)?;
+        for source in roots {
+            self.program.budget.charge(source.span, 2)?;
+            let value = Arc::new(self.capture().natural(source)?);
+            self.record_body_static(
+                value.node,
+                Arc::clone(&environment),
+                plans::BodyStaticKind::Natural { value },
+                source.span,
+            )?;
+        }
+        if let Some(source) = operation {
+            self.program.budget.charge(source.span, 5)?;
+            let node = self.index().node_id_static_op(source);
+            let expression_node = self.original_node(expression.span)?;
+            let requested = match expression.kind {
+                ExprKind::ApplyStatic { .. } => [true, false, false],
+                ExprKind::Adjoint { .. } => [false, true, false],
+                ExprKind::Controlled { .. } => [false, false, true],
+                _ => unreachable!("original runtime operation root selected above"),
+            };
+            let operation = Arc::new(self.capture().operation(source)?);
+            self.record_body_static(
+                node,
+                Arc::clone(&environment),
+                plans::BodyStaticKind::Operation {
+                    operation,
+                    expression: expression_node,
+                    requested,
+                },
+                source.span,
+            )?;
+        }
+        if let Some((callee, static_args)) = primitive {
+            self.program
+                .budget
+                .charge(expression.span, static_args.len() + 2)?;
+            let arguments = static_args
+                .iter()
+                .map(|argument| self.capture().operation(argument).map(Arc::new))
+                .collect::<Result<Vec<_>>>()?;
+            let callee = self.capture().reference(callee)?;
+            self.record_body_static(
+                self.original_node(expression.span)?,
+                environment,
+                plans::BodyStaticKind::PrimitiveCall { callee, arguments },
+                expression.span,
+            )?;
+        }
+        Ok(())
+    }
     fn original_node(&self, span: Span) -> Result<super::super::resolve::locals::NodeId> {
         self.current_node.ok_or_else(|| {
             SourceError::new(
@@ -577,10 +686,26 @@ impl Checker<'_, '_> {
     ) -> Result<()> {
         self.tick(span)?;
         self.program.budget.charge(span, 4)?;
+        let node = self.original_node(span)?;
+        let runtime_owners = if matches!(kind, ObligationKind::ControlSectors) {
+            let Some(super::super::resolve::locals::OriginalNode::Expression(original)) =
+                self.index().original_node(node)
+            else {
+                return Err(SourceError::new(
+                    "source",
+                    span,
+                    "control action lacks its original expression",
+                ));
+            };
+            self.capture().runtime_owners(original, scope)?
+        } else {
+            Vec::new()
+        };
         let plan = plans::EvidencePlan {
-            node: self.original_node(span)?,
+            node,
             environment: self.plan_environment(scope, span)?,
             subject,
+            runtime_owners,
         };
         self.program.obligations.push(Obligation {
             id: plans::ObligationId {
@@ -619,6 +744,17 @@ impl Checker<'_, '_> {
                     self.program.budget.charge(name.span, 3)?;
                     let original = Arc::new(self.capture().natural(value)?);
                     let key = self.program.budget.key(name.span, &info.key)?;
+                    let environment = self.plan_environment(scope, value.span)?;
+                    self.program.budget.charge(name.span, 2)?;
+                    self.record_body_static(
+                        original.node,
+                        environment,
+                        plans::BodyStaticKind::Binding {
+                            key: self.program.budget.key(name.span, &key)?,
+                            value: Arc::clone(&original),
+                        },
+                        value.span,
+                    )?;
                     self.program.budget.charge(name.span, key.name.len() + 2)?;
                     scope.naturals.insert(key.clone(), normalized);
                     self.natural_plans.insert(
@@ -729,6 +865,10 @@ impl Checker<'_, '_> {
         let node = self.index().node_id_expr(expr);
         let previous_node = self.current_node.replace(node);
         let result = self.expr_inner(expr, scope, expected);
+        let result = result.and_then(|ty| {
+            self.retain_expression_statics(expr, scope)?;
+            Ok(ty)
+        });
         self.current_node = previous_node;
         self.depth -= 1;
         result
@@ -1073,6 +1213,20 @@ impl Checker<'_, '_> {
             None
         };
         if let Some((node, left, comparison, right)) = &region {
+            let environment = self.plan_environment(scope, span)?;
+            self.program.budget.charge(span, 2)?;
+            self.record_body_static(
+                *node,
+                environment,
+                plans::BodyStaticKind::Predicate {
+                    left: Arc::clone(left),
+                    comparison: *comparison,
+                    right: Arc::clone(right),
+                },
+                span,
+            )?;
+        }
+        if let Some((node, left, comparison, right)) = &region {
             self.program.budget.charge(span, 4)?;
             self.plan_regions.push(plans::StaticRegion::Predicate {
                 node: *node,
@@ -1228,6 +1382,20 @@ impl Checker<'_, '_> {
         self.program.budget.charge(span, 2)?;
         let original_start = Arc::new(self.capture().natural(source_start)?);
         let original_end = Arc::new(self.capture().natural(source_end)?);
+        let environment = self.plan_environment(scope, span)?;
+        self.program.budget.charge(span, 4)?;
+        let carry_type = Arc::new(self.program.budget.copy_ty(span, &carry_ty)?);
+        self.record_body_static(
+            self.original_node(span)?,
+            environment,
+            plans::BodyStaticKind::Fold {
+                index: self.program.budget.key(span, &key)?,
+                start: Arc::clone(&original_start),
+                end: Arc::clone(&original_end),
+                carry_type,
+            },
+            span,
+        )?;
         self.program.budget.charge(index.span, 1)?;
         self.program.budget.charge(span, 6 + key.name.len())?;
         inner.naturals.insert(key.clone(), i);

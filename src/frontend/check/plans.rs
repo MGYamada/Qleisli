@@ -12,11 +12,18 @@ use crate::frontend::resolve::locals::{
     BindingKind, NodeId, NodeKind, OriginalNode, OriginalRegion, ResolvedUse, UseSiteId,
 };
 
+mod body_statics;
 mod interface_naturals;
+mod runtime_owners;
+pub(super) use body_statics::expression_natural_roots;
+pub(in crate::frontend) use body_statics::{
+    BodyStaticKind, BodyStaticOriginal, BodyStaticPlan, original_body_static,
+};
 pub(in crate::frontend) use interface_naturals::{
     InterfaceNaturalContext, InterfaceNaturals, InterfaceSlot, TypeChild,
     capture_interface_naturals_budgeted,
 };
+pub(in crate::frontend) use runtime_owners::{RuntimeOwnerPlan, original_runtime_owners};
 
 #[derive(Clone, Debug)]
 pub(in crate::frontend) struct ResolvedReference {
@@ -181,6 +188,9 @@ pub(in crate::frontend) struct EvidencePlan {
     pub node: NodeId,
     pub environment: Arc<StaticEnvironment>,
     pub subject: EvidenceSubject,
+    /// Ordered common-judgment owner types for this original Ctrl action only.
+    /// This is untrusted action metadata, not caller-prefix/frame evidence.
+    pub runtime_owners: Vec<RuntimeOwnerPlan>,
 }
 
 pub(super) struct Capture<'a, 'ast> {
@@ -1369,9 +1379,18 @@ impl<'ast> Validation<'_, 'ast> {
         Ok(())
     }
     fn environment(&self, environment: &StaticEnvironment, node: NodeId, span: Span) -> Result<()> {
+        self.environment_kind(environment, node, span, NodeKind::Expr)
+    }
+    fn environment_kind(
+        &self,
+        environment: &StaticEnvironment,
+        node: NodeId,
+        span: Span,
+        kind: NodeKind,
+    ) -> Result<()> {
         let owner = environment.owner;
         self.budget.charge(span, 1)?;
-        self.expression(owner, node, span)?;
+        self.original(owner, node, kind, span)?;
         if self.resolution.declaration(owner).module != environment.module {
             return Err(self.failure(span));
         }
@@ -1532,6 +1551,7 @@ pub(super) fn validate_and_finish(
         resolution: &program.resolution,
         budget: &program.budget,
     };
+    validation.body_statics(&program.body_statics)?;
     for (site, plan) in &mut program.static_calls {
         let span = validation
             .original(plan.owner, plan.node, NodeKind::Expr, Span::default())?
@@ -1633,6 +1653,13 @@ pub(super) fn validate_and_finish(
             span,
         )?;
         validation.environment(&plan.environment, plan.node, span)?;
+        validation.runtime_owners(
+            owner,
+            plan.node,
+            &obligation.kind,
+            &plan.runtime_owners,
+            span,
+        )?;
         match (&obligation.kind, &plan.subject) {
             (
                 ObligationKind::Provider { provider, .. }

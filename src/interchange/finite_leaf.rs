@@ -93,6 +93,54 @@ impl CheckedUnitaryLeaf {
     }
 }
 
+/// Two native-issued whole-space equations with the same requested meaning.
+/// This local sidecar retains original/canonical payloads and source provenance;
+/// it is not execution input, a new native authority or a source-preservation,
+/// target-realization or resource certificate.
+#[derive(Debug)]
+pub struct SourceUnitaryEquation {
+    implementation: Arc<CheckedUnitaryLeaf>,
+    specification: Arc<CheckedUnitaryLeaf>,
+    names: (String, String),
+    sources: Arc<Vec<(String, String)>>,
+}
+
+impl SourceUnitaryEquation {
+    pub fn implementation(&self) -> &CheckedUnitaryLeaf {
+        &self.implementation
+    }
+    pub fn specification(&self) -> &CheckedUnitaryLeaf {
+        &self.specification
+    }
+    pub fn names(&self) -> (&str, &str) {
+        (&self.names.0, &self.names.1)
+    }
+    pub fn sources(&self) -> &[(String, String)] {
+        &self.sources
+    }
+    pub(crate) fn bind(
+        implementation: Arc<CheckedUnitaryLeaf>,
+        specification: Arc<CheckedUnitaryLeaf>,
+        names: (String, String),
+        sources: Arc<Vec<(String, String)>>,
+    ) -> Result<Self> {
+        // Both private leaf values already carry their own fresh native
+        // decisions. Comparing their retained requirements associates inert
+        // provenance; this does not replace either native checking operation.
+        if implementation.boundary().signature() != specification.boundary().signature()
+            || implementation.meaning() != specification.meaning()
+        {
+            return Err(contract_error(ContractError::EquationMismatch));
+        }
+        Ok(Self {
+            implementation,
+            specification,
+            names,
+            sources,
+        })
+    }
+}
+
 /// Reconstructed equation bound to both complete transported byte strings.
 /// No public constructor or serialized success flag can create this value.
 #[derive(Debug)]

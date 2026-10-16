@@ -204,6 +204,40 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(Value::Classical(output))
             }
+            (Value::Bits(a), Value::Bits(b)) if a.len() == b.len() => {
+                // Retain the word constructor and original bit order. Its
+                // component phis remain simultaneous Raw classical outputs.
+                let growth = if classical.len().saturating_add(a.len()) > classical.capacity() {
+                    classical.len().saturating_mul(3)
+                } else {
+                    0
+                };
+                self.compiler.charge(
+                    module,
+                    span,
+                    a.len()
+                        .saturating_mul(6)
+                        .saturating_add(growth)
+                        .saturating_add(1),
+                )?;
+                classical.reserve_exact(a.len());
+                let mut outputs = Vec::with_capacity(a.len());
+                for (a, b) in a.into_iter().zip(b) {
+                    let output = if a == b {
+                        a
+                    } else {
+                        let output = self.classical();
+                        classical.push(ClassicalPhi {
+                            then_id: a,
+                            else_id: b,
+                            output,
+                        });
+                        output
+                    };
+                    outputs.push(output);
+                }
+                Ok(Value::bits(outputs))
+            }
             (Value::Quantum(a, ty), Value::Quantum(b, _)) => {
                 let a = a_regs.remove(&a).ok_or_else(|| {
                     self.error(
@@ -248,6 +282,91 @@ impl Lowerer<'_, '_> {
                 ErrorCode::TypeMismatch,
                 "incompatible branch result types",
             )),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::{call_state_tests::checked_compiler, *};
+    use super::*;
+    use crate::frontend::project::{ModuleOrigin, SourceModule};
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn word_phis_keep_order_reuse_inherited_bits_and_reserve_before_issuing_ids() {
+        let text = "unitary fn unused()->Unit{()}";
+        let project = Project {
+            root: PathBuf::from("main.qli"),
+            modules: BTreeMap::from([(
+                "main".into(),
+                SourceModule {
+                    name: "main".into(),
+                    path: PathBuf::from("main.qli"),
+                    source: text.into(),
+                    ast: crate::frontend::parser::parse_module(text).unwrap(),
+                    imports: BTreeMap::new(),
+                    origin: ModuleOrigin::Local,
+                },
+            )]),
+        };
+        let mut compiler = checked_compiler(&project);
+        for remaining in [0, MAX_WORK] {
+            compiler.work = MAX_WORK - remaining;
+            let mut lower = Lowerer {
+                compiler: &mut compiler,
+                raw: RawState::new(),
+                operation_sources: BTreeMap::new(),
+                instrument_calls: Vec::new(),
+                tuple_binding_origins: Vec::new(),
+                access_updates: Vec::new(),
+                effect: Effect::Unitary,
+                contract_effect: Effect::Unitary,
+                effect_source: None,
+                depth: 0,
+                bindings: BTreeMap::new(),
+            };
+            let ids: Vec<_> = (0..5).map(|_| lower.classical()).collect();
+            let mut phis = Vec::new();
+            let result = lower.merge_results(
+                "main",
+                Span::default(),
+                Value::Bits(vec![ids[0], ids[1], ids[2]]),
+                Value::Bits(vec![ids[0], ids[3], ids[4]]),
+                &mut BTreeMap::new(),
+                &mut BTreeMap::new(),
+                &mut Vec::new(),
+                &mut phis,
+            );
+            if remaining == 0 {
+                assert_eq!(result.unwrap_err().code, ErrorCode::Limit);
+                assert!(phis.is_empty());
+                assert_eq!(lower.classical(), ClassicalId(5));
+            } else {
+                assert_eq!(
+                    result.unwrap(),
+                    Value::Bits(vec![ids[0], ClassicalId(5), ClassicalId(6)])
+                );
+                assert_eq!(
+                    phis,
+                    vec![
+                        ClassicalPhi {
+                            then_id: ids[1],
+                            else_id: ids[3],
+                            output: ClassicalId(5)
+                        },
+                        ClassicalPhi {
+                            then_id: ids[2],
+                            else_id: ids[4],
+                            output: ClassicalId(6)
+                        },
+                    ]
+                );
+                assert_eq!(lower.classical(), ClassicalId(7));
+            }
         }
     }
 }

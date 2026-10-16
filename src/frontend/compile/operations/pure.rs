@@ -2,7 +2,8 @@
 use super::*;
 
 impl Compiler<'_> {
-    pub(super) fn pure_provider(
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn pure_provider_program(
         &mut self,
         module: &str,
         span: Span,
@@ -10,23 +11,9 @@ impl Compiler<'_> {
         meaning: Option<Key>,
         basis: Ty,
         codomain: Ty,
+        effect: Effect,
+        body: &AcceptedProgram,
     ) -> Result<Operation, CompileError> {
-        let effect = self.effect_in_module(module, key).ok_or_else(|| {
-            self.error(
-                module,
-                span,
-                ErrorCode::Effect,
-                "pure provider has no available source effect",
-            )
-        })?;
-        let body = self.checked.get(&key).ok_or_else(|| {
-            self.error(
-                module,
-                span,
-                ErrorCode::InvalidIr,
-                "provider has not been independently checked",
-            )
-        })?;
         let expected = meaning.map(|key| &self.meanings[&key].matrix);
         let evidence = crate::frontend::pure::check(
             &self.kernel,
@@ -119,7 +106,9 @@ impl Operation {
             Node::Then(a, b) | Node::Tensor(a, b) | Node::Conjugate(a, b) => {
                 a.needs_raw() || b.needs_raw()
             }
-            Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) => a.needs_raw(),
+            Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) | Node::Requested(_, a) => {
+                a.needs_raw()
+            }
             Node::Provider(_) => false,
         }
     }
@@ -131,6 +120,9 @@ impl Operation {
         compiler: &mut Compiler<'_>,
     ) -> Result<crate::interchange::pure_leaf::CheckedPureLeaf, CompileError> {
         self.require(module, span, access, compiler)?;
+        if let Node::Requested(_, operation) = self.node.as_ref() {
+            return operation.raw(module, span, access, compiler);
+        }
         let (basis, codomain) = match access {
             Access::Apply => (self.basis.clone(), self.codomain.clone()),
             Access::Adjoint => (self.codomain.clone(), self.basis.clone()),

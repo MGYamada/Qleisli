@@ -652,7 +652,7 @@ fn finite_v0_basis_lifts_are_injective_and_closed() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn finite_v0_computed_blocks_require_the_structural_certificate() {
+fn computed_blocks_keep_exact_native_phase_contracts() {
     let prefix = "use std::quantum::h; use std::quantum::z; use std::quantum::t;
                   classical fn p(x: Bit) -> Bit { x }
                   unitary fn phase(a: Q<Bit>) -> Q<Bit> { t(z(a)) }";
@@ -664,16 +664,72 @@ fn finite_v0_computed_blocks_require_the_structural_certificate() {
         );
         check_project(&SourceRoot::new(&source).0).unwrap();
     }
-    // H H and Z^2 are identities, but v0 certificates are structural. A static
-    // transform emits ApplyUnitary, which this source certificate excludes.
-    for body in ["h(h(a))", "adjoint(t)(a)", "power(z,2)(a)"] {
+    // These original bodies now require exact native normalization: H H and
+    // Z^2 are identities, while adjoint(T) retains its negative eighth phase.
+    // Keep the original library source and add only a separate closed caller
+    // to inspect the native-checked fragments retained from oracle.
+    for (body, phase) in [("h(h(a))", 0), ("adjoint(t)(a)", 7), ("power(z,2)(a)", 0)] {
         let source = format!(
             "{prefix} unitary fn oracle(q: Q<Bit>) -> Q<Bit> {{
                  with_computed(q,p) {{ |a| {body} }}
              }}"
         );
-        let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
-        assert_eq!(error.code, ErrorCode::Unsupported, "{body}\n{error}");
+        check_project(&SourceRoot::new(&source).0).unwrap();
+        let client = format!(
+            "{source}
+             use std::quantum::init0; use std::observe::measure_z;
+             observe fn main() -> Bit {{ measure_z(oracle(init0())) }}"
+        );
+        let accepted = compile_project(&SourceRoot::new(&client).0).unwrap();
+        let receipt = accepted
+            .source_computed_normalizations()
+            .iter()
+            .find(|receipt| receipt.names().0.contains("main::oracle::with_computed["))
+            .expect("actual original computed body has a native equation");
+        use qleisli::contract::DEFAULT_EXACT_WORK;
+        use qleisli::contract::exact::{Budget, Exact, Matrix};
+        use qleisli::interchange::finite_leaf::check_unitary;
+        let expected = Matrix::new(
+            2,
+            2,
+            vec![
+                Exact::one(),
+                Exact::zero(),
+                Exact::zero(),
+                Exact::phase(phase),
+            ],
+        )
+        .unwrap();
+        let wrong_phase = Matrix::new(
+            2,
+            2,
+            vec![
+                Exact::one(),
+                Exact::zero(),
+                Exact::zero(),
+                Exact::phase((phase + 1) % 8),
+            ],
+        )
+        .unwrap();
+        for leaf in [receipt.implementation(), receipt.specification()] {
+            check_unitary(
+                leaf.payload(),
+                leaf.boundary(),
+                &expected,
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .unwrap();
+            assert!(
+                check_unitary(
+                    leaf.payload(),
+                    leaf.boundary(),
+                    &wrong_phase,
+                    &mut Budget::new(DEFAULT_EXACT_WORK)
+                )
+                .is_err(),
+                "{body}: wrong phase accepted"
+            );
+        }
     }
 }
 

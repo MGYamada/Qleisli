@@ -117,6 +117,45 @@ impl Lowerer<'_, '_> {
             }
             return Ok(Value::EmptyBits);
         }
+        if namespace == "std::registers" && matches!(name, "empty" | "consume_empty") {
+            let arity = usize::from(name == "consume_empty");
+            if args.len() != arity {
+                return Err(self.primitive_refusal(
+                    module,
+                    span,
+                    ErrorCode::Arity,
+                    "empty register primitive argument arity mismatch",
+                )?);
+            }
+            self.compiler.charge(module, span, 8)?;
+            if name == "empty" {
+                let value = self.register(Ty::bits(0), Vec::new());
+                let slot = self.quantum(module, span, &value, false)?;
+                self.raw.operations.push(RawOp::PackUnit {
+                    output: self.raw.registers[&slot].token,
+                });
+                return Ok(value);
+            }
+            let value = args.pop().expect("empty owner");
+            if value.ty() != Ty::quantum(Ty::bits(0)) {
+                return Err(self.primitive_refusal(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "consume_empty requires exactly Q<Bits<0>>",
+                )?);
+            }
+            let slot = self.quantum_argument(module, span, &value, false, source_args.first())?;
+            let owner = self
+                .raw
+                .registers
+                .remove(&slot)
+                .expect("live zero-width owner");
+            self.raw
+                .operations
+                .push(RawOp::UnpackUnit { input: owner.token });
+            return Ok(Value::Unit);
+        }
         let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
             if crate::frontend::check::primitive::Primitive::lookup(&format!("{namespace}::{name}"))
                 .is_some()

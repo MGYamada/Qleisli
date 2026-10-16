@@ -1135,18 +1135,30 @@ fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn abstract_checked_provider_is_still_refused_by_finite_materialization() {
+fn abstract_checked_provider_closes_and_checks_its_original_meaning() {
     let source = format!("{PRELUDE}
         unitary fn abstracted[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{use_op[checked_op(U,ZMeaning)](q)}}
         observe fn main()->Bit{{measure_z(abstracted[provider](init0()))}}");
-    let error = compile_project(&SourceRoot::new(&source).0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::TypeMismatch, "{error}");
-    assert!(
-        error
-            .message
-            .contains("checked_op requires closed declarations"),
-        "{error}"
+    // Preserve the original source and entry. The eagerly checked closed audit
+    // compares the complete instantiated body with independent Z on every
+    // input, including phase/reference behavior; Z|0> measurement is no oracle.
+    let exact = format!(
+        "{source}
+        unitary fn closed(q:Q<Bit>)->Q<Bit>{{abstracted[provider](q)}}
+        unitary fn independent_z(q:Q<Bit>)->Q<Bit>{{z(q)}}
+        unitary fn audit(q:Q<Bit>)->Q<Bit>{{apply_contract(closed,independent_z,q)}}"
     );
+    compile_project(&SourceRoot::new(&exact).0).unwrap();
+
+    // -Z has the same measurement probabilities as Z for every input. Binding
+    // it through the original abstract formal must still fail the exact Meaning.
+    let false_meaning = format!(
+        "{source}
+        unitary fn minus_z(q:Q<Bit>)->Q<Bit>{{x(z(x(q)))}}"
+    )
+    .replace("abstracted[provider]", "abstracted[minus_z]");
+    let error = compile_project(&SourceRoot::new(&false_meaning).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Contract, "{error}");
 }
 
 #[cfg_attr(

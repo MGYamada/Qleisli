@@ -1,4 +1,4 @@
-//! Small private closure experiments, without generic production admission.
+//! Original signature closure and ordinary runtime admission use the same checks.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::frontend::project::{ModuleOrigin, SourceModule};
@@ -70,10 +70,20 @@ fn original_signature_u32_checks_differ_from_checked_helper_template_arithmetic(
                 assert!(matches!(closed.result.kind, Kind::Bits(0)));
             }
         }
-        // The private experiment must not relax whole-source profile admission.
-        let error = process_loaded_project(Path::new("main.qli"), &project, false).unwrap_err();
-        assert_eq!(error.code, ErrorCode::Unsupported);
-        assert!(error.message.contains("static Nat parameters"));
+        let result = process_loaded_project(Path::new("main.qli"), &project, true);
+        if refuses {
+            let error = result.unwrap_err();
+            assert_eq!(error.code, ErrorCode::Limit);
+            assert!(error.message.contains("concrete natural arithmetic"));
+            let source = &project.modules["main"].source;
+            assert_eq!(&source[error.span.start..error.span.end], "(n+n)");
+        } else {
+            assert!(
+                result
+                    .expect("ordinary helper instance keeps its exact zero result")
+                    .is_some()
+            );
+        }
     }
 }
 

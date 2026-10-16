@@ -11,18 +11,7 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
     }
     for (parameter, formal) in declaration.static_params.iter().zip(&interface.statics) {
         match &parameter.kind {
-            StaticParamKind::Basis => {
-                return Err((
-                    parameter.name.span,
-                    "finite profile does not support opaque Basis parameters",
-                ));
-            }
-            StaticParamKind::Natural => {
-                return Err((
-                    parameter.name.span,
-                    "finite profile does not support static Nat parameters",
-                ));
-            }
+            StaticParamKind::Basis | StaticParamKind::Natural => {}
             StaticParamKind::Operation {
                 basis, codomain, ..
             } => {
@@ -46,20 +35,6 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
             }
         }
     }
-    for requirement in &declaration.requires {
-        if let Requirement::Predicate(p) = requirement {
-            return Err((
-                p.left.span.cover(p.right.span),
-                "finite profile does not support size predicates",
-            ));
-        }
-        if declaration.static_params.is_empty() {
-            return Err((
-                declaration.span,
-                "requires needs static parameters in the finite profile",
-            ));
-        }
-    }
     for (parameter, checked) in declaration.params.iter().zip(&interface.params) {
         ty(&parameter.ty, checked)?;
     }
@@ -71,22 +46,9 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
 }
 fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
     match &ty.kind {
-        TypeKind::Named(_) => {
-            return Err((
-                ty.span,
-                "named Basis types are outside the finite lowering profile",
-            ));
-        }
-        TypeKind::Bits(_) => match &checked.kind {
-            Kind::Bits(size) if size.is_exact_zero() => {}
-            Kind::Bits(_) => {
-                return Err((
-                    ty.span,
-                    "nonzero register types are outside the finite lowering profile; only Bits<0> is supported",
-                ));
-            }
-            _ => unreachable!("checked register constructor differs"),
-        },
+        // Full instance closure validates every actual (including unused
+        // Basis values), original Nat roots and the existing finite limits.
+        TypeKind::Named(_) | TypeKind::Bits(_) => {}
         TypeKind::Tuple(fields) => {
             if fields.is_empty() {
                 return Err((
@@ -114,25 +76,15 @@ fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
 }
 fn operation(operation: &StaticOp) -> Result<(), Failure> {
     match &operation.kind {
-        StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
-            return Err((
-                operation.span,
-                "static argument is outside the finite lowering profile",
-            ));
-        }
-        StaticOpKind::Repeat(count, child) => {
-            if !matches!(
-                count,
-                Count::Natural(Natural {
-                    kind: NatKind::Number(0..=4096),
-                    ..
-                })
-            ) {
-                return Err((
-                    operation.span,
-                    "finite repetition requires a literal count in 0..=4096",
-                ));
+        StaticOpKind::Type(_) | StaticOpKind::Natural(_) => {}
+        StaticOpKind::Specialize { arguments, .. } => {
+            for argument in arguments {
+                self::operation(argument)?;
             }
+        }
+        StaticOpKind::Repeat(_, child) => {
+            // The original ordinary-u32 count is checked even for a dormant
+            // or zero-count child; no AST rewriting supplies a literal.
             self::operation(child)?;
         }
         StaticOpKind::Inverse(a) | StaticOpKind::Controlled(a) => self::operation(a)?,
@@ -171,11 +123,17 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
         ExprKind::UnsupportedClosure(_) => {
             return Err((expr.span, "runtime closure values are unsupported"));
         }
-        ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => {
-            return Err((
-                expr.span,
-                "expression is outside the finite lowering profile",
-            ));
+        ExprKind::StaticIf {
+            then_branch,
+            else_branch,
+            ..
+        } => {
+            block(then_branch)?;
+            block(else_branch)?;
+        }
+        ExprKind::StaticFold { initial, body, .. } => {
+            self::expr(initial)?;
+            block(body)?;
         }
         ExprKind::Controlled {
             operation: op,

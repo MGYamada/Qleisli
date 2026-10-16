@@ -147,7 +147,7 @@ impl Lowerer<'_, '_> {
         let signature = crate::frontend::instrument::signature(
             &parameters,
             &result_type,
-            |_| Some(0),
+            |size| Some(*size),
             &mut self.compiler.exact_work,
         )
         .map_err(|error| self.compiler.instrument_error(module, span, error))?;
@@ -174,7 +174,7 @@ impl Lowerer<'_, '_> {
             module,
             span,
             operations_size(&self.raw.operations[first..])
-                + result.tree_size().nodes
+                + result.tree_size().nodes.saturating_mul(2)
                 + module.len()
                 + 3,
         )?;
@@ -339,14 +339,14 @@ impl Compiler<'_> {
         let signature = crate::frontend::instrument::signature(
             &parameters,
             &result,
-            |_| Some(0),
+            |size| Some(*size),
             &mut self.exact_work,
         )
         .map_err(|error| self.instrument_error(module, span, error))?;
         let expected_signature = crate::frontend::instrument::signature(
             &expected_parameters,
             &expected_result,
-            |_| Some(0),
+            |size| Some(*size),
             &mut self.exact_work,
         )
         .map_err(|error| self.instrument_error(module, span, error))?;

@@ -292,7 +292,12 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
         ),
     ))
     .unwrap();
-    let root = SourceRoot::new(&original);
+    // The unchanged historical H H body now has an exact native identity
+    // equation. Use a separately authored non-diagonal body for the hint.
+    check_project_diagnostic(&SourceRoot::new(&original).0).unwrap();
+    assert!(original.contains("h(h(flag))"));
+    let unsupported = original.replace("h(h(flag))", "h(flag)");
+    let root = SourceRoot::new(&unsupported);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     assert_eq!(error.code, "unsupported");
     assert!(
@@ -303,7 +308,7 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     assert!(error.message.contains("return both owners"));
     assert!(error.message.contains("does not bypass cleanup checking"));
     let location = error.primary.unwrap();
-    assert!(original[location.span.start..location.span.end].contains("h(h(flag))"));
+    assert!(unsupported[location.span.start..location.span.end].contains("h(flag)"));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         command.arg("check").arg(&root.0);

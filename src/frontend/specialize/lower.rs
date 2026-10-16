@@ -18,6 +18,7 @@ use std::collections::{BTreeMap, BTreeSet};
 #[path = "fourier.rs"]
 mod fourier;
 mod preservation;
+mod zero_basis;
 pub use preservation::{FramePort, InitializationMove, PreparationValidation, SourceEvent};
 
 /// Immutable transport proposal retaining the complete source-order precursor.
@@ -32,6 +33,8 @@ pub struct HierarchyProposal {
     instrument: bool,
     events: Vec<SourceEvent>,
     moves: Vec<InitializationMove>,
+    zero_basis: Vec<zero_basis::Interval>,
+    pure_traces: Vec<zero_basis::DefinitionTrace>,
 }
 impl std::fmt::Debug for HierarchyProposal {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -87,6 +90,7 @@ impl HierarchyProposal {
                 "checked payload differs from source proposal",
             ));
         }
+        zero_basis::validate(self)?;
         preservation::validate(self)
     }
 
@@ -101,6 +105,7 @@ impl HierarchyProposal {
                 "native checked instrument differs from source proposal",
             ));
         }
+        zero_basis::validate(self)?;
         preservation::validate(self)
     }
 }
@@ -648,6 +653,10 @@ struct Lower<'a> {
     gate_cache: BTreeMap<usize, bool>,
     finite_gates: BTreeMap<u8, usize>,
     inline_visits: usize,
+    zero_basis: Vec<zero_basis::Interval>,
+    pure_traces: Vec<zero_basis::DefinitionTrace>,
+    trace_zero_basis: bool,
+    pure_trace_cells: usize,
 }
 struct NativeOperation<'a> {
     key: super::elaborate::OperationKey,
@@ -765,7 +774,9 @@ impl Lower<'_> {
         }
         let mut found = false;
         for step in self.source.definitions()[id].steps() {
-            found |= if let Some(name) = step.primitive_kind() {
+            found |= if zero_basis::classify(step) == Some(zero_basis::Kind::Structural) {
+                false
+            } else if let Some(name) = step.primitive_kind() {
                 match name {
                     Primitive::H
                     | Primitive::X
@@ -821,12 +832,70 @@ impl Lower<'_> {
             offset += n;
         }
         let mut children = vec![];
-        for step in definition.steps() {
+        let mut trace = if self.trace_zero_basis {
+            let cells = inputs.iter().try_fold(8usize, |total, port| {
+                total
+                    .checked_add(
+                        port.basis
+                            .storage_size(4096, 64)
+                            .ok_or_else(|| limit("pure source boundary exceeds type capacity"))?
+                            .nodes
+                            * 2
+                            + port.axes.len() * 2
+                            + 4,
+                    )
+                    .ok_or_else(|| limit("pure source boundary accounting overflow"))
+            })?;
+            let total = self
+                .pure_trace_cells
+                .checked_add(cells)
+                .ok_or_else(|| limit("pure source boundary accounting overflow"))?;
+            if total > 100_000 {
+                return Err(limit("pure source boundary exceeds retained cell budget"));
+            }
+            self.pure_trace_cells = total;
+            Some(Instrument {
+                inputs: inputs.clone(),
+                fresh: vec![],
+                initializations: vec![],
+                pure_steps: vec![],
+                measured: vec![],
+                next_axis: axes(&inputs).len() as u32,
+                next_classical: 1_000_000,
+                current: inputs.clone(),
+                events: vec![],
+                call_path: vec![],
+                trace_cells: cells,
+            })
+        } else {
+            None
+        };
+        for (step_index, step) in definition.steps().iter().enumerate() {
             let items = consume(step.inputs(), &mut values)?;
             if items.iter().any(|i| matches!(i, Item::Classical(_))) {
                 return Err(fail("pure proposal has classical operands"));
             }
-            let (node, output) = self.pure_step(step, quantum(&items))?;
+            let (node, output) = self.pure_step(step, quantum(&items), (id, step_index))?;
+            if let Some(trace) = &mut trace {
+                let before = self.pure_trace_cells;
+                preservation::reserve_pure_trace(
+                    trace,
+                    &items,
+                    &output,
+                    &mut self.pure_trace_cells,
+                    step,
+                )?;
+                trace.trace_cells = before;
+                preservation::record(
+                    trace,
+                    id,
+                    step_index,
+                    step,
+                    items,
+                    output.iter().cloned().map(Item::Quantum).collect(),
+                    Some(node),
+                )?;
+            }
             children.push(node);
             bind(
                 step.output(),
@@ -838,7 +907,42 @@ impl Lower<'_> {
         if result.iter().any(|i| matches!(i, Item::Classical(_))) {
             return Err(fail("pure proposal has classical results"));
         }
-        let root = self.graph.frame(inputs, &children, quantum(&result))?;
+        let outputs = quantum(&result);
+        let traced_outputs = if trace.is_some() {
+            let cells = outputs.iter().try_fold(0usize, |total, port| {
+                total
+                    .checked_add(
+                        port.basis
+                            .storage_size(4096, 64)
+                            .ok_or_else(|| limit("pure source return exceeds type capacity"))?
+                            .nodes
+                            + port.axes.len()
+                            + 1,
+                    )
+                    .ok_or_else(|| limit("pure source return accounting overflow"))
+            })?;
+            let total = self
+                .pure_trace_cells
+                .checked_add(cells)
+                .ok_or_else(|| limit("pure source return accounting overflow"))?;
+            if total > 100_000 {
+                return Err(limit("pure source return exceeds retained cell budget"));
+            }
+            self.pure_trace_cells = total;
+            Some(outputs.clone())
+        } else {
+            None
+        };
+        let root = self.graph.frame(inputs, &children, outputs)?;
+        if let Some(trace) = trace {
+            self.pure_traces.push(zero_basis::DefinitionTrace {
+                definition: id,
+                root,
+                inputs: trace.inputs,
+                outputs: traced_outputs.unwrap(),
+                events: trace.events,
+            });
+        }
         self.pure.insert(id, root);
         Ok(root)
     }
@@ -1208,12 +1312,20 @@ impl Lower<'_> {
                 .map(|p| &p.basis)
                 .ne(after.iter().map(|p| &p.basis))
             {
-                return self.factor_fourier(child);
+                return if self.trace_zero_basis {
+                    Ok(child)
+                } else {
+                    self.factor_fourier(child)
+                };
             }
             let enter = self.graph.identity(before.clone())?;
             let rename = self.graph.rename(after, before)?;
             let closed = self.graph.sequence(vec![enter, child, rename])?;
-            self.factor_fourier(closed)
+            if self.trace_zero_basis {
+                Ok(closed)
+            } else {
+                self.factor_fourier(closed)
+            }
         } else {
             let child = self.operation(op.child().ok_or_else(|| fail("missing repeat child"))?)?;
             let count = op
@@ -1239,7 +1351,15 @@ impl Lower<'_> {
             )
         }
     }
-    fn pure_step(&mut self, step: &SourceStep, before: Vec<Port>) -> Result<(usize, Vec<Port>)> {
+    fn pure_step(
+        &mut self,
+        step: &SourceStep,
+        before: Vec<Port>,
+        origin: (usize, usize),
+    ) -> Result<(usize, Vec<Port>)> {
+        if step.basis_table().is_some() {
+            return self.zero_basis_structural(step, before, origin);
+        }
         if let Some(key) = step.contract() {
             let checked = self
                 .source
@@ -1684,7 +1804,14 @@ impl Lower<'_> {
             let recorded_items = items.clone();
             let mut node = None;
             let mut inlined = false;
-            let output = if let Some(child) = step.called_definition() {
+            let mut preparation = None;
+            let output = if zero_basis::classify(step) == Some(zero_basis::Kind::Prepare) {
+                let (output, reference, fresh) =
+                    self.zero_basis_preparation(step, items, instrument, (id, step_index))?;
+                node = Some(reference);
+                preparation = Some(fresh);
+                output
+            } else if let Some(child) = step.called_definition() {
                 if self.source.definitions()[child].effect() != "unitary"
                     || !self.gate_present(child)
                 {
@@ -1694,7 +1821,8 @@ impl Lower<'_> {
                     instrument.call_path.pop();
                     output?
                 } else {
-                    let (output, reference) = self.instrument_pure_step(step, items, instrument)?;
+                    let (output, reference) =
+                        self.instrument_pure_step(step, items, instrument, (id, step_index))?;
                     node = Some(reference);
                     output
                 }
@@ -1796,21 +1924,21 @@ impl Lower<'_> {
                     )
                     | None => {
                         let (output, reference) =
-                            self.instrument_pure_step(step, items, instrument)?;
+                            self.instrument_pure_step(step, items, instrument, (id, step_index))?;
                         node = Some(reference);
                         output
                     }
                 }
             };
             if !inlined {
-                preservation::record(
+                preservation::record_prepared(
                     instrument,
-                    id,
-                    step_index,
+                    (id, step_index),
                     step,
                     recorded_items,
                     output.clone(),
                     node,
+                    preparation,
                 )?;
             }
             bind(step.output(), output, &mut values)?;
@@ -1822,28 +1950,30 @@ impl Lower<'_> {
         step: &SourceStep,
         items: Vec<Item>,
         instrument: &mut Instrument,
+        origin: (usize, usize),
     ) -> Result<(Vec<Item>, usize)> {
-        let structural = step.primitive_kind().is_some_and(|name| match name {
-            Primitive::Unit
-            | Primitive::Split
-            | Primitive::Join
-            | Primitive::Finish
-            | Primitive::TakeBit
-            | Primitive::PutBit
-            | Primitive::Empty
-            | Primitive::ConsumeEmpty => true,
-            Primitive::H
-            | Primitive::X
-            | Primitive::Z
-            | Primitive::Cnot
-            | Primitive::Phase
-            | Primitive::PhaseEighth
-            | Primitive::ControlledPhase
-            | Primitive::Init0
-            | Primitive::MeasureZ
-            | Primitive::EmptyBits
-            | Primitive::PrependBit => false,
-        });
+        let structural = zero_basis::classify(step) == Some(zero_basis::Kind::Structural)
+            || step.primitive_kind().is_some_and(|name| match name {
+                Primitive::Unit
+                | Primitive::Split
+                | Primitive::Join
+                | Primitive::Finish
+                | Primitive::TakeBit
+                | Primitive::PutBit
+                | Primitive::Empty
+                | Primitive::ConsumeEmpty => true,
+                Primitive::H
+                | Primitive::X
+                | Primitive::Z
+                | Primitive::Cnot
+                | Primitive::Phase
+                | Primitive::PhaseEighth
+                | Primitive::ControlledPhase
+                | Primitive::Init0
+                | Primitive::MeasureZ
+                | Primitive::EmptyBits
+                | Primitive::PrependBit => false,
+            });
         if !structural && !instrument.measured.is_empty() {
             return Err(Error::new(
                 "unsupported",
@@ -1855,7 +1985,7 @@ impl Lower<'_> {
         if items.iter().any(|i| matches!(i, Item::Classical(_))) {
             return Err(fail("quantum proposal contains classical operands"));
         }
-        let (node, output) = self.pure_step(step, quantum(&items))?;
+        let (node, output) = self.pure_step(step, quantum(&items), origin)?;
         instrument.pure_steps.push(node);
         Ok((output.into_iter().map(Item::Quantum).collect(), node))
     }
@@ -1980,9 +2110,22 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
             )));
         }
     }
+    let has_basis_tables = source
+        .definitions()
+        .iter()
+        .flat_map(|definition| definition.steps())
+        .any(|step| step.basis_table().is_some());
     for definition in source.definitions() {
         for step in definition.steps() {
-            if step.basis_table().is_some() {
+            if let Some(operation) = step.operation().filter(|_| has_basis_tables) {
+                if zero_basis::operation_uses_table(source, operation)? {
+                    return Ok(HierarchyEligibility::Ineligible(Error::new(
+                        "unsupported",step.span(),
+                        "zero-basis hierarchy transport requires ordinary source calls; static operation transforms retain the Raw profile",
+                    ).in_module(step.module())));
+                }
+            }
+            if step.basis_table().is_some() && zero_basis::classify(step).is_none() {
                 return Ok(HierarchyEligibility::Ineligible(Error::new(
                     "unsupported", step.span(),
                     "hierarchical transport does not support coherent basis tables; select the Raw profile",
@@ -2061,6 +2204,14 @@ fn lower_inner<'a>(
         gate_cache: BTreeMap::new(),
         finite_gates: BTreeMap::new(),
         inline_visits: 0,
+        zero_basis: vec![],
+        pure_traces: vec![],
+        trace_zero_basis: source
+            .definitions()
+            .iter()
+            .flat_map(|definition| definition.steps())
+            .any(|step| step.basis_table().is_some()),
+        pure_trace_cells: 0,
     };
     // Shared primitive proposals precede composite definitions. This is transport
     // sharing only: source steps, finite bytes and every reconstruction remain.
@@ -2099,9 +2250,17 @@ fn lower_inner<'a>(
     let precursor;
     let (payload, comparison, graph, instrument) = if profile == Effect::Unitary {
         let id = lower.pure_definition(source.root())?;
-        let id = lower.factor_fourier(id)?;
+        // This new source replay binds the actual ordered nodes. A trace
+        // factorization without that binding must not replace its root.
+        let id = if lower.trace_zero_basis {
+            id
+        } else {
+            lower.factor_fourier(id)?
+        };
         precursor = lower.graph.artifact(id);
-        let (compact, id, _) = lower.graph.compact_export(id)?;
+        let (compact, id, mapping) = lower.graph.compact_export(id)?;
+        zero_basis::remap(&mut lower.zero_basis, &mapping)?;
+        zero_basis::remap_traces(&mut lower.pure_traces, &mapping)?;
         let graph = compact.artifact(id);
         (graph.clone(), compact.comparison(id), graph, false)
     } else {
@@ -2176,6 +2335,8 @@ fn lower_inner<'a>(
         precursor = lower.graph.artifact(pure);
         let (compact, pure, map) = lower.graph.compact_export(pure)?;
         preservation::remap_events(&mut state.events, &map)?;
+        zero_basis::remap(&mut lower.zero_basis, &map)?;
+        zero_basis::remap_traces(&mut lower.pure_traces, &map)?;
         let graph = compact.artifact(pure);
         let pure_request = compact.comparison(pure);
         let readout_inputs = side(&desired, &[]);
@@ -2268,7 +2429,10 @@ fn lower_inner<'a>(
         instrument,
         events,
         moves,
+        zero_basis: lower.zero_basis,
+        pure_traces: lower.pure_traces,
     };
+    zero_basis::validate(&result)?;
     if instrument {
         preservation::validate(&result)?;
     }

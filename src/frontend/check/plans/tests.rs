@@ -1,5 +1,17 @@
 use super::*;
 
+const CONTROL_OWNERS: &str = "unitary fn zero(q:Q<Bits<0>>)->Q<Bits<0>>{q}
+    unitary fn keep(a:Q<Bit>,b:Q<Unit>,c:Q<Bits<0>>)->(Q<Bit>,Q<Unit>,Q<Bits<0>>){(a,b,c)}
+    unitary fn f[const U:Op<Bit>](z:Q<Bits<0>>,u:Q<Unit>,b:Q<Bit>)->(Q<Bits<0>>,Q<Unit>,Q<Bit>)
+    requires Applicable(U){
+        let alias=z;
+        zero(ctrl alias);
+        qfor static i in 0..0 carry (r_z,r_u,r_b)=(alias,u,b){
+            keep(ctrl r_b,excl r_u,excl r_z);
+            yield (r_z,r_u,r_b);
+        }
+    }";
+
 fn checked(source: &str) -> CheckedProgram {
     let module = crate::frontend::parser::parse_module(source).unwrap();
     super::super::program_with(
@@ -9,6 +21,197 @@ fn checked(source: &str) -> CheckedProgram {
     )
     .unwrap()
     .0
+}
+
+#[test]
+fn control_snapshots_retain_original_alias_carry_types_and_call_order() {
+    let program = checked(CONTROL_OWNERS);
+    let owner = program.resolution.qualified("main::f").unwrap();
+    let snapshots: Vec<_> = program
+        .obligations
+        .iter()
+        .filter(|obligation| {
+            obligation.definition == owner
+                && matches!(obligation.kind, ObligationKind::ControlSectors)
+        })
+        .collect();
+    assert_eq!(snapshots.len(), 2);
+    let alias = &snapshots[0].plan.runtime_owners;
+    assert_eq!(alias.len(), 1);
+    assert_eq!(alias[0].reference.local.as_ref().unwrap().name, "alias");
+    assert_eq!(*alias[0].ty, Ty::quantum(Ty::bits(Linear::constant(0))));
+    let carry = &snapshots[1].plan.runtime_owners;
+    assert_eq!(
+        carry
+            .iter()
+            .map(|binding| binding.reference.local.as_ref().unwrap().name.as_str())
+            .collect::<Vec<_>>(),
+        ["r_b", "r_u", "r_z"]
+    );
+    assert_eq!(*carry[0].ty, Ty::quantum(Ty::bit()));
+    assert_eq!(*carry[1].ty, Ty::quantum(Ty::unit()));
+    assert_eq!(*carry[2].ty, Ty::quantum(Ty::bits(Linear::constant(0))));
+    assert_ne!(carry[1].ty, carry[2].ty);
+    assert!(
+        program
+            .obligations
+            .iter()
+            .filter(|obligation| !matches!(obligation.kind, ObligationKind::ControlSectors))
+            .all(|obligation| obligation.plan.runtime_owners.is_empty())
+    );
+
+    let module = crate::frontend::parser::parse_module(CONTROL_OWNERS).unwrap();
+    super::super::program_with(
+        BTreeMap::from([("main", &module)]),
+        SourceLimits::selected(),
+        |resolution, interfaces, helpers, _, _, indices, budget| {
+            let validation = Validation {
+                indices,
+                helpers,
+                interfaces,
+                resolution,
+                budget,
+            };
+            let original = snapshots[1];
+            let verify = |owners: &[RuntimeOwnerPlan]| {
+                validation.runtime_owners(
+                    owner,
+                    original.plan.node,
+                    &original.kind,
+                    owners,
+                    original.span,
+                )
+            };
+            verify(carry).unwrap();
+            let mut swapped = carry.clone();
+            swapped.swap(0, 1);
+            assert!(verify(&swapped).is_err());
+            assert!(verify(&carry[..2]).is_err());
+            let mut ordinary = carry.clone();
+            ordinary[0].ty = Arc::new(Ty::bit());
+            assert!(verify(&ordinary).is_err());
+            let mut replaced = carry.clone();
+            replaced[2].ty = Arc::new(Ty::quantum(Ty::unit()));
+            assert!(verify(&replaced).is_err());
+            Ok(())
+        },
+    )
+    .unwrap();
+}
+
+#[test]
+fn borrowed_control_snapshots_require_the_canonical_original_judgment() {
+    use crate::frontend::resolve::locals::{Forest, OccurrencesForest, OriginalNode};
+    let module = crate::frontend::parser::parse_module(CONTROL_OWNERS).unwrap();
+    let (mut program, occurrences) = super::super::program_with(
+        BTreeMap::from([("main", &module)]),
+        SourceLimits::selected(),
+        |_, _, _, _, _, indices, budget| {
+            let mut occurrences = OccurrencesForest::default();
+            for index in indices.values_mut() {
+                occurrences.insert_budgeted(
+                    index.take_occurrences(),
+                    Span::default(),
+                    |span, cells| budget.charge(span, cells),
+                )?;
+            }
+            Ok(occurrences)
+        },
+    )
+    .unwrap();
+    let (other, _) = super::super::program_with(
+        BTreeMap::from([("main", &module)]),
+        SourceLimits::selected(),
+        |_, _, _, _, _, _, _| Ok(()),
+    )
+    .unwrap();
+    let forest = Forest::from_occurrences(occurrences);
+    let locals = forest.lookup(&program.lexical);
+    let owner = program.resolution.qualified("main::f").unwrap();
+    let module_id = program.resolution.declaration(owner).module;
+    let obligation = program
+        .obligations
+        .iter()
+        .find(|obligation| {
+            obligation.definition == owner && obligation.plan.runtime_owners.len() == 3
+        })
+        .unwrap();
+    let ordinal = obligation.id.ordinal;
+    let Some(OriginalNode::Expression(original)) = locals
+        .original_node_budgeted(obligation.plan.node, |_, _| Ok::<_, SourceError>(()))
+        .unwrap()
+    else {
+        unreachable!()
+    };
+    let copied_expression = original.clone();
+    let copied_judgment = obligation.clone();
+    let error = |span, message| SourceError::new("source", span, message);
+    let owners = original_runtime_owners(
+        &program,
+        &locals,
+        owner,
+        module_id,
+        original,
+        obligation,
+        &mut |_, _| Ok(()),
+        &error,
+    )
+    .unwrap();
+    assert_eq!(owners.len(), 3);
+    for (checked, expression, judgment) in [
+        (&program, &copied_expression, obligation),
+        (&program, original, &copied_judgment),
+        (&other, original, &other.obligations[obligation.id.ordinal]),
+    ] {
+        assert!(
+            original_runtime_owners(
+                checked,
+                &locals,
+                owner,
+                module_id,
+                expression,
+                judgment,
+                &mut |_, _| Ok(()),
+                &error
+            )
+            .is_err()
+        );
+    }
+    let mut remaining = 0usize;
+    let failure = original_runtime_owners(
+        &program,
+        &locals,
+        owner,
+        module_id,
+        original,
+        obligation,
+        &mut |span, cells| {
+            remaining = remaining
+                .checked_sub(cells)
+                .ok_or_else(|| SourceError::new("limit", span, "test snapshot budget exhausted"))?;
+            Ok(())
+        },
+        &error,
+    )
+    .unwrap_err();
+    assert_eq!(failure.code, "limit");
+    // Canonical collection identity does not authorize replacing its captured
+    // common type payload, even with another individually well-formed Q tree.
+    program.obligations[ordinal].plan.runtime_owners[2].ty = Arc::new(Ty::quantum(Ty::unit()));
+    let replaced = &program.obligations[ordinal];
+    assert!(
+        original_runtime_owners(
+            &program,
+            &locals,
+            owner,
+            module_id,
+            original,
+            replaced,
+            &mut |_, _| Ok(()),
+            &error
+        )
+        .is_err()
+    );
 }
 
 fn call_in<'a>(program: &'a CheckedProgram, owner: &str, target: &str) -> &'a StaticCallPlan {

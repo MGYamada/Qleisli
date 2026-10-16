@@ -180,6 +180,44 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
     let mut e = Equation::default();
     let phase = if wrong { 2 } else { 1 };
     let (before, after, entry) = match name {
+        "basis-zero" => {
+            let before = vec![unit(101), bit(102, 0)];
+            let after = vec![bit(103, 0)];
+            let finish = e.structural(&[unit(101)], &[], "unpack_unit");
+            let idle = e.rewire(&[bit(102, 0)], &[bit(102, 0)], &[0], &[0]);
+            let framed = e.tensor(&before, &[bit(102, 0)], finish, idle);
+            let rename = e.rewire(&[bit(102, 0)], &after, &[0], &[0]);
+            let interval = e.sequence(&before, &after, &[framed, rename]);
+            // One source basis step retains its own exact interval inside the
+            // complete ordinary root frame; the native request compares both.
+            let root = e.sequence(&before, &after, &[interval]);
+            (before, after, root)
+        }
+        "basis-phase-reference" => {
+            let before = vec![bit(101, 0), unit(102), bit(106, 1)];
+            let arranged = vec![unit(102), bit(101, 0), bit(106, 1)];
+            let phased = vec![unit(103), bit(101, 0), bit(106, 1)];
+            let prepared = vec![unit(103), bit(106, 1), bit(101, 0)];
+            let changed = vec![bit(107, 1), bit(101, 0)];
+            let after = vec![bit(101, 0), bit(107, 1)];
+            let enter = e.rewire(&before, &arranged, &[1, 0, 2], &[0, 1]);
+            let scalar = e.scalar(102, 103, 104, 105, phase);
+            let rest = vec![bit(101, 0), bit(106, 1)];
+            let idle = e.rewire(&rest, &rest, &[0, 1], &[0, 1]);
+            let scalar = e.tensor(&arranged, &phased, scalar, idle);
+            let arrange = e.rewire(&phased, &prepared, &[0, 2, 1], &[1, 0]);
+            let finish = e.structural(&[unit(103)], &[], "unpack_unit");
+            let zero = vec![bit(106, 1)];
+            let idle = e.rewire(&zero, &zero, &[0], &[0]);
+            let finish = e.tensor(&[unit(103), bit(106, 1)], &zero, finish, idle);
+            let rename = e.rewire(&zero, &[bit(107, 1)], &[0], &[0]);
+            let finish = e.sequence(&[unit(103), bit(106, 1)], &[bit(107, 1)], &[finish, rename]);
+            let retained = e.rewire(&[bit(101, 0)], &[bit(101, 0)], &[0], &[0]);
+            let finish = e.tensor(&prepared, &changed, finish, retained);
+            let leave = e.rewire(&changed, &after, &[1, 0], &[1, 0]);
+            let root = e.sequence(&before, &after, &[enter, scalar, arrange, finish, leave]);
+            (before, after, root)
+        }
         "multi-init-order" => {
             let rest = vec![bit(102, 0), bit(106, 1)];
             let before = [vec![unit(101)], rest.clone()].concat();
@@ -404,6 +442,8 @@ fn request(proposal: &HierarchyProposal, name: &str, wrong: bool) -> Vec<u8> {
         "unit-phase" => (vec![unit(101)], vec![bit(105, 0)]),
         "caller-frame" => (vec![unit(101), bit(102, 0)], vec![bit(103, 1)]),
         "helper-phase" => (vec![unit(101), bit(102, 0)], vec![bit(106, 1)]),
+        "basis-zero" => (vec![unit(101)], vec![bit(102, 0)]),
+        "basis-phase-reference" => (vec![bit(101, 0), unit(102)], vec![bit(106, 1)]),
         "multi-init-order" => (vec![unit(101)], vec![bit(102, 0), bit(106, 1)]),
         _ => panic!("unknown preparation interface"),
     };
@@ -463,6 +503,73 @@ fn request(proposal: &HierarchyProposal, name: &str, wrong: bool) -> Vec<u8> {
         ("outputs", outputs),
     ]))
     .unwrap()
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn zero_basis_preparation_keeps_exact_phase_reference_and_physical_initialization() {
+    for (name, text) in [
+        (
+            "basis-zero",
+            "pub isometry fn entry(q:Q<Unit>)->Q<Bit>{basis q as () {0}}",
+        ),
+        (
+            "basis-phase-reference",
+            "use std::quantum::phase_eighth;pub isometry fn entry(r:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>){(r,basis phase_eighth(u) as () {0})}",
+        ),
+    ] {
+        let proposal = lower(text);
+        let actual = json::parse(proposal.payload()).unwrap();
+        assert_eq!(
+            actual
+                .field("preparation")
+                .unwrap()
+                .field("initializations")
+                .unwrap()
+                .array()
+                .unwrap()
+                .len(),
+            1
+        );
+        let checked = kernel()
+            .check_instrument_native(proposal.payload(), &request(&proposal, name, false))
+            .unwrap();
+        proposal
+            .validate_initialization_moves_native(&checked)
+            .unwrap();
+        if name == "basis-phase-reference" {
+            assert!(
+                kernel()
+                    .check_instrument_native(proposal.payload(), &request(&proposal, name, true))
+                    .is_err(),
+                "wrong exact phase must refuse"
+            );
+            let input = [[0.5, 0.0], [0.0, 0.5], [0.5, 0.0], [0.0, -0.5]];
+            let output = checked.execute_instrument(&input, 2, limits()).unwrap();
+            assert_eq!(output.branches.len(), 1);
+            close(
+                &output.branches[0],
+                &[
+                    phase(input[0]),
+                    phase(input[1]),
+                    [0.0; 2],
+                    [0.0; 2],
+                    phase(input[2]),
+                    phase(input[3]),
+                    [0.0; 2],
+                    [0.0; 2],
+                ],
+            );
+        } else {
+            let output = checked
+                .execute_instrument(&[[0.0, 1.0]], 1, limits())
+                .unwrap();
+            close(&output.branches[0], &[[0.0, 1.0], [0.0, 0.0]]);
+        }
+    }
 }
 
 #[cfg_attr(

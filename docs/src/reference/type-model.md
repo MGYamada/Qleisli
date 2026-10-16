@@ -3,12 +3,12 @@
 This chapter specifies the **0.3.0 target contract** under the adopted
 [#22](https://github.com/MGYamada/Qleisli/issues/22) /
 [#27](https://github.com/MGYamada/Qleisli/issues/27) type boundary and the
-[authority hierarchy](authority.md). The current alpha frontend uses the
+[authority hierarchy](authority.md). The current beta frontend uses the
 canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` spellings described
 below. Both paths use one mandatory judgment over every complete original
 declaration and body before concrete eligibility, retaining exact type trees,
-owners, static premises, access and principal effects. The selected-source path
-implements bounded opaque Basis specialization; concrete emitter convergence,
+owners, static premises, access and principal effects. Both concrete paths
+implement bounded opaque Basis specialization; concrete emitter convergence,
 Meaning evidence integration and general source preservation remain in progress. The
 [foundation packet](../design/type-foundation.md) preserves the original
 experiments; their historical failures are not current acceptance results.
@@ -54,8 +54,11 @@ with head before tail. Existing concrete specialization bounds remain `n <= 8`
 retained source graph; flattening classical transport ports creates no type
 coercion. Source-step replay checks ordered elements against the actual
 native-accepted artifact. This bounded check is not an AST preservation theorem.
-The ordinary finite project profile retains its register/static-Nat limitation;
-use the selected source route for this register transport.
+The ordinary finite project adapter also retains ordered classical elements and
+exact quantum register owners. Its closed Basis/Nat substitutions support up to
+twelve physical bits, including nonzero registers; prepend requires its result
+to fit that bound. Selected elaboration retains its separate eight-bit capacity.
+Neither path identifies equal-width types or infers a missing static argument.
 
 The Bit literal spelling is `0` / `1` in both ordinary and basis
 computations. `false` / `true` migrate explicitly to `0` / `1`. A numeral in a
@@ -278,8 +281,11 @@ quantum input. The [coherent basis map](coherent-basis.md) consumes and returns
 a `Q<Unit>` owner with coefficient `+1`, retaining any scalar already present
 on its input; it is not runtime `let () = q` or an implicit owner elimination.
 Selected Raw implements this explicit map through the existing `LiftBasis`
-proposal and separate source-step comparison; general hierarchy conversion
-remains unsupported. Its existing quantum Unit, depth and work limitations
+proposal and separate source-step comparison. Hierarchy also admits the
+singleton coefficient-+1 table `[0]` under the narrow
+[zero-basis conversion/preparation profile](coherent-basis.md#concrete-profiles-and-proof-boundary);
+other tables and table-dependent static transforms remain unsupported there.
+Its existing quantum Unit, depth and work limitations
 still apply. Sized lowering omits
 ordinary Unit value ports while retaining the exact source interface and all
 executed operations. A computation returning Unit can still consume owners or
@@ -363,7 +369,7 @@ earlier parameters. Runtime values never determine static sizes or providers.
 
 The mandatory common source judgment covers every original declaration,
 owner/effect rule, capability, dependency and static branch, including private
-and unused declarations, both arms, zero-iteration bodies and all five ordinary
+and unused declarations, both arms, zero-iteration bodies and all six ordinary
 bundled modules. A source-semantic error precedes concrete profile eligibility.
 Specialization then checks closed substitutions, exact type trees, provider
 identity, premises and aggregate work. Numeric and operation obligations share
@@ -773,10 +779,12 @@ retain the full source tree and use an explicit representation mapping or
 reject an unsupported lowering profile. It must not silently map `Bits<1>` to
 Bit or `Bits<0>` to Unit to obtain evidence.
 
-The current finite profile supports ordinary Unit/Bit values, exact closed
-`Bits<0>` atoms and products, together with their supported quantum owners.
-Normalized closed zero sizes retain the Bits tag; nonzero registers and
-generic Basis/Nat materialization remain unsupported. The ordinary empty value
+The current finite profile supports ordinary Unit/Bit/Bits values and exact
+products, together with their supported quantum owners. Complete explicit
+Basis/Nat/Op substitutions close each original checked interface before body
+lowering. Static branches and carry folds use their original resolved plans;
+unused declarations, inactive arms and empty fold bodies retain their contract
+checks. Closed zero sizes retain the Bits tag. The ordinary empty value
 is copyable and emits no classical identity; `Q<Bits<0>>` retains a distinct
 linear owner and branch phi even with no wires. Both profiles use the same exact Bit judgment
 and eager, left-to-right operand evaluation for `0`, `1`, `not`, `and` and `xor`.
@@ -845,11 +853,16 @@ decision is never retried as weaker Raw validity. Total `classical fn` bodies
 are reusable as ordinary runtime computations: supported Unit/Bit/product calls
 use the same checked expression nodes and eager ordinary operations in both
 consumers. Runtime argument effects remain in the caller, and an ordinary call
-does not grant coherent injectivity or Meaning evidence. Selected Raw additionally
-transports ordinary Bits values; finite project lowering admits exact closed
-`Bits<0>` only. Selected coherent lifting evaluates complete bounded ordinary
+does not grant coherent injectivity or Meaning evidence. Both Raw adapters
+transport ordered ordinary Bits values within their respective finite widths;
+finite project lowering closes explicit Basis/Nat bindings, including nonzero
+registers. Selected coherent lifting evaluates complete bounded ordinary
 label bodies and emits Raw `LiftBasis`, with separate native acceptance and
-source-step comparison; its general hierarchy bridge remains unsupported.
+source-step comparison. Its hierarchy bridge admits only the singleton `[0]`
+zero-basis conversions and zero-Bit preparations described in the
+[coherent-basis profile](coherent-basis.md#concrete-profiles-and-proof-boundary),
+retaining the restrictions on other tables, static transforms and preparation
+after observation.
 These are implementation limits,
 not source-type prohibitions: ordinary `Bits<0>` is a copyable singleton basis
 distinct from `Unit`. All original declarations and bodies
@@ -873,7 +886,7 @@ errors identify the removed prefix. This namespace retirement does not complete
 the remaining grammar/CLI migration.
 Directory/qrate and explicit-module inputs retain their loader/provenance and
 concrete consumer differences, but both first check every complete original
-and the five bundled ordinary sources through the same judgment. Finite then
+and the six bundled ordinary sources through the same judgment. Finite then
 requires its concrete declarations to fit its profile; selected input seeks
 native acceptance only for the requested concrete specialization. Native
 results distinguish those scopes and do not certify every possible

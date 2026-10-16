@@ -860,6 +860,10 @@ mod tests {
             gate_cache: BTreeMap::new(),
             finite_gates: BTreeMap::new(),
             inline_visits: 0,
+            zero_basis: vec![],
+            pure_traces: vec![],
+            trace_zero_basis: false,
+            pure_trace_cells: 0,
         };
         let input = Port {
             owner: 1,

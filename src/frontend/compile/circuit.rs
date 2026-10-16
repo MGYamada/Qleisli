@@ -1,4 +1,4 @@
-//! Conversion of independently verified unary unitaries to flat finite circuits.
+//! Conversion of independently verified unitaries to ordered flat finite circuits.
 use super::*;
 use crate::ir::*;
 
@@ -61,17 +61,68 @@ pub(super) fn flatten(
     verified: &AcceptedProgram,
 ) -> Result<Vec<CircuitStep>, CompileError> {
     let raw = verified.program();
-    let port = &raw.quantum_inputs[0];
-    let width = port.wires.len();
+    compiler.charge(module, span, raw.quantum_inputs.len() + 1)?;
+    let width = raw
+        .quantum_inputs
+        .iter()
+        .map(|port| port.wires.len())
+        .sum::<usize>();
+    compiler.charge(
+        module,
+        span,
+        width + raw.quantum_inputs.len() * 3 + raw.quantum_outputs.len() + 80,
+    )?;
+    if width > MAX_BITS
+        || !raw.classical_inputs.is_empty()
+        || !raw.classical_outputs.is_empty()
+        || raw.quantum_inputs.is_empty()
+        || raw.quantum_outputs.is_empty()
+    {
+        return Err(compiler.error(
+            module,
+            span,
+            ErrorCode::Unsupported,
+            "finite transforms require a nonempty quantum owner group of at most 12 bits",
+        ));
+    }
+    let mut offset = 0;
+    let registers = raw
+        .quantum_inputs
+        .iter()
+        .map(|port| {
+            let axes = (offset..offset + port.wires.len()).collect();
+            offset += port.wires.len();
+            (port.token, axes)
+        })
+        .collect();
     let mut flat = FlatCircuit {
-        registers: BTreeMap::from([(port.token, (0..width).collect())]),
+        registers,
         classical: BTreeMap::new(),
         steps: Vec::new(),
     };
     flat.append(compiler, module, span, &raw.operations)?;
     // Rebind the result to the input axis order. Reordered ownership is part
     // of the function's operator and must participate in adjoint and control.
-    let axes = &flat.registers[&raw.quantum_outputs[0]];
+    compiler.charge(
+        module,
+        span,
+        width * width + width + raw.quantum_outputs.len() + 80,
+    )?;
+    let axes: Vec<_> = raw
+        .quantum_outputs
+        .iter()
+        .flat_map(|token| flat.registers[token].iter().copied())
+        .collect();
+    if axes.len() != width
+        || (0..width).any(|axis| axes.iter().filter(|found| **found == axis).count() != 1)
+    {
+        return Err(compiler.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "verified transform changes its complete ordered quantum interface",
+        ));
+    }
     if axes.iter().copied().ne(0..width) {
         compiler.charge(module, span, (1 << width) * (width + 2))?;
         let permutation = (0..1usize << width)
@@ -81,6 +132,10 @@ pub(super) fn flatten(
                 })
             })
             .collect();
+        if flat.steps.len() == flat.steps.capacity() {
+            compiler.charge(module, span, flat.steps.len() + 1)?;
+            flat.steps.reserve_exact(1);
+        }
         flat.steps.push(CircuitStep {
             controls: vec![],
             action: CircuitAction::Monomial {
@@ -114,6 +169,22 @@ impl FlatCircuit {
         for op in operations {
             compiler.tick(module, span)?;
             match op {
+                RawOp::PackUnit { output } => {
+                    // A logical zero-width owner has no coordinate to remap.
+                    // Scalar actions on it remain ordinary circuit steps.
+                    self.registers.insert(*output, Vec::new());
+                }
+                RawOp::UnpackUnit { input } => {
+                    let axes = self.registers.remove(input).expect("verified Unit owner");
+                    if !axes.is_empty() {
+                        return Err(compiler.error(
+                            module,
+                            span,
+                            ErrorCode::InvalidIr,
+                            "structural Unit consumption has nonzero width",
+                        ));
+                    }
+                }
                 RawOp::Gate {
                     gate: g,
                     input,
@@ -240,27 +311,63 @@ impl FlatCircuit {
                     compiler.charge(
                         module,
                         span,
-                        function.len().saturating_mul(use_ops.len() + 2),
+                        axes.len()
+                            .saturating_add(1)
+                            .saturating_add(function.len().saturating_mul(use_ops.iter().fold(
+                                2usize,
+                                |cost, usage| {
+                                    cost.saturating_add(match usage {
+                                        ProtectedUse::ControlledPhase { controls, .. } => {
+                                            controls.len() + 1
+                                        }
+                                        _ => 1,
+                                    })
+                                },
+                            ))),
                     )?;
                     let mut phases = vec![0u8; function.len()];
                     for (label, computed) in function.iter().enumerate() {
                         for usage in use_ops {
-                            let ProtectedUse::ProtectedGate { bit, gate } = usage else {
-                                return Err(compiler.error(
-                                    module,
-                                    span,
-                                    ErrorCode::Unsupported,
-                                    "static transform requires a diagonal computed body",
-                                ));
+                            let bit_value = |bit: &ProtectedBit| {
+                                let value = match bit.region {
+                                    ProtectedRegion::Source => label,
+                                    ProtectedRegion::Ancilla => usize::from(*computed),
+                                };
+                                value & (1 << bit.index) != 0
                             };
-                            let value = match bit.region {
-                                ProtectedRegion::Source => label,
-                                ProtectedRegion::Ancilla => usize::from(*computed),
+                            let exponent = match usage {
+                                ProtectedUse::ProtectedGate { bit, gate }
+                                    if matches!(gate, SingleGate::Z | SingleGate::T) =>
+                                {
+                                    if bit_value(bit) {
+                                        if *gate == SingleGate::Z { 4 } else { 1 }
+                                    } else {
+                                        0
+                                    }
+                                }
+                                ProtectedUse::ControlledPhase { controls, phase } => {
+                                    if controls
+                                        .iter()
+                                        .all(|control| bit_value(&control.bit) == control.when_one)
+                                    {
+                                        match phase {
+                                            ScalarPhase::MinusOne => 4,
+                                            ScalarPhase::EighthTurn => 1,
+                                        }
+                                    } else {
+                                        0
+                                    }
+                                }
+                                _ => {
+                                    return Err(compiler.error(
+                                        module,
+                                        span,
+                                        ErrorCode::Unsupported,
+                                        "static transform requires a diagonal computed body",
+                                    ));
+                                }
                             };
-                            if value & (1 << bit.index) != 0 {
-                                let exponent = if *gate == SingleGate::Z { 4 } else { 1 };
-                                phases[label] = (phases[label] + exponent) % 8;
-                            }
+                            phases[label] = (phases[label] + exponent) % 8;
                         }
                     }
                     self.steps.push(CircuitStep {

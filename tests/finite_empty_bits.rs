@@ -274,8 +274,14 @@ fn zero_width_does_not_allow_type_coercions_owner_loss_or_duplicate_owners() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-fn nonzero_and_generic_register_declarations_retain_the_finite_profile_refusal() {
+fn nonzero_and_generic_register_declarations_reach_finite_checking() {
+    // Uninstantiated generic bodies remain conditional common-checked families;
+    // these declaration-only sources execute no selected concrete instance.
     for source in [
         "pub unitary fn f(q:Q<Bits<1>>)->Q<Bits<1>>{q}",
         "pub unitary fn f(q:Q<Bits<0+1>>)->Q<Bits<1>>{q}",
@@ -283,8 +289,7 @@ fn nonzero_and_generic_register_declarations_retain_the_finite_profile_refusal()
         "pub unitary fn f[const A:Basis](q:Q<A>)->Q<A>{q}",
     ] {
         let root = SourceRoot::new(source);
-        let error = check_project(&root.0).unwrap_err();
-        assert_eq!(error.code, ErrorCode::Unsupported, "{error}\n{source}");
+        check_project(&root.0).unwrap_or_else(|error| panic!("{error}\n{source}"));
     }
 }
 

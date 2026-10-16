@@ -1,0 +1,249 @@
+{
+  "format": "qleisli.derived-phase-qft-retention",
+  "version": 1,
+  "scope": "Two separate inert packets. first retains the complete original directory tree except translations-01; that subtree is retained completely as translations-01. No recorded command, source or observer is executed; no original driver or source-freeze window is reconstructed.",
+  "archives": [
+    {
+      "id": "first",
+      "original_directory": "/private/tmp/qleisli-derived-phase-qft-first-9_2_729h",
+      "archive": "first.tar.gz",
+      "archive_bytes": 2644,
+      "archive_sha256": "b538543a28a23f7f32fb705db9cbeee91aba166b28f2c20d98a4e402a1705d64",
+      "tar_bytes": 30720,
+      "tar_sha256": "9bdbb99806cb64b2e2f8d1c045d453a15ca9f129ec97724a51c3a3845df92e5e",
+      "file_count": 21,
+      "expanded_bytes": 11509,
+      "files": [
+        {
+          "path": "capture.json",
+          "bytes": 5006,
+          "sha256": "b93ed6ef63da77a3c6e1a5538cea6e37cf94f6679170ef2abb0c8ecd4909248c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase/Qargo.toml",
+          "bytes": 40,
+          "sha256": "c6fede6de69c834f7c35e86f9d19b1e83c6aa59effaf7f4a0895dcc2a2c13498",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase/main.qli",
+          "bytes": 383,
+          "sha256": "6e8d3b06830b1830d46077c1396b4475224c22284c9671986dfbd8924ff8ee04",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase.check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase.check.stdout",
+          "bytes": 419,
+          "sha256": "1362abb23d6db1ba1ec3f262bd8c59aeb30a6d81beca506d14c726680189fd86",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase.run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "controlled_phase.run.stdout",
+          "bytes": 336,
+          "sha256": "cb34ba7d968b488adf2803f4ab466540012b17212ca7c219f83e9e8ca9adcc4f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/Qargo.toml",
+          "bytes": 40,
+          "sha256": "c6fede6de69c834f7c35e86f9d19b1e83c6aa59effaf7f4a0895dcc2a2c13498",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/kernel.qli",
+          "bytes": 1790,
+          "sha256": "ee43c65f3f145e8cbbd74ac94c11de78b300da97d512a47cb6a137e3660fd4ea",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/main.qli",
+          "bytes": 187,
+          "sha256": "254374e081d37358cf70f940c4e33ce32c29cd12cf039beca5225e3feb9f9e91",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.check.stdout",
+          "bytes": 310,
+          "sha256": "520e6a49785185f61d13a7be894158a35005ae1394897a0ff28c061ce4b02cb7",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.run.stdout",
+          "bytes": 308,
+          "sha256": "17d9cad0ce2d8a0ec02e6f54b8bc5e840895c043b006d7e81e35ca9b6509edff",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/Qargo.toml",
+          "bytes": 40,
+          "sha256": "c6fede6de69c834f7c35e86f9d19b1e83c6aa59effaf7f4a0895dcc2a2c13498",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/kernel.qli",
+          "bytes": 1790,
+          "sha256": "ee43c65f3f145e8cbbd74ac94c11de78b300da97d512a47cb6a137e3660fd4ea",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/main.qli",
+          "bytes": 242,
+          "sha256": "75798cf9142b5eefe1a5f49770ebe4f0b41b1962a3a4585def7534fc8df0f09b",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.check.stdout",
+          "bytes": 310,
+          "sha256": "520e6a49785185f61d13a7be894158a35005ae1394897a0ff28c061ce4b02cb7",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.run.stdout",
+          "bytes": 308,
+          "sha256": "17d9cad0ce2d8a0ec02e6f54b8bc5e840895c043b006d7e81e35ca9b6509edff",
+          "original_mode": "0644"
+        }
+      ]
+    },
+    {
+      "id": "translations-01",
+      "original_directory": "/private/tmp/qleisli-derived-phase-qft-first-9_2_729h/translations-01",
+      "archive": "translations-01.tar.gz",
+      "archive_bytes": 2199,
+      "archive_sha256": "881662f8e47033f68b96dc7dbaae27922054bcf0ec2d4659af7df5863286a0fc",
+      "tar_bytes": 30720,
+      "tar_sha256": "4f598fcb3f35d4ea008ca366b3918b33fcd44688b7056f12d76e4ab8eb0da13b",
+      "file_count": 15,
+      "expanded_bytes": 9726,
+      "files": [
+        {
+          "path": "capture.json",
+          "bytes": 3843,
+          "sha256": "a99566c781245faa28a8023e14bdb97c366249b63317d41b4662fea51ecd5b31",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/Qargo.toml",
+          "bytes": 40,
+          "sha256": "c6fede6de69c834f7c35e86f9d19b1e83c6aa59effaf7f4a0895dcc2a2c13498",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/kernel.qli",
+          "bytes": 1796,
+          "sha256": "723bee2249743d425eb113deb58424af83e3bd8ad2d7e77f54bf86b5f48d6374",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2/main.qli",
+          "bytes": 187,
+          "sha256": "254374e081d37358cf70f940c4e33ce32c29cd12cf039beca5225e3feb9f9e91",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.check.stdout",
+          "bytes": 419,
+          "sha256": "881173b484bc5ea75d5263a6a12077918ff788bdef6398d145ccbf5c6453cc92",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft2.run.stdout",
+          "bytes": 336,
+          "sha256": "cb34ba7d968b488adf2803f4ab466540012b17212ca7c219f83e9e8ca9adcc4f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/Qargo.toml",
+          "bytes": 40,
+          "sha256": "c6fede6de69c834f7c35e86f9d19b1e83c6aa59effaf7f4a0895dcc2a2c13498",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/kernel.qli",
+          "bytes": 1796,
+          "sha256": "723bee2249743d425eb113deb58424af83e3bd8ad2d7e77f54bf86b5f48d6374",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3/main.qli",
+          "bytes": 242,
+          "sha256": "75798cf9142b5eefe1a5f49770ebe4f0b41b1962a3a4585def7534fc8df0f09b",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.check.stdout",
+          "bytes": 419,
+          "sha256": "657a730e9617d87f194be1918ff4c6ab2f3c190babc9d42d2850b00dabc0f7f1",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "qft3.run.stdout",
+          "bytes": 608,
+          "sha256": "8264d768860defa60418e9089efc76aaaa1fd8edbebc90777ce934f34af72931",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

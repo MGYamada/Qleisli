@@ -335,7 +335,7 @@ difference between label copying and state copying.
 | Owners | Predicate takes one ordinary parameter of source's exact tree. Two-argument body returns ancilla; three-argument body returns data and ancilla. Capture/protection rules remain explicit; no standalone Release0 is inserted. |
 | Exact phase | Preserve complete use/logical action and require exact all-input clean return; known-input/marginal tests or approximate cleanup are insufficient. |
 | Source spans | Keep source, predicate, body, returned owner and logical-contract origins. |
-| Refusal | Wrong predicate arity/tree, unsupported body, Observe effect, lost/aliased/protected owners, failed equality/cleanup or capacity exhaustion rejects. Two-argument path retains identity/expanded-Z/T restriction. |
+| Refusal | Wrong predicate arity/tree, unsupported body, Observe effect, lost/aliased/protected owners, failed equality/cleanup or capacity exhaustion rejects. The two-argument path retains an already canonical empty/Z/T token chain through the existing protected gate. Other supported one-Bit ancilla bodies require native whole-original and canonical-witness equations for the same exact eighth-root diagonal before scalar/Z/T normalization. Chunking supplies only an untrusted matrix proposal; existing graph, dependency, source and shared-work capacities remain. Non-diagonal or unrepresentable actions reject; no name-based exception supplies evidence. |
 | Remaining obligations | Independently check actual retained compute/use/uncompute and exact logical/cleanup contract with references; syntax and Unitary annotations supply no clean evidence. |
 
 See [scoped bodies](functional-boundary.md#scoped-bodies-finite-elaboration-and-effects)

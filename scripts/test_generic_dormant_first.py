@@ -478,6 +478,12 @@ def main():
     check_dormant_partial_access_first()
     check_dormant_controls_first()
     check_dormant_control_owner_order_first()
+    check_general_static_runtime_first()
+    check_runtime_transforms_first()
+    check_derived_phase_qft_first()
+    check_computed_preparation_first()
+    check_zero_basis_first()
+    check_computed_long_leaf_first()
 
 
 def check_signature_tree(packet, files):
@@ -1201,6 +1207,907 @@ def check_dormant_control_owner_order_first():
     print('Dormant control owner-order history: 11 unchanged files / 6,758 bytes; '
           'two accepts, including the intended physical-axis-zero refusal. '
           'One physical qubit, two logical owners. No command executed.')
+
+
+def check_general_static_runtime_first():
+    """Read four complete bounded histories; archived observer code stays inert."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/general-static-runtime-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal static study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == 'd08bf54b8d108ca8b812ec8a4d7f9c262319aa309fc4cddb682e9b1ab01f72fb',
+            'general-static manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.general-static-runtime-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown general-static retention format')
+    rows = manifest['archives']
+    require([(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] == [
+                ('general', 61, 172127), ('primitive-control', 19, 525886),
+                ('derived-phase', 15, 10962), ('finite-primitives', 19, 13639)]
+            and sum(row['file_count'] for row in rows) == 114
+            and sum(row['expanded_bytes'] for row in rows) == 722614
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED,
+            'complete general-static packet counts differ')
+    check_signature_tree(study, [row['archive'] for row in rows] + ['packets.json', 'README.md'])
+    packets = {row['id']: read_archive(row, study) for row in rows}
+    originals = {row['id']: row['original_directory'] for row in rows}
+    head = '460f72e019885bd859686b6f4a8b265b40ab36fd'
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    old_cli = '0cc0017310561f75f95716603a293065797e370e2be901c26f03aad2f9ae2312'
+    new_cli = 'd2ffe826ad0d219dda9e45858d0aa11598945b23c9752848e5dae52f037bfd1c'
+    for files in packets.values():
+        for name, data in files.items():
+            if name.endswith('/Qargo.toml'):
+                require(tomllib.loads(data.decode()) ==
+                        {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                        'original static-study edition differs')
+
+    files = packets['general']
+    inventory = load_json(files['evidence-inventory.json'])
+    expected = {name: dict(sha256=sha(data), bytes=len(data)) for name, data in files.items()
+                if name != 'evidence-inventory.json'}
+    require(inventory['files'] == expected and inventory['files_excluding_inventory'] == 60
+            and inventory['bytes_excluding_inventory'] == 162436,
+            'complete original general-study inventory differs')
+    for group, count, driver, manifest_name in [
+        ('first', 10, 'observe_first.py', 'first-manifest.json'),
+        ('repairs', 2, 'observe_repairs.py', 'repair-manifest.json'),
+    ]:
+        plan = load_json(files[manifest_name])
+        observed = load_json(files['observations-' + group + '/observations.json'])
+        projects = plan['projects']
+        require(len(projects) == count and len(observed['observations']) == count
+                and observed['driver_sha256'] == sha(files[driver])
+                and observed['first_manifest_sha256'] == sha(files[manifest_name])
+                and [row['name'] for row in observed['observations']] ==
+                [project['name'] for project in projects], 'general observation order differs')
+        window = load_json(files['observations-' + group + '/before.json'])
+        state = {key: value for key, value in window.items() if key != 'utc'}
+        require(state['head'] == head and state['status'] == ''
+                and state['cli_sha256'] == old_cli and state['kernel_sha256'] == KERNEL_SHA
+                and len(state['source_sha256']) == 33
+                and all(HEX.fullmatch(value) for value in state['source_sha256'].values())
+                and datetime.fromisoformat(plan['created_utc']) <= datetime.fromisoformat(window['utc']),
+                'general original snapshot or prediction ordering differs')
+        after = load_json(files['observations-' + group + '/after.json'])
+        require({key: value for key, value in after.items() if key != 'utc'} == state,
+                'general complete source/executable window differs')
+        for project, observation in zip(projects, observed['observations']):
+            case = project['name']
+            require(project['prediction'] and all(sha(files[name]) == digest
+                    for name, digest in project['files'].items()), 'general first source differs')
+            require(observation['argv'] == [cli_path, 'check', originals['general'] + '/' + group + '/' + case,
+                                            '--format=json', '--lean-kernel=' + kernel_path]
+                    and observation['cli_identity_stable'] is True
+                    and observation['kernel_identity_stable'] is True
+                    and observation['source_identity_stable'] is True,
+                    'general original command or identity differs')
+            for snapshot in (observation['before'], observation['after']):
+                require({key: value for key, value in snapshot.items() if key != 'utc'} == state,
+                        'general per-command source window differs')
+            for stream in ('stdout', 'stderr'):
+                record = observation[stream]
+                data = files['observations-' + group + '/' + record['path']]
+                require(record['sha256'] == sha(data) and record['bytes'] == len(data),
+                        'general complete stream association differs')
+            require(files['observations-' + group + '/' + case + '.stderr.txt'] == b'',
+                    'general first stderr differs')
+            result = load_json(files['observations-' + group + '/' + case + '.stdout.txt'])
+            if case == 'closed_unit_control':
+                require(observation['exit_code'] == 0 and result['diagnostics'] == []
+                        and result['result']['native_decisions'] ==
+                        {'count': 20, 'requests_checked': 0, 'complete': True}
+                        and result['result']['source_preservation_verified'] is False,
+                        'general control native scope differs')
+            else:
+                code = 'type_mismatch' if group == 'first' and case.startswith('basis_') else 'unsupported'
+                require(observation['exit_code'] == 1 and result['result'] is None
+                        and len(result['diagnostics']) == 1
+                        and result['diagnostics'][0]['code'] == code,
+                        'general first refusal category differs')
+                if code == 'type_mismatch':
+                    require('use type(T)' in result['diagnostics'][0]['message'],
+                            'original Basis wrapper mistake was hidden')
+    for case, basis in [('basis_unit_identity', 'Unit'), ('basis_bit_identity', 'Bit')]:
+        require(files['repairs/' + case + '/main.qli'] ==
+                files['first/' + case + '/main.qli'].replace(
+                    ('identity[' + basis + ']').encode(), ('identity[type(' + basis + ')]').encode()),
+                'Basis repair changed more than its original argument wrapper')
+
+    files = packets['primitive-control']
+    plan, observed = (load_json(files[name]) for name in ('predictions-and-inputs.json', 'observations.json'))
+    before = plan['before']
+    require(before['head'] == head and before['branch'] == 'codex/beta-dormant-runtime'
+            and before['git_status_porcelain'] == '' and before['cli_sha256'] == old_cli
+            and before['kernel_sha256'] == KERNEL_SHA and len(before['rust_source_sha256']) == 409
+            and all(HEX.fullmatch(value) for value in before['rust_source_sha256'].values())
+            and observed['after'] == before and observed['stable_total_window'] is True,
+            'primitive-control complete original window differs')
+    cases = [('phase-unused', 0, 18, 0), ('phase-direct', 0, 20, 1),
+             ('x-unused', 0, 18, 0), ('x-direct', 1, None, None)]
+    require([case['name'] for case in plan['cases']] == [case[0] for case in cases]
+            and [row['name'] for row in observed['observations']] == [case[0] for case in cases],
+            'primitive-control original order differs')
+    for prediction, observation, (case, exit_code, decisions, requests) in zip(
+            plan['cases'], observed['observations'], cases):
+        require(prediction['prediction'] and prediction['main_sha256'] == sha(files[case + '/main.qli'])
+                and prediction['manifest_sha256'] == sha(files[case + '/Qargo.toml'])
+                and observation['before'] == observation['after'] == before
+                and observation['stable_window'] is True and observation['exit'] == exit_code
+                and observation['argv'] == [cli_path, 'check', originals['primitive-control'] + '/' + case,
+                                           '--format=json', '--lean-kernel=' + kernel_path],
+                'primitive-control original source/command binding differs')
+        for stream in ('stdout', 'stderr'):
+            require(observation[stream + '_sha256'] == sha(files[case + '.' + stream]),
+                    'primitive-control full stream differs')
+        require(files[case + '.stderr'] == b'', 'primitive-control stderr differs')
+        result = load_json(files[case + '.stdout'])
+        if decisions is None:
+            require(result['diagnostics'][0]['code'] == 'contract' and result['result'] is None,
+                    'direct X sector refusal differs')
+        else:
+            require(result['diagnostics'] == [] and result['result']['native_decisions'] ==
+                    {'count': decisions, 'requests_checked': requests, 'complete': True}
+                    and result['result']['source_preservation_verified'] is False,
+                    'dormant primitive gap incorrectly gained a request or preservation claim')
+
+    for packet_id, cli, cases in [
+        ('derived-phase', old_cli, [('final_unqualified', 1, 'unknown_name: unresolved function global_phase_eighth'),
+                                  ('legacy_exact_t', 0, ''),
+                                  ('global_scalar_is_not_t', 1, 'contract: exact equation U E_in = E_out u does not hold')]),
+        ('finite-primitives', new_cli, [(case, 1, 'unsupported: ') for case in
+                                      ('one_axis_roundtrip', 'word_constructor', 'exact_phase', 'unsupported_phase')]),
+    ]:
+        files = packets[packet_id]
+        plan, observed = (load_json(files[name]) for name in ('plan.json', 'observations.json'))
+        identities = {cli_path: cli, kernel_path: KERNEL_SHA}
+        require(plan['build_attestation'] is False and plan['execution'] == 'not run'
+                and plan['head_before'] == observed['head_after'] == head
+                and plan['dirty_before'] == observed['dirty_after'] and plan['dirty_before']
+                and plan['executables_before'] == observed['executables_after'] == identities
+                and observed['executables_stable'] is True and observed['source_bytes_stable'] is True
+                and plan['driver_sha256'] == sha(files['capture.py'])
+                and list(plan['cases']) == [case[0] for case in cases]
+                and [row['case'] for row in observed['observations']] == [case[0] for case in cases],
+                'derived/finite original executable or dirty-source identity differs')
+        for observation, (case, exit_code, message) in zip(observed['observations'], cases):
+            require(plan['predictions'][case] and observation['exit_code'] == exit_code
+                    and plan['cases'][case]['source_sha256'] == observation['source_sha256_after']
+                    == sha(files[case + '/main.qli'])
+                    and plan['cases'][case]['manifest_sha256'] == sha(files[case + '/Qargo.toml'])
+                    and observation['argv'] == [cli_path, 'check', originals[packet_id] + '/' + case,
+                                                '--lean-kernel=' + kernel_path],
+                    'derived/finite source/command binding differs')
+            for stream in ('stdout', 'stderr'):
+                require(observation[stream]['sha256'] == sha(files[observation[stream]['path']]),
+                        'derived/finite full stream association differs')
+            stdout, stderr = (files[observation[stream]['path']].decode() for stream in ('stdout', 'stderr'))
+            if exit_code:
+                require(stdout == '' and message in stderr, 'original derived/finite refusal differs')
+                if packet_id == 'finite-primitives':
+                    require('finite lowering profile' in stderr, 'profile refusal gained downstream evidence')
+            else:
+                require(stderr == '' and 'native decisions: 23; independent requests checked: 0' in stdout
+                        and 'source preservation: not proved' in stdout, 'derived T first native scope differs')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ('informed studies are not blind benchmarks', '114 original files / 722,614 bytes',
+                       'not a clean commit-to-binary build attestation', 'reader never executes',
+                       'never extracts', 'does not complete', '409 Rust source hashes'):
+        require(disclosure in note, 'missing general-static disclosure: ' + disclosure)
+    print('General-static runtime history: four packets / 114 unchanged files / 722,614 bytes; '
+          '23 original checks, 5 accepts / 18 refusals. Basis mistakes and dormant X gap retained. '
+          'No recorded command, source or observer executed.')
+
+
+def check_runtime_transforms_first():
+    """Read complete first/translation histories without replaying anything."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/runtime-transforms-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal transform study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == '136b45a0624d17074de276e29ffed3a4c901969178675a349ec796fe47b434d0',
+            'runtime-transform manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.runtime-transforms-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown runtime-transform retention format')
+    rows = manifest['archives']
+    require([(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] ==
+            [('first', 36, 36763), ('translations-01', 35, 26862)]
+            and sum(row['file_count'] for row in rows) <= MAX_MEMBERS
+            and sum(row['expanded_bytes'] for row in rows) <= MAX_CONTENT
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED,
+            'complete transform packet counts or fixed bounds differ')
+    check_signature_tree(study, [row['archive'] for row in rows] + ['packets.json', 'README.md'])
+    packets = {row['id']: read_archive(row, study) for row in rows}
+    originals = {row['id']: row['original_directory'] for row in rows}
+    cases = ['generic_classical', 'inactive_self', 'specialized_group_control',
+             'group_unit_inverse', 'symbolic_phase_inverse',
+             'specialized_group_0', 'specialized_group_1', 'specialized_group_2']
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    identities = {cli_path: 'ee67c0cb27748de6f7b13a4807eaf7ba8d96552816f5f0f23bc9cc1f0daf9c5b',
+                  kernel_path: KERNEL_SHA}
+    predictions = None
+    for packet_id in ['first', 'translations-01']:
+        files = packets[packet_id]
+        plan, observed = (load_json(files[name]) for name in ['plan.json', 'observations.json'])
+        expected = cases if packet_id == 'first' else cases[1:] + ['coherent_scalar_group']
+        require(plan['head_before'] == observed['head_after'] ==
+                '460f72e019885bd859686b6f4a8b265b40ab36fd'
+                and type(plan['dirty_before']) is str and plan['dirty_before']
+                and plan['dirty_before'] == observed['dirty_after']
+                and plan['executables_before'] == observed['executables_after'] == identities
+                and observed['executables_stable'] is True
+                and observed['source_bytes_stable'] is True
+                and plan['build_attestation'] is False and plan['execution'] == 'not run'
+                and plan['driver_sha256'] == sha(files['capture.py'])
+                and list(plan['cases']) == expected
+                and [row['case'] for row in observed['observations']] == expected,
+                'transform original source/observer/executable window differs')
+        if predictions is None:
+            predictions = plan['predictions']
+            require(list(predictions) == cases and all(predictions.values()),
+                    'first transform predictions differ')
+            require('original-test-source.rs' in files
+                    and not any(name.startswith('translations-01/') for name in files),
+                    'first packet snapshot or disclosed subtree split differs')
+        else:
+            require(plan['predictions'] == predictions
+                    and 'coherent_scalar_group' not in predictions,
+                    'translation stale/missing predictions were rewritten')
+        for row in observed['observations']:
+            case = row['case']
+            require(row['exit_code'] == 1
+                    and row['argv'] == [cli_path, 'check', originals[packet_id] + '/' + case,
+                                       '--lean-kernel=' + kernel_path]
+                    and plan['cases'][case]['source_sha256'] == row['source_sha256_after']
+                    == sha(files[case + '/main.qli'])
+                    and plan['cases'][case]['manifest_sha256'] == sha(files[case + '/Qargo.toml'])
+                    and tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                    {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                    'transform source/manifest/command association differs')
+            for stream in ['stdout', 'stderr']:
+                require(row[stream]['path'] == case + '.' + stream + '.txt'
+                        and row[stream]['sha256'] == sha(files[row[stream]['path']]),
+                        'transform complete stream association differs')
+            require(files[row['stdout']['path']] == b'', 'refused transform gained output')
+            code = ('parse' if case in ['generic_classical', 'group_unit_inverse',
+                                       'specialized_group_0', 'specialized_group_1',
+                                       'specialized_group_2'] else
+                    'type_mismatch' if case == 'symbolic_phase_inverse' else 'unsupported')
+            if packet_id == 'translations-01':
+                code = 'unsupported'
+            require((': ' + code + ': ') in files[row['stderr']['path']].decode(),
+                    'original transform refusal category differs')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ['informed studies, not blind benchmarks', 'All 16 baseline invocations refused',
+                       'stale generic-classical entry', 'no dedicated coherent-scalar prediction',
+                       '71 unchanged files / 63,625 expanded bytes',
+                       'not a clean commit-to-binary build attestation',
+                       'never executes recorded commands', 'never extracts',
+                       'does not establish current implementation correctness']:
+        require(disclosure in note, 'missing runtime-transform disclosure: ' + disclosure)
+    print('Runtime-transform history: two packets / 71 unchanged files / 63,625 bytes; '
+          '16 refused checks, original mistakes and stale predictions retained. '
+          'No recorded command, source or observer executed.')
+
+
+def check_derived_phase_qft_first():
+    """Inspect reported observations and retained bytes; execute no observer."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/derived-phase-qft-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal derived-phase study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == '0a83cdde1de1b5ffe278d94f5532ad0500834b6560b149f9a29fa91853a1a63e',
+            'derived-phase manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.derived-phase-qft-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown derived-phase retention format')
+    rows = manifest['archives']
+    require([(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] ==
+            [('first', 21, 11509), ('translations-01', 15, 9726)]
+            and sum(row['file_count'] for row in rows) <= MAX_MEMBERS
+            and sum(row['expanded_bytes'] for row in rows) <= MAX_CONTENT
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED,
+            'complete derived-phase packet counts or fixed bounds differ')
+    check_signature_tree(study, [row['archive'] for row in rows] + ['packets.json', 'README.md'])
+    packets = {row['id']: read_archive(row, study) for row in rows}
+    original = '/private/tmp/qleisli-derived-phase-qft-first-9_2_729h'
+    require([row['original_directory'] for row in rows] ==
+            [original, original + '/translations-01'], 'derived-phase original locations differ')
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    cli = 'd20fbb4505ed3c11997929b487404ea225395f993ea53bb30183361dcbda6ed9'
+    first = load_json(packets['first']['capture.json'])
+    translated = load_json(packets['translations-01']['capture.json'])
+    require(set(first) == {'head', 'cli_sha256', 'kernel_sha256', 'scope', 'records',
+                           'cli_stable', 'kernel_stable'}
+            and first['head'] == '460f72e019885bd859686b6f4a8b265b40ab36fd'
+            and first['scope'] == 'first desired source and actual diagnostics; dirty source, '
+                                  'no clean build attestation; only 2/3-bit executions'
+            and first['cli_stable'] is True and first['kernel_stable'] is True
+            and set(translated) == {'records', 'cli_sha256', 'kernel_sha256'}
+            and first['cli_sha256'] == translated['cli_sha256'] == cli
+            and first['kernel_sha256'] == translated['kernel_sha256'] == KERNEL_SHA,
+            'derived-phase recorded identity or capture limitations differ')
+    for packet_id, capture, cases in [
+        ('first', first, ['qft2', 'qft3', 'controlled_phase']),
+        ('translations-01', translated, ['qft2', 'qft3']),
+    ]:
+        files = packets[packet_id]
+        expected = {'capture.json'}
+        for case in cases:
+            expected.update(case + '/' + name for name in ['Qargo.toml', 'main.qli'])
+            if case != 'controlled_phase':
+                expected.add(case + '/kernel.qli')
+            expected.update(case + '.' + command + '.' + stream
+                            for command in ['check', 'run'] for stream in ['stdout', 'stderr'])
+            require(tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                    {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                    'derived-phase source manifest differs')
+        require(set(files) == expected, 'missing or extra derived-phase original file')
+        require([(row['case'], row['argv'][1]) for row in capture['records']] ==
+                [(case, command) for case in cases for command in ['check', 'run']],
+                'derived-phase original observation order differs')
+        for row in capture['records']:
+            case, command = row['case'], row['argv'][1]
+            fields = {'case', 'argv', 'exit_code', 'stdout', 'stderr'}
+            if packet_id == 'translations-01':
+                fields.add('command')
+                require(row['command'] == command, 'translation command identity differs')
+            directory = original + ('' if packet_id == 'first' else '/translations-01')
+            require(set(row) == fields and row['argv'] ==
+                    [cli_path, command, directory + '/' + case, '--format=json',
+                     '--lean-kernel=' + kernel_path] and type(row['exit_code']) is int,
+                    'derived-phase reported argv/source association differs')
+            for stream in ['stdout', 'stderr']:
+                require(type(row[stream]) is str and row[stream].encode() ==
+                        files[case + '.' + command + '.' + stream],
+                        'derived-phase full stream association differs')
+            require(row['stderr'] == '', 'derived-phase stderr differs')
+            result = load_json(row['stdout'])
+            require(result['format'] == 'qleisli.result' and result['version'] == 1
+                    and result['command'] == command, 'derived-phase result identity differs')
+            refuses = packet_id == 'first' and case != 'controlled_phase'
+            if refuses:
+                diagnostic, = result['diagnostics']
+                require(row['exit_code'] == 1 and result['outcome'] == 'error'
+                        and result['result'] is None and diagnostic['code'] == 'type_mismatch'
+                        and diagnostic['message'] ==
+                        'expected a Basis argument; use type(T) for a concrete type'
+                        and diagnostic['primary'] == {'path': 'kernel.qli', 'start': 436,
+                            'end': 439, 'line': 11, 'column': 51}
+                        and files[case + '/kernel.qli'][436:439] == b'Bit',
+                        'first QFT Basis-wrapper refusal differs')
+            else:
+                require(row['exit_code'] == 0 and result['outcome'] == 'ok'
+                        and result['diagnostics'] == [], 'derived-phase success observation differs')
+                observed = result['result']
+                if command == 'check':
+                    decisions = {'controlled_phase': 171, 'qft2': 210, 'qft3': 224}[case]
+                    require(observed['native_decisions'] == {'count': decisions,
+                            'requests_checked': 0, 'complete': True}
+                            and observed['checker_paths'] == [kernel_path]
+                            and observed['checker_identity'] == 'unpinned'
+                            and observed['entry'] == {'present': True, 'request_checked': False}
+                            and observed['source_preservation_verified'] is False,
+                            'derived-phase successful check scope differs')
+                else:
+                    distribution = observed['distribution']
+                    width = 3 if case == 'qft3' else 2
+                    outcomes = {tuple(item['bits']) for item in distribution}
+                    require(len(distribution) == len(outcomes) == 2 ** width
+                            and outcomes == {tuple(bool(n & (1 << k)) for k in range(width))
+                                             for n in range(2 ** width)}
+                            and all(all(type(bit) is bool for bit in item['bits'])
+                                    and type(item['probability']) is float
+                                    and math.isclose(item['probability'], 1 / 2 ** width,
+                                                     rel_tol=0, abs_tol=1e-12)
+                                    for item in distribution),
+                            'derived-phase bounded numerical observation differs')
+    for case in ['qft2', 'qft3']:
+        for name in ['Qargo.toml', 'main.qli']:
+            require(packets['first'][case + '/' + name] ==
+                    packets['translations-01'][case + '/' + name],
+                    'translation changed an unrelated source or manifest')
+        source = packets['first'][case + '/kernel.qli']
+        require(source.count(b'id[Bit]') == 1 and
+                packets['translations-01'][case + '/kernel.qli'] ==
+                source.replace(b'id[Bit]', b'id[type(Bit)]'),
+                'separate original Basis-wrapper repair differs')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ['informed authoring study, not a blind benchmark',
+                       '36 unchanged files / 21,235 expanded bytes',
+                       'first driver was Python stdin; no pre-invocation script was saved',
+                       'do not independently authenticate the invoking observer or the executed argv',
+                       'no separate HEAD or stability window',
+                       'Neither packet records a complete compiler-source freeze or pre/post source-byte hashes',
+                       'not a clean commit-to-binary build attestation',
+                       'never executes recorded commands', 'never extracts',
+                       'does not establish current implementation correctness']:
+        require(disclosure in note, 'missing derived-phase disclosure: ' + disclosure)
+    print('Derived-phase/QFT history: two packets / 36 unchanged files / 21,235 bytes; '
+          '10 invocations, 6 accepts / 4 original Basis-wrapper refusals; '
+          'successful check reports have no independent requests. '
+          'No recorded source, command or observer executed.')
+
+
+def check_computed_preparation_first():
+    """Read complete original histories without executing their saved observers."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/computed-preparation-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal computed study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == '68b20824a886e67a2e5a1d298ac97f326a3dffe4af0850bdeae19b4c9ea140ad',
+            'computed/preparation retention manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.computed-preparation-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown computed/preparation retention format')
+    rows = manifest['archives']
+    require(type(rows) is list and
+            [(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] == [
+                ('computed-body', 54, 126471), ('derived-preparation', 22, 9050),
+                ('canonical-length', 7, 68353)]
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED
+            and sum(row['expanded_bytes'] for row in rows) == 203874,
+            'complete computed/preparation packet counts or archive order differ')
+    # Bounds remain per archive, just as in the 114-file general-static study.
+    check_signature_tree(study, [row['archive'] for row in rows] + ['packets.json', 'README.md'])
+    packets = {row['id']: read_archive(row, study) for row in rows}
+    originals = {row['id']: row['original_directory'] for row in rows}
+    head = '460f72e019885bd859686b6f4a8b265b40ab36fd'
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    identities = {cli_path: 'd20fbb4505ed3c11997929b487404ea225395f993ea53bb30183361dcbda6ed9',
+                  kernel_path: KERNEL_SHA}
+    for files in packets.values():
+        for name, data in files.items():
+            if name.endswith('/Qargo.toml'):
+                require(tomllib.loads(data.decode()) ==
+                        {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                        'computed/preparation source edition differs')
+
+    def window(plan, observed, count):
+        require(plan['head_before'] == observed['head_after'] == head
+                and plan['build_attestation'] is False and observed['build_attestation'] is False
+                and plan['dirty_before'] == observed['dirty_after'] and plan['dirty_before']
+                and plan['executables_before'] == observed['executables_after'] == identities
+                and observed['executables_stable'] is True
+                and observed['wip_sources_stable'] is True
+                and plan['sources_before'] == observed['sources_after']
+                and type(plan['sources_before']) is dict and len(plan['sources_before']) == count
+                and all(local_name(name) and HEX.fullmatch(digest)
+                        for name, digest in plan['sources_before'].items()),
+                'saved computed source/executable window or no-attestation scope differs')
+
+    def streams(files, observation):
+        result = []
+        for stream in ('stdout', 'stderr'):
+            item = observation[stream]
+            require(set(item) == {'path', 'sha256'} and item['sha256'] == sha(files[local_name(item['path'])]),
+                    'complete computed stream association differs')
+            result.append(files[item['path']].decode())
+        return result
+
+    files = packets['computed-body']
+    cases = ['derived_z', 'derived_t', 'unrelated_z_wrapper', 'non_diagonal',
+             'wrong_scalar_meaning', 'hidden_reference']
+    first = load_json(files['plan.json'])
+    repair = load_json(files['repair-plan.json'])
+    require(first['classification'] == 'informed checking study, at most two allocated quantum wires; no execution'
+            and repair['kind'] == 'minimal first-source diagnostic repair'
+            and repair['repair'] == 'rename parameterized quantum main declaration to subject; no body/contract change'
+            and repair['first_plan_sha256'] == sha(files['plan.json'])
+            and first['sources_before'] == repair['sources_before'],
+            'computed first/repair lineage or classification differs')
+    for prefix, plan_name, observed_name, driver in [
+        ('', 'plan.json', 'observations.json', 'capture.py'),
+        ('attempt-02/', 'repair-plan.json', 'repair-observations.json', 'capture-repair.py'),
+    ]:
+        plan, observed = load_json(files[plan_name]), load_json(files[observed_name])
+        window(plan, observed, 201)
+        require(plan['driver_sha256'] == sha(files[driver])
+                and observed['original_sources_stable'] is True
+                and list(plan['cases']) == cases
+                and [item['case'] for item in observed['observations']] == cases,
+                'computed original observer, case order or source stability differs')
+        for observation in observed['observations']:
+            case = observation['case']
+            prediction = plan['cases'][case]
+            source = files[prefix + case + '/main.qli']
+            require(prediction['prediction'] == first['cases'][case]['prediction']
+                    and prediction['source_sha256'] == observation['source_sha256_after'] == sha(source)
+                    and prediction['manifest_sha256'] == sha(files[prefix + case + '/Qargo.toml'])
+                    and type(observation['exit_code']) is int and observation['exit_code'] == 1
+                    and observation['argv'] == [cli_path, 'check', originals['computed-body'] + '/' + prefix + case,
+                                                '--lean-kernel=' + kernel_path],
+                    'computed original source, prediction, argv or refusal differs')
+            if prefix:
+                original_source = files[case + '/main.qli']
+                require(prediction['original_source_sha256'] == sha(original_source)
+                        and source == original_source.replace(b'pub unitary fn main(', b'pub unitary fn subject(')
+                        and files[prefix + case + '/Qargo.toml'] == files[case + '/Qargo.toml'],
+                        'computed minimal repair changed a body, contract or original source')
+            stdout, stderr = streams(files, observation)
+            require(stdout == '' and stderr.startswith(originals['computed-body'] + '/' + prefix + case + '/main.qli:'),
+                    'computed original refusal stream or source location differs')
+            if case == 'hidden_reference':
+                message = 'ownership: with_computed body cannot capture outer binding `r`'
+            elif not prefix:
+                message = 'invalid_entry: main must be an ordinary fn main() with a closed classical result'
+            elif case == 'derived_t':
+                message = 'ownership: with_computed must return its ancilla ownership'
+            else:
+                message = 'unsupported: with_computed currently accepts only identity and expanded Z/T gates'
+            require(message in stderr, 'first entry mistake or repaired computed refusal was hidden')
+
+    files = packets['derived-preparation']
+    capture = load_json(files['capture.json'])
+    require(set(capture) == {'cli_sha256', 'kernel_sha256', 'head', 'scope', 'records', 'cli_stable', 'kernel_stable'}
+            and capture['cli_sha256'] == identities[cli_path] and capture['kernel_sha256'] == KERNEL_SHA
+            and capture['head'] == head and capture['cli_stable'] is True and capture['kernel_stable'] is True
+            and capture['scope'] == 'dirty source observation using existing executable; no full source freeze or clean build attestation; only zero/one/two-bit examples; Python stdin driver not saved',
+            'preparation observed provenance or missing-driver disclosure differs')
+    order = [(case, command) for case in ['reference_reset', 'empty_owner', 'false_pure_reset']
+             for command in ['check', 'run']]
+    require([(record['case'], record['argv'][1]) for record in capture['records']] == order
+            and all(not name.endswith('.py') for name in files),
+            'preparation command chronology or unsaved observer differs')
+    kernel = files['reference_reset/kernel.qli']
+    require(b'pub isometry fn init0()->Q<Bit>{basis unit(()) as () {0}}' in kernel
+            and b'pub observe fn reset(q:Q<Bit>)->Q<Bit>{let outcome=measure_z(q);init0()}' in kernel
+            and b'pub unitary fn empty()->Q<Bits<0>>' in kernel,
+            'original derived preparation contracts differ')
+    for record, (case, command) in zip(capture['records'], order):
+        require(files[case + '/kernel.qli'] == kernel
+                and record['argv'] == [cli_path, command, originals['derived-preparation'] + '/' + case,
+                                       '--format=json', '--lean-kernel=' + kernel_path]
+                and type(record['exit_code']) is int and record['exit_code'] == int(case == 'false_pure_reset')
+                and record['stdout'].encode() == files[case + '.' + command + '.stdout']
+                and record['stderr'].encode() == files[case + '.' + command + '.stderr'] == b'',
+                'preparation original argv, complete streams or outcomes differ')
+        response = load_json(record['stdout'])
+        require(response['format'] == 'qleisli.result' and response['version'] == 1
+                and response['command'] == command, 'preparation JSON report differs')
+        if case == 'false_pure_reset':
+            require(response['outcome'] == 'error' and response['result'] is None
+                    and len(response['diagnostics']) == 1 and response['diagnostics'][0]['code'] == 'effect'
+                    and 'body effect `Observe` exceeds asserted `Unitary` effect' in response['diagnostics'][0]['message'],
+                    'false Unitary preparation refusal differs')
+        elif command == 'check':
+            result = response['result']
+            require(response['outcome'] == 'ok' and response['diagnostics'] == []
+                    and result['checker_paths'] == [kernel_path] and result['checker_identity'] == 'unpinned'
+                    and result['native_decisions'] == {'count': 182 if case == 'reference_reset' else 168,
+                                                     'requests_checked': 0, 'complete': True}
+                    and result['entry'] == {'present': True, 'request_checked': False}
+                    and result['concrete_ir_roots'] == {'local': 5, 'bundled': 19}
+                    and result['source_preservation_verified'] is False,
+                    'preparation successful native scope differs')
+        else:
+            distribution = response['result']['distribution']
+            expected = {(False, False): 0.5, (True, False): 0.5} if case == 'reference_reset' else {(): 1.0}
+            require(response['outcome'] == 'ok' and response['diagnostics'] == []
+                    and len(distribution) == len(expected)
+                    and {tuple(item['bits']) for item in distribution} == set(expected)
+                    and all(all(type(bit) is bool for bit in item['bits'])
+                            and type(item['probability']) in (int, float)
+                            and math.isclose(item['probability'], expected[tuple(item['bits'])],
+                                             rel_tol=0, abs_tol=1e-12) for item in distribution),
+                    'preparation numerical observation differs')
+
+    files = packets['canonical-length']
+    plan, observed = load_json(files['plan.json']), load_json(files['observations.json'])
+    window(plan, observed, 203)
+    source = files['canonical-1025-t/main.qli']
+    require(plan['driver_sha256'] == sha(files['capture.py'])
+            and plan['source_sha256'] == observed['source_sha256_after'] == sha(source)
+            and plan['manifest_sha256'] == sha(files['canonical-1025-t/Qargo.toml'])
+            and source.count(b'let a=t(a);') == 1025 and b'use std::quantum::{t,init0}' in source
+            and 'no independent request or new equation is claimed' in plan['prediction']
+            and 'no execution' in plan['classification']
+            and plan['argv'] == [cli_path, 'check', originals['canonical-length'] + '/canonical-1025-t',
+                                  '--lean-kernel=' + kernel_path]
+            and observed['exit_code'] == 0 and observed['original_source_stable'] is True,
+            'canonical 1025-action original source, command or compatibility scope differs')
+    stdout, stderr = streams(files, observed)
+    require(stderr == '' and 'native decisions: 164; independent requests checked: 0' in stdout
+            and 'entry request checked: false' in stdout and 'source preservation: not proved' in stdout,
+            'canonical compatibility baseline gained an equation or preservation claim')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ('three separate informed studies, not blind benchmarks',
+                       'all 54 original files', 'repairs never replace first bytes or predictions',
+                       'Python stdin driver was not saved', 'source window',
+                       'not a clean commit-to-binary build attestation',
+                       '83 unchanged files / 203,874 expanded bytes',
+                       'passive reader never executes', 'never extracts archive members',
+                       'does not complete #369/#167'):
+        require(disclosure in note, 'missing computed/preparation disclosure: ' + disclosure)
+    print('Computed/preparation histories: three packets / 83 unchanged files / 203,874 bytes; '
+          '19 invocations, 5 accepts / 14 refusals. Entry mistakes and repairs retained; '
+          '1025-action acceptance is ordinary Raw checking only. No recorded code executed.')
+
+
+def check_zero_basis_first():
+    """Read first errors and separate wrappers as inert bytes, never replay."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/zero-basis-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal zero-basis study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == '8375babb05f5c843cbbd8e2415dba3a7b499638e0edd649b47b0d7154f0d3114',
+            'zero-basis manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.zero-basis-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown zero-basis retention format')
+    rows = manifest['archives']
+    require([(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] ==
+            [('first', 37, 25685), ('translations-01', 19, 10666)]
+            and sum(row['file_count'] for row in rows) <= MAX_MEMBERS
+            and sum(row['expanded_bytes'] for row in rows) <= MAX_CONTENT
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED,
+            'complete zero-basis counts or fixed reader bounds differ')
+    check_signature_tree(study, [row['archive'] for row in rows] + ['packets.json', 'README.md'])
+    packets = {row['id']: read_archive(row, study) for row in rows}
+    original = '/private/tmp/qleisli-zero-basis-first-37g9fz7_'
+    require([row['original_directory'] for row in rows] ==
+            [original, original + '/translations-01'], 'zero-basis original locations differ')
+    cases = ['prepare_zero', 'make_empty', 'consume_empty', 'phase_reference']
+    cli = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    identities = {cli: 'd20fbb4505ed3c11997929b487404ea225395f993ea53bb30183361dcbda6ed9',
+                  kernel: KERNEL_SHA}
+    for packet_id in ['first', 'translations-01']:
+        files = packets[packet_id]
+        plan, observed = (load_json(files[name]) for name in ['plan.json', 'observations.json'])
+        require(plan['executables_before'] == observed['executables_after'] == identities
+                and observed['executables_stable'] is True and plan['build_attestation'] is False
+                and list(plan['cases']) == cases, 'zero-basis recorded source/executable identity differs')
+        expected = {'plan.json', 'observations.json'}
+        for case in cases:
+            expected.update({case + '/main.qli', case + '/Qargo.toml'})
+            require(plan['cases'][case]['source_sha256'] == sha(files[case + '/main.qli'])
+                    and plan['cases'][case]['manifest_sha256'] == sha(files[case + '/Qargo.toml'])
+                    and tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                    {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                    'zero-basis original source/edition association differs')
+        if packet_id == 'first':
+            expected.update({'design-review.md', 'design-review-update-01.md', 'summary.json'})
+            require('capture.py' not in files and observed['first_sources_stable'] is True
+                    and plan['full_build_source_binding'] is False
+                    and plan['observed_head_before'] == observed['observed_head_after'] ==
+                    {'head': '460f72e019885bd859686b6f4a8b265b40ab36fd',
+                     'ref': 'refs/heads/codex/beta-dormant-runtime'}
+                    and plan['source_window'] == observed['source_window_after']
+                    and set(plan['source_window']) == {'src/frontend/specialize/lower.rs',
+                                                     'src/frontend/specialize/lower/preservation.rs',
+                                                     'src/frontend/specialize/raw.rs'}
+                    and all(HEX.fullmatch(value) for value in plan['source_window'].values())
+                    and list(plan['predictions']) == cases,
+                    'first observer absence, limited source window or predictions were rewritten')
+            order = [(case, profile) for case in cases for profile in ['ordinary', 'raw', 'hierarchy']]
+            require([(row['case'], row['profile']) for row in observed['observations']] == order,
+                    'zero-basis first command order differs')
+        else:
+            expected.add('capture.py')
+            require(plan['driver_sha256'] == sha(files['capture.py'])
+                    and observed['sources_stable'] is True and plan['prediction']
+                    and not any(key in plan for key in ['source_window', 'observed_head_before', 'dirty_before'])
+                    and [row['case'] for row in observed['observations']] == cases,
+                    'wrapper driver or missing observer fields were reconstructed')
+        for row in observed['observations']:
+            case = row['case']
+            require(row['source_sha256_after'] == plan['cases'][case]['source_sha256'],
+                    'zero-basis original source bytes changed during observation')
+            if packet_id == 'first':
+                profile = row['profile']
+                argv = ([cli, 'check', original + '/' + case, '--lean-kernel=' + kernel]
+                        if profile == 'ordinary' else
+                        [cli, 'check', '--entry=main::main',
+                         '--module=main=' + original + '/' + case + '/main.qli',
+                         '--ir-profile=' + profile, '--lean-kernel=' + kernel])
+                prefix = case + '.' + profile
+                expected_exit = 0 if profile == 'raw' else 1
+            else:
+                profile, prefix, expected_exit = 'wrapper', case, 0
+                argv = [cli, 'check', original + '/translations-01/' + case,
+                        '--lean-kernel=' + kernel]
+            require(row['argv'] == argv and row['exit_code'] == expected_exit,
+                    'zero-basis reported argv/outcome differs')
+            for stream in ['stdout', 'stderr']:
+                filename = prefix + '.' + stream + '.txt'
+                expected.add(filename)
+                require(row[stream]['path'] == filename
+                        and row[stream]['sha256'] == sha(files[filename]),
+                        'zero-basis full diagnostic stream association differs')
+            stdout, stderr = (files[row[stream]['path']].decode() for stream in ['stdout', 'stderr'])
+            if profile == 'raw':
+                result = load_json(stdout)
+                require(stderr == '' and result['status'] == 'checked'
+                        and result['checker_path'] == kernel and result['checker_identity'] == 'unpinned'
+                        and result['request_checked'] is False and result['source_preservation_verified'] is False
+                        and result['verification'] == {'scope': 'native-validity', 'request_origin': 'none',
+                                                       'source_steps_checked': True, 'source_meaning_verified': False}
+                        and result['ir_profile'] == 'raw'
+                        and result['source_check_scope'] == 'all-supplied-module-declarations'
+                        and result['native_check_scope'] == 'selected-specialization',
+                        'zero-basis selected Raw success scope differs')
+            elif profile == 'hierarchy':
+                require(stdout == '' and stderr.startswith('main:')
+                        and ': unsupported: hierarchical transport does not support coherent basis tables; select the Raw profile\n' in stderr,
+                        'zero-basis original hierarchy refusal was hidden')
+            elif profile == 'ordinary':
+                require(stdout == '' and stderr == original + '/' + case +
+                        '/main.qli:2:1: invalid_entry: main must be an ordinary fn main() with a closed classical result\n',
+                        'first ordinary entry mistake was rewritten')
+            else:
+                require(stderr == '' and stdout.startswith('checked source: ' + original + '/translations-01/' + case + '\n')
+                        and '2 concrete local roots, 19 bundled roots\n' in stdout
+                        and 'native decisions: 165; independent requests checked: 0\n' in stdout
+                        and 'entry request checked: false\nsource preservation: not proved\n' in stdout,
+                        'wrapper check success scope differs')
+        require(set(files) == expected, 'missing or extra original zero-basis retained file')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ['informed study, not a blind benchmark', '54 original',
+                       '56 files / 36,351 expanded bytes', 'two later notes',
+                       'no pre-invocation driver file exists', 'no driver is reconstructed',
+                       'no dirty-status snapshot was captured', 'not a complete source-closure freeze',
+                       'not a clean commit-to-binary build attestation', 'never extracts',
+                       'never executes recorded commands', 'No maximum-size case']:
+        require(disclosure in note, 'missing zero-basis disclosure: ' + disclosure)
+    print('Zero-basis history: two packets / 56 unchanged files / 36,351 bytes; '
+          '12 first checks (4 Raw accepts, 4 hierarchy refusals, 4 entry mistakes) and '
+          '4 separate wrapper accepts. Unsaved first observer retained as a limitation; '
+          'no recorded source, observer or command executed.')
+
+
+def check_computed_long_leaf_first():
+    """Validate complete first refusals as inert bytes, never run an observer."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/computed-long-leaf-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal long computed study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == 'bcb1d51e9f2132a5a518757c093cf6b3b7cf52c6fe3729242b41934db731e825',
+            'long computed manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.computed-long-leaf-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown long computed retention format')
+    rows = manifest['archives']
+    require(type(rows) is list
+            and [(row['id'], row['file_count'], row['expanded_bytes']) for row in rows] ==
+            [('first', 24, 266614)]
+            and sum(row['file_count'] for row in rows) <= MAX_MEMBERS
+            and sum(row['expanded_bytes'] for row in rows) <= MAX_CONTENT
+            and sum(row['archive_bytes'] for row in rows) <= MAX_STORED,
+            'complete long computed counts or unchanged reader bounds differ')
+    check_signature_tree(study, ['first.tar.gz', 'packets.json', 'README.md'])
+    files = read_archive(rows[0], study)
+    original = '/private/tmp/qleisli-computed-long-leaf-first-h2o26w73'
+    require(rows[0]['original_directory'] == original, 'long computed original location differs')
+    cli = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    scope = ('Dirty local executable identity and complete selected Rust/stdlib input window; '
+             'build record separate. Not compiler/runtime/source preservation attestation, '
+             'blind model benchmark, proof replay or issue completion.')
+    cases = [
+        ('attempt-01', 'first', 'capture.py', 1025,
+         '817f6a9ea87d5a642d3861321710458fed6bca1bb4fba75e52ca3dd0f109bf23'),
+        ('attempt-02', 'translation', 'capture_translation.py', 257,
+         'dbb73d713dc1968957916ec09e5f19ce4ce21c544c0a8dd497ea0b64cc64e155'),
+        ('attempt-03', 'compact', 'capture_compact.py', 0,
+         'b7f23d2df7fc37eb2e74c7cc1d52d97541d42f67b427c866aa345d35d3176810'),
+    ]
+    expected = set()
+    counts = collections.Counter()
+    for attempt, prefix, driver, calls, digest in cases:
+        source_name, edition_name = attempt + '/main.qli', attempt + '/Qargo.toml'
+        note_name = prefix + '-source.json'
+        stem = prefix + '-check'
+        names = {source_name, edition_name, note_name, driver, stem + '.started.json',
+                 stem + '.json', stem + '.stdout.txt', stem + '.stderr.txt'}
+        expected.update(names)
+        require(names <= files.keys(), 'incomplete long computed original attempt')
+        source = files[source_name]
+        note = load_json(files[note_name])
+        require(sha(source) == digest and note['files'] ==
+                {source_name: digest, edition_name: sha(files[edition_name])}
+                and tomllib.loads(files[edition_name].decode()) ==
+                {'schema-version': 2, 'qrate': {'edition': '2026'}}
+                and source.count(b'let a=t(a);') == calls
+                and b'use std::gate::t;' in source,
+                'long computed original source, edition or before-run note differs')
+        if prefix == 'first':
+            require(note['format'] == 'qleisli.informed-first-source'
+                    and note['model'] == 'GPT-6' and 'Not a blind authoring benchmark' in note['context']
+                    and 'source-work exhaustion is also possible' in note['prediction'],
+                    'long computed first model context or prediction was rewritten')
+        else:
+            require(note['format'] == 'qleisli.informed-source-translation'
+                    and '1,000,000 source-work bound' in note['reason'],
+                    'long computed translation lineage differs')
+        require((b'qfor static i in 0..257 carry r=a { yield t(r); }' in source) ==
+                (prefix == 'compact'), 'compact and expanded first sources were conflated')
+        started = load_json(files[stem + '.started.json'])
+        observed = load_json(files[stem + '.json'])
+        start_fields = {'argv', 'cwd', 'observer_sha256', 'cli_sha256', 'kernel_sha256',
+                        'head', 'dirty_status', 'inputs_before', 'scope'}
+        finish_fields = {'exit_code', 'seconds', 'inputs_after', 'inputs_stable',
+                         'cli_stable', 'kernel_stable', 'source_stable'}
+        require(set(started) == start_fields and set(observed) == start_fields | finish_fields
+                and all(observed[key] == value for key, value in started.items())
+                and started['observer_sha256'] == sha(files[driver])
+                and started['argv'] == [cli, 'check', original + '/' + attempt,
+                                        '--format=json', '--lean-kernel=' + kernel]
+                and started['cwd'] == '/Users/masa/git/Qleisli'
+                and started['cli_sha256'] == 'b5b71be9a3f4ae0f134392f751390fb6fd88ed9b3329748a0b13fb9f3082e85e'
+                and started['kernel_sha256'] == KERNEL_SHA
+                and started['head'] == '460f72e019885bd859686b6f4a8b265b40ab36fd'
+                and type(started['dirty_status']) is str and started['dirty_status']
+                and started['scope'] == scope
+                and type(observed['exit_code']) is int and observed['exit_code'] == 1
+                and type(observed['seconds']) in (int, float)
+                and math.isfinite(observed['seconds']) and observed['seconds'] >= 0
+                and all(observed[key] is True for key in
+                        ['inputs_stable', 'cli_stable', 'kernel_stable', 'source_stable']),
+                'long computed saved observer, command, dirty provenance or outcome differs')
+        inputs = started['inputs_before']
+        require(type(inputs) is dict and len(inputs) == 206 and inputs == observed['inputs_after']
+                and all(local_name(name) and type(value) is str and HEX.fullmatch(value)
+                        for name, value in inputs.items())
+                and sha(json.dumps(inputs, sort_keys=True, separators=(',', ':')).encode()) ==
+                '8755eac5ee399459207541efb09d7cdb6e3b5de00551e95fd9e2565cd2e2a282',
+                'long computed complete original input window differs')
+        require(files[stem + '.stderr.txt'] == b'', 'long computed full stderr differs')
+        response = load_json(files[stem + '.stdout.txt'])
+        require(set(response) == {'format', 'version', 'command', 'outcome', 'diagnostics', 'result'}
+                and response['format'] == 'qleisli.result' and type(response['version']) is int
+                and response['version'] == 1 and response['command'] == 'check'
+                and response['outcome'] == 'error' and response['result'] is None
+                and len(response['diagnostics']) == 1,
+                'long computed original full JSON error differs')
+        diagnostic = response['diagnostics'][0]
+        require(diagnostic['code'] == 'limit' and diagnostic['severity'] == 'error'
+                and diagnostic['related'] == [], 'long computed first error category differs')
+        if prefix == 'compact':
+            counts['function-profile'] += 1
+            require(diagnostic['message'] == 'with_computed phase normalization: function evidence exceeds its finite IR profile'
+                    and diagnostic['primary'] == {'path': 'main.qli', 'start': 148, 'end': 248,
+                                                  'line': 6, 'column': 11},
+                    'compact finite FunctionEvidence refusal was hidden')
+        else:
+            counts['source-work'] += 1
+            owner, used, requested = (('std::gate::t', 999695, 925) if prefix == 'first'
+                                      else ('std::gate::scalar_eighth', 1000000, 1))
+            require('source expansion exceeds the project-wide work limit of 1000000' in diagnostic['message']
+                    and f'while checking {owner}; {used} units used, {requested} requested' in diagnostic['message']
+                    and diagnostic['primary']['path'] == 'std://gate.qli'
+                    and diagnostic['primary']['line'] == (25 if prefix == 'first' else 18),
+                    'expanded source-work refusal was replaced by an equation result')
+    require(set(files) == expected and counts == {'source-work': 2, 'function-profile': 1},
+            'long computed complete inventory or diagnostic counters differ')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ['informed maintenance study, not a blind authoring benchmark',
+                       '24 unchanged files / 266,614 expanded bytes', 'Every original regular-file mode',
+                       'expanded-source work limits remain unrepaired', '206 hashes',
+                       'not independently resampled afterward', 'not a reconstructed clean commit-to-binary build attestation',
+                       'neither a source-success benchmark', 'M2 acceptance authority',
+                       'never overwrite these first sources', 'never extracts', 'never executes archived']:
+        require(disclosure in note, 'missing long computed disclosure: ' + disclosure)
+    print('Long computed history: one packet / 24 unchanged files / 266,614 bytes; '
+          'three first refusals, 2 source-work / 1 finite FunctionEvidence profile. '
+          'Expanded work limits remain unrepaired; no recorded source, observer or command executed.')
 
 
 if __name__ == '__main__':

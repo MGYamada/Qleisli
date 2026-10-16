@@ -154,6 +154,52 @@ fn shared_node_still_compares_both_ports_phase_effect_and_access() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn explicit_meaning_reference_survives_equal_matrices_and_shared_child() {
+    use crate::frontend::project::{ModuleOrigin, SourceModule};
+    let text = "classical fn identity(u:Unit)->Unit{u}\nmeaning First:Unit=permutation_by(identity);\nmeaning Second:Unit=permutation_by(identity);";
+    let project = Project {
+        root: PathBuf::from("main.qli"),
+        modules: BTreeMap::from([(
+            "main".into(),
+            SourceModule {
+                name: "main".into(),
+                path: PathBuf::from("main.qli"),
+                source: text.into(),
+                ast: crate::frontend::parser::parse_module(text).unwrap(),
+                imports: BTreeMap::new(),
+                origin: ModuleOrigin::Local,
+            },
+        )]),
+    };
+    let compiler = super::super::snapshot_tests::compiler(&project);
+    let first = compiler.source.resolution.qualified("main::First").unwrap();
+    let second = compiler
+        .source
+        .resolution
+        .qualified("main::Second")
+        .unwrap();
+    let child = provider(evidence());
+    let requested = |meaning| Operation {
+        node: Arc::new(Node::Requested(meaning, child.clone())),
+        depth: child.depth + 1,
+        nodes: child.nodes + 1,
+        ..child.clone()
+    };
+    assert!(same(&requested(first), &requested(first)));
+    assert_eq!(requested(first).meaning, requested(second).meaning);
+    assert!(!same(&requested(first), &requested(second)));
+    assert!(!same(&requested(first), &child));
+    assert!(!same(
+        &repeat(0, requested(first)),
+        &repeat(0, requested(second))
+    ));
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn pure_descriptor_keeps_its_optional_inverse_issued_identity() {
     let kernel = crate::interchange::native::Kernel::selected().unwrap();
     let leaf = Arc::new(

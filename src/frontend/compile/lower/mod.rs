@@ -9,10 +9,15 @@ mod branch;
 mod call_state_tests;
 mod certified;
 mod classical;
+mod computed_phase;
+mod dormant_access;
 mod function_contract;
 mod operations;
 mod primitives;
+mod runtime_transforms;
 mod scope;
+mod static_primitives;
+mod statics;
 mod transforms;
 mod value;
 
@@ -23,6 +28,8 @@ use crate::frontend::pattern::{self, BindingContext};
 use crate::frontend::raw_state::RawState;
 use crate::ir::*;
 use std::borrow::Cow;
+
+pub(super) use dormant_access::{PrimitiveControlVisit, check_dormant_primitive_control};
 
 #[derive(Clone, Copy)]
 enum CallArguments<'a> {
@@ -105,7 +112,7 @@ fn verification_error(
 // Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
-    raw: RawState<EmptyRegister>,
+    raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
@@ -128,7 +135,7 @@ struct PatternBinding<'a, 'c, 'p> {
 }
 impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
     type Value = Value;
-    type Size = EmptyRegister;
+    type Size = u32;
     type Error = CompileError;
 
     fn linear(&self, value: &Value) -> bool {
@@ -274,6 +281,7 @@ impl Lowerer<'_, '_> {
         quantum: &mut Vec<QuantumPort>,
         classical: &mut Vec<ClassicalId>,
     ) -> Result<Value, CompileError> {
+        self.compiler.tick(module, span)?;
         Ok(match &ty.kind {
             Kind::Unit => Value::Unit,
             Kind::Bit => {
@@ -282,9 +290,27 @@ impl Lowerer<'_, '_> {
                 Value::Classical(id)
             }
             Kind::Q(basis) => {
-                let wires = (0..basis.basis_bits().expect("basis type"))
-                    .map(|_| self.wire())
-                    .collect();
+                let width = basis.basis_bits().ok_or_else(|| {
+                    self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "finite quantum input requires a closed ordinary basis tree",
+                    )
+                })?;
+                if width > MAX_BITS {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "basis type exceeds the initial 12-bit limit",
+                    ));
+                }
+                // Both the register and the original Raw input retain their
+                // ordered physical axes, including the empty vector at zero.
+                self.compiler
+                    .charge(module, span, width.saturating_mul(2).saturating_add(3))?;
+                let wires = (0..width).map(|_| self.wire()).collect();
                 let value = self.register((**basis).clone(), wires);
                 let Value::Quantum(slot, _) = &value else {
                     unreachable!()
@@ -310,7 +336,32 @@ impl Lowerer<'_, '_> {
                     .map(|field| self.input(field, module, span, quantum, classical))
                     .collect::<Result<_, _>>()?,
             ),
-            Kind::Bits(EmptyRegister) => Value::EmptyBits,
+            Kind::Bits(width) => {
+                let width = usize::try_from(*width).map_err(|_| {
+                    self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "finite word width exceeds usize",
+                    )
+                })?;
+                if width > MAX_BITS {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "basis type exceeds the initial 12-bit limit",
+                    ));
+                }
+                let compiler = &mut *self.compiler;
+                let raw = &mut self.raw;
+                Value::input_word(
+                    width,
+                    classical,
+                    |cells| compiler.charge(module, span, cells),
+                    || raw.classical(),
+                )?
+            }
             Kind::Parameter(_) => {
                 return Err(self.error(
                     module,
@@ -336,6 +387,20 @@ impl Lowerer<'_, '_> {
             .declaration(*key)
             .name
             .clone();
+        if self.compiler.current_instance_owner() != Some(*key) {
+            let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+                (site.module, site.span)
+            });
+            let instance = self.compiler.prepare_instance(
+                *key,
+                BTreeMap::new(),
+                BTreeMap::new(),
+                BTreeMap::new(),
+                module,
+                span,
+            )?;
+            return self.call_instance(key, args, site, instance);
+        }
         if self.depth >= MAX_DEPTH {
             return Err(self.error(
                 &key_name.0,
@@ -571,9 +636,9 @@ impl Lowerer<'_, '_> {
         for stmt in &block.statements {
             self.compiler.tick(module, stmt.span)?;
             match &stmt.kind {
-                // The shared judgment checked this compile-time binding.
-                // It has no runtime value or owner in a finite body.
-                StmtKind::StaticLet { .. } => {}
+                StmtKind::StaticLet { name, value } => {
+                    self.static_binding(module, name, value)?;
+                }
                 StmtKind::MutableLet { .. } | StmtKind::Assign { .. } => {
                     return Err(self.error(
                         module,
@@ -881,26 +946,37 @@ impl Lowerer<'_, '_> {
                 classical_outputs: vec![],
                 declared_effect: Effect::Unitary,
             };
-            self.compiler
-                .kernel
-                .check_control_owners(&call, &signatures, &axes, &mut self.compiler.exact_work)
-                .map_err(|failure| {
-                    let code = match failure.code {
-                        "contract" => ErrorCode::Contract,
-                        "limit" => ErrorCode::Limit,
-                        "io" | "kernel" => ErrorCode::Project,
-                        _ => ErrorCode::InvalidIr,
-                    };
-                    self.error(
-                        module,
-                        span,
-                        code,
-                        format!(
-                            "{failure}; {}",
-                            crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
-                        ),
-                    )
-                })?;
+            if let Err(failure) = self.compiler.kernel.check_control_owners(
+                &call,
+                &signatures,
+                &axes,
+                &mut self.compiler.exact_work,
+            ) {
+                self.compiler.charge(
+                    module,
+                    span,
+                    failure.code.len()
+                        + failure.message.len()
+                        + failure.json_pointer.len()
+                        + crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION.len()
+                        + 16,
+                )?;
+                let code = match failure.code {
+                    "contract" => ErrorCode::Contract,
+                    "limit" => ErrorCode::Limit,
+                    "io" | "kernel" => ErrorCode::Project,
+                    _ => ErrorCode::InvalidIr,
+                };
+                return Err(self.error(
+                    module,
+                    span,
+                    code,
+                    format!(
+                        "{failure}; {}",
+                        crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
+                    ),
+                ));
+            }
         }
         for ((key, _), value) in owners.into_iter().zip(returned) {
             self.access_updates
@@ -920,7 +996,7 @@ impl Lowerer<'_, '_> {
         static_arguments: &[StaticOp],
         runtime_arguments: RuntimeArguments<'_>,
         target: Key,
-    ) -> Result<(), CompileError> {
+    ) -> Result<crate::frontend::resolve::locals::UseSiteId, CompileError> {
         let span = expression.span;
         let mut work = self.compiler.work;
         let result = (|| {
@@ -986,7 +1062,7 @@ impl Lowerer<'_, '_> {
             if checked.plan().target != target {
                 refuse!("runtime callee differs from its original call plan target");
             }
-            Ok(())
+            Ok(checked.plan().callee.site)
         })();
         self.compiler.work = work;
         result
@@ -1053,18 +1129,36 @@ impl Lowerer<'_, '_> {
             .unwrap_or_else(|| self.compiler.resolve(module, callee))?
         {
             Callee::User(key) => {
-                self.original_runtime_call(module, source, callee, static_args, args, key)?;
-                let bindings = self.bind_operations(&key, static_args, env, site)?;
-                self.call_bound(&key, values, Some(site), bindings)
+                let original =
+                    self.original_runtime_call(module, source, callee, static_args, args, key)?;
+                self.compiler.charge(
+                    module,
+                    span,
+                    self.compiler.source.static_calls[&original].arguments.len() + 1,
+                )?;
+                let plan = &self.compiler.source.static_calls[&original];
+                let cost = plan.arguments.iter().fold(2usize, |cells, actual| {
+                    cells.saturating_add(actual.formal.name.len() + 2)
+                });
+                self.compiler.charge(module, span, cost)?;
+                let plan = &self.compiler.source.static_calls[&original];
+                let actuals = plan.arguments.clone();
+                let environment = Arc::clone(&plan.environment);
+                let instance = self.compiler.bind_source_instance(
+                    key,
+                    &actuals,
+                    &environment,
+                    &self.bindings,
+                    module,
+                    span,
+                )?;
+                self.call_instance(&key, values, Some(site), instance)
             }
             Callee::Sealed(namespace, name) => {
                 if !static_args.is_empty() {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Arity,
-                        "sealed operations have no static parameters",
-                    ));
+                    return self.sealed_static_with_source(
+                        module, source, callee, &namespace, &name, values, args,
+                    );
                 }
                 self.sealed_with_source(module, span, &namespace, &name, values, args)
             }
@@ -1114,13 +1208,21 @@ impl Lowerer<'_, '_> {
                 ErrorCode::Unsupported,
                 "runtime closure values are unsupported",
             )),
-            ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => Err(self.error(
-                module,
-                expr.span,
-                ErrorCode::Unsupported,
-                "expression is outside the finite lowering profile",
-            )),
+            ExprKind::StaticIf { .. } => self.static_branch(module, expr, env),
+            ExprKind::StaticFold { .. } => self.static_fold(module, expr, env),
             ExprKind::Controlled { operation, args } => {
+                if args.len() == 2 {
+                    if let Some(value) = self.runtime_transform(
+                        module,
+                        expr,
+                        operation,
+                        &args[1],
+                        env,
+                        Access::Controlled,
+                    )? {
+                        return Ok(value);
+                    }
+                }
                 self.controlled_application(module, expr.span, operation, args, env)
             }
             ExprKind::ApplyContract {
@@ -1139,6 +1241,11 @@ impl Lowerer<'_, '_> {
                 )
             }
             ExprKind::ApplyStatic { operation, input } => {
+                if let Some(value) =
+                    self.runtime_transform(module, expr, operation, input, env, Access::Apply)?
+                {
+                    return Ok(value);
+                }
                 if let Some((function, count, count_span)) = named_literal_repetition(operation) {
                     let count = u16::try_from(count)
                         .ok()
@@ -1164,21 +1271,20 @@ impl Lowerer<'_, '_> {
                 let op = self.operation(module, operation, env)?;
                 self.apply_operation(module, expr.span, &op, value, Access::Apply)
             }
-            ExprKind::Adjoint { operation, input }
-                if !matches!(operation.kind, StaticOpKind::Name(_)) =>
-            {
-                self.constructed_inverse(module, expr.span, operation, input, env)
+            ExprKind::Adjoint { operation, input } => {
+                if let Some(value) =
+                    self.runtime_transform(module, expr, operation, input, env, Access::Adjoint)?
+                {
+                    return Ok(value);
+                }
+                if let StaticOpKind::Name(function) = &operation.kind {
+                    self.named_transform(module, expr.span, function, None, input, env)
+                } else {
+                    self.constructed_inverse(module, expr.span, operation, input, env)
+                }
             }
-            ExprKind::Adjoint { input, .. } | ExprKind::RepeatStatic { input, .. } => {
+            ExprKind::RepeatStatic { input, .. } => {
                 let function = match &expr.kind {
-                    ExprKind::Adjoint {
-                        operation:
-                            StaticOp {
-                                kind: StaticOpKind::Name(name),
-                                ..
-                            },
-                        ..
-                    } => name,
                     ExprKind::RepeatStatic { function, .. } => function,
                     _ => {
                         return Err(self.error(
@@ -1361,7 +1467,7 @@ impl Lowerer<'_, '_> {
                         "with_computed requires a classical function name",
                     ));
                 }
-                self.computed(module, expr.span, source, function, binder, body, env)
+                self.computed(module, expr.span, source, function, binder, body, env, expr)
             }
             ExprKind::CertifiedComputed {
                 source,
@@ -1616,24 +1722,26 @@ impl Lowerer<'_, '_> {
         binder: &Ident,
         body: &Block,
         env: &Env,
+        original: &Expr,
     ) -> Result<Value, CompileError> {
+        let owner = self.original_computed_body(module, original, function, binder, body)?;
         let source_slot = self.quantum(module, span, &source, false)?;
         let Callee::User(key) = self.compiler.resolve(module, function)? else {
-            return Err(self.error(
+            return Err(self.computed_refusal(
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "predicate must be a classical function",
-            ));
+            )?);
         };
-        let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
-            self.error(
+        let Some(predicate) = self.compiler.basis.get(&key) else {
+            return Err(self.computed_refusal(
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "predicate must be a classical function",
-            )
-        })?;
+            )?);
+        };
         let size = predicate
             .signature_size()
             .saturating_add(predicate.table.len());
@@ -1645,12 +1753,13 @@ impl Lowerer<'_, '_> {
             &predicate,
             &self.raw.registers[&source_slot].basis,
         )?;
+        self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
         let ancilla_slot = self.quantum(module, span, &ancilla, true)?;
         let initial_token = self.raw.registers[&ancilla_slot].token;
-        // This first source form exposes only the ancilla and classical outer
-        // values. Other quantum registers remain in the surrounding frame.
+        // Only the computed ancilla and classical outer values are visible.
+        // Independent fragment checking supplies no assumed external ports.
         self.compiler.charge(module, body.span, env_size(env))?;
         let mut local: Env = env
             .iter()
@@ -1670,55 +1779,54 @@ impl Lowerer<'_, '_> {
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
         self.contract_effect = Effect::Unitary;
-        let result = self.block(module, body, &mut local)?;
-        self.no_owned_bindings(module, body.span, &local, [binder])?;
-        if self.contract_effect != Effect::Unitary {
-            return Err(self.error(
-                module,
-                body.span,
-                ErrorCode::Effect,
-                "with_computed body must be unitary",
-            ));
-        }
+        let evaluated = (|| {
+            let result = self.block(module, body, &mut local)?;
+            self.no_owned_bindings(module, body.span, &local, [binder])?;
+            if self.contract_effect != Effect::Unitary {
+                return Err(self.computed_refusal(
+                    module,
+                    body.span,
+                    ErrorCode::Effect,
+                    "with_computed body must be unitary",
+                )?);
+            }
+            Ok(result)
+        })();
         self.effect = previous_effect;
         self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
-        if result != Value::quantum(ancilla_slot, Ty::bit()) {
-            return Err(self.error(
+        let result = evaluated?;
+        self.compiler
+            .charge(module, body.span, result.tree_size().nodes + 2)?;
+        if result.ty() != Ty::quantum(Ty::bit()) {
+            return Err(self.computed_refusal(
                 module,
                 body.span,
                 ErrorCode::Ownership,
                 "with_computed must return its ancilla ownership",
-            ));
+            )?);
         }
-        let mut expected_input = initial_token;
-        let mut use_ops = Vec::new();
-        for operation in &self.raw.operations[start..] {
-            match operation {
-                RawOp::Gate { gate, input, output } if matches!(gate, SingleGate::Z | SingleGate::T) && *input == expected_input => {
-                    use_ops.push(ProtectedUse::ProtectedGate { bit: ProtectedBit { region: ProtectedRegion::Ancilla, index: 0 }, gate: *gate });
-                    expected_input = *output;
-                }
-                _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking")),
-            }
+        let returned = self.quantum(module, body.span, &result, true)?;
+        let (use_ops, evidence) = self.normalize_computed_phase(
+            module,
+            original,
+            owner,
+            (initial_token, wire),
+            start,
+            returned,
+        )?;
+        // All replacement storage and the retained local equation are charged
+        // before changing the proposed body. Work and issued IDs never rewind.
+        self.compiler.charge(module, span, 14)?;
+        if let Some(evidence) = evidence {
+            self.compiler.computed_normalizations.push(evidence);
         }
         self.raw.operations.truncate(start);
-        // The temporary gates become one protected operation below; their old
-        // operation paths must not label this operation or a later expression.
         self.operation_sources.split_off(&vec![start]);
-        let ancilla = self
-            .raw
+        self.raw
             .registers
-            .remove(&ancilla_slot)
-            .expect("returned ancilla");
-        if ancilla.token != expected_input {
-            return Err(self.error(
-                module,
-                body.span,
-                ErrorCode::InvalidIr,
-                "ancilla transition does not match its protected gates",
-            ));
-        }
+            .remove(&returned)
+            .expect("independently checked returned ancilla");
         let output = self.token();
         let source_reg = self
             .raw
@@ -1742,20 +1850,37 @@ pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
 ) -> Result<AcceptedProgram, CompileError> {
-    lower_function_inner(compiler, key, BTreeMap::new())
+    let span = compiler.declarations[key].span;
+    let module = compiler.dormant_module(*key, span)?;
+    let instance = compiler.prepare_instance(
+        *key,
+        BTreeMap::new(),
+        BTreeMap::new(),
+        BTreeMap::new(),
+        &module,
+        span,
+    )?;
+    lower_instance_function(compiler, instance)
 }
 
-/// Check a concrete Op-only body without putting a specialization in the
-/// declaration-only ordinary-root cache.
-pub(super) fn lower_bound_function(
+pub(super) fn lower_instance_function(
     compiler: &mut Compiler<'_>,
-    key: &Key,
-    bindings: super::operations::Bindings,
+    instance: Arc<super::instances::ClosedInstance>,
 ) -> Result<AcceptedProgram, CompileError> {
-    lower_function_inner(compiler, key, bindings)
+    let key = instance.definition;
+    let span = compiler.declarations[&key].span;
+    let module = compiler.dormant_module(key, span)?;
+    for (key, operation) in &instance.operations {
+        compiler.charge(&module, span, key.name.len() + operation.copy_size() + 1)?;
+    }
+    let bindings = instance.operations.clone();
+    let frame = compiler.enter_instance(instance, &module, span)?;
+    let result = lower_function_in_context(compiler, &key, bindings);
+    compiler.leave_instance(frame);
+    result
 }
 
-fn lower_function_inner(
+fn lower_function_in_context(
     compiler: &mut Compiler<'_>,
     key: &Key,
     bindings: super::operations::Bindings,
@@ -1798,6 +1923,11 @@ fn lower_function_inner(
         })
         .collect::<Result<_, _>>()?;
     let result = lower.call_user(key, args, None)?;
+    lower.compiler.charge(
+        &key_name.0,
+        decl.span,
+        result.tree_size().nodes.saturating_mul(2),
+    )?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
     result.outputs(
