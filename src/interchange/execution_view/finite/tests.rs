@@ -389,3 +389,66 @@ fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
         assert_eq!(accepted.raw().quantum_outputs, root.quantum_outputs);
     }
 }
+
+#[test]
+fn identity_storage_views_preserve_exact_qdv_bytes_and_source_order() {
+    use super::super::Value;
+    use crate::contract::function::{FunctionIdentity, RetainedIdentity};
+
+    let sources: Vec<(String, String)> = vec![
+        ("main".into(), "// π original\n".into()),
+        ("dep".into(), "// dependency\n".into()),
+    ];
+    let expected = super::super::encode(&Value::Array(vec![
+        Value::Text("identity".into()),
+        Value::Text("implementation".into()),
+        Value::Text("specification".into()),
+        Value::Array(vec![
+            Value::Array(vec![
+                Value::Text("source".into()),
+                Value::Text("main".into()),
+                Value::Text("// π original\n".into()),
+            ]),
+            Value::Array(vec![
+                Value::Text("source".into()),
+                Value::Text("dep".into()),
+                Value::Text("// dependency\n".into()),
+            ]),
+        ]),
+    ]))
+    .unwrap();
+    let identities = [
+        RetainedIdentity::Owned(FunctionIdentity {
+            implementation: "implementation".into(),
+            specification: "specification".into(),
+            sources: sources.clone(),
+        }),
+        RetainedIdentity::shared(
+            "implementation".into(),
+            "specification".into(),
+            Arc::new(sources.clone()),
+        ),
+        RetainedIdentity::interned(
+            "implementation".into(),
+            "specification".into(),
+            Arc::new(sources.iter().cloned().map(Arc::new).collect()),
+        ),
+    ];
+    for identity in identities {
+        assert_eq!(write(|view| view.identity(identity.parts())), expected);
+    }
+    let reversed = RetainedIdentity::interned(
+        "implementation".into(),
+        "specification".into(),
+        Arc::new(sources.iter().rev().cloned().map(Arc::new).collect()),
+    );
+    assert_ne!(write(|view| view.identity(reversed.parts())), expected);
+    let mut changed = sources;
+    changed[1].1.push('!');
+    let changed = RetainedIdentity::interned(
+        "implementation".into(),
+        "specification".into(),
+        Arc::new(changed.into_iter().map(Arc::new).collect()),
+    );
+    assert_ne!(write(|view| view.identity(changed.parts())), expected);
+}

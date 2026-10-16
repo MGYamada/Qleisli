@@ -350,14 +350,51 @@ impl Compiler<'_> {
             &mut self.exact_work,
         )
         .map_err(|error| self.instrument_error(module, span, error))?;
-        let key = (implementation, specification);
+        // Call checking binds the literal caller span as well as both bodies.
+        self.charge(module, span, 1)?;
+        let instance = self.concrete_context.current.clone();
+        let caller = self
+            .current_instance_owner()
+            .or(self.checking)
+            .ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "instrument contract lacks its original caller definition",
+                )
+            })?;
+        if self.source.resolution.declaration(caller).name.0 != module {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "instrument contract caller module differs from its original definition",
+            ));
+        }
+        let key = (
+            implementation,
+            specification,
+            caller,
+            instance.as_ref().and_then(|instance| instance.record),
+        );
         if let Some(evidence) = self.instrument_evidence.get(&key) {
             // Immutable selected source preparation only. Every emitted call
             // below still obtains its own fresh original-artifact decision.
             return Ok(Arc::clone(evidence));
         }
-        let sources = self.retained_sources(module, span)?;
-        let identity = RetainedIdentity::shared(
+        let empty = super::super::operations::Bindings::new();
+        let bindings = instance
+            .as_ref()
+            .map_or(&empty, |instance| &instance.operations);
+        let sources = self.retained_sources(
+            module,
+            span,
+            &[implementation, specification, caller],
+            bindings,
+            &[],
+        )?;
+        let identity = RetainedIdentity::interned(
             self.source.resolution.path(implementation),
             self.source.resolution.path(specification),
             sources,
@@ -454,7 +491,13 @@ impl Compiler<'_> {
         } else {
             let implementation_name = self.source.resolution.path(implementation_key);
             let specification_name = self.source.resolution.path(specification_key);
-            let sources = self.retained_sources(module, span)?;
+            let sources = self.retained_sources(
+                module,
+                span,
+                &[implementation_key, specification_key],
+                &super::super::operations::Bindings::new(),
+                &[],
+            )?;
             let snapshot_size = total_size(
                 [&implementation_key, &specification_key]
                     .into_iter()
@@ -465,15 +508,15 @@ impl Compiler<'_> {
                 .saturating_add(implementation_name.len())
                 .saturating_add(specification_name.len());
             // Raw snapshots and pair names remain private to each distinct
-            // pair. Source bytes were retained and charged once for the project.
+            // pair. Original module bytes are retained and charged once across closures.
             self.charge(module, span, snapshot_work).map_err(|mut error| {
                 error.message.push_str(&format!(
-                    "; retaining a new function-contract pair snapshot ({snapshot_size} raw representation units, plus pair names); source bytes use the shared project snapshot"
+                    "; retaining a new function-contract pair snapshot ({snapshot_size} raw representation units, plus pair names); original module bytes are shared across relevant source closures"
                 ));
                 error
             })?;
             let identity =
-                RetainedIdentity::shared(implementation_name, specification_name, sources);
+                RetainedIdentity::interned(implementation_name, specification_name, sources);
             let raw = |key: &Key| {
                 self.checked
                     .get(key)

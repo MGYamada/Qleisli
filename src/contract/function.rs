@@ -29,10 +29,70 @@ pub struct FunctionIdentity {
     pub sources: Vec<(String, String)>,
 }
 
+/// Interned original source records. Sharing is storage accounting, never acceptance.
+pub(crate) type SourceRows = Arc<Vec<Arc<(String, String)>>>;
+
+/// Borrow exact ordered rows without copying source strings or forcing a public view.
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum SourceView<'a> {
+    Flat(&'a [(String, String)]),
+    Rows(&'a [Arc<(String, String)>]),
+}
+impl<'a> SourceView<'a> {
+    pub(crate) fn len(self) -> usize {
+        match self {
+            Self::Flat(rows) => rows.len(),
+            Self::Rows(rows) => rows.len(),
+        }
+    }
+    pub(crate) fn iter(self) -> impl ExactSizeIterator<Item = &'a (String, String)> + Clone {
+        (0..self.len()).map(move |index| match self {
+            Self::Flat(rows) => &rows[index],
+            Self::Rows(rows) => rows[index].as_ref(),
+        })
+    }
+    pub(crate) fn owned(self) -> Vec<(String, String)> {
+        self.iter().cloned().collect()
+    }
+}
+impl PartialEq for SourceView<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.iter().eq(other.iter())
+    }
+}
+impl Eq for SourceView<'_> {}
+
+/// Inert sidecar storage preserves its existing owned-slice inspection API lazily.
+#[derive(Debug)]
+pub(crate) struct SourceSnapshot {
+    rows: SourceRows,
+    exposed: OnceLock<Vec<(String, String)>>,
+}
+impl SourceSnapshot {
+    pub(crate) fn new(rows: SourceRows) -> Self {
+        Self {
+            rows,
+            exposed: OnceLock::new(),
+        }
+    }
+    pub(crate) fn view(&self) -> SourceView<'_> {
+        SourceView::Rows(&self.rows)
+    }
+    pub(crate) fn exposed(&self) -> &[(String, String)] {
+        self.exposed.get_or_init(|| self.view().owned())
+    }
+}
+
 /// Untrusted metadata storage; every evidence constructor still validates it.
-/// The frontend shares one frozen project without changing the public owned API.
+/// The frontend shares exact original source rows without changing the public owned API.
 pub(crate) enum RetainedIdentity {
     Owned(FunctionIdentity),
+    Interned {
+        implementation: String,
+        specification: String,
+        sources: SourceRows,
+        exposed: OnceLock<FunctionIdentity>,
+    },
     Shared {
         implementation: String,
         specification: String,
@@ -42,6 +102,18 @@ pub(crate) enum RetainedIdentity {
 }
 
 impl RetainedIdentity {
+    pub(crate) fn interned(
+        implementation: String,
+        specification: String,
+        sources: SourceRows,
+    ) -> Self {
+        Self::Interned {
+            implementation,
+            specification,
+            sources,
+            exposed: OnceLock::new(),
+        }
+    }
     pub(crate) fn shared(
         implementation: String,
         specification: String,
@@ -55,25 +127,41 @@ impl RetainedIdentity {
         }
     }
 
-    pub(crate) fn parts(&self) -> (&str, &str, &[(String, String)]) {
+    pub(crate) fn parts(&self) -> (&str, &str, SourceView<'_>) {
         match self {
             Self::Owned(identity) => (
                 &identity.implementation,
                 &identity.specification,
-                &identity.sources,
+                SourceView::Flat(&identity.sources),
             ),
             Self::Shared {
                 implementation,
                 specification,
                 sources,
                 ..
-            } => (implementation, specification, sources),
+            } => (implementation, specification, SourceView::Flat(sources)),
+            Self::Interned {
+                implementation,
+                specification,
+                sources,
+                ..
+            } => (implementation, specification, SourceView::Rows(sources)),
         }
     }
 
     fn exposed(&self) -> &FunctionIdentity {
         match self {
             Self::Owned(identity) => identity,
+            Self::Interned {
+                implementation,
+                specification,
+                sources,
+                exposed,
+            } => exposed.get_or_init(|| FunctionIdentity {
+                implementation: implementation.clone(),
+                specification: specification.clone(),
+                sources: SourceView::Rows(sources).owned(),
+            }),
             Self::Shared {
                 implementation,
                 specification,
@@ -91,7 +179,7 @@ impl RetainedIdentity {
         let (implementation, specification, sources) = self.parts();
         identity.implementation == implementation
             && identity.specification == specification
-            && identity.sources == sources
+            && identity.sources.iter().eq(sources.iter())
     }
 }
 
@@ -306,7 +394,7 @@ impl FunctionEvidence {
         self.identity.exposed()
     }
     /// Borrow transport metadata without materializing the owned public view.
-    pub(crate) fn identity_parts(&self) -> (&str, &str, &[(String, String)]) {
+    pub(crate) fn identity_parts(&self) -> (&str, &str, SourceView<'_>) {
         self.identity.parts()
     }
     pub fn circuit(&self) -> &Circuit {
@@ -396,7 +484,7 @@ pub(crate) fn validate_identity(
     }
     let mut bytes = implementation.len() + specification.len();
     let mut names = BTreeSet::new();
-    for (name, source) in sources {
+    for (name, source) in sources.iter() {
         if name.len() > MAX_IDENTITY_NAME_BYTES || !names.insert(name) {
             return Err(ContractError::Type(
                 "source identity paths must be bounded and unique",
@@ -414,6 +502,16 @@ pub(crate) fn validate_identity(
     }
     match identity {
         RetainedIdentity::Owned(_) => budget.charge(bytes)?,
+        RetainedIdentity::Interned { sources, .. } => {
+            for row in sources.iter() {
+                budget.charge_source_row(row)?;
+            }
+            budget.charge(
+                implementation.len()
+                    + specification.len()
+                    + sources.iter().map(|row| row.0.len() + 1).sum::<usize>(),
+            )?;
+        }
         RetainedIdentity::Shared { sources, .. } => {
             let names = implementation.len() + specification.len();
             budget.charge_source_storage(sources, bytes - names)?;
@@ -1290,7 +1388,7 @@ mod snapshot_tests {
         let (implementation, specification, borrowed) = first.identity_parts();
         assert_eq!(implementation, expected.implementation);
         assert_eq!(specification, expected.specification);
-        assert!(std::ptr::eq(borrowed.as_ptr(), sources.as_ptr()));
+        assert!(std::ptr::eq(borrowed.iter().next().unwrap(), &sources[0]));
         assert!(format!("{first:?}").contains("implementation"));
         for receipt in [&first, &second, &cloned] {
             let RetainedIdentity::Shared {
@@ -1383,6 +1481,170 @@ mod snapshot_tests {
             .unwrap_err()
             .error,
             ContractError::EquationMismatch
+        );
+    }
+
+    #[test]
+    fn overlapping_interned_closures_charge_shared_rows_once_without_exposing_copies() {
+        let shared = Arc::new(("main".into(), "p".repeat(100_000)));
+        let first = RetainedIdentity::interned(
+            "i".into(),
+            "s".into(),
+            Arc::new(vec![
+                Arc::clone(&shared),
+                Arc::new(("a".into(), "a".into())),
+            ]),
+        );
+        let second = RetainedIdentity::interned(
+            "i".into(),
+            "s".into(),
+            Arc::new(vec![
+                Arc::clone(&shared),
+                Arc::new(("b".into(), "b".into())),
+            ]),
+        );
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let before = budget.remaining();
+        validate_identity(&first, &mut budget).unwrap();
+        assert!(before - budget.remaining() >= shared.0.len() + shared.1.len());
+        let before = budget.remaining();
+        validate_identity(&second, &mut budget).unwrap();
+        assert!(before - budget.remaining() < 1000);
+        for identity in [&first, &second] {
+            let RetainedIdentity::Interned {
+                sources, exposed, ..
+            } = identity
+            else {
+                unreachable!()
+            };
+            assert!(Arc::ptr_eq(&sources[0], &shared));
+            assert!(exposed.get().is_none());
+        }
+        // Equal text in a new allocation is not evidence of already charged storage.
+        let copied = RetainedIdentity::interned(
+            "i".into(),
+            "s".into(),
+            Arc::new(vec![Arc::new(shared.as_ref().clone())]),
+        );
+        let before = budget.remaining();
+        validate_identity(&copied, &mut budget).unwrap();
+        assert!(before - budget.remaining() >= shared.0.len() + shared.1.len());
+        assert!(validate_identity(&first, &mut Budget::new(99_999)).is_err());
+        let duplicate = RetainedIdentity::interned(
+            "i".into(),
+            "s".into(),
+            Arc::new(vec![Arc::clone(&shared), shared]),
+        );
+        assert!(validate_identity(&duplicate, &mut Budget::new(DEFAULT_EXACT_WORK)).is_err());
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn interned_source_storage_preserves_native_snapshot_and_proposal_bytes() {
+        let expected = FunctionIdentity {
+            implementation: "implementation".into(),
+            specification: "specification".into(),
+            sources: vec![
+                ("main".into(), "// exact π source\n".into()),
+                ("dep".into(), "// dependency\n".into()),
+            ],
+        };
+        let rows: SourceRows = Arc::new(expected.sources.iter().cloned().map(Arc::new).collect());
+        let identities = [
+            RetainedIdentity::Owned(expected.clone()),
+            RetainedIdentity::shared(
+                expected.implementation.clone(),
+                expected.specification.clone(),
+                Arc::new(expected.sources.clone()),
+            ),
+            RetainedIdentity::interned(
+                expected.implementation.clone(),
+                expected.specification.clone(),
+                Arc::clone(&rows),
+            ),
+        ];
+        let mut keys = Vec::new();
+        let mut proposals = Vec::new();
+        for identity in identities {
+            keys.push(
+                crate::interchange::function_snapshot_key(
+                    &BasisType::Unit,
+                    &raw(),
+                    &raw(),
+                    identity.parts(),
+                )
+                .unwrap(),
+            );
+            let receipt = Arc::new(
+                FunctionEvidence::check_retained_diagnostic(
+                    BasisType::Unit,
+                    raw(),
+                    raw(),
+                    identity,
+                    &mut Budget::new(DEFAULT_EXACT_WORK),
+                )
+                .unwrap(),
+            );
+            receipt
+                .check_binding(&BasisType::Unit, &expected, &raw(), &raw())
+                .unwrap();
+            let mut caller = raw();
+            caller.operations.push(RawOp::ApplyUnitary {
+                input: TokenId(0),
+                output: TokenId(1),
+                steps: vec![CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Contract {
+                        indices: vec![],
+                        evidence: Arc::clone(&receipt),
+                        adjoint: false,
+                    },
+                }],
+            });
+            caller.quantum_outputs = vec![TokenId(1)];
+            let proposal = crate::interchange::native::Proposal::from_raw(
+                &caller,
+                None,
+                crate::interchange::Version::V2,
+                None,
+            )
+            .unwrap();
+            proposals.push(proposal.artifact().to_vec());
+            match receipt.identity.as_ref() {
+                RetainedIdentity::Shared { exposed, .. }
+                | RetainedIdentity::Interned { exposed, .. } => assert!(exposed.get().is_none()),
+                RetainedIdentity::Owned(_) => {}
+            }
+            let cloned = receipt.as_ref().clone();
+            assert!(std::ptr::eq(receipt.identity(), cloned.identity()));
+            assert_eq!(receipt.identity(), &expected);
+            let mut changed = expected.clone();
+            changed.sources[0].1.push('!');
+            assert!(
+                receipt
+                    .check_binding(&BasisType::Unit, &changed, &raw(), &raw())
+                    .is_err()
+            );
+        }
+        assert!(keys.windows(2).all(|pair| pair[0] == pair[1]));
+        assert!(proposals.windows(2).all(|pair| pair[0] == pair[1]));
+        let reversed = RetainedIdentity::interned(
+            expected.implementation,
+            expected.specification,
+            Arc::new(rows.iter().rev().cloned().collect()),
+        );
+        assert_ne!(
+            keys[0],
+            crate::interchange::function_snapshot_key(
+                &BasisType::Unit,
+                &raw(),
+                &raw(),
+                reversed.parts(),
+            )
+            .unwrap()
         );
     }
 

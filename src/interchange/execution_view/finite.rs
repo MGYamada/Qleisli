@@ -507,16 +507,30 @@ impl View<'_> {
         })
     }
 
-    fn identity(&mut self, identity: (&str, &str, &[(String, String)])) -> Result<()> {
+    fn sources(&mut self, sources: crate::contract::function::SourceView<'_>) -> Result<()> {
+        self.writer.sized(5, sources.len())?;
+        self.writer.depth += 1;
+        let result = (|| {
+            for (path, text) in sources.iter() {
+                self.record("source", 2, |w| {
+                    w.writer.text(path)?;
+                    w.writer.text(text)
+                })?;
+            }
+            Ok(())
+        })();
+        self.writer.depth -= 1;
+        result
+    }
+
+    fn identity(
+        &mut self,
+        identity: (&str, &str, crate::contract::function::SourceView<'_>),
+    ) -> Result<()> {
         self.record("identity", 3, |w| {
             w.writer.text(identity.0)?;
             w.writer.text(identity.1)?;
-            w.list(identity.2, |w, (path, text)| {
-                w.record("source", 2, |w| {
-                    w.writer.text(path)?;
-                    w.writer.text(text)
-                })
-            })
+            w.sources(identity.2)
         })
     }
 
@@ -529,12 +543,7 @@ impl View<'_> {
             w.record("identity", 3, |w| {
                 w.writer.text(implementation)?;
                 w.writer.text(specification)?;
-                w.list(sources, |w, (path, text)| {
-                    w.record("source", 2, |w| {
-                        w.writer.text(path)?;
-                        w.writer.text(text)
-                    })
-                })
+                w.sources(sources)
             })?;
             w.circuit(evidence.circuit())?;
             w.matrix(evidence.meaning())?;

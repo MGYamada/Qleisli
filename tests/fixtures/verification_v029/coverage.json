@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "e29e38293ac88085b8bb9755afa13978ccd84a274444d8d20c8ec302f1339188",
+  "surface_sha256": "22f529e2544c5394a4273d93f84c505b69f36bc7d6062c99c1422ec7e9cfcb00",
   "groups": [
     {
       "id": "raw-core",
@@ -2453,6 +2453,31 @@
             "ResolvedUse::Local",
             "BodyStaticKind::Operation"
           ]
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "markers": [
+            "pub(super) fn retained_sources(",
+            "fn root(",
+            "original_table_is(key, table)",
+            "fn operation(",
+            "origin.equation.source_view()",
+            "fn raw(",
+            "expected != source.source"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/operations.rs",
+          "markers": [
+            "self.retained_sources(module, span, &roots, bindings, &[program.raw()])?"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "&[implementation, specification, caller]",
+            "RetainedIdentity::interned("
+          ]
         }
       ],
       "tests": [
@@ -2611,6 +2636,34 @@
         {
           "path": "src/frontend/check/plans/body_statics/tests.rs",
           "test": "posttransfer_access_rejects_a_different_checked_collection_with_identical_ids"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "original_closure_keeps_nat_meaning_and_inactive_edges_but_not_unused_imports"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "local_operation_shadow_does_not_retain_its_global_diagnostic_candidate"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "foreign_equal_shaped_lexical_origin_is_not_a_current_source_root"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "unrelated_large_sources_do_not_become_ordinary_gate_dependencies"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contract_receipts_keep_each_original_caller_module"
+        },
+        {
+          "path": "tests/repair_diagnostics.rs",
+          "test": "snapshot_limit_errors_explain_the_retained_sources"
+        },
+        {
+          "path": "tests/cli_sampling.rs",
+          "test": "cli_new_default_has_an_explicit_legacy_escape"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2899,6 +2952,20 @@
             "SourceUnitaryEquation::bind",
             "fn computed_canonical_transport_bound("
           ]
+        },
+        {
+          "path": "src/frontend/compile/operations/pure.rs",
+          "markers": [
+            "self.retained_sources(module, span, &roots, bindings, &[body.raw()])?",
+            "let origin = Arc::new(PureOrigin {"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "markers": [
+            "let sources = self.compiler.retained_sources(",
+            "&self.bindings,"
+          ]
         }
       ],
       "tests": [
@@ -3025,6 +3092,10 @@
         {
           "path": "src/frontend/compile/lower/computed_phase.rs",
           "test": "native_canonical_witness_refuses_altered_use_and_owner_frame"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "bound_pure_actual_retains_its_original_source_through_a_generic_provider"
         }
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project and supported selected Raw control calls with original-byte control requests through the same version-paired native mode; unsupported hierarchy/profile cases refuse",
@@ -3736,19 +3807,75 @@
           "markers": [
             "pub fn source_computed_normalizations("
           ]
+        },
+        {
+          "path": "src/contract/function.rs",
+          "markers": [
+            "pub(crate) enum SourceView",
+            "pub(crate) struct SourceSnapshot",
+            "RetainedIdentity::Interned",
+            "budget.charge_source_row(row)?"
+          ]
+        },
+        {
+          "path": "src/contract/exact.rs",
+          "markers": [
+            "pub(crate) fn charge_source_row(",
+            "Arc::ptr_eq(seen, row)",
+            "self.source_rows.push(Arc::clone(row))"
+          ]
+        },
+        {
+          "path": "src/interchange/pure_leaf.rs",
+          "markers": [
+            "pub fn sources(&self)",
+            "self.sources.exposed()"
+          ]
+        },
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "fn evidence_fields(",
+            "for (path, text) in snapshot.iter()",
+            "pub(crate) fn function_snapshot_key("
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite.rs",
+          "markers": [
+            "fn sources(",
+            "for (path, text) in sources.iter()",
+            "w.sources(identity.2)"
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/function_evidence.rs",
           "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+        },
+        {
+          "path": "src/contract/function.rs",
+          "test": "overlapping_interned_closures_charge_shared_rows_once_without_exposing_copies"
+        },
+        {
+          "path": "src/contract/function.rs",
+          "test": "interned_source_storage_preserves_native_snapshot_and_proposal_bytes"
+        },
+        {
+          "path": "src/interchange/execution_view/finite/tests.rs",
+          "test": "identity_storage_views_preserve_exact_qdv_bytes_and_source_order"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "shared_receipts_keep_exact_bindings_and_outlive_source_changes"
         }
       ],
       "entry_path": "CheckedContract::{check_binding,check_entry}, FunctionEvidence/MeaningEvidence::check_binding, CheckedQpeInstrument::{instrument,candidate}; SourceUnitaryEquation::{implementation,specification,names,sources} and AcceptedProgram::source_computed_normalizations",
       "checked_artifact": "Existing checked report and retained artifact/object identity; inert original/canonical finite-leaf pair and source provenance, with no serialized acceptance flag or new native request kind",
       "checker": "Host binding/accessor checks; no fresh semantic acceptance",
       "proof_scope": "Existing immutable snapshot/binding regressions.",
-      "gaps": "A binding check or accessor cannot widen the original native report scope or create a new semantic guarantee. The computed pair grants no accepted function descriptor or inverse/control, adds no whole-root independent request and does not prove computed cleanup, source lowering, target/resources or QS/PR/RS/EXACT. Original expanded1025/257 derived-T studies still retain source-work refusals; compact first257-fold retains its original FunctionEvidence refusal beside separate future replays. Existing retained_sources includes every loaded module/comment/bundle under128-module/1MiB metadata limits. Later compact257 and expanded/eager forms may still fail unchanged source-work limits; a205-action whole-original leaf regression is not general long-source support."
+      "gaps": "A binding check or accessor cannot widen the original native report scope or create a new semantic guarantee. The computed pair grants no accepted function descriptor or inverse/control, adds no whole-root independent request and does not prove computed cleanup, source lowering, target/resources or QS/PR/RS/EXACT. Original expanded1025/257 derived-T studies still retain source-work refusals; compact first257-fold retains its original FunctionEvidence refusal beside separate future replays. Current retained_sources keeps complete original module bytes for the relevant declaration/bound-Op/Raw-dependency closure, shares immutable module rows and retains the unchanged128-module/1MiB metadata and aggregate native transport limits. This provenance selection does not change all-loaded source checking or prove source preservation. Later compact257 and expanded/eager forms may still fail unchanged source-work limits; a205-action whole-original leaf regression is not general long-source support."
     },
     {
       "id": "finite-component",

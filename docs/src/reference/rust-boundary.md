@@ -174,9 +174,14 @@ Both diagonal entries and full phase are retained. Chunking only constructs an
 untrusted matrix proposal; the native equation never substitutes checked chunks
 for the original body. Existing native graph, dependency, source and shared-work
 limits still apply, including the separate FunctionEvidence limits on actual
-dependencies. The current shared provenance snapshot retains all loaded modules
-within 128 modules and 1 MiB including names. Ordinary source expansion has its
-unchanged work limit; the normalization does not make every long source fit it.
+dependencies. Retained provenance contains the complete original module bytes
+for the relevant declaration, bound-provider and evidence dependencies. Module
+records are shared across closures within the existing 128-module and 1 MiB
+limits including names. This selects receipt metadata; project loading and
+checking still cover all loaded modules, as specified in
+[the production boundary](production-boundary.md#root-loading-and-compatibility-during-generic-migration).
+Ordinary source expansion has its unchanged work limit; the normalization does
+not make every long source fit it.
 The retained `SourceUnitaryEquation` associates the two native leaves, names
 and source snapshot for local inspection only. It is not execution input, a new
 authority flag, a whole-source preservation proof or a target/resource certificate.

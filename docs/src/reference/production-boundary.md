@@ -298,6 +298,21 @@ it does not introduce reachable-only loading or exempt unused siblings inside
 it. Explicit module-map `ParsedProgram::parse` checks every supplied module and
 the bundled registry before selecting a concrete entry.
 
+Ordinary finite-frontend function/instrument receipts and local equation
+sidecars retain source provenance separately from this loading policy. Each
+retained declaration contributes its original resolved lexical dependencies,
+including type and Nat expressions, Meaning references, inactive branches and
+zero-count operations. Actual bound Op descriptors and checked Raw receipt
+dependencies contribute their original source records as well. Pure providers
+retain their original declaration and equation association; instrument calls
+also retain the original caller and its concrete Op bindings for source-span
+binding. The resulting closure retains complete original module text, including
+comments, and shares immutable module records across receipts. Unrelated loaded
+modules need not appear in each receipt. Existing metadata and aggregate native
+transport limits still apply. This selection changes neither loading nor eager
+checking of every loaded declaration and does not implement #273. These records
+provide provenance, not a source-preservation proof or acceptance authority.
+
 A future reachable-module policy in
 [#273](https://github.com/MGYamada/Qleisli/issues/273) must specify entry roots,
 transitive imports/providers/Meaning dependencies, independent checking of the

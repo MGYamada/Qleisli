@@ -102,7 +102,7 @@ pub struct SourceUnitaryEquation {
     implementation: Arc<CheckedUnitaryLeaf>,
     specification: Arc<CheckedUnitaryLeaf>,
     names: (String, String),
-    sources: Arc<Vec<(String, String)>>,
+    sources: crate::contract::function::SourceSnapshot,
 }
 
 impl SourceUnitaryEquation {
@@ -116,13 +116,13 @@ impl SourceUnitaryEquation {
         (&self.names.0, &self.names.1)
     }
     pub fn sources(&self) -> &[(String, String)] {
-        &self.sources
+        self.sources.exposed()
     }
     pub(crate) fn bind(
         implementation: Arc<CheckedUnitaryLeaf>,
         specification: Arc<CheckedUnitaryLeaf>,
         names: (String, String),
-        sources: Arc<Vec<(String, String)>>,
+        sources: crate::contract::function::SourceRows,
     ) -> Result<Self> {
         // Both private leaf values already carry their own fresh native
         // decisions. Comparing their retained requirements associates inert
@@ -136,7 +136,7 @@ impl SourceUnitaryEquation {
             implementation,
             specification,
             names,
-            sources,
+            sources: crate::contract::function::SourceSnapshot::new(sources),
         })
     }
 }

@@ -789,7 +789,16 @@ impl Lowerer<'_, '_> {
                 span.start, span.end, phases[0], phases[1]
             ),
         );
-        let sources = self.compiler.retained_sources(module, span)?;
+        let sources = self.compiler.retained_sources(
+            module,
+            span,
+            &[owner],
+            &self.bindings,
+            &[
+                implementation.program().raw(),
+                specification.program().raw(),
+            ],
+        )?;
         self.compiler.charge(module, span, 1)?;
         let equation =
             match SourceUnitaryEquation::bind(implementation, specification, names, sources) {

@@ -217,6 +217,7 @@ fn pure_descriptor_keeps_its_optional_inverse_issued_identity() {
     let second = evidence();
     let make = |inverse| Operation {
         node: Arc::new(Node::Pure(PureProvider {
+            origin: None,
             leaf: Arc::clone(&leaf),
             inverse,
         })),
@@ -306,4 +307,90 @@ fn registry_hit_charges_work_and_failure_does_not_register_a_miss() {
     assert_eq!(error.code, ErrorCode::Limit);
     assert_eq!(compiler.instances.len(), 1);
     assert_eq!(compiler.work, MAX_WORK);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn pure_descriptor_keeps_original_source_origin_even_with_the_same_native_leaf() {
+    use crate::frontend::project::{ModuleOrigin, SourceModule};
+    let text = "unitary fn first(q:Q<Unit>)->Q<Unit>{q}\nunitary fn second(q:Q<Unit>)->Q<Unit>{q}";
+    let project = Project {
+        root: PathBuf::from("main.qli"),
+        modules: BTreeMap::from([(
+            "main".into(),
+            SourceModule {
+                name: "main".into(),
+                path: PathBuf::from("main.qli"),
+                source: text.into(),
+                ast: crate::frontend::parser::parse_module(text).unwrap(),
+                imports: BTreeMap::new(),
+                origin: ModuleOrigin::Local,
+            },
+        )]),
+    };
+    let compiler = super::super::snapshot_tests::compiler(&project);
+    let foreign = super::super::snapshot_tests::compiler(&project);
+    let first = compiler.source.resolution.qualified("main::first").unwrap();
+    let second = compiler
+        .source
+        .resolution
+        .qualified("main::second")
+        .unwrap();
+    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let leaf = Arc::new(
+        crate::frontend::pure::check(
+            &kernel,
+            &identity_raw(),
+            &BasisType::Unit,
+            &BasisType::Unit,
+            None,
+            &mut Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+        )
+        .unwrap(),
+    );
+    let rows = Arc::new(vec![Arc::new(("main".into(), text.into()))]);
+    let origin = |key, table| {
+        let path = compiler.source.resolution.path(key);
+        let equation = Arc::new(
+            crate::interchange::pure_leaf::SourcePureEquation::bind(
+                Arc::clone(&leaf),
+                Arc::clone(&leaf),
+                (path.clone(), path),
+                Arc::clone(&rows),
+            )
+            .unwrap(),
+        );
+        Arc::new(PureOrigin {
+            definition: key,
+            table,
+            meaning: None,
+            equation,
+        })
+    };
+    let first_origin = origin(first, Arc::clone(&compiler.source.lexical[&first]));
+    let second_origin = origin(second, Arc::clone(&compiler.source.lexical[&second]));
+    let foreign_origin = origin(first, Arc::clone(&foreign.source.lexical[&first]));
+    let inverse = evidence();
+    let make = |origin| Operation {
+        node: Arc::new(Node::Pure(PureProvider {
+            origin,
+            leaf: Arc::clone(&leaf),
+            inverse: Some(Arc::clone(&inverse)),
+        })),
+        ..provider(Arc::clone(&inverse))
+    };
+    let original = make(Some(Arc::clone(&first_origin)));
+    assert!(same(&original, &make(Some(first_origin))));
+    for other in [
+        make(Some(second_origin)),
+        make(Some(foreign_origin)),
+        make(None),
+    ] {
+        assert_eq!(original.meaning, other.meaning);
+        assert!(!same(&original, &other));
+        assert!(!same(&repeat(0, original.clone()), &repeat(0, other)));
+    }
 }

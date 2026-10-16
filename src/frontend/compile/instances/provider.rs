@@ -265,6 +265,7 @@ impl Compiler<'_> {
             basis.clone(),
             codomain.clone(),
             &body,
+            &instance.operations,
         )?;
         self.charge(module, span, instance.operations.len().saturating_mul(3))?;
         let reverse = instance

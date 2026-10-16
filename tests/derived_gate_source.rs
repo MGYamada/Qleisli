@@ -12,6 +12,14 @@ use qleisli::interchange::{RootInterface, Version};
 use qleisli::ir::{BasisShape, CircuitAction, QuantumPort, RawOp, RawProgram};
 
 fn actual(body: &str, width: usize) -> (RawProgram, BasisType) {
+    actual_with_gate_source(body, width, true)
+}
+
+fn actual_with_gate_source(
+    body: &str,
+    width: usize,
+    expected_gate_source: bool,
+) -> (RawProgram, BasisType) {
     let (ty, basis, result, close) = match width {
         1 => (
             "Bit",
@@ -63,13 +71,21 @@ fn actual(body: &str, width: usize) -> (RawProgram, BasisType) {
             })
         })
         .expect("actual ordinary provider body, not its self-comparison as oracle");
+    let sources = &receipt.identity().sources;
     assert!(
-        receipt
-            .identity()
-            .sources
+        sources
             .iter()
-            .any(|(name, text)| name == "std::gate"
-                && text == include_str!("../stdlib/src/gate.qli"))
+            .any(|(name, text)| name == "main" && text == &source)
+    );
+    // Every ordinary derived-gate case binds the exact library source. An
+    // unused import alone does not make it a dependency of a builtin scalar.
+    let gate_source = sources
+        .iter()
+        .find(|(name, _)| name == "std::gate")
+        .map(|(_, text)| text.as_str());
+    assert_eq!(
+        gate_source,
+        expected_gate_source.then_some(include_str!("../stdlib/src/gate.qli"))
     );
     (receipt.implementation().clone(), basis)
 }
@@ -251,7 +267,7 @@ fn derived_t_keeps_phase_under_adjoint_reference_and_nested_control() {
 )]
 #[test]
 fn a_global_scalar_on_bit_is_unitary_but_is_not_t() {
-    let (raw, basis) = actual("phase_eighth(q)", 1);
+    let (raw, basis) = actual_with_gate_source("phase_eighth(q)", 1, false);
     request(&raw, &basis, &diagonal(&[1, 1])).unwrap();
     let failure = request(&raw, &basis, &diagonal(&[0, 1])).unwrap_err();
     assert_eq!(failure.code, "contract");

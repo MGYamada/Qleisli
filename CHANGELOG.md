@@ -27,6 +27,11 @@ and exactness obligations retain their recorded scopes and status.
   and closed local Ops. Restore caller contexts on failure without refunding
   work or issued identities.
 
+- Retain complete original module bytes for each receipt's relevant source
+  dependencies, sharing records across overlapping closures while preserving
+  existing metadata/work limits and all-module loading and checking; reachable
+  loading (#273) and source-preservation proofs remain separate.
+
 - Derive identity, T, S/inverses, Z, X, CNOT, Toffoli, controlled phase and
   physical SWAP as ordinary checked `std::gate` source. T coherently controls
   the scalar on an explicitly owned Unit target with no additional physical

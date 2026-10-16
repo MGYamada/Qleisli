@@ -21,6 +21,7 @@ mod naturals;
 mod operations;
 mod profile;
 mod report;
+mod sources;
 mod types;
 
 use types::finite_type;
@@ -236,10 +237,14 @@ struct Compiler<'a> {
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
-    instrument_evidence: BTreeMap<(Key, Key), Arc<crate::contract::instrument::InstrumentEvidence>>,
-    // One immutable, full-project snapshot. It is copied only when evidence is
-    // first needed and charged before allocation. Individual receipts share it.
-    function_sources: Option<Arc<Vec<(String, String)>>>,
+    instrument_evidence: BTreeMap<
+        (Key, Key, Key, Option<usize>),
+        Arc<crate::contract::instrument::InstrumentEvidence>,
+    >,
+    // Complete original module rows are copied once; each receipt retains its
+    // relevant lexical/evidence closure without coupling unrelated modules.
+    source_rows: BTreeMap<String, Arc<(String, String)>>,
+    source_sets: BTreeMap<Vec<String>, crate::contract::function::SourceRows>,
     pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
     computed_normalizations: Vec<Arc<crate::interchange::finite_leaf::SourceUnitaryEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
@@ -332,67 +337,6 @@ impl<'a> Compiler<'a> {
         }
         *work += amount;
         Ok(())
-    }
-
-    fn retained_sources(
-        &mut self,
-        module: &str,
-        span: Span,
-    ) -> Result<Arc<Vec<(String, String)>>, CompileError> {
-        if let Some(sources) = &self.function_sources {
-            return Ok(Arc::clone(sources));
-        }
-        // The evidence checker independently checks the metadata again. This
-        // preflight bounds the vector and source/path storage before cloning.
-        if self.project.modules.len() > crate::contract::function::MAX_FUNCTION_SOURCES {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "function identity exceeds its metadata profile (at most 128 source modules)",
-            ));
-        }
-        let source_bytes = total_size(self.project.modules.values().map(|s| s.source.len()));
-        self.charge(module, span, source_bytes).map_err(|mut error| {
-            error.message.push_str(&format!(
-                "; retaining {source_bytes} source bytes in the shared project snapshot (all loaded modules, comments and bundled std); this snapshot is charged once across static providers and function contracts"
-            ));
-            error
-        })?;
-        // Loaded module paths are already bounded by the filesystem. Keep the
-        // evidence profile explicit here instead of cloning arbitrary strings.
-        if self
-            .project
-            .modules
-            .keys()
-            .any(|name| name.len() > crate::contract::function::MAX_IDENTITY_NAME_BYTES)
-        {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "function source identity paths exceed their 4096-byte limit",
-            ));
-        }
-        let retained_bytes =
-            source_bytes.saturating_add(total_size(self.project.modules.keys().map(String::len)));
-        if retained_bytes > crate::contract::function::MAX_FUNCTION_SOURCE_BYTES {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "shared function source snapshot exceeds 1 MiB including module names",
-            ));
-        }
-        let sources = Arc::new(
-            self.project
-                .modules
-                .iter()
-                .map(|(name, source)| (name.clone(), source.source.clone()))
-                .collect(),
-        );
-        self.function_sources = Some(Arc::clone(&sources));
-        Ok(sources)
     }
 
     fn check_tree(&mut self, module: &str, span: Span, size: TreeSize) -> Result<(), CompileError> {
@@ -998,7 +942,8 @@ fn process_loaded_project_details(
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
-        function_sources: None,
+        source_rows: BTreeMap::new(),
+        source_sets: BTreeMap::new(),
         pure_equations: Vec::new(),
         computed_normalizations: Vec::new(),
         meanings: BTreeMap::new(),
@@ -1289,7 +1234,8 @@ mod snapshot_tests {
             checked: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
-            function_sources: None,
+            source_rows: BTreeMap::new(),
+            source_sets: BTreeMap::new(),
             pure_equations: Vec::new(),
             computed_normalizations: Vec::new(),
             meanings: BTreeMap::new(),
@@ -1388,19 +1334,30 @@ mod snapshot_tests {
         for extra in [0, 25_003] {
             let project = project(extra);
             let mut compiler = compiler(&project);
-            let snapshots = (0..256)
-                .map(|_| compiler.retained_sources("main", Span::default()).unwrap())
-                .collect::<Vec<_>>();
-            assert_eq!(compiler.work, 100_000 + extra);
-            assert_eq!(
-                total_size(snapshots[0].iter().map(|(_, source)| source.len())),
-                100_000 + extra
+            let mut snapshots = Vec::new();
+            for i in 0..256 {
+                // Different closures share the exact same interned main record.
+                let names = if i % 2 == 0 {
+                    vec!["main".to_owned()]
+                } else {
+                    vec!["main".to_owned(), "unrelated".to_owned()]
+                };
+                snapshots.push(
+                    compiler
+                        .retain_source_modules("main", Span::default(), names)
+                        .unwrap(),
+                );
+            }
+            assert!(
+                compiler.work < 150_000 + extra,
+                "source bytes were recopied across closures"
             );
             assert!(
                 snapshots
                     .iter()
-                    .all(|source| Arc::ptr_eq(source, &snapshots[0]))
+                    .all(|source| Arc::ptr_eq(&source[0], &snapshots[0][0]))
             );
+            assert_eq!(snapshots[0][0].1, project.modules["main"].source);
             assert_ne!(
                 snapshots[0][0].1.as_ptr(),
                 project.modules["main"].source.as_ptr()
@@ -1415,20 +1372,27 @@ mod snapshot_tests {
     #[test]
     fn the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary() {
         let project = project(25_003);
+        let names = vec!["main".to_owned(), "unrelated".to_owned()];
+        let mut probe = compiler(&project);
+        probe
+            .retain_source_modules("main", Span::default(), names.clone())
+            .unwrap();
+        let required = probe.work;
         let mut accepted = compiler(&project);
-        accepted.work = MAX_WORK - 125_003;
-        accepted.retained_sources("main", Span::default()).unwrap();
-        assert_eq!(accepted.work, MAX_WORK);
-        accepted.retained_sources("main", Span::default()).unwrap();
+        accepted.work = MAX_WORK - required;
+        accepted
+            .retain_source_modules("main", Span::default(), names.clone())
+            .unwrap();
         assert_eq!(accepted.work, MAX_WORK);
         let mut rejected = compiler(&project);
-        rejected.work = MAX_WORK - 125_002;
+        rejected.work = MAX_WORK - required + 1;
         let error = rejected
-            .retained_sources("main", Span::default())
+            .retain_source_modules("main", Span::default(), names)
             .unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit);
         assert!(error.message.contains("charged once"));
-        assert!(rejected.function_sources.is_none());
+        assert!(rejected.source_rows.is_empty());
+        assert!(rejected.source_sets.is_empty());
     }
 
     #[cfg_attr(
@@ -1454,12 +1418,14 @@ mod snapshot_tests {
                 project.modules.insert(name, empty.clone());
             }
             let mut compiler = compiler(&project);
+            let names = project.modules.keys().cloned().collect();
             let error = compiler
-                .retained_sources("main", Span::default())
+                .retain_source_modules("main", Span::default(), names)
                 .unwrap_err();
             assert_eq!(error.code, ErrorCode::Limit);
             assert!(error.message.contains(message), "{error}");
-            assert!(compiler.function_sources.is_none());
+            assert!(compiler.source_rows.is_empty());
+            assert!(compiler.source_sets.is_empty());
         }
     }
 }

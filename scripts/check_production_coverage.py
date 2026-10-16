@@ -917,6 +917,77 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
     PATHS[_path]['tests'].extend(_extension['tests'])
 PATHS['checked-views']['boundaries'].extend(['source', 'finite-leaf'])
 
+# Inert original-source closure and storage accounting; no new native mode or proof claim.
+for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': 'src/frontend/compile/sources.rs',
+                                              'markers': ['pub(super) fn retained_sources(',
+                                                          'fn root(',
+                                                          'original_table_is(key, table)',
+                                                          'fn operation(',
+                                                          'origin.equation.source_view()',
+                                                          'fn raw(',
+                                                          'expected != source.source']},
+                                             {'path': 'src/frontend/compile/operations.rs',
+                                              'markers': ['self.retained_sources(module, span, '
+                                                          '&roots, bindings, &[program.raw()])?']},
+                                             {'path': 'src/frontend/compile/lower/function_contract.rs',
+                                              'markers': ['&[implementation, specification, '
+                                                          'caller]',
+                                                          'RetainedIdentity::interned(']}],
+                         'tests': [{'path': 'src/frontend/compile/sources.rs',
+                                    'test': 'original_closure_keeps_nat_meaning_and_inactive_edges_but_not_unused_imports'},
+                                   {'path': 'src/frontend/compile/sources.rs',
+                                    'test': 'local_operation_shadow_does_not_retain_its_global_diagnostic_candidate'},
+                                   {'path': 'src/frontend/compile/sources.rs',
+                                    'test': 'foreign_equal_shaped_lexical_origin_is_not_a_current_source_root'},
+                                   {'path': 'tests/source_snapshots.rs',
+                                    'test': 'unrelated_large_sources_do_not_become_ordinary_gate_dependencies'},
+                                   {'path': 'tests/function_contracts.rs',
+                                    'test': 'observing_contract_receipts_keep_each_original_caller_module'},
+                                   {'path': 'tests/repair_diagnostics.rs',
+                                    'test': 'snapshot_limit_errors_explain_the_retained_sources'},
+                                   {'path': 'tests/cli_sampling.rs',
+                                    'test': 'cli_new_default_has_an_explicit_legacy_escape'}]},
+ 'contract-acceptance': {'source_bindings': [{'path': 'src/frontend/compile/operations/pure.rs',
+                                              'markers': ['self.retained_sources(module, span, '
+                                                          '&roots, bindings, &[body.raw()])?',
+                                                          'let origin = Arc::new(PureOrigin {']},
+                                             {'path': 'src/frontend/compile/lower/computed_phase.rs',
+                                              'markers': ['let sources = '
+                                                          'self.compiler.retained_sources(',
+                                                          '&self.bindings,']}],
+                         'tests': [{'path': 'tests/source_snapshots.rs',
+                                    'test': 'bound_pure_actual_retains_its_original_source_through_a_generic_provider'}]},
+ 'checked-views': {'source_bindings': [{'path': 'src/contract/function.rs',
+                                        'markers': ['pub(crate) enum SourceView',
+                                                    'pub(crate) struct SourceSnapshot',
+                                                    'RetainedIdentity::Interned',
+                                                    'budget.charge_source_row(row)?']},
+                                       {'path': 'src/contract/exact.rs',
+                                        'markers': ['pub(crate) fn charge_source_row(',
+                                                    'Arc::ptr_eq(seen, row)',
+                                                    'self.source_rows.push(Arc::clone(row))']},
+                                       {'path': 'src/interchange/pure_leaf.rs',
+                                        'markers': ['pub fn sources(&self)',
+                                                    'self.sources.exposed()']},
+                                       {'path': 'src/interchange/mod.rs',
+                                        'markers': ['fn evidence_fields(',
+                                                    'for (path, text) in snapshot.iter()',
+                                                    'pub(crate) fn function_snapshot_key(']},
+                                       {'path': 'src/interchange/execution_view/finite.rs',
+                                        'markers': ['fn sources(',
+                                                    'for (path, text) in sources.iter()',
+                                                    'w.sources(identity.2)']}],
+                   'tests': [{'path': 'src/contract/function.rs',
+                              'test': 'overlapping_interned_closures_charge_shared_rows_once_without_exposing_copies'},
+                             {'path': 'src/contract/function.rs',
+                              'test': 'interned_source_storage_preserves_native_snapshot_and_proposal_bytes'},
+                             {'path': 'src/interchange/execution_view/finite/tests.rs',
+                              'test': 'identity_storage_views_preserve_exact_qdv_bytes_and_source_order'},
+                             {'path': 'tests/source_snapshots.rs',
+                              'test': 'shared_receipts_keep_exact_bindings_and_outlive_source_changes'}]}}.items():
+    PATHS[_path]['source_bindings'].extend(_extension['source_bindings'])
+    PATHS[_path]['tests'].extend(_extension['tests'])
+
 
 def boundary_paths(boundary):
     return sorted(name for name, rule in PATHS.items() if boundary in rule['boundaries'])

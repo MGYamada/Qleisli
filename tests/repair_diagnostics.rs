@@ -177,28 +177,26 @@ fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
 #[test]
 fn snapshot_limit_errors_explain_the_retained_sources() {
     for body in ["apply[p](q)", "apply_contract(p,p,q)"] {
-        let root = SourceRoot::new(&format!(
+        let source = format!(
             "unitary fn p(q:Q<Bit>)->Q<Bit>{{q}}
              unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
              unitary fn client(q:Q<Bit>)->Q<Bit>{{{body}}}"
-        ));
+        );
+        let root = SourceRoot::new(&source);
         check_project(&root.0).unwrap();
-        // This file alone exceeds the existing shared work budget when copied.
-        // A020-10 removes repeated copies, not the bounded initial snapshot.
-        root.write("unrelated.qli", &format!("// {}", "a".repeat(1_000_000)));
+        let comments = format!("// {}", "a".repeat(1_000_000));
+        root.write("unrelated.qli", &comments);
+        check_project(&root.0).unwrap();
+        // The same original bytes matter when they belong to the actual provider.
+        // Relevant bytes are never stripped or allowed to bypass the work bound.
+        root.write("main.qli", &format!("{source}\n{comments}"));
         let error = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(error.code, "limit", "{error:?}");
         assert!(
-            error.message.contains("shared project snapshot"),
+            error.message.contains("relevant source closure"),
             "{error:?}"
         );
         assert!(error.message.contains("charged once"), "{error:?}");
-        assert!(
-            error
-                .message
-                .contains("all loaded modules, comments and bundled std"),
-            "{error:?}"
-        );
     }
 }
 

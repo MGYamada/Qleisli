@@ -27,7 +27,7 @@ pub(super) struct Operation {
     pub access: [bool; 3],
     pub meaning: Option<Matrix>,
     pub effect: Effect,
-    node: Arc<Node>,
+    pub(super) node: Arc<Node>,
     depth: usize,
     nodes: usize,
 }
@@ -36,7 +36,7 @@ pub(super) struct CachedProvider {
     pub body: AcceptedProgram,
 }
 #[derive(Debug)]
-enum Node {
+pub(super) enum Node {
     Provider(Arc<FunctionEvidence>),
     Pure(PureProvider),
     Inverse(Operation),
@@ -57,9 +57,17 @@ pub(super) enum Constructor {
     Conjugate,
 }
 #[derive(Clone, Debug)]
-struct PureProvider {
-    leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
-    inverse: Option<Arc<FunctionEvidence>>,
+pub(super) struct PureProvider {
+    pub(super) origin: Option<Arc<PureOrigin>>,
+    pub(super) leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
+    pub(super) inverse: Option<Arc<FunctionEvidence>>,
+}
+#[derive(Debug)]
+pub(super) struct PureOrigin {
+    pub(super) definition: Key,
+    pub(super) table: Arc<crate::frontend::resolve::locals::Table>,
+    pub(super) meaning: Option<Key>,
+    pub(super) equation: Arc<crate::interchange::pure_leaf::SourcePureEquation>,
 }
 mod bindings;
 #[cfg(test)]
@@ -351,9 +359,10 @@ impl Compiler<'_> {
                 .map_err(|e| self.op_error(&name.0, span, e))?;
             (raw, matrix, None)
         } else {
-            let sources = self.retained_sources(&name.0, span)?;
+            let sources = self.retained_sources(&name.0, span, &[*key], &Bindings::new(), &[])?;
             let path = self.source.resolution.path(*key);
-            let identity = || RetainedIdentity::shared(path.clone(), path.clone(), sources.clone());
+            let identity =
+                || RetainedIdentity::interned(path.clone(), path.clone(), sources.clone());
             let mut references = BTreeMap::new();
             for id in target.references() {
                 let program = self.checked.get(&id).ok_or_else(|| {
@@ -658,6 +667,7 @@ impl Compiler<'_> {
             (**basis).clone(),
             (**codomain).clone(),
             &program,
+            &Bindings::new(),
         )?;
         self.charge(module, name.span, operation.copy_size() + 1)?;
         self.providers.insert(
@@ -681,6 +691,7 @@ impl Compiler<'_> {
         basis: Ty,
         codomain: Ty,
         program: &AcceptedProgram,
+        bindings: &Bindings,
     ) -> Result<Operation, CompileError> {
         contract_basis(&basis)
             .bits()
@@ -690,7 +701,7 @@ impl Compiler<'_> {
             .map_err(|error| self.op_error(module, span, error))?;
         if effect == Effect::Isometry || basis != codomain {
             return self.pure_provider_program(
-                module, span, key, meaning, basis, codomain, effect, program,
+                module, span, key, meaning, basis, codomain, effect, program, bindings,
             );
         }
         let raw = program.raw();
@@ -703,8 +714,9 @@ impl Compiler<'_> {
             ));
         self.charge(module, span, raw_work.saturating_mul(2))?;
         let implementation = raw.clone();
-        let sources = self.retained_sources(module, span)?;
-        let identity = RetainedIdentity::shared(
+        let roots: Vec<_> = [Some(key), meaning].into_iter().flatten().collect();
+        let sources = self.retained_sources(module, span, &roots, bindings, &[program.raw()])?;
+        let identity = RetainedIdentity::interned(
             self.source.resolution.path(key),
             meaning.map_or_else(
                 || self.source.resolution.path(key),
@@ -1075,8 +1087,14 @@ impl Operation {
                 a == b // FunctionEvidence compares issued proof identity only.
             }
             (Node::Pure(a), Node::Pure(b)) => {
-                charge(2)?;
-                Arc::ptr_eq(&a.leaf, &b.leaf) && a.inverse == b.inverse
+                charge(3)?;
+                Arc::ptr_eq(&a.leaf, &b.leaf)
+                    && a.inverse == b.inverse
+                    && match (&a.origin, &b.origin) {
+                        (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+                        (None, None) => true,
+                        _ => false,
+                    }
             }
             (Node::Inverse(a), Node::Inverse(b)) | (Node::Controlled(a), Node::Controlled(b)) => {
                 charge(1)?;

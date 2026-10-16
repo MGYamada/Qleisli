@@ -13,6 +13,7 @@ impl Compiler<'_> {
         codomain: Ty,
         effect: Effect,
         body: &AcceptedProgram,
+        bindings: &Bindings,
     ) -> Result<Operation, CompileError> {
         let expected = meaning.map(|key| &self.meanings[&key].matrix);
         let evidence = crate::frontend::pure::check(
@@ -43,17 +44,24 @@ impl Compiler<'_> {
                 |id| self.source.resolution.path(id),
             ),
         );
-        let sources = self.retained_sources(module, span)?;
+        let roots: Vec<_> = [Some(key), meaning].into_iter().flatten().collect();
+        let sources = self.retained_sources(module, span, &roots, bindings, &[body.raw()])?;
         let equation = crate::interchange::pure_leaf::SourcePureEquation::bind(
             evidence.clone(),
             specification,
             names,
-            sources,
+            Arc::clone(&sources),
         )
         .map_err(|e| self.error(module, span, ErrorCode::Contract, e.to_string()))?;
-        self.pure_equations.push(Arc::new(equation));
+        let equation = Arc::new(equation);
+        let origin = Arc::new(PureOrigin {
+            definition: key,
+            table: Arc::clone(&self.source.lexical[&key]),
+            meaning,
+            equation: Arc::clone(&equation),
+        });
+        self.pure_equations.push(equation);
         let inverse = if effect == Effect::Unitary {
-            let sources = self.retained_sources(module, span)?;
             let raw = evidence.program().raw().clone();
             Some(Arc::new(
                 FunctionEvidence::check_retained_with_kernel(
@@ -61,7 +69,7 @@ impl Compiler<'_> {
                     contract_basis(&basis),
                     raw.clone(),
                     raw,
-                    RetainedIdentity::shared(
+                    RetainedIdentity::interned(
                         self.source.resolution.path(key),
                         self.source.resolution.path(key),
                         sources,
@@ -85,6 +93,7 @@ impl Compiler<'_> {
             effect,
             meaning: Some(evidence.meaning().clone()),
             node: Arc::new(Node::Pure(PureProvider {
+                origin: Some(origin),
                 leaf: evidence,
                 inverse,
             })),

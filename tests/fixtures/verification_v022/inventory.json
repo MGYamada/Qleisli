@@ -3661,7 +3661,7 @@
     },
     {
       "path": "src/contract/exact.rs",
-      "sha256": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+      "sha256": "3336a225450b5da987d5a1928f988d547587bae284c72c6c66d162e4a0b62f45",
       "group": "scalar",
       "surface": {
         "declarations": [
@@ -3703,7 +3703,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "586c519000d049b855d15934a9ee30fb200a4f3451bdde7fc6118dd47e631155",
+      "sha256": "1011d798b9eb857b19d1a8150408d8217c307c488f4032528b28deb9b06b6524",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -4047,7 +4047,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "b74e8c9beb95df895860c4c17c637e9eaf23b9d1f85661ee205acd3e38cd8473",
+      "sha256": "a56e81b8c425baed31f92e33080a3eb659d466280f7e2dc7a14fd4e0b0fae381",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "8511f6ea017464a2c51f1dadbde361cb75196ccebb51305d2fdb467e49502750",
+      "sha256": "5557a4c7dfb3441ff3430da9d62baa26dd25c7df01d0ad1741638210580df4da",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4155,8 +4155,18 @@
       }
     },
     {
+      "path": "src/frontend/compile/sources.rs",
+      "sha256": "b63f27082c94b735898536fc936a05681f4dff23ecb079ffc35cd261aa9bca01",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "6660917bf1aa0fff90e49370bdf6a99efddf6bc355a545d34b4bb333f04ddcaf",
+      "sha256": "f97f44fa8f0e85abe4ee522b3924386c857f91d5c699d1474e34b455370f7754",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4166,7 +4176,7 @@
     },
     {
       "path": "src/frontend/compile/operations/pure.rs",
-      "sha256": "6bdcdb20fc66917bf8eabb8da54950956012747bb96ce2402049724bdacbe1bc",
+      "sha256": "ddfc138274771a1a69231e6cc6f06c93563868ba5fa46f18e66ad7c6612f4573",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5255,7 +5265,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "1c3eb8f393e1598eb87e43f5e9a2f14a97b2c04ee905ca9e78c3144d9ee1d334",
+      "sha256": "23d41d3c3493b1e61d9cbc5188f8f41f8c32eb0136731057ec9ae530b9214b67",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5285,7 +5295,7 @@
     {
       "path": "src/interchange/execution_view/finite/contracts.rs",
       "group": "execution-view-encoding",
-      "sha256": "f750301e09c25683c8930d0757613df4d8ab97945aa57b5d45cb707f3f5a8c62",
+      "sha256": "2e913560f651a03d31ed3e400996ed8618801d6d078124c258fcb622d8472e2d",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5295,7 +5305,7 @@
     {
       "path": "src/interchange/execution_view/finite/contracts/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "6c148fc492644a1cf1d642bbaee515c1906625518a5e7410b89a7fe83bc25e12",
+      "sha256": "0ef40dd202648fadee0ef1287db41c37921436e6b23b51d042950b55030942aa",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5315,7 +5325,7 @@
     {
       "path": "src/interchange/execution_view/finite/tests.rs",
       "group": "execution-view-encoding",
-      "sha256": "40650a5e0f06271288056c977deb627d1ec151b455d770f50a7053a84b6e1a55",
+      "sha256": "c312d5789e7f6a8472dbd045e73445beafcd4b626c9057eb17c5d1443658d9fa",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5324,7 +5334,7 @@
     },
     {
       "path": "src/interchange/finite_leaf.rs",
-      "sha256": "0fd335e04dafc2c8eb300fd2acf515b7f68e5716560751355613a4f4a23fe082",
+      "sha256": "6ead4a2f38ecd9e262053994a66454d3528333f8b06b481f3298909b612af67a",
       "group": "finite-leaf",
       "surface": {
         "declarations": [
@@ -5547,7 +5557,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "a99dda6983634756acb4eeb74d53089774229da2d0f0a459245e5d3dfb689d97",
+      "sha256": "8f25d6888c78a1e228914e9ba6495daa2d9e2e75394b0ba2d0f0b4660c169096",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5723,7 +5733,7 @@
     },
     {
       "path": "src/interchange/pure_leaf.rs",
-      "sha256": "0ff4d549de4a28c8b33badb142498b758b8b1f1d07f4726f9dba61e911fcf91a",
+      "sha256": "f4ef86620490d033be719df4d8953ab602685d2d7fedb80aff0e09f48fc42b5a",
       "group": "finite-leaf",
       "surface": {
         "declarations": [
@@ -6132,7 +6142,7 @@
     },
     {
       "path": "src/interchange/execution_view/finite/engineering_instrument.rs",
-      "sha256": "45606418bfb9eecf6a0eeef33480646c6e2bb8c037b1dc29e872f97f01d45d30",
+      "sha256": "d73a7e2bba9715d265f151cd7ca98654d64e93d451734c3739e3dd9108604417",
       "group": "engineering-instrument",
       "surface": {
         "declarations": [],
@@ -6445,7 +6455,7 @@
     },
     {
       "path": "src/interchange/execution_view/finite/engineering_openqasm.rs",
-      "sha256": "e5bf7a14c3f40efe8e5cef93e3df5a5a2c29d24f9cba98d6f73ad29b559008fa",
+      "sha256": "0ac5537d6145c6fbc74ad20e3070a303febfcf02eb7000a569f04a70d77ec80a",
       "group": "engineering-openqasm",
       "surface": {
         "declarations": [],
@@ -6555,7 +6565,7 @@
     },
     {
       "path": "src/frontend/compile/lower/call_state_tests.rs",
-      "sha256": "64a2bc2f5c7d618f2ff0284aaee7fc56625feab988b7886599d5a369e0cbd61c",
+      "sha256": "485d23ac0d70293e6fc933ae0129b3ddb615dc8811e68fe206343f8dd1093d9b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6585,7 +6595,7 @@
     },
     {
       "path": "src/frontend/compile/operations/identity_tests.rs",
-      "sha256": "c5c3cb2e86f1784d6817cc6a37fecda1eb1a6109f001213a6cf1a4b72d6a1cc1",
+      "sha256": "36bc69f93c009c225e2cd99046f5d4a0c163964490e839387b01d0b9048f942a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6707,7 +6717,7 @@
     },
     {
       "path": "src/frontend/compile/instances/provider.rs",
-      "sha256": "dc1359896d18a5dc791ffdf8545c00fcb8c63fe758e450e295c069f8cdc491c7",
+      "sha256": "20bb8952819918bba67fc3f06de5950ff2bef1062b17e739170371ebfba93db3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6727,7 +6737,7 @@
     },
     {
       "path": "src/frontend/compile/lower/computed_phase.rs",
-      "sha256": "c0450e0195e13662203f3792f96d7bba53ba857e61b964293ae14415309fae14",
+      "sha256": "2dc4564342fc66e1bc7f0f90aed473b3632adddc8d0add0ebbb085fb5ebced9c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6930,7 +6940,7 @@
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending. Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate. Complete closed instance admission does not skip eager nongeneric roots, original dormant obligations, actual per-instance body/native replay or full identity/effect/Meaning/access checks before cache reuse. Bounded first-study archive/stream identity checking is inert retention, not source preservation or a constitutional discharge.",
       "encoding": "One common original type/owner/effect/name judgment including all six actual ordinary bundled modules; exact tuples/moves/scopes and the typed primitive catalog. Finite complete ordered closed Basis/Nat/Op instances retain exact Unit/Bit/Bits<n>/product tags, ordinary ordered word identities, quantum owner/axis frames, original body-static/operation plans and observing result schemas. Original u32 Nat arithmetic is distinct from the adopted signed affine/helper and requires-conjunction contracts. Finite and selected emitter restrictions/capacities remain separate; ordinary empty_bits introduces no quantum owner.",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
-      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/file16MiB/project or explicit legacy remains separate. Selected64 total modules including6 actual bundles/1..58 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, the unchanged all-loaded snapshot includes module names, comments and bundled std, at most128 modules and1MiB aggregate metadata with4096-byte identity paths; this can refuse before a larger loader allowance. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
+      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/file16MiB/project or explicit legacy remains separate. Selected64 total modules including6 actual bundles/1..58 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, each relevant original declaration/bound-Op/Raw-dependency closure retains complete module names and text including comments and relevant bundled sources, with immutable module rows shared across closures. The unchanged128-module/1MiB metadata and4096-byte identity-path bounds, aggregate native transport limits and source-work budget still apply; this selection does not change loading or eager checking of every loaded declaration. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
         "VM-28"

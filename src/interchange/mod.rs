@@ -199,7 +199,7 @@ impl Encoder {
         signature: &BasisType,
         raw_implementation: &RawProgram,
         raw_specification: &RawProgram,
-        identity: (&str, &str, &[(String, String)]),
+        identity: (&str, &str, crate::contract::function::SourceView<'_>),
         target: Option<FiniteMeaning>,
     ) -> Result<()> {
         let implementation = self.program(raw_implementation)?;
@@ -214,7 +214,7 @@ impl Encoder {
             .checked_sub(implementation_name.len() + specification_name.len())
             .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
         let mut sources = Vec::new();
-        for (path, text) in snapshot {
+        for (path, text) in snapshot.iter() {
             let index = if let Some(&index) = self.source_ids.get(path) {
                 if self.sources[index].1 != *text {
                     return Err(Error::format("conflicting source snapshots for one label"));
@@ -773,7 +773,7 @@ pub(crate) fn function_snapshot_key(
     signature: &BasisType,
     implementation: &RawProgram,
     specification: &RawProgram,
-    identity: (&str, &str, &[(String, String)]),
+    identity: (&str, &str, crate::contract::function::SourceView<'_>),
 ) -> Result<Arc<[u8]>> {
     let mut encoder = Encoder::new(Version::V2);
     encoder.entries.push(Value::Null);
