@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [dormant control owner-order study](dormant-control-owner-order-v030/README.md)
+retains two unchanged mixed-owner sources and both actual baseline accepts,
+including the intended bit-Ctrl refusal. Predictions, dirty integration and
+stable executable identity remain distinct from fresh sector checking.
+
 The [partial-access first history](dormant-partial-access-v030/README.md) retains
 eight invocation/configuration failures separately from the corrected zero-qubit
 P1 reproducer's two accepts and two capacity refusals. Original sources and

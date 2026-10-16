@@ -78,6 +78,47 @@ fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn dormant_ctrl_uses_physical_axis_order_after_a_zero_width_owner() {
+    let base = "use std::quantum::x;
+        unitary fn pair(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){(a,x(b))}";
+    let kernel = Kernel::selected().unwrap();
+    let check = |source: &str| {
+        qleisli::frontend::compile::check_project_report_with_kernel(
+            &SourceRoot::new(source).0,
+            qleisli::frontend::project::SourcePolicy::default(),
+            &kernel,
+        )
+    };
+    let before = check(base).unwrap().native_decisions().requests_checked();
+    let source = |call: &str| {
+        format!(
+            "{base}unitary fn unused[const U:Op<Unit>](a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>)
+             requires Applicable(U){{{call};(U(a),b)}}"
+        )
+    };
+    let allowed = check(&source("pair(ctrl a,excl b)")).unwrap();
+    assert!(allowed.native_decisions().requests_checked() > before);
+    assert_eq!(allowed.entry_request_checked(), None);
+
+    // The second logical owner occupies physical axis zero. X on that Ctrl
+    // bit must fail even though the preceding owner contributes no axes.
+    let call = "pair(excl a,ctrl b)";
+    let bad = source(call);
+    let failure = check(&bad).unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure:?}");
+    assert!(
+        failure.message.contains("sector preservation"),
+        "{failure:?}"
+    );
+    let span = failure.primary.unwrap().span;
+    assert_eq!(&bad[span.start..span.end], call);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn dormant_sector_checks_the_actual_zero_power_and_diagonal_body() {
     for operation in ["diagonal", "power(flip,0)"] {
         let source = format!(
