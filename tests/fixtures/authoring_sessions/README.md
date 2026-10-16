@@ -10,6 +10,11 @@ eight invocation/configuration failures separately from the corrected zero-qubit
 P1 reproducer's two accepts and two capacity refusals. Original sources and
 diagnostics remain inert; prior executable identity is not a build attestation.
 
+The [dormant control first study](dormant-controls-v030/README.md) preserves five
+first sources and actual diagnostics, including a one-bit generic acceptance
+whose direct call refuses. Zero-width controls and scoped Rust snapshots remain
+distinct from native sector requests, full dormant checking and preservation.
+
 The [dormant closed-Op first studies](dormant-contracts-v030/README.md) preserve
 two complete pre-repair packets: an original parser refusal, a direct contract
 refusal, accepted bad unused/zero/partial requests and nine separate follow-ups.

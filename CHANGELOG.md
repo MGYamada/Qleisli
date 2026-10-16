@@ -17,6 +17,15 @@ and exactness obligations retain their recorded scopes and status.
   inverse/control/conjugate constructors. Whole deferred descriptions remain
   conditional; closed complete descriptions retain their aggregate checks.
 
+- Check closed declaration callees at dormant whole-owner `ctrl` sites through
+  their original call plans, caller-visible Unitary effect and exact ordered
+  interfaces. Recheck the concrete body and send its actual Raw ports/body to
+  the existing independent sector gate, including zero-width owners. Share
+  static-actual validation with ordinary calls; unbound actuals remain
+  conditional. Ordinary calls retain their existing profile. Primitive/local-Op
+  control requests and other dormant expressions remain unfinished; this is
+  further #369/#167 preparation, not Issue or source-preservation completion.
+
 - Check closed Meaning requests and each closed static actual in uninstantiated
   finite Op-only bodies, including zero-count children and either side of a
   deferred formal. Reuse ordinary provider, exact-port, Meaning and requested

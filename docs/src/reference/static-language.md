@@ -503,9 +503,22 @@ description's contract or replace aggregate checks when all actuals close.
 
 Unbound original Op formals remain conditional, including `checked_op(U,M)`;
 that deferral does not establish the requested Meaning. Runtime-expression
-obligations involving actual owners, control sectors and clean workspace still
-require their corresponding concrete gates. Full dormant plan materialization
-and general Basis/Nat instances remain concrete adapter obligations.
+obligations still require their corresponding concrete gates. For a dormant
+whole-owner `ctrl` call to a declaration with closed static actuals, the finite
+adapter binds the original expression and operands to its checked call plan,
+requires the original caller-visible Unitary effect, and preserves the complete
+ordered Q-owner interface. It independently checks the concrete callee body and
+submits its actual Raw ports and body to the existing native sector gate.
+Unitarity alone does not establish that sector condition. A zero-width Ctrl
+owner retains its exact type and still causes a native request, even though its
+physical axis set is empty. The existing control-request capacity applies to
+this explicit request; ordinary calls retain their separate finite profile.
+
+Unbound actuals remain conditional; closed siblings still undergo their own
+contract checks. Primitive and unbound local-Op callees, caller-frame and
+clean-workspace obligations, and other dormant expressions retain their
+corresponding checking duties. Full dormant materialization and general
+Basis/Nat instances remain concrete adapter obligations.
 
 Finite ordinary runtime calls additionally bind the borrowed plan to the exact
 original expression, callee and ordered static/runtime operand slices. A cloned
