@@ -4057,7 +4057,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "0b769230d385d9d68545cce78edea52a548b581ff9503b6553d515b779c6b440",
+      "sha256": "23027013f7ba668ec4254c40b5107e01f0ae772b4eb3f14dbd185a92b481d875",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4067,7 +4067,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "b92d41bc2f7b3e79ab51546ff36585ee07ab62b48f5ab6ea66aa18a2f273bbc3",
+      "sha256": "0969a566821ba764da5bf9e05c7967a052c43740fbc8ec71d8d5f4bdd9564f06",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "dae8bfc38a062b1ac40a56f56caf4565568c5ed7c162d13454e9199001382a44",
+      "sha256": "452ca7ad065562c2867eebc8863b2c1b3430003bd71c929fb57b0977cc0c352c",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4156,7 +4156,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "a15dbab6632028ed0dd06fdaea9a10916b7241c3983cc8e8ec9730b951917a29",
+      "sha256": "3958e1089eb56b7d62da1d737aaedb4ffa6e5a1e79b46a26239d162d2f34befd",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6566,6 +6566,36 @@
     {
       "path": "src/frontend/compile/operations/identity_tests.rs",
       "sha256": "917218a5d0e5fb1e178da1fa36b5cbff80f3e30e21a2f22ed566305b367e9f7d",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/dormant.rs",
+      "sha256": "9678e8c06f9d5625f94a6412b4b999d3db288cbc5231aab3279183e01f4acddf",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/dormant/tests.rs",
+      "sha256": "38cdff4f775314eed190947921200c13afcea7508b803e4f978d23296ede456c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations/bindings.rs",
+      "sha256": "1da3ce30d010d21930e45ad8779fb68125144037c1213b20bd13874f29e2e1a0",
       "group": "source",
       "surface": {
         "declarations": [],

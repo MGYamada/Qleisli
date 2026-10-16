@@ -1,0 +1,321 @@
+{
+  "format": "qleisli.dormant-partial-access-retention",
+  "version": 1,
+  "scope": "Inert complete pre-P1-repair history: eight invocation/configuration failures, then two partial-composite accepts and two static capacity refusals. No clean build attestation, source/native/runtime preservation proof, issue credit or release claim.",
+  "archives": [
+    {
+      "id": "first-attempts",
+      "original_directory": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/pr413-partial-access-first",
+      "archive": "first-attempts.tar.gz",
+      "archive_bytes": 18318,
+      "archive_sha256": "198884f9b3d6379899402a0b456c43c7236ae621c022fbaf9ce6ce055e9189b2",
+      "tar_bytes": 112640,
+      "tar_sha256": "01eacdaf12cfabdfb0e3a8539727549a8ff867641d0e5ffb65cbedc26a207f43",
+      "file_count": 30,
+      "expanded_bytes": 80376,
+      "files": [
+        {
+          "path": "closed_power_control/Qargo.toml",
+          "bytes": 67,
+          "sha256": "a3c18a9c3e75ff9dd8873967dbd55477e2f9c07b34dc2b0cdc3eeaaba5b3093a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control/main.qli",
+          "bytes": 278,
+          "sha256": "7d9833086b979e2c98dc80d69a9a22f14bedea57608a2aa93e91d88215fe5466",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.directory.stderr.txt",
+          "bytes": 166,
+          "sha256": "577e864b7c9e550fa8da1df26c1cb50dce88431a38ffa1895540b082512b9d57",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.directory.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.first.stderr.txt",
+          "bytes": 155,
+          "sha256": "19ac95216d70baab794f769f3b5fa6e73d388ba85e3dd846c6e6b3e4f2375621",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-observations.json",
+          "bytes": 5433,
+          "sha256": "b689dc035ddb02b59f64050534028b25b5d794b297d9f6a39fdc8b1662061850",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-plan.json",
+          "bytes": 379,
+          "sha256": "5f02bd37fdaf099d70889eef96a1f5ba0cdf6f6ada15fec33025a73cf487cd39",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/dormant.rs",
+          "bytes": 15358,
+          "sha256": "0df6b8103e308414836d601d90d0e2898d360c45e052ffbd94c4c6351d853456",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/operations/bindings.rs",
+          "bytes": 2443,
+          "sha256": "315383061c69451f97a3f41e8c5df3800381b408aadf4087578eb5a511b02afc",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/operations.rs",
+          "bytes": 46506,
+          "sha256": "3958e1089eb56b7d62da1d737aaedb4ffa6e5a1e79b46a26239d162d2f34befd",
+          "original_mode": "0644"
+        },
+        {
+          "path": "followup-observations.json",
+          "bytes": 7503,
+          "sha256": "a9941f63316ce117fb4771dc8b720ecd0e9317435b4b3571de99aee4ef7bb4fb",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated/Qargo.toml",
+          "bytes": 67,
+          "sha256": "a3c18a9c3e75ff9dd8873967dbd55477e2f9c07b34dc2b0cdc3eeaaba5b3093a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated/main.qli",
+          "bytes": 346,
+          "sha256": "ef4f8fa96fd2f4e2870b6f5b1efbf9fee0595599025971b43d1492682e47a944",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.directory.stderr.txt",
+          "bytes": 171,
+          "sha256": "6b9a10807914a2bfa5ffee32e06f8ee852747a4d4f68e33bcddd0df1235e69de",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.directory.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.first.stderr.txt",
+          "bytes": 160,
+          "sha256": "8f23ff6b2e035424de070fc2aab90c725126533ded268e941918764aee0be6f9",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left/Qargo.toml",
+          "bytes": 67,
+          "sha256": "a3c18a9c3e75ff9dd8873967dbd55477e2f9c07b34dc2b0cdc3eeaaba5b3093a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left/main.qli",
+          "bytes": 289,
+          "sha256": "41c30530b005d79662ef734a4b2805717df39f4ae87bc28ea7405bc28078c27b",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.directory.stderr.txt",
+          "bytes": 163,
+          "sha256": "a25339c508d2e130df6f10d9bf49f4a541f906d1a8840d0adbe888f13260cc8f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.directory.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.first.stderr.txt",
+          "bytes": 152,
+          "sha256": "2e72c1a035aa558f6bc57f4e2ec3cf34fbcedef475822a255a3ad053e82e7ff2",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right/Qargo.toml",
+          "bytes": 67,
+          "sha256": "a3c18a9c3e75ff9dd8873967dbd55477e2f9c07b34dc2b0cdc3eeaaba5b3093a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right/main.qli",
+          "bytes": 289,
+          "sha256": "b4e7971a44ec25c4b068cab7dfdace907743ac807e46313a00a33d043416dfc6",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.directory.stderr.txt",
+          "bytes": 164,
+          "sha256": "9334049c4db00bfee7dc244c48e67d64312a7e3b1acd07cdb5246bfc9a1be132",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.directory.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.first.stderr.txt",
+          "bytes": 153,
+          "sha256": "7c4a37cf416ad65a182480dc2464ce84f7b4a9d75844278a1747bbb843714606",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        }
+      ]
+    },
+    {
+      "id": "schema2-followup",
+      "original_directory": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/pr413-partial-access-schema2",
+      "archive": "schema2-followup.tar.gz",
+      "archive_bytes": 3002,
+      "archive_sha256": "633855433f055afbfd419fff1209f1d7d901c3b93f05baae3385b0d582f7b4c6",
+      "tar_bytes": 30720,
+      "tar_sha256": "8b7b7aec52f3d138818dc8f8e2f65dff66fd67a99e3282d30ba709ebe507badc",
+      "file_count": 18,
+      "expanded_bytes": 11185,
+      "files": [
+        {
+          "path": "closed_power_control/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control/main.qli",
+          "bytes": 278,
+          "sha256": "7d9833086b979e2c98dc80d69a9a22f14bedea57608a2aa93e91d88215fe5466",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.first.stderr.txt",
+          "bytes": 163,
+          "sha256": "85706f76d536519ebb3c85a67f653a9a47a2f6fc6a0fcec1f22e8c60b669f5c4",
+          "original_mode": "0644"
+        },
+        {
+          "path": "closed_power_control.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-observations.json",
+          "bytes": 8085,
+          "sha256": "9a25a19341659674ff360fafe026770eff10dc7240205707059b23fe707a0d83",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-plan.json",
+          "bytes": 398,
+          "sha256": "4586d322908d2423f5d3bcfa2d890763d54ed3754343b1ab947cfaac4a061f93",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated/main.qli",
+          "bytes": 346,
+          "sha256": "ef4f8fa96fd2f4e2870b6f5b1efbf9fee0595599025971b43d1492682e47a944",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.first.stderr.txt",
+          "bytes": 168,
+          "sha256": "10c7cdb824379bfac7da85c76d329f78ba7f805156f64f102cc6e676f52fb319",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_instantiated.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left/main.qli",
+          "bytes": 289,
+          "sha256": "41c30530b005d79662ef734a4b2805717df39f4ae87bc28ea7405bc28078c27b",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_left.first.stdout.txt",
+          "bytes": 494,
+          "sha256": "5f6ed24b04f13a36f35c16fb36992d87f0d7cae930e59c359a9e87cad88b0fd8",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right/main.qli",
+          "bytes": 289,
+          "sha256": "b4e7971a44ec25c4b068cab7dfdace907743ac807e46313a00a33d043416dfc6",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "partial_then_right.first.stdout.txt",
+          "bytes": 495,
+          "sha256": "5381157d2ed52211a89f4dc1c56336c696decc64ce61d03a940747aea3b02964",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

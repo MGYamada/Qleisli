@@ -244,64 +244,8 @@ impl Lowerer<'_, '_> {
             let actual = self.operation(site.module, arg, env)?;
             let binding = self.compiler.locals().binder(&param.name);
             let required = &expected[self.compiler.locals().key(binding)];
-            let mut work = self.compiler.work;
-            let same_ports = (|| {
-                let mut charge = |cells| {
-                    self.compiler
-                        .charge_at(&mut work, site.module, arg.span, cells)
-                };
-                Ok::<_, CompileError>(
-                    super::super::operations::same_port_budgeted(
-                        &actual.basis,
-                        &required.basis,
-                        &mut charge,
-                    )? && super::super::operations::same_port_budgeted(
-                        &actual.codomain,
-                        &required.codomain,
-                        &mut charge,
-                    )?,
-                )
-            })();
-            self.compiler.work = work;
-            if !same_ports? {
-                return Err(self.error(
-                    site.module,
-                    arg.span,
-                    ErrorCode::TypeMismatch,
-                    format!("static argument has a different exact basis tree: expected `Op<{}>`, found `Op<{}>`", required.basis, actual.basis),
-                ));
-            }
-            let mut work = self.compiler.work;
-            let same_meaning = match required.meaning.as_ref() {
-                Some(meaning) => super::super::operations::same_meaning_budgeted(
-                    Some(meaning),
-                    actual.meaning.as_ref(),
-                    &mut |cells| {
-                        self.compiler
-                            .charge_at(&mut work, site.module, arg.span, cells)
-                    },
-                ),
-                None => Ok(true),
-            };
-            self.compiler.work = work;
-            if !same_meaning? {
-                return Err(self.error(
-                    site.module,
-                    arg.span,
-                    ErrorCode::Contract,
-                    "static argument does not establish the required phase-fixed meaning",
-                ));
-            }
-            for access in [Access::Apply, Access::Adjoint, Access::Controlled] {
-                if required.access[super::super::operations::access_index(access)] {
-                    // Validate requested derived access even for an unused parameter.
-                    if actual.needs_raw() {
-                        actual.raw(site.module, arg.span, access, self.compiler)?;
-                    } else {
-                        actual.steps(site.module, arg.span, access, self.compiler)?;
-                    }
-                }
-            }
+            self.compiler
+                .validate_required_operation(required, &actual, site.module, arg.span)?;
             self.compiler.charge(
                 site.module,
                 arg.span,

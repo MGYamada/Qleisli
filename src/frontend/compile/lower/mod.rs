@@ -1745,6 +1745,16 @@ pub(super) fn lower_function(
     lower_function_inner(compiler, key, BTreeMap::new())
 }
 
+/// Check a concrete Op-only body without putting a specialization in the
+/// declaration-only ordinary-root cache.
+pub(super) fn lower_bound_function(
+    compiler: &mut Compiler<'_>,
+    key: &Key,
+    bindings: super::operations::Bindings,
+) -> Result<AcceptedProgram, CompileError> {
+    lower_function_inner(compiler, key, bindings)
+}
+
 fn lower_function_inner(
     compiler: &mut Compiler<'_>,
     key: &Key,

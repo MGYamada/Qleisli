@@ -5,6 +5,16 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [partial-access first history](dormant-partial-access-v030/README.md) retains
+eight invocation/configuration failures separately from the corrected zero-qubit
+P1 reproducer's two accepts and two capacity refusals. Original sources and
+diagnostics remain inert; prior executable identity is not a build attestation.
+
+The [dormant closed-Op first studies](dormant-contracts-v030/README.md) preserve
+two complete pre-repair packets: an original parser refusal, a direct contract
+refusal, accepted bad unused/zero/partial requests and nine separate follow-ups.
+Their partial scalar-phase scope and prior-build provenance remain inert history.
+
 The [operation identity first study](operation-identity-v030/README.md) preserves
 one unchanged zero-qubit Op-only source and its actual prior native observation.
 Its first predictions and later comparison experiments remain distinct; matching

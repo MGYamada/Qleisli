@@ -29,6 +29,226 @@ unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 ";
 
+const DORMANT_UNIT: &str = "
+use std::quantum::phase_eighth;
+unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
+unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+meaning ScalarMeaning:Unit=reference(scalar);
+unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U){U(q)}
+unitary fn pair[const U:Op<Unit,ScalarMeaning>,const V:Op<Unit>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U),Applicable(V){U(V(q))}
+unitary fn reverse[const U:Op<Unit>,const V:Op<Unit,ScalarMeaning>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U),Applicable(V){U(V(q))}
+";
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_partial_composites_check_requested_access_on_each_closed_fragment() {
+    for (operation, basis, request) in [
+        ("then_op(U,power(scalar,1025))", "Unit", "Applicable"),
+        ("then_op(power(scalar,1025),U)", "Unit", "Applicable"),
+        (
+            "tensor_op(U,power(scalar,1025))",
+            "(Unit,Unit)",
+            "Applicable",
+        ),
+        (
+            "tensor_op(power(scalar,1025),U)",
+            "(Unit,Unit)",
+            "Applicable",
+        ),
+        (
+            "power(then_op(U,power(scalar,1025)),0)",
+            "Unit",
+            "Applicable",
+        ),
+        (
+            "adjoint(then_op(U,power(scalar,1025)))",
+            "Unit",
+            "Applicable",
+        ),
+        ("conjugate_op(U,power(scalar,1025))", "Unit", "Applicable"),
+        ("conjugate_op(power(scalar,1025),U)", "Unit", "Applicable"),
+        (
+            "controlled(then_op(U,power(scalar,1025)))",
+            "(Bit,Unit)",
+            "Applicable",
+        ),
+        ("then_op(U,power(scalar,1025))", "Unit", "Adjointable"),
+        ("then_op(U,power(scalar,1025))", "Unit", "Controllable"),
+        ("adjoint(then_op(U,power(scalar,1025)))", "Unit", ""),
+    ] {
+        let required = if request.is_empty() {
+            String::new()
+        } else {
+            format!("requires {request}(V)")
+        };
+        let source = format!(
+            "{DORMANT_UNIT}
+            unitary fn demand[const V:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+            {required}{{q}}
+            unitary fn unused[const U:Op<Unit>](q:Q<{basis}>)->Q<{basis}>
+            requires Applicable(U),Adjointable(U),Controllable(U){{demand[{operation}](q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Limit, "{operation}: {failure}");
+        assert!(
+            failure.message.contains("1024 steps"),
+            "{operation}: {failure}"
+        );
+        assert!(
+            source[failure.span.start..failure.span.end].contains("power(scalar,1025)"),
+            "{operation}: {failure}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_partial_access_preserves_conditional_and_unrequested_descriptions() {
+    for (operation, basis, premises, request) in [
+        (
+            "then_op(U,power(scalar,1024))",
+            "Unit",
+            "requires Applicable(U)",
+            "requires Applicable(V)",
+        ),
+        (
+            "then_op(power(scalar,1024),U)",
+            "Unit",
+            "requires Applicable(U)",
+            "requires Applicable(V)",
+        ),
+        ("then_op(U,power(scalar,4096))", "Unit", "", ""),
+        (
+            "controlled(then_op(U,power(scalar,4096)))",
+            "(Bit,Unit)",
+            "",
+            "",
+        ),
+    ] {
+        let source = format!(
+            "{DORMANT_UNIT}
+            unitary fn demand[const V:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+            {request}{{q}}
+            unitary fn unused[const U:Op<Unit>](q:Q<{basis}>)->Q<{basis}>
+            {premises}{{demand[{operation}](q)}}"
+        );
+        check_project(&SourceRoot::new(&source).0)
+            .unwrap_or_else(|failure| panic!("{operation}: {failure}"));
+    }
+    let source = format!(
+        "{DORMANT_UNIT}
+        unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+        requires Applicable(U){{hold[then_op(U,power(scalar,1024))](q)}}
+        unitary fn concrete(q:Q<Unit>)->Q<Unit>{{unused[identity](q)}}"
+    );
+    let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+    assert_eq!(failure.code, ErrorCode::Limit);
+    assert!(failure.message.contains("1024 steps"), "{failure}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_checked_meaning_and_zero_count_children_reach_exact_contract_gates() {
+    for operation in [
+        "checked_op(identity,ScalarMeaning)",
+        "power(checked_op(identity,ScalarMeaning),0)",
+        "then_op(U,checked_op(identity,ScalarMeaning))",
+        "then_op(checked_op(identity,ScalarMeaning),U)",
+    ] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{hold[{operation}](q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{operation}: {failure}");
+        assert!(failure.message.contains("exact equation"), "{failure}");
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_partial_calls_check_closed_actuals_on_either_side_of_a_formal() {
+    for call in ["pair[identity,U]", "reverse[U,identity]"] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{{call}(q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{call}: {failure}");
+        assert!(
+            failure.message.contains("required phase-fixed meaning"),
+            "{failure}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_valid_closed_requests_and_unbound_formals_remain_distinct() {
+    for call in [
+        "hold[checked_op(scalar,ScalarMeaning)]",
+        "hold[power(checked_op(scalar,ScalarMeaning),0)]",
+        "hold[then_op(U,identity)]",
+        "pair[scalar,U]",
+        "reverse[U,scalar]",
+        "hold[scalar]",
+        "hold[checked_op(U,ScalarMeaning)]",
+    ] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{{call}(q)}}"
+        );
+        check_project(&SourceRoot::new(&text).0)
+            .unwrap_or_else(|failure| panic!("{call}: {failure}"));
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_rectangular_meaning_does_not_request_an_unpromised_inverse() {
+    let root = SourceRoot::new(
+        "use lib::prep;
+        meaning M:Unit -> (Unit,Unit)=reference(prep);
+        isometry fn holdRect[const U:Op<Unit -> (Unit,Unit)>](q:Q<Unit>)->Q<(Unit,Unit)>
+        requires Applicable(U){U(q)}
+        isometry fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<(Unit,Unit)>{
+            holdRect[checked_op(prep,M)](q)
+        }",
+    );
+    root.write(
+        "lib.qli",
+        "use std::quantum::{finish,unit,join};
+        pub isometry fn prep(q:Q<Unit>)->Q<(Unit,Unit)>{
+            finish(q);join(unit(()),unit(()))
+        }",
+    );
+    check_project(&root.0).unwrap();
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"

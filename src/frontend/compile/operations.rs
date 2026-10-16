@@ -47,6 +47,7 @@ struct PureProvider {
     leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
     inverse: Option<Arc<FunctionEvidence>>,
 }
+mod bindings;
 #[cfg(test)]
 mod identity_tests;
 mod pure;

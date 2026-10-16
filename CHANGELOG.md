@@ -11,6 +11,21 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Propagate requested access into closed fragments of partially deferred static
+  descriptions. A neighboring unbound Op no longer hides the existing access,
+  exact-circuit and step-limit checks, including beneath zero repetition and
+  inverse/control/conjugate constructors. Whole deferred descriptions remain
+  conditional; closed complete descriptions retain their aggregate checks.
+
+- Check closed Meaning requests and each closed static actual in uninstantiated
+  finite Op-only bodies, including zero-count children and either side of a
+  deferred formal. Reuse ordinary provider, exact-port, Meaning and requested
+  access gates; check complete concrete bodies without storing specializations
+  in the ordinary-root cache. Meaning comparison does not request an unpromised
+  inverse. Preserve genuinely conditional formals, source-profile refusals and
+  all existing budgets. Dormant runtime-owner obligations and general Basis/Nat
+  materialization remain unfinished #369/#167 prerequisites.
+
 - Bind finite runtime calls to their original checked plans and exact source
   operand slices, refusing foreign same-shaped syntax. Charge complete
   operation-description comparisons before specialization counting, including
