@@ -5980,7 +5980,7 @@
     },
     {
       "path": "stdlib/src/gate.qli",
-      "sha256": "4564152272a8de04dc9e0ba968c0e4163ec24dddbefefb248fa19baad0bf0842",
+      "sha256": "ea47db2cf1ba639b637b740a57b6a510807fb98301f20fbf7b5d1ec5aea215d4",
       "group": "source",
       "surface": null
     },
@@ -5998,7 +5998,7 @@
     },
     {
       "path": "stdlib/src/transform.qli",
-      "sha256": "7931abc7c4f4303335ec5cea68cd55f2a803b5029ef496e8604a85ec8ec57c9a",
+      "sha256": "8388857d96cbdd55ff653de428178a0a4aa1e52eff54597fcca6082cf31666db",
       "group": "source",
       "surface": null
     },

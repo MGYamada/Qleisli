@@ -233,9 +233,11 @@ fn unfinished_comment_blocks_cannot_swallow_later_declarations() {
 fn every_bundled_module_and_public_or_private_definition_has_documentation() {
     let sources = [
         include_str!("../stdlib/src/basis.qli"),
+        include_str!("../stdlib/src/gate.qli"),
         include_str!("../stdlib/src/transform.qli"),
         include_str!("../stdlib/src/reflection.qli"),
         include_str!("../stdlib/src/measurement.qli"),
+        include_str!("../stdlib/src/structure.qli"),
     ];
     let mut public = 0;
     let mut private = 0;
@@ -261,7 +263,7 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
             }
         }
     }
-    assert_eq!((public, private), (9, 1));
+    assert_eq!((public, private), (21, 5));
 }
 
 #[test]

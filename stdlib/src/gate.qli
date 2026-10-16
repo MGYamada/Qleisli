@@ -43,6 +43,7 @@ pub unitary fn z(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
 /// Bit flip: H Z H = |1><0| + |0><1|.
 pub unitary fn x(q: Q<Bit>) -> Q<Bit> { h(z(h(q))) }
 
+/// Dyadic phase provider for coherent control: diag(1,exp(2*pi*i*j/2^k)).
 unitary fn phase_leaf[const j: Nat, const k: Nat](q: Q<Bit>) -> Q<Bit> {
     phase[j,k](q)
 }
@@ -59,6 +60,7 @@ pub unitary fn cnot(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
     controlled(x)(a,b)
 }
 
+/// Packed CNOT: preserve the first axis and flip the second iff the first is one.
 unitary fn cnot_pair(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
     let (a,b) = cnot(a,b);

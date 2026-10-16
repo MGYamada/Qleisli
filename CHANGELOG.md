@@ -45,6 +45,8 @@ and exactness obligations retain their recorded scopes and status.
   retained Contract circuits before adjacent-phase lowering, preserving ordered
   axes, controls and adjoints under bounded expansion. Exact small-output checks
   remain distinct from general export preservation and resource certificates.
+  Document private gate and transform providers and check documentation across
+  all six ordinary bundled modules.
 
 - Normalize supported computed-ancilla bodies through native equations for
   the complete original one-Bit fragment and a canonical witness built from

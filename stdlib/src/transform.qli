@@ -10,8 +10,8 @@ use std::gate::id;
 use std::quantum::split;
 use std::quantum::join;
 
-// qif arms select named fixed interfaces; instantiate the ordinary identity
-// explicitly so its Basis argument is checked before provider selection.
+/// Fixed Bit identity for the zero arm of a coherent conditional.
+/// Instantiate the Basis argument before selecting the provider.
 unitary fn bit_identity(q: Q<Bit>) -> Q<Bit> { id[type(Bit)](q) }
 
 /// Apply H tensor H to a two-bit register, preserving both owners and order.
