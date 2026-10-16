@@ -13,6 +13,7 @@
 mod basis;
 mod calls;
 mod circuit;
+mod dormant;
 mod interfaces;
 mod lower;
 mod naturals;
@@ -1034,6 +1035,7 @@ fn process_loaded_project_details(
             compiler.checked.insert(key, program);
         }
     }
+    compiler.check_dormant_operations()?;
     // FunctionEquality names closed pairs even inside an unused generic body
     // or a zero-count branch. Source checking is not their semantic discharge.
     for ordinal in 0..compiler.source.obligations.len() {

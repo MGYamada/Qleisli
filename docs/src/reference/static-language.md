@@ -481,8 +481,21 @@ These private plans consume the existing preparation budget. They are source
 metadata, not independently checked evidence. Retention alone does not
 discharge an unmaterialized generic obligation or widen a concrete profile.
 In particular, selected-specialization validity of a harmless entry does not
-check a false Meaning request in an unselected generic body. Full dormant
-plan materialization remains a concrete adapter obligation.
+check a false Meaning request in an unselected generic body. A separate finite
+Op-only pass checks closed Meaning requests and each closed static actual in
+uninstantiated bodies. It borrows original operation occurrences, visits both
+siblings even when one depends on an unbound formal, and retains zero-count
+children. Each concrete actual uses the ordinary exact-port, phase-fixed Meaning
+and requested-access gates. When every actual is closed, the complete concrete
+body reaches ordinary lowering and native checking without entering the
+declaration-only ordinary-root cache. A Meaning comparison does not itself
+request every capability in the source's available-access summary.
+
+Unbound original Op formals remain conditional, including `checked_op(U,M)`;
+that deferral does not establish the requested Meaning. Runtime-expression
+obligations involving actual owners, control sectors and clean workspace still
+require their corresponding concrete gates. Full dormant plan materialization
+and general Basis/Nat instances remain concrete adapter obligations.
 
 Finite ordinary runtime calls additionally bind the borrowed plan to the exact
 original expression, callee and ordered static/runtime operand slices. A cloned
@@ -492,8 +505,8 @@ both exact ports, phase, source effect, access, constructors, ordered children,
 repetition counts and issued native dependency identities. A zero power retains
 its child identity. Matching matrices alone do not identify two descriptions.
 This counter is not an executable cache, and a refused comparison is not a
-cache miss. These checks do not enable a generic concrete profile or discharge
-the outstanding dormant plans.
+cache miss. These checks do not enable general Basis/Nat materialization or
+discharge the outstanding runtime-expression obligations.
 
 The current common judgment has a 1,000,000-unit work allowance. Its selected
 profile also limits retained scope storage to 16,384 cells. Natural-expression

@@ -29,6 +29,113 @@ unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 ";
 
+const DORMANT_UNIT: &str = "
+use std::quantum::phase_eighth;
+unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
+unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+meaning ScalarMeaning:Unit=reference(scalar);
+unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U){U(q)}
+unitary fn pair[const U:Op<Unit,ScalarMeaning>,const V:Op<Unit>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U),Applicable(V){U(V(q))}
+unitary fn reverse[const U:Op<Unit>,const V:Op<Unit,ScalarMeaning>](q:Q<Unit>)->Q<Unit>
+ requires Applicable(U),Applicable(V){U(V(q))}
+";
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_checked_meaning_and_zero_count_children_reach_exact_contract_gates() {
+    for operation in [
+        "checked_op(identity,ScalarMeaning)",
+        "power(checked_op(identity,ScalarMeaning),0)",
+        "then_op(U,checked_op(identity,ScalarMeaning))",
+        "then_op(checked_op(identity,ScalarMeaning),U)",
+    ] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{hold[{operation}](q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{operation}: {failure}");
+        assert!(failure.message.contains("exact equation"), "{failure}");
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_partial_calls_check_closed_actuals_on_either_side_of_a_formal() {
+    for call in ["pair[identity,U]", "reverse[U,identity]"] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{{call}(q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{call}: {failure}");
+        assert!(
+            failure.message.contains("required phase-fixed meaning"),
+            "{failure}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_valid_closed_requests_and_unbound_formals_remain_distinct() {
+    for call in [
+        "hold[checked_op(scalar,ScalarMeaning)]",
+        "hold[power(checked_op(scalar,ScalarMeaning),0)]",
+        "hold[then_op(U,identity)]",
+        "pair[scalar,U]",
+        "reverse[U,scalar]",
+        "hold[scalar]",
+        "hold[checked_op(U,ScalarMeaning)]",
+    ] {
+        let text = format!(
+            "{DORMANT_UNIT}
+            unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+            requires Applicable(U){{{call}(q)}}"
+        );
+        check_project(&SourceRoot::new(&text).0)
+            .unwrap_or_else(|failure| panic!("{call}: {failure}"));
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_rectangular_meaning_does_not_request_an_unpromised_inverse() {
+    let root = SourceRoot::new(
+        "use lib::prep;
+        meaning M:Unit -> (Unit,Unit)=reference(prep);
+        isometry fn holdRect[const U:Op<Unit -> (Unit,Unit)>](q:Q<Unit>)->Q<(Unit,Unit)>
+        requires Applicable(U){U(q)}
+        isometry fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<(Unit,Unit)>{
+            holdRect[checked_op(prep,M)](q)
+        }",
+    );
+    root.write(
+        "lib.qli",
+        "use std::quantum::{finish,unit,join};
+        pub isometry fn prep(q:Q<Unit>)->Q<(Unit,Unit)>{
+            finish(q);join(unit(()),unit(()))
+        }",
+    );
+    check_project(&root.0).unwrap();
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"

@@ -73,9 +73,9 @@ def integer(value, limit):
     return type(value) is int and 0 <= value <= limit
 
 
-def read_file(path, limit):
+def read_file(path, limit, study=STUDY):
     require(path.is_file() and not path.is_symlink()
-            and path.resolve().is_relative_to(STUDY.resolve()), 'nonlocal retained file')
+            and path.resolve().is_relative_to(study.resolve()), 'nonlocal retained file')
     require(path.stat().st_size <= limit, 'retained file exceeds read bound')
     with path.open('rb') as stream:
         content = stream.read(limit + 1)
@@ -193,7 +193,7 @@ def check_synthetic_containers():
         raise ValueError('duplicate synthetic JSON key accepted')
 
 
-def read_archive(row):
+def read_archive(row, study=STUDY):
     require(set(row) == {'id', 'original_directory', 'archive', 'archive_bytes',
                         'archive_sha256', 'tar_bytes', 'tar_sha256', 'file_count',
                         'expanded_bytes', 'files'}, 'unexpected archive fields')
@@ -222,7 +222,7 @@ def read_archive(row):
             'member inventory is not canonical')
     require(sum(item['bytes'] for item in entries.values()) == row['expanded_bytes'],
             'expanded byte count differs')
-    compressed = read_file(STUDY / name, MAX_STORED)
+    compressed = read_file(study / name, MAX_STORED, study)
     require(len(compressed) == row['archive_bytes'] and sha(compressed) == row['archive_sha256'],
             'archive identity differs')
     # Bound expansion before parsing original raw headers or member metadata.
@@ -474,6 +474,7 @@ def main():
     check_interface_naturals_first()
     check_closed_interface_naturals_first()
     check_operation_identity_first()
+    check_dormant_contracts_first()
 
 
 def check_signature_tree(packet, files):
@@ -741,6 +742,123 @@ def check_operation_identity_first():
     print('Operation identity first history: 8 unchanged files / 4,992 bytes; '
           '23 native decisions / zero independent requests; '
           'no generic admission or source-preservation proof. No command executed.')
+
+
+def check_dormant_contracts_first():
+    """Read both complete pre-repair packets without executing their commands."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/dormant-contracts-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal contract study')
+    manifest_bytes = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(manifest_bytes) ==
+            '43bc5db07379ac2d87fe2d9c5d95a58ae98eedd42c5ac0f1d3ed1f684ca8bd6c',
+            'dormant contract retention manifest differs')
+    manifest = load_json(manifest_bytes)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.dormant-contracts-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown dormant contract retention format')
+    rows = manifest['archives']
+    require(type(rows) is list and
+            [(r['id'], r['file_count'], r['expanded_bytes']) for r in rows] ==
+            [('first-contracts', 34, 196087), ('followup-contracts', 38, 36583)],
+            'complete dormant contract packet counts differ')
+    require(sum(r['archive_bytes'] for r in rows) <= MAX_STORED
+            and sum(r['expanded_bytes'] for r in rows) <= MAX_CONTENT
+            and sum(r['file_count'] for r in rows) <= MAX_MEMBERS,
+            'aggregate dormant contract retention exceeds fixed reader bounds')
+    check_signature_tree(study, [r['archive'] for r in rows] + ['packets.json', 'README.md'])
+    packets = [read_archive(row, study) for row in rows]
+    first, followup = packets
+    for index, (row, files) in enumerate(zip(rows, packets)):
+        plan = load_json(files['first-plan.json'])
+        observed = load_json(files['first-observations.json'])
+        follow = index == 1
+        require(plan['execution'] == 'not run' and 'not blind benchmark' in plan['kind']
+                and observed['build_attestation'] is False
+                and observed['binary_stable'] is True and observed['kernel_stable'] is True,
+                'dormant contract prediction or provenance differs')
+        head = 'c3b463072dad16b4f082dcc49cf34263b2543dfa'
+        cli = 'c0bdb167737522fc13f8be5f392fbe40d332d7d152a1adc24bf21a25ed0f02b6'
+        cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+        kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+        for suffix in ('_before', '_after') if follow else ('',):
+            require(observed['observed_head' + suffix] == head
+                    and observed['cli_sha256' + suffix] == cli
+                    and observed['kernel_sha256' + suffix] == KERNEL_SHA,
+                    'observed source and prior binary identities differ')
+        cases = plan['cases']
+        inputs = {name: sha(data) for name, data in files.items()
+                  if name.endswith(('/main.qli', '/Qargo.toml'))}
+        if follow:
+            inputs['first-plan.json'] = sha(files['first-plan.json'])
+        require(observed['inputs_before'] == observed['inputs_after'] == inputs,
+                'dormant contract complete input window differs')
+        observations = observed['observations']
+        require(len(observations) == len(cases)
+                and {o['case'] for o in observations} == set(cases),
+                'dormant contract original observations differ')
+        for case, prediction in cases.items():
+            require(prediction['authored_qubits'] == 0
+                    and prediction['source_sha256'] == sha(files[case + '/main.qli'])
+                    and tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                    {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                    'dormant contract original source identity differs')
+        failures = {} if follow else {
+            'direct_bad_control': '8:55: contract: exact equation U E_in = E_out u does not hold',
+            'deferred_left_bad_right': '8:90: parse: expected `)`, found identifier'}
+        for observation in observations:
+            case = observation['case']
+            require(observation['argv'] == [cli_path, 'check', row['original_directory'] + '/' + case]
+                    and type(observation['exit_code']) is int
+                    and observation['exit_code'] == int(case in failures)
+                    and type(observation['seconds']) in (int, float)
+                    and math.isfinite(observation['seconds']) and observation['seconds'] >= 0,
+                    'dormant contract recorded command or outcome differs')
+            if follow:
+                require(observation['observed_head'] == head
+                        and observation['cli_sha256'] == cli
+                        and observation['kernel_sha256'] == KERNEL_SHA
+                        and observation['environment_override'] == {'QLEISLI_KERNEL': kernel_path}
+                        and observation['build_attestation'] is False
+                        and observation['cli_stable_during_case'] is True
+                        and observation['kernel_stable_during_case'] is True,
+                        'follow-up per-command provenance differs')
+            require(observation['stdout'] == case + '.first.stdout.txt'
+                    and observation['stderr'] == case + '.first.stderr.txt',
+                    'dormant contract full stream association differs')
+            stdout, stderr = (files[observation[key]].decode() for key in ('stdout', 'stderr'))
+            if case in failures:
+                require(stdout == '' and stderr == row['original_directory'] + '/' + case
+                        + '/main.qli:' + failures[case] + '\n',
+                        'original parser and contract diagnostics differ')
+            else:
+                direct = case == 'direct_closed_phase_good'
+                require(stderr == '' and stdout.splitlines() == [
+                    'checked source: ' + row['original_directory'] + '/' + case,
+                    'native checks: IR structure, ownership, interface, classical scope and '
+                    f'decoded execution view; {3 if direct else 2} concrete local roots, 9 bundled roots',
+                    'checker: ' + kernel_path, 'checker identity: unpinned',
+                    f'native decisions: {24 if direct else 22}; independent requests checked: 1',
+                    'entry: absent; entry request checked: not applicable',
+                    'source preservation: not proved'], 'recorded native checking scope differs')
+    prior = {name: sha(data) for name, data in first.items()}
+    observed_followup = load_json(followup['first-observations.json'])
+    require(observed_followup['inputs_stable'] is True
+            and observed_followup['prior_first_evidence_unchanged'] is True
+            and observed_followup['prior_first_hashes_before'] ==
+            observed_followup['prior_first_hashes_after'] == prior,
+            'follow-up rewrote the complete initial evidence or Rust snapshot map')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ('informed studies, not blind benchmarks', 'partial closed-Op study',
+                       'Expression obligations remain outside this study',
+                       'prior build, not a clean commit-to-binary build attestation',
+                       'It never executes recorded commands.',
+                       'No source/native/runtime preservation proof', 'no issue completion'):
+        require(disclosure in note, 'missing dormant contract disclosure: ' + disclosure)
+    print('Dormant contract first history: 72 unchanged files / 232,670 bytes; '
+          'initial 5 accepts / 1 contract refusal / 1 parser refusal, then 9 accepts. '
+          'Partial closed-Op study only. No command executed.')
 
 
 if __name__ == '__main__':
