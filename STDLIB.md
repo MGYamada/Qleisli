@@ -1,5 +1,9 @@
 # Standard-library contribution conventions
 
+The standard library is code for people to read. Prioritize clarity, concision
+and simplicity in its source, comments and examples. Express each operation
+directly with the clearest available language forms.
+
 Status: **initial contribution discipline adopted on 2026-09-30; conventions
 will be refined through corpus examples**. The user selects a mathlib-style
 open-source library effort from v0.5.0: shared mathematical conventions,
