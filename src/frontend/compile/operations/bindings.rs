@@ -49,8 +49,21 @@ impl Compiler<'_> {
                 "static argument does not establish the required phase-fixed meaning",
             ));
         }
+        self.validate_operation_access(operation, required.access, module, span)
+    }
+
+    /// A closed fragment uses the same actual materialization gates as a whole
+    /// actual. Available capabilities alone do not request any of these paths.
+    pub(in crate::frontend::compile) fn validate_operation_access(
+        &mut self,
+        operation: &Operation,
+        requested: [bool; 3],
+        module: &str,
+        span: Span,
+    ) -> Result<(), CompileError> {
+        self.charge(module, span, 3)?;
         for access in [Access::Apply, Access::Adjoint, Access::Controlled] {
-            if required.access[access_index(access)] {
+            if requested[access_index(access)] {
                 if operation.needs_raw() {
                     operation.raw(module, span, access, self)?;
                 } else {

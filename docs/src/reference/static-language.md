@@ -491,6 +491,16 @@ body reaches ordinary lowering and native checking without entering the
 declaration-only ordinary-root cache. A Meaning comparison does not itself
 request every capability in the source's available-access summary.
 
+Requested paths also reach each maximal closed fragment of a partially
+deferred description. Then/tensor preserve the requested path on both operands;
+inverse exchanges forward/reverse requests and retains its required inverse
+at construction; control maps a requested path to the child's controlled path.
+For a requested conjugate path, its outer operand needs forward and reverse
+paths and its inner operand needs the requested path. Repetition propagates requests even at
+zero count. The same concrete access gates and their existing circuit/step
+limits apply. Checking these fragments does not establish the whole deferred
+description's contract or replace aggregate checks when all actuals close.
+
 Unbound original Op formals remain conditional, including `checked_op(U,M)`;
 that deferral does not establish the requested Meaning. Runtime-expression
 obligations involving actual owners, control sectors and clean workspace still

@@ -87,6 +87,7 @@ impl<'a> Compiler<'a> {
         module: &str,
         original: &StaticOp,
         environment: &StaticEnvironment,
+        requested: [bool; 3],
         depth: usize,
     ) -> Result<Option<Operation>, CompileError> {
         self.tick(module, original.span)?;
@@ -121,23 +122,29 @@ impl<'a> Compiler<'a> {
             StaticOpKind::Inverse(child)
             | StaticOpKind::Controlled(child)
             | StaticOpKind::Repeat(_, child) => {
-                let Some(child) = self.closed_operation(module, child, environment, depth + 1)?
+                let child_requests = match &original.kind {
+                    // Forming adjoint itself requires the operand's J path.
+                    StaticOpKind::Inverse(_) => [requested[1], true, requested[2]],
+                    // Each requested path of the constructed controlled object
+                    // uses the operand's C path; formation alone requests none.
+                    StaticOpKind::Controlled(_) => {
+                        [false, false, requested[0] || requested[1] || requested[2]]
+                    }
+                    // Even zero copies first materialize the original child.
+                    _ => requested,
+                };
+                let Some(child) =
+                    self.closed_operation(module, child, environment, child_requests, depth + 1)?
                 else {
                     return Ok(None);
                 };
-                // Construction itself requests the child's inverse/control,
-                // even when an enclosing repeat later has count zero.
-                let requested = match original.kind {
-                    StaticOpKind::Inverse(_) => Some(Access::Adjoint),
-                    StaticOpKind::Controlled(_) => Some(Access::Controlled),
-                    _ => None,
-                };
-                if let Some(access) = requested {
-                    if child.needs_raw() {
-                        child.raw(module, original.span, access, self)?;
-                    } else {
-                        child.steps(module, original.span, access, self)?;
-                    }
+                if matches!(original.kind, StaticOpKind::Inverse(_)) {
+                    self.validate_operation_access(
+                        &child,
+                        [false, true, false],
+                        module,
+                        original.span,
+                    )?;
                 }
                 self.construct(module, original.span, &original.kind, child, None)
                     .map(Some)
@@ -145,15 +152,40 @@ impl<'a> Compiler<'a> {
             StaticOpKind::Then(left, right)
             | StaticOpKind::Tensor(left, right)
             | StaticOpKind::Conjugate(left, right) => {
-                let left = self.closed_operation(module, left, environment, depth + 1)?;
+                let left_requests = if matches!(original.kind, StaticOpKind::Conjugate(..)) {
+                    let needed = requested[0] || requested[1] || requested[2];
+                    [needed, needed, false]
+                } else {
+                    requested
+                };
+                let closed_left =
+                    self.closed_operation(module, left, environment, left_requests, depth + 1)?;
                 // Do not short-circuit: a deferred left operand cannot hide a
                 // closed request in the right operand.
-                let right = self.closed_operation(module, right, environment, depth + 1)?;
-                match (left, right) {
+                let closed_right =
+                    self.closed_operation(module, right, environment, requested, depth + 1)?;
+                match (closed_left, closed_right) {
                     (Some(left), Some(right)) => self
                         .construct(module, original.span, &original.kind, left, Some(right))
                         .map(Some),
-                    _ => Ok(None),
+                    (closed_left, closed_right) => {
+                        // Only maximal closed fragments need separate access
+                        // checks. Complete composites retain their whole gate.
+                        if let Some(operation) = closed_left {
+                            self.validate_operation_access(
+                                &operation,
+                                left_requests,
+                                module,
+                                left.span,
+                            )?;
+                        }
+                        if let Some(operation) = closed_right {
+                            self.validate_operation_access(
+                                &operation, requested, module, right.span,
+                            )?;
+                        }
+                        Ok(None)
+                    }
                 }
             }
             StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
@@ -241,7 +273,9 @@ impl<'a> Compiler<'a> {
             let environment = Arc::clone(&obligation.plan.environment);
             self.checking = Some(owner);
             let original = self.original_operation(owner, &module, &operation)?;
-            if let Some(actual) = self.closed_operation(&module, original, &environment, 1)? {
+            if let Some(actual) =
+                self.closed_operation(&module, original, &environment, [false; 3], 1)?
+            {
                 let meaning = &self.meanings[&required];
                 let mut work = self.work;
                 let charged = (|| {
@@ -293,8 +327,18 @@ impl<'a> Compiler<'a> {
                 let actual = &self.source.static_calls[&site].arguments[ordinal];
                 let value = Arc::clone(&actual.value);
                 let original = self.original_operation(owner, &module, &value)?;
+                // Obtain the actual formal demand before deciding whether the
+                // complete argument closes. Deferral cannot erase this demand.
+                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+                self.charge(
+                    &module,
+                    original.span,
+                    (formal.name.len() + 2).saturating_mul(required.len() + 1),
+                )?;
+                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+                let requested = required[formal].access;
                 if let Some(operation) =
-                    self.closed_operation(&module, original, &environment, 1)?
+                    self.closed_operation(&module, original, &environment, requested, 1)?
                 {
                     let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
                     self.charge(

@@ -47,6 +47,119 @@ unitary fn reverse[const U:Op<Unit>,const V:Op<Unit,ScalarMeaning>](q:Q<Unit>)->
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn dormant_partial_composites_check_requested_access_on_each_closed_fragment() {
+    for (operation, basis, request) in [
+        ("then_op(U,power(scalar,1025))", "Unit", "Applicable"),
+        ("then_op(power(scalar,1025),U)", "Unit", "Applicable"),
+        (
+            "tensor_op(U,power(scalar,1025))",
+            "(Unit,Unit)",
+            "Applicable",
+        ),
+        (
+            "tensor_op(power(scalar,1025),U)",
+            "(Unit,Unit)",
+            "Applicable",
+        ),
+        (
+            "power(then_op(U,power(scalar,1025)),0)",
+            "Unit",
+            "Applicable",
+        ),
+        (
+            "adjoint(then_op(U,power(scalar,1025)))",
+            "Unit",
+            "Applicable",
+        ),
+        ("conjugate_op(U,power(scalar,1025))", "Unit", "Applicable"),
+        ("conjugate_op(power(scalar,1025),U)", "Unit", "Applicable"),
+        (
+            "controlled(then_op(U,power(scalar,1025)))",
+            "(Bit,Unit)",
+            "Applicable",
+        ),
+        ("then_op(U,power(scalar,1025))", "Unit", "Adjointable"),
+        ("then_op(U,power(scalar,1025))", "Unit", "Controllable"),
+        ("adjoint(then_op(U,power(scalar,1025)))", "Unit", ""),
+    ] {
+        let required = if request.is_empty() {
+            String::new()
+        } else {
+            format!("requires {request}(V)")
+        };
+        let source = format!(
+            "{DORMANT_UNIT}
+            unitary fn demand[const V:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+            {required}{{q}}
+            unitary fn unused[const U:Op<Unit>](q:Q<{basis}>)->Q<{basis}>
+            requires Applicable(U),Adjointable(U),Controllable(U){{demand[{operation}](q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Limit, "{operation}: {failure}");
+        assert!(
+            failure.message.contains("1024 steps"),
+            "{operation}: {failure}"
+        );
+        assert!(
+            source[failure.span.start..failure.span.end].contains("power(scalar,1025)"),
+            "{operation}: {failure}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_partial_access_preserves_conditional_and_unrequested_descriptions() {
+    for (operation, basis, premises, request) in [
+        (
+            "then_op(U,power(scalar,1024))",
+            "Unit",
+            "requires Applicable(U)",
+            "requires Applicable(V)",
+        ),
+        (
+            "then_op(power(scalar,1024),U)",
+            "Unit",
+            "requires Applicable(U)",
+            "requires Applicable(V)",
+        ),
+        ("then_op(U,power(scalar,4096))", "Unit", "", ""),
+        (
+            "controlled(then_op(U,power(scalar,4096)))",
+            "(Bit,Unit)",
+            "",
+            "",
+        ),
+    ] {
+        let source = format!(
+            "{DORMANT_UNIT}
+            unitary fn demand[const V:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+            {request}{{q}}
+            unitary fn unused[const U:Op<Unit>](q:Q<{basis}>)->Q<{basis}>
+            {premises}{{demand[{operation}](q)}}"
+        );
+        check_project(&SourceRoot::new(&source).0)
+            .unwrap_or_else(|failure| panic!("{operation}: {failure}"));
+    }
+    let source = format!(
+        "{DORMANT_UNIT}
+        unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+        requires Applicable(U){{hold[then_op(U,power(scalar,1024))](q)}}
+        unitary fn concrete(q:Q<Unit>)->Q<Unit>{{unused[identity](q)}}"
+    );
+    let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+    assert_eq!(failure.code, ErrorCode::Limit);
+    assert!(failure.message.contains("1024 steps"), "{failure}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn dormant_checked_meaning_and_zero_count_children_reach_exact_contract_gates() {
     for operation in [
         "checked_op(identity,ScalarMeaning)",
