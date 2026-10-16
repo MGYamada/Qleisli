@@ -476,6 +476,8 @@ def main():
     check_operation_identity_first()
     check_dormant_contracts_first()
     check_dormant_partial_access_first()
+    check_dormant_controls_first()
+    check_dormant_control_owner_order_first()
 
 
 def check_signature_tree(packet, files):
@@ -978,6 +980,227 @@ def check_dormant_partial_access_first():
     print('Dormant partial-access first history: 48 unchanged files / 91,561 bytes; '
           '8 invocation/configuration failures, then 2 accepts / 2 capacity refusals. '
           'Zero authored qubits. No command executed.')
+
+
+def check_dormant_controls_first():
+    """Preserve the real pre-repair sector gap; never replay recorded commands."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/dormant-controls-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal control study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == 'd20674e4ea35c5e67923a63fcbe5843f940a7276d0fe7c40a9fa06ce81b4c291',
+            'dormant control manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.dormant-controls-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown dormant control retention format')
+    rows = manifest['archives']
+    require(type(rows) is list and len(rows) == 1
+            and rows[0]['id'] == 'first-controls'
+            and rows[0]['file_count'] == 40 and rows[0]['expanded_bytes'] == 635383,
+            'complete control packet count differs')
+    check_signature_tree(study, ['first-controls.tar.gz', 'packets.json', 'README.md'])
+    files = read_archive(rows[0], study)
+    plan, observed = (load_json(files[name]) for name in ('first-plan.json', 'first-observations.json'))
+    head = '739c24860698234c5489941f8c55447535d2b793'
+    cli = 'a94f242cb191f31fd6b7fb35ec71c8e607d5f68d5fec89107d1edc8855389f45'
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    require(plan['execution'] == 'not run' and plan['build_attestation'] is False
+            and observed['build_attestation'] is False and 'no external model or blind benchmark' in plan['kind']
+            and observed['all_planned_cases_observed'] is True,
+            'control predictions or observed scope differ')
+    for suffix in ('_before', '_after'):
+        require(observed['observed_head' + suffix] == head
+                and observed['cli_sha256' + suffix] == cli
+                and observed['kernel_sha256' + suffix] == KERNEL_SHA,
+                'control observed binary or HEAD identity differs')
+    for flag in ('inputs_stable', 'scoped_rust_stable', 'scoped_rust_match_first_snapshots',
+                 'prior_evidence_unchanged'):
+        require(observed[flag] is True, 'control capture input window differs')
+    scope = plan['scoped_rust_first_inputs']
+    require(len(scope) == 17 and scope == observed['scoped_rust_before'] == observed['scoped_rust_after'],
+            'control original Rust scope differs')
+    for name, digest in scope.items():
+        require(sha(files['first-rust/' + local_name(name)]) == digest,
+                'control first Rust snapshot differs')
+    inputs = {name: sha(data) for name, data in files.items()
+              if name == 'first-plan.json' or name.startswith('first-rust/')
+              or name.endswith(('/main.qli', '/Qargo.toml'))}
+    require(inputs == observed['inputs_before'] == observed['inputs_after'],
+            'complete original control input window differs')
+    cases = {'zero_scalar_ctrl_then_unbound': (0, 19, 1),
+             'zero_closed_hold_ctrl_then_unbound': (0, 21, 1),
+             'zero_mixed_owner_forest': (0, 20, 2),
+             'one_bit_unused_flip_ctrl': (1, 19, 1),
+             'one_bit_direct_flip_ctrl': (1, None, None)}
+    require(list(plan['cases']) == list(cases)
+            and [o['case'] for o in observed['observations']] == list(cases),
+            'control case order differs')
+    for observation in observed['observations']:
+        case = observation['case']
+        qubits, decisions, roots = cases[case]
+        prediction = plan['cases'][case]
+        expected_identity = dict(head=head, cli=cli, kernel=KERNEL_SHA, scoped_rust=scope,
+                                 source=sha(files[case + '/main.qli']),
+                                 manifest=sha(files[case + '/Qargo.toml']))
+        require(observation['identity_before'] == observation['identity_after'] == expected_identity
+                and observation['argv'] == [cli_path, 'check', rows[0]['original_directory'] + '/' + case]
+                and observation['environment_override'] == {'QLEISLI_KERNEL': kernel_path}
+                and observation['build_attestation'] is False,
+                'control per-command original association differs')
+        for flag in ('head_stable_during_case', 'cli_stable_during_case', 'kernel_stable_during_case',
+                     'source_stable_during_case', 'scoped_rust_stable_during_case'):
+            require(observation[flag] is True, 'control per-command stability differs')
+        require(type(prediction['qubits']) is int and prediction['qubits'] == qubits
+                and prediction['source_sha256'] == expected_identity['source']
+                and prediction['manifest_sha256'] == expected_identity['manifest']
+                and tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                {'schema-version': 2, 'qrate': {'edition': '2026'}}, 'control source identity differs')
+        refused = decisions is None
+        require(type(observation['exit_code']) is int and observation['exit_code'] == int(refused),
+                'original control outcome differs')
+        for stream in ('stdout', 'stderr'):
+            name = case + '.first.' + stream + '.txt'
+            require(observation[stream] == name and observation[stream + '_sha256'] == sha(files[name]),
+                    'control complete stream association differs')
+        stdout, stderr = (files[observation[k]].decode() for k in ('stdout', 'stderr'))
+        if refused:
+            require(stdout == '' and ':3:37: contract:' in stderr
+                    and 'ctrl requires computational-basis sector preservation' in stderr
+                    and 'phase kickback is permitted' in stderr, 'original control refusal differs')
+        else:
+            require(stderr == '' and stdout.splitlines() == [
+                'checked source: ' + rows[0]['original_directory'] + '/' + case,
+                'native checks: IR structure, ownership, interface, classical scope and '
+                f'decoded execution view; {roots} concrete local roots, 9 bundled roots',
+                'checker: ' + kernel_path, 'checker identity: unpinned',
+                f'native decisions: {decisions}; independent requests checked: 0',
+                'entry: absent; entry request checked: not applicable',
+                'source preservation: not proved'], 'original control native scope differs')
+    prior_study = ROOT / 'tests/fixtures/authoring_sessions/dormant-contracts-v030'
+    prior_manifest = read_file(prior_study / 'packets.json', 32 * 1024, prior_study)
+    require(sha(prior_manifest) == '43bc5db07379ac2d87fe2d9c5d95a58ae98eedd42c5ac0f1d3ed1f684ca8bd6c',
+            'prior Meaning manifest differs')
+    prior_rows = load_json(prior_manifest)['archives']
+    prior = {PurePosixPath(row['original_directory']).name:
+             {name: sha(data) for name, data in read_archive(row, prior_study).items()}
+             for row in prior_rows}
+    require(prior == plan['prior_evidence_hashes_before'] == observed['prior_evidence_hashes_before']
+            == observed['prior_evidence_hashes_after'], 'control study rewrote prior Meaning evidence')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ('informed study is not a blind benchmark',
+                       'not a clean commit-to-binary build attestation',
+                       'reader never executes recorded commands or source',
+                       'not complete', '40 original files / 635,383'):
+        require(disclosure in note, 'missing control study disclosure: ' + disclosure)
+    print('Dormant control first history: 40 unchanged files / 635,383 bytes; '
+          'four accepts (including the one-bit dormant gap), one direct sector refusal. '
+          'Zero-width controls do not prove one-bit refusal. No command executed.')
+
+
+def check_dormant_control_owner_order_first():
+    """Read complete mixed-owner history as inert data, including its observer."""
+    study = ROOT / 'tests/fixtures/authoring_sessions/dormant-control-owner-order-v030'
+    require(study.is_dir() and not study.is_symlink()
+            and study.resolve().is_relative_to(ROOT.resolve()), 'nonlocal owner-order study')
+    raw = read_file(study / 'packets.json', 32 * 1024, study)
+    require(sha(raw) == '77f435e051719e69d5bdc0f6c6d6963492b678c9437e867179c265d57901b398',
+            'owner-order manifest differs')
+    manifest = load_json(raw)
+    require(set(manifest) == {'format', 'version', 'scope', 'archives'}
+            and manifest['format'] == 'qleisli.dormant-control-owner-order-retention'
+            and type(manifest['version']) is int and manifest['version'] == 1,
+            'unknown owner-order retention format')
+    rows = manifest['archives']
+    original = '/private/tmp/qleisli-generic-plan-validation-ji3399kg/controls-mixed-owner-baseline'
+    require(type(rows) is list and len(rows) == 1
+            and rows[0]['id'] == 'first-owner-order'
+            and rows[0]['original_directory'] == original
+            and rows[0]['file_count'] == 11 and rows[0]['expanded_bytes'] == 6758,
+            'complete owner-order packet count differs')
+    check_signature_tree(study, ['first-owner-order.tar.gz', 'packets.json', 'README.md'])
+    files = read_archive(rows[0], study)
+    cases = ('empty_ctrl', 'bit_ctrl')
+    require(set(files) == {'capture.py', 'plan.json', 'observations.json'}
+            | {case + '/' + name for case in cases for name in ('main.qli', 'Qargo.toml')}
+            | {case + '.' + stream + '.txt' for case in cases for stream in ('stdout', 'stderr')},
+            'complete owner-order file association differs')
+    plan, observed = (load_json(files[name]) for name in ('plan.json', 'observations.json'))
+    head = '410a50dc0ae2a4179279e75d3c4ea9aad0422ca2'
+    cli_path = '/Users/masa/git/Qleisli/target/debug/qleisli'
+    kernel_path = '/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel'
+    executables = {cli_path: '5f08a1b8b8e3836954bfb267a94c66757055485cd1c653c881db1c6cae1ca88f',
+                   kernel_path: KERNEL_SHA}
+    require(set(plan) == {'kind', 'before_control_cli', 'predictions', 'limits',
+                         'cli_build_attestation', 'provenance', 'head_before',
+                         'executables_before', 'driver_sha256'}
+            and plan['kind'] == 'informed one-bit whole-owner study'
+            and plan['before_control_cli'] is True and plan['cli_build_attestation'] is False
+            and plan['head_before'] == head and plan['executables_before'] == executables
+            and plan['limits'] == 'one physical qubit; no maximum-size case; no run/sampling'
+            and plan['provenance'] == 'Existing separately identified CLI; observed Git HEAD is '
+            'not a binary build attestation. Concurrent checkout integration may change Git/source state.'
+            and plan['driver_sha256'] == sha(files['capture.py'])
+            == '6af3850e9f69aa492dcde9292556447715338193cc068df96fa333165652eb93',
+            'owner-order first provenance or observer differs')
+    require(plan['predictions'] == {
+                'empty_ctrl': 'accept; exact zero-width owner remains present',
+                'bit_ctrl': 'must refuse; X changes the sole physical Ctrl axis'}
+            and list(plan['predictions']) == list(cases),
+            'owner-order independent predictions differ')
+    require(set(observed) == {'observations', 'head_after', 'executables_after', 'executables_stable'}
+            and observed['head_after'] == head and observed['executables_after'] == executables
+            and observed['executables_stable'] is True
+            and type(observed['observations']) is list and len(observed['observations']) == 2
+            and [item['case'] for item in observed['observations']] == list(cases),
+            'owner-order observation identity or order differs')
+    prefix = ('use std::quantum::x;\n'
+              'unitary fn pair(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){(a,x(b))}\n'
+              'unitary fn unused[const U:Op<Unit>](a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>)\n'
+              'requires Applicable(U){')
+    for observation in observed['observations']:
+        case = observation['case']
+        require(set(observation) == {'case', 'argv', 'exit_code', 'source_sha256',
+                                    'stdout_sha256', 'stderr_sha256'}
+                and observation['argv'] == [cli_path, 'check', original + '/' + case,
+                                            '--lean-kernel=' + kernel_path]
+                and type(observation['exit_code']) is int and observation['exit_code'] == 0,
+                'owner-order original command or outcome differs')
+        access = 'ctrl a,excl b' if case == 'empty_ctrl' else 'excl a,ctrl b'
+        require(files[case + '/main.qli'].decode() == prefix + 'pair(' + access + ');(U(a),b)}\n'
+                and observation['source_sha256'] == sha(files[case + '/main.qli'])
+                and tomllib.loads(files[case + '/Qargo.toml'].decode()) ==
+                {'schema-version': 2, 'qrate': {'edition': '2026'}},
+                'owner-order original source or schema differs')
+        for stream in ('stdout', 'stderr'):
+            require(observation[stream + '_sha256'] == sha(files[case + '.' + stream + '.txt']),
+                    'owner-order complete original stream association differs')
+        require(files[case + '.stderr.txt'] == b''
+                and files[case + '.stdout.txt'].decode().splitlines() == [
+                    'checked source: ' + original + '/' + case,
+                    'native checks: IR structure, ownership, interface, classical scope and '
+                    'decoded execution view; 1 concrete local roots, 9 bundled roots',
+                    'checker: ' + kernel_path, 'checker identity: unpinned',
+                    'native decisions: 19; independent requests checked: 0',
+                    'entry: absent; entry request checked: not applicable',
+                    'source preservation: not proved'],
+                'owner-order first actual native scope differs')
+    note = ' '.join(read_file(study / 'README.md', 16 * 1024, study).decode().split())
+    for disclosure in ('informed study is not a blind benchmark',
+                       'Both first checks actually accepted',
+                       'Predictions are requirements, not observed successes',
+                       'Capture occurred during a dirty cherry-pick integration',
+                       'not a clean commit-to-binary build attestation',
+                       '11 original files / 6,758 bytes',
+                       'reader never executes recorded commands or source',
+                       'never extracts records to the filesystem',
+                       'does not complete'):
+        require(disclosure in note, 'missing owner-order disclosure: ' + disclosure)
+    print('Dormant control owner-order history: 11 unchanged files / 6,758 bytes; '
+          'two accepts, including the intended physical-axis-zero refusal. '
+          'One physical qubit, two logical owners. No command executed.')
 
 
 if __name__ == '__main__':

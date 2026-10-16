@@ -1,0 +1,260 @@
+{
+  "format": "qleisli.dormant-controls-retention",
+  "version": 1,
+  "scope": "Informed five-source first study: zero-width owner controls and a one-bit dormant sector counterexample, not source preservation or generic admission.",
+  "archives": [
+    {
+      "id": "first-controls",
+      "original_directory": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/dormant-controls-first",
+      "archive": "first-controls.tar.gz",
+      "archive_bytes": 116619,
+      "archive_sha256": "e0a88c09a7cacedd10ec52e10cacc4772a3914d2e9ab335f3675de5c6b875882",
+      "tar_bytes": 675840,
+      "tar_sha256": "f793a0d94e2794a44270971c27008e98c1e539fca135e147ca5d0a726061e1e5",
+      "file_count": 40,
+      "expanded_bytes": 635383,
+      "files": [
+        {
+          "path": "first-observations.json",
+          "bytes": 57553,
+          "sha256": "9d7291822c8a1d6cef283c460680cb43bf7dc947b319146a9eed2a9ec5c2eb90",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-plan.json",
+          "bytes": 16702,
+          "sha256": "2467231f82ee4012640c9a5e72a5a635a37a69dd873786d00787f07afa108216",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/check/body/operations.rs",
+          "bytes": 54016,
+          "sha256": "2058367da0fd98a029db500e1a21df36775da2dc27708b3f2e8162c67fffc43d",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/check/body/places.rs",
+          "bytes": 8653,
+          "sha256": "7ab3790d98d73824cacbcb63673b9860755429957d126f40bbb366ca06cde8e9",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/check/body.rs",
+          "bytes": 49193,
+          "sha256": "69e474a15fc0aa93e0e0e7672f2888d4b9c8bd6be179d2bbec06f810bd10f352",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/check/plans.rs",
+          "bytes": 66304,
+          "sha256": "2591d86baf67e5c7559aefe94c63c0ae5147da2a021101c235e117a9889afa6f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/calls.rs",
+          "bytes": 9770,
+          "sha256": "908d419088d140395e34dff009a493eff24dc2fdba5a3da11c1ec8f5dfa9b6b7",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/dormant/tests.rs",
+          "bytes": 4825,
+          "sha256": "38cdff4f775314eed190947921200c13afcea7508b803e4f978d23296ede456c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/dormant.rs",
+          "bytes": 14987,
+          "sha256": "39ce569a655894389ae06377ca4cdef37314efbe297612f255d60244b701fc96",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/interfaces.rs",
+          "bytes": 7487,
+          "sha256": "d3da64080ac7bb1f1e448f2546c1b646dc9391112680297aa981586aa90f9a81",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/lower/mod.rs",
+          "bytes": 69133,
+          "sha256": "23027013f7ba668ec4254c40b5107e01f0ae772b4eb3f14dbd185a92b481d875",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/lower/operations.rs",
+          "bytes": 11307,
+          "sha256": "0969a566821ba764da5bf9e05c7967a052c43740fbc8ec71d8d5f4bdd9564f06",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/lower/primitives.rs",
+          "bytes": 15764,
+          "sha256": "2b2ebf58fb36da0ccbb6dc6731c45b82700e13470beba14fd34b2c3c322421e5",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/mod.rs",
+          "bytes": 53045,
+          "sha256": "452ca7ad065562c2867eebc8863b2c1b3430003bd71c929fb57b0977cc0c352c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/operations/bindings.rs",
+          "bytes": 2443,
+          "sha256": "315383061c69451f97a3f41e8c5df3800381b408aadf4087578eb5a511b02afc",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/compile/operations.rs",
+          "bytes": 46506,
+          "sha256": "3958e1089eb56b7d62da1d737aaedb4ffa6e5a1e79b46a26239d162d2f34befd",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/frontend/resolve/locals.rs",
+          "bytes": 98073,
+          "sha256": "120da41322ff11f4c4bfb8ea47cbae73a3dca5533feaf5d322c854dcc7d4cbdb",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/interchange/native/contracts.rs",
+          "bytes": 13770,
+          "sha256": "b6bb22c89caa8bb4db25c9dc1de6d0c7a1752e6a62954a263964d639faf9ab1e",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-rust/src/interchange/native.rs",
+          "bytes": 31637,
+          "sha256": "bba6eb4a3e227db089acd9850fe7eb9e30ec925361609094c1a0f818a6bb6ce6",
+          "original_mode": "0644"
+        },
+        {
+          "path": "observed-git-status-before.txt",
+          "bytes": 603,
+          "sha256": "1616fa7e7004a8b8150675e378f225e58cf219b3eced2a24859f5e4264ac2e20",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_direct_flip_ctrl/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_direct_flip_ctrl/main.qli",
+          "bytes": 113,
+          "sha256": "312ffc1fc5b9b5eee7e4c4633bb51633648bc86db8aba1895543c7670735d046",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_direct_flip_ctrl.first.stderr.txt",
+          "bytes": 336,
+          "sha256": "98bec58ca162d05780c1e68fb347ff30878436f93cff84e5ff58e40aa5395955",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_direct_flip_ctrl.first.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_unused_flip_ctrl/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_unused_flip_ctrl/main.qli",
+          "bytes": 156,
+          "sha256": "7ab44aadfd9da45c665fedc5344f577647bb52adc9c7fd3a7affc4f6453c2933",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_unused_flip_ctrl.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "one_bit_unused_flip_ctrl.first.stdout.txt",
+          "bytes": 495,
+          "sha256": "823b561c0ccdcc539afdf3eeb84990c08e77ea8e92842a9057f2b99b9c162376",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_closed_hold_ctrl_then_unbound/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_closed_hold_ctrl_then_unbound/main.qli",
+          "bytes": 276,
+          "sha256": "4b9c486e04d4301fc7c027d3849904d4635375af7b8ca59b68c643748eb63911",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_closed_hold_ctrl_then_unbound.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_closed_hold_ctrl_then_unbound.first.stdout.txt",
+          "bytes": 505,
+          "sha256": "52c12d1ef21f94c4e11ffebc541f4ceb08322c4fde762b7162c79c1046219766",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_mixed_owner_forest/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_mixed_owner_forest/main.qli",
+          "bytes": 325,
+          "sha256": "333d5b1e2906701bf41d97cea1c6b493bc16a7783b8b687c04de277a8002099b",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_mixed_owner_forest.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_mixed_owner_forest.first.stdout.txt",
+          "bytes": 494,
+          "sha256": "01494bf94c570022a122516d0ccd52f3df8a0f2e249d667cba5f308b137bdda0",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_scalar_ctrl_then_unbound/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_scalar_ctrl_then_unbound/main.qli",
+          "bytes": 187,
+          "sha256": "c4a65418d955257aa6f033d13a209dcc23e1b05b8edfcd6c39aeb9ca5835796a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_scalar_ctrl_then_unbound.first.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "zero_scalar_ctrl_then_unbound.first.stdout.txt",
+          "bytes": 500,
+          "sha256": "fc6b648eb5294767642214c8c8bbee779cb594bf03db482f90ae94ea3a4d42bc",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

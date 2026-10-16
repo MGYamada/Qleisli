@@ -11,6 +11,148 @@ use std::collections::BTreeMap;
 const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h;
     use std::quantum::x; use std::quantum::cnot; use std::observe::measure_z;";
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_closed_calls_do_not_hide_a_nonsector_action_on_ctrl() {
+    for call in ["flip(ctrl q)", "hold[flip](ctrl q)"] {
+        let source = format!(
+            "use std::quantum::x;
+            unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
+            unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            requires Applicable(U){{U(q)}}
+            unitary fn unused[const V:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            requires Applicable(V){{{call};V(q)}}"
+        );
+        let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{call}: {failure}");
+        assert!(failure.message.contains("sector preservation"), "{failure}");
+        assert!(
+            source[failure.span.start..failure.span.end].starts_with(call),
+            "{failure}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
+    let base = "use std::quantum::{phase_eighth};
+        unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+        requires Applicable(U){U(q)}
+        unitary fn pair(a:Q<Unit>,b:Q<(Unit,Unit)>)->(Q<Unit>,Q<(Unit,Unit)>){
+            let a=scalar(a);(a,b)
+        }";
+    let kernel = Kernel::selected().unwrap();
+    let check = |source: &str| {
+        qleisli::frontend::compile::check_project_report_with_kernel(
+            &SourceRoot::new(source).0,
+            qleisli::frontend::project::SourcePolicy::default(),
+            &kernel,
+        )
+        .unwrap()
+    };
+    let before = check(base).native_decisions().requests_checked();
+    for body in [
+        "unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+         requires Applicable(U){scalar(ctrl q);U(q)}",
+        "unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
+         requires Applicable(U){hold[scalar](ctrl q);U(q)}",
+        "unitary fn unused[const U:Op<Unit>](a:Q<Unit>,b:Q<(Unit,Unit)>)->(Q<Unit>,Q<(Unit,Unit)>)
+         requires Applicable(U){pair(ctrl a,excl b);(U(a),b)}",
+    ] {
+        let report = check(&format!("{base}{body}"));
+        assert!(report.native_decisions().requests_checked() > before);
+        assert_eq!(report.entry_request_checked(), None);
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_ctrl_uses_physical_axis_order_after_a_zero_width_owner() {
+    let base = "use std::quantum::x;
+        unitary fn pair(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){(a,x(b))}";
+    let kernel = Kernel::selected().unwrap();
+    let check = |source: &str| {
+        qleisli::frontend::compile::check_project_report_with_kernel(
+            &SourceRoot::new(source).0,
+            qleisli::frontend::project::SourcePolicy::default(),
+            &kernel,
+        )
+    };
+    let before = check(base).unwrap().native_decisions().requests_checked();
+    let source = |call: &str| {
+        format!(
+            "{base}unitary fn unused[const U:Op<Unit>](a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>)
+             requires Applicable(U){{{call};(U(a),b)}}"
+        )
+    };
+    let allowed = check(&source("pair(ctrl a,excl b)")).unwrap();
+    assert!(allowed.native_decisions().requests_checked() > before);
+    assert_eq!(allowed.entry_request_checked(), None);
+
+    // The second logical owner occupies physical axis zero. X on that Ctrl
+    // bit must fail even though the preceding owner contributes no axes.
+    let call = "pair(excl a,ctrl b)";
+    let bad = source(call);
+    let failure = check(&bad).unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure:?}");
+    assert!(
+        failure.message.contains("sector preservation"),
+        "{failure:?}"
+    );
+    let span = failure.primary.unwrap().span;
+    assert_eq!(&bad[span.start..span.end], call);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_sector_checks_the_actual_zero_power_and_diagonal_body() {
+    for operation in ["diagonal", "power(flip,0)"] {
+        let source = format!(
+            "use std::quantum::{{x,z}};
+            unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
+            unitary fn diagonal(q:Q<Bit>)->Q<Bit>{{z(q)}}
+            unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            requires Applicable(U){{U(q)}}
+            unitary fn unused[const V:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            requires Applicable(V){{hold[{operation}](ctrl q);V(q)}}"
+        );
+        check_project(&SourceRoot::new(&source).0).unwrap();
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn dormant_unbound_ctrl_actual_stays_conditional_until_its_real_binding() {
+    let base = "use std::quantum::x;
+        unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+        unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+        requires Applicable(U){U(q)}
+        unitary fn conditional[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+        requires Applicable(U){hold[U](ctrl q);q}";
+    check_project(&SourceRoot::new(base).0).unwrap();
+    let concrete = format!("{base}unitary fn actual(q:Q<Bit>)->Q<Bit>{{conditional[flip](q)}}");
+    let failure = check_project(&SourceRoot::new(&concrete).0).unwrap_err();
+    assert_eq!(failure.code, ErrorCode::Contract);
+    assert!(failure.message.contains("sector preservation"));
+}
+
 fn selected(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
 }

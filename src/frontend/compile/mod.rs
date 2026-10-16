@@ -1036,6 +1036,7 @@ fn process_loaded_project_details(
         }
     }
     compiler.check_dormant_operations()?;
+    compiler.check_dormant_controls()?;
     // FunctionEquality names closed pairs even inside an unused generic body
     // or a zero-count branch. Source checking is not their semantic discharge.
     for ordinal in 0..compiler.source.obligations.len() {

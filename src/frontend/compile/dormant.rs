@@ -5,9 +5,10 @@
 
 use super::*;
 use crate::frontend::check::plans::{EvidenceSubject, ResolvedStatic, StaticEnvironment};
-use crate::frontend::resolve::locals::OriginalNode;
+use crate::frontend::resolve::locals::{OriginalNode, UseSiteId};
 use operations::{Bindings, Operation, RequiredOperation};
 
+mod controls;
 #[cfg(test)]
 mod tests;
 
@@ -311,86 +312,104 @@ impl<'a> Compiler<'a> {
             {
                 continue;
             }
-            let (owner, target, count) = (plan.owner, plan.target, plan.arguments.len());
+            let (owner, target) = (plan.owner, plan.target);
             let at = self.declarations[&owner].span;
             let module = self.dormant_module(owner, at)?;
-            self.charge(&module, at, 2 + count * 2)?;
-            let environment = Arc::clone(&self.source.static_calls[&site].environment);
-            self.checking = Some(owner);
-            let required = self.required_bindings(&target)?;
-            let mut bindings = Bindings::new();
-            let mut identity = Vec::with_capacity(count);
-            let mut complete = true;
-            for ordinal in 0..count {
-                let actual = &self.source.static_calls[&site].arguments[ordinal];
-                self.charge(&module, actual.value.span, 1)?;
-                let actual = &self.source.static_calls[&site].arguments[ordinal];
-                let value = Arc::clone(&actual.value);
-                let original = self.original_operation(owner, &module, &value)?;
-                // Obtain the actual formal demand before deciding whether the
-                // complete argument closes. Deferral cannot erase this demand.
-                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                self.charge(
-                    &module,
-                    original.span,
-                    (formal.name.len() + 2).saturating_mul(required.len() + 1),
-                )?;
-                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                let requested = required[formal].access;
-                if let Some(operation) =
-                    self.closed_operation(&module, original, &environment, requested, 1)?
-                {
-                    let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                    self.charge(
-                        &module,
-                        original.span,
-                        (formal.name.len() + 2).saturating_mul(required.len() + 1),
-                    )?;
-                    let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                    self.validate_required_operation(
-                        &required[formal],
-                        &operation,
-                        &module,
-                        original.span,
-                    )?;
-                    let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                    self.charge(
-                        &module,
-                        original.span,
-                        (formal.name.len() + 2).saturating_mul(bindings.len() + 1),
-                    )?;
-                    let mut work = self.work;
-                    let charged = (|| {
-                        let mut charge =
-                            |cells| self.charge_at(&mut work, &module, original.span, cells);
-                        charge_port_copy(&operation.basis, 2, &mut charge)?;
-                        charge_port_copy(&operation.codomain, 2, &mut charge)?;
-                        charge(
-                            operation
-                                .meaning
-                                .as_ref()
-                                .map_or(0, |m| m.entries().len())
-                                .saturating_mul(2)
-                                + 2,
-                        )
-                    })();
-                    self.work = work;
-                    charged?;
-                    let formal = self.source.static_calls[&site].arguments[ordinal]
-                        .formal
-                        .clone();
-                    identity.push(operation.clone());
-                    bindings.insert(formal, operation);
-                } else {
-                    complete = false;
-                }
-            }
-            if complete {
-                self.record_operation_instance(target, identity, &module, at)?;
+            if let Some(bindings) = self.closed_call_bindings(site, &module, at)? {
                 self.checking = Some(target);
                 lower::lower_bound_function(self, &target, bindings)?;
             }
         }
         Ok(())
+    }
+
+    /// Every closed actual reaches the same gates, including siblings of an
+    /// unbound formal. None retains an unfinished call, never a successful one.
+    fn closed_call_bindings(
+        &mut self,
+        site: UseSiteId,
+        module: &str,
+        at: Span,
+    ) -> Result<Option<Bindings>, CompileError> {
+        self.tick(module, at)?;
+        let plan = &self.source.static_calls[&site];
+        let (owner, target, count) = (plan.owner, plan.target, plan.arguments.len());
+        self.charge(module, at, 2 + count * 2)?;
+        let environment = Arc::clone(&self.source.static_calls[&site].environment);
+        self.checking = Some(owner);
+        let required = self.required_bindings(&target)?;
+        let mut bindings = Bindings::new();
+        let mut identity = Vec::with_capacity(count);
+        let mut complete = true;
+        for ordinal in 0..count {
+            let actual = &self.source.static_calls[&site].arguments[ordinal];
+            self.charge(module, actual.value.span, 1)?;
+            let actual = &self.source.static_calls[&site].arguments[ordinal];
+            let value = Arc::clone(&actual.value);
+            let original = self.original_operation(owner, module, &value)?;
+            // Obtain the actual formal demand before deciding whether the
+            // complete argument closes. Deferral cannot erase this demand.
+            let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+            self.charge(
+                module,
+                original.span,
+                (formal.name.len() + 2).saturating_mul(required.len() + 1),
+            )?;
+            let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+            let requested = required[formal].access;
+            if let Some(operation) =
+                self.closed_operation(module, original, &environment, requested, 1)?
+            {
+                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+                self.charge(
+                    module,
+                    original.span,
+                    (formal.name.len() + 2).saturating_mul(required.len() + 1),
+                )?;
+                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+                self.validate_required_operation(
+                    &required[formal],
+                    &operation,
+                    module,
+                    original.span,
+                )?;
+                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
+                self.charge(
+                    module,
+                    original.span,
+                    (formal.name.len() + 2).saturating_mul(bindings.len() + 1),
+                )?;
+                let mut work = self.work;
+                let charged = (|| {
+                    let mut charge =
+                        |cells| self.charge_at(&mut work, module, original.span, cells);
+                    charge_port_copy(&operation.basis, 2, &mut charge)?;
+                    charge_port_copy(&operation.codomain, 2, &mut charge)?;
+                    charge(
+                        operation
+                            .meaning
+                            .as_ref()
+                            .map_or(0, |m| m.entries().len())
+                            .saturating_mul(2)
+                            + 2,
+                    )
+                })();
+                self.work = work;
+                charged?;
+                let formal = self.source.static_calls[&site].arguments[ordinal]
+                    .formal
+                    .clone();
+                identity.push(operation.clone());
+                bindings.insert(formal, operation);
+            } else {
+                complete = false;
+            }
+        }
+        if complete {
+            self.record_operation_instance(target, identity, module, at)?;
+            Ok(Some(bindings))
+        } else {
+            Ok(None)
+        }
     }
 }

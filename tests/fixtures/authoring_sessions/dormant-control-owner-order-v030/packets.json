@@ -1,0 +1,86 @@
+{
+  "format": "qleisli.dormant-control-owner-order-retention",
+  "version": 1,
+  "scope": "Informed one-physical-qubit first study of zero-width owner order: two actual accepts, including an intended Ctrl refusal. Predictions and first observations are distinct.",
+  "archives": [
+    {
+      "id": "first-owner-order",
+      "original_directory": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/controls-mixed-owner-baseline",
+      "archive": "first-owner-order.tar.gz",
+      "archive_bytes": 2531,
+      "archive_sha256": "23a6c5d49b7cb77ec431276850b250db3ee1261b3a32812c782f00f286e391ad",
+      "tar_bytes": 20480,
+      "tar_sha256": "daeb18effb968f5bff01d4a32917d545cb2e7669c61071e34755bfba30bfb496",
+      "file_count": 11,
+      "expanded_bytes": 6758,
+      "files": [
+        {
+          "path": "bit_ctrl/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "bit_ctrl/main.qli",
+          "bytes": 212,
+          "sha256": "1b8fc6872462f087890a67ef5c90d68f5f2d498fc39c575a72281387aea62e31",
+          "original_mode": "0644"
+        },
+        {
+          "path": "bit_ctrl.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "bit_ctrl.stdout.txt",
+          "bytes": 486,
+          "sha256": "366f14f9beca109c7fec6b005c9a284107b6570bd5c9d205e34b43b77874aabf",
+          "original_mode": "0644"
+        },
+        {
+          "path": "capture.py",
+          "bytes": 2648,
+          "sha256": "6af3850e9f69aa492dcde9292556447715338193cc068df96fa333165652eb93",
+          "original_mode": "0644"
+        },
+        {
+          "path": "empty_ctrl/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "empty_ctrl/main.qli",
+          "bytes": 212,
+          "sha256": "86081569a4b1fb336f9625afdc40df3cf2aa5ee05ec6bdd896dc4cf180a7030d",
+          "original_mode": "0644"
+        },
+        {
+          "path": "empty_ctrl.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "empty_ctrl.stdout.txt",
+          "bytes": 488,
+          "sha256": "bd8891e7f18b1d9b388b4de00175f8e5746d086a8ee96066b24b24315d101306",
+          "original_mode": "0644"
+        },
+        {
+          "path": "observations.json",
+          "bytes": 1664,
+          "sha256": "d1cd6ab39817f39780183e3ee8452206ef9499163d5cf783fd599ded9e98f837",
+          "original_mode": "0644"
+        },
+        {
+          "path": "plan.json",
+          "bytes": 958,
+          "sha256": "b131c14e9d01e708a75384823971ff927d2c96649fec0f0eccbd460154271db0",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

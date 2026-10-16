@@ -4117,7 +4117,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "452ca7ad065562c2867eebc8863b2c1b3430003bd71c929fb57b0977cc0c352c",
+      "sha256": "de0f7b5609d5deaa34f2ea116406c1dffe76799a87d3eaec6326c76063652fd4",
       "group": "source",
       "surface": {
         "declarations": [
@@ -6575,7 +6575,7 @@
     },
     {
       "path": "src/frontend/compile/dormant.rs",
-      "sha256": "9678e8c06f9d5625f94a6412b4b999d3db288cbc5231aab3279183e01f4acddf",
+      "sha256": "338680e72bc87f6e998ed2ba67cad7e13a8b3abc47ee1d9896a190936c2a3308",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6596,6 +6596,16 @@
     {
       "path": "src/frontend/compile/operations/bindings.rs",
       "sha256": "1da3ce30d010d21930e45ad8779fb68125144037c1213b20bd13874f29e2e1a0",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/dormant/controls.rs",
+      "sha256": "51eb80088160e930a5e6167c5db6337488ac5adccccadb778b98175956ddbbde",
       "group": "source",
       "surface": {
         "declarations": [],
