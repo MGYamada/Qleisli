@@ -30,7 +30,9 @@ and exactness obligations retain their recorded scopes and status.
 - Derive identity, T, S/inverses, Z, X, CNOT, Toffoli, controlled phase and
   physical SWAP as ordinary checked `std::gate` source. T coherently controls
   the scalar on an explicitly owned Unit target with no additional physical
-  wire and a nonempty controlled phase action. Checked target realization and
+  wire and a nonempty controlled phase action. Keep gate source readable:
+  S and Z state their quarter-turn and half-turn phases directly, and S/T
+  inverses use `adjoint`. Checked target realization and
   cost accounting remain separate. Move structural `permute_axes` to ordinary
   `std::structure`; retain fixed QFT2/QFT3 phase and axis contracts. The final
   language-owned primitive surface and qualified foundation retirement in

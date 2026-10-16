@@ -28,19 +28,19 @@ pub unitary fn t(q: Q<Bit>) -> Q<Bit> {
     q
 }
 
-/// Exact diag(1,i), derived as two T actions.
-pub unitary fn s(q: Q<Bit>) -> Q<Bit> { power(t,2)(q) }
+/// Quarter-turn phase: diag(1,i).
+pub unitary fn s(q: Q<Bit>) -> Q<Bit> { phase[1,2](q) }
 
-/// Exact diag(1,-i), retaining the full phase of six T actions.
-pub unitary fn sdg(q: Q<Bit>) -> Q<Bit> { power(t,6)(q) }
+/// Inverse S: diag(1,-i).
+pub unitary fn sdg(q: Q<Bit>) -> Q<Bit> { adjoint(s)(q) }
 
-/// Exact T inverse diag(1,zeta_8^-1), derived as seven T actions.
-pub unitary fn tdg(q: Q<Bit>) -> Q<Bit> { power(t,7)(q) }
+/// Inverse T: diag(1,zeta_8^-1).
+pub unitary fn tdg(q: Q<Bit>) -> Q<Bit> { adjoint(t)(q) }
 
-/// Exact Z = diag(1,-1), derived as four T actions.
-pub unitary fn z(q: Q<Bit>) -> Q<Bit> { power(t,4)(q) }
+/// Half-turn phase: diag(1,-1).
+pub unitary fn z(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
 
-/// Exact bit flip H Z H, with coefficient +1 on both basis transitions.
+/// Bit flip: H Z H = |1><0| + |0><1|.
 pub unitary fn x(q: Q<Bit>) -> Q<Bit> { h(z(h(q))) }
 
 unitary fn phase_leaf[const j: Nat, const k: Nat](q: Q<Bit>) -> Q<Bit> {

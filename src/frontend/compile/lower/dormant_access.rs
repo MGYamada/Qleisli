@@ -512,7 +512,9 @@ mod tests {
                     limited = true;
                 }
                 Ok(PrimitiveControlVisit::CheckedAction) => successful = true,
-                other => panic!("original direct action must be checked or limited: {other:?}"),
+                Ok(PrimitiveControlVisit::NotCovered) => {
+                    panic!("original direct action must be checked or limited")
+                }
             }
         }
         assert!(limited && successful);
