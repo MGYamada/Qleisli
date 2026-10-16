@@ -5754,7 +5754,17 @@
     },
     {
       "path": "src/interop/export.rs",
-      "sha256": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+      "sha256": "ba768ecc61b573e267281986dde06886aa2ee7c1da67d703a83425da2a4e27dd",
+      "group": "foreign",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interop/export/contracts.rs",
+      "sha256": "5c05f34848114b2049ec1e9490af3bcdb064b4583af985e647caaa10401e7f2f",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5799,7 +5809,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "dd50b77a2fefa0a98f6247e22bfd04f2435900a237066078cf2bb0fabbbe3ae9",
+      "sha256": "9f26854c8845aa1a83fa646094643ba40bc454b060815406744c790b720a0769",
       "group": "foreign",
       "surface": {
         "declarations": [],

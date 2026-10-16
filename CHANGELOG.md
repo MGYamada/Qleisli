@@ -36,9 +36,10 @@ and exactness obligations retain their recorded scopes and status.
   cost accounting remain separate. Move structural `permute_axes` to ordinary
   `std::structure`; retain fixed QFT2/QFT3 phase and axis contracts. The final
   language-owned primitive surface and qualified foundation retirement in
-  #369/#167 remain unfinished. The ordinary T path retains a Contract action
-  that the current terminal OpenQASM/QIR exporters reject; source/IR checking
-  and simulation do not complete that export migration.
+  #369/#167 remain unfinished. Terminal OpenQASM/QIR export now expands actual
+  retained Contract circuits before adjacent-phase lowering, preserving ordered
+  axes, controls and adjoints under bounded expansion. Exact small-output checks
+  remain distinct from general export preservation and resource certificates.
 
 - Normalize supported computed-ancilla bodies through native equations for
   the complete original one-Bit fragment and a canonical witness built from

@@ -107,11 +107,13 @@ Its absence of physical wires does not imply zero synthesis or gate cost.
 Applying the scalar directly to `Q<Bit>` instead gives `zeta_8 I_Bit`, which
 must fail an exact T request. The source definitions and exact requested checks
 remain separate from source/target preservation and quantitative PR/RS evidence.
-The current ordinary T body retains a `CircuitAction::Contract` dependency.
-The terminal OpenQASM 3 and QIR Base exporters do not expand that action and
-currently refuse bodies containing it. Native source/IR checking and simulation
-therefore do not establish export support for the derived gate path; no sealed
-gate substitution or weaker export fallback is implied.
+The ordinary T body retains a `CircuitAction::Contract` dependency. The terminal
+OpenQASM 3 and QIR Base exporters expand its actual retained circuit, preserving
+ordered axes, control polarity and adjoints before lowering to target gates.
+This bounded producer path has the same target vocabulary and workspace limits;
+an unsupported body still refuses. Literal-output checks cover exact T phase and
+clean synthesis scratch in small cases. They do not supply a general export
+preservation theorem or a quantitative resource certificate.
 
 These rows are interface descriptions, not declaration syntax or new function
 types. Public quantum functions have explicit checked effect contracts under

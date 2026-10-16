@@ -480,3 +480,398 @@ fn export_has_independent_capacity_checks() {
         InteropErrorKind::Limit
     );
 }
+
+// These probes consume literal exported gate words, then ask the native encoded
+// contract checker for independently specified all-column equations. Native
+// re-import is a separate output-validity check, not an export theorem.
+fn ordinary_terminal(body: &str, definitions: &str, result: &str) -> AcceptedProgram {
+    let text = format!(
+        "use std::quantum::{{init0,h,split,join,unit,finish,phase_eighth}};
+         use std::gate::t;
+         use std::observe::measure_z;
+         unitary fn wrapper(q:Q<Bit>)->Q<Bit>{{t(q)}}
+         unitary fn unchanged(q:Q<Bit>)->Q<Bit>{{q}}
+         {definitions}
+         pub observe fn main()->{result}{{{body}}}"
+    );
+    qleisli::frontend::compile::compile_project(&common::SourceRoot::new(&text).0).unwrap()
+}
+
+fn has_contract(program: &AcceptedProgram) -> bool {
+    program.raw().operations.iter().any(|op| match op {
+        RawOp::ApplyUnitary { steps, .. } => steps
+            .iter()
+            .any(|step| matches!(step.action, CircuitAction::Contract { .. })),
+        _ => false,
+    })
+}
+
+fn literal_target(text: &str) -> (usize, Vec<CircuitStep>) {
+    let mut width = None;
+    let mut steps = vec![];
+    for line in text.lines() {
+        if let Some(rest) = line.strip_prefix("qubit[") {
+            width = Some(rest.strip_suffix("] q;").unwrap().parse::<usize>().unwrap());
+            continue;
+        }
+        if line.is_empty()
+            || line == "OPENQASM 3.0;"
+            || line == "include \"stdgates.inc\";"
+            || line == "reset q;"
+            || line.starts_with("bit[")
+            || line.starts_with("c[")
+        {
+            continue;
+        }
+        let (gate, operands) = line.strip_suffix(';').unwrap().split_once(' ').unwrap();
+        let axes: Vec<usize> = operands
+            .split(", ")
+            .map(|arg| {
+                arg.strip_prefix("q[")
+                    .unwrap()
+                    .strip_suffix(']')
+                    .unwrap()
+                    .parse()
+                    .unwrap()
+            })
+            .collect();
+        let (controls, action) = match gate {
+            "h" => {
+                assert_eq!(axes.len(), 1);
+                (vec![], CircuitAction::Hadamard { target: axes[0] })
+            }
+            "x" | "cx" | "ccx" => {
+                let arity = match gate {
+                    "x" => 1,
+                    "cx" => 2,
+                    _ => 3,
+                };
+                assert_eq!(axes.len(), arity);
+                (
+                    axes[..arity - 1]
+                        .iter()
+                        .map(|&index| BitControl {
+                            index,
+                            when_one: true,
+                        })
+                        .collect(),
+                    CircuitAction::Monomial {
+                        indices: vec![axes[arity - 1]],
+                        permutation: vec![1, 0],
+                        phases: vec![0, 0],
+                    },
+                )
+            }
+            "t" | "tdg" | "s" | "sdg" | "z" => {
+                assert_eq!(axes.len(), 1);
+                let exponent = match gate {
+                    "t" => 1,
+                    "tdg" => 7,
+                    "s" => 2,
+                    "sdg" => 6,
+                    _ => 4,
+                };
+                (
+                    vec![],
+                    CircuitAction::Monomial {
+                        indices: axes,
+                        permutation: vec![0, 1],
+                        phases: vec![0, exponent],
+                    },
+                )
+            }
+            _ => panic!("unexpected target gate in bounded exact probe: {line}"),
+        };
+        steps.push(CircuitStep { controls, action });
+    }
+    let width = width.expect("physical target declaration");
+    assert!(width <= 3, "only small target experiments");
+    (width, steps)
+}
+
+fn exact_target(text: &str, logical_phases: &[u8]) -> Result<(), qleisli::contract::ContractError> {
+    use qleisli::contract::exact::{Exact, Matrix};
+    let logical_dim = logical_phases.len();
+    let meaning = Matrix::new(
+        logical_dim,
+        logical_dim,
+        (0..logical_dim * logical_dim)
+            .map(|i| {
+                if i / logical_dim == i % logical_dim {
+                    Exact::phase(i32::from(logical_phases[i / logical_dim]))
+                } else {
+                    Exact::zero()
+                }
+            })
+            .collect(),
+    )?;
+    exact_target_matrix(text, meaning)
+}
+
+fn exact_target_matrix(
+    text: &str,
+    meaning: qleisli::contract::exact::Matrix,
+) -> Result<(), qleisli::contract::ContractError> {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{
+        BasisType, CheckedContract, Circuit, Contract, DEFAULT_EXACT_WORK, Encoding,
+    };
+    let (width, steps) = literal_target(text);
+    let logical_dim = meaning.cols();
+    assert!(logical_dim.is_power_of_two());
+    assert_eq!(meaning.rows(), logical_dim);
+    let logical = BasisType::Bits(logical_dim.trailing_zeros());
+    let physical = BasisType::Bits(u32::try_from(width).unwrap());
+    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+    let embedding = Matrix::new(
+        1 << width,
+        logical_dim,
+        (0..(1 << width) * logical_dim)
+            .map(|i| {
+                if i / logical_dim == i % logical_dim {
+                    Exact::one()
+                } else {
+                    Exact::zero()
+                }
+            })
+            .collect(),
+    )?;
+    let encoding = Encoding::new(logical, physical.clone(), embedding, &mut budget)?;
+    let contract = Contract::new(encoding.clone(), encoding, meaning, &mut budget)?;
+    CheckedContract::check(Circuit::new(physical, steps)?, contract, &mut budget).map(|_| ())
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_contract_export_preserves_t_phase_and_nested_adjoint() {
+    for (operation, exponent, literal, qis) in [
+        ("t", 1, "t", "t__body"),
+        ("wrapper", 1, "t", "t__body"),
+        ("adjoint(wrapper)", 7, "tdg", "t__adj"),
+        ("adjoint(adjoint(wrapper))", 1, "t", "t__body"),
+    ] {
+        let program = ordinary_terminal(&format!("measure_z({operation}(init0()))"), "", "Bit");
+        assert!(
+            has_contract(&program),
+            "actual retained ordinary body: {operation}"
+        );
+        let text = export_openqasm3(&program).unwrap();
+        assert_eq!(literal_target(&text).1.len(), 1, "{text}");
+        assert!(text.contains(&format!("{literal} q[0];")), "{text}");
+        assert!(
+            export_qir_base(&program)
+                .unwrap()
+                .contains(&format!("call void @__quantum__qis__{qis}("))
+        );
+        import_openqasm3(&text).unwrap();
+        exact_target(&text, &[0, exponent]).unwrap();
+        assert!(exact_target(&text, &[0, 0]).is_err());
+        assert!(
+            exact_target(&text, &[exponent, exponent]).is_err(),
+            "global phase is not T"
+        );
+        assert!(
+            exact_target(&text, &[0, (8 - exponent) % 8]).is_err(),
+            "inverse direction"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_contract_export_keeps_reference_axes_and_reordered_owners() {
+    let program = ordinary_terminal(
+        "let a=init0();let b=init0();let q=join(b,a);let(b,a)=split(q);let b=wrapper(b);(measure_z(a),measure_z(b))",
+        "",
+        "(Bit,Bit)",
+    );
+    let text = export_openqasm3(&program).unwrap();
+    assert!(has_contract(&program));
+    assert!(text.contains("t q[1];"), "{text}");
+    import_openqasm3(&text).unwrap();
+    exact_target(&text, &[0, 0, 1, 1]).unwrap();
+    assert!(exact_target(&text.replace("t q[1];", "t q[0];"), &[0, 0, 1, 1]).is_err());
+
+    let program = ordinary_terminal(
+        "let a=init0();let b=init0();let c=init0();let q=apply_contract(on_last,on_last,join(b,join(c,a)));let(b,q)=split(q);let(c,a)=split(q);(measure_z(a),(measure_z(b),measure_z(c)))",
+        "unitary fn on_last(q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>{let(a,q)=split(q);let(b,c)=split(q);join(a,join(b,wrapper(c)))}",
+        "(Bit,(Bit,Bit))",
+    );
+    let text = export_openqasm3(&program).unwrap();
+    assert!(has_contract(&program));
+    assert!(text.contains("t q[0];"), "{text}");
+    import_openqasm3(&text).unwrap();
+    exact_target(&text, &[0, 1, 0, 1, 0, 1, 0, 1]).unwrap();
+    assert!(
+        exact_target(
+            &text.replace("t q[0];", "t q[2];"),
+            &[0, 1, 0, 1, 0, 1, 0, 1]
+        )
+        .is_err()
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn controlled_ordinary_contract_export_returns_scratch_exactly() {
+    for (arms, expected) in [
+        ("0=>unchanged,1=>wrapper", [0, 0, 0, 1]),
+        ("0=>wrapper,1=>unchanged", [0, 0, 1, 0]),
+    ] {
+        let program = ordinary_terminal(
+            &format!("let(a,b)=qif(init0(),init0()){{{arms}}};(measure_z(a),measure_z(b))"),
+            "",
+            "(Bit,Bit)",
+        );
+        let text = export_openqasm3(&program).unwrap();
+        assert!(has_contract(&program));
+        assert_eq!(literal_target(&text).0, 3, "one clean synthesis qubit");
+        import_openqasm3(&text).unwrap();
+        exact_target(&text, &expected).unwrap();
+        assert!(exact_target(&text.replace("t q[2];\n", ""), &expected).is_err());
+        let uncompute = text
+            .lines()
+            .rev()
+            .find(|line| line.starts_with("ccx "))
+            .unwrap();
+        let last = text.rfind(uncompute).unwrap();
+        let mut missing_uncompute = text.clone();
+        missing_uncompute.replace_range(last..last + uncompute.len() + 1, "");
+        assert!(
+            exact_target(&missing_uncompute, &expected).is_err(),
+            "scratch must return to zero for every input"
+        );
+        if arms.starts_with("0=>wrapper") {
+            assert!(
+                exact_target(&text.replace("x q[0];\n", ""), &expected).is_err(),
+                "control polarity"
+            );
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn adjacent_contract_phases_merge_before_assigning_workspace() {
+    let program = ordinary_terminal(
+        "let(a,b)=qif(init0(),init0()){0=>unchanged,1=>twice};(measure_z(a),measure_z(b))",
+        "unitary fn twice(q:Q<Bit>)->Q<Bit>{wrapper(wrapper(q))}",
+        "(Bit,Bit)",
+    );
+    assert!(has_contract(&program));
+    let text = export_openqasm3(&program).unwrap();
+    assert_eq!(
+        literal_target(&text).0,
+        2,
+        "adjacent even phase needs no synthesis qubit: {text}"
+    );
+    import_openqasm3(&text).unwrap();
+    exact_target(&text, &[0, 0, 0, 2]).unwrap();
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn uncontrolled_unit_contract_phase_is_not_erased_by_export() {
+    let program = ordinary_terminal(
+        "let u=apply_contract(scalar,scalar,unit(()));finish(u);()",
+        "unitary fn scalar(u:Q<Unit>)->Q<Unit>{phase_eighth(u)}",
+        "Unit",
+    );
+    assert!(has_contract(&program));
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::interchange::native::Proposal;
+    use qleisli::interchange::{RootInterface, Version};
+    let implementation = program
+        .raw()
+        .operations
+        .iter()
+        .find_map(|op| {
+            let RawOp::ApplyUnitary { steps, .. } = op else {
+                return None;
+            };
+            steps.iter().find_map(|step| match &step.action {
+                CircuitAction::Contract { evidence, .. } => Some(evidence.implementation()),
+                _ => None,
+            })
+        })
+        .unwrap();
+    let boundary = UnitaryBoundary::new(
+        BasisType::Unit,
+        implementation.quantum_inputs[0].clone(),
+        QuantumPort {
+            token: implementation.quantum_outputs[0],
+            wires: vec![],
+            shape: BasisShape { bits: 0 },
+        },
+    )
+    .unwrap();
+    let interface = RootInterface {
+        input: BasisType::Unit,
+        output: BasisType::Unit,
+    };
+    let proposal = Proposal::from_raw(implementation, Some(&interface), Version::V2, None).unwrap();
+    for (phase, accepted) in [(1, true), (0, false)] {
+        let matrix = Matrix::new(1, 1, vec![Exact::phase(phase)]).unwrap();
+        assert_eq!(
+            check_unitary(
+                proposal.artifact(),
+                &boundary,
+                &matrix,
+                &mut Budget::new(DEFAULT_EXACT_WORK)
+            )
+            .is_ok(),
+            accepted
+        );
+    }
+    for result in [export_openqasm3(&program), export_qir_base(&program)] {
+        let error = result.unwrap_err();
+        assert_eq!(error.kind, InteropErrorKind::Unsupported);
+        assert!(
+            error.message.contains("uncontrolled scalar phase"),
+            "{error}"
+        );
+        assert!(error.operation.is_some());
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_contract_adjoint_reverses_noncommuting_body_order() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    let program = ordinary_terminal(
+        "measure_z(adjoint(mixed)(init0()))",
+        "unitary fn mixed(q:Q<Bit>)->Q<Bit>{h(wrapper(q))}",
+        "Bit",
+    );
+    assert!(has_contract(&program));
+    let text = export_openqasm3(&program).unwrap();
+    assert!(text.contains("h q[0];\ntdg q[0];"), "{text}");
+    import_openqasm3(&text).unwrap();
+    // (H T)^dagger = T^dagger H, including every complex coefficient.
+    let scale = Exact::inv_sqrt2();
+    let phase = Exact::phase(7).mul(scale).unwrap();
+    let expected = Matrix::new(2, 2, vec![scale, scale, phase, phase.neg().unwrap()]).unwrap();
+    exact_target_matrix(&text, expected.clone()).unwrap();
+    let wrong_order = text.replace("h q[0];\ntdg q[0];", "tdg q[0];\nh q[0];");
+    assert!(exact_target_matrix(&wrong_order, expected).is_err());
+}

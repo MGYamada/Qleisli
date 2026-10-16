@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "c3518c0f01ef58b86d12c4c924915415c5a6d118832f60bc3058d5d64d343796",
+  "surface_sha256": "e29e38293ac88085b8bb9755afa13978ccd84a274444d8d20c8ec302f1339188",
   "groups": [
     {
       "id": "raw-core",
@@ -3081,12 +3081,73 @@
             "pub fn export_openqasm3(program: &AcceptedProgram)",
             "pub fn export_qir_base(program: &AcceptedProgram)"
           ]
+        },
+        {
+          "path": "src/interop/profile.rs",
+          "markers": [
+            "pub(super) fn extract(",
+            "ExpansionBudget::default()",
+            "super::export::steps(",
+            "&mut expansion"
+          ]
+        },
+        {
+          "path": "src/interop/export.rs",
+          "markers": [
+            "pub(super) fn steps(",
+            "contracts::Cursor::new(steps, wires.len(), expansion)?",
+            "step(circuit, scratch, &merged, wires)?"
+          ]
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "markers": [
+            "pub(in crate::interop) struct ExpansionBudget",
+            "fn reserve(",
+            "evidence.expanded_steps()",
+            "budget.reserve(steps)?",
+            "body: evidence.circuit().steps()",
+            "inverse: frame.inverse ^ *adjoint",
+            "crate::contract::invert_steps("
+          ]
         }
       ],
       "tests": [
         {
           "path": "scripts/test_interop_native.py",
           "test": "test_all_actions_formats_use_real_native_checker"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_export_preserves_t_phase_and_nested_adjoint"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_export_keeps_reference_axes_and_reordered_owners"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "controlled_ordinary_contract_export_returns_scratch_exactly"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "adjacent_contract_phases_merge_before_assigning_workspace"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "uncontrolled_unit_contract_phase_is_not_erased_by_export"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_adjoint_reverses_noncommuting_body_order"
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "test": "expansion_reservation_is_shared_across_raw_operations"
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "test": "malformed_mapping_of_checked_dependency_returns_an_error"
         }
       ],
       "entry_path": "interop::{export_openqasm3,export_qir_base}; corresponding CLI/Python exports",
