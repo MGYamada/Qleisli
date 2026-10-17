@@ -288,17 +288,29 @@ fn native_comparison_checks_the_actual_named_transform_payloads() {
 }
 
 #[test]
-fn preparation_operation_retains_its_explicit_hierarchy_refusal() {
+fn forward_preparation_operation_retains_its_original_source_interval() {
     let source = elaborate(
         "isometry fn prepare(q:Q<Unit>)->Q<Bit>{basis q as label {0}}fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
     );
-    assert!(
-        source
-            .lower()
-            .unwrap_err()
-            .message()
-            .contains("original structural unitary tables")
-    );
+    let proposal = source.lower().unwrap();
+    // This is original-source structural replay only. The independent exact
+    // preparation equations and fresh native checks remain in isometry_tests.
+    assert!(proposal.is_instrument());
+    validate(&proposal).unwrap();
+    p::validate(&proposal).unwrap();
+    let [interval] = proposal.zero_basis.as_slice() else {
+        panic!("one original Unit-to-Bit preparation interval")
+    };
+    assert_eq!(interval.input.basis, SourceType::unit());
+    assert_eq!(interval.output.basis, SourceType::bit());
+    assert!(interval.input.axes.is_empty());
+    assert_eq!(interval.output.axes.len(), 1);
+    let prepared = interval.prepared.as_ref().unwrap();
+    assert_eq!(prepared.basis, SourceType::bit());
+    assert_eq!(prepared.axes, interval.output.axes);
+    assert_ne!(interval.input.owner, interval.output.owner);
+    assert_ne!(prepared.owner, interval.input.owner);
+    assert_ne!(prepared.owner, interval.output.owner);
 }
 
 #[cfg_attr(
@@ -446,3 +458,90 @@ fn native_valid_direction_and_polarity_changes_remain_different_source_actions()
 
 mod composite_tests;
 mod native_source_tests;
+
+#[test]
+fn public_isometry_repetition_retains_its_effect_refusal() {
+    for operation in [
+        "power(then_op(zero,zero),0)",
+        "then_op(power(then_op(zero,zero),0),zero)",
+        "power(then_op(zero,zero),1)",
+    ] {
+        // The public Isometry contract is authoritative in the caller. The
+        // eager frontend rejects this provider before hierarchy materialization,
+        // including at zero repetitions. This is not a test of the lower-level
+        // materialized-repeat defense or permission to weaken the effect gate.
+        let main = format!(
+            "use provider::zero;fn invoke[const U:Op<Unit -> Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){{U(q)}}pub isometry fn entry(q:Q<Unit>)->Q<Unit>{{invoke[{operation}](q)}}"
+        );
+        let error = match ParsedProgram::parse(BTreeMap::from([
+            (
+                "provider".into(),
+                "pub isometry fn zero(q:Q<Unit>)->Q<Unit>{basis q as label {()}}".into(),
+            ),
+            ("main".into(), main.clone()),
+        ])) {
+            Err(error) => error,
+            Ok(_) => {
+                panic!("public Isometry provider unexpectedly passed the frontend effect gate")
+            }
+        };
+        assert_eq!(error.code(), "effect");
+        assert_eq!(error.module(), Some("main"));
+        assert!(
+            error.message().starts_with(
+                "operation provider's checked effect in the caller's module must be Unitary"
+            ),
+            "{error}"
+        );
+        assert_eq!(&main[error.span().start..error.span().end], "zero");
+    }
+}
+
+#[test]
+fn materialized_unitary_repetition_before_preparation_retains_its_profile_refusal() {
+    for repeated in [
+        "power(zero,0)",
+        "power(then_op(zero,zero),0)",
+        "power(zero,1)",
+        "zero",
+    ] {
+        // The repeated child is genuinely Unitary and passes the public effect
+        // gate. A separate rectangular preparation makes the outer Then an
+        // Isometry and reaches the materialized forward path. The count-zero
+        // child must not disappear merely because its singleton action is +1.
+        let source = format!(
+            "unitary fn zero(q:Q<Unit>)->Q<Unit>{{basis q as label {{()}}}} isometry fn prepare(q:Q<Unit>)->Q<Bit>{{basis q as label {{0}}}} fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){{U(q)}} pub isometry fn entry(q:Q<Unit>)->Q<Bit>{{invoke[then_op({repeated},prepare)](q)}}"
+        );
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
+            .unwrap()
+            .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        assert!(
+            source
+                .definitions()
+                .iter()
+                .flat_map(|definition| definition.steps())
+                .any(|step| {
+                    step.kind() == "apply"
+                        && step.effect() == "iso"
+                        && step
+                            .operation()
+                            .is_some_and(SourceOperation::has_constructed)
+                })
+        );
+        if repeated == "zero" {
+            let proposal = source.lower().unwrap();
+            assert!(proposal.is_instrument());
+            // Structural correspondence only; independent native preparation
+            // and phase/reference equations are checked in isometry_tests.
+            validate(&proposal).unwrap();
+            p::validate(&proposal).unwrap();
+        } else {
+            let error = source.lower().unwrap_err();
+            assert_eq!(error.code(), "unsupported");
+            assert!(error.message().contains("repetition"), "{error}");
+        }
+    }
+}

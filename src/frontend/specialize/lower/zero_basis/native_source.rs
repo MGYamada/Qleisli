@@ -16,6 +16,15 @@ pub(in crate::frontend::specialize::lower) struct NativeSourceTrace {
     pub(super) witness: Arc<SourceOperationWitness>,
 }
 
+impl NativeSourceTrace {
+    /// Borrow the same immutable witness for shared retention accounting only.
+    pub(in crate::frontend::specialize::lower) fn retained_witness(
+        &self,
+    ) -> &Arc<SourceOperationWitness> {
+        &self.witness
+    }
+}
+
 impl Lower<'_> {
     /// Keep the actual checked leaf and the original source's dormant dependencies.
     pub(in crate::frontend::specialize::lower) fn native_source_operation(

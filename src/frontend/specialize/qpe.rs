@@ -226,6 +226,7 @@ impl HierarchyProposal {
     /// it. This can reject equivalent circuits outside the producer shape.
     /// Success requires fresh `Kernel::check_qpe_instrument` before execution.
     pub fn qpe_binding(&self, independent_provider_request: &[u8]) -> Result<QpeBindingProposal> {
+        self.validate_fourier_transport()?;
         build(self, independent_provider_request)
             .map_err(|e| Error::new("unsupported", Span::default(), e.to_string()))
     }

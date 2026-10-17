@@ -160,6 +160,57 @@ pub(super) fn operation_has_structural_tables(
     }
 }
 
+/// Preserve the existing refusal for repetition on a materialized forward
+/// path: zero iterations do not retain the original dormant child. Pure
+/// constructed branches remain atomic and use their existing child binding.
+pub(super) fn materialized_without_repeat(operation: &SourceOperation) -> Result<bool> {
+    let mut pending = vec![operation];
+    let mut visits = 0usize;
+    while let Some(operation) = pending.pop() {
+        visits += 1;
+        if visits > 10_000 {
+            return Err(limit(
+                "forward operation traversal exceeds definition capacity",
+            ));
+        }
+        if operation.child().is_some() {
+            return Ok(false);
+        }
+        if operation
+            .constructed()
+            .is_some_and(|(_, _, ports)| ports.effect == Effect::Unitary)
+        {
+            continue;
+        }
+        pending.extend(operation.children());
+    }
+    Ok(true)
+}
+
+/// Match a pure child materialized inside an Isometry constructor at the
+/// exact original tree path supplied by Replay. Split/join events are checked
+/// separately against their original tensor constructor and complete frame.
+pub(super) fn validate_constructor_operation(
+    proposal: &HierarchyProposal,
+    event: &SourceEvent,
+    operation: &SourceOperation,
+    defs: &[Value],
+    adjoint: bool,
+    enabled: bool,
+) -> Result<()> {
+    if !enabled {
+        return Ok(());
+    }
+    // Every materialized pure child needs its original binding, including
+    // table-free siblings of preparation. Matching endpoints is insufficient.
+    if !operation_has_structural_tables(&proposal.source, operation)? {
+        return Err(p::invalid(
+            "materialized pure child is outside the structural-table transport profile",
+        ));
+    }
+    operations::validate_bound(proposal, event, operation, defs, adjoint)
+}
+
 /// Bind transformed structural-table events without changing native acceptance.
 pub(super) fn validate_operation_event(
     proposal: &HierarchyProposal,
@@ -451,6 +502,7 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
         ));
     }
     let defs = p::array(p::field(&graph, "definitions")?)?;
+    let mut materialized_constructors = false;
     for event in &proposal.events {
         let step = proposal
             .source
@@ -459,7 +511,19 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
             .and_then(|definition| definition.steps().get(event.step))
             .ok_or_else(|| p::invalid("source event lacks its original source step"))?;
         validate_call_event(proposal, event, step, defs, true)?;
-        validate_operation_event(proposal, event, step, defs, true)?;
+        let materialized = step.kind() == "apply"
+            && step.effect() == "iso"
+            && step
+                .operation()
+                .is_some_and(SourceOperation::has_constructed);
+        if materialized {
+            // The event retains the outer origin, not an atomic application
+            // of the entire Isometry. Replay below binds its exact child path,
+            // source operands and split/join or pure-child interval instead.
+            materialized_constructors = true;
+        } else {
+            validate_operation_event(proposal, event, step, defs, true)?;
+        }
         if step.basis_table().is_some() {
             validate_event(proposal, event)?;
         }
@@ -606,6 +670,16 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
                 ));
             }
         }
+    }
+    if materialized_constructors {
+        // Once for the complete original body, never once per event. The
+        // existing bounded replay must succeed before deferring an outer
+        // operation's atomic matcher can count as a valid source binding.
+        // The public initializer gate also replays to return its move report.
+        if !proposal.instrument {
+            return Err(p::invalid("materialized Isometry requires an instrument"));
+        }
+        p::validate(proposal)?;
     }
     Ok(())
 }

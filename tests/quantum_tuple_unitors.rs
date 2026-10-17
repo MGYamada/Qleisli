@@ -786,7 +786,7 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
             "type",
         ),
     ] {
-        reject(&format!("{decl}"), code);
+        reject(decl, code);
     }
     let text = " pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{global_phase_eighth(q)}";
     let graph = elaborate(text, "main::f");
@@ -879,7 +879,7 @@ fn isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject() {
         "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{qfor static k in 0..0 carry r=q{let(a,b)=split(r);yield join(a,a);}}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q} unitary fn unused(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);a}",
     ] {
-        reject(&format!("{decl}"), "ownership");
+        reject(decl, "ownership");
     }
     reject(&study("effectful-argument"), "effect");
 }

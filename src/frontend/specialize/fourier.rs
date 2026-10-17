@@ -392,17 +392,71 @@ fn node_trace(
     }
     Some(trace)
 }
+#[cfg(test)]
 fn trace(graph: &Graph, root: usize) -> Option<Trace> {
     let mut work = TRACE_WORK;
+    trace_with_work(graph, root, &mut work)
+}
+fn trace_with_work(graph: &Graph, root: usize, work: &mut usize) -> Option<Trace> {
+    if root >= graph.nodes.len() {
+        return None;
+    }
     let mut cache = Vec::with_capacity(root.checked_add(1)?);
     for index in 0..=root {
-        let t = node_trace(graph, index, &cache, &mut work);
+        let t = node_trace(graph, index, &cache, work);
         cache.push(t);
-        if work == 0 {
+        if *work == 0 {
             return None;
         }
     }
     cache.pop()?
+}
+fn trace_debit(graph: &Graph, root: usize, remaining: &mut usize) -> Option<Trace> {
+    let initial = (*remaining).min(TRACE_WORK);
+    let mut work = initial;
+    let result = trace_with_work(graph, root, &mut work);
+    *remaining -= initial - work;
+    result
+}
+/// Re-read complete original and actual words under one remaining producer
+/// replay budget. This retains the existing factoring premise, not acceptance.
+pub(super) fn retained_trace_pair(
+    original: &Graph,
+    original_root: usize,
+    actual: &Graph,
+    actual_root: usize,
+    work: &mut usize,
+) -> bool {
+    let Some(before) = original.nodes.get(original_root) else {
+        return false;
+    };
+    let Some(after) = actual.nodes.get(actual_root) else {
+        return false;
+    };
+    if before.before != after.before || before.after != after.after || before.before.len() != 1 {
+        return false;
+    }
+    let width = before.before[0].axes.len();
+    let Some(original_trace) = trace_debit(original, original_root, work) else {
+        return false;
+    };
+    let Some(actual_trace) = trace_debit(actual, actual_root, work) else {
+        return false;
+    };
+    let cost = original_trace
+        .events
+        .len()
+        .saturating_mul(original_trace.events.len())
+        .saturating_add(
+            actual_trace
+                .events
+                .len()
+                .saturating_mul(actual_trace.events.len()),
+        );
+    if spend(work, cost).is_none() {
+        return false;
+    }
+    staircase(&original_trace, width) && staircase(&actual_trace, width)
 }
 fn fraction(mut j: u64, mut k: u32) -> (u64, u32) {
     while k > 0 && j % 2 == 0 {
@@ -610,6 +664,15 @@ impl Builder<'_, '_> {
 }
 impl Lower<'_> {
     pub(super) fn factor_fourier(&mut self, original: usize) -> Result<usize> {
+        // Preserve the prior separate TRACE_WORK bound for each full trace.
+        let mut work = 2 * TRACE_WORK;
+        self.factor_fourier_with_work(original, &mut work)
+    }
+    pub(super) fn factor_fourier_with_work(
+        &mut self,
+        original: usize,
+        work: &mut usize,
+    ) -> Result<usize> {
         let node = &self.graph.nodes[original];
         if node.before.len() != 1
             || node.after.len() != 1
@@ -622,7 +685,7 @@ impl Lower<'_> {
         let outer = node.before[0].clone();
         let output = node.after[0].clone();
         let width = outer.axes.len();
-        let Some(original_trace) = trace(&self.graph, original) else {
+        let Some(original_trace) = trace_debit(&self.graph, original, work) else {
             return Ok(original);
         };
         if !staircase(&original_trace, width) {
@@ -663,7 +726,7 @@ impl Lower<'_> {
                 children.push(b.lower.graph.rename(vec![outer], vec![output])?);
             }
             let candidate = b.lower.graph.sequence(children)?;
-            let candidate_trace = trace(&b.lower.graph, candidate)
+            let candidate_trace = trace_debit(&b.lower.graph, candidate, work)
                 .ok_or_else(|| limit("Fourier candidate trace exceeded its bounded profile"))?;
             // Both complete traces normalize to exactly the same positive-sign
             // staircase using only diagonal/disjoint-support commutations.
@@ -703,7 +766,7 @@ impl Lower<'_> {
 // Compact only when serializing. The producer graph remains available for the
 // source trace and translation record. The checker requires every emitted row
 // to be reachable; unused source/candidate rows must not be smuggled into it.
-fn remap_body(body: &Value, indices: &BTreeMap<usize, usize>) -> Option<Value> {
+pub(super) fn remap_body(body: &Value, indices: &BTreeMap<usize, usize>) -> Option<Value> {
     let Value::Object(mut fields) = body.clone() else {
         return None;
     };
@@ -749,7 +812,7 @@ fn remap_body(body: &Value, indices: &BTreeMap<usize, usize>) -> Option<Value> {
     }
     Some(Value::Object(fields))
 }
-fn encoded(value: &Value) -> Result<String> {
+pub(super) fn encoded(value: &Value) -> Result<String> {
     String::from_utf8(json::encode(value).map_err(|e| fail(e.to_string()))?)
         .map_err(|_| fail("graph JSON is not UTF-8"))
 }

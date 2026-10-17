@@ -67,7 +67,7 @@ class SourceChecksTests(unittest.TestCase):
             import check_rust_test_partition as partition
             heavy, rest = partition.selection(group, checks.definition(group)['commands'])
             self.assertEqual(heavy, ['frontend_ownership_differential', 'source_ir_correspondence'])
-            self.assertEqual(len(rest), 120)
+            self.assertEqual(len(rest), 121)
             self.assertTrue(all(argv[:3] == ['python3', 'scripts/run_kernel_tests.py', '--']
                                 for argv in (commands[start + 1], commands[start + 3])))
         with patch.object(checks, 'definition', return_value={'prepare': ['loop']}):

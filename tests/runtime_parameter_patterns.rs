@@ -358,10 +358,15 @@ fn static_substitutions_and_provider_bindings_keep_declaration_and_source_identi
         Some(text.as_str())
     );
     let input = [[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
-    assert_eq!(
-        execute(&graph, &input),
-        [input[1], input[0], input[3], input[2]]
-    );
+    let observed = execute(&graph, &input);
+    let expected = [input[1], input[0], input[3], input[2]];
+    assert_eq!(observed.len(), expected.len());
+    // Ordinary H Z H evaluates irrational coefficients in this f64 simulator.
+    // This checks numerical execution only; no tolerance enters native semantic
+    // acceptance or the independently specified exact X permutation above.
+    for (actual, expected) in observed.iter().flatten().zip(expected.iter().flatten()) {
+        assert!(actual.is_finite() && (actual - expected).abs() < 1e-12);
+    }
 }
 
 #[cfg_attr(

@@ -166,7 +166,7 @@ fn selected_nonexecuted_control_obligations_refuse_before_transport() {
         "unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{power(oracle,0)(q)}",
         "unitary fn unused(q:Q<Bit>)->Q<Bit>{if 1 {h(ctrl q);q}else{q}}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
     ] {
-        let source = format!("{program}");
+        let source = program.to_owned();
         let concrete = selected(&source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1142,7 +1142,7 @@ fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
             "size",
         ),
     ] {
-        let text = format!("{program}");
+        let text = program.to_owned();
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
@@ -1900,10 +1900,7 @@ fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order
             "preservation"
         );
     }
-    let bad = format!(
-        "{}",
-        text.replace("put_bit[3,1](b,r)", "h(ctrl b);put_bit[3,1](b,r)")
-    );
+    let bad = text.replace("put_bit[3,1](b,r)", "h(ctrl b);put_bit[3,1](b,r)");
     let source = selected(&bad)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()

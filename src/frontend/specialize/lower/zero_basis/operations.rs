@@ -380,6 +380,33 @@ pub(super) fn validate(
     }
 }
 
+/// Bind one pure child inside a forward constructor after original path replay.
+pub(super) fn validate_bound(
+    proposal: &HierarchyProposal,
+    event: &SourceEvent,
+    operation: &SourceOperation,
+    defs: &[Value],
+    adjoint: bool,
+) -> Result<()> {
+    let mut matcher = Match {
+        proposal,
+        defs,
+        visits: 0,
+        cells: 0,
+    };
+    let id = event
+        .node
+        .ok_or_else(|| p::invalid("materialized pure child omits its actual interval"))?;
+    let before = quantum(&event.inputs);
+    let after = quantum(&event.outputs);
+    if matcher.ports(id)? != (before.clone(), after.clone()) {
+        return Err(p::invalid(
+            "materialized pure child changes its complete source event boundary",
+        ));
+    }
+    matcher.bound(operation, id, &before, &after, adjoint, 0)
+}
+
 /// Validate one retained actual override shape and return its exact leaf index.
 pub(super) fn validate_native_trace(
     proposal: &HierarchyProposal,

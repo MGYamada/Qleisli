@@ -13371,6 +13371,50 @@
       ],
       "lexical_sha256": "a5d06ea68c01ab395c7d58d1a93aa18eed39e41a3c58039b9da335921a49cdc6",
       "layout_edits": []
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-443.qli",
+      "before_sha256": "98db9359dd3413f144bea1a9319e32013df01bdb859c862229f4dbad05a256df",
+      "current_sha256": "3e6bcd7ad095ae7e34b5e006b40d56d2f7c53f9192a73cc4386ee6778208ec7f",
+      "logical_paths": [
+        "tests/fixtures/frontend_v030/isometry-preparation/supplemental-multi-init/main.qli"
+      ],
+      "manual_edits": [],
+      "lexical_edits": [
+        {
+          "start": 75,
+          "end": 99,
+          "replacement": "use std::state::init0;",
+          "kind": "import"
+        },
+        {
+          "start": 100,
+          "end": 131,
+          "replacement": "",
+          "kind": "import"
+        },
+        {
+          "start": 132,
+          "end": 157,
+          "replacement": "",
+          "kind": "import"
+        },
+        {
+          "start": 158,
+          "end": 178,
+          "replacement": "",
+          "kind": "import"
+        },
+        {
+          "start": 259,
+          "end": 271,
+          "replacement": "global_phase_eighth",
+          "kind": "primitive spelling"
+        }
+      ],
+      "lexical_sha256": "3e6bcd7ad095ae7e34b5e006b40d56d2f7c53f9192a73cc4386ee6778208ec7f",
+      "layout_edits": []
     }
   ],
   "exclusions": [

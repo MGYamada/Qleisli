@@ -17,6 +17,12 @@ and exactness obligations retain their recorded scopes and status.
   original fixture/corpus inputs and explicit current-source mappings. Initial
   bounded native and CLI checks have run; corpus registration, remaining target
   regressions and full normal/MSRV/CI validation are unfinished.
+  Retain original source intervals for forward isometries and Fourier proposals,
+  with fresh original checking by the executed artifact's canonical checker.
+  Each hierarchy decision keeps its 2M structural/10M exact-work limit; the
+  executed/original pair may consume 4M/20M plus separately bounded host and
+  legacy reconstruction work. The existing n=1,m=3 named-QPE regression still
+  exceeds a per-decision structural limit and remains under repair.
 
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all

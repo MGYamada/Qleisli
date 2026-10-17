@@ -250,6 +250,9 @@ impl SourceEvent {
     pub fn span(&self) -> Span {
         self.span
     }
+    /// Node index in `HierarchyProposal::source_trace_graph`, which can differ
+    /// from its executed `pure_graph` after optional Fourier factoring.
+    /// This is unrelated to the checked-source `definition` and `step` indices.
     pub fn unitary_definition(&self) -> Option<usize> {
         self.node
     }
@@ -267,9 +270,11 @@ pub struct InitializationMove {
     crossed: Vec<usize>,
 }
 impl InitializationMove {
+    /// Index in `HierarchyProposal::source_events`.
     pub fn initialization_event(&self) -> usize {
         self.initialization
     }
+    /// Indices in `HierarchyProposal::source_events`.
     pub fn crossed_events(&self) -> &[usize] {
         &self.crossed
     }
@@ -729,6 +734,7 @@ impl Replay<'_> {
         path: &[usize],
         origin: (usize, usize, &SourceStep),
         structural: Option<Primitive>,
+        operation: Option<(&super::SourceOperation, bool)>,
     ) -> Result<Vec<Item>> {
         let event = self
             .events
@@ -746,6 +752,16 @@ impl Replay<'_> {
             ));
         }
         self.event_contract(event, structural, "unitary", false)?;
+        if let Some((operation, adjoint)) = operation {
+            super::zero_basis::validate_constructor_operation(
+                self.proposal,
+                event,
+                operation,
+                self.definitions,
+                adjoint,
+                self.zero_basis_replay,
+            )?;
+        }
         self.next += 1;
         Ok(event.outputs.clone())
     }
@@ -764,6 +780,11 @@ impl Replay<'_> {
             return self.function(id, args, path);
         }
         if let Some(child) = operation.child() {
+            if self.zero_basis_replay {
+                return Err(invalid(
+                    "materialized zero-basis repetition lacks its original dormant child transport",
+                ));
+            }
             let mut output = args;
             for iteration in 0..operation
                 .repeat_count()
@@ -780,7 +801,7 @@ impl Replay<'_> {
             .constructed()
             .ok_or_else(|| invalid("missing retained constructor"))?;
         if ports.effect == crate::ir::Effect::Unitary {
-            return self.constructor_event(&args, path, origin, None);
+            return self.constructor_event(&args, path, origin, None, Some((operation, false)));
         }
         match kind {
             super::OperationConstructor::Then => {
@@ -794,7 +815,8 @@ impl Replay<'_> {
             }
             super::OperationConstructor::Conjugate => {
                 path.push(0);
-                let first = self.constructor_event(&args, path, origin, None);
+                let first =
+                    self.constructor_event(&args, path, origin, None, Some((&children[0], true)));
                 path.pop();
                 path.push(1);
                 let middle = self.operation(&children[1], first?, path, origin);
@@ -806,7 +828,8 @@ impl Replay<'_> {
             }
             super::OperationConstructor::Tensor => {
                 path.push(0);
-                let split = self.constructor_event(&args, path, origin, Some(Primitive::Split));
+                let split =
+                    self.constructor_event(&args, path, origin, Some(Primitive::Split), None);
                 path.pop();
                 let split = split?;
                 let [left, right] = split.as_slice() else {
@@ -821,7 +844,8 @@ impl Replay<'_> {
                 let mut operands = left?;
                 operands.extend(right?);
                 path.push(3);
-                let output = self.constructor_event(&operands, path, origin, Some(Primitive::Join));
+                let output =
+                    self.constructor_event(&operands, path, origin, Some(Primitive::Join), None);
                 path.pop();
                 output
             }
