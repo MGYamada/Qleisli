@@ -1,0 +1,3 @@
+use std::state::init0;
+use std::state::reset;
+pub observe fn f(q: Q<Bit>) -> Q<Bit> { q }

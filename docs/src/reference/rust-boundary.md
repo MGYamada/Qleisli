@@ -50,7 +50,7 @@ its name grants no special permission. In particular, this observing function
 fragment explicitly means measurement:
 
 ```qli
-use std::observe::measure_z;
+
 
 observe fn drop(q: Q<Bit>) -> Bit {
     measure_z(q)
@@ -92,7 +92,7 @@ An ordinary function may be named `default`. For example, this checked function
 fragment has explicit preparation and principal Isometry effect:
 
 ```qli
-use std::quantum::init0;
+use std::state::init0;
 
 fn default() -> Q<Bit> { init0() }
 ```
@@ -129,9 +129,9 @@ distinct; see the [primitive inventory](primitive-boundary.md).
 
 | Explicit operation | Owner, effect and intended physical meaning |
 | --- | --- |
-| `std::observe::measure_z(q)` | `Q<Bit> -> Bit`; Observe. Consumes the original logical owner and returns the Z outcome. It does not return a quantum owner or silently select one outcome. |
-| `std::observe::discard(q)` | One `Q<A> -> Unit`; Observe. Explicitly loses that subsystem's quantum information by the specified partial trace. It is not proof of clean return. The finite lowering supports it; the selected concrete catalog currently does not. |
-| `std::observe::reset(q)` | `Q<Bit> -> Q<Bit>`; Observe. Ends the original logical owner and returns a fresh owner prepared in zero. The result remains linear and must itself be returned or explicitly consumed. The finite lowering supports it; the selected concrete catalog currently does not. |
+| `measure_z(q)` | `Q<Bit> -> Bit`; Observe. Consumes the original logical owner and returns the Z outcome. It does not return a quantum owner or silently select one outcome. |
+| `discard(q)` | One `Q<A> -> Unit`; Observe. Explicitly loses that subsystem's quantum information by the specified partial trace. It is not proof of clean return. The finite lowering supports it; the selected concrete catalog currently does not. |
+| `std::state::reset(q)` | `Q<Bit> -> Q<Bit>`; Observe. Ends the original logical owner and returns a fresh owner prepared in zero. The result remains linear and must itself be returned or explicitly consumed. The finite lowering supports it; the selected concrete catalog currently does not. |
 | `with_computed(...) { ... }` | A checked scoped construction with its own exact cleanup premises. It returns the data owner and discharges its private auxiliary only through the admitted compute/use/uncompute rule. |
 | `adjoint(U)(q)` | Reverses the specified operation only with the required checked access. The call consumes its input and returns an owner; uncomputation alone does not discharge that returned owner or prove it clean. |
 | Scope exit | A lexical boundary requiring complete owner accounting. It performs none of the physical operations above. |
@@ -146,8 +146,8 @@ For example, a finite observing body can choose reset and then explicitly
 consume its fresh result:
 
 ```qli
-use std::observe::reset;
-use std::observe::measure_z;
+use std::state::reset;
+
 
 observe fn reset_then_measure(q: Q<Bit>) -> Bit {
     let fresh = reset(q);
@@ -334,9 +334,9 @@ inverse, reset, discard, release or fresh preparation. Returned values retain
 their changed state and phase, even across a nested lexical boundary.
 
 ```qli
-use std::quantum::init0;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+
 
 observe fn main() -> Bit {
     let q = init0();

@@ -27,10 +27,8 @@ Save this Bell-pair program as `bell/main.qli`:
 
 <!-- quickstart:bell -->
 ```qli
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::cnot;
 
 observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());

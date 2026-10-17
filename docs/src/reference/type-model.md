@@ -164,12 +164,12 @@ neither such a map nor an implicit `Q<A> -> A` conversion.
 Common source checking retains `Q<Unit>` and `Op<Unit>` alongside `Q<Bit>`,
 `Q<Bits<n>>` and complete packaged Basis trees. Helpers and operation providers
 retain the exact basis and linear owner even with an empty physical axis list.
-`std::quantum::phase_eighth(q)` consumes one `Q<A>` owner for any Basis tree A
+`global_phase_eighth(q)` consumes one `Q<A>` owner for any Basis tree A
 and returns its exact type with scalar action `exp(i*pi/4) I`. Its sole argument
 evaluates once; it takes no static arguments and has Unitary effect. An ordinary
 value or a tuple of separate owners is not a valid argument. The selected
-concrete scalar path currently supports the Unit/Bit/Bits atoms; checking a
-packaged tuple does not add that concrete emitter capability. This scalar is
+scalar preparation preserves the complete closed Basis tree, including packaged
+tuples, subject to the requested concrete profile and its existing bounds. This scalar is
 distinct from `phase[1,3]`, whose Bit action is `diag(1, exp(i*pi/4))`.
 
 Hierarchy lowering retains that scalar through explicit checked Unit structure
@@ -181,9 +181,9 @@ factor cannot remove the scalar.
 
 The common source catalog exposes two explicit structural maps:
 
-- `std::quantum::unit(u)` takes exactly one ordinary `Unit` argument and returns
+- `unit(u)` takes exactly one ordinary `Unit` argument and returns
   one fresh `Q<Unit>` owner.
-- `std::quantum::finish(q)` consumes exactly one `Q<Unit>` owner and returns
+- `finish(q)` consumes exactly one `Q<Unit>` owner and returns
   ordinary `Unit`.
 
 Both take no static arguments and have Unitary quantum action with exact
@@ -194,7 +194,7 @@ or converts another basis implicitly. `unit()` is an arity error; write
 specified argument types.
 
 Both arguments evaluate completely, once, before their map. In particular,
-`finish(phase_eighth(unit(())))` has scalar coefficient `exp(i*pi/4)`;
+`finish(global_phase_eighth(unit(())))` has scalar coefficient `exp(i*pi/4)`;
 its ordinary Unit result does not erase that computation. Reintroducing a
 Unit owner after finishing it gives a fresh owner, never revives the consumed
 binding, and preserves the phase and any retained reference. An observing
@@ -219,7 +219,7 @@ cannot unpack the former. The two explicit maps are:
 - `join(a,b): (Q<A>,Q<B>) -> Q<(A,B)>`, consuming two distinct owners and
   returning one fresh owner with the complete ordered basis tree.
 
-Both names are in `std::quantum`, take no static arguments, and have Unitary
+Both names are bare language primitives, take no static arguments, and have Unitary
 action with coefficient `+1`. `split` has one argument and requires an immediate
 binary basis tuple; `join` has two arguments, not one ordinary tuple argument.
 Their arguments evaluate completely, once, from left to right. Nested trees,
@@ -244,7 +244,7 @@ Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
 factor. The coefficient is exactly `+1` on every basis value and retained
 reference. Scalar work already performed on an eliminated Unit factor remains
 in the composition. These maps are never inserted by implicit coercion.
-`phase_eighth` preserves one `Q<A>` owner for any admitted closed basis tree,
+`global_phase_eighth` preserves one `Q<A>` owner for any admitted closed basis tree,
 including packaged tuples with Unit and Bits factors. Its coefficient is
 exactly `exp(i*pi/4)` times identity on that complete ordered basis and any
 retained reference. Concrete preparation preserves the original tree and axes;
@@ -369,7 +369,7 @@ earlier parameters. Runtime values never determine static sizes or providers.
 
 The mandatory common source judgment covers every original declaration,
 owner/effect rule, capability, dependency and static branch, including private
-and unused declarations, both arms, zero-iteration bodies and all six ordinary
+and unused declarations, both arms, zero-iteration bodies and all seven ordinary
 bundled modules. A source-semantic error precedes concrete profile eligibility.
 Specialization then checks closed substitutions, exact type trees, provider
 identity, premises and aggregate work. Numeric and operation obligations share
@@ -828,7 +828,7 @@ requires the existing hierarchy phase target. This is a target capability
 distinction, not a source type or edition distinction. The adapter enforces the
 existing 16-live-wire bound across whole call frames, before allocation.
 
-`phase_eighth(q)` uses the existing zero-axis monomial to multiply the complete
+`global_phase_eighth(q)` uses the existing zero-axis monomial to multiply the complete
 `Q<Unit>` or `Q<Bit>` owner by exactly `exp(i*pi/4)`. On Bit this is a scalar
 times identity on both basis labels, not T on one axis. It consumes the original
 token and returns a fresh token with the same shape and wires. Raw source-step
@@ -838,7 +838,7 @@ Preceding argument work and subsequent observation stay in source order.
 
 This Raw adapter transports ordinary `Bits<N>` within the selected concrete
 bounds described above. Unsupported quantum basis shapes
-and controlled-phase primitives still reject. Closed Definition/Repeat providers support
+outside the exact coefficient/constructor profile still reject. Closed Definition/Repeat providers support
 forward, adjoint and controlled access through ordinary calls within the exact
 pure-circuit profile; this includes conditional scalar action on a Unit owner.
 Their original Meaning requests remain mandatory, including unused bindings
@@ -886,7 +886,7 @@ errors identify the removed prefix. This namespace retirement does not complete
 the remaining grammar/CLI migration.
 Directory/qrate and explicit-module inputs retain their loader/provenance and
 concrete consumer differences, but both first check every complete original
-and the six bundled ordinary sources through the same judgment. Finite then
+and the seven bundled ordinary sources through the same judgment. Finite then
 requires its concrete declarations to fit its profile; selected input seeks
 native acceptance only for the requested concrete specialization. Native
 results distinguish those scopes and do not certify every possible
@@ -930,7 +930,7 @@ ownership and phase obligations. `sample` and named-QPE selection require a
 public Observe contract and an actually observing supported artifact; a broader
 annotation does not fabricate observing operations or rewrite the Raw effect.
 This adapter introduces no native primitive or new theorem. Raw supports
-retained quantum Unit inputs/returns, exact `phase_eighth` and the explicit
+retained quantum Unit inputs/returns, exact `global_phase_eighth` and the explicit
 structural Unit introduction/elimination maps. The latter lower to
 `RawOp::PackUnit` and `RawOp::UnpackUnit`: their zero-axis owner transitions
 retain the complete live caller frame and scalar phase, with fresh native

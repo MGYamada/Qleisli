@@ -12,10 +12,10 @@ fn checked(source: &str) -> CheckedProgram {
     .0
 }
 
-const BODY: &str = "use std::quantum::phase_eighth;
+const BODY: &str = "
     unitary fn f[const n:Nat](q:Q<Unit>)->Q<Unit>{
         static let k=n-n;
-        if static k==0 {qfor static i in 0..0 carry r=q {yield phase_eighth(r);}}
+        if static k==0 {qfor static i in 0..0 carry r=q {yield global_phase_eighth(r);}}
         else {q}
     }";
 
@@ -69,7 +69,7 @@ fn identity_and_sealed_only_static_bodies_retain_all_original_plans() {
 #[test]
 fn zero_body_primitive_naturals_keep_ordered_categories_aliases_and_fold_scope() {
     let program = checked(
-        "use std::quantum::phase;
+        "
         unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{
             static let k=n-n;
             qfor static i in 0..0 carry r=q {yield phase[k,i+1](r);}

@@ -14,10 +14,10 @@ use qleisli::interchange::native::Kernel;
 #[test]
 fn dormant_primitive_x_refuses_at_its_original_action_like_a_direct_call() {
     for source in [
-        "use std::quantum::x;
+        "use std::gate::x;
          unitary fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
          requires Applicable(U){x(ctrl q);U(q)}",
-        "use std::quantum::x;
+        "use std::gate::x;
          unitary fn direct(q:Q<Bit>)->Q<Bit>{x(ctrl q);q}",
     ] {
         let failure = check_project(&SourceRoot::new(source).0).unwrap_err();
@@ -37,7 +37,7 @@ fn dormant_zero_width_primitive_actions_each_require_a_fresh_native_request() {
     for basis in ["Unit", "(Unit,Unit)"] {
         let source = |actions: &str| {
             format!(
-                "use std::quantum::phase_eighth;
+                "
                  unitary fn unused[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
                  requires Applicable(U){{{actions}U(q)}}"
             )
@@ -52,8 +52,11 @@ fn dormant_zero_width_primitive_actions_each_require_a_fresh_native_request() {
         };
         let before = check("").native_decisions().requests_checked();
         for (actions, expected) in [
-            ("phase_eighth(ctrl q);", 1),
-            ("phase_eighth(ctrl q);phase_eighth(ctrl q);", 2),
+            ("global_phase_eighth(ctrl q);", 1),
+            (
+                "global_phase_eighth(ctrl q);global_phase_eighth(ctrl q);",
+                2,
+            ),
         ] {
             let report = check(actions);
             assert_eq!(
@@ -71,9 +74,9 @@ fn dormant_zero_width_primitive_actions_each_require_a_fresh_native_request() {
 )]
 #[test]
 fn dormant_primitive_owner_type_comes_from_the_referenced_parameter_identity() {
-    let positive = "use std::quantum::phase_eighth;
+    let positive = "
         unitary fn unused[const U:Op<Unit>](bit:Q<Bit>,scalar:Q<Unit>)->(Q<Bit>,Q<Unit>)
-        requires Applicable(U){phase_eighth(ctrl scalar);(bit,U(scalar))}";
+        requires Applicable(U){global_phase_eighth(ctrl scalar);(bit,U(scalar))}";
     let kernel = Kernel::selected().unwrap();
     let report = check_project_report_with_kernel(
         &SourceRoot::new(positive).0,
@@ -82,7 +85,7 @@ fn dormant_primitive_owner_type_comes_from_the_referenced_parameter_identity() {
     )
     .unwrap();
     assert!(report.native_decisions().requests_checked() > 0);
-    let negative = "use std::quantum::x;
+    let negative = "use std::gate::x;
         unitary fn unused[const U:Op<Unit>](scalar:Q<Unit>,bit:Q<Bit>)->(Q<Unit>,Q<Bit>)
         requires Applicable(U){x(ctrl bit);(U(scalar),bit)}";
     let failure = check_project(&SourceRoot::new(negative).0).unwrap_err();
@@ -99,9 +102,9 @@ fn dormant_primitive_owner_type_comes_from_the_referenced_parameter_identity() {
 )]
 #[test]
 fn dormant_primitive_action_does_not_restore_a_spent_source_parameter() {
-    let source = "use std::quantum::phase_eighth;
+    let source = "
         unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
-        requires Applicable(U){let moved=q;phase_eighth(ctrl q);U(moved)}";
+        requires Applicable(U){let moved=q;global_phase_eighth(ctrl q);U(moved)}";
     let failure = check_project(&SourceRoot::new(source).0).unwrap_err();
     assert_eq!(failure.code, ErrorCode::Ownership, "{failure}");
     assert_eq!(&source[failure.span.start..failure.span.end], "q");

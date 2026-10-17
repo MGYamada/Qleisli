@@ -46,7 +46,7 @@ impl Root {
         result
     }
     fn evolution(&self, n: usize) {
-        self.write("evolution.qli", &format!("use std::quantum::t; pub unitary fn evolve(q: Q<Bit>) -> Q<Bit> {{ power(t,{n})( q) }}"));
+        self.write("evolution.qli", &format!("use std::gate::t; pub unitary fn evolve(q: Q<Bit>) -> Q<Bit> {{ power(t,{n})( q) }}"));
     }
 }
 impl Drop for Root {
@@ -61,10 +61,10 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, bits: &[bool], expected: f64) 
         "{bits:?}: {actual}, expected {expected}"
     );
 }
-const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split; use std::observe::measure_z;
-use std::observe::discard; use std::measurement::measure_x;";
+const IMPORTS: &str = "use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+  
+ use std::measurement::measure_x;";
 
 #[cfg_attr(
     not(qleisli_native_tests),
@@ -92,8 +92,8 @@ fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
     let root = Root::qpe();
     root.write(
         "main.qli",
-        "use estimation::phase2; use std::quantum::init0;
-        use std::quantum::x; use std::observe::measure_z;
+        "use estimation::phase2; use std::state::init0;
+        use std::gate::x; 
         observe fn main() -> ((Bit,Bit),Bit) {
             let (phase, q) = phase2(x(init0())); (phase, measure_z(q))
         }",

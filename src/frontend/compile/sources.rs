@@ -404,7 +404,7 @@ mod tests {
             ("main", "use phase::turn;use dormant::unused;use unrelated::ignored;
               unitary fn original[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n==0 {turn(q)}else{power(unused,0)(q)}}
               meaning M:Bit=reference(turn);"),
-            ("phase", "use std::quantum::phase;use numbers::exponent;
+            ("phase", "use numbers::exponent;
               pub unitary fn turn(q:Q<Bit>)->Q<Bit>{phase[1,exponent[0]()](q)}"),
             ("numbers", "pub static fn exponent[const n:Nat]()->Nat{n+1}"),
             ("dormant", "pub unitary fn unused(q:Q<Bit>)->Q<Bit>{q}"),

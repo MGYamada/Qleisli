@@ -1,0 +1,7 @@
+use std::state::init0;
+use std::gate::x;
+
+unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+unitary fn invoke[const U:Op<Bit -> Bit>](q:Q<Bit>)->Q<Bit>
+requires Applicable(U){U(q)}
+pub observe fn main()->Bit{measure_z(invoke[flip](init0()))}

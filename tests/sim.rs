@@ -51,8 +51,8 @@ fn close(actual: f64, expected: f64) {
 #[test]
 fn nested_branches_reserve_pending_outer_components_and_amplitudes() {
     use qleisli::frontend::compile::compile_project;
-    let root = common::SourceRoot::new(include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/nested_ensemble/main.qli"
+    let root = common::SourceRoot::new(&common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/nested_ensemble/main.qli",
     ));
     let program = compile_project(&root.0).unwrap();
     // At deepest allocation: two pending outside components plus four cells.

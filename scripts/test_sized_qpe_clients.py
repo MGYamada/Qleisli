@@ -161,7 +161,7 @@ def cache_case(base):
     # Different nested providers at the same natural sizes must not share a
     # stale instantiation. Their phases add to pi on the all-one three-bit input.
     modules = base | {
-      'box': 'use std::registers::take_bit; use std::registers::put_bit; pub unitary fn box[const n: Nat, const V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controllable(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
+      'box': '  pub unitary fn box[const n: Nat, const V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controllable(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
       'route': 'pub unitary fn route[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controllable(U) { controlled(U)(c,q) }',
       'client': 'use route::route; use box::box; use evolution::evolve; pub unitary fn twice[const n: Nat](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { let (c,q)=route[n,box[n,evolve[n-1,1,3]]](c,q); route[n,box[n,evolve[n-1,3,3]]](c,q) }'}
     artifact = compile_source(modules['client'],'twice',dict(n=2),modules=modules)
@@ -200,7 +200,7 @@ def main():
     artifacts['declaration-order']=build(reordered,'order',2,2)
     parameters['declaration-order']=('order',2,2,1,3)
     negative_sign=base['amplification'].replace('use rotation::prepare;',
-        'use rotation::prepare; use std::registers::take_bit; use std::registers::put_bit; use std::quantum::phase; use std::quantum::x;').replace(
+        'use rotation::prepare;    use std::gate::x;').replace(
         'prepare[n,j,d](q)\n}', 'let q=prepare[n,j,d](q); let (bit,rest)=take_bit[n,0](q); put_bit[n,0](x(phase[1,1](x(phase[1,1](bit)))),rest)\n}')
     faults={
       'wrong-modular-direction': (base|{'modular':base['modular'].replace('take_bit[n,n-1]','take_bit[n,0]').replace('put_bit[n,0]','put_bit[n,n-1]')},('order',3,2,1,3)),

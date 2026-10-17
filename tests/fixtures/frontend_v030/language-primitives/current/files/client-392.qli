@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+
+
+
+pub observe fn f(q:Q<Bit>,r:Q<(Unit,Bit)>)->(Bits<1>,Q<(Unit,Bit)>){let b=measure_z(q);let(u,a)=split(r);let r=join(u,a);(prepend_bit[0](b,empty_bits()),r)}

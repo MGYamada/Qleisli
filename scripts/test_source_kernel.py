@@ -6,7 +6,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import json
 import os
 from pathlib import Path
-from current_source_fixtures import current_source_fixture
+from current_source_fixtures import current_source_fixture, current_source_project
 import subprocess
 import sys
 import tempfile
@@ -30,7 +30,7 @@ class SourceKernel(unittest.TestCase):
 
     def test_library_without_entry_checks_with_native_kernel(self):
         for source in ['library', 'project', 'generic']:
-            project = FIXTURE/source if source == 'library' else current_source_fixture(FIXTURE/source)
+            project = current_source_project(FIXTURE/source)
             legacy = self.run_cli('check', project)
             selected = self.run_cli('check', project, KERNEL)
             self.assertEqual(legacy, selected)
@@ -107,7 +107,8 @@ sys.exit(result.returncode)
             tmp = Path(tmp)
             (tmp/'src').mkdir()
             (tmp/'Qargo.toml').write_text('schema-version = 2\n[qrate]\nedition = "2026"\n[source]\nroot = "src"\n')
-            (tmp/'src/library.qli').write_bytes((FIXTURE/'library/library.qli').read_bytes())
+            project = current_source_project(FIXTURE/'library')
+            (tmp/'src/library.qli').write_bytes((project/'library.qli').read_bytes())
             self.assertEqual(self.run_cli('check', tmp, KERNEL, '--qrate')[0], 0)
             code, document = self.run_cli('check', tmp, tmp/'missing', '--qrate')
             self.assertNotEqual(code, 0)

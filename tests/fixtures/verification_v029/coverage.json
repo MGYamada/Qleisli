@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "b93649e28564ecfa0dfc96ca7e0fcfccf803219708c5b1b95a4de6b79fbf1acb",
+  "surface_sha256": "48e0e9d15443637b82f0d6946b322893f36e95580ab2cedc1ad72ccf04d6416c",
   "groups": [
     {
       "id": "raw-core",
@@ -3157,7 +3157,7 @@
           "path": "src/interop/profile.rs",
           "markers": [
             "pub(super) fn extract(",
-            "ExpansionBudget::default()",
+            "ExpansionBudget::for_program(program)",
             "super::export::steps(",
             "&mut expansion"
           ]
@@ -3180,6 +3180,21 @@
             "body: evidence.circuit().steps()",
             "inverse: frame.inverse ^ *adjoint",
             "crate::contract::invert_steps("
+          ]
+        },
+        {
+          "path": "src/interop/export/normalization.rs",
+          "markers": [
+            "program.kernel()",
+            "FunctionEvidence::check_retained_with_kernel(",
+            "equation.signature() == &signature",
+            "equation.implementation() == &original",
+            "equation.specification() == &proposed",
+            "work: Budget::new(DEFAULT_EXACT_WORK),",
+            "const MAX_LOCAL_EQUATIONS: usize = 7;",
+            "fn candidate(",
+            "first.controls != middle.controls",
+            "phases != &[0, 4]"
           ]
         }
       ],
@@ -3219,6 +3234,30 @@
         {
           "path": "src/interop/export/contracts.rs",
           "test": "malformed_mapping_of_checked_dependency_returns_an_error"
+        },
+        {
+          "path": "src/interop/export/normalization.rs",
+          "test": "candidate_requires_exact_adjacent_phase_target_and_ordered_controls"
+        },
+        {
+          "path": "src/interop/export/normalization.rs",
+          "test": "equation_failure_keeps_the_original_window_and_shared_budget"
+        },
+        {
+          "path": "src/interop/export/normalization.rs",
+          "test": "existing_native_equation_refuses_wrong_phase_or_control_subjects"
+        },
+        {
+          "path": "src/interop/export/normalization.rs",
+          "test": "actual_retained_hzh_and_adjoint_preserve_all_columns_controls_and_reference"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order"
         }
       ],
       "entry_path": "interop::{export_openqasm3,export_qir_base}; corresponding CLI/Python exports",
@@ -3747,11 +3786,71 @@
         },
         {
           "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
-          "test": "zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refusal"
+          "test": "zero_basis_composition_retains_intervals_and_nonzero_tables_keep_profile_refusal"
         },
         {
           "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
           "test": "zero_basis_preparation_keeps_exact_phase_reference_and_physical_initialization"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+          "test": "named_zero_basis_transforms_retain_all_original_empty_owner_intervals"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+          "test": "preparation_operation_retains_its_explicit_hierarchy_refusal"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+          "test": "zero_repetitions_bind_the_original_child_and_literal_count"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+          "test": "native_valid_identity_cannot_replace_the_original_zero_repeat_child_root"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+          "test": "native_valid_direction_and_polarity_changes_remain_different_source_actions"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+          "test": "all_original_composite_constructors_retain_structural_table_dependencies"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+          "test": "native_valid_other_constructor_trees_cannot_replace_the_original_source"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+          "test": "native_execution_preserves_composite_full_phase_with_an_untouched_reference"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+          "test": "original_composites_keep_distinct_zero_width_arrow_endpoints"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "checked_finite_overrides_keep_actual_bytes_and_each_original_zero_interval"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "a_zero_repeat_override_cannot_erase_its_original_dormant_source_child"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "reference_meaning_override_retains_both_original_raw_and_actual_receipt_wrapper"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "reference_override_compares_complete_nested_receipt_snapshots_after_native_decode"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "checked_source_witness_cannot_move_to_a_fresh_equal_shaped_source_collection"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+          "test": "retained_witness_ceiling_rejects_before_extending_the_existing_aggregate"
         }
       ],
       "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",

@@ -1,0 +1,5 @@
+use std::state::init0;
+use std::state::reset;
+use library::f;
+pub observe fn g(q: Q<Bit>) -> Q<Bit> { f(q) }
+pub observe fn main() -> Bit { measure_z(g(init0())) }

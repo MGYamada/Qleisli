@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada
+// Primitive-source migration: Copyright 2026 Qleisli Project Contributors
+// SPDX-License-Identifier: Apache-2.0
+// Deliberate QLI rejection fixture; not an external translation.
+use std::state::init0;
+
+observe fn main() -> (Bit,Bit) {
+    let q = init0();
+    let bit = measure_z(q);
+    (bit,measure_z(q))
+}

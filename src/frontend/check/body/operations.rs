@@ -658,10 +658,7 @@ impl Checker<'_, '_> {
             Target::Primitive(primitive) => {
                 self.program
                     .budget
-                    .charge(span, primitive.module.len() + primitive.name.len() + 2)?;
-                let path = format!("{}::{}", primitive.module, primitive.name);
-                let primitive =
-                    primitive::Primitive::lookup(&path).expect("typed sealed resolution");
+                    .charge(span, primitive.spelling().len() + 1)?;
                 if static_args.len() != primitive.natural_arity() {
                     return Err(SourceError::new(
                         "static-arity",
@@ -779,13 +776,8 @@ impl Checker<'_, '_> {
                 Target::Primitive(primitive) => {
                     self.program
                         .budget
-                        .charge(span, primitive.module.len() + primitive.name.len() + 2)?;
-                    let path = format!("{}::{}", primitive.module, primitive.name);
-                    if primitive::Primitive::lookup(&path)
-                        .expect("typed sealed resolution")
-                        .effect()
-                        != Effect::Unitary
-                    {
+                        .charge(span, primitive.spelling().len() + 1)?;
+                    if primitive.effect() != Effect::Unitary {
                         return Err(SourceError::new(
                             "effect",
                             span,
@@ -970,9 +962,6 @@ impl Checker<'_, '_> {
         }
         match self.resolve(name)? {
             Target::Primitive(primitive) if allow_primitive => {
-                let path = format!("{}::{}", primitive.module, primitive.name);
-                let primitive =
-                    primitive::Primitive::lookup(&path).expect("resolved typed primitive");
                 if primitive.dependent() {
                     return Err(SourceError::new(
                         "type",
@@ -1020,9 +1009,7 @@ impl Checker<'_, '_> {
                 let mut message =
                     "static provider requires an ordinary fn with inferred Unitary body effect"
                         .to_owned();
-                if primitive.module == "std::quantum"
-                    && matches!(primitive.name, "h" | "x" | "z" | "t")
-                {
+                if primitive == primitive::Primitive::H {
                     self.program.budget.charge(
                         name.span,
                         name.text.len().saturating_mul(2).saturating_add(128),

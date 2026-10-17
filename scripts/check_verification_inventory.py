@@ -16,6 +16,65 @@ ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = 'tests/fixtures/verification_v022/inventory.json'
 PACKETS = {'VM-23', 'VM-24', 'VM-25', 'VM-26', 'VM-27', 'VM-28', 'VM-29'}
 
+# Reviewed source identities, not a theorem of minimality or a new admission.
+# Keep internal selected/backend tags separate from this language-owned set.
+LANGUAGE_PRIMITIVE_PATH = 'src/frontend/primitive.rs'
+LANGUAGE_PRIMITIVES = {
+    'H': 'h', 'Phase': 'phase', 'GlobalPhaseEighth': 'global_phase_eighth',
+    'Unit': 'unit', 'Finish': 'finish', 'Split': 'split', 'Join': 'join',
+    'MeasureZ': 'measure_z', 'Discard': 'discard', 'TakeBit': 'take_bit',
+    'PutBit': 'put_bit', 'EmptyBits': 'empty_bits', 'PrependBit': 'prepend_bit',
+}
+
+
+def primitive_method(text, name):
+    """Borrow one bounded method body; comments/literals cannot invent braces."""
+    code = rust_code(text)
+    match = re.search(r'\bpub\s+fn\s+' + re.escape(name) + r'\b[^{}]*\{', code)
+    if match is None:
+        raise ValueError('missing typed primitive method: ' + name)
+    depth, end = 1, match.end()
+    while end < len(code) and depth:
+        depth += (code[end] == '{') - (code[end] == '}')
+        end += 1
+    if depth:
+        raise ValueError('unclosed typed primitive method: ' + name)
+    return text[match.end():end - 1]
+
+
+def check_language_primitives(root):
+    """Detect source catalog growth even after its digest/enum row is refreshed.
+
+    This intentionally recognizes the current explicit catalog, not arbitrary
+    Rust semantics. A new catalog representation requires reviewed guard changes.
+    """
+    text = (root/LANGUAGE_PRIMITIVE_PATH).read_text()
+    actual = variants(text, 'PrimitiveId')
+    if actual != {name: name for name in LANGUAGE_PRIMITIVES}:
+        raise ValueError('unreviewed typed language primitive identity set')
+    code = rust_code(text)
+    match = re.search(r'\bpub\s+const\s+ALL\s*:[^=;]*=\s*&\[([^]]*)\]', code, re.S)
+    if match is None or re.findall(r'\bSelf::(\w+)', match[1]) != list(LANGUAGE_PRIMITIVES):
+        raise ValueError('typed language primitive ALL drift')
+    body = primitive_method(text, 'spelling')
+    masked = rust_code(body)
+    expected_body = 'matchself{' + ''.join('Self::' + name + '=>,' for name in LANGUAGE_PRIMITIVES) + '}'
+    if re.sub(r'\s+', '', masked) != expected_body:
+        raise ValueError('typed language primitive spelling body must remain canonical')
+    spellings = {}
+    for row in re.finditer(r'Self::(\w+)\s*=>\s*("[a-z_]+")\s*,', body):
+        if not masked[row.start():].startswith('Self::'):
+            continue
+        if row[1] in spellings:
+            raise ValueError('duplicate typed language primitive spelling')
+        spellings[row[1]] = json.loads(row[2])
+    if spellings != LANGUAGE_PRIMITIVES:
+        raise ValueError('typed language primitive spelling drift')
+    lookup = re.sub(r'\s+', '', rust_code(primitive_method(text, 'lookup_unbound')))
+    if lookup != 'Self::ALL.iter().copied().find(|id|id.spelling()==name)':
+        raise ValueError('typed language primitive lookup must remain canonical unbound-only')
+
+
 # Reviewed metadata for this separate engineering route. Identity checks do not
 # prove these claims; changing the route's contract requires explicit review.
 ENGINEERING_INSTRUMENT_BOUNDARY = {
@@ -271,6 +330,7 @@ def test_names(path):
 
 def check(root=ROOT, data=None):
     try:
+        check_language_primitives(root)
         if data is None:
             data = json.loads((root / INVENTORY).read_text())
         expected = {'format','version','packet','release','authority','groups','enums','sources','boundaries','capacities','corpus','native_packaging','comparison'}
@@ -316,6 +376,8 @@ def check(root=ROOT, data=None):
         required = {'Effect','SingleGate','ScalarPhase','UnitaryStep','CircuitAction','ProtectedRegion','ProtectedUse','RawOp'}
         if not required <= {n for p,n in covered if p == 'src/ir.rs'} or ('src/contract/mod.rs','BasisType') not in covered:
             raise ValueError('missing published constructor family')
+        if (LANGUAGE_PRIMITIVE_PATH, 'PrimitiveId') not in covered:
+            raise ValueError('missing typed language primitive constructor family')
         if len({s['path'] for s in data['sources']}) != len(data['sources']):
             raise ValueError('duplicate source snapshot')
         paths = {s['path'] for s in data['sources']}

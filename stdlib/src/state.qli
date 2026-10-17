@@ -1,0 +1,18 @@
+//! Explicit ordinary state preparation and observation-bearing replacement.
+//! These definitions receive the same source, effect and native checks as users.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+
+/// Prepare exactly |0>, coefficient +1, in one fresh Bit owner.
+/// The Unit input has no physical wire; the result allocates one physical wire.
+/// Tensor identity on every retained reference; no separability promise is inferred.
+pub isometry fn init0() -> Q<Bit> {
+    basis unit(()) as _ { 0 }
+}
+
+/// Erase the complete incoming Bit owner and return an independently prepared |0>.
+/// This is Observe even when the original input happened to be zero.
+/// Correlations with every retained reference follow discard then preparation.
+pub observe fn reset(q: Q<Bit>) -> Q<Bit> {
+    discard(q);
+    init0()
+}

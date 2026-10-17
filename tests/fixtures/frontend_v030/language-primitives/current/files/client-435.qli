@@ -1,0 +1,6 @@
+use std::state::init0;
+
+use std::gate::t;
+
+unitary fn ht(q: Q<Bit>) -> Q<Bit> { t(h(q)) }
+observe fn main() -> Bit { measure_z(power(ht,300)(init0())) }

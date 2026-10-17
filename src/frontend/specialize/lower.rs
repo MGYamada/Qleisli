@@ -35,6 +35,7 @@ pub struct HierarchyProposal {
     moves: Vec<InitializationMove>,
     zero_basis: Vec<zero_basis::Interval>,
     pure_traces: Vec<zero_basis::DefinitionTrace>,
+    native_sources: Vec<zero_basis::NativeSourceTrace>,
 }
 impl std::fmt::Debug for HierarchyProposal {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -655,12 +656,14 @@ struct Lower<'a> {
     inline_visits: usize,
     zero_basis: Vec<zero_basis::Interval>,
     pure_traces: Vec<zero_basis::DefinitionTrace>,
+    native_sources: Vec<zero_basis::NativeSourceTrace>,
     trace_zero_basis: bool,
     pure_trace_cells: usize,
 }
 struct NativeOperation<'a> {
     key: super::elaborate::OperationKey,
     leaf: &'a crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+    witness: Option<std::sync::Arc<super::raw::SourceOperationWitness>>,
 }
 impl Lower<'_> {
     fn native_operation(
@@ -1286,8 +1289,20 @@ impl Lower<'_> {
     fn operation(&mut self, op: &SourceOperation) -> Result<usize> {
         let key = op.key();
         if let Some(native) = self.native_operations.iter().find(|entry| entry.key == key) {
+            if zero_basis::operation_uses_table(self.source, op)? {
+                let witness = native
+                    .witness
+                    .as_ref()
+                    .ok_or_else(|| fail("checked provider lacks its original Raw source witness"))?
+                    .clone();
+                return self.native_source_operation(op, native.leaf, witness);
+            }
             return self.native_operation(native.leaf);
         }
+        self.operation_source(op)
+    }
+    /// Expand the original source at this root; descendants retain their checks.
+    fn operation_source(&mut self, op: &SourceOperation) -> Result<usize> {
         if let Some((kind, children, ports)) = op.constructed() {
             if ports.effect != Effect::Unitary {
                 return Err(fail(
@@ -2118,10 +2133,12 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
     for definition in source.definitions() {
         for step in definition.steps() {
             if let Some(operation) = step.operation().filter(|_| has_basis_tables) {
-                if zero_basis::operation_uses_table(source, operation)? {
+                if zero_basis::operation_uses_table(source, operation)?
+                    && !zero_basis::operation_has_structural_tables(source, operation)?
+                {
                     return Ok(HierarchyEligibility::Ineligible(Error::new(
                         "unsupported",step.span(),
-                        "zero-basis hierarchy transport requires ordinary source calls; static operation transforms retain the Raw profile",
+                        "zero-basis hierarchy transport requires original structural unitary tables; preparation retains the Raw profile",
                     ).in_module(step.module())));
                 }
             }
@@ -2155,6 +2172,14 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
     lower_inner(source, &[])
 }
 
+/// Retain original Raw correspondence only where hierarchy also carries basis intervals.
+pub(super) fn operation_needs_source_witness(
+    source: &ElaboratedProgram,
+    operation: &SourceOperation,
+) -> Result<bool> {
+    zero_basis::operation_uses_table(source, operation)
+}
+
 pub(super) fn lower_with_checked_operation(
     check: &super::SourceMeaningCheck<'_>,
 ) -> Result<HierarchyProposal> {
@@ -2163,9 +2188,17 @@ pub(super) fn lower_with_checked_operation(
     let op = proposal
         .operation()
         .ok_or_else(|| fail("hierarchy binding requires an original source operation binding"))?;
+    let witness = if operation_needs_source_witness(proposal.source(), op)? {
+        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+        let mut cells = 0;
+        Some(check.source_witness(&mut budget, &mut cells)?)
+    } else {
+        None
+    };
     let operations = [NativeOperation {
         key: op.key(),
         leaf: check.leaf(),
+        witness,
     }];
     lower_inner(proposal.source(), &operations)
 }
@@ -2173,15 +2206,36 @@ pub(super) fn lower_with_checked_operation(
 pub(super) fn lower_with_checked_meanings(
     check: &super::CheckedSourceMeanings<'_>,
 ) -> Result<HierarchyProposal> {
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let operations = check
         .leaves
         .iter()
         .map(|(key, leaf, _)| {
+            let leaf = leaf
+                .unitary()
+                .ok_or_else(|| fail("rectangular Meaning requires the Raw lowering profile"))?;
+            let mut witness = None;
+            for candidate in check.source_witnesses.iter() {
+                budget
+                    .charge(1)
+                    .map_err(|_| limit("native source witness lookup exceeds shared work"))?;
+                if candidate.key() != key {
+                    continue;
+                }
+                budget
+                    .charge(leaf.payload().len())
+                    .map_err(|_| limit("native source witness lookup exceeds shared work"))?;
+                if candidate.payload() == leaf.payload()
+                    && candidate.matches(check.source(), candidate.operation(), &mut budget)?
+                {
+                    witness = Some(candidate.clone());
+                    break;
+                }
+            }
             Ok(NativeOperation {
                 key: key.clone(),
-                leaf: leaf
-                    .unitary()
-                    .ok_or_else(|| fail("rectangular Meaning requires the Raw lowering profile"))?,
+                leaf,
+                witness,
             })
         })
         .collect::<Result<Vec<_>>>()?;
@@ -2206,6 +2260,7 @@ fn lower_inner<'a>(
         inline_visits: 0,
         zero_basis: vec![],
         pure_traces: vec![],
+        native_sources: vec![],
         trace_zero_basis: source
             .definitions()
             .iter()
@@ -2261,6 +2316,7 @@ fn lower_inner<'a>(
         let (compact, id, mapping) = lower.graph.compact_export(id)?;
         zero_basis::remap(&mut lower.zero_basis, &mapping)?;
         zero_basis::remap_traces(&mut lower.pure_traces, &mapping)?;
+        zero_basis::remap_native_sources(&mut lower.native_sources, &mapping)?;
         let graph = compact.artifact(id);
         (graph.clone(), compact.comparison(id), graph, false)
     } else {
@@ -2337,6 +2393,7 @@ fn lower_inner<'a>(
         preservation::remap_events(&mut state.events, &map)?;
         zero_basis::remap(&mut lower.zero_basis, &map)?;
         zero_basis::remap_traces(&mut lower.pure_traces, &map)?;
+        zero_basis::remap_native_sources(&mut lower.native_sources, &map)?;
         let graph = compact.artifact(pure);
         let pure_request = compact.comparison(pure);
         let readout_inputs = side(&desired, &[]);
@@ -2431,6 +2488,7 @@ fn lower_inner<'a>(
         moves,
         zero_basis: lower.zero_basis,
         pure_traces: lower.pure_traces,
+        native_sources: lower.native_sources,
     };
     zero_basis::validate(&result)?;
     if instrument {

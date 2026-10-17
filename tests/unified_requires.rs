@@ -250,7 +250,7 @@ fn invalid_arithmetic_and_unbounded_requirement_forms_do_not_gain_acceptance() {
 fn specialization_keys_keep_nat_provider_and_exact_type_separate() {
     let source = format!(
         "{MIXED}
-        use std::quantum::x;
+        use std::gate::x;
         pub unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
         pub unitary fn host(a:Q<Bit>,b:Q<Bit>,c:Q<Bits<1>>,d:Q<Bit>,e:Q<Bit>)
           ->(Q<Bit>,Q<Bit>,Q<Bits<1>>,Q<Bit>,Q<Bit>) {{
@@ -313,7 +313,7 @@ fn receipt(raw: &RawProgram) -> &FunctionEvidence {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn requires_only_source_replacement_cannot_reuse_old_function_evidence() {
-    let first = "use std::quantum::h;
+    let first = "
         unitary fn implementation(q:Q<Bit>)->Q<Bit>{h(h(q))}
         unitary fn specified(q:Q<Bit>)->Q<Bit>{q}
         pub unitary fn guarded[const n:Nat](q:Q<Bit>)->Q<Bit>

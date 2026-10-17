@@ -15,10 +15,10 @@ use qleisli::sim::{SimulationLimits, run_closed};
 
 const TOLERANCE: f64 = 1e-12;
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::reset; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ use std::state::reset; 
 ";
 
 type Distribution = BTreeMap<Vec<bool>, f64>;

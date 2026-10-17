@@ -17,8 +17,8 @@ import subprocess
 import tempfile
 
 SEED = 20260930021
-IMPORTS = """use std::quantum::{init0,h,x,z,t,cnot,toffoli,split,join};
-use std::observe::{measure_z,reset};
+IMPORTS = """use std::state::init0; use std::gate::x; use std::gate::z; use std::gate::t; use std::gate::cnot; use std::gate::toffoli;
+use std::state::reset;
 unitary fn pa(q:Q<Bit>)->Q<Bit>{t(h(q))}
 unitary fn pb(q:Q<Bit>)->Q<Bit>{z(x(q))}
 unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}

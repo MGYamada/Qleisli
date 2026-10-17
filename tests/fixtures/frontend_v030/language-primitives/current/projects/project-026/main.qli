@@ -1,0 +1,15 @@
+
+use std::gate::t;
+use std::gate::cnot;
+use std::state::init0;
+
+
+unitary fn interference(q: Q<Bit>) -> Q<Bit> {
+    h(t(h(h(t(h(q))))))
+}
+
+observe fn main() -> (Bit, Bit) {
+    let (q, reference) = cnot(h(init0()), init0());
+    let q = interference(q);
+    (measure_z(q), measure_z(reference))
+}

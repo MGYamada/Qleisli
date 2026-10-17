@@ -44,7 +44,7 @@ use super::ast::*;
 use super::check::{self, Interface, SourceError, SourceLimits, StaticKind};
 use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{Project, SourcePolicy};
-use super::resolve::{DefId, Target};
+use super::resolve::{DefId, PrimitiveId, Target};
 use crate::AcceptedProgram;
 
 const MAX_BITS: usize = 12;
@@ -57,7 +57,7 @@ type Key = DefId;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum MeaningCacheKey {
     Declaration(Key),
-    Sealed(String, String),
+    Primitive(PrimitiveId, String),
 }
 
 /// Stable categories for consumers; `message` is explanatory text.
@@ -189,14 +189,7 @@ fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
 #[derive(Clone, Debug)]
 enum Callee {
     User(Key),
-    Sealed(String, String),
-}
-
-fn empty_bits_primitive(namespace: &str, name: &str) -> bool {
-    super::check::primitive::Primitive::EmptyBits
-        .path()
-        .rsplit_once("::")
-        .is_some_and(|(module, primitive)| namespace == module && name == primitive)
+    Primitive(PrimitiveId),
 }
 
 #[derive(Clone)]
@@ -354,15 +347,13 @@ impl<'a> Compiler<'a> {
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
         match self.locals().usage(name).target {
             ResolvedUse::Global(Target::Declaration(id)) => Ok(Callee::User(id)),
-            ResolvedUse::Global(Target::Primitive(id)) => {
-                Ok(Callee::Sealed(id.module.into(), id.name.into()))
-            }
+            ResolvedUse::Global(Target::Primitive(id)) => Ok(Callee::Primitive(id)),
             ResolvedUse::Local(_) | ResolvedUse::Unresolved => Err(self.error(
                 module,
                 name.span,
                 ErrorCode::UnknownName,
                 format!(
-                    "unknown function `{}`; standard operations require an explicit import",
+                    "unknown function `{}`; ordinary library definitions require an explicit import",
                     name.text
                 ),
             )),

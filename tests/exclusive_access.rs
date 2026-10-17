@@ -8,8 +8,8 @@ use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
-const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h;
-    use std::quantum::x; use std::quantum::cnot; use std::observe::measure_z;";
+const IMPORTS: &str = "use std::state::init0; 
+    use std::gate::x; use std::gate::cnot; ";
 
 #[cfg_attr(
     not(qleisli_native_tests),
@@ -19,7 +19,7 @@ const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h;
 fn dormant_closed_calls_do_not_hide_a_nonsector_action_on_ctrl() {
     for call in ["flip(ctrl q)", "hold[flip](ctrl q)"] {
         let source = format!(
-            "use std::quantum::x;
+            "use std::gate::x;
             unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
             unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
             requires Applicable(U){{U(q)}}
@@ -42,8 +42,8 @@ fn dormant_closed_calls_do_not_hide_a_nonsector_action_on_ctrl() {
 )]
 #[test]
 fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
-    let base = "use std::quantum::{phase_eighth};
-        unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+    let base = "
+        unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
         requires Applicable(U){U(q)}
         unitary fn pair(a:Q<Unit>,b:Q<(Unit,Unit)>)->(Q<Unit>,Q<(Unit,Unit)>){
@@ -79,7 +79,7 @@ fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
 )]
 #[test]
 fn dormant_ctrl_uses_physical_axis_order_after_a_zero_width_owner() {
-    let base = "use std::quantum::x;
+    let base = "use std::gate::x;
         unitary fn pair(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){(a,x(b))}";
     let kernel = Kernel::selected().unwrap();
     let check = |source: &str| {
@@ -122,7 +122,7 @@ fn dormant_ctrl_uses_physical_axis_order_after_a_zero_width_owner() {
 fn dormant_sector_checks_the_actual_zero_power_and_diagonal_body() {
     for operation in ["diagonal", "power(flip,0)"] {
         let source = format!(
-            "use std::quantum::{{x,z}};
+            "use std::gate::x; use std::gate::z;
             unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
             unitary fn diagonal(q:Q<Bit>)->Q<Bit>{{z(q)}}
             unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
@@ -140,7 +140,7 @@ fn dormant_sector_checks_the_actual_zero_power_and_diagonal_body() {
 )]
 #[test]
 fn dormant_unbound_ctrl_actual_stays_conditional_until_its_real_binding() {
-    let base = "use std::quantum::x;
+    let base = "use std::gate::x;
         unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
         unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
         requires Applicable(U){U(q)}
@@ -166,7 +166,7 @@ fn selected_nonexecuted_control_obligations_refuse_before_transport() {
         "unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{power(oracle,0)(q)}",
         "unitary fn unused(q:Q<Bit>)->Q<Bit>{if 1 {h(ctrl q);q}else{q}}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
     ] {
-        let source = format!("use std::quantum::h;{program}");
+        let source = format!("{program}");
         let concrete = selected(&source)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -226,7 +226,7 @@ fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
         "let q=pair(q);",
     ] {
         let text = format!(
-            "{IMPORTS} use std::quantum::z;
+            "{IMPORTS} use std::gate::z;
              fn done(a:Unit,b:Unit)->Unit{{()}}
              unitary fn pair(q:Q<Bit>)->Q<Bit>{{h(excl q);z(excl q);q}}
              pub observe fn main()->Bit{{let q=init0();{expression}h(excl q);measure_z(q)}}"
@@ -339,7 +339,7 @@ fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
          unitary fn unused(q:Q<Bit>)->Q<Bit>{oracle[1](q)}
          unitary fn other(q:Q<Bit>)->Q<Bit>{oracle[2](q)}",
     ] {
-        let text = format!("use std::quantum::z;{unused}{ordinary}");
+        let text = format!("use std::gate::z;{unused}{ordinary}");
         let parsed = selected(&text);
         assert!(
             parsed
@@ -415,7 +415,7 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
           unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
           unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);adjoint(checked_op(identity,Flip))(q)}", "contract"),
     ] {
-        let text = format!("use std::quantum::{{z,h}};{body}pub unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}");
+        let text = format!("use std::gate::z;{body}pub unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}");
         let source = selected(&text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap().elaborate().unwrap();
         let error = source.lower_raw_with_kernel(&Kernel::selected().unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err();
@@ -434,7 +434,7 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
         ),
         (
             "helper".into(),
-            "use std::quantum::h;unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}".into(),
+            "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}".into(),
         ),
     ]))
     .unwrap();
@@ -459,7 +459,7 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
 #[test]
 fn selected_control_requires_checker_and_one_bounded_budget() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    let source = selected("use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}")
+    let source = selected("use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}")
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
         .elaborate()
@@ -534,7 +534,7 @@ fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_provi
             "unsupported",
         ),
     ] {
-        let text = format!("use std::quantum::{{h,z}};{body}");
+        let text = format!("use std::gate::z;{body}");
         let source = selected(&text)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -819,7 +819,7 @@ fn finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase() {
         (run_closed(&raw, SimulationLimits::default()).unwrap()[&vec![true, true]] - 1.0).abs()
             < 1e-12
     );
-    let source = "use std::quantum::phase_eighth;pub unitary fn f(q:Q<Unit>)->Q<Unit>{phase_eighth(ctrl q);q}";
+    let source = "pub unitary fn f(q:Q<Unit>)->Q<Unit>{global_phase_eighth(ctrl q);q}";
     check_project(&SourceRoot::new(source).0).unwrap();
     let raw = checked_raw(source, "main::f");
     assert_eq!(raw.raw().quantum_inputs.len(), 1);
@@ -833,9 +833,9 @@ fn finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase() {
     )
     .unwrap_err();
     assert_eq!(error.code, "project");
-    let source = "use std::quantum::{split,join,z,phase_eighth};
+    let source = "use std::gate::z;
         unitary fn diagonal(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{
-            let (b,u)=split(q);z(excl b);phase_eighth(excl u);join(b,u)
+            let (b,u)=split(q);z(excl b);global_phase_eighth(excl u);join(b,u)
         }
         pub unitary fn f(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{diagonal(ctrl q);q}";
     check_project(&SourceRoot::new(source).0).unwrap();
@@ -859,8 +859,8 @@ fn access_markers_remain_ordinary_contextual_names() {
 )]
 #[test]
 fn zero_width_owner_keeps_phase_and_cannot_be_duplicated() {
-    let source = "use std::quantum::phase_eighth;
-        pub unitary fn f(q:Q<Unit>)->Q<Unit>{phase_eighth(excl q);q}";
+    let source = "
+        pub unitary fn f(q:Q<Unit>)->Q<Unit>{global_phase_eighth(excl q);q}";
     let proposal = selected(source)
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -916,8 +916,8 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
         ),
     ] {
         let source = format!(
-            "{IMPORTS} use std::quantum::split;
-            use std::quantum::join;use std::quantum::unit;use std::observe::discard;
+            "{IMPORTS} 
+            
             {definition} pub unitary fn f(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{{change(excl q);q}}"
         );
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
@@ -950,7 +950,7 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
 #[test]
 fn reassembled_owner_and_callee_binders_do_not_restore_old_snapshot() {
     let source = format!(
-        "{IMPORTS} use std::quantum::join;use std::quantum::split;
+        "{IMPORTS} 
         unitary fn transform(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{
             let (a,b)=split(q);x(excl a);join(a,b)
         }}
@@ -1069,13 +1069,13 @@ fn indexed_places_retain_original_axis_and_owner_occurrences() {
 #[test]
 fn indexed_places_check_symbolic_bounds_and_ordered_selected_types() {
     for text in [
-        "use std::quantum::h;pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<N {h(excl q[K]);q}",
+        "pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<N {h(excl q[K]);q}",
         "unitary fn id[const W:Nat](r:Q<Bits<W>>)->Q<Bits<W>>{r} pub unitary fn f[const N:Nat,const A:Nat,const B:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires A<=B,B<=N {id[B-A](excl q[A..B]);q}",
         "unitary fn pair[const A:Nat,const B:Nat](a:Q<Bits<A>>,b:Q<Bits<B>>)->(Q<Bits<A>>,Q<Bits<B>>){(a,b)}pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<=N {pair[N-K,K](excl q[K..N],ctrl q[0..K]);q}",
-        "use std::quantum::cnot;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{cnot(ctrl q[0],excl q[1]);q}",
-        "use std::quantum::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<J,J<N {cnot(ctrl q[I],excl q[J]);q}",
-        "use std::quantum::cnot;pub unitary fn f(a:Q<Bits<1>>,b:Q<Bits<1>>)->(Q<Bits<1>>,Q<Bits<1>>){cnot(ctrl a[0],excl b[0]);(a,b)}",
-        "use std::quantum::h;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{static let k=1;h(excl q[k]);h(excl q[0]);q}",
+        "use std::gate::cnot;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{cnot(ctrl q[0],excl q[1]);q}",
+        "use std::gate::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<J,J<N {cnot(ctrl q[I],excl q[J]);q}",
+        "use std::gate::cnot;pub unitary fn f(a:Q<Bits<1>>,b:Q<Bits<1>>)->(Q<Bits<1>>,Q<Bits<1>>){cnot(ctrl a[0],excl b[0]);(a,b)}",
+        "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{static let k=1;h(excl q[k]);h(excl q[0]);q}",
         "unitary fn id(r:Q<Bits<0>>)->Q<Bits<0>>{r}pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{id(excl q[0..0]);q}",
     ] {
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]));
@@ -1104,7 +1104,7 @@ fn indexed_places_refuse_unproved_bounds_overlap_and_changed_interfaces() {
         ("let k=0;h(excl q[k]);q", "static"),
     ] {
         let text = format!(
-            "use std::quantum::{{h,cnot}};use std::observe::measure_z;unitary fn range(r:Q<Bits<1>>)->Q<Bits<1>>{{r}}unitary fn range_pair(a:Q<Bits<2>>,b:Q<Bits<1>>)->(Q<Bits<2>>,Q<Bits<1>>){{(a,b)}}unitary fn change(r:Q<Bit>)->(Q<Bit>,Unit){{(r,())}}pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{{body}}}"
+            "use std::gate::cnot;unitary fn range(r:Q<Bits<1>>)->Q<Bits<1>>{{r}}unitary fn range_pair(a:Q<Bits<2>>,b:Q<Bits<1>>)->(Q<Bits<2>>,Q<Bits<1>>){{(a,b)}}unitary fn change(r:Q<Bit>)->(Q<Bit>,Unit){{(r,())}}pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{{body}}}"
         );
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
@@ -1142,7 +1142,7 @@ fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
             "size",
         ),
     ] {
-        let text = format!("use std::quantum::h;{program}");
+        let text = format!("{program}");
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
@@ -1155,7 +1155,7 @@ fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
 )]
 #[test]
 fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
-    let text = "use std::quantum::h;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[0]);q}";
+    let text = "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[0]);q}";
     let parsed = selected(text);
     let source = parsed
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1187,12 +1187,12 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
 
 #[test]
 fn symbolic_place_overlap_requires_original_binder_guards() {
-    let text = "use std::quantum::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<N,J<N {cnot(ctrl q[I],excl q[J]);q}";
+    let text = "use std::gate::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<N,J<N {cnot(ctrl q[I],excl q[J]);q}";
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
         .expect_err("disjointness is not implied by independent bounds");
     assert_eq!(error.code(), "ownership");
     assert_eq!(&text[error.span().start..error.span().end], "excl q[J]");
-    let text = "use std::quantum::h;pub unitary fn f[const N:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{let N=0;h(excl q[N]);q}";
+    let text = "pub unitary fn f[const N:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{let N=0;h(excl q[N]);q}";
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
         .expect_err("runtime shadow is not a static index");
     assert_eq!(error.code(), "name", "{error}");
@@ -1210,7 +1210,7 @@ fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
         for k in 0..n {
             for (gate, flip) in [("x(excl q[K]);", true), ("z(ctrl q[K]);", false)] {
                 let text = format!(
-                    "use std::quantum::{{x,z,split,join}};pub unitary fn main[const K:Nat](input:Q<(Bits<{n}>,Bit)>)->Q<(Bits<{n}>,Bit)> requires K<{n}{{let(q,r)=split(input);{gate}join(q,r)}}"
+                    "use std::gate::x; use std::gate::z;pub unitary fn main[const K:Nat](input:Q<(Bits<{n}>,Bit)>)->Q<(Bits<{n}>,Bit)> requires K<{n}{{let(q,r)=split(input);{gate}join(q,r)}}"
                 );
                 let source = selected(&text)
                     .instantiate(
@@ -1267,7 +1267,7 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
         ("cnot(ctrl q[2],excl q[0]);", 2, 0),
     ] {
         let text = format!(
-            "use std::quantum::{{cnot,split,join}};pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{{let(q,r)=split(input);{call}join(q,r)}}"
+            "use std::gate::cnot;pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{{let(q,r)=split(input);{call}join(q,r)}}"
         );
         let source = selected(&text)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -1297,7 +1297,7 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
         proposal.validate_source_steps(&accepted).unwrap();
         assert_eq!(accepted.raw().operations.len(), 15);
     }
-    let bad = "use std::quantum::cnot;pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{cnot(excl q[2],ctrl q[0]);q}";
+    let bad = "use std::gate::cnot;pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{cnot(excl q[2],ctrl q[0]);q}";
     let source = selected(bad)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1330,7 +1330,7 @@ fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
                     ("x", "excl", "0")
                 };
                 let text = format!(
-                    "use std::quantum::{{x,z}};fn update[const N:Nat](r:Q<Bits<N>>)->Q<Bits<N>> requires 0<N {{{gate}({access} r[{index}]);r}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{update[{}](excl q[{start}..{end}]);q}}",
+                    "use std::gate::x; use std::gate::z;fn update[const N:Nat](r:Q<Bits<N>>)->Q<Bits<N>> requires 0<N {{{gate}({access} r[{index}]);r}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{update[{}](excl q[{start}..{end}]);q}}",
                     end - start
                 );
                 let source = selected(&text)
@@ -1372,7 +1372,7 @@ fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
 #[test]
 fn selected_place_control_rechecks_bound_provider_and_shared_work() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    let text = "use std::quantum::{z,h};fn provider(q:Q<Bit>)->Q<Bit>{z(q)}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){U(ctrl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{apply[provider](q)}";
+    let text = "use std::gate::z;fn provider(q:Q<Bit>)->Q<Bit>{z(q)}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){U(ctrl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{apply[provider](q)}";
     let source = selected(text)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1419,7 +1419,7 @@ fn selected_place_control_rechecks_bound_provider_and_shared_work() {
 #[test]
 fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let text = "use std::quantum::x;pub unitary fn main[const R:Nat](q:Q<Bits<3>>)->Q<Bits<3>> requires R<=3 {x(excl q[2]);qfor static k in 0..R carry r=q {x(excl r[k]);let u=if static k==0 {x(excl r[2]);()}else{()};yield r;}}";
+    let text = "use std::gate::x;pub unitary fn main[const R:Nat](q:Q<Bits<3>>)->Q<Bits<3>> requires R<=3 {x(excl q[2]);qfor static k in 0..R carry r=q {x(excl r[k]);let u=if static k==0 {x(excl r[2]);()}else{()};yield r;}}";
     let parsed = selected(text);
     let kernel = Kernel::selected().unwrap();
     for rounds in 0..=3 {
@@ -1452,7 +1452,7 @@ fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
 #[test]
 fn selected_places_mix_distinct_whole_parents_and_selected_owners() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let text = "use std::quantum::{split,join,cnot};pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{let(q,r)=split(input);cnot(ctrl q[1],excl r);cnot(ctrl r,excl q[2]);join(q,r)}";
+    let text = "use std::gate::cnot;pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{let(q,r)=split(input);cnot(ctrl q[1],excl r);cnot(ctrl r,excl q[2]);join(q,r)}";
     let source = selected(text)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1489,7 +1489,7 @@ fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() 
     for (gate, access, phases) in [("x", "excl", false), ("z", "ctrl", true)] {
         // Static providers require an ordinary function, not a primitive name.
         let text = format!(
-            "use std::quantum::{{x,z}};fn provider(q:Q<Bit>)->Q<Bit>{{{gate}(q)}}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){{U({access} q[1]);q}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{apply[provider](q)}}"
+            "use std::gate::x; use std::gate::z;fn provider(q:Q<Bit>)->Q<Bit>{{{gate}(q)}}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){{U({access} q[1]);q}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{apply[provider](q)}}"
         );
         let source = selected(&text)
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -1575,7 +1575,7 @@ fn selected_place_replay_rejects_native_valid_paired_partition_faults() {
 #[test]
 fn selected_place_inverse_keeps_original_phase_axis() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let text = "use std::quantum::phase;unitary fn turn(q:Q<Bits<3>>)->Q<Bits<3>>{phase[1,3](excl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{adjoint(turn)(q)}";
+    let text = "unitary fn turn(q:Q<Bits<3>>)->Q<Bits<3>>{phase[1,3](excl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{adjoint(turn)(q)}";
     let source = selected(text)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1608,19 +1608,17 @@ fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     let kernel = Kernel::selected().unwrap();
     for calls in [
-        "phase_eighth(ctrl q[0..3]);",
+        "global_phase_eighth(ctrl q[0..3]);",
         "pair(ctrl q[0..3],ctrl q[1..1]);",
         "pair(ctrl q[1..1],ctrl q[0..3]);",
         "pair(ctrl q[0..1],ctrl q[2..3]);",
     ] {
         let helper = if calls.starts_with("pair") {
-            "unitary fn pair[const A:Nat,const B:Nat](a:Q<Bits<A>>,b:Q<Bits<B>>)->(Q<Bits<A>>,Q<Bits<B>>){phase_eighth(ctrl a);phase_eighth(ctrl b);(a,b)}"
+            "unitary fn pair[const A:Nat,const B:Nat](a:Q<Bits<A>>,b:Q<Bits<B>>)->(Q<Bits<A>>,Q<Bits<B>>){global_phase_eighth(ctrl a);global_phase_eighth(ctrl b);(a,b)}"
         } else {
             ""
         };
-        let text = format!(
-            "use std::quantum::phase_eighth;{helper}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{calls}q}}"
-        );
+        let text = format!("{helper}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{calls}q}}");
         // Explicit static arguments preserve the two exact selected widths.
         let text = if calls.starts_with("pair") {
             text.replace(
@@ -1652,7 +1650,7 @@ fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         proposal.validate_source_steps(&accepted).unwrap();
     }
-    let text = "use std::quantum::phase_eighth;pub unitary fn main(q:Q<Bits<0>>)->Q<Bits<0>>{phase_eighth(ctrl q[0..0]);q}";
+    let text = "pub unitary fn main(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(ctrl q[0..0]);q}";
     let proposal = selected(text)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1675,7 +1673,7 @@ fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
 )]
 #[test]
 fn closed_static_branches_and_empty_fold_thread_updated_carry() {
-    let source = "use std::quantum::x;
+    let source = "use std::gate::x;
         pub unitary fn f[const rounds:Nat](q:Q<Bit>)->Q<Bit>{
             qfor static k in 0..rounds carry r=q {
                 let u=if static k==0 {x(excl r);()} else {x(excl r);()};
@@ -1730,12 +1728,12 @@ fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     for (text, basis, phases) in [
         (
-            "use std::quantum::phase_eighth;pub unitary fn main(q:Q<Unit>)->Q<Unit>{phase_eighth(ctrl q);q}",
+            "pub unitary fn main(q:Q<Unit>)->Q<Unit>{global_phase_eighth(ctrl q);q}",
             BasisType::Unit,
             vec![1],
         ),
         (
-            "use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}",
+            "use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}",
             BasisType::Bit,
             vec![0, 4],
         ),
@@ -1780,7 +1778,7 @@ fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
         for k in 0..n {
             for gate in ["", "x(excl b);", "z(ctrl b);"] {
                 let text = format!(
-                    "use std::registers::{{take_bit,put_bit}};use std::quantum::{{x,z,split,join}};
+                    "use std::gate::x; use std::gate::z;
                     pub unitary fn main(input:Q<(Bits<{n}>,Bit)>)->Q<(Bits<{n}>,Bit)>{{
                         let(q,r)=split(input);
                         let(b,rest)=take_bit[{n},{k}](q);{gate}
@@ -1864,7 +1862,7 @@ fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
 #[test]
 fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order() {
     use qleisli::ir::RawOp;
-    let text = "use std::registers::{take_bit,put_bit};
+    let text = "
         pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{let(b,r)=take_bit[3,1](q);put_bit[3,1](b,r)}";
     let source = selected(text)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -1903,7 +1901,7 @@ fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order
         );
     }
     let bad = format!(
-        "use std::quantum::h;{}",
+        "{}",
         text.replace("put_bit[3,1](b,r)", "h(ctrl b);put_bit[3,1](b,r)")
     );
     let source = selected(&bad)
@@ -1927,7 +1925,7 @@ fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order
 )]
 #[test]
 fn selected_generic_register_access_retains_original_static_bounds() {
-    let text = "use std::registers::{take_bit,put_bit};use std::quantum::x;
+    let text = "use std::gate::x;
         pub unitary fn main[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<N {
             let(b,r)=take_bit[N,K](q);x(excl b);put_bit[N,K](b,r)
         }";
@@ -1976,10 +1974,10 @@ fn selected_generic_register_access_retains_original_static_bounds() {
 fn selected_register_access_keeps_zero_width_phase_and_inverse_axis() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     for (text, n, phases) in [
-        ("use std::registers::{take_bit,put_bit};use std::quantum::phase_eighth;
-          pub unitary fn main(q:Q<Bits<1>>)->Q<Bits<1>>{let(b,r)=take_bit[1,0](q);phase_eighth(ctrl r);put_bit[1,0](b,r)}",
+        ("
+          pub unitary fn main(q:Q<Bits<1>>)->Q<Bits<1>>{let(b,r)=take_bit[1,0](q);global_phase_eighth(ctrl r);put_bit[1,0](b,r)}",
           1, vec![1;2]),
-        ("use std::registers::{take_bit,put_bit};use std::quantum::phase;
+        ("
           unitary fn turn(q:Q<Bits<3>>)->Q<Bits<3>>{let(b,r)=take_bit[3,1](q);let b=phase[1,3](b);put_bit[3,1](b,r)}
           pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{adjoint(turn)(q)}",
           3, (0..8).map(|label| if label & 2 != 0 {7} else {0}).collect()),

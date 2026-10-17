@@ -16,9 +16,9 @@ use qleisli::frontend::compile::check_project;
 const SEED: u64 = 0x514c_4549_534c_4932;
 const CASES: usize = 4_000;
 const WORKERS: usize = 2;
-const IMPORTS: &str = "use std::quantum::h; use std::quantum::x;
-use std::quantum::cnot; use std::quantum::init0;
-use std::observe::measure_z;\n";
+const IMPORTS: &str = " use std::gate::x;
+use std::gate::cnot; use std::state::init0;
+\n";
 
 struct Random(u64);
 

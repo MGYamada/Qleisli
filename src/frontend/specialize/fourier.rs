@@ -862,6 +862,7 @@ mod tests {
             inline_visits: 0,
             zero_basis: vec![],
             pure_traces: vec![],
+            native_sources: vec![],
             trace_zero_basis: false,
             pure_trace_cells: 0,
         };

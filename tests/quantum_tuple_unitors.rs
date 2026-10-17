@@ -669,13 +669,13 @@ fn ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work() {
     let root = &graph.definitions()[graph.root()];
     assert_eq!(root.steps().len(), 3);
     let callee = root.steps()[0].called_definition().unwrap();
-    assert_eq!(root.steps()[1].primitive(), Some("std::quantum::split"));
-    assert_eq!(root.steps()[2].primitive(), Some("std::quantum::finish"));
+    assert_eq!(root.steps()[1].primitive(), Some("split"));
+    assert_eq!(root.steps()[2].primitive(), Some("finish"));
     assert_eq!(
         graph.definitions()[callee]
             .steps()
             .iter()
-            .filter(|s| s.primitive() == Some("std::quantum::phase_eighth"))
+            .filter(|s| s.primitive() == Some("global_phase_eighth"))
             .count(),
         1
     );
@@ -700,7 +700,7 @@ fn split_and_join_create_fresh_distinct_linear_owners_without_flattening() {
     let graph = elaborate(&source("left-nested-right"), "main::round");
     let root = &graph.definitions()[graph.root()];
     let split = &root.steps()[0];
-    assert_eq!(split.primitive(), Some("std::quantum::split"));
+    assert_eq!(split.primitive(), Some("split"));
     let fields = split.output().fields();
     assert_eq!(fields.len(), 2);
     assert_ne!(fields[0].identity(), fields[1].identity());
@@ -786,12 +786,9 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
             "type",
         ),
     ] {
-        reject(
-            &format!("use std::quantum::{{split,join,phase_eighth}};{decl}"),
-            code,
-        );
+        reject(&format!("{decl}"), code);
     }
-    let text = "use std::quantum::phase_eighth; pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{phase_eighth(q)}";
+    let text = " pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{global_phase_eighth(q)}";
     let graph = elaborate(text, "main::f");
     assert_eq!(
         basis_view(
@@ -804,7 +801,7 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
         "(Unit,Bit)"
     );
     reject(
-        "use std::quantum::phase_eighth;pub unitary fn f(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){phase_eighth((a,b))}",
+        "pub unitary fn f(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){global_phase_eighth((a,b))}",
         "type",
     );
 }
@@ -815,9 +812,10 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
 )]
 #[test]
 fn direct_packaged_scalar_keeps_exact_tree_axes_and_external_reference() {
-    let first = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli"
+    let first = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli",
     );
+    let first = first.as_str();
     for basis in [
         Basis::pair(Basis::Unit, Basis::pair(Basis::Bit, Basis::Bit)),
         Basis::pair(Basis::Unit, Basis::Unit),
@@ -881,10 +879,7 @@ fn isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject() {
         "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{qfor static k in 0..0 carry r=q{let(a,b)=split(r);yield join(a,a);}}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q} unitary fn unused(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);a}",
     ] {
-        reject(
-            &format!("use std::quantum::{{split,join,finish}};{decl}"),
-            "ownership",
-        );
+        reject(&format!("{decl}"), "ownership");
     }
     reject(&study("effectful-argument"), "effect");
 }

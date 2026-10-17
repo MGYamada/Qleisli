@@ -23,7 +23,7 @@ fn cli(root: &SourceRoot) -> Command {
 fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     for (source, reason) in [
         (
-            "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+            "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
             "at most one ordinary Bits<0> result",
         ),
         (
@@ -51,7 +51,7 @@ fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     // The original preparation example is now eligible. Its missing checker
     // must still reject instead of bypassing the native acceptance boundary.
     let root = SourceRoot::new(
-        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+        "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
     );
     let output = cli(&root)
         .arg("--ir-profile=hierarchy")
@@ -131,13 +131,13 @@ fn assert_rejection(
 fn native_failure_diagnostics_preserve_codes_profile_and_producer_or_caller_scope() {
     for (source, profile, mode, argument) in [
         (
-            "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
+            " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
             "unitary",
             "composition-request checking",
             "--hierarchy-request-pending",
         ),
         (
-            "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> Bits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
+            "   pub observe fn f(q: Q<Bit>) -> Bits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
             "instrument",
             "composition-instrument checking",
             "--instrument-pending",

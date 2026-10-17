@@ -2,11 +2,8 @@
 //!
 //! Logical owners and external-reference behavior follow each declared contract.
 //! Contract identifiers: R003-R005.
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::quantum::split;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::cnot;
 
 /// Measure the X eigenvalue (-1)^b and return the classical result b.
 /// Consume the target owner; interpret the measurement with all references.

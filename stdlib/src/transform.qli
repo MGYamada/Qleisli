@@ -3,12 +3,9 @@
 //! Ordinary checked .qli definitions; no general-size or approximate QFT API.
 //! Fourier basis labels are little-endian; Fourier circuits include output-bit reversal.
 //! Contracts and finite regression status: F001-F002 and R001.
-use std::quantum::h;
 use std::gate::t;
 use std::gate::s;
 use std::gate::id;
-use std::quantum::split;
-use std::quantum::join;
 
 /// Fixed Bit identity for the zero arm of a coherent conditional.
 /// Instantiate the Basis argument before selecting the provider.

@@ -154,11 +154,11 @@ def check(root, binary):
 
         # Resolve an ordinary embedded .qli library module, not only built-ins.
         write_project("bundled-library", """
-use std::quantum::init0;
-use std::quantum::join;
-use std::quantum::split;
+use std::state::init0;
+
+
 use std::transform::qft2;
-use std::observe::measure_z;
+
 observe fn main() -> (Bit, Bit) {
     let (a, b) = split(qft2(join(init0(), init0())));
     (measure_z(a), measure_z(b))
@@ -172,8 +172,8 @@ observe fn main() -> (Bit, Bit) {
                         for row in rows), "embedded QFT library failed")
 
         write_project("invalid-ownership", """
-use std::quantum::init0;
-use std::observe::measure_z;
+use std::state::init0;
+
 observe fn main() -> (Bit, Bit) {
     let q = init0();
     (measure_z(q), measure_z(q))

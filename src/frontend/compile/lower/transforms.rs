@@ -58,10 +58,15 @@ impl Lowerer<'_, '_> {
         }
         let key = match &target {
             Callee::User(key) => super::super::MeaningCacheKey::Declaration(*key),
-            // The polymorphic sealed aliases have a different dimension for
-            // each exact basis tree. Never reuse a Bit matrix for Unit/product.
-            Callee::Sealed(namespace, gate) => {
-                super::super::MeaningCacheKey::Sealed(namespace.clone(), format!("{gate}:{basis}"))
+            // A scalar's dimension depends on the exact Basis tree; its
+            // language identity is separate from the display-only basis key.
+            Callee::Primitive(primitive) => {
+                self.compiler.charge(
+                    module,
+                    name.span,
+                    basis.tree_size().nodes.saturating_mul(16) + 1,
+                )?;
+                super::super::MeaningCacheKey::Primitive(*primitive, basis.to_string())
             }
         };
         if let Some(matrix) = self.compiler.closed_meanings.get(&key) {
@@ -86,73 +91,66 @@ impl Lowerer<'_, '_> {
                     &mut self.compiler.exact_work,
                 )
             }
-            Callee::Sealed(_, gate) => {
-                if matches!(gate.as_str(), "s" | "sdg" | "tdg" | "id" | "phase_eighth") {
-                    // Independent expectations use the declared diagonal/scalar
-                    // equations, not the candidate lowering or its T expansion.
-                    let dimension = 1 << basis.basis_bits().expect("basis");
-                    self.compiler
-                        .exact_work
-                        .charge(dimension * dimension)
-                        .map_err(|e| self.compiler.op_error(module, name.span, e.into()))?;
-                    let exponent = match gate.as_str() {
-                        "s" => 2,
-                        "sdg" => 6,
-                        "tdg" => 7,
-                        "phase_eighth" => 1,
-                        _ => 0,
-                    };
-                    let entries = (0..dimension * dimension)
-                        .map(|index| {
-                            let row = index / dimension;
-                            let column = index % dimension;
-                            if row != column {
-                                Exact::zero()
-                            } else if matches!(gate.as_str(), "s" | "sdg" | "tdg") && row == 0 {
-                                Exact::one()
-                            } else {
-                                Exact::phase(exponent)
-                            }
-                        })
-                        .collect();
-                    Matrix::new(dimension, dimension, entries).map_err(Into::into)
-                } else {
-                    let gate = match gate.as_str() {
-                        "h" => SingleGate::H,
-                        "x" => SingleGate::X,
-                        "z" => SingleGate::Z,
-                        "t" => SingleGate::T,
-                        _ => unreachable!("static target validated"),
-                    };
-                    let raw = RawProgram {
-                        quantum_inputs: vec![QuantumPort {
-                            token: TokenId(0),
-                            wires: vec![WireId(0)],
-                            shape: BasisShape::BIT,
-                        }],
-                        classical_inputs: vec![],
-                        operations: vec![RawOp::Gate {
-                            gate,
-                            input: TokenId(0),
-                            output: TokenId(1),
-                        }],
-                        quantum_outputs: vec![TokenId(1)],
-                        classical_outputs: vec![],
-                        declared_effect: Effect::Unitary,
-                    };
-                    let verified = self.compiler.kernel.accept_raw(raw).map_err(|e| {
+            Callee::Primitive(PrimitiveId::GlobalPhaseEighth) => {
+                // Independent full scalar expectation, never a phase quotient
+                // or a recognition of the candidate's source name/body.
+                let dimension = 1 << basis.basis_bits().expect("basis");
+                self.compiler
+                    .exact_work
+                    .charge(dimension * dimension)
+                    .map_err(|e| self.compiler.op_error(module, name.span, e.into()))?;
+                let entries = (0..dimension * dimension)
+                    .map(|index| {
+                        if index / dimension == index % dimension {
+                            Exact::phase(1)
+                        } else {
+                            Exact::zero()
+                        }
+                    })
+                    .collect();
+                Matrix::new(dimension, dimension, entries).map_err(Into::into)
+            }
+            Callee::Primitive(PrimitiveId::H) => {
+                let raw = RawProgram {
+                    quantum_inputs: vec![QuantumPort {
+                        token: TokenId(0),
+                        wires: vec![WireId(0)],
+                        shape: BasisShape::BIT,
+                    }],
+                    classical_inputs: vec![],
+                    operations: vec![RawOp::Gate {
+                        gate: SingleGate::H,
+                        input: TokenId(0),
+                        output: TokenId(1),
+                    }],
+                    quantum_outputs: vec![TokenId(1)],
+                    classical_outputs: vec![],
+                    declared_effect: Effect::Unitary,
+                };
+                let verified = self
+                    .compiler
+                    .kernel
+                    .accept_raw_with_budget(raw, &mut self.compiler.exact_work)
+                    .map_err(|e| {
                         self.compiler.op_error(
                             module,
                             name.span,
                             crate::contract::ContractError::InvalidCircuit(e.to_string()),
                         )
                     })?;
-                    crate::contract::function::verified_meaning(
-                        &verified,
-                        &signature,
-                        &mut self.compiler.exact_work,
-                    )
-                }
+                crate::contract::function::verified_meaning(
+                    &verified,
+                    &signature,
+                    &mut self.compiler.exact_work,
+                )
+            }
+            Callee::Primitive(_) => {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::TypeMismatch,
+                    "static logical primitive requires h or global_phase_eighth",
+                ));
             }
         }
         .map_err(|e| self.compiler.op_error(module, name.span, e))?;

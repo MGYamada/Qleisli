@@ -1,0 +1,2 @@
+use std::gate::cnot;
+unitary fn duplicate(q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { cnot(q,q) }

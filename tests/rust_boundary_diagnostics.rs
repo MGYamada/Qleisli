@@ -122,7 +122,7 @@ fn borrow_resource_spelling_has_no_builtin_or_type_inferred_semantics() {
     );
     closed_bit("pub fn main()->Bit{let borrow=1;borrow}", true);
     closed_bit(
-        "use std::quantum::{init0,h};use std::observe::measure_z;
+        "use std::state::init0;
         unitary fn borrow(q:Q<Bit>)->Q<Bit>{h(h(q))}
         pub observe fn main()->Bit{measure_z(borrow(init0()))}",
         false,
@@ -205,7 +205,7 @@ fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
         at(source, "||q", 2, 1),
         "quantum ownership `q` has already been consumed",
     );
-    let control = "use std::quantum::{init0,h};use std::observe::measure_z;
+    let control = "use std::state::init0;
         unitary fn move(q:Q<Bit>)->Q<Bit>{h(h(q))}
         pub observe fn main()->Bit{measure_z(move(init0()))}";
     closed_bit(control, false);
@@ -298,7 +298,7 @@ fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
         true,
     );
     closed_bit(
-        "use std::quantum::{init0,h};use std::observe::measure_z;
+        "use std::state::init0;
          pub observe fn main()->Bit{let q=init0();h(excl q);h(excl q);measure_z(q)}",
         false,
     );
@@ -366,7 +366,7 @@ fn user_helpers_and_local_categories_do_not_acquire_rust_name_privileges() {
         Effect::Unitary
     );
 
-    let observing = "use std::quantum::init0; use std::observe::discard;
+    let observing = "use std::state::init0; 
         observe fn drop(q:Q<Bit>)->Unit{discard(q)}
         pub observe fn main()->Bit{drop(init0());1}";
     let common = closed_bit(observing, true);
@@ -474,7 +474,7 @@ fn ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear
 )]
 #[test]
 fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
-    let lost = "use std::observe::reset;
+    let lost = "use std::state::reset;
         pub observe fn client(q:Q<Bit>)->Unit{reset(q);()}";
     let message = shared_rejection(
         lost,
@@ -485,8 +485,8 @@ fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
     );
     implicit_loss(&message);
 
-    let retained = "use std::quantum::init0; use std::quantum::h;
-        use std::observe::reset; use std::observe::measure_z;
+    let retained = "use std::state::init0; 
+        use std::state::reset; 
         pub observe fn reset_owner(q:Q<Bit>)->Q<Bit>{reset(q)}
         pub unitary fn linear_owner(q:Q<Bit>)->Q<Bit>{let q=h(q);q}
         pub observe fn main()->Bit{measure_z(reset_owner(linear_owner(init0())))}";
@@ -537,7 +537,7 @@ fn assignment_classifies_the_original_destination_before_its_rhs() {
             "ordinary place assignment is unsupported",
         );
     }
-    let source = "use std::quantum::h;pub unitary fn client(q:Q<Bit>)->Q<Bit>{q=h(q);q}";
+    let source = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{q=h(q);q}";
     shared_rejection(
         source,
         "ownership",
@@ -644,8 +644,8 @@ fn forbidden_replacement_is_checked_in_unused_branches_and_empty_folds() {
 #[test]
 fn contextual_mut_name_and_explicit_consuming_rebinding_remain_ordinary_rules() {
     closed_bit("pub fn main()->Bit{let mut=0;mut}", false);
-    let source = "use std::quantum::init0;use std::quantum::h;use std::quantum::z;
-        use std::observe::measure_z;
+    let source = "use std::state::init0;use std::gate::z;
+        
         pub observe fn main()->Bit{let q=init0();let q=h(q);z(ctrl q);h(excl q);measure_z(q)}";
     // H Z H is X: neither consuming rebinding nor explicit access needs mut.
     closed_bit(source, true);

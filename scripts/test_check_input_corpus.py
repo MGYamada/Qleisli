@@ -559,6 +559,88 @@ class CounterexampleMigrationTests(unittest.TestCase):
         for unchanged in (b"repeat_static(n, foo, q)", b"adjoint(foo[n], q)", b"classical fn one(b: Bit) -> Bit { 1 }"):
             self.assertEqual(corpus.canonical_counterexample_application(unchanged), unchanged)
 
+    def primitive_stage(self):
+        # Synthetic history gains old imports before either migration. This is
+        # provenance calibration, never an observation from a real compiler.
+        data = json.loads(self.record.read_text())
+        prefix = b"// phase_eighth stays in historical comments.\nuse std::quantum::h; use std::quantum::z; use std::quantum::phase_eighth;\n"
+        scalar = b"\nunitary fn scalar(q: Q<Bit>) -> Q<Bit> { phase_eighth(q) }\n"
+        for source, record in data['files'].items():
+            before = self.root / source
+            after = self.stage / 'counterexample-sources' / source
+            for path in (before, after):
+                path.write_bytes(prefix + path.read_bytes() + scalar)
+            record.update(before=corpus.sha256(before), after=corpus.sha256(after))
+        self.write(self.record, data)
+        observation = json.loads((self.stage / 'checks.json').read_text())
+        observation['sources'] = {source: record['after'] for source, record in data['files'].items()}
+        self.write(self.stage / 'checks.json', observation)
+        previous = self.canonical_stage()
+        data = json.loads((previous / 'counterexamples.json').read_text())
+        stage = self.root / 'migrations/primitives'
+        from corpus_primitive_migration import canonical_counterexample_primitives
+        for source, record in data['files'].items():
+            before = previous / 'counterexample-sources' / source
+            after = stage / 'counterexample-sources' / source
+            after.parent.mkdir(parents=True, exist_ok=True)
+            after.write_bytes(canonical_counterexample_primitives(before.read_bytes(), str(Path(source).parent)))
+            record.update(before=corpus.sha256(before), after=corpus.sha256(after))
+        data.update(issue=369, transformation='language-owned-primitives')
+        self.write(stage / 'counterexamples.json', data)
+        observation['sources'] = {source: record['after'] for source, record in data['files'].items()}
+        self.write(stage / 'checks.json', observation)
+        self.mutate(self.root / 'manifest.json', lambda manifest:
+                    manifest['counterexample_source_migrations'].append('migrations/primitives/counterexamples.json'))
+        return stage
+
+    def test_primitive_stage_retains_fault_body_comments_and_observation_binding(self):
+        stage = self.primitive_stage()
+        selected = corpus.current_project(self.fault, self.root)
+        self.assertEqual(selected, (stage / 'counterexample-sources' / self.fault['project']).resolve())
+        text = (selected / 'kernel.qli').read_text()
+        self.assertIn('use std::gate::z;', text)
+        self.assertIn('global_phase_eighth(q)', text)
+        self.assertIn('// phase_eighth stays in historical comments.', text)
+        self.assertIn('inverse(h)(power(migration_t, 2)(q))', text)
+        self.mutate(stage / 'checks.json', lambda data: data.update(sources={}))
+        with self.assertRaisesRegex(ValueError, 'observation source identity mismatch'):
+            corpus.current_project(self.fault, self.root)
+
+    def test_primitive_stage_rejects_rehashed_fault_body_changes(self):
+        stage = self.primitive_stage()
+        source = self.fault['project'] + '/kernel.qli'
+        path = stage / 'counterexample-sources' / source
+        path.write_text(path.read_text().replace('power(migration_t, 2)', 'power(migration_t, 3)'))
+        self.mutate(stage / 'counterexamples.json', lambda data:
+                    data['files'][source].update(after=corpus.sha256(path)))
+        with self.assertRaisesRegex(ValueError, 'more than the primitive source translation'):
+            corpus.current_project(self.fault, self.root)
+
+    def test_primitive_identity_requires_reviewed_exact_bit_provider_context(self):
+        from corpus_primitive_migration import canonical_counterexample_primitives
+        source = (b'// Fixed one-Bit target.\nuse std::quantum::id;\n'
+                  b'unitary fn example(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) { qif(c,q) { 0 => id, 1 => id } }\n')
+        translated = canonical_counterexample_primitives(source, 'semantic_faults/graph_edge_erased')
+        self.assertIn(b'unitary fn id(q: Q<Bit>) -> Q<Bit> { q }', translated)
+        self.assertIn(b'0 => id, 1 => id', translated)
+        with self.assertRaisesRegex(ValueError, 'explicit interface review'):
+            canonical_counterexample_primitives(source, 'semantic_faults/unreviewed')
+        with self.assertRaisesRegex(ValueError, 'explicit interface review'):
+            canonical_counterexample_primitives(source.replace(b'0 => id', b'0 => id(q)'), 'semantic_faults/graph_edge_erased')
+
+    def test_primitive_identity_import_text_inside_comments_and_quotes_is_inert(self):
+        from corpus_primitive_migration import canonical_counterexample_primitives
+        comment = b'// Historical spelling: use std::quantum::id;\n'
+        quoted = b'"use std::quantum::id;"\n'
+        self.assertEqual(canonical_counterexample_primitives(comment + quoted, 'semantic_faults/unreviewed'), comment + quoted)
+        actual = comment + b'use std::quantum::id;\nunitary fn keep(q: Q<Bit>) -> Q<Bit> { q }\n'
+        translated = canonical_counterexample_primitives(actual, 'semantic_faults/unreviewed')
+        self.assertTrue(translated.startswith(comment))
+        self.assertEqual(translated.count(b'use std::quantum::id;'), 1)
+        self.assertIn(b'unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }', translated)
+        with self.assertRaisesRegex(ValueError, 'explicit lexical review'):
+            canonical_counterexample_primitives(actual.replace(b'\nuse std::quantum::id;', b'\nuse /* keep this */ std::quantum::id;'), 'semantic_faults/unreviewed')
+
     def test_execution_and_report_binding_share_the_explicit_current_sources(self):
         expected = self.stage / "counterexample-sources"
         with patch.object(corpus, "CORPUS", self.root), patch.object(corpus.subprocess, "run") as run, \

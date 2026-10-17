@@ -120,10 +120,10 @@ impl Lowerer<'_, '_> {
         }
         let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
         self.add_contract_effect(module, span, op.effect);
-        let joined = self.sealed(module, span, "std::quantum", "join", vec![c, q])?;
+        let joined = self.primitive_call(module, span, PrimitiveId::Join, vec![c, q])?;
         let slot = self.quantum(module, span, &joined, false)?;
         self.apply_circuit(slot, steps);
-        self.sealed(module, span, "std::quantum", "split", vec![joined])
+        self.primitive_call(module, span, PrimitiveId::Split, vec![joined])
     }
 
     pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {

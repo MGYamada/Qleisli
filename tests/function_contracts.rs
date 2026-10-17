@@ -13,10 +13,10 @@ use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
 classical fn predicate(value: Bit) -> Bit { value }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
@@ -177,12 +177,12 @@ fn observing_reference_source_replacement_requires_a_fresh_equation() {
     ));
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
+        " pub observe fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
     );
     let original = compile_project(&root.0).unwrap();
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
+        " pub observe fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -620,7 +620,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
     );
     root.write(
         "helper.qli",
-        "use std::quantum::z; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { z(q) }",
+        "use std::gate::z; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { z(q) }",
     );
     let previous = compile_project(&root.0).unwrap();
     assert!(
@@ -632,7 +632,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
     );
     root.write(
         "helper.qli",
-        "use std::quantum::x; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { x(q) }",
+        "use std::gate::x; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { x(q) }",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -765,12 +765,12 @@ fn apply_contract_is_reserved_and_has_exact_static_name_syntax() {
 #[test]
 fn observing_contract_receipts_keep_each_original_caller_module() {
     let root = SourceRoot::new(
-        "use left::left_read;use right::right_read;use std::quantum::init0;
+        "use left::left_read;use right::right_read;use std::state::init0;
         observe fn main()->(Bit,Bit){(left_read(init0()),right_read(init0()))}",
     );
     root.write(
         "specified.qli",
-        "use std::observe::measure_z;
+        "
         pub observe fn actual(q:Q<Bit>)->Bit{measure_z(q)}
         pub observe fn reference(q:Q<Bit>)->Bit{measure_z(q)}",
     );

@@ -1,5 +1,5 @@
-use std::quantum::z;
-use std::quantum::h;
+use std::gate::z;
+
 use specification::phase;
 
 classical fn copy_label(value: Bit) -> Bit { value }

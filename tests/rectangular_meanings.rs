@@ -7,8 +7,8 @@ use qleisli::frontend::compile::compile_project;
 use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 
-const PREP: &str = "use std::quantum::{unit,finish,init0,h,x,z,join,split};
-    use std::observe::measure_z;
+const PREP: &str = "use std::state::init0; use std::gate::x; use std::gate::z;
+    
     isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
     meaning Plus:Unit -> Bit=reference(prepare);";
 
@@ -115,7 +115,7 @@ fn ordinary_project_composition_and_tensor_preserve_ordered_ports() {
 #[test]
 fn rectangular_composition_preserves_an_entangled_caller() {
     let result = run(&format!("{PREP}
-        use std::quantum::cnot;
+        use std::gate::cnot;
         isometry fn duplicate(q:Q<Bit>)->Q<(Bit,Bit)>{{let(a,b)=cnot(q,init0());join(a,b)}}
         meaning Copy:Bit -> (Bit,Bit)=reference(duplicate);
         unitary fn ident(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{q}}

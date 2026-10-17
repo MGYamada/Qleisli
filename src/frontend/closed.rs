@@ -576,7 +576,7 @@ mod tests {
     #[test]
     fn runtime_closure_rejects_a_rectangular_meaning_declaration() {
         let program = checked(
-            "use std::quantum::{finish,init0};
+            "use std::state::init0;
              isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
              meaning Prepared:Unit -> Bit=reference(prepare);",
         );

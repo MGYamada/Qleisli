@@ -1,4 +1,4 @@
-use std::quantum::z;
+use std::gate::z;
 
 classical fn predicate(x: Bit) -> Bit { not x }
 

@@ -41,12 +41,12 @@ these diagnostic forms grant neither. See the
 
 One private source collection retains complete original bytes, common AST and
 provenance. Filesystem entries retain their selected path; in-memory entries
-carry no invented file or manifest. Both loaders add the fixed registry's six
+carry no invented file or manifest. Both loaders add the fixed registry's seven
 ordinary source modules and validate its edition-2026 manifest. Both loaders
 apply their byte policies to bundled bytes before copying or parsing;
 placement under `std::` supplies no checking exemption. The selected loader
-also reserves all six bundled module slots. It accepts 1 through 58 supplied
-modules: the six bundles count toward its
+also reserves all seven bundled module slots. It accepts 1 through 57 supplied
+modules: the seven bundles count toward its
 64-module ceiling and its 1 MiB aggregate byte limit. Its 64 KiB/module limit
 also applies. Finite bounded and explicit legacy byte-loading policies remain
 separate; this unit does not make an unbounded byte loader bounded.
@@ -292,8 +292,8 @@ They have no runtime interface, effect or accepted-handle authority.
 finite function on ordinary values. Its body is one restricted label expression:
 names, `()`, `0`/`1`, ordered products, eager `not`/`and`/`xor`, and acyclic calls
 to other classical functions, plus the existing nullary ordinary
-`empty_bits()` constructor imported from `std::classical`, with its exact `Bits<0>` signature.
-Other sealed quantum calls remain excluded. It has no runtime statements, observation or
+`empty_bits()` language primitive constructor, requiring no import, with its exact `Bits<0>` signature.
+Other quantum primitive calls remain excluded. It has no runtime statements, observation or
 quantum capture. Parameter/result trees and argument-list arity remain exact;
 noninjective functions are permitted.
 
@@ -305,7 +305,7 @@ is ignored. An already measured Bit is ordinary data; a live `Q<T>` cannot be
 passed as `T` without explicit observation. For example:
 
 ```qli
-use std::observe::measure_z;
+
 classical fn flip(b: Bit) -> Bit { not b }
 fn invert(q: Q<Bit>) -> Q<Bit> { basis q as b { flip(b) } }
 fn read_flipped(q: Q<Bit>) -> Bit { flip(measure_z(q)) }
@@ -481,6 +481,17 @@ does not erase the computation that produced its argument.
 
 ## Declaration resolution and current profiles
 
+Unqualified calls resolve lexical runtime/static bindings first, then ordinary
+same-module declarations or explicit imports, and only then a language primitive
+when the spelling is genuinely unbound. A moved binding, wrong callable category
+or failed ordinary type/effect/access check remains the selected use and error;
+there is no fallback. The canonical primitive identities and complete migration
+of the 27 retired qualified entries are in the
+[primitive boundary](primitive-boundary.md#bare-lookup-and-ordinary-shadowing).
+Primitives require no import or prelude and their names are not reserved.
+Qualified foundation paths and hidden aliases are unavailable. Ordinary stdlib
+imports retain visibility, public effects and source/body obligations.
+
 An imported declaration retains its canonical module and declaration name.
 Visibility is checked before use: a private declaration cannot be imported from
 another module or selected as a host entry. A sized host-supplied provider is
@@ -495,7 +506,7 @@ Unused import-only cycles are permitted because imports have no runtime action.
 Every self-import is a declaration-name collision, including a private or
 public declaration imported into its own module. Duplicate imports and clashes
 with local declarations reject. Missing members, private members, collisions
-and unknown sealed primitives point to the final path token; a missing module
+and retired foundation entries point to the final path token; a missing module
 points to the complete `use` span.
 
 Same-module sibling calls may refer forward or backward and may use private
@@ -520,8 +531,8 @@ retry through a same-named global declaration.
 
 `src/frontend/resolve.rs` and `resolve/locals.rs` retain canonical declaration,
 lexical-use and original-span associations. The common typed primitive catalog
-has 27 fixed names; finite and selected concrete emitters still support their
-own subsets. The six ordinary bundled modules undergo the same common
+has 13 bare typed identities; finite and selected concrete emitters retain
+their profile-specific adapters. The seven ordinary bundled modules undergo the same common
 judgment as caller source. No ambient standard-library discovery, replacement
 of reserved `std` modules or new alias/re-export syntax is admitted here.
 Source facts, concrete capability and independent native acceptance remain

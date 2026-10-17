@@ -309,11 +309,7 @@ impl Builder<'_> {
                     ResolvedUse::Global(Target::Primitive(id)) => {
                         // Compare the original canonical primitive identity;
                         // no path String is allocated or source name re-resolved.
-                        if id
-                            != (crate::frontend::resolve::PrimitiveId {
-                                module: "std::classical",
-                                name: "empty_bits",
-                            })
+                        if id != crate::frontend::resolve::PrimitiveId::EmptyBits
                             || !arguments.is_empty()
                         {
                             return Err(error(

@@ -104,9 +104,9 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
 #[test]
 fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
     for source in [
-        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+        "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
         "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
-        "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
+        " pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
         let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
@@ -122,8 +122,7 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         assert!(profile.message().contains("lowering"), "{profile}");
         assert_eq!(profile, elaborated.lower().unwrap_err());
     }
-    let source =
-        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
+    let source = "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
     let preparation = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -136,7 +135,7 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         "iso"
     );
     assert!(preparation.lower().unwrap().is_instrument());
-    let source = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
+    let source = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
     let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -197,7 +196,7 @@ fn python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations()
             3 => "let a = b; (a,a)",
             _ => "a",
         });
-        cases.push((format!("use std::quantum::h; use std::quantum::x; use std::quantum::cnot; pub unitary fn f(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{ {body} }}"), BTreeMap::new()));
+        cases.push((format!(" use std::gate::x; use std::gate::cnot; pub unitary fn f(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{ {body} }}"), BTreeMap::new()));
     }
     let oracle = python(&cases);
     let mut accepted = 0;
@@ -316,7 +315,7 @@ print(count)
 
 #[test]
 fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
-    let provider = "use std::quantum::x; pub unitary fn flip(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>) { (a,x(b)) }";
+    let provider = "use std::gate::x; pub unitary fn flip(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>) { (a,x(b)) }";
     let template = "use dep::flip; pub unitary fn f(c: Q<Bit>, a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>,Q<Bit>) { let (c,(a,b)) = controlled(flip)(c,(a,b)); (c,a,b) }";
     for main in [
         template.to_string(),

@@ -5,15 +5,21 @@ schema 2: name `std`, product version `0.3.0-beta`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
 
-The compiler embeds six ordinary [source modules](../src): `std::basis`,
+The compiler embeds seven ordinary [source modules](../src): `std::basis`,
 `std::transform`, `std::reflection`, `std::measurement`, `std::gate` and
-`std::structure`, with twenty-one public definitions and five private reflection,
+`std::structure` and `std::state`, with twenty-five public definitions and five private reflection,
 scalar-phase, phase-provider, packed-control and fixed-identity helpers. Their edition manifest is
 embedded in the distribution too. It reads no installed qargo executable to use
 them. Their mathematical admission rules, exact contracts and path migration
 are specified by the [stdlib Reference](../../docs/src/reference/stdlib.md);
 contribution and evidence requirements remain in [STDLIB.md](../../STDLIB.md).
-The compiler-owned foundation catalogs retain their separate primitive boundary.
+Bare language primitives require no import; lexical bindings and ordinary
+declarations/imports take priority, even after a moved/wrong-category or failed
+check. Only genuinely unbound names select a primitive. Retired foundation
+imports have no aliases or prelude. `std::state::{init0,reset}` and
+`std::structure::{empty,consume_empty}` are ordinary source definitions with
+explicit effects, full type/owner trees and arbitrary-reference contracts.
+Concrete emitter support and native acceptance remain separate.
 
 The retired `std::routines`, `std::transforms` and fixed `std::arithmetic`
 exports have no compatibility aliases. Useful A001–A003 arithmetic circuits

@@ -554,11 +554,11 @@ impl Compiler<'_> {
     ) -> Result<Operation, CompileError> {
         let key = match self.resolve(module, name)? {
             Callee::User(key) => key,
-            Callee::Sealed(namespace, gate) => {
+            Callee::Primitive(primitive) => {
                 let mut message =
                     "static provider requires an ordinary fn with inferred Unitary body effect"
                         .to_owned();
-                if namespace == "std::quantum" && matches!(gate.as_str(), "h" | "x" | "z" | "t") {
+                if primitive == PrimitiveId::H {
                     message.push_str(&format!(
                         "; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
                         name.text

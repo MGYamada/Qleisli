@@ -12,7 +12,7 @@ use std::{fs, process::Command};
 #[test]
 fn tuple_diagnostic_has_a_structured_binding_and_no_host_path() {
     let root = SourceRoot::new(
-        "use std::quantum::{init0,cnot}; use std::observe::measure_z; observe fn main()->Bit { let pair=cnot(init0(),init0()); measure_z(pair) }",
+        "use std::state::init0; use std::gate::cnot;  observe fn main()->Bit { let pair=cnot(init0(),init0()); measure_z(pair) }",
     );
     let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .arg("check")
@@ -125,7 +125,7 @@ fn interop_file_io_uses_the_closed_project_code() {
 fn terminal_export_keeps_allocations_before_observation() {
     for observe in ["let a=measure_z(q);", "discard(q); let a=0;"] {
         let root = SourceRoot::new(&format!(
-            "use std::quantum::{{init0,h}}; use std::observe::{{measure_z,discard}}; observe fn main()->(Bit,Bit) {{let q=h(init0()); {observe} let b=measure_z(init0()); (a,b)}}"
+            "use std::state::init0;  observe fn main()->(Bit,Bit) {{let q=h(init0()); {observe} let b=measure_z(init0()); (a,b)}}"
         ));
         let program = compile_project(&root.0).unwrap();
         for error in [
@@ -135,7 +135,7 @@ fn terminal_export_keeps_allocations_before_observation() {
             assert_eq!(error.kind, InteropErrorKind::Unsupported);
             assert!(error.to_string().contains("after terminal observation"));
         }
-        root.write("main.qli", "use std::quantum::init0; use std::observe::measure_z; observe fn main()->(Bit,Bit){let q=init0();let r=init0();(measure_z(q),measure_z(r))}");
+        root.write("main.qli", "use std::state::init0;  observe fn main()->(Bit,Bit){let q=init0();let r=init0();(measure_z(q),measure_z(r))}");
         let program = compile_project(&root.0).unwrap();
         assert!(export_openqasm3(&program).is_ok());
         assert!(export_qir_base(&program).is_ok());

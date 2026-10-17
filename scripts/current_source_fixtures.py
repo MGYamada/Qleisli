@@ -21,6 +21,7 @@ ISOMETRY_MAP = "tests/fixtures/frontend_v030/isometry-vocabulary/source-map.json
 PUBLIC_EFFECTS_MAP = "tests/fixtures/frontend_v030/public-effects/source-map.json"
 APPLICATION_MAP = "tests/fixtures/frontend_v030/operation-application/source-map.json"
 CONST_MAP = "tests/fixtures/frontend_v030/const-parameters/source-map.json"
+PRIMITIVE_MAP = "tests/fixtures/frontend_v030/language-primitives/source-map.json"
 QFOR_MAP = "tests/fixtures/frontend_v030/qfor/source-map.json"
 
 
@@ -152,7 +153,8 @@ def _migration_maps(stop_before=None):
             (RETIRED_OPERATION_MAP, "qleisli.retired-operation-source-map", "retired operation"),
             (CAPABILITY_NAMING_MAP, "qleisli.capability-naming-source-map", "capability naming"),
             (ISOMETRY_MAP, "qleisli.isometry-vocabulary-source-map", "isometry vocabulary"),
-            (PUBLIC_EFFECTS_MAP, "qleisli.public-effect-source-map", "public effect")):
+            (PUBLIC_EFFECTS_MAP, "qleisli.public-effect-source-map", "public effect"),
+            (PRIMITIVE_MAP, "qleisli.language-primitive-source-map", "language primitive")):
         if relative == stop_before:
             break
         path = _local(ROOT, relative)
@@ -217,3 +219,46 @@ def source_hashes(project):
     return {p.relative_to(project).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(project.rglob("*"))
             if p.is_file() and (p.suffix == ".qli" or p.name == "Qargo.toml")}
+
+
+def current_source_project(path):
+    """Select only registered project roots, checking their complete link chain.
+
+    Accept a historical, intermediate or final registered project path. Starting
+    from a later snapshot still checks every recorded predecessor. No commands,
+    observers or diagnostic records are read or executed by this selector.
+    """
+    path = Path(path)
+    if not path.is_absolute():
+        path = ROOT / path
+    key = path.relative_to(ROOT).as_posix()
+    _local(ROOT, key)
+    initial = _projects(_read_map(MAP), "historical_path", "explicit")
+    stages = [(initial, "historical_path", "historical_sha256")]
+    stages.extend((projects, "before_path", "before_sha256")
+                  for _, projects in _migration_maps())
+    forward, backward = {}, {}
+    for stage, (projects, before_field, hash_field) in enumerate(stages):
+        for entry in projects.values():
+            before, current = entry[before_field], entry["current_path"]
+            if before in forward or current in backward:
+                raise ValueError("ambiguous source project migration chain")
+            edge = (stage, before, current, entry, hash_field)
+            forward[before] = edge
+            backward[current] = edge
+    # Every link must follow the declared migration order, even if unselected.
+    for before, edge in forward.items():
+        predecessor = backward.get(before)
+        if predecessor is not None and predecessor[0] >= edge[0]:
+            raise ValueError("unordered or cyclic source project migration chain")
+    if key not in forward and key not in backward:
+        raise ValueError(f"unregistered source project: {key}")
+    first = key
+    while first in backward:
+        first = backward[first][1]
+    current = first
+    while current in forward:
+        _, before, selected, entry, hash_field = forward[current]
+        _verify_pair(_local(ROOT, before), _local(ROOT, selected), entry, hash_field)
+        current = selected
+    return _local(ROOT, current)

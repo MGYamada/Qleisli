@@ -142,8 +142,8 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
         ErrorCode::Ownership,
     );
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::x;
-        use std::observe::measure_z;
+        "use std::state::init0; use std::gate::x;
+        
         observe fn main()->(Bit,Bit,Bit){
             let c=measure_z(init0());
             let (a,b,d)=(x(init0()),if c {init0()} else {x(init0())},init0());

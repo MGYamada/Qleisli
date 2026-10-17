@@ -3,6 +3,7 @@
 //! starts in zero, is explicitly uncomputed, and counts toward the target cap.
 
 mod contracts;
+mod normalization;
 pub(super) use contracts::ExpansionBudget;
 
 use super::profile::{self, Gate, GateOp, TerminalCircuit};
@@ -172,9 +173,10 @@ pub(super) fn steps(
     expansion: &mut ExpansionBudget,
 ) -> Result<(), InteropError> {
     let mut cursor = contracts::Cursor::new(steps, wires.len(), expansion)?;
-    let mut pending = cursor.next()?;
+    let mut window = std::collections::VecDeque::with_capacity(3);
+    let mut pending = expansion.normalizations.next(&mut cursor, &mut window)?;
     while let Some(mut merged) = pending.take() {
-        pending = cursor.next()?;
+        pending = expansion.normalizations.next(&mut cursor, &mut window)?;
         if let CircuitAction::Monomial {
             indices,
             permutation,
@@ -204,7 +206,7 @@ pub(super) fn steps(
                     for (a, b) in phases.iter_mut().zip(next_phases) {
                         *a = (*a + *b) % 8;
                     }
-                    pending = cursor.next()?;
+                    pending = expansion.normalizations.next(&mut cursor, &mut window)?;
                 }
             }
         }

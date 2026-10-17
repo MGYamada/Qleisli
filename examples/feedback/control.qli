@@ -1,5 +1,5 @@
-use std::quantum::x;
-use std::observe::measure_z;
+use std::gate::x;
+
 
 pub observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
     let b = measure_z(q);

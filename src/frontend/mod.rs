@@ -20,6 +20,7 @@ mod meaning;
 mod ordinary;
 pub mod parser;
 mod pattern;
+mod primitive;
 pub mod project;
 mod pure;
 mod raw_splice;

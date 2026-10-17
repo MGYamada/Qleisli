@@ -1,5 +1,5 @@
 //! Phase oracles on four labels; the first bit has integer weight one.
-use std::quantum::z;
+use std::gate::z;
 
 classical fn is00((a, b): (Bit, Bit)) -> Bit { not a and not b }
 classical fn is10((a, b): (Bit, Bit)) -> Bit { a and not b }

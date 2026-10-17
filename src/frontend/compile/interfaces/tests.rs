@@ -179,7 +179,7 @@ fn closed_runtime_signature_checks_capacity_before_proposal_materialization() {
         ),
     ] {
         let project = project(format!(
-            "use std::classical::empty_bits;\n{helper}\
+            "\n{helper}\
              unitary fn keep(b: Bits<{size}>) -> Bits<0> {{ b }}\n\
              unitary fn main() -> Unit {{ let _ = keep(empty_bits()); () }}\n"
         ));

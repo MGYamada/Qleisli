@@ -79,7 +79,7 @@ fn eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use() {
     assert_eq!(
         operations
             .iter()
-            .filter(|op| matches!(op, RawOp::Init0 { .. }))
+            .filter(|op| matches!(op, RawOp::LiftBasis { output_wires, table, .. } if output_wires.len() == 1 && table == &[0]))
             .count(),
         1
     );
@@ -228,7 +228,12 @@ fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
         .operations
         .iter()
         .filter_map(|op| match op {
-            RawOp::Init0 { output, wire } => Some((*output, *wire)),
+            RawOp::LiftBasis {
+                output,
+                output_wires,
+                table,
+                ..
+            } if output_wires.len() == 1 && table == &[0] => Some((*output, output_wires[0])),
             _ => None,
         })
         .collect::<Vec<_>>();
@@ -246,7 +251,11 @@ fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
             .operations
             .iter()
             .filter_map(|op| match op {
-                RawOp::Init0 { wire, .. } => Some(*wire),
+                RawOp::LiftBasis {
+                    output_wires,
+                    table,
+                    ..
+                } if output_wires.len() == 1 && table == &[0] => Some(output_wires[0]),
                 _ => None,
             })
             .collect::<Vec<_>>();
@@ -306,15 +315,12 @@ fn ignored_measurement_and_unit_return_keep_observation_before_later_logic() {
 fn representable_phases_match_independent_exact_targets_and_interference() {
     for (numerator, denominator, eighths) in [(1, 3, 1), (2, 4, 1), (3, 3, 3), (0, 4, 0)] {
         let text = format!(
-            "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ phase[{numerator},{denominator}](q) }}"
+            " pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ phase[{numerator},{denominator}](q) }}"
         );
         let graph = elaborate(&text, "main::f", BTreeMap::new());
         let definition = &graph.definitions()[graph.root()];
         assert_eq!(definition.steps().len(), 1);
-        assert_eq!(
-            definition.steps()[0].primitive(),
-            Some("std::quantum::phase")
-        );
+        assert_eq!(definition.steps()[0].primitive(), Some("phase"));
         assert_eq!(
             definition.steps()[0].natural_arguments(),
             &[numerator, denominator]
@@ -360,8 +366,7 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
 
     // The source domain is j < 2^k, independently of whether modular reduction
     // could represent an equal operator. Do not broaden it at the Raw target.
-    let invalid =
-        "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[9,3](q) }";
+    let invalid = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[9,3](q) }";
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), invalid.into())]))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())

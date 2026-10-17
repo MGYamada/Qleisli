@@ -1,0 +1,1 @@
+use std::structure::consume_empty;    unitary fn drain(z: Q<Bits<0>>) -> () { consume_empty(z) } pub observe fn f(z: Q<Bits<0>>,q: Q<Bit>) -> CBits<1> { let u = drain(z); let (a,b) = (u,u); prepend_bit[0](measure_z(q),empty_bits()) }

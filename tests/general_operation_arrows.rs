@@ -104,7 +104,7 @@ fn current_annotations_of_retained_sources_reach_native_checking_and_complex_exe
 )]
 #[test]
 fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
-    let source = "use std::quantum::{finish,split,phase};
+    let source = "
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);phase[1,3](b)}
         fn invoke[const A:Basis,const B:Basis,const U:Op<A -> B>](q:Q<A>)->Q<B>
             requires Applicable(U){U(q)}
@@ -119,7 +119,7 @@ fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
 
 #[test]
 fn entry_provider_bindings_check_both_ports_and_actual_effect() {
-    let source = "use std::quantum::{finish,init0};
+    let source = "use std::state::init0;
         pub isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
         pub unitary fn wrong(q:Q<Bit>)->Q<Bit>{q}
         pub isometry fn main[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}";
@@ -145,7 +145,7 @@ fn entry_provider_bindings_check_both_ports_and_actual_effect() {
 fn explicit_endomorphism_keeps_abbreviation_effect_and_provider_rules() {
     for kind in ["Op<Bit>", "Op<Bit -> Bit>"] {
         let source = format!(
-            "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
+            " fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
              unitary fn invoke[const U:{kind}](q:Q<Bit>)->Q<Bit>
                 requires Applicable(U){{U(q)}}
              pub unitary fn main(q:Q<Bit>)->Q<Bit>{{invoke[had](q)}}"
@@ -186,7 +186,7 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
     }
     for (source, code) in [
         (
-            "use std::quantum::{init0,finish}; use std::observe::measure_z; fn bad(q:Q<Unit>)->Q<Bit>{finish(q); let b=init0(); let c=measure_z(b);init0()} fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)} fn call(q:Q<Unit>)->Q<Bit>{invoke[bad](q)}",
+            "use std::state::init0;  fn bad(q:Q<Unit>)->Q<Bit>{finish(q); let b=init0(); let c=measure_z(b);init0()} fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)} fn call(q:Q<Unit>)->Q<Bit>{invoke[bad](q)}",
             "effect",
         ),
         (
@@ -247,7 +247,7 @@ fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
 )]
 #[test]
 fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
-    let source = "use std::quantum::{finish,split,phase};
+    let source = "
         fn unitor(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
@@ -262,7 +262,7 @@ fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
 )]
 #[test]
 fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
-    let prefix = "use std::quantum::{h,phase};
+    let prefix = "
         fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
         fn had(q:Q<Bit>)->Q<Bit>{h(q)}";
     let omega = std::f64::consts::FRAC_1_SQRT_2;
@@ -287,7 +287,7 @@ fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
         pub unitary fn main(q:Q<Bit>)->Q<Bit>{{invoke[conjugate_op(twist,had)](q)}}"
     );
     amplitudes(&selected(&source, "run", 0), &[[omega, 0.0], [0.5, 0.5]]);
-    let source = "use std::quantum::{split,join,finish,phase};
+    let source = "
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         fn middle(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,b)=split(q);join(u,phase[1,3](b))}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
@@ -303,7 +303,7 @@ fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
 fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
     let source = |depth: usize| {
         let mut source = String::from(
-            "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+            " fn had(q:Q<Bit>)->Q<Bit>{h(q)}
             fn f0[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}",
         );
         for n in 1..=depth {
@@ -393,7 +393,7 @@ fn raw_constructors_check_refined_children_even_under_zero_repetition() {
 )]
 #[test]
 fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
-    let source = "use std::quantum::{x,phase,split,join};
+    let source = "use std::gate::x;
         classical fn flip(b:Bit)->Bit{not b}
         meaning X:Bit=permutation_by(flip);
         fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
@@ -497,7 +497,7 @@ fn constructors_preserve_the_existing_nested_repetition_product_bound() {
         ("Bit", "conjugate_op(power(had,256),id)"),
     ] {
         let source = format!(
-            "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
+            " fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
              fn id(q:Q<Bit>)->Q<Bit>{{q}}
              fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
                 requires Applicable(U){{U(q)}}
@@ -838,7 +838,7 @@ fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference()
         expected[basis] = [1.0, 0.0];
         amplitudes(&selected(&constructed, "run", basis), &expected);
     }
-    let source = "use std::quantum::{split,finish,phase,join};
+    let source = "
         fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);phase[1,3](b)}
         fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
             requires Adjointable(U){adjoint(U)(q)}
@@ -859,7 +859,7 @@ fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference()
     let source = source.replace(
         "pub unitary fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
         "fn open(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
-    ) + "use std::quantum::{init0,h}; use std::observe::measure_z;
+    ) + "use std::state::init0; 
          pub observe fn main()->Bit{
             let(q,r)=split(open(join(h(init0()),init0())));
             let(u,b)=split(q);finish(u);let _=measure_z(r);measure_z(h(phase[1,3](b)))}";
@@ -912,7 +912,7 @@ fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
             "type",
         ),
         (
-            "use std::quantum::{init0,finish};
+            "use std::state::init0;
             fn prep(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
             fn reverse[const U:Op<Unit -> Bit>](q:Q<Bit>)->Q<Unit>
                 requires Adjointable(U){adjoint(U)(q)}
@@ -937,7 +937,7 @@ fn direct_formal_adjoint_preserves_original_nested_meaning_obligations() {
     let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
     for (body, honest) in [("phase[1,1](q)", true), ("q", false)] {
         let source = format!(
-            "use std::quantum::{{split,finish,phase}};
+            "
              classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){{(0,(0,b))}}
              meaning Z:Bit=phase_by(z_phase);
              fn direct(q:Q<Bit>)->Q<Bit>{{{body}}}

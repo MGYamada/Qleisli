@@ -11,9 +11,9 @@ use qleisli::sim::{SimulationLimits, run_closed};
 static NEXT: AtomicU64 = AtomicU64::new(0);
 const ARITHMETIC: &str = include_str!("../examples/order_finding/arithmetic.qli");
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::cnot; use std::quantum::split; use std::quantum::join;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::cnot;  
+ 
 use std::measurement::measure_z2; use std::measurement::measure_x;
 use arithmetic::increment2; use arithmetic::add2;
 use arithmetic::mul2_mod15;

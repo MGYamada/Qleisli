@@ -6,7 +6,6 @@ use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::interchange::{self, Version};
 use qleisli::ir::*;
 use qleisli::sim::{SampleError, SampleLimits, sample_closed};
-use std::path::Path;
 use std::process::Command;
 
 #[test]
@@ -142,7 +141,7 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
 )]
 #[test]
 fn small_native_receipts_round_trip_shared_source() {
-    let source = "use std::quantum::init0; use std::observe::measure_z;
+    let source = "use std::state::init0; 
         unitary fn actual(q:Q<Bit>)->Q<Bit>{q}
         unitary fn specified(q:Q<Bit>)->Q<Bit>{q}
         observe fn main()->Bit{
@@ -208,8 +207,11 @@ fn usage_in_both_formats_lists_every_command_and_option() {
 #[test]
 #[ignore = "historical large expansion exceeds native time/work bounds before the former Rust diagnostic"]
 fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
-    let root = Path::new("tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020");
-    let error = check_project(&root.join("expansion_limit")).unwrap_err();
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/expansion_limit/main.qli",
+    );
+    let root = SourceRoot::new(&source);
+    let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit);
     assert!(
         error.message.contains("project-wide work limit of 1000000"),
@@ -219,15 +221,18 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
         error.message.contains("while checking main::main"),
         "{error}"
     );
-    let source = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/expansion_limit/main.qli"
-    );
     assert!(source[error.span.start..error.span.end].contains("fn main"));
-    check_project(&root.join("repeat_300")).unwrap();
+    let repeat_300 = SourceRoot::new(&common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_300/main.qli",
+    ));
+    check_project(&repeat_300.0).unwrap();
     // Historical repeat failure is repaired by structural copy validation.
-    check_project(&root.join("repeat_1000")).unwrap();
+    let repeat_1000 = SourceRoot::new(&common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_1000/main.qli",
+    ));
+    check_project(&repeat_1000.0).unwrap();
     let explicit = SourceRoot::new(
-        "use std::quantum::{h,t,init0}; use std::observe::measure_z;
+        "use std::gate::t; use std::state::init0; 
          unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}
          unitary fn long(q:Q<Bit>)->Q<Bit>{power(ht,512)(q)}
          observe fn main()->Bit{measure_z(apply_contract(long,long,init0()))}",

@@ -1,0 +1,11 @@
+use std::state::init0;
+use std::gate::x;
+use std::gate::z;
+
+
+unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { z(x(z(x(h(q))))) }
+
+pub observe fn main() -> Bit {
+    measure_z(h(apply_contract(implementation, reference_h, init0())))
+}

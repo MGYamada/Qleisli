@@ -124,9 +124,10 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
 #[test]
 fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
     use qleisli::frontend::compile::{check_project, compile_project};
-    let canonical = include_str!(
-        "fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli"
+    let canonical = common::current_source_text(
+        "tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli",
     );
+    let canonical = canonical.as_str();
     let mut bodies = Vec::new();
     // An assertion does not seed inference or change the emitted isometry.
     for (text, diagnostic, asserted) in [
@@ -163,7 +164,8 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
         assert_eq!(accepted.raw().quantum_outputs.len(), 1);
         assert!(matches!(
             accepted.raw().operations.as_slice(),
-            [qleisli::ir::RawOp::Init0 { .. }]
+            [qleisli::ir::RawOp::PackUnit { .. }, qleisli::ir::RawOp::LiftBasis { output_wires, table, .. }]
+                if output_wires.len() == 1 && table == &[0]
         ));
         for version in [
             qleisli::interchange::Version::V1,
@@ -178,7 +180,7 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
         // The finite entry contract is a closed classical result. Keep that
         // explicit adapter separate from the original quantum-result source.
         let adapter = format!(
-            "use std::observe::measure_z;{} pub observe fn main()->Bit{{measure_z(produce())}}",
+            "{} pub observe fn main()->Bit{{measure_z(produce())}}",
             text.replace("fn main()", "fn produce()")
         );
         let root = SourceRoot::new(&adapter);
@@ -221,9 +223,10 @@ fn retired_iso_reports_one_exact_migration_span_before_native_checking() {
 #[test]
 fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() {
     use qleisli::frontend::compile::{ErrorCode, check_project};
-    let observing = include_str!(
-        "fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli"
+    let observing = common::current_source_text(
+        "tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli",
     );
+    let observing = observing.as_str();
     let error =
         ParsedProgram::parse(BTreeMap::from([("main".into(), observing.into())])).unwrap_err();
     assert_eq!(error.code(), "effect");
@@ -250,9 +253,9 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
     use qleisli::frontend::compile::HierarchyEligibility;
     use qleisli::interchange::{hierarchical, native};
 
-    let source = "use std::quantum::{split,finish,phase_eighth};
+    let source = "
         pub isometry fn entry(q:Q<(Unit,Bit)>)->Q<Bit>{
-            let(u,b)=split(q);finish(u);phase_eighth(b)
+            let(u,b)=split(q);finish(u);global_phase_eighth(b)
         }";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     let fact = parsed.function_effect("main::entry").unwrap();
@@ -354,7 +357,7 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
 )]
 #[test]
 fn adopted_isometry_cli_retains_scalar_phase_and_the_actual_scope() {
-    let text = "use std::quantum::{init0,phase_eighth};pub isometry fn main()->Q<Bit>{phase_eighth(init0())}";
+    let text = "use std::state::init0;pub isometry fn main()->Q<Bit>{global_phase_eighth(init0())}";
     let root = SourceRoot::new(text);
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args(["--format=json", "run", "--entry=main::main"])

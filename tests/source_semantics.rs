@@ -55,10 +55,10 @@ fn assert_both(source: &str, wrapped: &str, expanded: &str, expected: &[(&[bool]
 #[test]
 fn measured_actual_is_evaluated_once_before_classical_substitution() {
     let source = r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::cnot;
+
 observe fn read_x(q: Q<Bit>) -> Bit { measure_z(h(q)) }
 unitary fn pair(left: Bit, right: Bit) -> (Bit,Bit) { (left,right) }
 unitary fn duplicate(b: Bit) -> (Bit,Bit) { pair(b,b) }
@@ -86,11 +86,11 @@ fn call_substitution_respects_callee_scope_and_restores_shadowed_classical_names
     for (flag, other) in [(false, false), (false, true), (true, false), (true, true)] {
         let source = format!(
             r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::z;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+
 unitary fn phase(flag: Bit, q: Q<Bit>) -> Q<Bit> {{
     if flag {{ z(q) }} else {{ q }}
 }}
@@ -127,12 +127,12 @@ observe fn main() -> ((Bit,Bit),(Bit,Bit)) {{
 #[test]
 fn nested_call_preserves_conditional_phase_against_an_entangled_caller_frame() {
     let source = r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::z;
-use std::quantum::t;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::z;
+use std::gate::t;
+use std::gate::cnot;
+
 unitary fn phased(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { t(q) } else { z(t(q)) }
 }
@@ -172,14 +172,14 @@ observe fn main() -> (Bit,(Bit,Bit)) {
 #[test]
 fn simultaneous_phi_order_preserves_mixed_results_zero_width_and_bell_coherence() {
     let source = r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::z;
-use std::quantum::cnot;
-use std::quantum::split;
-use std::observe::measure_z;
-use std::observe::discard;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+use std::gate::cnot;
+
+
+
 observe fn main() -> ((Bit,Bit),((Bit,Bit),(Bit,Bit))) {
     let (a,r) = cnot(h(init0()),init0());
     let (u,a) = split(basis a as k { ((),k) });

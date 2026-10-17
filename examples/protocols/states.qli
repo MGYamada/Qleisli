@@ -1,8 +1,8 @@
 //! Closed unitary preparations, each applied to a fresh |0> by its caller.
 //! Named wrappers are required for current static operation arguments.
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::t;
+
+use std::gate::x;
+use std::gate::t;
 
 /// |0> from |0>; phase +1 on the whole interface.
 pub unitary fn zero(q: Q<Bit>) -> Q<Bit> { q }

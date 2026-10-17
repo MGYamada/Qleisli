@@ -11,6 +11,13 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Stage the typed, unqualified language-primitive surface and retirement of
+  imported foundation catalogs for #369/#167. Keep state preparation, observing
+  reset and empty-owner structure helpers in ordinary checked source. Preserve
+  original fixture/corpus inputs and explicit current-source mappings. Initial
+  bounded native and CLI checks have run; corpus registration, remaining target
+  regressions and full normal/MSRV/CI validation are unfinished.
+
 - Materialize closed Basis/Nat/Op instances through the common original-source
   plans and ordinary finite lowering, including nonzero registers, static
   branches/folds and symbolic powers. Keep exact type trees, zero-width owners,

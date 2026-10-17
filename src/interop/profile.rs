@@ -117,6 +117,16 @@ pub(super) struct TerminalCircuit {
 }
 
 impl TerminalCircuit {
+    /// Target qubits start in zero; allocation never reuses an earlier axis.
+    /// Both original Init0 and a singleton coefficient-+1 lift use this bound.
+    fn allocate_zero(&mut self) -> Result<usize, InteropError> {
+        if self.qubits >= MAX_QUBITS {
+            return Err(InteropError::limit("at most 12 allocated qubits"));
+        }
+        let axis = self.qubits;
+        self.qubits += 1;
+        Ok(axis)
+    }
     pub fn push(&mut self, gate: Gate, wires: Vec<usize>) -> Result<(), InteropError> {
         if self.gates.len() >= MAX_GATES {
             return Err(InteropError::limit("at most 4096 gates"));
@@ -283,7 +293,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     };
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
     let mut scratch = Vec::new();
-    let mut expansion = super::export::ExpansionBudget::default();
+    let mut expansion = super::export::ExpansionBudget::for_program(program);
     let mut measured = BTreeMap::new();
     let mut observed = false;
     for (index, op) in raw.operations.iter().enumerate() {
@@ -315,11 +325,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     }
                 }
                 RawOp::Init0 { output, .. } => {
-                    if circuit.qubits >= MAX_QUBITS {
-                        return Err(InteropError::limit("at most 12 allocated qubits"));
-                    }
-                    owners.insert(*output, vec![circuit.qubits]);
-                    circuit.qubits += 1;
+                    owners.insert(*output, vec![circuit.allocate_zero()?]);
                 }
                 RawOp::Gate {
                     gate,
@@ -400,9 +406,22 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     table,
                 } => {
                     let wires = owners.remove(input).expect("verified owner");
-                    let axes =
-                        super::export::axis_permutation(table, wires.len(), output_wires.len())?;
-                    owners.insert(*output, axes.into_iter().map(|axis| wires[axis]).collect());
+                    // The accepted Raw lift has exact coefficient +1. Only
+                    // its singleton zero-wire -> |0> shape prepares a
+                    // new target qubit; no source name or general table rule
+                    // supplies this case. Other owners and their axes remain live.
+                    let output_axes =
+                        if wires.is_empty() && output_wires.len() == 1 && table.as_slice() == [0] {
+                            vec![circuit.allocate_zero()?]
+                        } else {
+                            let axes = super::export::axis_permutation(
+                                table,
+                                wires.len(),
+                                output_wires.len(),
+                            )?;
+                            axes.into_iter().map(|axis| wires[axis]).collect()
+                        };
+                    owners.insert(*output, output_axes);
                 }
                 RawOp::MeasureZ { input, output } => {
                     observed = true;
@@ -446,6 +465,25 @@ mod tests {
     use super::*;
     use crate::contract::exact::{Budget, Exact};
     use crate::contract::{BasisType, Circuit};
+    use crate::interop::InteropErrorKind;
+
+    #[test]
+    fn zero_allocation_keeps_monotone_axes_and_the_existing_limit() {
+        let mut circuit = TerminalCircuit {
+            qubits: 2,
+            gates: vec![],
+            measurements: vec![],
+        };
+        assert_eq!(circuit.allocate_zero().unwrap(), 2);
+        assert_eq!(circuit.qubits, 3);
+        // Guard-only test: do not construct or check a maximum-size program.
+        circuit.qubits = MAX_QUBITS;
+        assert_eq!(
+            circuit.allocate_zero().unwrap_err().kind,
+            InteropErrorKind::Limit
+        );
+        assert_eq!(circuit.qubits, MAX_QUBITS);
+    }
 
     #[test]
     fn gate_columns_match_independent_exact_definitions_including_phase() {

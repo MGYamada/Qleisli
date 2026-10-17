@@ -69,7 +69,7 @@ class LocalResolution(unittest.TestCase):
         source = 'pub unitary fn const(const: Q<Bit>) -> Q<Bit> { const }'
         self.assertEqual(Parser(source, module='register_tools').parse()[0], 'const')
         # Initialization uses the same marker parser without changing its effect.
-        source = 'use std::quantum::init0; pub iso fn fresh[const n: Nat]() -> Q<Bit> { init0() }'
+        source = 'use std::state::init0; pub iso fn fresh[const n: Nat]() -> Q<Bit> { init0() }'
         parser = InstrumentParser(source, module='initialization')
         parser.parse()
         self.assertEqual(parser.effect, 'iso')
@@ -81,7 +81,7 @@ class LocalResolution(unittest.TestCase):
                 parser_class(source, module='register_tools').parse()
 
     def test_isometry_vocabulary_preserves_historical_effect_and_proposal(self):
-        historical = 'use std::quantum::init0; pub iso fn fresh() -> Q<Bit> { init0() }'
+        historical = 'use std::state::init0; pub iso fn fresh() -> Q<Bit> { init0() }'
         canonical = historical.replace('iso fn', 'isometry fn')
         old = InstrumentParser(historical, module='initialization')
         new = InstrumentParser(canonical, module='initialization')

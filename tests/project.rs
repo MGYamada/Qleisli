@@ -80,7 +80,7 @@ fn bell_module_and_bundled_imports_resolve() {
     );
     root.write(
         "main.qli",
-        "use bell::entangle;\nuse std::quantum::h;\nuse std::quantum::init0;\nuse std::basis::xor2;\nuse std::observe::measure_z;\nobserve fn main() -> Bit { measure_z(init0()) }",
+        "use bell::entangle;\n\nuse std::state::init0;\nuse std::basis::xor2;\n\nobserve fn main() -> Bit { measure_z(init0()) }",
     );
     root.write(
         "nested/helper.qli",
@@ -93,9 +93,10 @@ fn bell_module_and_bundled_imports_resolve() {
     assert_eq!(main.origin, ModuleOrigin::Local);
     assert_eq!(main.imports["entangle"].module, "bell");
     assert_eq!(main.imports["entangle"].origin, ImportOrigin::Local);
-    assert_eq!(main.imports["h"].origin, ImportOrigin::Sealed);
+    assert!(!main.imports.contains_key("h"));
     assert_eq!(main.imports["xor2"].origin, ImportOrigin::Bundled);
-    assert_eq!(main.imports["measure_z"].origin, ImportOrigin::Sealed);
+    assert!(!main.imports.contains_key("measure_z"));
+    assert_eq!(main.imports["init0"].origin, ImportOrigin::Bundled);
     let basis = project.module("std::basis").unwrap();
     assert_eq!(basis.origin, ModuleOrigin::Bundled);
     assert_eq!(basis.ast.decls.len(), 2);
@@ -261,11 +262,11 @@ fn reserved_word_cannot_name_a_local_module() {
 }
 
 #[test]
-fn unknown_sealed_name_is_not_reinterpreted_as_user_code() {
+fn retired_primitive_namespace_is_not_reinterpreted_as_user_code() {
     let root = TempRoot::new();
     root.write("main.qli", "use std::quantum::untrusted_gate;");
     let error = Project::load(root.path()).unwrap_err();
-    assert!(error.message.contains("sealed module"), "{error}");
+    assert!(error.message.contains("retired"), "{error}");
 }
 
 #[test]
@@ -298,6 +299,8 @@ fn semantic_stdlib_public_paths_resolve_without_retired_namespace_aliases() {
         ("transform", &["hadamard2", "qft2", "qft3"][..]),
         ("reflection", &["reflect_uniform2"][..]),
         ("measurement", &["measure_x", "measure_z2", "parity_zz"][..]),
+        ("state", &["init0", "reset"][..]),
+        ("structure", &["empty", "consume_empty", "permute_axes"][..]),
     ] {
         use std::fmt::Write;
         let mut source = String::new();

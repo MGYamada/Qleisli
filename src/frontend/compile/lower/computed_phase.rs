@@ -825,7 +825,7 @@ mod tests {
 
     fn project() -> Project {
         project_source(
-            "use std::quantum::{z,h};classical fn predicate(b:Bit)->Bit{b}
+            "use std::gate::z;classical fn predicate(b:Bit)->Bit{b}
             unitary fn f(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|h(z(a))}}",
         )
     }
@@ -922,7 +922,7 @@ mod tests {
     #[test]
     fn native_normalization_rejects_same_relative_phase_with_wrong_global_scalar() {
         let project = project_source(
-            "use std::quantum::z;classical fn predicate(b:Bit)->Bit{b}
+            "use std::gate::z;classical fn predicate(b:Bit)->Bit{b}
             unitary fn f(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|z(a)}}",
         );
         let original = expression(&project);

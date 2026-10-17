@@ -75,7 +75,7 @@ fn unused_finite_meaning_is_not_a_native_request() {
 )]
 fn reference_meaning_requests_do_not_promote_the_entry() {
     let checked = report(
-        "use std::quantum::h;
+        "
          unitary fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
          meaning H:Bit=reference(reference_h);
          observe fn main()->Bit{0}",
@@ -95,7 +95,7 @@ fn reference_meaning_requests_do_not_promote_the_entry() {
 )]
 fn operation_instantiations_stay_within_concrete_roots_and_selected_qrate() {
     let root = SourceRoot::new(
-        "use std::quantum::{x,init0}; use std::observe::measure_z;
+        "use std::gate::x; use std::state::init0; 
          unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
          unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
          unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}

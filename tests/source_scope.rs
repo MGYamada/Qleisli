@@ -9,9 +9,9 @@ use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::cnot; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::cnot; 
+ 
 ";
 
 fn assert_distribution(source: &str, expected: BTreeMap<Vec<bool>, f64>) {

@@ -143,9 +143,9 @@ fn nested_quantum_environments_cannot_be_reused_as_callables_or_providers() {
 #[test]
 fn reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner() {
     let source = "
-        use std::quantum::init0; use std::quantum::h;
-        use std::quantum::x; use std::quantum::cnot;
-        use std::observe::measure_z;
+        use std::state::init0; 
+        use std::gate::x; use std::gate::cnot;
+        
         unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
         unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         pub unitary fn twice[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>

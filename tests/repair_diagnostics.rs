@@ -18,19 +18,19 @@ fn fixture(name: &str) -> String {
 fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
     for (source, cause, derived, asserted) in [
         (
-            "use std::observe::measure_z;\nunitary fn bad(q:Q<Bit>)->Bit{measure_z(q)}",
+            "\nunitary fn bad(q:Q<Bit>)->Bit{measure_z(q)}",
             "measure_z(q)",
             "Observe",
             "Unitary",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;\nunitary fn bad()->Bit{measure_z(init0())}",
+            "use std::state::init0; \nunitary fn bad()->Bit{measure_z(init0())}",
             "measure_z(init0())",
             "Observe",
             "Unitary",
         ),
         (
-            "use std::quantum::init0;\nunitary fn bad()->Q<Bit>{init0()}",
+            "use std::state::init0;\nunitary fn bad()->Q<Bit>{init0()}",
             "init0()",
             "Isometry",
             "Unitary",
@@ -42,7 +42,7 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Unitary",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;
+            "use std::state::init0; 
              fn strong()->Unit{let b=measure_z(init0());()} fn weak()->Unit{()}
              isometry fn bad()->Unit{strong(); weak()}",
             "strong()",
@@ -50,21 +50,21 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Isometry",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;
+            "use std::state::init0; 
              fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;
+            "use std::state::init0; 
              fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;
+            "use std::state::init0; 
              fn strong()->Bit{measure_z(init0())} isometry fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
@@ -104,7 +104,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     let root = SourceRoot::new(source);
     root.write(
         "helper.qli",
-        "use std::quantum::init0; use std::observe::measure_z;
+        "use std::state::init0; 
          pub observe fn strong()->Unit{let b=measure_z(init0());()}",
     );
     let error = check_project_diagnostic(&root.0).unwrap_err();
@@ -142,32 +142,32 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
-    let root = SourceRoot::new("use std::quantum::{init0, h};");
+fn ordinary_gate_providers_and_language_primitive_hints_have_checked_rewrites() {
+    let root = SourceRoot::new("use std::state::init0;");
     check_project(&root.0).unwrap();
-
-    for gate in ["h", "x", "z", "t"] {
+    for gate in ["x", "z", "t"] {
         let source = format!(
-            "use std::quantum::{gate};
-            unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
-            unitary fn client(q:Q<Bit>)->Q<Bit>{{apply[{gate}](q)}}"
+            "use std::gate::{gate};
+             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
+             unitary fn client(q:Q<Bit>)->Q<Bit>{{apply[{gate}](q)}}"
         );
         root.write("main.qli", &source);
-        let error = check_project_diagnostic(&root.0).unwrap_err();
-        assert_eq!(error.code, "type_mismatch");
-        let wrapper = format!("fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {gate}(q) }}");
-        assert!(error.message.contains(&wrapper), "{error:?}");
-        let location = error.primary.unwrap();
-        assert_eq!(&source[location.span.start..location.span.end], gate);
-        root.write(
-            "main.qli",
-            &format!(
-                "{}\n{wrapper}",
-                source.replace(&format!("[{gate}]"), "[wrapped_gate]")
-            ),
-        );
         check_project(&root.0).unwrap();
     }
+    let source = "unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        unitary fn client(q:Q<Bit>)->Q<Bit>{apply[h](q)}";
+    root.write("main.qli", source);
+    let error = check_project_diagnostic(&root.0).unwrap_err();
+    assert_eq!(error.code, "type_mismatch");
+    let wrapper = "fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { h(q) }";
+    assert!(error.message.contains(wrapper), "{error:?}");
+    let location = error.primary.unwrap();
+    assert_eq!(&source[location.span.start..location.span.end], "h");
+    root.write(
+        "main.qli",
+        &format!("{}\n{wrapper}", source.replace("[h]", "[wrapped_gate]")),
+    );
+    check_project(&root.0).unwrap();
 }
 
 #[cfg_attr(

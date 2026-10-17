@@ -2285,7 +2285,7 @@ mod tests {
     #[test]
     fn observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls() {
         let source = elaborate(
-            "use std::quantum::h; use std::observe::measure_z;
+            " 
             fn reference(q:Q<Bit>)->Bit{measure_z(q)}
             fn implementation(q:Q<Bit>)->Bit{measure_z(h(h(q)))}
             pub observe fn main(q:Q<Bit>)->Bit{apply_contract(implementation,reference,q)}",
@@ -2364,7 +2364,7 @@ mod tests {
         for body in ["h(phase[1,3](q))", "helper[then_op(twist,had)](q)"] {
             let source = elaborate(
                 &format!(
-                    "use std::quantum::{{h,phase}};
+                    "
                 unitary fn twist(q:Q<Bit>)->Q<Bit>{{phase[1,3](q)}}
                 unitary fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
                 unitary fn helper[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
@@ -2420,7 +2420,7 @@ mod tests {
         }
 
         let source = elaborate(
-            "use std::quantum::phase_eighth;unitary fn turn(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn caller(c:Q<Bit>,q:Q<Unit>,r:Q<Bit>)->(Q<Bit>,Q<Unit>,Q<Bit>){let(c,q)=controlled(turn)(c,q);(c,q,r)}",
+            "unitary fn turn(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)} pub unitary fn caller(c:Q<Bit>,q:Q<Unit>,r:Q<Bit>)->(Q<Bit>,Q<Unit>,Q<Bit>){let(c,q)=controlled(turn)(c,q);(c,q,r)}",
             "main::caller",
         );
         let raw = RawProgram {
@@ -2521,7 +2521,7 @@ mod tests {
     #[test]
     fn ordinary_register_replay_rejects_native_valid_order_and_computation_faults() {
         let source = elaborate(
-            "use std::classical::{empty_bits,prepend_bit};
+            "
             pub unitary fn main()->Bits<2>{prepend_bit[1](0,prepend_bit[0](1,empty_bits()))}",
             "main::main",
         );
@@ -2597,7 +2597,7 @@ mod tests {
     #[test]
     fn rectangular_constructor_subject_keeps_its_own_ports_and_suspended_caller() {
         let source = elaborate(
-            "use std::quantum::{split,join};
+            "
             fn regroup(q:Q<(Bit,(Bit,Bit))>)->Q<((Bit,Bit),Bit)>{
                 let(a,bc)=split(q);let(b,c)=split(bc);join(join(a,b),c)}
             fn invoke[const U:Op<((Bit,Bit),Bit) -> (Bit,(Bit,Bit))>](
@@ -2655,7 +2655,7 @@ mod tests {
     )]
     #[test]
     fn constructor_replay_rejects_native_valid_gate_and_phase_substitutions() {
-        let prefix = "use std::quantum::{x,h,phase};
+        let prefix = "use std::gate::x;
             fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
             fn had(q:Q<Bit>)->Q<Bit>{h(q)}
             fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}";
@@ -2706,7 +2706,7 @@ mod tests {
     #[test]
     fn nested_forward_replay_rejects_native_valid_provider_and_caller_frame_substitutions() {
         let source = elaborate(
-            "use std::quantum::x;unitary fn leaf(q:Q<Bit>)->Q<Bit>{x(q)}
+            "use std::gate::x;unitary fn leaf(q:Q<Bit>)->Q<Bit>{x(q)}
             unitary fn helper[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
             pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(helper[leaf](q),r)}",
             "main::caller",
@@ -2758,7 +2758,7 @@ mod tests {
 
     fn closed_pair() -> (ElaboratedProgram, RawProgram) {
         let source = elaborate(
-            "use std::quantum::{h,x,cnot,init0}; use std::observe::measure_z;\n\
+            "use std::gate::x; use std::gate::cnot; use std::state::init0; \n\
              unitary fn turn(q: Q<Bit>) -> Q<Bit> { x(q) }\n\
              pub observe fn main() -> (Bit,Bit) {\n\
              let a = init0(); let b = init0(); let (a,b) = cnot(h(a),b);\n\
@@ -2818,7 +2818,7 @@ mod tests {
     #[test]
     fn packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions() {
         let source = elaborate(
-            "use std::quantum::{split,join};
+            "
              pub unitary fn f(q:Q<(Unit,(Bit,Bit))>)->Q<(Unit,(Bit,Bit))>{
                  let (u,r)=split(q); let (a,b)=split(r); join(u,join(b,a))}",
             "main::f",
@@ -3012,7 +3012,7 @@ mod tests {
         ] {
             let source = elaborate(
                 &format!(
-                    "use std::quantum::phase_eighth; pub unitary fn f(q: Q<{basis}>) -> Q<{basis}> {{ phase_eighth(q) }}"
+                    " pub unitary fn f(q: Q<{basis}>) -> Q<{basis}> {{ global_phase_eighth(q) }}"
                 ),
                 "main::f",
             );
@@ -3149,7 +3149,7 @@ mod tests {
     #[test]
     fn raw_source_replay_mixed_checks_open_quantum_and_classical_input_and_output_order() {
         let source = elaborate(
-            "use std::quantum::{h,cnot};\n\
+            "use std::gate::cnot;\n\
              pub unitary fn f((q,r): (Q<Bit>,Q<Bit>), c: Bit) -> ((Q<Bit>,Bit),Q<Bit>) {\n\
              let (q,r) = cnot(h(q),r); ((q,c),r) }",
             "main::f",
@@ -3209,7 +3209,7 @@ mod tests {
     #[test]
     fn raw_source_replay_mixed_retains_zero_phase_and_matches_only_exact_eighth_turns() {
         let source = elaborate(
-            "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {\n\
+            " pub unitary fn f(q: Q<Bit>) -> Q<Bit> {\n\
              phase[7,3](phase[1,2](phase[2,4](phase[0,8](q)))) }",
             "main::f",
         );
@@ -3244,7 +3244,7 @@ mod tests {
             "preservation"
         );
         let unsupported = elaborate(
-            "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[1,4](q) }",
+            " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[1,4](q) }",
             "main::f",
         );
         let identity = RawProgram {
@@ -3265,7 +3265,7 @@ mod tests {
     #[test]
     fn source_z_replay_rejects_native_valid_x_substitution() {
         let source = elaborate(
-            "use std::quantum::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}",
+            "use std::gate::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}",
             "main::f",
         );
         let proposal = source.lower_raw().unwrap();

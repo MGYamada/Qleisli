@@ -1,0 +1,12 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::state::init0;
+
+use std::gate::x;
+
+
+observe fn main() -> (Bit, Bit) {
+    let coin = measure_z(h(init0()));
+    let target = init0();
+    let target = if coin { x(target) } else { target };
+    (coin, measure_z(target))
+}

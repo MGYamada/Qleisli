@@ -15,11 +15,7 @@ pub(super) struct ModuleId(usize);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct DefId(usize);
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) struct PrimitiveId {
-    pub module: &'static str,
-    pub name: &'static str,
-}
+pub(super) use super::primitive::PrimitiveId;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Target {
@@ -80,7 +76,7 @@ pub(super) fn retired_public_name_hint(module: &str, name: &str) -> Option<&'sta
         ("std::gate", "permute_axes") => Some(
             "; help: import `std::structure::permute_axes`; physical SWAP remains `std::gate::swap`",
         ),
-        _ => None,
+        _ => super::primitive::retired_name_hint(module, name),
     }
 }
 
@@ -185,12 +181,6 @@ impl Resolution {
         let (module, name) = &self.declaration(id).name;
         format!("{module}::{name}")
     }
-    pub fn target_path(&self, target: Target) -> String {
-        match target {
-            Target::Declaration(id) => self.path(id),
-            Target::Primitive(id) => format!("{}::{}", id.module, id.name),
-        }
-    }
     pub fn qualified(&self, path: &str) -> Result<DefId, FailureKind> {
         let (module, name) = path.rsplit_once("::").ok_or(FailureKind::InvalidPath)?;
         let owner = self
@@ -221,6 +211,7 @@ impl Resolution {
                     .get(&module)
                     .and_then(|scope| scope.imports.get(name).copied())
             })
+            .or_else(|| PrimitiveId::lookup_unbound(name).map(Target::Primitive))
     }
 
     /// Source name resolution has one policy and one fixed typed primitive catalog.
@@ -291,58 +282,47 @@ impl Resolution {
                     last.span,
                 ));
             }
-            let target = if let Some(primitive) = primitive(&path) {
-                Target::Primitive(primitive)
-            } else {
-                if matches!(
-                    module.as_str(),
-                    "std::quantum" | "std::observe" | "std::registers" | "std::classical"
-                ) {
-                    charge(
-                        last.span,
-                        self.module_name(caller)
-                            .len()
-                            .checked_add(last.text.len())
-                            .and_then(|n| n.checked_add(1))
-                            .unwrap_or(usize::MAX),
-                    )?;
-                    return Err(failure(
-                        FailureKind::UnknownPrimitive {
-                            module,
-                            name: last.text.clone(),
-                        },
-                        last.span,
-                    ));
-                }
-                let Some(owner) = self.module(&module) else {
-                    charge(usage.span, self.module_name(caller).len() + 1)?;
-                    return Err(failure(FailureKind::MissingModule(module), usage.span));
-                };
-                let Some(id) = self.local(owner, &last.text) else {
-                    charge(
-                        last.span,
-                        self.module_name(caller)
-                            .len()
-                            .checked_add(last.text.len())
-                            .and_then(|n| n.checked_add(1))
-                            .unwrap_or(usize::MAX),
-                    )?;
-                    return Err(failure(
-                        FailureKind::MissingName {
-                            module,
-                            name: last.text.clone(),
-                        },
-                        last.span,
-                    ));
-                };
-                if !self.visible(id, None) {
-                    charge(last.span, self.module_name(caller).len() + 1)?;
-                    return Err(failure(FailureKind::Private(path), last.span));
-                }
-                charge(usage.span, 1)?;
-                scope.edges.push((self.declaration(id).module, usage.span));
-                Target::Declaration(id)
+            if super::primitive::retired_name_hint(&module, &last.text).is_some() {
+                charge(
+                    last.span,
+                    self.module_name(caller)
+                        .len()
+                        .checked_add(last.text.len())
+                        .and_then(|n| n.checked_add(1))
+                        .unwrap_or(usize::MAX),
+                )?;
+                return Err(failure(
+                    FailureKind::UnknownPrimitive {
+                        module,
+                        name: last.text.clone(),
+                    },
+                    last.span,
+                ));
+            }
+            let Some(owner) = self.module(&module) else {
+                charge(usage.span, self.module_name(caller).len() + 1)?;
+                return Err(failure(FailureKind::MissingModule(module), usage.span));
             };
+            let Some(id) = self.local(owner, &last.text) else {
+                charge(
+                    last.span,
+                    self.module_name(caller).len() + last.text.len() + 1,
+                )?;
+                return Err(failure(
+                    FailureKind::MissingName {
+                        module,
+                        name: last.text.clone(),
+                    },
+                    last.span,
+                ));
+            };
+            if !self.visible(id, None) {
+                charge(last.span, self.module_name(caller).len() + 1)?;
+                return Err(failure(FailureKind::Private(path), last.span));
+            }
+            charge(usage.span, 1)?;
+            scope.edges.push((self.declaration(id).module, usage.span));
+            let target = Target::Declaration(id);
             if self.local(caller, &last.text).is_some() {
                 charge(
                     last.span,
@@ -389,16 +369,6 @@ impl Resolution {
         self.scopes.insert(module, scope);
         Ok(())
     }
-}
-
-fn primitive(path: &str) -> Option<PrimitiveId> {
-    super::check::primitive::Primitive::lookup(path).map(|primitive| {
-        let (module, name) = primitive
-            .path()
-            .rsplit_once("::")
-            .expect("sealed qualified name");
-        PrimitiveId { module, name }
-    })
 }
 
 /// Iterative DFS, preserving root/edge order and the exact closing edge location.
@@ -559,19 +529,25 @@ mod tests {
     }
 
     #[test]
-    fn source_resolution_uses_the_whole_fixed_catalog_for_both_consumers() {
-        let empty =
-            parse_module("use std::registers::empty; pub unitary fn f()-> Unit{()}").unwrap();
-        let z = parse_module("use std::quantum::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}").unwrap();
-        let table = Resolution::new([("a", &empty)]).unwrap();
+    fn source_resolution_keeps_language_primitives_and_ordinary_imports_distinct() {
+        let main =
+            parse_module("use gates::x; pub unitary fn f(q:Q<Bit>)->Q<Bit>{h(x(q))}").unwrap();
+        let gates = parse_module("pub unitary fn x(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        let mut table = Resolution::new([("a", &main), ("gates", &gates)]).unwrap();
         let module = table.module("a").unwrap();
+        let scope = table.imports(module, &main).unwrap();
+        let imported = scope.imports["x"];
+        assert!(matches!(imported, Target::Declaration(_)));
+        table.set_scope(module, scope);
+        assert_eq!(table.lookup(module, "x"), Some(imported));
+        assert_eq!(
+            table.lookup(module, "h"),
+            Some(Target::Primitive(PrimitiveId::H))
+        );
+        let retired = parse_module("use std::quantum::h;").unwrap();
         assert!(matches!(
-            table.imports(module, &empty).unwrap().imports["empty"],
-            Target::Primitive(_)
-        ));
-        assert!(matches!(
-            table.imports(module, &z).unwrap().imports["z"],
-            Target::Primitive(_)
+            table.imports(module, &retired).unwrap_err().kind,
+            FailureKind::UnknownPrimitive { .. }
         ));
     }
 }

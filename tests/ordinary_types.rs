@@ -13,13 +13,16 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 macro_rules! source {
-    ($name:literal) => {
-        include_str!(concat!(
-            "fixtures/frontend_v030/ordinary-types-independent/sources/",
-            $name,
-            "/main.qli"
-        ))
-    };
+    ($name:literal) => {{
+        static TEXT: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+            common::current_source_text(concat!(
+                "tests/fixtures/frontend_v030/ordinary-types-independent/sources/",
+                $name,
+                "/main.qli"
+            ))
+        });
+        TEXT.as_str()
+    }};
 }
 
 fn parsed(source: &str) -> ParsedProgram {

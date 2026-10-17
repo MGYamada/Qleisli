@@ -58,8 +58,8 @@ fn native_transport_failures_use_the_closed_v1_project_code() {
 )]
 #[test]
 fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
-    let root = SourceRoot::new(include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli"
+    let root = SourceRoot::new(&common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli",
     ));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -325,9 +325,7 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
 )]
 #[test]
 fn json_runtime_limit_does_not_emit_a_partial_distribution() {
-    let mut source = String::from(
-        "use std::quantum::init0; use std::observe::discard; observe fn main() -> Unit {",
-    );
+    let mut source = String::from("use std::state::init0;  observe fn main() -> Unit {");
     for i in 0..17 {
         source.push_str(&format!("let q{i} = init0();"));
     }

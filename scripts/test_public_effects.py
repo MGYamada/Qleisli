@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check current public-effect policy on 19 unchanged first-study projects.
+"""Check current public-effect policy on 19 current translations of first-study projects.
 
 Commands and expectations below are new, explicit regressions. Historical argv,
 observer code, predictions and output records are never loaded or executed.
@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_project
 import subprocess
 import sys
 
@@ -98,16 +99,16 @@ def expected(case, selected):
         )
     if category == 'reset-profile' and selected:
         return 'unsupported', (
-            'selected concrete preparation does not support std::observe::reset',
+            'selected concrete preparation does not support discard',
         )
     return 'ok', ()
 
 
 def commands(compiler, kernel, case):
-    project = ORIGINAL / case
+    project = current_source_project(ORIGINAL / case)
     common = [str(compiler), 'check']
     # A directory loads its ordinary schema-2 manifest; selected input instead
-    # names all original modules explicitly and always requests the Raw route.
+    # names all selected current modules explicitly and always requests the Raw route.
     yield 'finite-text', common + [str(project), f'--lean-kernel={kernel}']
     selected = common + ['--entry=main::main', '--ir-profile=raw', '--format=json',
                          f'--lean-kernel={kernel}']
@@ -153,10 +154,10 @@ def check_result(case, route, process, kernel):
         module = ('library' if case in ('external-missing-public-effect',
                                        'external-reset-observe') else 'main')
         require(isinstance(primary, dict) and primary.get('module') == module
-                and primary.get('path') == str(ORIGINAL / case / f'{module}.qli')
+                and primary.get('path') == str(current_source_project(ORIGINAL / case) / f'{module}.qli')
                 and type(primary.get('start')) is int and type(primary.get('end')) is int
                 and 0 <= primary['start'] < primary['end'],
-                'diagnostic lost its original module/path/byte span')
+                'diagnostic lost its selected current module/path/byte span')
         message = diagnostic.get('message', '')
     elif code == 'ok':
         require(not stderr and stdout.startswith('checked source: ')

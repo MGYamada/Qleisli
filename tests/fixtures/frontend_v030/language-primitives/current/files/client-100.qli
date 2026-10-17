@@ -1,0 +1,3 @@
+use std::state::init0;
+use std::gate::cnot;
+pub fn entry(q:Q<Bits<0>>)->Q<Bit>{finish(q);init0()}

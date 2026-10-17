@@ -1,4 +1,4 @@
-use std::quantum::z;
+use std::gate::z;
 
 // Exactly one marked input: (1, 1).
 classical fn marked((a, b): (Bit, Bit)) -> Bit { a and b }

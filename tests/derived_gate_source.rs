@@ -47,8 +47,8 @@ fn actual_with_gate_source(
     let source = format!(
         "use std::gate::{{t,s,sdg,tdg,z,x,cnot,toffoli,id,controlled_phase}};
          use std::transform::{{qft2,qft3}};
-         use std::quantum::{{init0,split,join,phase_eighth}};
-         use std::observe::measure_z;
+         use std::state::init0;
+         
          unitary fn probe(q:Q<{ty}>)->Q<{ty}>{{{body}}}
          pub observe fn main()->{result}{{{close}}}"
     );
@@ -267,7 +267,7 @@ fn derived_t_keeps_phase_under_adjoint_reference_and_nested_control() {
 )]
 #[test]
 fn a_global_scalar_on_bit_is_unitary_but_is_not_t() {
-    let (raw, basis) = actual_with_gate_source("phase_eighth(q)", 1, false);
+    let (raw, basis) = actual_with_gate_source("global_phase_eighth(q)", 1, false);
     request(&raw, &basis, &diagonal(&[1, 1])).unwrap();
     let failure = request(&raw, &basis, &diagonal(&[0, 1])).unwrap_err();
     assert_eq!(failure.code, "contract");

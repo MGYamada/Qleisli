@@ -518,7 +518,7 @@ fn zero_basis_preparation_keeps_exact_phase_reference_and_physical_initializatio
         ),
         (
             "basis-phase-reference",
-            "use std::quantum::phase_eighth;pub isometry fn entry(r:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>){(r,basis phase_eighth(u) as () {0})}",
+            "pub isometry fn entry(r:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>){(r,basis global_phase_eighth(u) as () {0})}",
         ),
     ] {
         let proposal = lower(text);
@@ -627,7 +627,7 @@ fn isometry_roots_match_independently_authored_exact_composition_requests() {
 #[test]
 fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
     let proposal = lower(
-        "use std::quantum::{finish,init0};
+        "use std::state::init0;
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
         pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
@@ -654,7 +654,7 @@ fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
 )]
 #[test]
 fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request() {
-    let text = "use std::quantum::{finish,init0,h,x};
+    let text = "use std::state::init0; use std::gate::x;
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
         pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}";
@@ -764,9 +764,9 @@ fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
 fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     let valid = lower(&source("unit-zero"));
     let wrong = lower(
-        "use std::quantum::finish; use std::quantum::phase_eighth;
-         use std::quantum::init0;
-         fn changed(q: Q<Unit>) -> Unit { finish(phase_eighth(q)) }
+        " 
+         use std::state::init0;
+         fn changed(q: Q<Unit>) -> Unit { finish(global_phase_eighth(q)) }
          pub isometry fn entry(q: Q<Unit>) -> Q<Bit> { changed(q); init0() }",
     );
     let mut bad = wrong.clone();

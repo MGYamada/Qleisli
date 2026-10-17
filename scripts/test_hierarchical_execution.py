@@ -9,6 +9,7 @@ import json
 import math
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_file
 import subprocess
 import tempfile
 
@@ -80,11 +81,11 @@ def main():
         for width in (1,2,3):
             for inverse in (False,True):
                 if inverse:
-                    graph=compile_source(INVERSE_SOURCE.read_text(),'inverse_fourier',dict(n=width),
-                        modules={'fourier':SOURCE.read_text(),'inverse':INVERSE_SOURCE.read_text()})
+                    graph=compile_source(current_source_file(INVERSE_SOURCE).read_text(),'inverse_fourier',dict(n=width),
+                        modules={'fourier':current_source_file(SOURCE).read_text(),'inverse':current_source_file(INVERSE_SOURCE).read_text()})
                     required=ordinary_request(graph)
                 else:
-                    graph=canonical_boundary(compile_source(SOURCE.read_text(),'fourier',dict(n=width)))
+                    graph=canonical_boundary(compile_source(current_source_file(SOURCE).read_text(),'fourier',dict(n=width)))
                     required=request(width)
                 rows.append(write_case(directory,f'fourier-{width}-{inverse}','pure',graph,required,
                     columns(width),width,width,0,lambda c:fourier(width,c,inverse)))
@@ -125,8 +126,7 @@ def main():
             lambda c:{(outcome<<1,target):value for (outcome,target),value in retiming(c).items()}))
         for provider,expression in [('global','x(phase[j,d](x(phase[j,d](bit))))'),
                                     ('conjugated','h(phase[j,d](h(bit)))')]:
-            evolution=modules['evolution'].replace('use std::quantum::phase;',
-                'use std::quantum::phase;\nuse std::quantum::h;\nuse std::quantum::x;').replace('phase[j,d](bit)',expression)
+            evolution=('use std::gate::x;\n' + modules['evolution']).replace('phase[j,d](bit)',expression)
             proposal=compile_instrument(modules|{'evolution':evolution},'measurement::qpe',dict(n=1,m=2),
                 {'U':Operation('evolution::evolve',(1,1,3))})
             artifact,required=source_documents(proposal)

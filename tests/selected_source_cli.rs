@@ -294,7 +294,7 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
     // argument; its zero wire count does not turn it into a closed entry.
     let quantum_unit = SourceRoot::new("pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }");
     let returned_quantum =
-        SourceRoot::new("use std::quantum::init0; pub isometry fn f() -> Q<Bit> { init0() }");
+        SourceRoot::new("use std::state::init0; pub isometry fn f() -> Q<Bit> { init0() }");
     let paths = [
         unit,
         bit.0.join("main.qli"),
@@ -470,8 +470,8 @@ fn selected_open_signature_checks_and_proposals_do_not_claim_closed_execution() 
 #[test]
 #[cfg(unix)]
 fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
-    let h = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
-    let x = "use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
+    let h = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
+    let x = "use std::gate::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
     // Choose the H request before creating either CLI candidate. Producer
     // consistency for X must not replace this caller-selected equation.
     let h_request = ParsedProgram::parse(BTreeMap::from([("main".into(), h.into())]))
@@ -798,9 +798,7 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
 #[test]
 fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
     for call in ["h(&q)", "h(&mut q)", "h(&ctrl q)", "h(ctrl q)"] {
-        let source = format!(
-            "// π\r\nuse std::quantum::h;pub unitary fn main(q:Q<Bit>)->Q<Bit>{{{call};q}}"
-        );
+        let source = format!("// π\r\npub unitary fn main(q:Q<Bit>)->Q<Bit>{{{call};q}}");
         let files = SourceRoot::new(&source);
         for json in [false, true] {
             let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -998,8 +996,8 @@ fn binding_refusals_precede_native_dispatch_in_text_and_json() {
         ),
     ] {
         let source = format!(
-            "// 日本語\r\nuse std::quantum::init0;use std::quantum::h;
-            use std::observe::measure_z;pub observe fn main()->Bit{{{body}}}"
+            "// 日本語\r\nuse std::state::init0;
+            pub observe fn main()->Bit{{{body}}}"
         );
         let files = SourceRoot::new(&source);
         let absent = files.0.join("must-not-start-a-native-checker");
@@ -1046,10 +1044,10 @@ fn selected_static_places_choose_raw_before_native_acceptance() {
     for call in [
         "x(excl q[1]);",
         "z(ctrl q[1]);",
-        "phase_eighth(ctrl q[0..0]);",
+        "global_phase_eighth(ctrl q[0..0]);",
     ] {
         let files = SourceRoot::new(&format!(
-            "use std::quantum::{{x,z,phase_eighth}};pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{call}q}}"
+            "use std::gate::x; use std::gate::z;pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{call}q}}"
         ));
         for explicit in [false, true] {
             let mut command = selected("check", &files.0.join("main.qli"), "main::main");
@@ -1087,7 +1085,7 @@ fn selected_raw_control_checks_without_weakening_emission() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04");
     for name in ["entangled", "kickback", "overlap"] {
-        let source = path.join(name).join("main.qli");
+        let source = common::current_namespace_fixture(&path.join(name).join("main.qli"));
         let mut command = selected("check", &source, "main::main");
         command
             .arg("--ir-profile=raw")
@@ -1107,7 +1105,7 @@ fn selected_raw_control_checks_without_weakening_emission() {
     ));
     let mut command = selected(
         "emit-proposal",
-        &path.join("entangled/main.qli"),
+        &common::current_namespace_fixture(&path.join("entangled/main.qli")),
         "main::main",
     );
     command

@@ -14,14 +14,16 @@ from compile_sized_corpus import (IMPORTS, Parser, Producer, Quantum, Operation,
 
 EFFECTS = {'unitary': 0, 'iso': 1, 'observe': 2}
 ADAPTERS = IMPORTS | {
-    'std::quantum::init0': 'init0', 'std::observe::measure_z': 'measure_z',
-    'std::registers::empty': 'empty', 'std::registers::consume_empty': 'consume_empty',
-    'std::classical::empty_bits': 'empty_bits', 'std::classical::prepend_bit': 'prepend_bit',
+    'std::state::init0': 'init0',
+    'std::structure::empty': 'empty', 'std::structure::consume_empty': 'consume_empty',
 }
+INSTRUMENT_BUILTINS = {name: name for name in ('measure_z', 'empty_bits', 'prepend_bit')}
+
 
 
 class InstrumentParser(Parser):
-    primitive_imports = ADAPTERS
+    reference_imports = ADAPTERS
+    language_builtins = Parser.language_builtins | INSTRUMENT_BUILTINS
 
     def function_effect(self):
         spelling = self.peek()

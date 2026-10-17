@@ -11,7 +11,7 @@ use qleisli::frontend::project::SourcePolicy;
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 
-const IMPORTS: &str = "use std::quantum::init0; use std::observe::measure_z;";
+const IMPORTS: &str = "use std::state::init0; ";
 const UNSUPPORTED: &str = "Semantic error: \"externally unitary\" is not supported";
 
 fn explanation(message: &str, inferred: &str, asserted: &str) {
@@ -377,11 +377,11 @@ fn same_module_operation_providers_preserve_precision_and_cannot_hide_measuremen
     let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
     for (provider, accepted) in [
         (
-            "use std::quantum::x; observe fn g(q:Q<Bit>)->Q<Bit>{x(q)}",
+            "use std::gate::x; observe fn g(q:Q<Bit>)->Q<Bit>{x(q)}",
             true,
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z; fn g(q:Q<Bit>)->Q<Bit>{let a=init0();let b=measure_z(a);q}",
+            "use std::state::init0;  fn g(q:Q<Bit>)->Q<Bit>{let a=init0();let b=measure_z(a);q}",
             false,
         ),
     ] {

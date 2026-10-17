@@ -3,20 +3,13 @@
 //! Every body uses the same source and native checks as user code. No function
 //! here is a sealed gate intrinsic or a structural axis-routing helper.
 //! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
-use std::quantum::h;
-use std::quantum::phase_eighth;
-use std::quantum::phase;
-use std::quantum::unit;
-use std::quantum::finish;
-use std::quantum::split;
-use std::quantum::join;
 
 /// Identity preserves the exact Basis tree, including zero-width owners.
 pub unitary fn id[const A: Basis](q: Q<A>) -> Q<A> { q }
 
 /// Exact scalar zeta_8 I on one logical Unit owner, including its phase.
 unitary fn scalar_eighth(u: Q<Unit>) -> Q<Unit> {
-    phase_eighth(u)
+    global_phase_eighth(u)
 }
 
 /// T = diag(1,zeta_8), with exact phase for every input and external reference.

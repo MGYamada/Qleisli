@@ -10,10 +10,10 @@ use qleisli::ir::RawOp;
 use qleisli::sim::{SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
 classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";

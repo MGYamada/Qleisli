@@ -324,6 +324,15 @@ class ProductionCoverage(unittest.TestCase):
                                       'fn doc_reads_one_file_and_does_not_claim_type_checking()',
                                       'fn renamed_documentation_test()')
 
+    def test_terminal_equation_requires_bound_kernel_full_bodies_and_shared_work(self):
+        for marker in (
+            'program.kernel()', 'FunctionEvidence::check_retained_with_kernel(',
+            'equation.implementation() == &original', 'equation.specification() == &proposed',
+            'work: Budget::new(DEFAULT_EXACT_WORK),', 'const MAX_LOCAL_EQUATIONS: usize = 7;',
+        ):
+            with self.subTest(marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source('src/interop/export/normalization.rs', marker, 'removed binding')
+
     def test_historical_release_is_not_current_alpha_certification(self):
         for change in (
             lambda d: d['validation']['current_development'].update(status='published and verified'),

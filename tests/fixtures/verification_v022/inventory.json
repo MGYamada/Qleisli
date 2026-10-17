@@ -140,7 +140,7 @@
       "id": "source",
       "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
       "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
-      "obligation": "Every original body, including unused/dead/zero forms and all six actual ordinary bundled modules, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation. Public quantum declarations require explicit checked effects; external calls, providers, contracts, specialization and cache reuse use only the public bound, while same-original-module inference remains precise. Finite lowering admits complete ordered closed Basis/Nat/Op instances, ordinary and quantum registers up to twelve bits, original static aliases/branches/folds and symbolic powers within the existing budgets. Unit, Bit, Bits<0>, Bits<1> and complete product trees remain distinct; zero-width quantum owners stay linear, while ordinary words retain ordered classical identities and copy accounting. Original ordinary Nat arithmetic checks every u32 intermediate; normalized bounded affine/helper contracts retain their signed-i128/final-u32 and adopted requires-conjunction semantics. Complete original plan/owner/collection identity and each available actual/formal effect/Meaning/access/type obligation precede deferral, body expansion and cache reuse, including dormant and zero-count occurrences and instances first closed at a runtime fold index. Actual Raw effects and fresh native validation remain separate. Indexed/mutable places, implicit final Unit, runtime closure values and generic classical headers remain outside this finite execution profile. Inert retained first-study packets execute no recorded commands and establish no source meaning.",
+      "obligation": "Every original body, including unused/dead/zero forms and all seven actual ordinary bundled modules, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation. Public quantum declarations require explicit checked effects; external calls, providers, contracts, specialization and cache reuse use only the public bound, while same-original-module inference remains precise. Finite lowering admits complete ordered closed Basis/Nat/Op instances, ordinary and quantum registers up to twelve bits, original static aliases/branches/folds and symbolic powers within the existing budgets. Unit, Bit, Bits<0>, Bits<1> and complete product trees remain distinct; zero-width quantum owners stay linear, while ordinary words retain ordered classical identities and copy accounting. Original ordinary Nat arithmetic checks every u32 intermediate; normalized bounded affine/helper contracts retain their signed-i128/final-u32 and adopted requires-conjunction semantics. Complete original plan/owner/collection identity and each available actual/formal effect/Meaning/access/type obligation precede deferral, body expansion and cache reuse, including dormant and zero-count occurrences and instances first closed at a runtime fold index. Actual Raw effects and fresh native validation remain separate. Indexed/mutable places, implicit final Unit, runtime closure values and generic classical headers remain outside this finite execution profile. Inert retained first-study packets execute no recorded commands and establish no source meaning.",
       "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
@@ -970,6 +970,14 @@
       "path": "src/ir.rs",
       "name": "RawOp",
       "members": {
+        "PackUnit": {
+          "declaration": "PackUnit { output: TokenId, }",
+          "group": "raw-PackUnit"
+        },
+        "UnpackUnit": {
+          "declaration": "UnpackUnit { input: TokenId, }",
+          "group": "raw-UnpackUnit"
+        },
         "CertifiedCompute": {
           "declaration": "CertifiedCompute { source: TokenId, source_out: TokenId, ancilla_wires: Vec<WireId>, function: Vec<u16>, use_steps: Vec<CircuitStep>, logical_steps: Vec<CircuitStep>, }",
           "group": "raw-CertifiedCompute"
@@ -1045,14 +1053,6 @@
         "ComputeUseUncompute": {
           "declaration": "ComputeUseUncompute { source: TokenId, source_out: TokenId, targets: Vec<TargetTransition>, ancilla_wires: Vec<WireId>, function: Vec<u16>, use_ops: Vec<ProtectedUse>, }",
           "group": "raw-ComputeUseUncompute"
-        },
-        "PackUnit": {
-          "declaration": "PackUnit { output: TokenId, }",
-          "group": "raw-PackUnit"
-        },
-        "UnpackUnit": {
-          "declaration": "UnpackUnit { input: TokenId, }",
-          "group": "raw-UnpackUnit"
         }
       }
     },
@@ -1068,6 +1068,10 @@
           "declaration": "Bit",
           "group": "finite-contract"
         },
+        "Bits": {
+          "declaration": "Bits(u32)",
+          "group": "finite-bits-interface"
+        },
         "Pair": {
           "declaration": "Pair(Box<BasisType>, Box<BasisType>)",
           "group": "finite-contract"
@@ -1075,10 +1079,6 @@
         "Tuple": {
           "declaration": "Tuple(Vec<BasisType>)",
           "group": "finite-contract"
-        },
-        "Bits": {
-          "declaration": "Bits(u32)",
-          "group": "finite-bits-interface"
         }
       }
     },
@@ -1174,12 +1174,20 @@
       "path": "src/frontend/ast.rs",
       "name": "FnKind",
       "members": {
+        "Static": {
+          "declaration": "Static",
+          "group": "source"
+        },
         "Meaning": {
           "declaration": "Meaning",
           "group": "source"
         },
         "Classical": {
           "declaration": "Classical",
+          "group": "source"
+        },
+        "Inferred": {
+          "declaration": "Inferred",
           "group": "source"
         },
         "Isometry": {
@@ -1192,14 +1200,6 @@
         },
         "Observe": {
           "declaration": "Observe",
-          "group": "source"
-        },
-        "Inferred": {
-          "declaration": "Inferred",
-          "group": "source"
-        },
-        "Static": {
-          "declaration": "Static",
           "group": "source"
         }
       }
@@ -1220,16 +1220,16 @@
           "declaration": "Bits(Natural)",
           "group": "source"
         },
+        "Named": {
+          "declaration": "Named(Ident)",
+          "group": "source"
+        },
         "Q": {
           "declaration": "Q(Box<Type>)",
           "group": "source"
         },
         "Tuple": {
           "declaration": "Tuple(Vec<Type>)",
-          "group": "source"
-        },
-        "Named": {
-          "declaration": "Named(Ident)",
           "group": "source"
         }
       }
@@ -1238,20 +1238,16 @@
       "path": "src/frontend/ast.rs",
       "name": "FnBody",
       "members": {
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
         "Meaning": {
           "declaration": "Meaning { permutation: bool, function: Ident }",
           "group": "source"
         },
-        "Basis": {
-          "declaration": "Basis(BasisExpr)",
-          "group": "source"
-        },
-        "Quantum": {
-          "declaration": "Quantum(Block)",
-          "group": "source"
-        },
-        "Natural": {
-          "declaration": "Natural(Natural)",
+        "MeaningReference": {
+          "declaration": "MeaningReference { function: Ident }",
           "group": "source"
         },
         "MeaningCompose": {
@@ -1262,8 +1258,12 @@
           "declaration": "MeaningTensor { left: Ident, right: Ident }",
           "group": "source"
         },
-        "MeaningReference": {
-          "declaration": "MeaningReference { function: Ident }",
+        "Basis": {
+          "declaration": "Basis(BasisExpr)",
+          "group": "source"
+        },
+        "Quantum": {
+          "declaration": "Quantum(Block)",
           "group": "source"
         }
       }
@@ -1272,16 +1272,12 @@
       "path": "src/frontend/ast.rs",
       "name": "StmtKind",
       "members": {
-        "Let": {
-          "declaration": "Let { pattern: Pattern, value: Expr, }",
-          "group": "source"
-        },
-        "Expr": {
-          "declaration": "Expr(Expr)",
-          "group": "source"
-        },
         "StaticLet": {
           "declaration": "StaticLet { name: Ident, value: Natural, }",
+          "group": "source"
+        },
+        "Let": {
+          "declaration": "Let { pattern: Pattern, value: Expr, }",
           "group": "source"
         },
         "MutableLet": {
@@ -1290,6 +1286,10 @@
         },
         "Assign": {
           "declaration": "Assign { target: Ident, value: Expr, }",
+          "group": "source"
+        },
+        "Expr": {
+          "declaration": "Expr(Expr)",
           "group": "source"
         }
       }
@@ -1316,6 +1316,18 @@
       "path": "src/frontend/ast.rs",
       "name": "ExprKind",
       "members": {
+        "UnsupportedClosure": {
+          "declaration": "UnsupportedClosure(Box<UnsupportedClosure>)",
+          "group": "source"
+        },
+        "AccessCall": {
+          "declaration": "AccessCall { callee: Ident, static_args: Vec<StaticOp>, args: Vec<AccessArgument>, }",
+          "group": "source-excl"
+        },
+        "ApplyStatic": {
+          "declaration": "ApplyStatic { operation: StaticOp, input: Box<Expr>, }",
+          "group": "source"
+        },
         "ApplyContract": {
           "declaration": "ApplyContract { implementation: Ident, specification: Ident, input: Box<Expr>, }",
           "group": "source"
@@ -1391,18 +1403,6 @@
         "CertifiedComputed": {
           "declaration": "CertifiedComputed { source: Box<Expr>, function: Ident, logical: Box<Ident>, data_binder: Box<Ident>, ancilla_binder: Box<Ident>, body: Block, }",
           "group": "source"
-        },
-        "ApplyStatic": {
-          "declaration": "ApplyStatic { operation: StaticOp, input: Box<Expr>, }",
-          "group": "source"
-        },
-        "AccessCall": {
-          "declaration": "AccessCall { callee: Ident, static_args: Vec<StaticOp>, args: Vec<AccessArgument>, }",
-          "group": "source-excl"
-        },
-        "UnsupportedClosure": {
-          "declaration": "UnsupportedClosure(Box<UnsupportedClosure>)",
-          "group": "source"
         }
       }
     },
@@ -1430,6 +1430,10 @@
       "members": {
         "Name": {
           "declaration": "Name(Ident)",
+          "group": "source"
+        },
+        "Type": {
+          "declaration": "Type(Type)",
           "group": "source"
         },
         "Bind": {
@@ -1466,10 +1470,6 @@
         },
         "Conjugate": {
           "declaration": "Conjugate(Box<StaticOp>, Box<StaticOp>)",
-          "group": "source"
-        },
-        "Type": {
-          "declaration": "Type(Type)",
           "group": "source"
         }
       }
@@ -1736,6 +1736,10 @@
           "declaration": "Qif",
           "group": "source"
         },
+        "Qfor": {
+          "declaration": "Qfor",
+          "group": "source"
+        },
         "True": {
           "declaration": "True",
           "group": "source"
@@ -1883,10 +1887,6 @@
         "Eof": {
           "declaration": "Eof",
           "group": "source"
-        },
-        "Qfor": {
-          "declaration": "Qfor",
-          "group": "source"
         }
       }
     },
@@ -1914,10 +1914,6 @@
         },
         "Bundled": {
           "declaration": "Bundled",
-          "group": "source"
-        },
-        "Sealed": {
-          "declaration": "Sealed",
           "group": "source"
         }
       }
@@ -2136,12 +2132,12 @@
           "declaration": "Natural",
           "group": "source"
         },
-        "Operation": {
-          "declaration": "Operation { basis: Type, codomain: Option<Box<Type>>, meaning: Option<Ident>, }",
-          "group": "source"
-        },
         "Basis": {
           "declaration": "Basis",
+          "group": "source"
+        },
+        "Operation": {
+          "declaration": "Operation { basis: Type, codomain: Option<Box<Type>>, meaning: Option<Ident>, }",
           "group": "source"
         }
       }
@@ -2164,6 +2160,10 @@
       "path": "src/frontend/ast.rs",
       "name": "NatKind",
       "members": {
+        "Call": {
+          "declaration": "Call { callee: Ident, arguments: Vec<Natural>, }",
+          "group": "source"
+        },
         "Number": {
           "declaration": "Number(i128)",
           "group": "source"
@@ -2182,10 +2182,6 @@
         },
         "Mul": {
           "declaration": "Mul(Box<Natural>, Box<Natural>)",
-          "group": "source"
-        },
-        "Call": {
-          "declaration": "Call { callee: Ident, arguments: Vec<Natural>, }",
           "group": "source"
         }
       }
@@ -2303,6 +2299,64 @@
         "Tuple": {
           "declaration": "Tuple(usize)",
           "group": "engineering-instrument"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/primitive.rs",
+      "name": "PrimitiveId",
+      "members": {
+        "H": {
+          "declaration": "H",
+          "group": "source"
+        },
+        "Phase": {
+          "declaration": "Phase",
+          "group": "source"
+        },
+        "GlobalPhaseEighth": {
+          "declaration": "GlobalPhaseEighth",
+          "group": "source"
+        },
+        "Unit": {
+          "declaration": "Unit",
+          "group": "source"
+        },
+        "Finish": {
+          "declaration": "Finish",
+          "group": "source"
+        },
+        "Split": {
+          "declaration": "Split",
+          "group": "source"
+        },
+        "Join": {
+          "declaration": "Join",
+          "group": "source"
+        },
+        "MeasureZ": {
+          "declaration": "MeasureZ",
+          "group": "source"
+        },
+        "Discard": {
+          "declaration": "Discard",
+          "group": "source"
+        },
+        "TakeBit": {
+          "declaration": "TakeBit",
+          "group": "source"
+        },
+        "PutBit": {
+          "declaration": "PutBit",
+          "group": "source"
+        },
+        "EmptyBits": {
+          "declaration": "EmptyBits",
+          "group": "source"
+        },
+        "PrependBit": {
+          "declaration": "PrependBit",
+          "group": "source"
         }
       }
     }
@@ -3498,7 +3552,7 @@
     },
     {
       "path": "scripts/test_instrument_host.py",
-      "sha256": "29b7ba3c5f786e1c4ba5863f9d50ad88edc5fbe481c3c71b407a92ec8db121cf",
+      "sha256": "c567fd00864760ffad6dfb8f5bf37d4c9f8b9dbae40cdba10a2322b6b64336ec",
       "group": "instrument",
       "surface": null
     },
@@ -3880,7 +3934,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "49c88fc8ed0a1c5cbd2aa1c72423170061256590e95406fd6bffb5e6afe19faa",
+      "sha256": "c6ed73a48abb81b2018e81bbd06e196841b031eb071e2084f42f0f5a46d5ba7a",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3898,7 +3952,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "69d10de8a11dc7ed0747784af8fec59c7116df7157c2e287adaa989e34c8eb92",
+      "sha256": "e913875c397047bbff805934e9e21fbee05c265cb081c3cf12a9f9dfed311371",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3908,7 +3962,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "8631921ad947bbacd20b2b1af9c86bba5be9e486a672e299ec63e069ebe026d4",
+      "sha256": "12603c48b7b913133b20e5d20ca89f34f1ac03fda714f2049137ae02a152fba7",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3928,7 +3982,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "f7aa48e445fdd89aa4c282b7421fbb09665d70434feb802b0a5fb2d5fe531a24",
+      "sha256": "301b70890172671e441c4dfdd90216c9a288a991f73bd2a5fbfd518f1ab8d578",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3938,7 +3992,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "2938b1c2e74782a0a443ec7959bc302c00b29adaa5f89526623304e95c8030a1",
+      "sha256": "487df7dbea4cb28cc81f5ae7f4af712ab8ecea445132e9df8c88d0499d6f96ca",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3958,26 +4012,17 @@
     },
     {
       "path": "src/frontend/check/primitive.rs",
-      "sha256": "b571be2b5fed4ad1a7b0c72988172b5bb5f879c797fc1606c4a1bd401feef37e",
+      "sha256": "6fc40d8e3f8490d77d5f4d53a9c1f5717f41e41d2191a1d1d77996f2c5e488eb",
       "surface": {
         "declarations": [],
-        "functions": [
-          "pub fn dependent(self) -> bool",
-          "pub fn effect(self) -> Effect",
-          "pub fn fixed( self, ns: &[Linear], context: &Context, span: Span, budget: &Budget, ) -> Result<(Vec<Ty>, Ty)>",
-          "pub fn lookup(path: &str) -> Option<Self>",
-          "pub fn natural_arity(self) -> usize",
-          "pub fn output(self, input: Vec<Ty>, span: Span, budget: &Budget) -> Result<Ty>",
-          "pub fn path(self) -> &'static str",
-          "pub fn runtime_arity(self) -> usize"
-        ],
+        "functions": [],
         "capacity_constants": []
       },
       "group": "source"
     },
     {
       "path": "src/frontend/check/rectangular_meaning_tests.rs",
-      "sha256": "c5e8ab47ebd85c9f66af6639a5faa813cec463681078fa23d3866eb60f487877",
+      "sha256": "931596f1167d3177f77cef03231054a95856c1a7331911aa4c4e2bda4ec9e5ea",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3997,7 +4042,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "c6678a41ef7a2e665976f9942fc615fdaaed21d3310f04ff08bf526fac2b92e6",
+      "sha256": "7d1142622c6973d8f599d9e7ced72cb60dbeff96233f86917b23445388feb499",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4027,7 +4072,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "0942730c0460203c206b0365105495651867a900f5a8aabe43e9b418c77de5db",
+      "sha256": "20f0e6744c2206d00b5b081202964b6b6eeaf71bb6892f598e57efc7f026fbba",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4037,7 +4082,7 @@
     },
     {
       "path": "src/frontend/compile/lower/classical.rs",
-      "sha256": "adc9e3e05ebd5786f81551f76c2c02d787fe07f9a26acfb6bf3d206786589c8b",
+      "sha256": "9f9dea946746dda8e29ce7e79dae16f7f5a3671ae411715510ddbbb5f13307fd",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4057,7 +4102,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "122a0603207e9c68d7208ef5d27e5f0fc8def6888e319f042064d70f0cb918ef",
+      "sha256": "f8a60aca332a4ba3542c920a7bf0ebdc723fc709bcc8708cb6c3cf71e97123cc",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4067,7 +4112,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "47ae209eb3ce8cb04670e39b2a25b39dd5563c0e8f8391aeef42069639c9b233",
+      "sha256": "a3049591263e7dd53cd4e719709f97a533045dcbe504e5d4d84695f57d8d4cfa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4077,7 +4122,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "155c229efceda5a86b81df82940494a45a67771ad0d0bdf7bdb989ac78ce2b87",
+      "sha256": "8b7e2e985f49d1d8b9b45765f6063c4997feca32fbd974ad794bb9c15ae18618",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4097,7 +4142,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "89c7b347f416ccdee3255f80919d9de748ca0cf36c15c50192cbbade8d660417",
+      "sha256": "f81b1d20b5d71d01767216eb38b449df5fbd6d9ddea377aa191e5c2cc022d631",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4117,7 +4162,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "5557a4c7dfb3441ff3430da9d62baa26dd25c7df01d0ad1741638210580df4da",
+      "sha256": "7d081e07040b706b56ec649b26df8408a2e873e6beee51707d9839d6a1f463ee",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4156,7 +4201,7 @@
     },
     {
       "path": "src/frontend/compile/sources.rs",
-      "sha256": "b63f27082c94b735898536fc936a05681f4dff23ecb079ffc35cd261aa9bca01",
+      "sha256": "281f71100b735d4e1ba8c3bcd1e5fdbbcf2fcd886729fc7a573249b3f16a180c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4166,7 +4211,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "f97f44fa8f0e85abe4ee522b3924386c857f91d5c699d1474e34b455370f7754",
+      "sha256": "4254ad7c5e0ab6cc21d9529dc335ad81ffa42243a2c4d08fa36b49ccbb537598",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4213,14 +4258,18 @@
     },
     {
       "path": "src/frontend/core.rs",
-      "sha256": "b3408205fbc00db5179ddfa7587a70b9cf300f89608820707b039018be4cb9c2",
+      "sha256": "0017a30253ba7cde3a4c39cf0ad385d4eef3c1f6309e675729b9ca7518de3c5e",
       "group": "source",
       "surface": {
         "declarations": [
           "Primitive"
         ],
         "functions": [
-          "pub fn primitive(module: &str, name: &str) -> Option<&'static Primitive>"
+          "pub fn arity(self) -> usize",
+          "pub fn kind(self) -> FnKind",
+          "pub fn name(self) -> &'static str",
+          "pub fn natural_arity(self) -> usize",
+          "pub fn primitive(id: PrimitiveId) -> &'static Primitive"
         ],
         "capacity_constants": []
       }
@@ -4380,7 +4429,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "938b2f1c917ceb9fb8152c070084bc101a0183035266837d60b0079d1599debb",
+      "sha256": "66f8b2714d8d9761fdff5c5ac39401c097d1ce9b46c7bd8f9bddfcb47387b31e",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4460,7 +4509,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "e6e67a34a4e763ca7d0114ea6c8db950ef08c4783b09393c97342767080209f0",
+      "sha256": "94668dc6ced877593505cdc53caae443ee91142fb18143446d3c71142eea2387",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4553,7 +4602,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "33e9c70eb868b2b70a40ae3670f7d9af8d3c635f7e7764ad5084e8d283a64d68",
+      "sha256": "bd9ee93ac259177ec291ea795f0f36e28e108f5802872363daef138ca41f3cca",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4582,7 +4631,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "af73eb59b9510dfc27f5b06c5885e37bcf930e0996572c093d8e74fcdd175864",
+      "sha256": "21eb1d213913fbff2c3ee8c787a2da6ca3c504d06370200f93d1573abc768745",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4666,7 +4715,7 @@
     },
     {
       "path": "src/frontend/source.rs",
-      "sha256": "f6e60e501bf997a1c832ac1855f95fec91fb43e600329c153137ed90051e5014",
+      "sha256": "fb8ce28968a40655087f2c27283366221ac11052e6cf4625cdd5616750076d7c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4763,7 +4812,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "fe795b1a20cbbeff700612395aa1d0e9d9c34b616b818b17c76db37273caa04c",
+      "sha256": "19ec3d8a9665f4891ccaf3db987b6189fbd9def16867c284ecd5b2c600c3f071",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4820,6 +4869,7 @@
           "pub fn path(&self) -> &str",
           "pub fn peak_quantum_width(&self) -> usize",
           "pub fn primitive(&self) -> Option<&str>",
+          "pub fn primitive_identity(&self) -> Option<crate::frontend::core::PrimitiveId>",
           "pub fn repeat_count(&self) -> Option<u32>",
           "pub fn root(&self) -> usize",
           "pub fn span(&self) -> Span",
@@ -4841,7 +4891,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate/basis.rs",
-      "sha256": "ea3aae544adb2a354c9474865510d8e3443d6e16143533c4c2e9afa7cec7b5f7",
+      "sha256": "4f64e3138ea16163cf7282587b08818bf20f5ba2a954e203b6ded00cfb8aa34f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4861,7 +4911,7 @@
     },
     {
       "path": "src/frontend/specialize/fourier.rs",
-      "sha256": "d3829a760318b4459f1c7118b677b653fee9817f05338bcbc0d5292517e21b53",
+      "sha256": "0fcf512118625805eb446b1809cc46b024223f0557adb968cab7962b53576c16",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4871,7 +4921,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "dd4c22ff80edc63abfdd2c1e2074001185a552215ae9b8c7b3617b49e6469a1b",
+      "sha256": "0d6502b55ad72cc26d9e622d1cff6cdbb44655856647c96b5fb414402ad94416",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4894,7 +4944,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "d2892b511c1b7be788a6ee42c5fbb27740afd123860067c09dab87eda7b193fc",
+      "sha256": "ab24bbb3dfe931fa326444d6fdee888e1230c5a1e34662cad18edbb775e1cdce",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4928,7 +4978,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
-      "sha256": "8bace90972ba1fd20b70c6809ff261256698ff70e295ae2b8ab5d51356cbc753",
+      "sha256": "3864d9f2b7517ff84e5a7441dd010b51a8efa87baca2887b7a85787db5640b13",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4948,13 +4998,14 @@
     },
     {
       "path": "src/frontend/specialize/primitive.rs",
-      "sha256": "250457dcac0f211a17559c1897cc430f8564d4a19b99a22ae1b59ee4fd0a4b1b",
+      "sha256": "f403e1cacfe149c18fab53653bf78961883f53e57c38ea2e84f298ac137fcace",
       "group": "sized-source",
       "surface": {
         "declarations": [],
         "functions": [
           "pub fn dependent(self) -> bool",
-          "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn from_language(id: crate::frontend::resolve::PrimitiveId) -> Option<Self>",
+          "pub fn language_identity(self) -> Option<crate::frontend::resolve::PrimitiveId>",
           "pub fn runtime_arity(self) -> usize",
           "pub fn signature(self) -> Signature"
         ],
@@ -4989,7 +5040,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "c560ecb79dbc59c573db4e80d674d9227330d45efe9284e0e880afba369c70c4",
+      "sha256": "76638556472663173bd5759d3410b6c853198274a4720930f197105079e0dba4",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5039,7 +5090,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "884b23e87d2edf4a9d03fb72244ddc2bfdea188e73ac69c1eec7729affa047c7",
+      "sha256": "a0cb6dbb3a46d2de3b194a3ff733a2b7d453ff36d76589cf1d98546356e07180",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5059,7 +5110,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "c316cc70c23ea612d71867dde345ddff915ffd6843d4762d0bdcf527134d641a",
+      "sha256": "b7f2fddfebcf520b90a55b90e941f46829b77c470fc8e629c37050b63b91806d",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5334,7 +5385,7 @@
     },
     {
       "path": "src/interchange/finite_leaf.rs",
-      "sha256": "6ead4a2f38ecd9e262053994a66454d3528333f8b06b481f3298909b612af67a",
+      "sha256": "ce86eb183ab728f72e1ad38e28c4d3747c6ac01a321b6269b1cf4b3f8e713cba",
       "group": "finite-leaf",
       "surface": {
         "declarations": [
@@ -5764,7 +5815,7 @@
     },
     {
       "path": "src/interop/export.rs",
-      "sha256": "ba768ecc61b573e267281986dde06886aa2ee7c1da67d703a83425da2a4e27dd",
+      "sha256": "ec02c2314d60d87f2af80f0a22f6dab597017af994802438d2ad61b8196f99db",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5774,7 +5825,7 @@
     },
     {
       "path": "src/interop/export/contracts.rs",
-      "sha256": "5c05f34848114b2049ec1e9490af3bcdb064b4583af985e647caaa10401e7f2f",
+      "sha256": "fd8228ee2f9086c247e83e2d48a5c310e8d35dc5caafe7b037bd0550ca81c343",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5819,7 +5870,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "9f26854c8845aa1a83fa646094643ba40bc454b060815406744c790b720a0769",
+      "sha256": "75bb596c356d3ba732ea2709b6c15554098a7c9fdb9e4f808cbfa216d271934e",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5980,25 +6031,25 @@
     },
     {
       "path": "stdlib/src/gate.qli",
-      "sha256": "ea47db2cf1ba639b637b740a57b6a510807fb98301f20fbf7b5d1ec5aea215d4",
+      "sha256": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/measurement.qli",
-      "sha256": "415c15304945ae98bc6645377c1bae3dd7b3d979e717aef98e3b6c6b6b6053d9",
+      "sha256": "ba667cc69ea8f06681f44e904add5cc2d2f156cba51aa561055885a7d8f727ec",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/reflection.qli",
-      "sha256": "29f8e70cecd719fdd0c26ca483722846e4434dc7ae71530a60b73a5352893de1",
+      "sha256": "c010a9377edc24ce836738aa008fe7cfd20492a73a5c1e85399e147b40d573bf",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/transform.qli",
-      "sha256": "8388857d96cbdd55ff653de428178a0a4aa1e52eff54597fcca6082cf31666db",
+      "sha256": "bb7cc068e01d6f3ba26421b26b51058e4f4d4f6f99c52d1e85e23effdf377ad5",
       "group": "source",
       "surface": null
     },
@@ -6366,7 +6417,7 @@
     },
     {
       "path": "scripts/test_engineering_openqasm_cli.py",
-      "sha256": "e0a6e03a0cd965646b5ef4052baf12a071fcca4ff064175e118496cc7a7c5cb1",
+      "sha256": "3d3d8d3d44170832aec76bacc219e94e21fa493e262475cd82fa7e146ec634c6",
       "group": "engineering-openqasm",
       "surface": null
     },
@@ -6465,7 +6516,7 @@
     },
     {
       "path": "src/frontend/closed.rs",
-      "sha256": "1ce1066e9788f116539f0c3665e53f64701487225aae5c1789ee487eae8828a6",
+      "sha256": "47e4cc22f966b8ffbe22c583a1fe3cf1b2894c9258c701348a5b00e0c4912065",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6495,7 +6546,7 @@
     },
     {
       "path": "src/frontend/check/plans/tests.rs",
-      "sha256": "d21387de338250e975ca136857d9f4bc9f5627dc6ef2d5652736b57438cc5888",
+      "sha256": "da92f31c2557f7e0d479bf96e63bdc685e3b68010e24b0774114633ffee66714",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6525,7 +6576,7 @@
     },
     {
       "path": "src/frontend/compile/interfaces/tests.rs",
-      "sha256": "16e3e9d3c9740bb583498bc6d60eb4ff3e878f212f66d27995db6bc594287048",
+      "sha256": "8bd9d835b618f7b4e515a3a14977d43c02732094c04f732737ba18f7028c821e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6565,7 +6616,7 @@
     },
     {
       "path": "src/frontend/compile/lower/call_state_tests.rs",
-      "sha256": "485d23ac0d70293e6fc933ae0129b3ddb615dc8811e68fe206343f8dd1093d9b",
+      "sha256": "e5bf690355986550816f8a3ed24815dec900a8132f3e718143fea1853f8a1f57",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6615,7 +6666,7 @@
     },
     {
       "path": "src/frontend/compile/dormant/tests.rs",
-      "sha256": "87c0ac7800dfaf775f1e8de91b6a56c1d4d57d3f44565e63a42cb7a5404f46f5",
+      "sha256": "b1a82a02d450b273cf44997f1479f6318c5c64fcfd95a6fbe19380b644d5237c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6655,7 +6706,7 @@
     },
     {
       "path": "src/frontend/check/plans/body_statics/tests.rs",
-      "sha256": "735ab88a31c10aea7dd5ab877a6d19f457c12cbf151bd9ab7793510e567ca630",
+      "sha256": "b34f9dcd828dbf45e971320f5ef3aad08f4d8cc6a565fd443e94780cc192d2d0",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6737,7 +6788,7 @@
     },
     {
       "path": "src/frontend/compile/lower/computed_phase.rs",
-      "sha256": "2dc4564342fc66e1bc7f0f90aed473b3632adddc8d0add0ebbb085fb5ebced9c",
+      "sha256": "75172a0d5980e62999858da4364a41bf010dddcea0c262e2926db552eddeeb16",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6747,7 +6798,7 @@
     },
     {
       "path": "src/frontend/compile/lower/dormant_access.rs",
-      "sha256": "dc6812c29568f622ed8072e186dbba7b4975f19daa7e8f33a80e460e49408e82",
+      "sha256": "b266a72fe45ab3f5749ebf922af459bf89d7142561dd01ff0f449817aa72a816",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6757,7 +6808,7 @@
     },
     {
       "path": "src/frontend/compile/lower/runtime_transforms.rs",
-      "sha256": "d34aa01265adb651bd65b61ee83ac8468c7241b9575a181378f6533b7f2a3f92",
+      "sha256": "6eb0675ea108aa177e29f6dc18586ce0046bddb3613b91f9fe621e0cf8ceb8f7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6767,7 +6818,7 @@
     },
     {
       "path": "src/frontend/compile/lower/static_primitives.rs",
-      "sha256": "c7a81819837ed524e4eacfd0c113298c149895b684064e7b76d8e1ddd1e61a9a",
+      "sha256": "8ab650cd5743ee1c43dee68720ced94fa66a30b0d9f7f46ae05ed30df69a05b5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6787,7 +6838,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/zero_basis.rs",
-      "sha256": "698dd9f26b58e5afbdb30c6a824aec715a47af602c9fe7a38f2bfebc77465151",
+      "sha256": "b1a35de6336ae7f4fad7563a545526ffbb61a6ce051a74fa5226cd8711e3fb4c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -6797,7 +6848,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
-      "sha256": "3d6035573e9394318f9575fcc9c521f150ef1446b748c9578f285d6ec1569c4f",
+      "sha256": "d89962d570fdb865da9deeb586ac76e901fd9e02b8e89e9e3ca98c9ee8f3466e",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -6807,7 +6858,123 @@
     },
     {
       "path": "stdlib/src/structure.qli",
-      "sha256": "7b634539cffde01ea1933abf2ddfd711e0036d0201fffe5a28122b58dbcb990d",
+      "sha256": "bb4e6be285aacde6ac9cf7e1350d86daf5782fde0788f938724349cd3ff8beed",
+      "group": "source",
+      "surface": null
+    },
+    {
+      "path": "src/frontend/primitive.rs",
+      "sha256": "4aaf83bfdca10d254e223747b6cb6d0d69753a78361dfa7a38c732fbc318713d",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "PrimitiveId"
+        ],
+        "functions": [
+          "pub fn effect(self) -> Effect",
+          "pub fn lookup_unbound(name: &str) -> Option<Self>",
+          "pub fn natural_arity(self) -> usize",
+          "pub fn runtime_arity(self) -> usize",
+          "pub fn spelling(self) -> &'static str"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/native_source.rs",
+      "sha256": "5964b88a3ee3848f7179f8bac484005f5a4873a4cd770b16156b083d5c843c8c",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations.rs",
+      "sha256": "2f305dcbcab926bfcf4af0e911e4bc258c11c8d5dc7b9391f9f8d3c8022e1836",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations/constructed.rs",
+      "sha256": "69630bd801adff2956d203f834336b5c46fe759e738a0c5fc807cfe32fdee512",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations/native_source.rs",
+      "sha256": "560df993f90e4e32a95063dded3eee1fed076346bf13eea80dd231d271f9f7c6",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+      "sha256": "d086e69ceb1e1abc4de8d390e0e8ae74a1314728252ef6f67e7d29fecf8fe139",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+      "sha256": "c172ee4858365726a9ce2c1f03a307a01bae269dc97aa3cb0200c1e5407cea2e",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+      "sha256": "527de8e7bd93f1a9195251a6aee62e09dc42ca096d02c4eb040919f3a39be918",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/source_witness.rs",
+      "sha256": "e5be1582de4a2fefdac46f2984c1bfdd6e35b30d6f531e8e503989780c83b3c2",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interop/export/normalization.rs",
+      "sha256": "00c609609682605e86e6f336eedfa91f3967ba867a6f98b5a652c05acb965238",
+      "group": "foreign",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_LOCAL_EQUATIONS: usize = 7;"
+        ]
+      }
+    },
+    {
+      "path": "stdlib/src/state.qli",
+      "sha256": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27",
       "group": "source",
       "surface": null
     }
@@ -6938,9 +7105,9 @@
       "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending. Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate. Complete closed instance admission does not skip eager nongeneric roots, original dormant obligations, actual per-instance body/native replay or full identity/effect/Meaning/access checks before cache reuse. Bounded first-study archive/stream identity checking is inert retention, not source preservation or a constitutional discharge.",
-      "encoding": "One common original type/owner/effect/name judgment including all six actual ordinary bundled modules; exact tuples/moves/scopes and the typed primitive catalog. Finite complete ordered closed Basis/Nat/Op instances retain exact Unit/Bit/Bits<n>/product tags, ordinary ordered word identities, quantum owner/axis frames, original body-static/operation plans and observing result schemas. Original u32 Nat arithmetic is distinct from the adopted signed affine/helper and requires-conjunction contracts. Finite and selected emitter restrictions/capacities remain separate; ordinary empty_bits introduces no quantum owner.",
+      "encoding": "One common original type/owner/effect/name judgment including all seven actual ordinary bundled modules; exact tuples/moves/scopes and 13 typed bare PrimitiveId source identities. Lexical bindings (including moved/wrong category) precede ordinary declarations/imports, with builtins only when genuinely unbound; no failed-typecheck fallback, primitive imports, prelude or hidden old aliases. Finite complete ordered closed Basis/Nat/Op instances retain exact Unit/Bit/Bits<n>/product tags, ordinary ordered word identities, quantum owner/axis frames, original body-static/operation plans and observing result schemas. Original u32 Nat arithmetic is distinct from the adopted signed affine/helper and requires-conjunction contracts. Finite and selected emitter restrictions/capacities remain separate; ordinary empty_bits introduces no quantum owner.",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
-      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/file16MiB/project or explicit legacy remains separate. Selected64 total modules including6 actual bundles/1..58 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, each relevant original declaration/bound-Op/Raw-dependency closure retains complete module names and text including comments and relevant bundled sources, with immutable module rows shared across closures. The unchanged128-module/1MiB metadata and4096-byte identity-path bounds, aggregate native transport limits and source-work budget still apply; this selection does not change loading or eager checking of every loaded declaration. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
+      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/file16MiB/project or explicit legacy remains separate. Selected64 total modules including7 actual bundles/1..57 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, each relevant original declaration/bound-Op/Raw-dependency closure retains complete module names and text including comments and relevant bundled sources, with immutable module rows shared across closures. The unchanged128-module/1MiB metadata and4096-byte identity-path bounds, aggregate native transport limits and source-work budget still apply; this selection does not change loading or eager checking of every loaded declaration. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
         "VM-28"
@@ -7802,12 +7969,12 @@
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
       "scripts/test_hierarchical_instrument.py": "b267b62dc9ca4145eb093c90f52492fa41e3f6c8f781a62027cb72f795bcd3b2",
       "tests/sized_corpus.rs": "c41e60eb4c31c52dc4ce18922217a630100290a7f515245fcf7077874d532947",
-      "scripts/test_instrument_host.py": "29b7ba3c5f786e1c4ba5863f9d50ad88edc5fbe481c3c71b407a92ec8db121cf",
-      "scripts/test_sized_qft.py": "ba5aa3164371f5cc479de027dd5bd9901e48a4e5fc2e36e6804fe3754e898ea4",
+      "scripts/test_instrument_host.py": "c567fd00864760ffad6dfb8f5bf37d4c9f8b9dbae40cdba10a2322b6b64336ec",
+      "scripts/test_sized_qft.py": "45146947ba14d0f9931c306cda53506a225adbb1595b95a2bd3014e37524138a",
       "scripts/test_hierarchical_contract_typing.py": "71e8f180b1ce221c43ae07bc0d77cfaa4d8156162ec6a0d073b079cb9bb80ce8",
       "scripts/test_hierarchical_request.py": "2750a246c00f0a73a31138301539eefd4a8f6bd2dc5779a6a49931709cd06f82",
-      "scripts/test_hierarchical_routed_power.py": "55aac6c84042428e098eb5ee7dcfae7a13ff4bf3f383603fece3e3a6a04ccc16",
-      "scripts/test_hierarchical_execution.py": "c9c7fe8fead31d0ee497eeab8f04159945f0bb3273ba374dcc18e6609f342d87",
+      "scripts/test_hierarchical_routed_power.py": "46c10cbcca1580ba33307bd3087d4b045198b9734e74983da3a22199640cb0f3",
+      "scripts/test_hierarchical_execution.py": "d8e565a4b17186e58a0ab433f5c1c079a7b2556567edb26e6338a4d46be20892",
       "tests/hierarchical_execution.rs": "13aceaa54a5a8dffb00c325e44c7f49acda7dfcc7cebd53914c19f6592dc3592",
       "scripts/test_hierarchical_circuit_trace.py": "46e6aee8b9914ff74f195df5cf9320777d16d9882b043fcffd61ca0ac9664af4",
       "scripts/test_hierarchical_qpe_schedule.py": "f47ef4809c20b4dd2b86caccb4cb1443140190c0d2072ddfdb4ff91ed682e87e",
@@ -7815,9 +7982,9 @@
       "scripts/test_hierarchical_qpe_instrument.py": "4d30f3d65a146e01359eff89fe5947bc54a8cad245619384167d3a1351f36dc4",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "41d854e33e8fdb30eb8e8d7882cadbc8e84b6856a650c9d11afef317cbea2357",
-      "tests/sized_cli.rs": "ad9df15c671e285595a9d7d00e307dbd181e72ace98cf64de4f60b3993a791a6",
+      "tests/sized_cli.rs": "ab5afe4ea337b78a680b7273bfc27ae9a078c090529b238f0c8cd0bdb27ba829",
       "tests/hierarchical_qpe_host.rs": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
-      "scripts/test_qpe_instrument_host.py": "dd1eed6adf9650051940771ff63ad55af7d383767c055335fcd607fabac7d315",
+      "scripts/test_qpe_instrument_host.py": "094822ba4b13bf48b43b1a0a426b6885f951b2c67010b89b2aa35098138871d9",
       "tests/connections.rs": "fcaff4e0ca4f5efe6a62ada25b0d1e415919082f1dfe33143f0f5aa5d6730b4a",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",

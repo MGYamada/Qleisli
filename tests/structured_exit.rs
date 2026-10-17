@@ -167,7 +167,7 @@ fn final_branches_cannot_drop_or_exchange_unaccounted_quantum_owners() {
 fn static_range_arithmetic_and_shape_refuse_before_native_acceptance() {
     for (text, selected_code, finite_code) in [
         (
-            "use std::registers::take_bit; pub unitary fn bad[const n:Nat](q:Q<Bits<n>>)->(Q<Bits<n-1>>,Q<Bit>) requires n>=1 {take_bit[n,n](q)} observe fn main()->Bit{0}",
+            " pub unitary fn bad[const n:Nat](q:Q<Bits<n>>)->(Q<Bits<n-1>>,Q<Bit>) requires n>=1 {take_bit[n,n](q)} observe fn main()->Bit{0}",
             "size",
             "type_mismatch",
         ),
@@ -208,8 +208,8 @@ fn explicit_alternatives_keep_correlated_owners_and_host_limits_stay_separate() 
     use qleisli::ir::RawOp;
     use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 
-    let text = "use std::quantum::init0;use std::quantum::h;
-        use std::quantum::x;use std::quantum::cnot;use std::observe::measure_z;
+    let text = "use std::state::init0;
+        use std::gate::x;use std::gate::cnot;
         fn choose(b:Bit,q:Q<Bit>)->(Bit,Q<Bit>){if b {(0,q)}else{(1,x(q))}}
         pub observe fn main()->(Bit,Bit,Bit,Bit){
             let (a,r)=cnot(h(init0()),init0());

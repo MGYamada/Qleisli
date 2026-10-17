@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::state::reset;
+pub isometry fn f() -> Unit { let _ = measure_z(init0()); () }
+pub observe fn main() -> Unit { f() }

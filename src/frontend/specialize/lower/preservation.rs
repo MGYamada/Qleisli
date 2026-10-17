@@ -42,7 +42,7 @@ pub(super) fn number(v: &Value) -> Result<usize> {
     usize::try_from(v.number().map_err(transport)?)
         .map_err(|_| invalid("transport integer overflow"))
 }
-fn text(v: &Value) -> Result<&str> {
+pub(super) fn text(v: &Value) -> Result<&str> {
     v.text().map_err(transport)
 }
 pub(super) fn tag(v: &Value) -> Result<&str> {
@@ -836,6 +836,13 @@ impl Replay<'_> {
             self.definitions,
             self.zero_basis_replay,
         )?;
+        super::zero_basis::validate_operation_event(
+            self.proposal,
+            e,
+            step,
+            self.definitions,
+            self.zero_basis_replay,
+        )?;
         if step.basis_table().is_some() {
             super::zero_basis::validate_event(self.proposal, e)?;
             if super::zero_basis::classify(step) == Some(super::zero_basis::Kind::Prepare) {
@@ -1586,7 +1593,7 @@ mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
     fn proposal() -> HierarchyProposal {
-        let source = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
+        let source = " use std::state::init0;    pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
         ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1622,7 +1629,7 @@ mod tests {
         use crate::interchange::{RootInterface, Version, hierarchical, native};
         use crate::ir::{CircuitAction, RawOp};
         use std::sync::Arc;
-        let source = "use std::quantum::{h,init0};
+        let source = "use std::state::init0;
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub isometry fn main(q:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=apply_contract(implementation,specified,q);(q,init0())}";
@@ -1854,9 +1861,9 @@ mod tests {
 
         let make = |helper: &str, introduce: &str, eliminate: &str| {
             let source = format!(
-                "use std::quantum::unit; use std::quantum::finish;
-                 use std::quantum::phase_eighth; use std::observe::measure_z;
-                 use std::classical::empty_bits; use std::classical::prepend_bit;
+                " 
+                  
+                  
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = {introduce}; let () = {eliminate};
@@ -1884,13 +1891,13 @@ mod tests {
 
         for (helper, introduce, eliminate, changed_step) in [
             (
-                "unitary fn altered(u: Unit) -> Q<Unit> { phase_eighth(unit(u)) }",
+                "unitary fn altered(u: Unit) -> Q<Unit> { global_phase_eighth(unit(u)) }",
                 "altered(())",
                 "finish(u)",
                 0,
             ),
             (
-                "unitary fn altered(q: Q<Unit>) -> Unit { finish(phase_eighth(q)) }",
+                "unitary fn altered(q: Q<Unit>) -> Unit { finish(global_phase_eighth(q)) }",
                 "unit(())",
                 "altered(u)",
                 1,
@@ -1961,7 +1968,7 @@ mod tests {
 
     #[test]
     fn source_trace_charges_idle_zero_width_basis_before_frame_cloning() {
-        let source = "use std::quantum::h; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit;
+        let source = "   
             pub observe fn f(q:Q<Bit>,z:Q<((Unit,Unit),(Unit,Unit))>)->(Bits<1>,Q<((Unit,Unit),(Unit,Unit))>){
                 let q=h(q); let b=measure_z(q); (prepend_bit[0](b,empty_bits()),z)
             }";
@@ -2070,10 +2077,10 @@ mod tests {
         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
         let make = |helper: &str, join: &str, split: &str| {
             let source = format!(
-                "use std::quantum::unit; use std::quantum::finish;
-                 use std::quantum::split; use std::quantum::join;
-                 use std::quantum::phase_eighth; use std::observe::measure_z;
-                 use std::classical::empty_bits; use std::classical::prepend_bit;
+                " 
+                  
+                  
+                  
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = unit(()); let p = {join}; let (u,q) = {split};
@@ -2101,13 +2108,13 @@ mod tests {
             .unwrap();
         for (helper, join, split, changed_step) in [
             (
-                "unitary fn altered(u:Q<Unit>,q:Q<Bit>)->Q<(Unit,Bit)>{join(phase_eighth(u),q)}",
+                "unitary fn altered(u:Q<Unit>,q:Q<Bit>)->Q<(Unit,Bit)>{join(global_phase_eighth(u),q)}",
                 "altered(u,q)",
                 "split(p)",
                 1,
             ),
             (
-                "unitary fn altered(p:Q<(Unit,Bit)>)->(Q<Unit>,Q<Bit>){let(u,q)=split(p);(phase_eighth(u),q)}",
+                "unitary fn altered(p:Q<(Unit,Bit)>)->(Q<Unit>,Q<Bit>){let(u,q)=split(p);(global_phase_eighth(u),q)}",
                 "join(u,q)",
                 "altered(p)",
                 2,

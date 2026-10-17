@@ -453,7 +453,7 @@ fn fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasur
         assert_eq!(definition.steps().len(), 1);
         assert_eq!(
             definition.steps()[0].primitive(),
-            Some("std::quantum::phase_eighth")
+            Some("global_phase_eighth")
         );
         assert_ne!(
             definition.inputs()[0].identity(),
@@ -842,44 +842,44 @@ fn scalar_work_precedes_readout_and_cannot_be_retimed_past_observation() {
 fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
     for (declaration, code, message) in [
         (
-            "pub unitary fn f(u: Unit) -> Unit { phase_eighth(u) }",
+            "pub unitary fn f(u: Unit) -> Unit { global_phase_eighth(u) }",
             "type",
             "primitive requires one exact quantum owner",
         ),
         (
-            "pub unitary fn f(b: Bit) -> Bit { phase_eighth(b) }",
+            "pub unitary fn f(b: Bit) -> Bit { global_phase_eighth(b) }",
             "type",
             "primitive requires one exact quantum owner",
         ),
         (
-            "pub unitary fn f(q: Q<Unit>,r: Q<Bit>) -> (Q<Unit>,Q<Bit>) { phase_eighth((q,r)) }",
+            "pub unitary fn f(q: Q<Unit>,r: Q<Bit>) -> (Q<Unit>,Q<Bit>) { global_phase_eighth((q,r)) }",
             "type",
             "primitive requires one exact quantum owner",
         ),
         (
-            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth[0](not q) }",
+            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { global_phase_eighth[0](not q) }",
             "static",
             "static argument arity mismatch",
         ),
         (
-            "pub unitary fn f() -> Q<Unit> { phase_eighth() }",
+            "pub unitary fn f() -> Q<Unit> { global_phase_eighth() }",
             "arity",
             "runtime argument arity mismatch",
         ),
         (
-            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(q,q) }",
+            "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { global_phase_eighth(q,q) }",
             "arity",
             "runtime argument arity mismatch",
         ),
     ] {
-        let text = format!("use std::quantum::phase_eighth; {declaration}");
+        let text = format!(" {declaration}");
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
         assert!(error.message().contains(message), "{text}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start);
-        assert!(text[error.span().start..error.span().end].starts_with("phase_eighth"));
+        assert!(text[error.span().start..error.span().end].starts_with("global_phase_eighth"));
     }
 }
 
@@ -889,7 +889,8 @@ fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
 )]
 #[test]
 fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
-    let text = "use std::quantum::phase_eighth; pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(phase_eighth(q)) }";
+    let text =
+        " pub unitary fn f(q: Q<Unit>) -> Q<Unit> { global_phase_eighth(global_phase_eighth(q)) }";
     let graph = elaborate(text, "main::f", BTreeMap::new());
     let definition = &graph.definitions()[graph.root()];
     assert_eq!(definition.steps().len(), 2);
@@ -901,7 +902,7 @@ fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
     assert_ne!(first.inputs()[0].identity(), first.output().identity());
     assert_ne!(first.output().identity(), second.output().identity());
     for step in definition.steps() {
-        assert_eq!(step.primitive(), Some("std::quantum::phase_eighth"));
+        assert_eq!(step.primitive(), Some("global_phase_eighth"));
     }
     let proposal = graph.lower().unwrap();
     let reconstructed = kernel().inspect(proposal.payload()).unwrap();
@@ -1104,8 +1105,8 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
 )]
 #[test]
 fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
-    let text = "use std::quantum::{init0,phase_eighth}; use std::observe::measure_z;\n\
-        unitary fn twice(q: Q<Bit>) -> Q<Bit> { phase_eighth(phase_eighth(q)) }\n\
+    let text = "use std::state::init0; \n\
+        unitary fn twice(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(global_phase_eighth(q)) }\n\
         pub observe fn main() -> Bit { measure_z(twice(init0())) }";
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
     let graph = elaborate(text, "main::main", BTreeMap::new());
@@ -1117,7 +1118,12 @@ fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
     proposal.validate_source_steps(&accepted).unwrap();
     assert_eq!(accepted.raw(), finite.raw());
     let [
-        RawOp::Init0 { .. },
+        RawOp::PackUnit { .. },
+        RawOp::LiftBasis {
+            output_wires,
+            table,
+            ..
+        },
         RawOp::ApplyUnitary { .. },
         RawOp::ApplyUnitary { .. },
         RawOp::MeasureZ { .. },
@@ -1125,6 +1131,8 @@ fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
     else {
         panic!("both scalar calls must follow preparation and precede observation");
     };
+    assert_eq!(table, &[0]);
+    assert_eq!(output_wires.len(), 1);
 }
 
 #[cfg_attr(
@@ -1225,7 +1233,7 @@ fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
         "unitary fn pair(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){(a,b)}
          pub unitary fn entry(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){power(pair,0)((a,b))}"
             .into(),
-        "use std::quantum::init0; use std::observe::discard;
+        "use std::state::init0; 
          observe fn pair(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){discard(a);(init0(),b)}
          unitary fn unused(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){power(pair,0)((a,b))}"
             .into(),
@@ -1243,7 +1251,7 @@ fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
 )]
 #[test]
 fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
-    let prelude = "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
+    let prelude = "use std::gate::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
     for (body, width) in [
         ("z(q)", 1),
         ("adjoint(oracle)(q)", 1),
@@ -1324,7 +1332,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
         ],
         1,
     );
-    let direct = "use std::quantum::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}";
+    let direct = "use std::gate::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}";
     let z = elaborate(direct, "main::f", BTreeMap::new())
         .lower()
         .unwrap();
@@ -1352,7 +1360,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
 )]
 #[test]
 fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
-    let text = "use std::quantum::{h,z,init0}; use std::observe::measure_z; pub observe fn main()->Bit{measure_z(h(z(h(init0()))))}";
+    let text = "use std::gate::z; use std::state::init0;  pub observe fn main()->Bit{measure_z(h(z(h(init0()))))}";
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
     let raw = elaborate(text, "main::main", BTreeMap::new())
         .lower_raw()
@@ -1372,7 +1380,7 @@ fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
         "(q:Bit)->Bit{z(q)}",
         "(q:Q<Bit>)->Q<Bit>{z(q,q)}",
     ] {
-        let text = format!("// 日本語\r\nuse std::quantum::z; pub unitary fn f{signature}");
+        let text = format!("// 日本語\r\nuse std::gate::z; pub unitary fn f{signature}");
         assert!(
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).is_err(),
             "{text}"
@@ -1454,7 +1462,7 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
     );
     for count in ["k", "2^k"] {
         let text = format!(
-            "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{{z(q)}} pub unitary fn f[const k:Nat](q:Q<Bit>)->Q<Bit> requires k<=2 {{power(oracle,{count})(q)}}"
+            "use std::gate::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{{z(q)}} pub unitary fn f[const k:Nat](q:Q<Bit>)->Q<Bit> requires k<=2 {{power(oracle,{count})(q)}}"
         );
         for k in 0..=2 {
             let source = elaborate(&text, "main::f", BTreeMap::from([("k".into(), k)]));
@@ -1495,7 +1503,7 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
 )]
 #[test]
 fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action() {
-    let prelude = "use std::quantum::{h,z}; unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}";
+    let prelude = "use std::gate::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}";
     for (expression, inverse) in [
         ("power(oracle,2)(q)", false),
         ("adjoint(power(oracle,2))(q)", true),
@@ -1551,7 +1559,7 @@ fn canonical_power_zero_width_scalar_and_control_keep_exact_phase() {
             "(c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)"
         };
         let text = format!(
-            "use std::quantum::phase_eighth;unitary fn scalar(q:Q<Unit>)->Q<Unit>{{phase_eighth(q)}}pub unitary fn f{signature}{{{expression}}}"
+            "unitary fn scalar(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}pub unitary fn f{signature}{{{expression}}}"
         );
         let graph = elaborate(&text, "main::f", BTreeMap::new())
             .lower()

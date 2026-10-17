@@ -11,9 +11,9 @@ use qleisli::interchange::{hierarchical, native::Kernel};
 use qleisli::ir::{CircuitAction, RawOp};
 use std::collections::BTreeMap;
 
-const IMPORTS: &str = "use std::quantum::h; use std::quantum::z; use std::quantum::x;
-    use std::quantum::init0; use std::quantum::join; use std::quantum::split;
-    use std::observe::measure_z;";
+const IMPORTS: &str = " use std::gate::z; use std::gate::x;
+    use std::state::init0;  
+    ";
 
 fn parse(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
@@ -318,11 +318,11 @@ fn unused_reference_rejects_wrong_category_unbound_statics_shape_and_effect() {
             "type",
         ),
         (
-            "use std::observe::reset; fn f(q:Q<Bit>)->Q<Bit>{reset(q)} meaning M:Bit=reference(f);",
+            "use std::state::reset; fn f(q:Q<Bit>)->Q<Bit>{reset(q)} meaning M:Bit=reference(f);",
             "effect",
         ),
         (
-            "use std::quantum::{init0,finish}; fn f(q:Q<Unit>)->Q<Bit>{let ()=finish(q);init0()} meaning M:Unit=reference(f);",
+            "use std::state::init0; fn f(q:Q<Unit>)->Q<Bit>{let ()=finish(q);init0()} meaning M:Unit=reference(f);",
             "type",
         ),
     ] {
@@ -469,17 +469,17 @@ fn reference_receipts_survive_existing_inverse_and_control_access() {
 )]
 #[test]
 fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
-    let source = "use std::quantum::{unit,finish,phase_eighth};
-        fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+    let source = "
+        fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         meaning S:Unit=reference(scalar);
-        fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         pub unitary fn main()->Bit{let q=apply_contract(implementation,S,unit(()));finish(q);0}";
     assert_eq!(
         matrix(source),
         Matrix::new(1, 1, vec![Exact::new([0, 1, 0, 1], 1).unwrap()]).unwrap()
     );
     let wrong = source.replace(
-        "fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}",
+        "fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}",
         "fn implementation(q:Q<Unit>)->Q<Unit>{q}",
     );
     assert!(compile_project(&SourceRoot::new(&wrong).0).is_err());
@@ -506,7 +506,7 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
 #[test]
 fn fixed_fourier_reference_meanings_match_independent_exact_coefficients() {
     // Fixed 2/3-qubit specifications only; no generic QFT implementation.
-    let prefix = "use std::quantum::{h,s,t,split,join,init0}; use std::observe::measure_z;
+    let prefix = "use std::gate::s; use std::gate::t; use std::state::init0; 
         fn ident(q:Q<Bit>)->Q<Bit>{q}
         fn quarter(q:Q<Bit>)->Q<Bit>{s(q)}
         fn eighth(q:Q<Bit>)->Q<Bit>{t(q)}";

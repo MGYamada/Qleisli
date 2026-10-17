@@ -6,10 +6,10 @@ use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 const PRELUDE: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
 unitary fn ident(q:Q<Bit>)->Q<Bit>{q}
 unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
 unitary fn phase(q:Q<Bit>)->Q<Bit>{t(q)}
@@ -94,7 +94,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     );
     root.write(
         "meanings.qli",
-        "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
+        "use std::gate::x; classical fn flip(b:Bit)->Bit{not b}
         pub meaning Flip:Bit=permutation_by(flip);
         pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
     );
@@ -145,7 +145,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
         root.write(
             "provider.qli",
             &format!(
-                "use std::quantum::z; use std::quantum::t;
+                "use std::gate::z; use std::gate::t;
             pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{{{body}}}"
             ),
         );
@@ -177,7 +177,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
     }
     root.write(
         "provider.qli",
-        "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
+        "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -763,10 +763,11 @@ fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
 )]
 #[test]
 fn explicit_endomorphisms_match_abbreviations_in_the_project_adapter() {
-    let first =
-        include_str!("fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli");
-    let scalar = "use std::quantum::{unit,finish,phase_eighth};
-        unitary fn minus(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}
+    let first = common::current_source_text(
+        "tests/fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli",
+    );
+    let scalar = "
+        unitary fn minus(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}
         unitary fn scalar_control[const U:Op<Unit>](q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>
             requires Controllable(U){let(c,u)=split(q);let(c,u)=controlled(U)(c,u);join(c,u)}
         pub observe fn main()->Bit{let(c,u)=split(scalar_control[minus](join(h(init0()),unit(()))));finish(u);measure_z(h(c))}";

@@ -168,10 +168,10 @@ fn missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliarie
 
 #[test]
 fn corpus_dropped_owner_now_points_to_b_not_the_body() {
-    let source = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli",
     );
-    let root = SourceRoot::new(source);
+    let root = SourceRoot::new(&source);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.as_ref().unwrap();
     assert_eq!(error.code, "ownership");

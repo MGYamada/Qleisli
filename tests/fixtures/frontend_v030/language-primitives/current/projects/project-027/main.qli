@@ -1,0 +1,11 @@
+
+use std::gate::t;
+use std::state::init0;
+
+
+// Type-correct semantic fault: move the last T through the outer H.
+unitary fn interference(q: Q<Bit>) -> Q<Bit> {
+    t(h(h(h(t(h(q))))))
+}
+
+observe fn main() -> Bit { measure_z(interference(init0())) }

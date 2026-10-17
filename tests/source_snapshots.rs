@@ -10,7 +10,7 @@ use std::sync::Arc;
 
 fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {
     let mut source = String::from(
-        "use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
+        "use std::state::init0; use std::gate::x; 
          unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
          unitary fn specified(q:Q<Bit>)->Q<Bit>{x(q)}\n",
     );
@@ -109,8 +109,8 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         "apply_contract(implementation,specified,q)",
     ] {
         let root = SourceRoot::new(&format!(
-            "use dep::implementation; use std::quantum::init0; use std::quantum::x;
-             use std::observe::measure_z;
+            "use dep::implementation; use std::state::init0; use std::gate::x;
+             
              classical fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
              unitary fn specified(q:Q<Bit>)->Q<Bit>{{x(q)}}
              unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
@@ -122,7 +122,7 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         );
         root.write(
             "helper.qli",
-            "use std::quantum::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}",
+            "use std::gate::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}",
         );
         let program = compile_project(&root.0).unwrap();
         let receipt = Arc::clone(receipts(&program.program().operations)[0]);
@@ -219,7 +219,7 @@ fn small_native_specializations_retain_exact_shared_sources() {
 )]
 #[test]
 fn unrelated_large_sources_do_not_become_ordinary_gate_dependencies() {
-    let source = "use std::gate::t;use std::quantum::{init0,h};use std::observe::measure_z;
+    let source = "use std::gate::t;use std::state::init0;
         unitary fn specified(q:Q<Bit>)->Q<Bit>{t(q)}
         observe fn main()->Bit{measure_z(apply_contract(specified,specified,h(init0())))}";
     let root = SourceRoot::new(source);
@@ -257,7 +257,7 @@ fn unrelated_large_sources_do_not_become_ordinary_gate_dependencies() {
     // Every loaded declaration still goes through the ordinary effect checker.
     root.write(
         "unrelated_0.qli",
-        "use std::observe::measure_z;pub unitary fn wrong(q:Q<Bit>)->Bit{measure_z(q)}",
+        "pub unitary fn wrong(q:Q<Bit>)->Bit{measure_z(q)}",
     );
     assert!(compile_project(&root.0).is_err());
 }
@@ -268,9 +268,11 @@ fn unrelated_large_sources_do_not_become_ordinary_gate_dependencies() {
 )]
 #[test]
 fn bound_pure_actual_retains_its_original_source_through_a_generic_provider() {
-    let root = SourceRoot::new("use adapter::forward;use preparation::zero;use std::quantum::unit;use std::observe::measure_z;
+    let root = SourceRoot::new(
+        "use adapter::forward;use preparation::zero;
         isometry fn invoke[const U:Op<Unit -> Bit>](u:Q<Unit>)->Q<Bit> requires Applicable(U){U(u)}
-        observe fn main()->Bit{measure_z(invoke[forward[zero]](unit(())))}");
+        observe fn main()->Bit{measure_z(invoke[forward[zero]](unit(())))}",
+    );
     let adapter = "pub isometry fn forward[const U:Op<Unit -> Bit>](u:Q<Unit>)->Q<Bit> requires Applicable(U){U(u)}";
     let preparation = "pub isometry fn zero(u:Q<Unit>)->Q<Bit>{basis u as () {0}}";
     root.write("adapter.qli", adapter);

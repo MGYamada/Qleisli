@@ -1,9 +1,9 @@
 //! Estimate the phase of T on |1>: 1001, low-weight phase bit first.
 use iterative::phase3;
-use std::quantum::init0;
-use std::quantum::x;
-use std::quantum::t;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+use std::gate::t;
+
 
 unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }
 

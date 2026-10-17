@@ -173,7 +173,7 @@ fn effectful_unit_rhs_is_retained_before_the_empty_result_is_bound() {
             .raw()
             .operations
             .iter()
-            .any(|op| matches!(op, RawOp::Init0 { .. }))
+            .any(|op| matches!(op, RawOp::LiftBasis { output_wires, table, .. } if output_wires.len() == 1 && table == &[0]))
     );
     let distribution = run_closed(&current, SimulationLimits::default()).unwrap();
     assert_eq!(distribution.len(), 1);
