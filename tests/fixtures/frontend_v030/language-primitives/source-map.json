@@ -3530,6 +3530,22 @@
           "current_sha256": "a8e11b7cc04f06881acc1d916ee0e8189c9603b55ff4dea78221e95bb4c6120f"
         }
       ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/projects/project-055",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "6cf0bfe86e6fc97e6f5e792fae910a620c3f65ea8aff4b94335efc160da03bcf",
+          "current_sha256": "4a8be6461937db945e574549fff6700a9eb62788bdc5d342e53219a543c7c3a9"
+        }
+      ]
     }
   ]
 }

@@ -289,10 +289,11 @@ mod tests {
 
     #[test]
     fn first_manifest_observations_remain_valid_user_controls() {
-        let first = crate::interchange::json::parse(include_bytes!(
-            "../../../tests/fixtures/authoring_sessions/canonical-std-pair-v030/first-observations.txt"
+        let source = fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join(
+            "tests/fixtures/authoring_sessions/canonical-std-pair-v030/first-observations.txt",
         ))
         .unwrap();
+        let first = crate::interchange::json::parse(&source).unwrap();
         let cases = first.field("cases").unwrap().array().unwrap();
         assert_eq!(cases.len(), 15);
         let stdout = first.field("stdout").unwrap().text().unwrap();

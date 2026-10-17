@@ -1053,7 +1053,10 @@ class RepositoryMigrationTests(unittest.TestCase):
             for row in entry["files"]:
                 if row["path"].endswith("Qargo.toml"):
                     self.assertEqual((before / row["path"]).read_bytes(), (current / row["path"]).read_bytes())
-                    expected.add(current / row["path"])
+                else:
+                    selected = fixtures.current_source_file(before / row["path"])
+                    self.assertEqual(selected.read_bytes(), (current / row["path"]).read_bytes())
+                expected.add(current / row["path"])
         # Full byte inventories above cover every record. The selector's
         # graph/order checks run once here; synthetic tests exercise each
         # mutation. Avoid reparsing the complete map for every fixture row.

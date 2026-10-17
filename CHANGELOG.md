@@ -34,6 +34,8 @@ and exactness obligations retain their recorded scopes and status.
   and bare primitives used by the repository quickstart.
   Keep internal derived-contract requests distinct from an unrequested entry
   in installation checks, with matching text and JSON decision counts.
+  Select the retained current native-validation project through its complete
+  source map, preserving original inputs and all native rejection assertions.
 
 - Require the embedded std manifest to name `std` and match the compiler's
   complete product version before loading source. Preserve independent user
