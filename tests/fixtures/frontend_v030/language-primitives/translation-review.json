@@ -13331,6 +13331,46 @@
           "kind": "removed-import separator"
         }
       ]
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/interface-naturals-v030/translations/ordinary/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-441.qli",
+      "before_sha256": "688a1ed0f2779828c396540006be0e1a1b21ec8f9a775a4d292da7945c33f68d",
+      "current_sha256": "4ff664c912fadb00a63087c59cb00ec8702841845c7513cc7886b6d2803a7fee",
+      "logical_paths": [
+        "tests/fixtures/authoring_sessions/interface-naturals-v030/translations/ordinary/main.qli"
+      ],
+      "manual_edits": [],
+      "lexical_edits": [
+        {
+          "start": 0,
+          "end": 31,
+          "replacement": "",
+          "kind": "import"
+        }
+      ],
+      "lexical_sha256": "4ff664c912fadb00a63087c59cb00ec8702841845c7513cc7886b6d2803a7fee",
+      "layout_edits": []
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/interface-naturals-v030/translations/helper/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-442.qli",
+      "before_sha256": "4e7489a0fe5e9ba460364eb01cd2448eb303d313628c388a7693032dcc73f3c2",
+      "current_sha256": "a5d06ea68c01ab395c7d58d1a93aa18eed39e41a3c58039b9da335921a49cdc6",
+      "logical_paths": [
+        "tests/fixtures/authoring_sessions/interface-naturals-v030/translations/helper/main.qli"
+      ],
+      "manual_edits": [],
+      "lexical_edits": [
+        {
+          "start": 0,
+          "end": 31,
+          "replacement": "",
+          "kind": "import"
+        }
+      ],
+      "lexical_sha256": "a5d06ea68c01ab395c7d58d1a93aa18eed39e41a3c58039b9da335921a49cdc6",
+      "layout_edits": []
     }
   ],
   "exclusions": [

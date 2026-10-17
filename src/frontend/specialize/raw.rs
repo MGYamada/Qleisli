@@ -2870,8 +2870,22 @@ mod tests {
         .unwrap();
         let mut proposal = source.lower_raw().unwrap();
         let required = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+        let boundary = proposal.finite_boundary.as_ref().unwrap();
+        // Keep the original exact source ports. Canonical target IR uses its
+        // own token IDs; those cannot stand in for this expanded X boundary.
+        assert_eq!(boundary.input().wires, boundary.output().wires);
+        assert_eq!(boundary.input().shape, boundary.output().shape);
+        let mut replacement = required.target_ir().unwrap();
+        replacement.quantum_inputs = vec![boundary.input().clone()];
+        replacement.quantum_outputs = vec![boundary.output().token];
+        let [RawOp::ApplyUnitary { input, output, .. }] = replacement.operations.as_mut_slice()
+        else {
+            panic!("one independently authored identity action")
+        };
+        *input = boundary.input().token;
+        *output = boundary.output().token;
         proposal.proposal = native::Proposal::from_raw(
-            &required.target_ir().unwrap(),
+            &replacement,
             Some(&RootInterface {
                 input: BasisType::Bit,
                 output: BasisType::Bit,
@@ -2921,17 +2935,30 @@ mod tests {
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         preservation::validate(&source, accepted.raw()).unwrap();
         let mut wrong = accepted.raw().clone();
-        assert_eq!(wrong.operations.len(), 2);
-        // Keep every token edge and the exact type/effect interface valid,
-        // while exchanging only the gate actions on that ordered chain.
-        for (op, replacement) in wrong
-            .operations
-            .iter_mut()
-            .zip([SingleGate::Z, SingleGate::H])
+        // The ordinary Z body is four exact eighth turns. Keep the full
+        // phase and every token edge while exchanging H;Z with Z;H.
+        let original = [
+            SingleGate::H,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+        ];
+        let reordered = [
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::H,
+        ];
+        assert_eq!(wrong.operations.len(), original.len());
+        for ((op, expected), replacement) in
+            wrong.operations.iter_mut().zip(original).zip(reordered)
         {
             let RawOp::Gate { gate, .. } = op else {
-                panic!("gate chain")
+                panic!("ordinary H and four exact phase actions")
             };
+            assert_eq!(*gate, expected);
             *gate = replacement;
         }
         let wrong = kernel.accept_raw(wrong).unwrap();

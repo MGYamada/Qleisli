@@ -24,14 +24,24 @@ fn project(text: String) -> Project {
 }
 
 fn first(case: &str) -> Project {
-    let text = std::fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join(FIRST)
-            .join("translations")
-            .join(case)
-            .join("main.qli"),
-    )
-    .expect("retained separate translation");
+    let original = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join(FIRST)
+        .join("translations")
+        .join(case)
+        .join("main.qli");
+    let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+    let output = std::process::Command::new("python3")
+        .args(["-B", "-c", script])
+        .arg(original)
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
     project(text)
 }
 

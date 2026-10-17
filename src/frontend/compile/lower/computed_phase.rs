@@ -822,6 +822,7 @@ impl Lowerer<'_, '_> {
 mod tests {
     use super::*;
     use crate::frontend::project::{ModuleOrigin, SourceModule};
+    use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
 
     fn project() -> Project {
         project_source(
@@ -831,19 +832,55 @@ mod tests {
     }
 
     fn project_source(text: &str) -> Project {
+        crate::frontend::project::check_bundled_manifest().unwrap();
+        let mut builder = Builder::default();
+        builder
+            .insert(
+                Source::local(
+                    "main".into(),
+                    Some(PathBuf::from("main.qli")),
+                    text.into(),
+                    ParsePolicy::Project,
+                )
+                .unwrap_or_else(|failure| {
+                    panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                }),
+            )
+            .unwrap();
+        for bundled in BundledRegistry::sources() {
+            builder
+                .insert(
+                    Source::bundled(bundled, ParsePolicy::Project).unwrap_or_else(|failure| {
+                        panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                    }),
+                )
+                .unwrap();
+        }
+        let modules = builder
+            .finish()
+            .into_entries()
+            .map(|source| {
+                let (name, path, source, ast, bundled) = source.into_parts();
+                (
+                    name.clone(),
+                    SourceModule {
+                        name,
+                        path: path.expect("original local and bundled paths"),
+                        source,
+                        ast,
+                        imports: BTreeMap::new(),
+                        origin: if bundled {
+                            ModuleOrigin::Bundled
+                        } else {
+                            ModuleOrigin::Local
+                        },
+                    },
+                )
+            })
+            .collect();
         Project {
             root: PathBuf::from("main.qli"),
-            modules: BTreeMap::from([(
-                "main".into(),
-                SourceModule {
-                    name: "main".into(),
-                    path: PathBuf::from("main.qli"),
-                    source: text.into(),
-                    ast: crate::frontend::parser::parse_module(text).unwrap(),
-                    imports: BTreeMap::new(),
-                    origin: ModuleOrigin::Local,
-                },
-            )]),
+            modules,
         }
     }
 
@@ -931,7 +968,21 @@ mod tests {
         };
         let mut compiler = super::super::call_state_tests::checked_compiler(&project);
         let owner = compiler.source.resolution.qualified("main::f").unwrap();
-        compiler.checking = Some(owner);
+        // Enter the same original instance context as ordinary body lowering.
+        // `checking` alone does not bind the ordinary Z call's static plan.
+        let instance = compiler
+            .prepare_instance(
+                owner,
+                BTreeMap::new(),
+                BTreeMap::new(),
+                BTreeMap::new(),
+                "main",
+                original.span,
+            )
+            .unwrap();
+        let frame = compiler
+            .enter_instance(instance, "main", original.span)
+            .unwrap();
         let mut lower = lowerer(&mut compiler);
         lower.effect = Effect::Unitary;
         lower.contract_effect = Effect::Unitary;
@@ -974,6 +1025,7 @@ mod tests {
         assert!(lower.compiler.computed_normalizations.is_empty());
         assert!(lower.compiler.checked.is_empty());
         assert_eq!(lower.compiler.checking, Some(owner));
+        assert_eq!(lower.compiler.current_instance_owner(), Some(owner));
 
         // A source-bound actual body is not enough to bypass shared transport
         // retention/equation work. Refusal precedes a fresh native leaf request
@@ -997,6 +1049,11 @@ mod tests {
         assert!(lower.compiler.computed_normalizations.is_empty());
         assert!(lower.compiler.checked.is_empty());
         assert_eq!(lower.compiler.checking, Some(owner));
+        assert_eq!(lower.compiler.current_instance_owner(), Some(owner));
+        lower.compiler.leave_instance(frame);
+        assert_eq!(lower.compiler.checking, None);
+        assert_eq!(lower.compiler.current_instance_owner(), None);
+        assert!(lower.compiler.concrete_context.current.is_none());
     }
 
     #[cfg_attr(
@@ -1159,7 +1216,21 @@ mod tests {
                 .unwrap();
             let checked_predicate = compiler.compile_basis(&predicate).unwrap();
             compiler.basis.insert(predicate, checked_predicate);
-            compiler.checking = Some(owner);
+            // Enter the same original instance context as ordinary body lowering.
+            // `checking` alone does not bind the ordinary Z call's static plan.
+            let instance = compiler
+                .prepare_instance(
+                    owner,
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    BTreeMap::new(),
+                    "main",
+                    original.span,
+                )
+                .unwrap();
+            let frame = compiler
+                .enter_instance(instance, "main", original.span)
+                .unwrap();
             compiler.work = MAX_WORK - allowance;
             let started = compiler.work;
             let mut lower = lowerer(&mut compiler);
@@ -1186,6 +1257,7 @@ mod tests {
             assert_eq!(lower.contract_effect, Effect::Observe);
             assert_eq!(lower.effect_source, origin);
             assert_eq!(lower.compiler.checking, Some(owner));
+            assert_eq!(lower.compiler.current_instance_owner(), Some(owner));
             assert_eq!(lower.depth, 0);
             assert_eq!(lower.access_updates.len(), 1);
             assert_eq!(lower.tuple_binding_origins.len(), 1);
@@ -1208,6 +1280,10 @@ mod tests {
                 .max()
                 .unwrap();
             assert!(lower.token().0 > maximum);
+            lower.compiler.leave_instance(frame);
+            assert_eq!(lower.compiler.checking, None);
+            assert_eq!(lower.compiler.current_instance_owner(), None);
+            assert!(lower.compiler.concrete_context.current.is_none());
         }
         assert!(
             allocated_limit,

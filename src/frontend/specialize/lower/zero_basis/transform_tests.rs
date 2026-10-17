@@ -307,7 +307,17 @@ fn preparation_operation_retains_its_explicit_hierarchy_refusal() {
 )]
 #[test]
 fn native_valid_identity_cannot_replace_the_original_zero_repeat_child_root() {
-    let valid = lower("pub unitary fn entry(q:Q<Bit>)->Q<Bit>{power(scalar,0)(q)}");
+    // The separate ordinary call keeps the original scalar root reachable after
+    // the closed repeat child changes. Seven eighth-turns cancel its full phase.
+    let valid = lower(
+        "pub unitary fn entry(q:Q<Bit>)->Q<Bit>{
+            let q=scalar(q);let q=power(scalar,0)(q);
+            let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+            let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+            let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+            global_phase_eighth(q)
+        }",
+    );
     let repeat = node_with_tag(&valid, "repeat");
     let event = operation_event(&valid);
     let mut wrong = valid.clone();

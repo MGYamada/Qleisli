@@ -176,7 +176,7 @@ fn original_composites_keep_distinct_zero_width_arrow_endpoints() {
         ("(Unit,Bit)", "(Bits<0>,Bit)", "tensor_op(to_bits,scalar)"),
     ] {
         let source = format!(
-            "{conversions}fn invoke[const U:Op<{input} -> {output}>](q:Q<{input}>)->Q<{output}> requires Applicable(U){{U(q)}}pub unitary fn entry(q:Q<{input}>)->Q<{output}>{{invoke[{operation}](q)}}"
+            "{conversions}fn invoke[const U:Op<{input} -> {output}>](q:Q<{input}>)->Q<{output}> requires Applicable(U),Adjointable(U){{U(q)}}pub unitary fn entry(q:Q<{input}>)->Q<{output}>{{invoke[{operation}](q)}}"
         );
         let proposal = lower(&source);
         validate(&proposal).unwrap();

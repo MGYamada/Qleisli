@@ -830,9 +830,23 @@ impl Graph {
 mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
-    const SOURCE: &str = include_str!(
-        "../../../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
-    );
+    const SOURCE_PATH: &str =
+        "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli";
+
+    fn current_source_text(path: &str) -> String {
+        let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+        let output = std::process::Command::new("python3")
+            .args(["-B", "-c", script, path])
+            .current_dir(env!("CARGO_MANIFEST_DIR"))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    }
 
     fn source(text: &str, width: u32) -> ElaboratedProgram {
         // Header-only translation of retained historical bounded inputs.
@@ -893,7 +907,7 @@ mod tests {
     )]
     #[test]
     fn direct_finite_gates_bind_actual_ports_and_reuse_identical_headers() {
-        let source = source(SOURCE, 1);
+        let source = source(&current_source_text(SOURCE_PATH), 1);
         let (mut lower, _, _) = factor(&source);
         let input = Port {
             owner: 900,
@@ -936,8 +950,9 @@ mod tests {
     }
     #[test]
     fn actual_source_fourier_factoring_preserves_complete_phase_trace() {
+        let original = current_source_text(SOURCE_PATH);
         for width in 1..=3 {
-            let source = source(SOURCE, width);
+            let source = source(&original, width);
             let (mut lower, original, candidate) = factor(&source);
             assert_ne!(original, candidate);
             assert!(staircase(
@@ -984,7 +999,7 @@ mod tests {
             );
             assert_eq!(lower.graph.bytes, (16 << 20) - 1);
         }
-        let equivalent = SOURCE.replace(
+        let equivalent = original.replace(
             "controlled_phase[1,n-stage-k]",
             "controlled_phase[2,n-stage-k+1]",
         );
@@ -997,11 +1012,11 @@ mod tests {
     }
     #[test]
     fn actual_source_fourier_factoring_commuting_variant_preserves_complete_trace() {
-        let delayed = include_str!(
-            "../../../tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+        let delayed = current_source_text(
+            "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
         );
         for width in 1..=3 {
-            let source = source(delayed, width);
+            let source = source(&delayed, width);
             let (lower, original, candidate) = factor(&source);
             assert_ne!(original, candidate);
             assert!(staircase(
@@ -1031,13 +1046,14 @@ mod tests {
     }
     #[test]
     fn actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes() {
+        let original = current_source_text(SOURCE_PATH);
         for changed in [
-            SOURCE.replace(
+            original.replace(
                 "controlled_phase[1,n-stage-k]",
                 "controlled_phase[3,n-stage-k]",
             ),
-            SOURCE.replace("if static k+k+2 <= n", "if static n+1 <= n"),
-            SOURCE.replace(
+            original.replace("if static k+k+2 <= n", "if static n+1 <= n"),
+            original.replace(
                 "let target = h(target);",
                 "let target = h(target); let target = h(target);",
             ),

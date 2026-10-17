@@ -2711,8 +2711,8 @@ mod tests {
             pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(helper[leaf](q),r)}",
             "main::caller",
         );
-        // Original two-owner interface and X action authored independently of
-        // the emitter. The second owner remains suspended during both calls.
+        // Original two-owner interface and ordinary H Z H action authored
+        // independently of the emitter. The second owner remains suspended.
         let raw = RawProgram {
             quantum_inputs: vec![
                 QuantumPort {
@@ -2727,33 +2727,76 @@ mod tests {
                 },
             ],
             classical_inputs: vec![],
-            operations: vec![RawOp::Gate {
-                gate: SingleGate::X,
-                input: TokenId(0),
-                output: TokenId(2),
-            }],
-            quantum_outputs: vec![TokenId(2), TokenId(1)],
+            operations: readable_x_fixture([0, 2, 3, 4, 5, 6, 7]),
+            quantum_outputs: vec![TokenId(7), TokenId(1)],
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
         checked(&source, raw.clone());
         let mut wrong = raw.clone();
-        wrong.operations[0] = RawOp::Gate {
+        wrong.operations = vec![RawOp::Gate {
             gate: SingleGate::H,
             input: TokenId(0),
-            output: TokenId(2),
-        };
+            output: TokenId(7),
+        }];
         let accepted = kernel().accept_raw(wrong).unwrap();
         assert!(validate(&source, accepted.raw()).is_err());
         let mut wrong = raw;
-        wrong.operations[0] = RawOp::Gate {
-            gate: SingleGate::X,
-            input: TokenId(1),
-            output: TokenId(2),
-        };
-        wrong.quantum_outputs = vec![TokenId(0), TokenId(2)];
+        // Keep the complete X action, but apply it to the suspended owner.
+        wrong.operations = readable_x_fixture([1, 2, 3, 4, 5, 6, 7]);
+        wrong.quantum_outputs = vec![TokenId(0), TokenId(7)];
         let accepted = kernel().accept_raw(wrong).unwrap();
         assert!(validate(&source, accepted.raw()).is_err());
+    }
+
+    /// Independent exact H Z H action, with Z written as four eighth turns.
+    /// The caller supplies every token edge; no emitter supplies this oracle.
+    fn readable_x_fixture(tokens: [u32; 7]) -> Vec<RawOp> {
+        [
+            SingleGate::H,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::H,
+        ]
+        .into_iter()
+        .zip(tokens.windows(2))
+        .map(|(gate, edge)| RawOp::Gate {
+            gate,
+            input: TokenId(edge[0]),
+            output: TokenId(edge[1]),
+        })
+        .collect()
+    }
+
+    /// Independent controlled H Z H in ordered (control,target) coordinates.
+    /// Four exact eighth phases preserve the full coefficient, including control.
+    fn readable_cnot_fixture() -> Vec<crate::ir::CircuitStep> {
+        let control = crate::ir::BitControl {
+            index: 0,
+            when_one: true,
+        };
+        let hadamard = crate::ir::CircuitStep {
+            controls: vec![control],
+            action: CircuitAction::Hadamard { target: 1 },
+        };
+        let phase = crate::ir::CircuitStep {
+            controls: vec![control],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![0, 1],
+                phases: vec![0, 1],
+            },
+        };
+        vec![
+            hadamard.clone(),
+            phase.clone(),
+            phase.clone(),
+            phase.clone(),
+            phase,
+            hadamard,
+        ]
     }
 
     fn closed_pair() -> (ElaboratedProgram, RawProgram) {
@@ -2770,40 +2813,57 @@ mod tests {
         let raw = RawProgram {
             quantum_inputs: vec![],
             classical_inputs: vec![],
-            operations: vec![
-                RawOp::Init0 {
-                    output: TokenId(0),
-                    wire: WireId(0),
-                },
-                RawOp::Init0 {
-                    output: TokenId(1),
-                    wire: WireId(1),
-                },
-                RawOp::Gate {
-                    gate: SingleGate::H,
-                    input: TokenId(0),
-                    output: TokenId(2),
-                },
-                RawOp::Cnot {
-                    control: TokenId(2),
-                    target: TokenId(1),
-                    control_out: TokenId(3),
-                    target_out: TokenId(4),
-                },
-                RawOp::Gate {
-                    gate: SingleGate::X,
-                    input: TokenId(3),
-                    output: TokenId(5),
-                },
-                RawOp::MeasureZ {
-                    input: TokenId(5),
-                    output: ClassicalId(0),
-                },
-                RawOp::MeasureZ {
-                    input: TokenId(4),
-                    output: ClassicalId(1),
-                },
-            ],
+            operations: {
+                let mut operations = vec![
+                    RawOp::PackUnit { output: TokenId(0) },
+                    RawOp::LiftBasis {
+                        input: TokenId(0),
+                        output: TokenId(1),
+                        output_wires: vec![WireId(0)],
+                        table: vec![0],
+                    },
+                    RawOp::PackUnit { output: TokenId(2) },
+                    RawOp::LiftBasis {
+                        input: TokenId(2),
+                        output: TokenId(3),
+                        output_wires: vec![WireId(1)],
+                        table: vec![0],
+                    },
+                    RawOp::Gate {
+                        gate: SingleGate::H,
+                        input: TokenId(1),
+                        output: TokenId(4),
+                    },
+                    RawOp::Join {
+                        left: TokenId(4),
+                        right: TokenId(3),
+                        output: TokenId(5),
+                    },
+                    RawOp::ApplyUnitary {
+                        input: TokenId(5),
+                        output: TokenId(6),
+                        steps: readable_cnot_fixture(),
+                    },
+                    RawOp::Split {
+                        input: TokenId(6),
+                        left: TokenId(7),
+                        right: TokenId(8),
+                        left_bits: 1,
+                    },
+                ];
+                operations.extend(readable_x_fixture([7, 9, 10, 11, 12, 13, 14]));
+                operations.extend([
+                    RawOp::MeasureZ {
+                        input: TokenId(14),
+                        output: ClassicalId(0),
+                    },
+                    RawOp::MeasureZ {
+                        input: TokenId(8),
+                        output: ClassicalId(1),
+                    },
+                ]);
+                operations
+            },
             quantum_outputs: vec![],
             classical_outputs: vec![ClassicalId(0), ClassicalId(1)],
             declared_effect: Effect::Observe,
@@ -3094,27 +3154,29 @@ mod tests {
         checked(&source, raw.clone());
         let mut mutations = Vec::new();
         let mut changed = raw.clone();
-        let RawOp::Gate { gate, .. } = &mut changed.operations[2] else {
+        let RawOp::Gate { gate, .. } = &mut changed.operations[4] else {
             unreachable!()
         };
         *gate = SingleGate::X;
         mutations.push(("H replaced by X", changed));
         let mut changed = raw.clone();
-        let RawOp::Cnot {
-            control, target, ..
-        } = &mut changed.operations[3]
+        let RawOp::Join {
+            left: control,
+            right: target,
+            ..
+        } = &mut changed.operations[5]
         else {
             unreachable!()
         };
         std::mem::swap(control, target);
         mutations.push(("CNOT operand direction swapped", changed));
         let mut changed = raw.clone();
-        changed.operations[5] = RawOp::MeasureZ {
-            input: TokenId(4),
+        changed.operations[14] = RawOp::MeasureZ {
+            input: TokenId(8),
             output: ClassicalId(0),
         };
-        changed.operations[6] = RawOp::MeasureZ {
-            input: TokenId(5),
+        changed.operations[15] = RawOp::MeasureZ {
+            input: TokenId(14),
             output: ClassicalId(1),
         };
         mutations.push(("two measurement owners exchanged", changed));
@@ -3174,14 +3236,24 @@ mod tests {
                     input: TokenId(10),
                     output: TokenId(11),
                 },
-                RawOp::Cnot {
-                    control: TokenId(11),
-                    target: TokenId(20),
-                    control_out: TokenId(12),
-                    target_out: TokenId(21),
+                RawOp::Join {
+                    left: TokenId(11),
+                    right: TokenId(20),
+                    output: TokenId(12),
+                },
+                RawOp::ApplyUnitary {
+                    input: TokenId(12),
+                    output: TokenId(13),
+                    steps: readable_cnot_fixture(),
+                },
+                RawOp::Split {
+                    input: TokenId(13),
+                    left: TokenId(14),
+                    right: TokenId(21),
+                    left_bits: 1,
                 },
             ],
-            quantum_outputs: vec![TokenId(12), TokenId(21)],
+            quantum_outputs: vec![TokenId(14), TokenId(21)],
             classical_outputs: vec![ClassicalId(41)],
             declared_effect: Effect::Unitary,
         };
@@ -3272,11 +3344,27 @@ mod tests {
         let accepted = kernel().accept(proposal.proposal()).unwrap();
         proposal.validate_source_steps(&accepted).unwrap();
         let mut fault = accepted.raw().clone();
-        let [RawOp::Gate { gate, .. }] = fault.operations.as_mut_slice() else {
-            panic!("one Z gate")
-        };
-        assert_eq!(*gate, SingleGate::Z);
-        *gate = SingleGate::X;
+        assert_eq!(
+            fault.operations.len(),
+            4,
+            "ordinary Z is four exact eighth turns"
+        );
+        assert!(fault.operations.iter().all(|op| matches!(
+            op,
+            RawOp::Gate {
+                gate: SingleGate::T,
+                ..
+            }
+        )));
+        let input = fault.quantum_inputs[0].token;
+        let output = fault.quantum_outputs[0];
+        // Substitute exact X for the entire Z action, preserving the same
+        // original input/output owner boundary and physical axis.
+        fault.operations = vec![RawOp::Gate {
+            gate: SingleGate::X,
+            input,
+            output,
+        }];
         let valid_fault = kernel().accept_raw(fault).unwrap();
         assert!(validate(&source, valid_fault.raw()).is_err());
         assert!(proposal.validate_source_steps(&valid_fault).is_err());

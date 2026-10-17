@@ -6,8 +6,13 @@ use crate::interchange::native;
 
 /// Use an original binder site, retaining the selected complete constructor tree.
 fn finite_override(operation: &str, exponent: u8) -> HierarchyProposal {
+    finite_override_entry(&format!("invoke[{operation}](q)"), exponent)
+}
+
+/// Keep the checked binder's entry context explicit for source-mutation fixtures.
+fn finite_override_entry(entry: &str, exponent: u8) -> HierarchyProposal {
     let source = elaborate(&format!(
-        "fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}pub unitary fn entry(q:Q<Bit>)->Q<Bit>{{invoke[{operation}](q)}}"
+        "fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}pub unitary fn entry(q:Q<Bit>)->Q<Bit>{{{entry}}}"
     ));
     let caller = source
         .definitions()
@@ -80,7 +85,16 @@ fn checked_finite_overrides_keep_actual_bytes_and_each_original_zero_interval() 
 )]
 #[test]
 fn a_zero_repeat_override_cannot_erase_its_original_dormant_source_child() {
-    let valid = finite_override("power(scalar,0)", 0);
+    // The distinct repeat-one call keeps the original closed child reachable.
+    // Seven direct eighth-turns cancel that call without sharing its wrapper.
+    let valid = finite_override_entry(
+        "let q=power(scalar,1)(q);let q=invoke[power(scalar,0)](q);
+         let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+         let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+         let q=global_phase_eighth(q);let q=global_phase_eighth(q);
+         global_phase_eighth(q)",
+        0,
+    );
     let trace = valid
         .native_sources
         .iter()
@@ -108,7 +122,8 @@ fn a_zero_repeat_override_cannot_erase_its_original_dormant_source_child() {
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
     );
-    // This remains a native identity equation; that cannot discharge its old child.
+    // Native validity of this complete graph cannot discharge the original
+    // child of this particular zero repeat, even though the full phase is kept.
     kernel.inspect(wrong.payload()).unwrap();
     assert!(validate(&wrong).is_err());
 }

@@ -2,9 +2,31 @@
 use super::*;
 
 fn checked(source: &str) -> Result<()> {
-    let module = crate::frontend::parser::parse_module(source).unwrap();
+    use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+    crate::frontend::project::check_bundled_manifest().unwrap();
+    let mut builder = Builder::default();
+    builder
+        .insert(
+            Source::local("main".into(), None, source.into(), ParsePolicy::Project).unwrap_or_else(
+                |failure| panic!("ordinary source {} at {:?}", failure.name, failure.span()),
+            ),
+        )
+        .unwrap();
+    for bundled in BundledRegistry::sources() {
+        builder
+            .insert(
+                Source::bundled(bundled, ParsePolicy::Project).unwrap_or_else(|failure| {
+                    panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                }),
+            )
+            .unwrap();
+    }
+    let sources = builder.finish();
     program_with(
-        BTreeMap::from([("main", &module)]),
+        sources
+            .iter()
+            .map(|(name, source)| (name, source.syntax()))
+            .collect(),
         SourceLimits::selected(),
         |_, _, _, _, _, _, _| Ok(()),
     )

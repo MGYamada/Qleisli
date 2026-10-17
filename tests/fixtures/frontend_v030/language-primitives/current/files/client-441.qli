@@ -1,0 +1,3 @@
+
+unitary fn keep[const n: Nat](b: Bits<(n+n)-n-n>) -> Bits<(n+n)-n-n> { b }
+unitary fn main() -> Unit { let _ = keep[2147483648](empty_bits()); () }
