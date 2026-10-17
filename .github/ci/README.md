@@ -353,6 +353,23 @@ python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qle
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
+The latest and MSRV Rust groups split all-target testing into two literal,
+sequential native-gated Cargo commands: ownership/source-IR correspondence,
+then every other integration target plus libraries, binaries, examples and
+benches. Before either command, `check_rust_test_partition.py` compares their
+positive selections with the same pinned Cargo's complete root-package
+metadata. Missing, extra, duplicate, overlapping or unreviewed target conventions
+fail; adding a target requires updating the explicit selection. The guard records
+the inventory and exact commands in the existing immutable command log. It does
+not execute tests or replace native validation. The separate ignored-dialect,
+catalog, documentation and doctest commands retain their existing coverage.
+
+Each command retains its 3,600-second timeout. Two commands provide more
+aggregate available test time than the former single invocation; this is not a
+speedup or preservation of an aggregate time cap. Job limits, required contexts,
+case counts, existing skips and native gates remain unchanged. No passed
+partition substitutes for another, and failure retains later commands as not run.
+
 The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
 infrastructure regressions before the changes job can schedule heavy builds.
 It runs for both documentation and full profiles. The same local invocation
