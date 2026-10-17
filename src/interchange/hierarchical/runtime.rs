@@ -421,11 +421,11 @@ mod checker_path_tests {
 
     use crate::interchange::{hierarchical::Kernel, json};
 
-    #[test]
     #[cfg_attr(
         not(qleisli_native_tests),
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
+    #[test]
     fn all_native_modes_retain_invoked_canonical_paths_after_alias_and_target_moves() {
         use std::os::unix::fs::symlink;
         static SERIAL: AtomicU64 = AtomicU64::new(0);

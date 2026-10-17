@@ -2375,9 +2375,27 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Cli/EngineeringInstrument.lean",
+      "sha256": "83cc395f41eff8060888b9c6d6554e477f87b3e2befdf847caec47ff590f688d",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Cli/EngineeringOpenQasm.lean",
+      "sha256": "99c6c92f2f2ec37b468b431ccf20166762f2edfdba88ec0b3d13f4da44a444c5",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Cli/EngineeringPure.lean",
       "sha256": "5efa14fc1f2970b092524eed830175f40cfc263250f558458794749c9e941b25",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Cli/EngineeringPureTensor.lean",
+      "sha256": "30d21f0186860c54705d40b25fd61064d8baf992e2ec5375fe7b74cb48fc76f3",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -2423,9 +2441,27 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/EngineeringInstrument.lean",
+      "sha256": "d4e9dfdced0837199cb79b76bdb3fb2f7d1b3f989930a2b73ed8559d7171e804",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/EngineeringOpenQasm.lean",
+      "sha256": "91349f0708e392cfba7ffbdf71ba9d4d177d41e077df6a5d004de6cda586aa00",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/EngineeringPure.lean",
       "sha256": "8014e7576703e4f7284dbb91a1fff22e1a5dc37b5a9b3f32fc36ef7200cd44fd",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/EngineeringPureTensor.lean",
+      "sha256": "fccb21d39092b636700910cf9122f4eb5fb846111cf32e7280c8980eedf619ba",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -2453,9 +2489,27 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
+      "sha256": "175f5cb215575f064e570dca327d13e294b2cccf9ec814b4b28d60c7876b190b",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
+      "sha256": "4189f0b706029e007d4cd18d60d11fac8b6c6d06f9550d2f3f5eded1e2c73195",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPure.lean",
       "sha256": "0b99111b78c4a249a1c1830505e7da15d3e60d1bde67097e3798dcd24b00e72d",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean",
+      "sha256": "9172a660168ceeba283c0c67b976754f67b42a7014a731c45c7f2e452cff9d2d",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -2477,9 +2531,27 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean",
+      "sha256": "1dfa9cc648062143483ec5ef06faeab79538f59f67ccf4b2ce843ffde834201c",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
+      "sha256": "fabdd0a28a00405357b29530cf20cfc052f4b4ee642602f412b85ea910a58cac",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/ExecutionView/EngineeringPure.lean",
       "sha256": "d5b1ede341ca7474a46778bab649c4e5679c594bb0cac193d97d23d1420027fa",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean",
+      "sha256": "7d5698d58a694f9e671790ce55e95be08cda783a87e2e7cff96402223dd43cb4",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -2951,9 +3023,21 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
+      "sha256": "25909334d60fbb8b1406ab7d2b418b969d2cb3c755c99302ed3b9154070d65b5",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPure.lean",
       "sha256": "f3bb2318fec4030010e55d9413b2b2fc7160056f07f264087ec93dd282f059f9",
       "group": "finite-leaf",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean",
+      "sha256": "3da7bc617832a9dc79fbc11d7571f118b5ac7ba57f206eef5ba40383380a27c1",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -3101,6 +3185,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
+      "sha256": "98230e97bc32d9238b9999d786ac0e23198b2387d287a1ba883b40d6445c1fc9",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
       "sha256": "73be05fc1ed4fd9ba5e4d6a2cd652e22af6221a2f7e31c7c4f09e025c228cf0f",
       "group": "raw-core",
@@ -3209,6 +3299,18 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
+      "sha256": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
+      "sha256": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Uniform.lean",
       "sha256": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
       "group": "hierarchy",
@@ -3227,6 +3329,12 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/CanonicalOpenQasmGates.lean",
+      "sha256": "33a87fb22ef4bd251bee119b2b37668997273a2453b8c04b486a7c2819fe3c2a",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/ControlAccess.lean",
       "sha256": "90938b8ef731ee1d1fa565a09fca6f0e0251e7aecff7b70ee226cc55cf2b64c3",
       "group": "finite-meaning",
@@ -3235,6 +3343,24 @@
     {
       "path": "lean/Qleisli/EngineeringInstrument.lean",
       "sha256": "5681679fffe26f2c8a66d8ded6015e5e5b8cc35149b301594b51e518793dda99",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentComposition.lean",
+      "sha256": "35d2996a883e34aaadd48c1a919d8c4e9e92b3f84a451455df10390a04f0dc1d",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentPureComparison.lean",
+      "sha256": "e5770e336691d3725108f008d3601876a80ab0361166921ea3459414506c9ab4",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/EngineeringInstrumentTensor.lean",
+      "sha256": "67d8c86d7254bddda19abffd7547a3b5ffbb9b4598f998b17a0392311037016e",
       "group": "scalar",
       "surface": null
     },
@@ -3269,6 +3395,24 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean",
+      "sha256": "0e64ae57c0c15ff0bc30ae5940c52f7caa43e852c18d07e49b6463adb517a22e",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringOpenQasm.lean",
+      "sha256": "fe8510160756d89b08f410862c37d13076cd4315da8309cad14f025fc814505d",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
+      "sha256": "47768fa115a35a2805d095d1afab42df60ae48756e7728f0a6955955ad94e1a0",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/NativeEngineeringPure.lean",
       "sha256": "e146d4630bb280af2a787ec4a9fbfb7cf53f267321c6a28ab1daf5d46e6b4d31",
       "group": "finite-leaf",
@@ -3278,6 +3422,18 @@
       "path": "lean/Qleisli/NativeEngineeringPureProtocol.lean",
       "sha256": "9b05516125eaa743fc4c8430c4f6951ef99de170578af582a6a175530b8169aa",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringPureTensor.lean",
+      "sha256": "311168ed2fecde40d59aa6eed3e0a547f54f4ada189d15258cacc787b88b3225",
+      "group": "engineering-pure-tensor",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeEngineeringPureTensorProtocol.lean",
+      "sha256": "963cb380187cef9edbd2c80404490bcfc7b7f357f7f230b243429b2d8cfea27b",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -3403,6 +3559,12 @@
     {
       "path": "lean/Qleisli/Semantics/EngineeringInstrument.lean",
       "sha256": "73c3b22a86ce269f18379e823ffe649d865cdb8a86795e73575e63999d1ddc2b",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/EngineeringInstrumentComposition.lean",
+      "sha256": "eba35fd7c85a4ff1aeb2623dcfdaeb1ee50f9da9f1d4c111f24fd4d07f996493",
       "group": "scalar",
       "surface": null
     },
@@ -3545,9 +3707,39 @@
       "surface": null
     },
     {
+      "path": "scripts/test_engineering_instrument_cli.py",
+      "sha256": "cabcdcd81cdee829e4b710033eed8714e29841ea21cafcd2d0c5487f1a530106",
+      "group": "engineering-instrument",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_openqasm_cli.py",
+      "sha256": "3d3d8d3d44170832aec76bacc219e94e21fa493e262475cd82fa7e146ec634c6",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_openqasm_native.py",
+      "sha256": "8c6ae7ad55c0725beec81e34c20f499ef5019688ffc29cb1a047adffcbcfd9b1",
+      "group": "engineering-openqasm",
+      "surface": null
+    },
+    {
       "path": "scripts/test_engineering_pure_cli.py",
       "sha256": "b1db5f62c76300de07d47ad0bc43ab0489ec46e8ac354e7500cba98cc0c90678",
       "group": "engineering-pure",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_pure_tensor_cli.py",
+      "sha256": "5dc013fc266f0d0d7932c6ce1d0dda7cdb39ff11b0a0d21efabc19853e008842",
+      "group": "engineering-pure-tensor",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_engineering_pure_tensor_native.py",
+      "sha256": "ef4991b2533cf781f119a96a3cfa2de62d062a5f15ce8cb47ce37766ea9834ea",
+      "group": "engineering-pure-tensor",
       "surface": null
     },
     {
@@ -3630,6 +3822,36 @@
       "path": "src/bin/qleisli/engineering.rs",
       "sha256": "2e191d64ba0bb5223a329c142f7472c43957b8f7ef34fe362b9ccedf3591f2f8",
       "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/engineering_instrument.rs",
+      "sha256": "920bc7c146a4b402910681faa7fec441d88596716ee4cab7dca85f2d081e9d56",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/engineering_openqasm.rs",
+      "sha256": "84edec1b63e3382d919804cbf171a5953afe90f84319275057f2c52f08f242a2",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/engineering_pure_tensor.rs",
+      "sha256": "9a4d9d1e2e760fb179fff073d0e0d8ef686d46c34860c613ea6899371d876fe6",
+      "group": "engineering-pure-tensor",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3962,7 +4184,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "12603c48b7b913133b20e5d20ca89f34f1ac03fda714f2049137ae02a152fba7",
+      "sha256": "c4b43833bc15efc07c38c9b77c6a540ec2727c448fada6b6db119d263216437a",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3982,7 +4204,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "301b70890172671e441c4dfdd90216c9a288a991f73bd2a5fbfd518f1ab8d578",
+      "sha256": "71d691a65c53370fc6bb1ac2367af647c8013bef0b6de37de8124e50d99c290f",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4011,6 +4233,75 @@
       "group": "source"
     },
     {
+      "path": "src/frontend/check/plans.rs",
+      "sha256": "9e8fa006e3acdc57ec03538089d2683b4046cd7833a04e96f34d5bc72e5dd36c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn classify_budgeted( &self, environment: &StaticEnvironment, bound: &BTreeSet<BinderKey>, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<PlanClosure>",
+          "pub fn named(&self, name: &ast::Ident, arguments: &[ast::StaticOp]) -> Result<ResolvedStatic>",
+          "pub fn natural(&self, source: &ast::Natural) -> Result<ResolvedNatural>",
+          "pub fn operation(&self, source: &ast::StaticOp) -> Result<ResolvedStatic>",
+          "pub fn output(&self) -> &Ty",
+          "pub fn reference(&self, name: &ast::Ident) -> Result<ResolvedReference>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/body_statics.rs",
+      "sha256": "e0b5895df909b630bcd8616b28e4ecd67b158565554bb9dc576e59b1f6a44be1",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/body_statics/tests.rs",
+      "sha256": "b34f9dcd828dbf45e971320f5ef3aad08f4d8cc6a565fd443e94780cc192d2d0",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/interface_naturals.rs",
+      "sha256": "c61c5a3629b8aaf259a74cdaf4bae3949b7ab0102f3b75791272311ac1d8a18b",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/runtime_owners.rs",
+      "sha256": "47557a98fbc9f5f3bb365666262cd659ffeb2729b14bcf38e3d4a2a4bdab1d0c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn runtime_owners( &self, expression: &ast::Expr, scope: &Scope, ) -> Result<Vec<RuntimeOwnerPlan>>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/plans/tests.rs",
+      "sha256": "73eba955bf35f12329377f6a34f3960e9421c7af8f71237a7ef5c2af4c1e5bfc",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/check/primitive.rs",
       "sha256": "6fc40d8e3f8490d77d5f4d53a9c1f5717f41e41d2191a1d1d77996f2c5e488eb",
       "surface": {
@@ -4022,7 +4313,7 @@
     },
     {
       "path": "src/frontend/check/rectangular_meaning_tests.rs",
-      "sha256": "931596f1167d3177f77cef03231054a95856c1a7331911aa4c4e2bda4ec9e5ea",
+      "sha256": "c25d8a1c7ac33220ead3c080af81cf1bfcec7b2d6d5dc05f70e69a81ab9b2685",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4041,8 +4332,41 @@
       }
     },
     {
+      "path": "src/frontend/closed.rs",
+      "sha256": "3111a8e14500fe53312b85f2328cb6f521bc03fae51020a534d17e65b5108d02",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn ceiling(&self) -> crate::ir::Effect",
+          "pub fn output(&self) -> &ClosedType"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/compile/basis.rs",
       "sha256": "7d1142622c6973d8f599d9e7ced72cb60dbeff96233f86917b23445388feb499",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/calls.rs",
+      "sha256": "908d419088d140395e34dff009a493eff24dc2fdba5a3da11c1ec8f5dfa9b6b7",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/calls/tests.rs",
+      "sha256": "3cc4c11e4a68cf627db1d96b7dcbf47c398273ccc5ab889c528cbf037f937d2b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4061,8 +4385,128 @@
       }
     },
     {
+      "path": "src/frontend/compile/dormant.rs",
+      "sha256": "75ba9785aad85769c0cb6161a179425d4091def019ab0d5e66a17b827a663517",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/dormant/controls.rs",
+      "sha256": "3eb6d8793a6c64fb74048c81c2ab171d0fc31fa0c1982d866694399a6f2159ab",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/dormant/tests.rs",
+      "sha256": "b1a82a02d450b273cf44997f1479f6318c5c64fcfd95a6fbe19380b644d5237c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances.rs",
+      "sha256": "dfd45c1f00beb96111d59107e0543bea53e5a44bfab28f3ed1f5a8c883dc39a2",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances/bindings.rs",
+      "sha256": "56dd9c257df2e3049201b167587be01138bd43f155dae65523a493a44cb91bfe",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances/closure.rs",
+      "sha256": "f721eb92406d1c786e47dfb1f1a4ee14ee364362df51e119f71e8d705aa4bc7e",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances/contracts.rs",
+      "sha256": "df20a07a04e185c6c1897a9e61ea661a02d9cd68c4a2fd856993335f1cb1785b",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances/provider.rs",
+      "sha256": "20bb8952819918bba67fc3f06de5950ff2bef1062b17e739170371ebfba93db3",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/instances/tests.rs",
+      "sha256": "e96707416eaa6ebbcef6b1a0b11f387d0fe7815e18434f06e9408dbf5f69aeb3",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/interfaces.rs",
+      "sha256": "d3da64080ac7bb1f1e448f2546c1b646dc9391112680297aa981586aa90f9a81",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/interfaces/tests.rs",
+      "sha256": "7f4fbf062022263256cae25609b4f6ee000d95c5b12564bcff841f4cf39e5f4a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/compile/lower/branch.rs",
       "sha256": "b74c30114b6b921a8f28b4b8bf72e42e02c4508b4450fc691b58ce8e2af2640d",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/call_state_tests.rs",
+      "sha256": "e5bf690355986550816f8a3ed24815dec900a8132f3e718143fea1853f8a1f57",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4083,6 +4527,26 @@
     {
       "path": "src/frontend/compile/lower/classical.rs",
       "sha256": "9f9dea946746dda8e29ce7e79dae16f7f5a3671ae411715510ddbbb5f13307fd",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/computed_phase.rs",
+      "sha256": "34bfc898e0c38517b367faf45bd4700e54c88a9af4dbcb5a2a14a47743cf2d60",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/dormant_access.rs",
+      "sha256": "b266a72fe45ab3f5749ebf922af459bf89d7142561dd01ff0f449817aa72a816",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4131,8 +4595,38 @@
       }
     },
     {
+      "path": "src/frontend/compile/lower/runtime_transforms.rs",
+      "sha256": "6eb0675ea108aa177e29f6dc18586ce0046bddb3613b91f9fe621e0cf8ceb8f7",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/compile/lower/scope.rs",
       "sha256": "e4d3e09afbca1a3918e65a8b827d62ac67c154e0ecfb81469e5d21bd9c6c490a",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/static_primitives.rs",
+      "sha256": "8ab650cd5743ee1c43dee68720ced94fa66a30b0d9f7f46ae05ed30df69a05b5",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/statics.rs",
+      "sha256": "67f2805828837c02ce468198d3862503c6f353c33f388e64489e8d85178efa73",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4200,8 +4694,18 @@
       }
     },
     {
-      "path": "src/frontend/compile/sources.rs",
-      "sha256": "281f71100b735d4e1ba8c3bcd1e5fdbbcf2fcd886729fc7a573249b3f16a180c",
+      "path": "src/frontend/compile/naturals.rs",
+      "sha256": "f2d80489d97766e42164f45f3029c109410caaf3bc08f94726d5a73329d3b092",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/naturals/tests.rs",
+      "sha256": "ce7a9d83a3d6ca46bdfa2e1eec0e38966e9002747d01ecada169a6f5e79e22ef",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4212,6 +4716,26 @@
     {
       "path": "src/frontend/compile/operations.rs",
       "sha256": "4254ad7c5e0ab6cc21d9529dc335ad81ffa42243a2c4d08fa36b49ccbb537598",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations/bindings.rs",
+      "sha256": "1da3ce30d010d21930e45ad8779fb68125144037c1213b20bd13874f29e2e1a0",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations/identity_tests.rs",
+      "sha256": "36bc69f93c009c225e2cd99046f5d4a0c163964490e839387b01d0b9048f942a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4253,6 +4777,26 @@
           "pub fn entry_request_checked(&self) -> Option<bool>",
           "pub fn native_decisions(&self) -> &NativeDecisionSummary"
         ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/sources.rs",
+      "sha256": "281f71100b735d4e1ba8c3bcd1e5fdbbcf2fcd886729fc7a573249b3f16a180c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/types.rs",
+      "sha256": "7bde4961d9dd01695722b667a9f4e3d24f8f2c097ee1a4d2865741c41be19864",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
         "capacity_constants": []
       }
     },
@@ -4508,8 +5052,26 @@
       }
     },
     {
+      "path": "src/frontend/primitive.rs",
+      "sha256": "4aaf83bfdca10d254e223747b6cb6d0d69753a78361dfa7a38c732fbc318713d",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "PrimitiveId"
+        ],
+        "functions": [
+          "pub fn effect(self) -> Effect",
+          "pub fn lookup_unbound(name: &str) -> Option<Self>",
+          "pub fn natural_arity(self) -> usize",
+          "pub fn runtime_arity(self) -> usize",
+          "pub fn spelling(self) -> &'static str"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/project.rs",
-      "sha256": "94668dc6ced877593505cdc53caae443ee91142fb18143446d3c71142eea2387",
+      "sha256": "610f1f9a808012be52e2c59db9c688127e3630e3432cffff988477118527f43d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4602,7 +5164,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "bd9ee93ac259177ec291ea795f0f36e28e108f5802872363daef138ca41f3cca",
+      "sha256": "425eb6b20f43578a7a302c254eb983bf12e51c4937edd96b16b29ec6e461eca1",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4622,7 +5184,6 @@
           "pub fn scope(&self, module: ModuleId) -> &Scope",
           "pub fn set_scope(&mut self, module: ModuleId, scope: Scope)",
           "pub fn set_scope_budgeted<E>( &mut self, module: ModuleId, scope: Scope, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
-          "pub fn target_path(&self, target: Target) -> String",
           "pub fn try_declaration(&self, id: DefId) -> Option<&Declaration>",
           "pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool"
         ],
@@ -4911,7 +5472,7 @@
     },
     {
       "path": "src/frontend/specialize/fourier.rs",
-      "sha256": "0fcf512118625805eb446b1809cc46b024223f0557adb968cab7962b53576c16",
+      "sha256": "0458a07a6609a8fb28f1cae81213462b39ad2b6182b8d32a687ef61721947745",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4921,7 +5482,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "0d6502b55ad72cc26d9e622d1cff6cdbb44655856647c96b5fb414402ad94416",
+      "sha256": "a707323859b24b11b2bd0d1f6ffcb41e4bab5f080402e502819020df1992094d",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4936,6 +5497,7 @@
           "pub fn pure_graph(&self) -> &[u8]",
           "pub fn source(&self) -> &ElaboratedProgram",
           "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn source_trace_graph(&self) -> &[u8]",
           "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
           "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
         ],
@@ -4943,8 +5505,18 @@
       }
     },
     {
+      "path": "src/frontend/specialize/lower/fourier_transport.rs",
+      "sha256": "0a71609d515040fa608b14914a001ea9ee5f80f934b72f5e370eade1cbeceb2d",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "ab24bbb3dfe931fa326444d6fdee888e1230c5a1e34662cad18edbb775e1cdce",
+      "sha256": "13fd19d53b0e6bef0cb5bc8b4513320205a8761af0b683eadea05f67b8908c2e",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4978,7 +5550,97 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
-      "sha256": "3864d9f2b7517ff84e5a7441dd010b51a8efa87baca2887b7a85787db5640b13",
+      "sha256": "7b31d37d5f4c668e8359e41905cd5af4fee3cb88696751d1fccc5fb0fa1fd70b",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis.rs",
+      "sha256": "cf449644db72a04b192e59b3c65515595af433ae509daac0b05cc2da60f61dce",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/native_source.rs",
+      "sha256": "e9455f6689274f6bd7212650e1f54ac1dd5cace835a929be0e9f0e4eccaf6ca6",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations.rs",
+      "sha256": "3fcc3db20067c6cb287b9537de0a060c6a07cd47e661fbc1e695d0312dbccb5d",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations/constructed.rs",
+      "sha256": "69630bd801adff2956d203f834336b5c46fe759e738a0c5fc807cfe32fdee512",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/operations/native_source.rs",
+      "sha256": "560df993f90e4e32a95063dded3eee1fed076346bf13eea80dd231d271f9f7c6",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+      "sha256": "d89962d570fdb865da9deeb586ac76e901fd9e02b8e89e9e3ca98c9ee8f3466e",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
+      "sha256": "0bff1cb90e0b75e66c36d33286ad406eab89f10ed739a9de92407f609c567704",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
+      "sha256": "f70dd2cc0b30e052a350bc0f8be21c132668330149e3f64e3047465a2c4da6a5",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
+      "sha256": "7f5f6306de9e556e041205d4869606ba0fa6c69946b4a456da7eb0204a1006ab",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5024,7 +5686,7 @@
     },
     {
       "path": "src/frontend/specialize/qpe.rs",
-      "sha256": "5bfb6d7679697ca3021078d18685efc32f856094025535ef4bb06ce010b8d22a",
+      "sha256": "dd84e51e265e3109d622b693b422a06be2d9c78d0c79c635e1c2d6f5aec8ee21",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -5040,7 +5702,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "76638556472663173bd5759d3410b6c853198274a4720930f197105079e0dba4",
+      "sha256": "b046223482ef2c9dca66104814cc08ff937053cad4605e5459c03c2ce0fd8fd9",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5090,7 +5752,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "a0cb6dbb3a46d2de3b194a3ff733a2b7d453ff36d76589cf1d98546356e07180",
+      "sha256": "2d2fac3d85ce7ff0a11b18e27964f20f12192692dd5e297b1564a91adc08e2c0",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5110,7 +5772,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "b7f2fddfebcf520b90a55b90e941f46829b77c470fc8e629c37050b63b91806d",
+      "sha256": "14387d114828274741970c546f6e90ff9bf4f297d7808133b97b99055b84c2ed",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5137,6 +5799,16 @@
     {
       "path": "src/frontend/specialize/raw/preservation/access_meaning.rs",
       "sha256": "becb7389d91f64dd1cae1eba7ef8e73fe0201d7f54045b9e1006d2632d1acc4e",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/source_witness.rs",
+      "sha256": "e5be1582de4a2fefdac46f2984c1bfdd6e35b30d6f531e8e503989780c83b3c2",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5240,6 +5912,131 @@
       }
     },
     {
+      "path": "src/interchange/engineering_instrument.rs",
+      "sha256": "487a51f8cd21624fd828ffbbc8ec6066866ea77d56589247417630dfa0ac0a19",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [
+          "EngineeringInstrumentReport",
+          "EngineeringInstrumentRequest"
+        ],
+        "functions": [
+          "pub fn actual_artifact(&self) -> &[u8]",
+          "pub fn actual_signature(&self) -> &InstrumentSignature",
+          "pub fn check( actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringInstrumentReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn epsilon(&self) -> DyadicBound",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn expected_signature(&self) -> &InstrumentSignature",
+          "pub fn ideal_artifact(&self) -> &[u8]",
+          "pub fn identity(&self) -> &FunctionIdentity",
+          "pub fn instrument_bound_verified(&self) -> bool",
+          "pub fn majorants(&self) -> &[DyadicBound]",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new( actual_signature: InstrumentSignature, expected_signature: InstrumentSignature, identity: FunctionIdentity, epsilon: DyadicBound, majorants: Vec<DyadicBound>, ) -> Result<Self>",
+          "pub fn request(&self) -> &EngineeringInstrumentRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_instrument/runtime.rs",
+      "sha256": "a74003e5b63c5530253f2a5abc7257af470ecf4838c4161c5db71ec822874af6",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_instrument/tests.rs",
+      "sha256": "11ce671f0c710c974c108d9ea51e43a4a5a7b941191741fb6199c25a0e69b9f6",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm.rs",
+      "sha256": "ef615954157901d4551775787cef88bc24684bb16baceb6d615258cc1e285896",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [
+          "EngineeringOpenQasmReport",
+          "EngineeringOpenQasmRequest"
+        ],
+        "functions": [
+          "pub fn check( target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, target: &[u8], request_bytes: &[u8], ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn contract(&self) -> &EngineeringInstrumentRequest",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn gate_word(&self) -> impl ExactSizeIterator<Item = &'static str> + '_",
+          "pub fn ideal_artifact(&self) -> &[u8]",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new(contract: EngineeringInstrumentRequest) -> Result<Self>",
+          "pub fn request(&self) -> &EngineeringOpenQasmRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn target_bytes(&self) -> &[u8]",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/runtime.rs",
+      "sha256": "61ce133aea43069a4eef15cef8dde171adc55c96cf7c1f693b002931e47ff619",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/target.rs",
+      "sha256": "3d230e6b4847bc578de4b4003ee808f8b35a41dc5e804fe1d4dd5216fff208fa",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "pub(super) const MAX_TARGET_BYTES: usize = 1024;",
+          "pub(super) const MAX_TARGET_GATES: usize = 8;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_openqasm/tests.rs",
+      "sha256": "4df3f9be4fdc399c1a8c055f3643eaa1bea689e960cb7f424a2ff4af3131016d",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/engineering_pure.rs",
       "sha256": "f43fd9ff2fecba6bf3104f627c5829ff92c731509df37cd6479d4c716a5585f9",
       "group": "engineering-pure",
@@ -5294,6 +6091,60 @@
       "path": "src/interchange/engineering_pure/tests.rs",
       "sha256": "0517d8be4d98d01ced912fae4680b22f73e4986ca427f4c91f201e5c14334d98",
       "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_pure_tensor.rs",
+      "sha256": "9fe4e0b756a4fb9c76e6d283e16495f723a1d68893faec19c608249f8d201c3c",
+      "group": "engineering-pure-tensor",
+      "surface": {
+        "declarations": [
+          "EngineeringPureTensorReport",
+          "EngineeringPureTensorRequest"
+        ],
+        "functions": [
+          "pub fn artifacts(&self) -> [&[u8]; 6]",
+          "pub fn check( programs: [&AcceptedProgram; 6], request: &EngineeringPureTensorRequest, ) -> Result<EngineeringPureTensorReport>",
+          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringPureTensorReport>",
+          "pub fn check_with_kernel( kernel: &Kernel, programs: [&AcceptedProgram; 6], request: &EngineeringPureTensorRequest, ) -> Result<EngineeringPureTensorReport>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker_profile(&self) -> &'static str",
+          "pub fn claim_kind(&self) -> &'static str",
+          "pub fn composition(&self) -> &'static str",
+          "pub fn error_category(&self) -> &'static str",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn left(&self) -> &EngineeringPureRequest",
+          "pub fn metric(&self) -> &'static str",
+          "pub fn new( parent: EngineeringPureRequest, left: EngineeringPureRequest, right: EngineeringPureRequest, ) -> Result<Self>",
+          "pub fn parent(&self) -> &EngineeringPureRequest",
+          "pub fn request(&self) -> &EngineeringPureTensorRequest",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn right(&self) -> &EngineeringPureRequest",
+          "pub fn target_profile(&self) -> &'static str"
+        ],
+        "capacity_constants": [
+          "const MAX_FILE_BYTES: usize = 16 << 20;"
+        ]
+      }
+    },
+    {
+      "path": "src/interchange/engineering_pure_tensor/runtime.rs",
+      "sha256": "0148190f0d7432be33d4307b9c9fdde687c7aa1491e16c9af272f4776bb17342",
+      "group": "engineering-pure-tensor",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/engineering_pure_tensor/tests.rs",
+      "sha256": "98c871a456cb8f2f6f8260c7e628f23db9fa9c4f61b43f3946ee5d5aa11a40fb",
+      "group": "engineering-pure-tensor",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5364,9 +6215,39 @@
       }
     },
     {
+      "path": "src/interchange/execution_view/finite/engineering_instrument.rs",
+      "sha256": "d73a7e2bba9715d265f151cd7ca98654d64e93d451734c3739e3dd9108604417",
+      "group": "engineering-instrument",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/engineering_openqasm.rs",
+      "sha256": "0ac5537d6145c6fbc74ad20e3070a303febfcf02eb7000a569f04a70d77ec80a",
+      "group": "engineering-openqasm",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/execution_view/finite/engineering_pure.rs",
       "sha256": "d955f4bd3340d6d9b56f20201da0639269895fde7f85e567ef98ce8d4225ed9b",
       "group": "engineering-pure",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/engineering_pure_tensor.rs",
+      "sha256": "ffc7f49a7ccb7956dd6ac4b2911c8f738eeac502b67efce210228c7d8ec7d1a4",
+      "group": "engineering-pure-tensor",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -5434,7 +6315,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "de1fbd4b3918496a01dcb0a8b3b2d02c76dc9edda661f398354df2bfcdcffa39",
+      "sha256": "d1f6d4b0daeec338684c18ad0798ab1a69caa89ac981c4ef5fa14cd111c7e9b5",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -5576,7 +6457,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "559a601826a0c4fb20a12ea17d8d6484ae9f45708cb562863bbee15f3b4d9415",
+      "sha256": "b9064272fe4e2fe0895b91fd5e1e3dfd8daec2218faa3e8f7493ef1640699b19",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -5815,7 +6696,7 @@
     },
     {
       "path": "src/interop/export.rs",
-      "sha256": "ec02c2314d60d87f2af80f0a22f6dab597017af994802438d2ad61b8196f99db",
+      "sha256": "45808fbb741dcf541ddb4263c0baebeedca66ed5a113bf405bb3994ee48bf83f",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -5831,6 +6712,18 @@
         "declarations": [],
         "functions": [],
         "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interop/export/normalization.rs",
+      "sha256": "56f16f3c3759087e675682d52962d4d4852746b2278b31947db62cb1653e0d82",
+      "group": "foreign",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_LOCAL_EQUATIONS: usize = 7;"
+        ]
       }
     },
     {
@@ -5870,7 +6763,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "75bb596c356d3ba732ea2709b6c15554098a7c9fdb9e4f808cbfa216d271934e",
+      "sha256": "51533a03682f41ae765bae960cd5adaa88c5e53a2955e42699b3b06d13ea552a",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -6048,158 +6941,22 @@
       "surface": null
     },
     {
-      "path": "stdlib/src/transform.qli",
-      "sha256": "bb7cc068e01d6f3ba26421b26b51058e4f4d4f6f99c52d1e85e23effdf377ad5",
+      "path": "stdlib/src/state.qli",
+      "sha256": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27",
       "group": "source",
       "surface": null
     },
     {
-      "path": "tests/engineering_pure_cli.rs",
-      "sha256": "6663994570ebc384bccc8bc8fe68971ecc1906ae2504725b1573a74f725a0af7",
-      "group": "engineering-pure",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "lean-kernel/Cli/EngineeringInstrument.lean",
-      "sha256": "83cc395f41eff8060888b9c6d6554e477f87b3e2befdf847caec47ff590f688d",
-      "group": "engineering-instrument",
+      "path": "stdlib/src/structure.qli",
+      "sha256": "bb4e6be285aacde6ac9cf7e1350d86daf5782fde0788f938724349cd3ff8beed",
+      "group": "source",
       "surface": null
     },
     {
-      "path": "lean-kernel/Protocol/EngineeringInstrument.lean",
-      "sha256": "d4e9dfdced0837199cb79b76bdb3fb2f7d1b3f989930a2b73ed8559d7171e804",
-      "group": "engineering-instrument",
+      "path": "stdlib/src/transform.qli",
+      "sha256": "bb7cc068e01d6f3ba26421b26b51058e4f4d4f6f99c52d1e85e23effdf377ad5",
+      "group": "source",
       "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringInstrument.lean",
-      "sha256": "175f5cb215575f064e570dca327d13e294b2cccf9ec814b4b28d60c7876b190b",
-      "group": "engineering-instrument",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean",
-      "sha256": "1dfa9cc648062143483ec5ef06faeab79538f59f67ccf4b2ce843ffde834201c",
-      "group": "engineering-instrument",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/EngineeringInstrumentComposition.lean",
-      "sha256": "35d2996a883e34aaadd48c1a919d8c4e9e92b3f84a451455df10390a04f0dc1d",
-      "group": "scalar",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/EngineeringInstrumentPureComparison.lean",
-      "sha256": "e5770e336691d3725108f008d3601876a80ab0361166921ea3459414506c9ab4",
-      "group": "scalar",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/EngineeringInstrumentTensor.lean",
-      "sha256": "67d8c86d7254bddda19abffd7547a3b5ffbb9b4598f998b17a0392311037016e",
-      "group": "scalar",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeEngineeringInstrumentProtocol.lean",
-      "sha256": "0e64ae57c0c15ff0bc30ae5940c52f7caa43e852c18d07e49b6463adb517a22e",
-      "group": "engineering-instrument",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/Semantics/EngineeringInstrumentComposition.lean",
-      "sha256": "eba35fd7c85a4ff1aeb2623dcfdaeb1ee50f9da9f1d4c111f24fd4d07f996493",
-      "group": "scalar",
-      "surface": null
-    },
-    {
-      "path": "scripts/test_engineering_instrument_cli.py",
-      "sha256": "cabcdcd81cdee829e4b710033eed8714e29841ea21cafcd2d0c5487f1a530106",
-      "group": "engineering-instrument",
-      "surface": null
-    },
-    {
-      "path": "src/bin/qleisli/engineering_instrument.rs",
-      "sha256": "920bc7c146a4b402910681faa7fec441d88596716ee4cab7dca85f2d081e9d56",
-      "group": "engineering-instrument",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_instrument.rs",
-      "sha256": "487a51f8cd21624fd828ffbbc8ec6066866ea77d56589247417630dfa0ac0a19",
-      "group": "engineering-instrument",
-      "surface": {
-        "declarations": [
-          "EngineeringInstrumentReport",
-          "EngineeringInstrumentRequest"
-        ],
-        "functions": [
-          "pub fn actual_artifact(&self) -> &[u8]",
-          "pub fn actual_signature(&self) -> &InstrumentSignature",
-          "pub fn check( actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
-          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringInstrumentReport>",
-          "pub fn check_with_kernel( kernel: &Kernel, actual: &AcceptedProgram, ideal: &AcceptedProgram, request: &EngineeringInstrumentRequest, ) -> Result<EngineeringInstrumentReport>",
-          "pub fn checker(&self) -> &Path",
-          "pub fn checker_profile(&self) -> &'static str",
-          "pub fn claim_kind(&self) -> &'static str",
-          "pub fn composition(&self) -> &'static str",
-          "pub fn epsilon(&self) -> DyadicBound",
-          "pub fn error_category(&self) -> &'static str",
-          "pub fn exact_work(&self) -> usize",
-          "pub fn expected_signature(&self) -> &InstrumentSignature",
-          "pub fn ideal_artifact(&self) -> &[u8]",
-          "pub fn identity(&self) -> &FunctionIdentity",
-          "pub fn instrument_bound_verified(&self) -> bool",
-          "pub fn majorants(&self) -> &[DyadicBound]",
-          "pub fn metric(&self) -> &'static str",
-          "pub fn new( actual_signature: InstrumentSignature, expected_signature: InstrumentSignature, identity: FunctionIdentity, epsilon: DyadicBound, majorants: Vec<DyadicBound>, ) -> Result<Self>",
-          "pub fn request(&self) -> &EngineeringInstrumentRequest",
-          "pub fn request_bytes(&self) -> &[u8]",
-          "pub fn target_profile(&self) -> &'static str"
-        ],
-        "capacity_constants": [
-          "const MAX_FILE_BYTES: usize = 16 << 20;"
-        ]
-      }
-    },
-    {
-      "path": "src/interchange/engineering_instrument/runtime.rs",
-      "sha256": "a74003e5b63c5530253f2a5abc7257af470ecf4838c4161c5db71ec822874af6",
-      "group": "engineering-instrument",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_instrument/tests.rs",
-      "sha256": "11ce671f0c710c974c108d9ea51e43a4a5a7b941191741fb6199c25a0e69b9f6",
-      "group": "engineering-instrument",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/execution_view/finite/engineering_instrument.rs",
-      "sha256": "d73a7e2bba9715d265f151cd7ca98654d64e93d451734c3739e3dd9108604417",
-      "group": "engineering-instrument",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
     },
     {
       "path": "tests/engineering_instrument_cli.rs",
@@ -6212,127 +6969,9 @@
       }
     },
     {
-      "path": "lean-kernel/Cli/EngineeringPureTensor.lean",
-      "sha256": "30d21f0186860c54705d40b25fd61064d8baf992e2ec5375fe7b74cb48fc76f3",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/EngineeringPureTensor.lean",
-      "sha256": "fccb21d39092b636700910cf9122f4eb5fb846111cf32e7280c8980eedf619ba",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean",
-      "sha256": "9172a660168ceeba283c0c67b976754f67b42a7014a731c45c7f2e452cff9d2d",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean",
-      "sha256": "7d5698d58a694f9e671790ce55e95be08cda783a87e2e7cff96402223dd43cb4",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringPureTensor.lean",
-      "sha256": "3da7bc617832a9dc79fbc11d7571f118b5ac7ba57f206eef5ba40383380a27c1",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeEngineeringPureTensor.lean",
-      "sha256": "311168ed2fecde40d59aa6eed3e0a547f54f4ada189d15258cacc787b88b3225",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeEngineeringPureTensorProtocol.lean",
-      "sha256": "963cb380187cef9edbd2c80404490bcfc7b7f357f7f230b243429b2d8cfea27b",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "scripts/test_engineering_pure_tensor_cli.py",
-      "sha256": "5dc013fc266f0d0d7932c6ce1d0dda7cdb39ff11b0a0d21efabc19853e008842",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "scripts/test_engineering_pure_tensor_native.py",
-      "sha256": "ef4991b2533cf781f119a96a3cfa2de62d062a5f15ce8cb47ce37766ea9834ea",
-      "group": "engineering-pure-tensor",
-      "surface": null
-    },
-    {
-      "path": "src/bin/qleisli/engineering_pure_tensor.rs",
-      "sha256": "9a4d9d1e2e760fb179fff073d0e0d8ef686d46c34860c613ea6899371d876fe6",
-      "group": "engineering-pure-tensor",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_pure_tensor.rs",
-      "sha256": "9fe4e0b756a4fb9c76e6d283e16495f723a1d68893faec19c608249f8d201c3c",
-      "group": "engineering-pure-tensor",
-      "surface": {
-        "declarations": [
-          "EngineeringPureTensorReport",
-          "EngineeringPureTensorRequest"
-        ],
-        "functions": [
-          "pub fn artifacts(&self) -> [&[u8]; 6]",
-          "pub fn check( programs: [&AcceptedProgram; 6], request: &EngineeringPureTensorRequest, ) -> Result<EngineeringPureTensorReport>",
-          "pub fn check_serialized_with_kernel( kernel: &Kernel, actual_artifact: &[u8], request_bytes: &[u8], ) -> Result<EngineeringPureTensorReport>",
-          "pub fn check_with_kernel( kernel: &Kernel, programs: [&AcceptedProgram; 6], request: &EngineeringPureTensorRequest, ) -> Result<EngineeringPureTensorReport>",
-          "pub fn checker(&self) -> &Path",
-          "pub fn checker_profile(&self) -> &'static str",
-          "pub fn claim_kind(&self) -> &'static str",
-          "pub fn composition(&self) -> &'static str",
-          "pub fn error_category(&self) -> &'static str",
-          "pub fn exact_work(&self) -> usize",
-          "pub fn left(&self) -> &EngineeringPureRequest",
-          "pub fn metric(&self) -> &'static str",
-          "pub fn new( parent: EngineeringPureRequest, left: EngineeringPureRequest, right: EngineeringPureRequest, ) -> Result<Self>",
-          "pub fn parent(&self) -> &EngineeringPureRequest",
-          "pub fn request(&self) -> &EngineeringPureTensorRequest",
-          "pub fn request_bytes(&self) -> &[u8]",
-          "pub fn right(&self) -> &EngineeringPureRequest",
-          "pub fn target_profile(&self) -> &'static str"
-        ],
-        "capacity_constants": [
-          "const MAX_FILE_BYTES: usize = 16 << 20;"
-        ]
-      }
-    },
-    {
-      "path": "src/interchange/engineering_pure_tensor/runtime.rs",
-      "sha256": "0148190f0d7432be33d4307b9c9fdde687c7aa1491e16c9af272f4776bb17342",
-      "group": "engineering-pure-tensor",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_pure_tensor/tests.rs",
-      "sha256": "98c871a456cb8f2f6f8260c7e628f23db9fa9c4f61b43f3946ee5d5aa11a40fb",
-      "group": "engineering-pure-tensor",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/execution_view/finite/engineering_pure_tensor.rs",
-      "sha256": "ffc7f49a7ccb7956dd6ac4b2911c8f738eeac502b67efce210228c7d8ec7d1a4",
-      "group": "engineering-pure-tensor",
+      "path": "tests/engineering_pure_cli.rs",
+      "sha256": "6663994570ebc384bccc8bc8fe68971ecc1906ae2504725b1573a74f725a0af7",
+      "group": "engineering-pure",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -6348,635 +6987,6 @@
         "functions": [],
         "capacity_constants": []
       }
-    },
-    {
-      "path": "lean-kernel/Cli/EngineeringOpenQasm.lean",
-      "sha256": "99c6c92f2f2ec37b468b431ccf20166762f2edfdba88ec0b3d13f4da44a444c5",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/EngineeringOpenQasm.lean",
-      "sha256": "91349f0708e392cfba7ffbdf71ba9d4d177d41e077df6a5d004de6cda586aa00",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasm.lean",
-      "sha256": "4189f0b706029e007d4cd18d60d11fac8b6c6d06f9550d2f3f5eded1e2c73195",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean",
-      "sha256": "fabdd0a28a00405357b29530cf20cfc052f4b4ee642602f412b85ea910a58cac",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasm.lean",
-      "sha256": "25909334d60fbb8b1406ab7d2b418b969d2cb3c755c99302ed3b9154070d65b5",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Semantics/CanonicalTerminalQasm.lean",
-      "sha256": "98230e97bc32d9238b9999d786ac0e23198b2387d287a1ba883b40d6445c1fc9",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean",
-      "sha256": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean",
-      "sha256": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/CanonicalOpenQasmGates.lean",
-      "sha256": "33a87fb22ef4bd251bee119b2b37668997273a2453b8c04b486a7c2819fe3c2a",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeEngineeringOpenQasm.lean",
-      "sha256": "fe8510160756d89b08f410862c37d13076cd4315da8309cad14f025fc814505d",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean",
-      "sha256": "47768fa115a35a2805d095d1afab42df60ae48756e7728f0a6955955ad94e1a0",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "scripts/test_engineering_openqasm_cli.py",
-      "sha256": "3d3d8d3d44170832aec76bacc219e94e21fa493e262475cd82fa7e146ec634c6",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "scripts/test_engineering_openqasm_native.py",
-      "sha256": "8c6ae7ad55c0725beec81e34c20f499ef5019688ffc29cb1a047adffcbcfd9b1",
-      "group": "engineering-openqasm",
-      "surface": null
-    },
-    {
-      "path": "src/bin/qleisli/engineering_openqasm.rs",
-      "sha256": "84edec1b63e3382d919804cbf171a5953afe90f84319275057f2c52f08f242a2",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_openqasm.rs",
-      "sha256": "ef615954157901d4551775787cef88bc24684bb16baceb6d615258cc1e285896",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [
-          "EngineeringOpenQasmReport",
-          "EngineeringOpenQasmRequest"
-        ],
-        "functions": [
-          "pub fn check( target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
-          "pub fn check_serialized_with_kernel( kernel: &Kernel, target: &[u8], request_bytes: &[u8], ) -> Result<EngineeringOpenQasmReport>",
-          "pub fn check_with_kernel( kernel: &Kernel, target: &[u8], ideal: &AcceptedProgram, request: &EngineeringOpenQasmRequest, ) -> Result<EngineeringOpenQasmReport>",
-          "pub fn checker(&self) -> &Path",
-          "pub fn checker_profile(&self) -> &'static str",
-          "pub fn claim_kind(&self) -> &'static str",
-          "pub fn composition(&self) -> &'static str",
-          "pub fn contract(&self) -> &EngineeringInstrumentRequest",
-          "pub fn error_category(&self) -> &'static str",
-          "pub fn exact_work(&self) -> usize",
-          "pub fn gate_word(&self) -> impl ExactSizeIterator<Item = &'static str> + '_",
-          "pub fn ideal_artifact(&self) -> &[u8]",
-          "pub fn metric(&self) -> &'static str",
-          "pub fn new(contract: EngineeringInstrumentRequest) -> Result<Self>",
-          "pub fn request(&self) -> &EngineeringOpenQasmRequest",
-          "pub fn request_bytes(&self) -> &[u8]",
-          "pub fn target_bytes(&self) -> &[u8]",
-          "pub fn target_profile(&self) -> &'static str"
-        ],
-        "capacity_constants": [
-          "const MAX_FILE_BYTES: usize = 16 << 20;"
-        ]
-      }
-    },
-    {
-      "path": "src/interchange/engineering_openqasm/runtime.rs",
-      "sha256": "61ce133aea43069a4eef15cef8dde171adc55c96cf7c1f693b002931e47ff619",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/engineering_openqasm/target.rs",
-      "sha256": "3d230e6b4847bc578de4b4003ee808f8b35a41dc5e804fe1d4dd5216fff208fa",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": [
-          "pub(super) const MAX_TARGET_BYTES: usize = 1024;",
-          "pub(super) const MAX_TARGET_GATES: usize = 8;"
-        ]
-      }
-    },
-    {
-      "path": "src/interchange/engineering_openqasm/tests.rs",
-      "sha256": "4df3f9be4fdc399c1a8c055f3643eaa1bea689e960cb7f424a2ff4af3131016d",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/execution_view/finite/engineering_openqasm.rs",
-      "sha256": "0ac5537d6145c6fbc74ad20e3070a303febfcf02eb7000a569f04a70d77ec80a",
-      "group": "engineering-openqasm",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/closed.rs",
-      "sha256": "47e4cc22f966b8ffbe22c583a1fe3cf1b2894c9258c701348a5b00e0c4912065",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [
-          "pub fn ceiling(&self) -> crate::ir::Effect",
-          "pub fn output(&self) -> &ClosedType"
-        ],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans.rs",
-      "sha256": "8fe3f2ec82be3b099566c64127c23d81d2efea949e27988a324ee5bacfc9e5fe",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [
-          "pub fn classify_budgeted( &self, environment: &StaticEnvironment, bound: &BTreeSet<BinderKey>, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<PlanClosure>",
-          "pub fn named(&self, name: &ast::Ident, arguments: &[ast::StaticOp]) -> Result<ResolvedStatic>",
-          "pub fn natural(&self, source: &ast::Natural) -> Result<ResolvedNatural>",
-          "pub fn operation(&self, source: &ast::StaticOp) -> Result<ResolvedStatic>",
-          "pub fn output(&self) -> &Ty",
-          "pub fn reference(&self, name: &ast::Ident) -> Result<ResolvedReference>"
-        ],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans/tests.rs",
-      "sha256": "da92f31c2557f7e0d479bf96e63bdc685e3b68010e24b0774114633ffee66714",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans/interface_naturals.rs",
-      "sha256": "c61c5a3629b8aaf259a74cdaf4bae3949b7ab0102f3b75791272311ac1d8a18b",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/interfaces.rs",
-      "sha256": "d3da64080ac7bb1f1e448f2546c1b646dc9391112680297aa981586aa90f9a81",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/interfaces/tests.rs",
-      "sha256": "8bd9d835b618f7b4e515a3a14977d43c02732094c04f732737ba18f7028c821e",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/naturals.rs",
-      "sha256": "f2d80489d97766e42164f45f3029c109410caaf3bc08f94726d5a73329d3b092",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/naturals/tests.rs",
-      "sha256": "ce7a9d83a3d6ca46bdfa2e1eec0e38966e9002747d01ecada169a6f5e79e22ef",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/types.rs",
-      "sha256": "7bde4961d9dd01695722b667a9f4e3d24f8f2c097ee1a4d2865741c41be19864",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/call_state_tests.rs",
-      "sha256": "e5bf690355986550816f8a3ed24815dec900a8132f3e718143fea1853f8a1f57",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/calls.rs",
-      "sha256": "908d419088d140395e34dff009a493eff24dc2fdba5a3da11c1ec8f5dfa9b6b7",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/calls/tests.rs",
-      "sha256": "3cc4c11e4a68cf627db1d96b7dcbf47c398273ccc5ab889c528cbf037f937d2b",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/operations/identity_tests.rs",
-      "sha256": "36bc69f93c009c225e2cd99046f5d4a0c163964490e839387b01d0b9048f942a",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/dormant.rs",
-      "sha256": "75ba9785aad85769c0cb6161a179425d4091def019ab0d5e66a17b827a663517",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/dormant/tests.rs",
-      "sha256": "b1a82a02d450b273cf44997f1479f6318c5c64fcfd95a6fbe19380b644d5237c",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/operations/bindings.rs",
-      "sha256": "1da3ce30d010d21930e45ad8779fb68125144037c1213b20bd13874f29e2e1a0",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/dormant/controls.rs",
-      "sha256": "3eb6d8793a6c64fb74048c81c2ab171d0fc31fa0c1982d866694399a6f2159ab",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans/body_statics.rs",
-      "sha256": "e0b5895df909b630bcd8616b28e4ecd67b158565554bb9dc576e59b1f6a44be1",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans/body_statics/tests.rs",
-      "sha256": "b34f9dcd828dbf45e971320f5ef3aad08f4d8cc6a565fd443e94780cc192d2d0",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/check/plans/runtime_owners.rs",
-      "sha256": "47557a98fbc9f5f3bb365666262cd659ffeb2729b14bcf38e3d4a2a4bdab1d0c",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [
-          "pub fn runtime_owners( &self, expression: &ast::Expr, scope: &Scope, ) -> Result<Vec<RuntimeOwnerPlan>>"
-        ],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances.rs",
-      "sha256": "dfd45c1f00beb96111d59107e0543bea53e5a44bfab28f3ed1f5a8c883dc39a2",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances/bindings.rs",
-      "sha256": "56dd9c257df2e3049201b167587be01138bd43f155dae65523a493a44cb91bfe",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances/closure.rs",
-      "sha256": "f721eb92406d1c786e47dfb1f1a4ee14ee364362df51e119f71e8d705aa4bc7e",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances/contracts.rs",
-      "sha256": "df20a07a04e185c6c1897a9e61ea661a02d9cd68c4a2fd856993335f1cb1785b",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances/provider.rs",
-      "sha256": "20bb8952819918bba67fc3f06de5950ff2bef1062b17e739170371ebfba93db3",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/instances/tests.rs",
-      "sha256": "e96707416eaa6ebbcef6b1a0b11f387d0fe7815e18434f06e9408dbf5f69aeb3",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/computed_phase.rs",
-      "sha256": "75172a0d5980e62999858da4364a41bf010dddcea0c262e2926db552eddeeb16",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/dormant_access.rs",
-      "sha256": "b266a72fe45ab3f5749ebf922af459bf89d7142561dd01ff0f449817aa72a816",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/runtime_transforms.rs",
-      "sha256": "6eb0675ea108aa177e29f6dc18586ce0046bddb3613b91f9fe621e0cf8ceb8f7",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/static_primitives.rs",
-      "sha256": "8ab650cd5743ee1c43dee68720ced94fa66a30b0d9f7f46ae05ed30df69a05b5",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/compile/lower/statics.rs",
-      "sha256": "67f2805828837c02ce468198d3862503c6f353c33f388e64489e8d85178efa73",
-      "group": "source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis.rs",
-      "sha256": "b1a35de6336ae7f4fad7563a545526ffbb61a6ce051a74fa5226cd8711e3fb4c",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
-      "sha256": "d89962d570fdb865da9deeb586ac76e901fd9e02b8e89e9e3ca98c9ee8f3466e",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "stdlib/src/structure.qli",
-      "sha256": "bb4e6be285aacde6ac9cf7e1350d86daf5782fde0788f938724349cd3ff8beed",
-      "group": "source",
-      "surface": null
-    },
-    {
-      "path": "src/frontend/primitive.rs",
-      "sha256": "4aaf83bfdca10d254e223747b6cb6d0d69753a78361dfa7a38c732fbc318713d",
-      "group": "source",
-      "surface": {
-        "declarations": [
-          "PrimitiveId"
-        ],
-        "functions": [
-          "pub fn effect(self) -> Effect",
-          "pub fn lookup_unbound(name: &str) -> Option<Self>",
-          "pub fn natural_arity(self) -> usize",
-          "pub fn runtime_arity(self) -> usize",
-          "pub fn spelling(self) -> &'static str"
-        ],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/native_source.rs",
-      "sha256": "5964b88a3ee3848f7179f8bac484005f5a4873a4cd770b16156b083d5c843c8c",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/operations.rs",
-      "sha256": "2f305dcbcab926bfcf4af0e911e4bc258c11c8d5dc7b9391f9f8d3c8022e1836",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/operations/constructed.rs",
-      "sha256": "69630bd801adff2956d203f834336b5c46fe759e738a0c5fc807cfe32fdee512",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/operations/native_source.rs",
-      "sha256": "560df993f90e4e32a95063dded3eee1fed076346bf13eea80dd231d271f9f7c6",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/transform_tests.rs",
-      "sha256": "d086e69ceb1e1abc4de8d390e0e8ae74a1314728252ef6f67e7d29fecf8fe139",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs",
-      "sha256": "c172ee4858365726a9ce2c1f03a307a01bae269dc97aa3cb0200c1e5407cea2e",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs",
-      "sha256": "527de8e7bd93f1a9195251a6aee62e09dc42ca096d02c4eb040919f3a39be918",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/specialize/raw/source_witness.rs",
-      "sha256": "e5be1582de4a2fefdac46f2984c1bfdd6e35b30d6f531e8e503989780c83b3c2",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interop/export/normalization.rs",
-      "sha256": "00c609609682605e86e6f336eedfa91f3967ba867a6f98b5a652c05acb965238",
-      "group": "foreign",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": [
-          "const MAX_LOCAL_EQUATIONS: usize = 7;"
-        ]
-      }
-    },
-    {
-      "path": "stdlib/src/state.qli",
-      "sha256": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27",
-      "group": "source",
-      "surface": null
     }
   ],
   "boundaries": [

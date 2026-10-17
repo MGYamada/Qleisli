@@ -26,6 +26,8 @@ and exactness obligations retain their recorded scopes and status.
   Adapt CLI/access regressions to ordinary gate bodies, fixed caller equations
   and mandatory original-source native checks. Numerical simulation assertions
   retain full distributions and complex states under their existing tolerance.
+  Refresh actual-source inventory and coverage bindings while retaining all
+  existing proof gates, native limits and original regression references.
 
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all
