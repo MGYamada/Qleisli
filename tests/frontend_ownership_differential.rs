@@ -15,6 +15,7 @@ use qleisli::frontend::compile::check_project;
 
 const SEED: u64 = 0x514c_4549_534c_4932;
 const CASES: usize = 4_000;
+const WORKERS: usize = 2;
 const IMPORTS: &str = "use std::quantum::h; use std::quantum::x;
 use std::quantum::cnot; use std::quantum::init0;
 use std::observe::measure_z;\n";
@@ -232,22 +233,14 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     }
 }
 
-#[cfg_attr(
-    not(qleisli_native_tests),
-    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
-)]
-#[test]
-fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
-    let mut random = Random(SEED);
-    // Retain all first sources before either checker runs. Failure context
-    // contains the exact source, seed and case for deterministic reproduction.
-    let cases = (0..CASES)
-        .map(|index| generate(&mut random, Fault::for_case(index)))
-        .collect::<Vec<_>>();
+fn compare_cases(cases: &[Case], start: usize) -> (usize, usize) {
+    // Each worker owns its project files. Neither public checker nor a native
+    // decision is shared or replaced by a cached comparison result.
     let root = SourceRoot::new("");
     let mut accepted = 0;
     let mut rejected = 0;
-    for (index, case) in cases.iter().enumerate() {
+    for (offset, case) in cases.iter().enumerate() {
+        let index = start + offset;
         root.write("main.qli", &case.source);
         let finite = check_project(&root.0);
         let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), case.source.clone())]))
@@ -270,6 +263,40 @@ fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
             rejected += 1;
         }
     }
-    assert_eq!(accepted + rejected, CASES);
-    assert!(accepted > 0 && rejected > 0);
+    assert_eq!(accepted + rejected, cases.len());
+    (accepted, rejected)
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
+    let mut random = Random(SEED);
+    // Retain all first sources in their original seed order before either
+    // checker runs. Workers only borrow disjoint slices of these exact bytes.
+    let cases = (0..CASES)
+        .map(|index| generate(&mut random, Fault::for_case(index)))
+        .collect::<Vec<_>>();
+    assert_eq!(CASES % WORKERS, 0);
+    let chunk = CASES / WORKERS;
+    let (accepted, rejected) = std::thread::scope(|scope| {
+        let workers: Vec<_> = cases
+            .chunks(chunk)
+            .enumerate()
+            .map(|(worker, cases)| scope.spawn(move || compare_cases(cases, worker * chunk)))
+            .collect();
+        assert_eq!(workers.len(), WORKERS);
+        workers
+            .into_iter()
+            .map(|worker| worker.join().expect("ownership comparison worker"))
+            .fold(
+                (0, 0),
+                |(accepted, rejected), (more_accepted, more_rejected)| {
+                    (accepted + more_accepted, rejected + more_rejected)
+                },
+            )
+    });
+    assert_eq!((accepted, rejected), (CASES / 4, CASES * 3 / 4));
 }

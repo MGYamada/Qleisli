@@ -2,6 +2,8 @@
 """Check source-runner failures, input binding and shared command coverage.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
+import contextlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -153,15 +155,19 @@ class SourceChecksTests(unittest.TestCase):
             root = Path(directory); output = root / 'out'
             commands = [['python3', 'first.py'], ['python3', 'second.py']]
             log = root / 'failed.log'; log.write_text('actual failure')
-            failed = dict(status='failed', log=str(log), error='exit 2', commands=[])
+            failed = dict(status='timed-out', log=str(log), error='command exceeded 3600 seconds', commands=[])
+            stderr = io.StringIO()
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
                     patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                     patch.object(checks, 'plan', return_value=commands),
                     patch.object(checks, 'toolchain', return_value={}),
-                    patch.object(checks.ci_runtime, 'run_task', return_value=failed)):
+                    patch.object(checks.ci_runtime, 'run_task', return_value=failed),
+                    contextlib.redirect_stderr(stderr)):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
+            self.assertIn('command exceeded 3600 seconds', stderr.getvalue())
+            self.assertIn('actual failure', stderr.getvalue())
             report = json.loads((output / 'results.json').read_text())
-            self.assertEqual([row['status'] for row in report['commands']], ['failed', 'not-run'])
+            self.assertEqual([row['status'] for row in report['commands']], ['timed-out', 'not-run'])
             before = (output / 'results.json').read_bytes()
             with self.assertRaises(FileExistsError): checks.execute('source-integrity', None, output)
             self.assertEqual((output / 'results.json').read_bytes(), before)

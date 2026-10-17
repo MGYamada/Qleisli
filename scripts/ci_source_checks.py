@@ -147,6 +147,8 @@ def execute(group, compiler, output):
             report['commands'][number] = dict(argv=command, **result)
             print(f"{group} {number + 1}/{len(commands)}: {result['status']}", flush=True)
             if result['status'] != 'passed':
+                if result.get('error'):
+                    print(result['error'], file=sys.stderr)
                 print(Path(result['log']).read_text()[-16384:], file=sys.stderr)
                 raise ValueError('source check failed: ' + ' '.join(command))
             if kernel and number + 1 == preparation:

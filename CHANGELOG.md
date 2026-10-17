@@ -52,6 +52,9 @@ and exactness obligations retain their recorded scopes and status.
   exact-work and specialization-count limits separate in their boundary tests;
   ordinary Bits copy/drop tests retain quantum-owner and implicit-conversion
   refusals.
+  Run the same deterministic 4,000-case ownership comparison in two isolated
+  workers, keeping both public checker calls and every expected result. Expose
+  the command's failure cause in CI logs without changing checks or time limits.
 
 - Normalize supported computed-ancilla bodies through native equations for
   the complete original one-Bit fragment and a canonical witness built from
