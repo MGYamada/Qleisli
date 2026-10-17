@@ -169,7 +169,7 @@ fn exact_zero_register_product_meaning_keeps_unit_nodes_and_axis_order() {
 )]
 fn zero_width_quantum_branch_phi_retains_an_owner_through_explicit_basis_maps() {
     let source = "
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         unitary fn choose(c:Bit,q:Q<Bits<0>>)->Q<Bits<0>>{
             if c{global_phase_eighth(q)}else{q}
         }
@@ -203,7 +203,7 @@ fn zero_width_quantum_branch_phi_retains_an_owner_through_explicit_basis_maps() 
 )]
 fn controlled_empty_register_scalar_preserves_the_exact_relative_phase() {
     let source = "
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn labels(q:Bit)->(Bit,(Bit,Bit)){(q,(0,0))}
         meaning T:Bit=phase_by(labels);
         unitary fn scalar(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}
@@ -225,8 +225,8 @@ fn controlled_empty_register_scalar_preserves_the_exact_relative_phase() {
 )]
 fn observing_empty_register_result_reaches_the_complete_instrument_schema() {
     let source = "
-        
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn actual(q:Q<Bits<0>>)->Bits<0>{discard(q);empty_bits()}
         observe fn reference(q:Q<Bits<0>>)->Bits<0>{discard(q);empty_bits()}
         observe fn main()->Bits<0>{

@@ -143,7 +143,7 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
     );
     let root = SourceRoot::new(
         "use std::state::init0; use std::gate::x;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main()->(Bit,Bit,Bit){
             let c=measure_z(init0());
             let (a,b,d)=(x(init0()),if c {init0()} else {x(init0())},init0());

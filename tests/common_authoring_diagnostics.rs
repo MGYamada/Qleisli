@@ -65,7 +65,7 @@ fn non_endomorphic_adjoint_names_the_effect_obligation_without_guessing_body_eff
 
 #[test]
 fn endomorphic_observing_provider_still_reports_its_inferred_effect() {
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         fn m(q:Q<Bit>)->Q<Bit>{let b=measure_z(q); init0()}
         fn client(q:Q<Bit>)->Q<Bit>{adjoint(m)(q)}";
     let start = source.find("adjoint(m)").unwrap() + "adjoint(".len();

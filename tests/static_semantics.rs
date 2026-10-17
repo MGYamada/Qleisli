@@ -125,7 +125,7 @@ impl Mul for Exact {
 const IMPORTS: &str = "
 use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t; use std::gate::cnot;
-  
+\x20\x20
 ";
 
 fn compiled_steps(definitions: &str, preparation: &str, operation: &str) -> Vec<CircuitStep> {
@@ -1015,7 +1015,7 @@ fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
     use qleisli::frontend::compile::{ErrorCode, check_project};
     let root = SourceRoot::new(
         "use std::state::init0;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main()->Unit { discard(global_phase_eighth(init0())); () }",
     );
     let verified = compile_project(&root.0).unwrap();

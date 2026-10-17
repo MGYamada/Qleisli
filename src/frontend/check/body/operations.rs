@@ -487,11 +487,11 @@ impl Checker<'_, '_> {
                         access: required,
                         meaning: Some(required_meaning),
                     }),
-                    actual: Some(plans::operation_contract(
+                    actual: Some(Box::new(plans::operation_contract(
                         &operation,
                         arg.span,
                         &self.program.budget,
-                    )?),
+                    )?)),
                 };
                 self.obligation_subject(
                     arg.span,
@@ -1177,11 +1177,11 @@ impl Checker<'_, '_> {
                 let subject = plans::EvidenceSubject::Operation {
                     operation: Arc::new(self.capture().operation(op)?),
                     required: Some(required),
-                    actual: Some(plans::operation_contract(
+                    actual: Some(Box::new(plans::operation_contract(
                         &operation,
                         op.span,
                         &self.program.budget,
-                    )?),
+                    )?)),
                 };
                 self.obligation_subject(
                     op.span,

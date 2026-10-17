@@ -322,10 +322,10 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
 )]
 #[test]
 fn qli_frontend_and_qir_profile_contract() {
-    let p = qleisli::frontend::compile::compile_project(std::path::Path::new(
+    let project = common::current_source_project(std::path::Path::new(
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
-    ))
-    .unwrap();
+    ));
+    let p = qleisli::frontend::compile::compile_project(&project).unwrap();
     let qasm = export_openqasm3(&p).unwrap();
     close(
         probability(&import_openqasm3(&qasm).unwrap(), &[true, true]),
@@ -488,7 +488,7 @@ fn ordinary_terminal(body: &str, definitions: &str, result: &str) -> AcceptedPro
     let text = format!(
         "use std::state::init0;
          use std::gate::t;
-         
+\x20\x20\x20\x20\x20\x20\x20\x20\x20
          unitary fn wrapper(q:Q<Bit>)->Q<Bit>{{t(q)}}
          unitary fn unchanged(q:Q<Bit>)->Q<Bit>{{q}}
          {definitions}
@@ -886,7 +886,7 @@ fn ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase() {
     for (width, body, result, literal, qis) in [
         (
             1usize,
-            "measure_z(readable_flip(init0()))",
+            "measure_z(invoke[readable_flip](init0()))",
             "Bit",
             "x q[0];",
             "x__body",
@@ -908,10 +908,13 @@ fn ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase() {
     ] {
         let program = ordinary_terminal(
             body,
-            "use std::gate::{z,cnot,toffoli}; unitary fn readable_flip(q:Q<Bit>)->Q<Bit>{h(z(h(q)))}",
+            "use std::gate::{z,cnot,toffoli}; unitary fn readable_flip(q:Q<Bit>)->Q<Bit>{h(z(h(q)))} fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}",
             result,
         );
-        assert!(has_contract(&program), "actual ordinary function receipts");
+        assert!(
+            has_contract(&program),
+            "actual ordinary function receipts at width {width}"
+        );
         let text = export_openqasm3(&program).unwrap();
         assert!(text.contains(literal), "{text}");
         let (physical_width, emitted) = literal_target(&text);
@@ -1039,4 +1042,146 @@ fn ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order() {
         exact_target_matrix(&text.replace("cx q[1], q[0];\n", ""), expected).is_err(),
         "all three original windows matter"
     );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_inlined_hzh_exports_literal_x_across_pure_raw_steps() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    let program = ordinary_terminal(
+        "measure_z(readable_flip(init0()))",
+        "use std::gate::z; unitary fn readable_flip(q:Q<Bit>)->Q<Bit>{h(z(h(q)))}",
+        "Bit",
+    );
+    assert!(
+        !has_contract(&program),
+        "this ordinary direct call exercises separate original Raw steps"
+    );
+    let pure: Vec<_> = program
+        .raw()
+        .operations
+        .iter()
+        .filter(|op| matches!(op, RawOp::Gate { .. } | RawOp::ApplyUnitary { .. }))
+        .collect();
+    assert_eq!(pure.len(), 3, "three distinct original Raw operations");
+    assert!(matches!(
+        pure[0],
+        RawOp::Gate {
+            gate: SingleGate::H,
+            ..
+        }
+    ));
+    assert!(matches!(
+        pure[2],
+        RawOp::Gate {
+            gate: SingleGate::H,
+            ..
+        }
+    ));
+    let RawOp::ApplyUnitary { steps, .. } = pure[1] else {
+        panic!("original Z action")
+    };
+    assert_eq!(steps.len(), 1);
+    assert!(steps[0].controls.is_empty());
+    assert!(
+        matches!(&steps[0].action, CircuitAction::Monomial { indices, permutation, phases }
+        if indices == &[0] && permutation == &[0,1] && phases == &[0,4])
+    );
+    let original = program.raw().clone();
+    let text = export_openqasm3(&program).unwrap();
+    let (width, emitted) = literal_target(&text);
+    assert_eq!(width, 1);
+    assert_eq!(emitted.len(), 1);
+    assert!(text.contains("x q[0];"), "{text}");
+    assert!(
+        export_qir_base(&program)
+            .unwrap()
+            .contains("call void @__quantum__qis__x__body(")
+    );
+    let expected = Matrix::new(
+        2,
+        2,
+        vec![Exact::zero(), Exact::one(), Exact::one(), Exact::zero()],
+    )
+    .unwrap();
+    exact_target_matrix(&text, expected.clone()).unwrap();
+    assert!(exact_target_matrix(&text.replace("x q[0];", ""), expected).is_err());
+    let wrong_phase = Matrix::new(
+        2,
+        2,
+        vec![
+            Exact::zero(),
+            Exact::phase(1),
+            Exact::phase(1),
+            Exact::zero(),
+        ],
+    )
+    .unwrap();
+    assert!(exact_target_matrix(&text, wrong_phase).is_err());
+    assert_eq!(program.raw(), &original);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn final_target_window_does_not_cross_fresh_preparation() {
+    for singleton in [false, true] {
+        let mut operations = vec![
+            RawOp::Init0 {
+                output: TokenId(0),
+                wire: WireId(0),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: TokenId(0),
+                output: TokenId(1),
+            },
+        ];
+        if singleton {
+            operations.extend([
+                RawOp::PackUnit { output: TokenId(2) },
+                RawOp::LiftBasis {
+                    input: TokenId(2),
+                    output: TokenId(3),
+                    output_wires: vec![WireId(1)],
+                    table: vec![0],
+                },
+            ]);
+        } else {
+            operations.push(RawOp::Init0 {
+                output: TokenId(3),
+                wire: WireId(1),
+            });
+        }
+        operations.extend([
+            RawOp::Gate {
+                gate: SingleGate::Z,
+                input: TokenId(1),
+                output: TokenId(4),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: TokenId(4),
+                output: TokenId(5),
+            },
+            RawOp::MeasureZ {
+                input: TokenId(5),
+                output: ClassicalId(0),
+            },
+            RawOp::MeasureZ {
+                input: TokenId(3),
+                output: ClassicalId(1),
+            },
+        ]);
+        let program = raw(operations, vec![ClassicalId(0), ClassicalId(1)]);
+        let text = export_openqasm3(&program).unwrap();
+        assert!(text.contains("h q[0];\nz q[0];\nh q[0];"), "{text}");
+        assert!(!text.contains("x q[0];"));
+        assert_eq!(literal_target(&text).0, 2);
+    }
 }

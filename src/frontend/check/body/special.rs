@@ -755,11 +755,11 @@ impl Checker<'_, '_> {
                     span,
                     &self.program.budget,
                 )?),
-                actual: Some(plans::operation_contract(
+                actual: Some(Box::new(plans::operation_contract(
                     &operation,
                     span,
                     &self.program.budget,
-                )?),
+                )?)),
             };
             self.obligation_subject(
                 span,

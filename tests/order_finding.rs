@@ -12,8 +12,8 @@ static NEXT: AtomicU64 = AtomicU64::new(0);
 const ARITHMETIC: &str = include_str!("../examples/order_finding/arithmetic.qli");
 const IMPORTS: &str = "
 use std::state::init0;  use std::gate::x;
-use std::gate::cnot;  
- 
+use std::gate::cnot;\x20\x20
+\x20
 use std::measurement::measure_z2; use std::measurement::measure_x;
 use arithmetic::increment2; use arithmetic::add2;
 use arithmetic::mul2_mod15;

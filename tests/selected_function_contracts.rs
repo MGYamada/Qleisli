@@ -64,7 +64,7 @@ fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal, Error> {
 )]
 #[test]
 fn observing_specialization_checks_calls_and_unused_original_obligations() {
-    let definitions = "use std::state::init0; 
+    let definitions = "use std::state::init0;\x20
         fn reference(q: Q<Bit>) -> Bit { measure_z(q) }
         fn implementation(q: Q<Bit>) -> Bit { measure_z(phase[1,3](h(h(q)))) }";
     let called = format!(
@@ -144,7 +144,7 @@ fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_
 )]
 #[test]
 fn observing_specialization_keeps_nested_equations_empty_values_and_references() {
-    let source = "use std::state::init0; use std::gate::cnot; 
+    let source = "use std::state::init0; use std::gate::cnot;\x20
         fn reference(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) {
             let empty=unit(()); ((),(measure_z(q),empty))
         }
@@ -172,7 +172,7 @@ fn observing_specialization_keeps_nested_equations_empty_values_and_references()
 #[test]
 fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
     let source = " use std::state::init0;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         fn reference(q:Q<Bit>)->(Bits<0>,Bits<2>){let b=measure_z(q); (empty_bits(),prepend_bit[1](b,prepend_bit[0](not(b),empty_bits())))}
         fn candidate(q:Q<Bit>)->(Bits<0>,Bits<2>){reference(q)}
         pub observe fn main()->(Bits<0>,Bits<2>){apply_contract(candidate,reference,init0())}";
@@ -207,7 +207,7 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
 )]
 #[test]
 fn observing_specialization_rechecks_changed_reference_dependencies_and_output_order() {
-    let main = "use dependency::reference; use std::state::init0; 
+    let main = "use dependency::reference; use std::state::init0;\x20
         fn implementation(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}
         pub observe fn main()->(Bit,Bit){apply_contract(implementation,reference,init0())}";
     let dependency = "
@@ -341,7 +341,7 @@ fn identity_and_negative_h_fail_exact_equations_in_both_adapters() {
 )]
 #[test]
 fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
-    let source = "use std::state::init0; use std::gate::x; 
+    let source = "use std::state::init0; use std::gate::x;\x20
         classical fn flip(b: Bit) -> Bit { not b }
         meaning X: Bit = permutation_by(flip);
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> { x(q) }
@@ -363,7 +363,7 @@ fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
 )]
 #[test]
 fn unused_and_zero_count_contracts_are_not_erased() {
-    let definitions = "use std::state::init0; 
+    let definitions = "use std::state::init0;\x20
         unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
         unitary fn specified(q: Q<Bit>) -> Q<Bit> { h(q) }";
     for body in [
@@ -385,7 +385,7 @@ fn unused_and_zero_count_contracts_are_not_erased() {
 )]
 #[test]
 fn unused_generic_body_keeps_its_closed_function_contract_in_both_adapters() {
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
         unitary fn specified(q: Q<Bit>) -> Q<Bit> { h(q) }
         unitary fn unused[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> {

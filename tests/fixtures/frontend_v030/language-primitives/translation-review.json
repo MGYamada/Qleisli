@@ -27,7 +27,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7f51efd32b681827b761394a593fa31dacf5e46422e0cf0009f49fc32a655ed8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/discard-unitary/main.qli",
@@ -51,7 +53,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "44b00cde5e8bd443fa907acd5bdb1b5b09a08936cba976fbcec9257405351ad7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-identity-observe/library.qli",
@@ -75,7 +79,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b6286c64a60cb307bc5135687d635ccd23ba40a739df99ddb664e156dd70bc0c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-identity-observe/main.qli",
@@ -99,7 +105,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f7b499cfc427d7051599fb3f10ddddc362516179dd65b4c6347ea9a5535188cc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-identity-unitary/library.qli",
@@ -123,7 +131,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b6286c64a60cb307bc5135687d635ccd23ba40a739df99ddb664e156dd70bc0c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-identity-unitary/main.qli",
@@ -147,7 +157,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "df3b45b0d5f086e8d91901c804cbd77048943c9700676447c457b82e0573ed73",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-missing-public-effect/library.qli",
@@ -158,7 +170,9 @@
         "project:tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-missing-public-effect"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "bf8aca4e8a5f5d13c776c696bb3058d5ef4052b145ae21549ba4257c37a6bcd6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-missing-public-effect/main.qli",
@@ -182,7 +196,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "df3b45b0d5f086e8d91901c804cbd77048943c9700676447c457b82e0573ed73",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-reset-observe/library.qli",
@@ -206,7 +222,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "68f71a74141fd8bba01e44d94157864365571c2ea8baac7c8acc5701ccb1c7f8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-reset-observe/main.qli",
@@ -230,7 +248,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f7b499cfc427d7051599fb3f10ddddc362516179dd65b4c6347ea9a5535188cc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-reset-unitary/library.qli",
@@ -254,7 +274,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "68f71a74141fd8bba01e44d94157864365571c2ea8baac7c8acc5701ccb1c7f8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/external-reset-unitary/main.qli",
@@ -278,7 +300,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "df3b45b0d5f086e8d91901c804cbd77048943c9700676447c457b82e0573ed73",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/hidden-measure-isometry/main.qli",
@@ -302,7 +326,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "43e13e974e51bf90a5008151741ff4039e12437be16db8ef6035e0719b3ce96c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/hidden-measure-unitary/main.qli",
@@ -326,7 +352,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "404eded12c06e4bd023ae4ab9c9572084fd4bc1eb341b198a68a5472ae238af0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/missing-public-closed-quantum-effect/main.qli",
@@ -350,7 +378,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ba997781c86bc3de41badab536ad0186b99dd605912ebff1366118161d2fa53d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/missing-public-quantum-effect/main.qli",
@@ -374,7 +404,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "83c55b0c55b4d073983b63a3257b31f98dc40f587a87443e10e47c6f8ab109e7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/private-inference-control/main.qli",
@@ -398,7 +430,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "904f71e3903cbcdcdde854377da7d4ed349b5352b471af9403507ae764ff9cc3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/public-classical-inference-control/main.qli",
@@ -422,7 +456,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "74b2f45679cff8a8d5b9c86f5f11a227a93acf2d7090334cdd9fa3c6c51e652f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/reset-isometry/main.qli",
@@ -446,7 +482,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fac2095a39635bc39876c70534cf4fd7d5bc962954aaa557a504744e0211e9d4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/reset-unitary/main.qli",
@@ -470,7 +508,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "896dda4d134b838647d19077ae947c0bf485f5419fbf48b5ed5ea0a474bc1af6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/same-module-precision/main.qli",
@@ -494,7 +534,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "354d020c3eebec33fd2e0bbc9aeb1976a5e42bacc300c8779bd5f3f22336c782",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/transitive-discard-unitary/main.qli",
@@ -518,7 +560,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bf9cbd2b510f43b0eb874fbf591e57af1e516d8231bd0f79854a24fa7fe7f86f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/transitive-hidden-measure-unitary/main.qli",
@@ -542,7 +586,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "780469c384efea58f7924f8e6028a18c7afda3d8be17912053cbdad7ab8c5b63",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/transitive-reset-isometry/main.qli",
@@ -566,7 +612,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "13b7c3b5ae170e1dec18d42bb3e260f730f73b10859708bea63152f6e874f66a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-001/main.qli",
@@ -596,7 +644,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fe8d217148881b510f7b5636cfa77544993d27734e81aad33f0be51b491d00e7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-002/main.qli",
@@ -638,7 +688,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "25726ce8fa92ff209b954ac445842fa1cc6c5d0cc4d1a823b57aaf6be1a85dd0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-003/main.qli",
@@ -680,7 +732,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e545f64fd257673baab60f014bfb0bb8aa406f0a7904cc37933357263019a27c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-004/estimation.qli",
@@ -722,7 +776,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "294e423c303b87fd9741ddc2a6c167dd1f67b151c35ab98471d3bc82eada4325",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-004/gates.qli",
@@ -752,7 +808,9 @@
           "replacement": "use std::gate::t;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b3ecf81beb71889668d22a1c455c46e29fe310a179d35457deac7154beeea378",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-004/main.qli",
@@ -788,7 +846,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1e955376cd06224c5285452e34c134dbd998f0e3036e20d3fe1afb0a1fe71fca",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-005/estimation.qli",
@@ -830,7 +890,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "294e423c303b87fd9741ddc2a6c167dd1f67b151c35ab98471d3bc82eada4325",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-005/gates.qli",
@@ -860,7 +922,9 @@
           "replacement": "use std::gate::t;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b3ecf81beb71889668d22a1c455c46e29fe310a179d35457deac7154beeea378",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/projects/client-005/main.qli",
@@ -902,7 +966,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b25e35e0cb80b49decc538d036dd47e15dc001911e4ef0297af8083bbc7927f2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/first_source/main.qli",
@@ -938,7 +1004,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "07f754ef529bcfc4cd32059b9a0abd412b4985d9016a75962f7e9bedf048cc61",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/reference_client/main.qli",
@@ -980,7 +1048,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "eb354ab3c84b72ee69d2f07b48509233b9a583be07d751e71f968fd0e0f9cde9",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_interference/wrong_order/main.qli",
@@ -1016,7 +1086,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1657b86d8403b03787f398fe17e71877eb184f768db7e2984f74e6c8e691aca2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_phase_layout/interference_client/main.qli",
@@ -1052,7 +1124,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f9f806a131cdaa4ef0dd485d64a3d6e62dd0f0f949f1be2683ba0e83d726ca5d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/coherent_phase/minus_x/main.qli",
@@ -1094,7 +1168,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e96d7ba1e6b0f0d3e1b6ba5935083f2501f5550f1a06473a51d07a6ae4871419",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/coherent_phase/plus_x/main.qli",
@@ -1136,7 +1212,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "949966477c3cfdd90b712f2bc78aa41a885673037a322bbb0385b117d81957e1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/verification_v029/project/main.qli",
@@ -1166,7 +1244,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ed7f4767c703ddd3bd3484189f87dfaec54eac9ad0b867144de8f7aed5bf864f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/a.qli",
@@ -1177,7 +1257,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "736406f1865190d887b734fbe8a32a7f0e847e2dff10047105284686f0017f6c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/duplicate-declarations/a.qli",
@@ -1188,7 +1270,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/duplicate-declarations/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/a.qli",
@@ -1199,7 +1283,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "bfa4e2283db41fad5e0534689f95b0bad9c7b3581aea99fc2bdb8a990740af90",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/b.qli",
@@ -1210,7 +1296,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/b.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "b3ff8b3137147277aec023d9b4af3f4dfd362537f6722eb09ac84918e9d94ecf",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/a.qli",
@@ -1221,7 +1309,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/b.qli",
@@ -1232,7 +1322,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/b.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "ccf5dfec8bec4ce160322152484fc5f861320dd5e688dd723074696f8cb61337",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/reserved-module/if.qli",
@@ -1243,7 +1335,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/reserved-module/if.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/a.qli",
@@ -1254,7 +1348,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "3f2e43892390601f779e4d98834e4d599623108378f23eed59920499f9e65d7a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-private/a.qli",
@@ -1265,7 +1361,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-private/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "e989c5dcbbbf458684e7c7f5a7ac6fc185ee8822c24e40471b7838887e8f714a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-public/a.qli",
@@ -1276,7 +1374,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-public/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "e193c60dda25e72fef7d349bf1cbd4a02b4abed663bd8f1b5f6c3a337c61eafa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/underscore-module/_.qli",
@@ -1287,7 +1387,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/underscore-module/_.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/a.qli",
@@ -1298,7 +1400,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/a.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/b.qli",
@@ -1309,7 +1413,9 @@
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/b.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "a877425fe3406b027d8d4d67312cf33511d3646e1d0829224ad5c553281eaa10",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal/main.qli",
@@ -1346,7 +1452,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ba9697391670609cba9f4f851b9a000f72b18cc56c4d6d4234792e589c6e98b1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
@@ -1358,7 +1466,9 @@
         "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli"
       ],
       "manual_edits": [],
-      "lexical_edits": []
+      "lexical_edits": [],
+      "lexical_sha256": "7f1fa00b9360d2cc421ce1550a84aae2d93326688a0508150178a147bfb93edf",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/scalar-unit/main.qli",
@@ -1383,7 +1493,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "3f4bbae55cd5b0b9bb8575d3f6600e62318699f672f6d6b35c7f73706e9dcba8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/direct-arrow-adjoint-v030/attempt-02/main.qli",
@@ -1402,7 +1514,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "13eda50ad29bc681b60837cc316a755fe22f7750dc3cab5e60e009c4fce81e64",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/caller-frame/main.qli",
@@ -1421,7 +1535,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "13a97d2337327cdf4431c958f7b2fee0d4d8c508c7c71aa004185f501afafb8f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/closed-zero/main.qli",
@@ -1440,7 +1556,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e8e25d42198628d720d22c98906feb4cdb6cba68869fb7f9dabc99caa55281d8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/fresh-unit-phase/main.qli",
@@ -1465,7 +1583,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "76675a3e8c1302e0b338467f3608cf88f76f304630cf9e6d831ba26f9cc326c3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/helper-phase/main.qli",
@@ -1490,7 +1610,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "5a8473445fd86368d74239777e3bd07d662bde2111b119ccea640571950ec98f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/pure-control/main.qli",
@@ -1515,7 +1637,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "44e60cf827c554280bf4f9f9d48cc1da1fd7aad51d2e495599d470bd2f34beeb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/retained-unit/main.qli",
@@ -1534,7 +1658,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b014ed727c67613a7332302f5f588dfc17940523c1a825f006316284c03d9786",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-phase/main.qli",
@@ -1559,7 +1685,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "c924f4a159e66e8d42b3c97f5d0753bcae50481ce1bf83a3d5ba71a65bc5bf5f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/isometry-preparation-v030/attempt-01/unit-zero/main.qli",
@@ -1578,7 +1706,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "194bef96a05fc9ea5b9903f00727a7e552ed201f80e63e466e23ae4cc06974c6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/verification_v029/library/library.qli",
@@ -1596,7 +1726,9 @@
           "replacement": "use std::gate::t;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a8e11b7cc04f06881acc1d916ee0e8189c9603b55ff4dea78221e95bb4c6120f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/desired-preparation-arrow.qli",
@@ -1614,7 +1746,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d57c1ca47da53664efff7da6b07f5daf449ca6a137f0c7c2f067156af70508b1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/desired-unitor-arrow.qli",
@@ -1632,7 +1766,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e96651bd0cbb61d74c0cd2de3ddbe98e7690d80a2ca9af2ed9e2772d19e8d077",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01/direct-unitor.qli",
@@ -1650,7 +1786,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c2f0608bdfa10e3f8e78ba9a9013e209397717b42584fef5da3c41d0ace42681",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-iso-reset/main.qli",
@@ -1668,7 +1806,9 @@
           "replacement": "use std::state::reset;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7111645ca5cdafe279f08eeded7479d0e4b1317ff7289a6d3c8348acb13bd7cd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/bad-unitary-observation/main.qli",
@@ -1686,7 +1826,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d2a66feae85aba4c97477019c1185ebab6b9a8c932c8829a0391ac350ef9d25d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/plain-observation/main.qli",
@@ -1704,7 +1846,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4ee9e234b40af2e4390ad9250e9e2ce7a65c7a2a4785582e9e09e8621461e969",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/plain-preparation/main.qli",
@@ -1722,7 +1866,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "780ea3ec05b9a4ae5838731b9038f7fb8f43dc278f8c209f028506438c9df108",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/plain-unitary/main.qli",
@@ -1740,7 +1886,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f8499b76111f02a83ce964e047021a1a036d8495abfe01bcfe65c1a80a7d896a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/unit-introduction/main.qli",
@@ -1758,7 +1906,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "16cfc8534d8e1c7c9d1f7a3ee72c9de822eead8cf1f40b1076fa4a6264b79e1b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/classical-runtime-v030/attempt-01/nested-label/main.qli",
@@ -1782,7 +1932,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9b195ea92ca17ab93047dd3c3a1de976466396f10d34c5f3964268967f3fb2a4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/classical-runtime-v030/attempt-01/shared-flip/main.qli",
@@ -1806,7 +1958,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5921b0a383427e26003e8f40c833651bdbdfbd2cafbf589041637a61e06d6267",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/adjoint-observe/main.qli",
@@ -1830,7 +1984,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "78e446a34308bcaa0d2705ef1881ecdba6a0cc6d7cd921fadd1ddd46be75ae02",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/live-rebinding/main.qli",
@@ -1854,7 +2010,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ac58599718ab8c3f391d2f8cc9954fd3c9fa6e46faeef0a9614d819c5683c8ca",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/missing-else/main.qli",
@@ -1878,7 +2036,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "61f79ca606618cb0bdb86ec4232f870c8ed81caf2e916327dcfb36157a65abde",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/main.qli",
@@ -1902,7 +2062,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5386399619282d4a75a121cc8e9c5ffdd2ad51340590ccbd330b523124877436",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli",
@@ -1926,7 +2088,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "39802251c9c58c4531f63cc9cd19d541dad96c3c87f54eca5d83fcb8673c7b18",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/coherent-unit-phase/main.qli",
@@ -1950,7 +2114,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "326d8fe4d50bff57105364a2f94d516abb5b7556454774dd8d5790337ccdb040",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/effectful-unit/main.qli",
@@ -1974,7 +2140,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "35bb109af42c6088462a21654e222d2161adb5adf5658ad9ca5b1fa4bbefbf76",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-coherent-phase/main.qli",
@@ -1998,7 +2166,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "b636698106a626600e4216cf847de3371af742344a5a448cdf36e43d4e4f3f51",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-effectful-unit/main.qli",
@@ -2022,7 +2192,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "064d3d267d1529d6a51b023b1cd265ec89074b2e4e76f8adf58a79c432ff3f02",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/unitary-effect/main.qli",
@@ -2040,7 +2212,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "15e41434f184caa8dce751feb040d591c0fb64ce8ae2bfc17830db97b4b7ed91",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/sized-consume/main.qli",
@@ -2058,7 +2232,9 @@
           "replacement": "use std::structure::consume_empty;\nuse std::structure::empty;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bdffc710b9123a2b408094753dccd7f287466f148737e160cbbff05b3447e67a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/tensor.qli",
@@ -2076,7 +2252,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7a013d351478c520b4d9ebffe2449df99b51a784f3c5ea42bc156d80561ecf4d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/wrong-tensor.qli",
@@ -2094,7 +2272,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "31546bdb0d2aa93849366c9482ba0d21b4788df4392ea0adc97e484dd397ec50",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/kernel.qli",
@@ -2112,7 +2292,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c9b8be9f9fc7cb4901ad1863fa68452b223073fa3ab2dda29e69ddefc02c85a8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/main.qli",
@@ -2148,7 +2330,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "db3e932bdefcfb75fb7985ec9ea0a0e876f27c85e0b3375ae023a831a79b4102",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-readout/main.qli",
@@ -2172,7 +2356,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d85dd360cbe412b48c039eb7118380211b6400958c3766ec53b2838aa503123f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-residual/main.qli",
@@ -2196,7 +2382,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3db2a0dc20d2bf702b9325a0d4e07825879523f7f46f730234d33604399a4031",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/duplicate-unit/main.qli",
@@ -2214,7 +2402,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "63b7b2c0b83dd85b61aa13d0ca1ec65f0618c11cbcc7a1295feca192a5ef0b16",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/empty-classical/main.qli",
@@ -2238,7 +2428,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "cb72e8f4148bb2fc8aad6f3700e1f13df3be7a8aef957b362696824b5f99517f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/false-unitary/main.qli",
@@ -2256,7 +2448,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5edfe62c4b7474a6a88298b7d0ef41c8aeed889c2922cf2b2ac2ee4e169909e0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/lost-unit/main.qli",
@@ -2274,7 +2468,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "eaac9883890ad429fa94c05ba83bed4828a45ba40846d96561f2c19d3f5ca04b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/observing-assertion/main.qli",
@@ -2298,7 +2494,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "30beae71605d31cad5de1ce81d000f8916da4b513bc8fb802e03f0237f28f642",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/wrong-empty-basis/main.qli",
@@ -2316,7 +2514,9 @@
           "replacement": "use std::state::init0;\nuse std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7db1d6c55f81984663522bb82833a320f906d5880e19e844cc1ce69e752d9b78",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli",
@@ -2340,7 +2540,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "41c81786321c9532b3cc65c2f90190a1cae2bba1ebf400d90ff6b2ed19fe3bf0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli",
@@ -2358,7 +2560,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ea444a1f51a2e92cb6ab7ff955d8f5b57e9090a607329b6321e6d80f8e2af255",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-01/compose-wrong-order.qli",
@@ -2382,7 +2586,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "30ac42d69746e6275b6734ee5a2a65860fca5341deb30624a78c2b69145d3b5f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-01/compose.qli",
@@ -2406,7 +2612,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f0e9bcf7d1a79a9d345b7dd8f5ce7b4b75b3149453bb4dca03caa6afee3b8cb7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-01/tensor-wrong-axes.qli",
@@ -2430,7 +2638,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "34f1e3c4209ca643d80b64d9affeb96efb89003d6dde6c61e7027ed2d25d071c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-01/tensor.qli",
@@ -2454,7 +2664,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1f28ac17df90de0a50f94bd7c022cd71e37b0b95e8fa2a2f18c4e1308cb25431",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-02/compose-wrong-order.qli",
@@ -2478,7 +2690,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e8ca48bc3eef59757a75d965b735d684b3d532492cd9c53b9702fae1f9fce9d7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-02/compose.qli",
@@ -2502,7 +2716,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5ec65fe3fe966e097e16d89705d18fea431135715e686b96a1ee914c8ab48d70",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-02/tensor-wrong-axes.qli",
@@ -2526,7 +2742,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c88a0790679c79d558f3fbaf01275d690eb95aae85d0c2b950391976925a16cb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-02/tensor.qli",
@@ -2550,7 +2768,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "37dd03bc3d07a0726712d433d9348ec7708466fbf4aba966c8d7d6c4d58c76af",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-03/compose-wrong-order.qli",
@@ -2574,7 +2794,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "92ac52ca1dc7a7e4c56a388ba6d7236d39def85460fb0cf74181f7c233fb2705",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-03/compose.qli",
@@ -2598,7 +2820,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "65fccad5c8adaea38a326a0dcf144810a7d207ae651af2ba51ece57b4ddbb69a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-03/tensor-wrong-axes.qli",
@@ -2622,7 +2846,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a07bea90ace0145bc41a3ced64d71f572210aa8a9f54d88ac56da4c1839fecea",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-composition-v030/attempt-03/tensor.qli",
@@ -2646,7 +2872,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0c25796c0784919fadfce70066a1a85dbeb8959802cba80a35592635c2cbfadd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli",
@@ -2670,13 +2898,15 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "7e58f893fc6cef4753626621da97ba58e4e90aadd4b0f2d42b8fc1e7825ca7d4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-116.qli",
       "before_sha256": "9bf16e0c714679ea89f195242b24ca90649f60e7d13f5c6dfa0d0dfb1843af6f",
-      "current_sha256": "baabb38190c7c753e76f3818527c48ee7896ffe31b1d4fa5d54d89c3595a4edb",
+      "current_sha256": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor/main.qli"
       ],
@@ -2694,13 +2924,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "baabb38190c7c753e76f3818527c48ee7896ffe31b1d4fa5d54d89c3595a4edb",
+      "layout_edits": [
+        {
+          "start": 118,
+          "end": 119,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-117.qli",
       "before_sha256": "16f73b4cfdae748d95704f67921a9fdd19654cc6d11417eaf3ef10895b0642a8",
-      "current_sha256": "6a572b191294cc42808fbca5ef54c4aa74f6509002ff0b3afcc65c86dedcb55f",
+      "current_sha256": "fbe4d8a0b5e180b3f5505242dd7771247b060ebac974ed4d0e21ee48e6a791c7",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero/main.qli"
       ],
@@ -2718,13 +2957,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "6a572b191294cc42808fbca5ef54c4aa74f6509002ff0b3afcc65c86dedcb55f",
+      "layout_edits": [
+        {
+          "start": 97,
+          "end": 98,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-118.qli",
       "before_sha256": "079e719e08dc6eaad32e80240fae5762f58a6a88fc44e7d076f8ba649f0303bb",
-      "current_sha256": "15dacc87018ab4f66a234e7241fe4f96c1fcf9dba2041702ce74051ffdf23a58",
+      "current_sha256": "b0a0f9307cceb5e650c3e1c119fb4bf2b3c2aec0ba81bac60dbf8979a6984ae4",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase/main.qli"
       ],
@@ -2742,13 +2990,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "15dacc87018ab4f66a234e7241fe4f96c1fcf9dba2041702ce74051ffdf23a58",
+      "layout_edits": [
+        {
+          "start": 97,
+          "end": 98,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-119.qli",
       "before_sha256": "ae0b4b65e575b130007993a9da6c7499fe62333939d947fe1402f7b581cd629e",
-      "current_sha256": "fad4b314b43a4a8072d36c7a7efbadb3e11212773f02e84b3515711bc89ae93a",
+      "current_sha256": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument/main.qli"
       ],
@@ -2766,13 +3023,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "fad4b314b43a4a8072d36c7a7efbadb3e11212773f02e84b3515711bc89ae93a",
+      "layout_edits": [
+        {
+          "start": 136,
+          "end": 137,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-120.qli",
       "before_sha256": "f881e56854ea81f7927d567ca95ebe28df1eea1dcdc2532f11bdf61aa5ccb812",
-      "current_sha256": "faa97c250598e857765c71783b2f1cb8e3bcd658aa821539e27f4e221eb00860",
+      "current_sha256": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper/main.qli"
       ],
@@ -2790,13 +3056,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "faa97c250598e857765c71783b2f1cb8e3bcd658aa821539e27f4e221eb00860",
+      "layout_edits": [
+        {
+          "start": 115,
+          "end": 116,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-121.qli",
       "before_sha256": "dc3911335c36bda4a0c0c6322cc2a4d15cd8cf01c384e7f9bad9e5b182d26310",
-      "current_sha256": "62439a2d655051abc146f83ea78f1bb3a4f69c2aac42f0f1cc7b46de0d23f0f7",
+      "current_sha256": "f7422cbbc1b7eb46420fc509791877ff56878c46393b773f36a37fae55ae8fcc",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect/main.qli"
       ],
@@ -2814,13 +3089,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "62439a2d655051abc146f83ea78f1bb3a4f69c2aac42f0f1cc7b46de0d23f0f7",
+      "layout_edits": [
+        {
+          "start": 97,
+          "end": 98,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-122.qli",
       "before_sha256": "76a1279e11880127f8762d8be399f08a80d3792417f7534bc4ec2263735865ff",
-      "current_sha256": "454a2779d7417e7fe82432d3ffb82f41d4a5ed7af6320b20a5ee4683ed56e987",
+      "current_sha256": "3b0f69894ac9614f60a12c4590291a2a8f90a24421ca75a95277e0d9dd90dca9",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t/main.qli"
       ],
@@ -2838,13 +3122,22 @@
           "replacement": "",
           "kind": "import"
         }
+      ],
+      "lexical_sha256": "454a2779d7417e7fe82432d3ffb82f41d4a5ed7af6320b20a5ee4683ed56e987",
+      "layout_edits": [
+        {
+          "start": 115,
+          "end": 116,
+          "replacement": "",
+          "kind": "removed-import separator"
+        }
       ]
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-123.qli",
       "before_sha256": "ae2259a7df92b06a812a641200f7110fbc80695c62ddb2b089145217f6bdc800",
-      "current_sha256": "1bda4e1d6166dbe99b709612ef569b291265cd002ea07b8b02b138ef60d7d76d",
+      "current_sha256": "d97c25b025fbb61e9eaa82e3733bc7fd3f4ea0d958aaede4e722fc24ff49bfdb",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase/main.qli"
       ],
@@ -2861,6 +3154,15 @@
           "end": 138,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "1bda4e1d6166dbe99b709612ef569b291265cd002ea07b8b02b138ef60d7d76d",
+      "layout_edits": [
+        {
+          "start": 97,
+          "end": 98,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -2880,13 +3182,15 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7effb104f4987a3f0fc6218e1e850bc2b29a2c5fceec0ef31ceedb9127a6dc7c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-125.qli",
       "before_sha256": "ae4b1c37c1794abd8fe845edcde06435416b0165d1e3a0d942c7ba3b3a1e4b1c",
-      "current_sha256": "bc61d9cd782a08e3c5d9fd4f92c8a8a74af66d6a617f9a6c9f1a6e9dd258b323",
+      "current_sha256": "ab6d0853ac621207d5f95d988ecf227d2df879c9473e9c55f33378f4f67eb8f0",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if/main.qli"
       ],
@@ -2903,6 +3207,15 @@
           "end": 132,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "bc61d9cd782a08e3c5d9fd4f92c8a8a74af66d6a617f9a6c9f1a6e9dd258b323",
+      "layout_edits": [
+        {
+          "start": 97,
+          "end": 98,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -2922,7 +3235,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e20f53af757d292f5bb73567de489efc92c6d8d42d692f23312481a34ddc5c49",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-03/measured-copy/main.qli",
@@ -2952,7 +3267,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "29f0c689887194a44db90deb03b280dc2e8897087321ea0d5919b17951157e88",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/entangled/main.qli",
@@ -2994,7 +3311,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1c5d09eaf8cb5e8c878e586796f4d533908bbdc1c4ff8c5011f2772980b0f4aa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/exclusive/main.qli",
@@ -3036,7 +3355,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7c8ed9238cf6492081304d80da4c351da8b5289a6dc891325c02e64e04cccc00",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/kickback/main.qli",
@@ -3078,7 +3399,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "521b43315d5b163df0fac1398ef597b65948f1095051a91553225fd5070c1f04",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04/overlap/main.qli",
@@ -3120,7 +3443,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8b40e58c13960778a19d6a5e618142267d720c3a679a62c9c7e9ba1c5d808a4f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/aliased-zero-owner/main.qli",
@@ -3138,7 +3463,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d92e11df95801d17ea58f7f731f0e73dee0cc685526fdbc21165c28861d8e858",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/bits0-is-not-unit/main.qli",
@@ -3156,7 +3483,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "dad4555367d880a40757d984313156643bb74795b08296c0c0bafb6fb11c910c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/effectful-argument/main.qli",
@@ -3180,7 +3509,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c209652bd0bfc4703675d8565dbb87a79ea5842ee5c3467f990151d02bee2d6f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/existing-atom-control/main.qli",
@@ -3198,7 +3529,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "6ea2384db7f652832bd552da72e376438b4bec47a0b7fb989a827652b06a3aa8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-split-join/main.qli",
@@ -3216,7 +3549,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8ef52a69a04e6f9716fb57768d90c1c81a27cce1a1762692dd5c33a83bf011e3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/implicit-destructure/main.qli",
@@ -3234,7 +3569,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "432d17eaabd5af99ac0700c4547ec712eb9c0a196be5de1cc342758966efdef7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-insert/main.qli",
@@ -3252,7 +3589,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "31f04bd5863404acfa56f68649c509590ef33bb5aeb8b0021188b83fd0efb407",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-remove/main.qli",
@@ -3270,7 +3609,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ae4a01d3de8175812cec93cad024a6afc81d9556f3589c12f4bcde42cb7ae68e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/lost-revived-owners/main.qli",
@@ -3288,7 +3629,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "96a19581c1ed6e9dce6d8dba69a00567a4a3a3c6798a585efcb6e15d6cb6e511",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/nested-product/main.qli",
@@ -3306,7 +3649,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5f6b942745d0f10af3413c953b67c0e6689fe1646e98eb3fb0c40f1b522b9bab",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/ordered-axes/main.qli",
@@ -3324,7 +3669,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f1442cd4077a5eee2018b647391f7230e65f6f856d71cc6e842154dd819a29b5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/removed-unit-phase/main.qli",
@@ -3348,7 +3695,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "5fd70c48e74ec0126aaf59089544963004fa1e47a12318f5637679a3f99579f9",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-insert/main.qli",
@@ -3366,7 +3715,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3118df3a343a0373d825633e97e07d2c93b32e058264973620f7b144b56c1e0e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-remove/main.qli",
@@ -3384,7 +3735,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f2c79fc0adb12992f0c0c78a240fa2a4c6b1ab999595afee218e0a2fe41c5f21",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/roundtrips/main.qli",
@@ -3402,7 +3755,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "46fa03ecfdd2cd7e3c225da3ab6c4ca025bffb1937adbd0b52389e8f1ab3e35d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/unused-zero-fold/main.qli",
@@ -3420,7 +3775,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1101d59b1f9a756d656e0ca532097b2532c8486fbe4a71a895dd431243c63515",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/wrong-arities/main.qli",
@@ -3438,7 +3795,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e5748052acc4fe6f4ddfb01dc7b938944b48446f1f67d9ef51f8a2870357eff1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/zero-unit-pair/main.qli",
@@ -3456,7 +3815,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b98125f4f59705e1acd5dfd60e41247ba2d09b5498c83e9c7633eb8575baa9b8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/duplicate-revived-owner/main.qli",
@@ -3480,7 +3841,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3f450234feceb3a683b1287836574e472660051805dfc17cc9bd9d009169eb81",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/effect-violation/main.qli",
@@ -3510,7 +3873,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5c6bffd7575b0414c1c773cd4615e39e06217424041a4bd67741c288fb0f2904",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate/main.qli",
@@ -3534,7 +3899,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ab24168c26fdeec86525e15a33d42e75cfdf2087b33b93926cf7d015b20df6a6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/existing-scalar-control/main.qli",
@@ -3558,7 +3925,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "d2fddca82a6ceb2d118080a6f49322611b82df6c935b85fc4acc246001098178",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/introduce/main.qli",
@@ -3582,7 +3951,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "af50ed4f92e040f21b336b0dfab07336e6d7b7421fed119973c06a867629e635",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/left-separate-owner/main.qli",
@@ -3606,7 +3977,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a8a9d3215dece017112d12e667b9c3748083cd5e9fbc518155d744029d38ebb0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/lost-owner/main.qli",
@@ -3630,7 +4003,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "6e12a3ffc6bce34b0f83621309f4300aedd2b10527418b7876bf236ad879bd05",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/observing-argument/main.qli",
@@ -3660,7 +4035,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "464bd162c173efdb76b9c6ee305aa1ae338641f8351382c00894cb2c5a05a90e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/ordinary-roundtrip/main.qli",
@@ -3684,7 +4061,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "41b0886a702c725edfdc9631b74e40ee845943a6fad6a39682a35c30109d42fa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/quantum-roundtrip/main.qli",
@@ -3708,7 +4087,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1942bc32e50b18646f37a3444cf1575f147b00f3df546b490a16253bf074ccfc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/right-separate-owner/main.qli",
@@ -3732,7 +4113,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9f9aaa5b606ed9400d2468042b74b18dde4b6646c473fc411aa19c1e6758513b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/scalar-argument/main.qli",
@@ -3768,7 +4151,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "1cfc08c2bb3446dd68a43024a377df1397043c4ab81676d3d35ed61ef5f2e34b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/unused-invalid-body/main.qli",
@@ -3792,7 +4177,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b6286f57ff5d0121ccb4db3836590ea536f6ff79952b83b85e752f705accc6ea",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wildcard-owner/main.qli",
@@ -3816,7 +4203,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5703554be12b5ce91e67e79c6fe464401ef1bbad9a107f2ee91b399c495d00f3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-ordinary-types/main.qli",
@@ -3840,7 +4229,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "24d02297604327a2c0629a1e219485d86e43d736dffa82c27eee043387cd9369",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-quantum-types/main.qli",
@@ -3864,7 +4255,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "18f37cb972b0d5f7b5c3dffea0a9503d04b9c175cbc015a74a1587f92c5cbd62",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-runtime-arity/main.qli",
@@ -3888,7 +4281,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "cb776b60ce869db2a91c55d41f79aa3397dacda12d29af46f68f22890348e662",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/wrong-static-arity/main.qli",
@@ -3912,7 +4307,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "87a6988410ff168335ff8be6dae6d46d99f7c03945449b65eade76fbc354e8b4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/zero-fold-invalid-body/main.qli",
@@ -3936,7 +4333,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3fefd69e3a837dffd89d8f52e7ea49e7ead038b59c013d32ebfd5524a729ba83",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/phase-eighth/main.qli",
@@ -3960,7 +4359,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "d2fddca82a6ceb2d118080a6f49322611b82df6c935b85fc4acc246001098178",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli",
@@ -3984,7 +4385,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "dbd345a303a24c0190b15c9a2693d55f6fa1cdd7ba84d9aba05479c366e44b9b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-identity/main.qli",
@@ -4008,7 +4411,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b267e315254798586400bb0cbbff2b3371f3da16b27425eca770a6dfc254b3ff",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-negative-h/main.qli",
@@ -4032,7 +4437,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c188731d6a5dfa4e9ac1787e5812b8a59791b0a57dc6682db9171f865773f304",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/effectful-unit/main.qli",
@@ -4056,7 +4463,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "25b57f86aaa043fed7103e0bc6d46e5768b4e4cd91164085324a0b28b96eebff",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-effectful-unit/main.qli",
@@ -4080,7 +4489,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "02800923a0d52cbb503d4b9b7dba942bbb8e08259350f22d99ec6b6d2ab19404",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-swap/main.qli",
@@ -4104,7 +4515,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7004a772ddbcc51aef9413f2e8ca31eb2bc1194d031f8845fe230219481052c2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-unit/main.qli",
@@ -4128,7 +4541,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c960a74e2fe872d59cca2563fc08e7b7933052c31c678a3ff6a396696c20d7ee",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/unitary-argument-effect.qli",
@@ -4152,7 +4567,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f256c20f9c34ed234429631f25f5e48e3bd2a022cf0dd56809c2d83e07738ead",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-sources/argument-owner-order.qli",
@@ -4176,7 +4593,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "cedbade1d77ca7081399426bb030a6e2fef05ecb7a86c1453173587cefc71af6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-sources/operation-binding.qli",
@@ -4194,7 +4613,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "37a3534db506a647f21895787365c84c37197c1bf83e52cbc40d9e85b91cf0af",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-sources/phase-through-product.qli",
@@ -4224,7 +4645,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "1848d954efa6c0d3548dac1e75a8d99307e39dfc2d9a69837bd1415b1bf421b1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-sources/unit-wildcard-effects.qli",
@@ -4248,7 +4671,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d7c1dcf3bdd5bc17c3219e492c679d92be16a0f3c5d88c8aa059cde0e8895cda",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-sources/unitary-argument-effect.qli",
@@ -4272,7 +4697,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a6a9d0ae04f2fad59655b47f01cf0b99222c4ecce1e26740f76adbb702d6ded6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-007.qli",
@@ -4291,7 +4718,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "06047c6cd518e835c8f340a9f4bf4bc501459074fbc7f32c4fca6f7e31ef61ff",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-008.qli",
@@ -4334,7 +4763,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8103357683d85bb529d6287ea317f01f80d9c5a8db2d067105b08dfe7c4f1344",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-016.qli",
@@ -4353,7 +4784,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "57d521306a3ba7a85413018c1d09c3be50fecbb89c6f0f18bddab22f65d29ddc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-019.qli",
@@ -4378,7 +4811,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "78a104f69141d8a46595448f5caa7ccb422c8a387ea715923ddf7ca882e3f7a4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-020.qli",
@@ -4397,7 +4832,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a0cb1bf6d3b249832fbca4d7f002dbcee70c9c463ca16182f6e278989592ae01",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-021.qli",
@@ -4440,7 +4877,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "8a78024b8fe39c58b003867ef9030244c8a1f63b35ae327537baa1b27b240014",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-022.qli",
@@ -4471,7 +4910,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "dae06511fd9fc44595ccd021786547ebe8d69e049ca8c23fe491f2130e17eacd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-023.qli",
@@ -4490,7 +4931,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "423a639904cf0a0b1fc0f4a203675c62f452ae823534ac7c984c4ba58ef2b718",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-024.qli",
@@ -4509,7 +4952,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b6c58f80c23ee523c91de6eccea827c9faa5946750b6de110d4f7be9195735d8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-025.qli",
@@ -4534,7 +4979,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a6b549607d6b897b9764ea6cb6019f071d7b4af5b264ecd3865b86917354354e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-026.qli",
@@ -4553,7 +5000,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fd32da36f3c89812a1288ec6bf163cd07ed3d6cdb0976fac074f8b6755a932fb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-027.qli",
@@ -4596,7 +5045,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "5c7e484785ade5ec527c992d84a111ec886ac9d23311bacd1773130e5e359ca0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-028.qli",
@@ -4615,13 +5066,15 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "089c141e0fa84646a1e0d996c895d8f3605a60abf52d69a88a24e65f51902b2b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-029.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-196.qli",
       "before_sha256": "8012f165f783dffc88421623f5455bf0e5178f9b9e301aeeea829f5c47b0b9f1",
-      "current_sha256": "03cb43ad3688294adaa5894b8aaeceb4e7ec3e1265be253f0fef1f6018c3b124",
+      "current_sha256": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli",
         "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli"
@@ -4639,6 +5092,15 @@
           "end": 132,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "03cb43ad3688294adaa5894b8aaeceb4e7ec3e1265be253f0fef1f6018c3b124",
+      "layout_edits": [
+        {
+          "start": 115,
+          "end": 116,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -4665,7 +5127,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "21fe3ed5794da9d12954dff06c52e862c2013ba79d2b37e771bf378834dc1d61",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-034.qli",
@@ -4684,7 +5148,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b6f47963d72a6e1a54372e997550a6d8b0de3000434ca490f5d84c51eaf45a96",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-036.qli",
@@ -4742,7 +5208,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "47e6d6912cc5d7983df6b167923366ea34d8b8a3f441f6502e158532d5184576",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-037.qli",
@@ -4800,7 +5268,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1a5d78325a37d5ba64a6f6a74f7e6daff2acef9941a5c0f2e94f607f92acc4be",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-038.qli",
@@ -4846,7 +5316,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c1bca98185aa463ce3334ced800c88caec02ecd92c268e39315fc57ee28fa0ce",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-039.qli",
@@ -4886,7 +5358,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "6e3517602bdb553ce06e41264bf890988bdfb86dfe53c1c9f6edb859905c0524",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-040.qli",
@@ -4926,7 +5400,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d068c62761e3733a5e0ede2dc70541d65a61749c742ec3261f74776485c8a644",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-041.qli",
@@ -4966,7 +5442,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b4636bc8db7335e361a1cf7d768a4535c615e0ff9ca9b7996910eeffebbb0e27",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-042.qli",
@@ -5006,7 +5484,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0b0836d4d423a7706e2dac02264a63352c46c2f4391aa716d7d75fe28f0b89e8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-049.qli",
@@ -5025,7 +5505,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0e12157c512d8ebee82170f5ef70a01d8ac35c2f682ce6ad75d9be16bfe0202f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-058.qli",
@@ -5052,7 +5534,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "45fdf06062e8b9b7988d4607d904b3d86afe90e5308092901247b9b78eda1f05",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-064.qli",
@@ -5072,7 +5556,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0a569a6c8794c56297b130a2bd8804db09d11a634e537bbdadb6b94c6003f59b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-065.qli",
@@ -5092,7 +5578,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "231e5773d5ae7788bbb8989ef9875dca1579304f27cbbf444ad89314f2eb6a1e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-066.qli",
@@ -5118,7 +5606,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a1ef8ff0668b17036ab71191dec07176ecfcff84cfa30d9a9736a4b225fd0c12",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-067.qli",
@@ -5156,7 +5646,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "605e53b04fcbd84dd5a3e0d7d1e76ecd696a7bb42503c0791dfd6b8797430d00",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-069.qli",
@@ -5194,7 +5686,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7d6f5326a84c465b83fa0b3f34170ad46535ff5426166cfa68535bb1543918f0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-070.qli",
@@ -5232,7 +5726,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9f218420f661bf298b7c07d62384082dce30d7bae59bc37f3cd5aa9b99534eed",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-072.qli",
@@ -5270,7 +5766,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9a8401d84029ab9996a2c95383934057b6865c9ea708cb632595e53bc4a133a7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-074.qli",
@@ -5296,7 +5794,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "214d5c8496bd3d57d44da9adbc43c2b66d21c3b0fe9611b409d24617e8abd188",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-075.qli",
@@ -5322,7 +5822,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "a88b024c90548c84d7395d41f11bde422f10a1c2e3a9df627919ac6c0a10b707",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-076.qli",
@@ -5367,7 +5869,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "54eab479d25335813cde762e5532d903f77c8045891c0ea78de738d799ffe7dd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-077.qli",
@@ -5410,7 +5914,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d821c2549eb468db4fcf2617b7a4f4c705e386de5b206e72eb9affee0055b6ae",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-078.qli",
@@ -5453,7 +5959,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0d633afaeb974e3e48833b7b2344696919a71319ec7fab4a5de63e864d022dfa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-079.qli",
@@ -5496,7 +6004,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bea90c3190729fa55fbd79673470b14b375cef991975af30d70a8cc0dc981827",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-080.qli",
@@ -5539,7 +6049,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9a7b307a30004e4dfcff6767626bd2b7795d75276e7c6b3330b77c357e8e0c32",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-081.qli",
@@ -5582,7 +6094,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "75b0fe51341429bf17b49afbf4dd5bda0cf8b33f5cd1745390b76c436a2b5c82",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-082.qli",
@@ -5625,7 +6139,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "362a506e52ac0e8145be0d4e61a3b1fd7ea9fce7da6173154aae44d5f4383c7f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-083.qli",
@@ -5669,7 +6185,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "97eff4eb00252271a5fa8ff52a70986e071cdc229b09f9f1f18a0fe60a9acb8f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-084.qli",
@@ -5699,7 +6217,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c493e1fa274a0877e277608b1201aa3fd84df4b2fa6baddf58f276bda5af4407",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-085.qli",
@@ -5729,7 +6249,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a9df7fb7dbe6e4a3e50860834287636e66a840b0341cc97fd0347999c563eaf1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/003-main.qli",
@@ -5747,7 +6269,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c6062bdc5e497287e6008bae1429c0b8f0b21d788258812ff017f9c72227fd53",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/005-main.qli",
@@ -5765,7 +6289,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ee22e8e5405c5b8a2c46aef63881fddbd1b6c7813d21c1472220076376524d00",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/015-main.qli",
@@ -5796,7 +6322,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d8f00c70f662d2bfa87ce3464cf50caa51d1420426fad572d032ab187fa4c9ab",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/016-nary_lift.qli",
@@ -5839,7 +6367,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e54c08763a65bee87101dc0faad59b14039fa8585dcbc0a594b8553c9b1a6d55",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/018-main.qli",
@@ -5894,7 +6424,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d83752e59f01ec5e537a0115ebf9539f3a8c5c0eeaa6aed6c3c16441f87f4a7c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/019-main.qli",
@@ -5949,7 +6481,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e4c686037b517aa0480aa81914cea979fc68aa14240245543bae91ef4d6c9d27",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/020-main.qli",
@@ -6004,7 +6538,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e1aec7211aadf9510cb363cdaca67988836bc2038863d4d269305aeb553b2e91",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/021-main.qli",
@@ -6059,7 +6595,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "214afdb256634bdcccec11023714de58421c03cb2e2bf805dea1331441df6f18",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/022-main.qli",
@@ -6114,7 +6652,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "6ca57b1d27c6f1775e8b7a7d2e3b06dea38a5259a859901a6f0f922f4ac62a35",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/023-main.qli",
@@ -6169,7 +6709,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "33c837b976341463ea99afe5ac83bdaa41bdd14acd392249ddc91e286b3b265d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/024-main.qli",
@@ -6224,7 +6766,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ab94253b756d490c563e37c21dd234c4b3f32269ff4b140986ce68235f62d9e0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/025-main.qli",
@@ -6279,7 +6823,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f73c88587127219867c255310f83875ca657353ab04d9faa0a819059acc6b201",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/026-main.qli",
@@ -6334,7 +6880,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "13d45d4af2e71bf84431f853715c81828b0232188536b31ab9a0366a976a1b0e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/027-main.qli",
@@ -6389,7 +6937,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8071c7eeb3f49dbeace0370a3e2530aa3939eda3d1e4dfed0d55708dbe61b93f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/028-main.qli",
@@ -6444,7 +6994,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8dcc7497a353a43cfc28b747314e02d9d5bd429580fa470b837e694f5a7660ec",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/029-main.qli",
@@ -6499,7 +7051,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "387d948a8ad23e04282451c8e57f575b8bea7e5add4087f4471781aaa01207f0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/030-main.qli",
@@ -6554,7 +7108,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3ecfbfadce7e0fb7647a8a943245c6edd73b811155833f937edea4eb32f62533",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/031-main.qli",
@@ -6609,7 +7165,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "86163688ed5845f7302f056d3a79f701644c5fb8668d3de2e8d22ee7caa4434f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/032-main.qli",
@@ -6664,7 +7222,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1737f6159fcc9455d447f1a5bd785b81f41a439a27a8f10e843e9ffec62a9774",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/033-main.qli",
@@ -6719,7 +7279,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "818c129b64368068e7313c604c70aa363e1a5768bd4b8fb04a592ed183ddf1c1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/034-main.qli",
@@ -6774,7 +7336,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ce9ec669e6254553d772cfc3b5619ed18efc589edc819f68bd2458487ce89709",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/035-main.qli",
@@ -6829,7 +7393,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bbcc1c5c8b75cc685ea9bbdfa4ca99d1f11c417847daaeef2ec23a8a36efcfb8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/036-main.qli",
@@ -6884,7 +7450,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f2df0d8e3a37f277de58beb8b40991de607dbf6c34b88eabc1b472a570b974e0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/037-main.qli",
@@ -6939,7 +7507,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "17e9e7df761e9f46af0931e90b8d50466bba15ed33a9135fd581e1fae5e699cc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/038-main.qli",
@@ -6994,7 +7564,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a273dba2f9b5ab9355a6510bb5bc81351289cc0dfd81890a513cf5e9b17ae6ac",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/039-main.qli",
@@ -7049,7 +7621,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e41a9e1f32af5d0b3856f10ad9bb75ff0f0d608db846ebeb4269c40966da742f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/040-main.qli",
@@ -7104,7 +7678,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ad47545cc4d442bb119898c03cace42270fe42d11f347e762190efcedd537635",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/041-main.qli",
@@ -7159,7 +7735,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "061ab846d5d758520fba93929318c4c0511d8224219faf09acaee7226190f53b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/042-main.qli",
@@ -7214,7 +7792,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1274e9469378c5fe544a62b4a554210e6d02a8f6d3ea14436975369293812ead",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/043-main.qli",
@@ -7269,7 +7849,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b747fe6047ff88274c9cadae7c9033bb5b2b2331efe6f936b4b48d21b9ec1108",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/044-explicit_layout.qli",
@@ -7324,7 +7906,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ff51c7a3ba7ae34016ae67241f553d915e2aabf38f12ddea291db3ed6e3589a7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/045-wrong_permutation.qli",
@@ -7379,7 +7963,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8c53bd55a94bb0fd11399387aa82a740f8bf7c23bfb01adea9dca3bd8d71ea27",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/046-multi_parameter.qli",
@@ -7417,7 +8003,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7bc6b4e97dd6e485248e0327d3945e378263147909dbc8ef8a3b96d2269beb1d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/050-dropped_auxiliary.qli",
@@ -7435,7 +8023,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c10c59231dbb843880d284d25c1d50eed4a08b565024798ebf9ea6a22382a73c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/056-main.qli",
@@ -7489,7 +8079,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "84bbeb2d726eea8c490b621794e972ad8a0870bd3df7f5ae3f7c56026027b193",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/057-main.qli",
@@ -7543,7 +8135,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5340f8a903893a89a3d7311a5a4c7ee8d84ad88676246fb0cf0d3fc9b90b4453",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/058-main.qli",
@@ -7597,7 +8191,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ce00a41feb51d1dc235345f7057966de965e1fef4ca862bcebcde7c939e6e259",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/059-main.qli",
@@ -7651,7 +8247,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d00ef7a14978e55cea7a459e5660378d0dad88a45b89d0a85ffab659f4f1dfce",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/071-main.qli",
@@ -7669,7 +8267,9 @@
           "replacement": "use std::gate::t;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1a01d451f0f67933c737e5a65b67eb2be832004871cf132482217dbbc81a739e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/073-main.qli",
@@ -7687,7 +8287,9 @@
           "replacement": "use std::gate::t;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8b0f621ac4a117704221a07874dde6dc7f29d218a92d48045e8f55b64237e9fa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/074-auxiliary_hh.qli",
@@ -7717,7 +8319,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a010b8c3e5da9ce37c4964d3fb320ce1a5c3e4f04f86d5f5707dfdbf8d0bbaef",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/075-auxiliary_hh.qli",
@@ -7735,7 +8339,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e21bb8f91c158c5e361ef7a5ca8fe50f380f2d98ad9986bc056cdf2d63ae0843",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/080-false_cleanup.qli",
@@ -7753,7 +8359,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1a8068cee620f128e0fd139582b2a35e64751165a95aa31df4c0512a0db24ffd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/083-kernel.qli",
@@ -7772,7 +8380,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "750fcc0a9eab7ef9e949b42fc2bd9e4dfff3d4c8c6652854b3af896cc9145f1b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/084-pair_contract.qli",
@@ -7815,7 +8425,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9ab6576fdb4cdac9af8c940c19c07e7fa715344891068638ac5625d0053349e3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/085-pair_contract.qli",
@@ -7858,7 +8470,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "77f34ab4b6e2a925fe925bce4bdd9d22f5e65fcaf95d51bd2bcb14ce546b4162",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/classical-functions/current/086-phase_kickback.qli",
@@ -7889,7 +8503,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "535bcbfd74b36aca8184c34b5c467b5a628d5cfa44e739c1e736ecdc7e196199",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
@@ -7931,7 +8547,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "08ab8bf203f2546bf4aece35c1dc23d91cac1af95d0660cf34369af2722b6496",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
@@ -7967,7 +8585,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "8f3c3f859a1e615da84bc507d8b334f16fac722a6089f98a1eb7d02ae5d8421d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/abstract-split/main.qli",
@@ -7985,7 +8605,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4f0f18459c2b4ecbb2ed2c897941a72eb2183f9ab38ace7f70bc3b349183804a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/assumed-unit/main.qli",
@@ -8003,7 +8625,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0a6d34a0b207e7ee31175c7c02f388be0d5e61dd259e38dedfafa194fcc7a737",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli",
@@ -8021,13 +8645,15 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "166042b8ea2b720c676df2e8d1a30affeb121fe7a01f6f8f5e1974b11b6fab92",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-279.qli",
       "before_sha256": "9020a09cb62c8dfac8e1cfd3b03f83dce48421f6200d6e54be848c70037011a3",
-      "current_sha256": "acaba0664a78193d94e99ecd0644c0713006d4a9834993d53d5ab172460f3dad",
+      "current_sha256": "c1b8ae27bfb96841b9324716c4d45f1751570e5b86f377449176924cec40de23",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold/main.qli"
       ],
@@ -8044,6 +8670,15 @@
           "end": 132,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "acaba0664a78193d94e99ecd0644c0713006d4a9834993d53d5ab172460f3dad",
+      "layout_edits": [
+        {
+          "start": 115,
+          "end": 116,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -8087,7 +8722,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b3fdb8d31011997aaafc8f523e06b6eec8ead2313bc8aece33341c2050785161",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli",
@@ -8111,7 +8748,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4ef7bf2e62e0b134049190ad397b2ad8099051fa34e83265d1a962235f2e0eb5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/reflection.qli",
@@ -8141,7 +8780,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0c2c10f76a77a7c87c046f76c77238b736b65924bf63ae1d8fbe549cc3509849",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/rotation.qli",
@@ -8177,7 +8818,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4e246d8e99cf00cf2861d87636fd97eb25d9bfeadd65e9be241c8010e8cc5638",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
@@ -8201,7 +8844,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bea250b03d3876162e2e15dff2dabd665a3fa90525e352cc6a36c923fcf395d0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-bits.qli",
@@ -8225,7 +8870,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "7c421e1169e6b1c147f6da5a3b835527186e987a40347f89c9ee87dd38c4c48b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/katas_ghz/prepare.qli",
@@ -8262,7 +8909,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7deb58d2fe2ba52007f866285044f93e8b40eef585e92454a453fe40d1948fd4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/measured_qpe/readout.qli",
@@ -8304,7 +8953,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c34ff6dc07ee4a41d4db7f08ea0e29d561a18ed10fe7919db4a81323c3fda6fc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/controls.qli",
@@ -8334,7 +8985,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7bc249a62cdee9a97abd2b35d2ab60274bc2710c633c9f8a4dab661742d30f37",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/increment.qli",
@@ -8358,7 +9011,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7ed9dba0dce275244cb1dbeaf8948b4f6424af89fd420d7f10402406418d8d1e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/negation.qli",
@@ -8389,7 +9044,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "24ed43408320ba805a2adb3ae8fa1feba3fdb3d0f42f35d078fdd10bc124b56c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/evolution.qli",
@@ -8419,7 +9076,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7436ba4ab8f0274d7fa6f9d3c8c46ab24c2e8b8a377cfe22b9762f44578f4e6f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/preparation.qli",
@@ -8450,7 +9109,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "79b7590c06420a63024c04b57514bed4c9078c9c525d8ea204c3642c6cb1f5d5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_xor/bitwise.qli",
@@ -8481,7 +9142,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "98984634675dfcbbbd0431772dcb4ea3b9df7fc5334a0fa72e261f329d84ae01",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/isometry-vocabulary/current/initialization.qli",
@@ -8512,7 +9175,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "84d80141fdbea55ce041e96ce5cd8472fcc92e1f215f31fc7b818953163fc407",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/isometry-vocabulary/current/wildcard_not_injective.qli",
@@ -8538,7 +9203,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8fe928fbc69842d7d7dd95e6121e6a510689a5a913aac6b018407e1042195d8a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02/main.qli",
@@ -8574,7 +9241,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4a8be6461937db945e574549fff6700a9eb62788bdc5d342e53219a543c7c3a9",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/main.qli",
@@ -8610,7 +9279,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "befbbc11355ee98a05e24a04a69ddc7eef7abe97158e5f4ec0a19a0c0c3ba0bf",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first/main.qli",
@@ -8646,7 +9317,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "92f928cff509c39403b86972d950b26f240ee39618ee35a65eeaf153a42fff3b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_nested.qli",
@@ -8670,7 +9343,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3be508852e571cb6d8d76acb9f04cb3022d4653088205523f59d4602f2cd6a9c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_shadow.qli",
@@ -8694,7 +9369,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1f93beb6319f5c261704d127e4e0f224852b8eabe66515476794753d4bc03a05",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/tuple_evaluation.qli",
@@ -8724,7 +9401,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f05efcbcf0d20e1eed09e44acefe40e5c70300fe2c96115a247a5d5b7d9b1064",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020/main.qli",
@@ -8760,7 +9439,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "51fb0161754da94922e9dc8ac70cc4aa69765ad63d8e979f9151d77c765d416e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli",
@@ -8778,7 +9459,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d664bd1e6e4c94d140adb905b994a48672b8997cf68fcc4e63fe2392f6e90984",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli",
@@ -8796,7 +9479,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d742dd8cacaeba89e6561a61ea64088dcb3c212a4244eeb662c6181186c0caf1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli",
@@ -8814,7 +9499,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f0ecb68623cfb0f0830c6150f998209a1c49264f308b50574a66b682a7465984",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/a.qli",
@@ -8832,7 +9519,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "78cda760dbcb80e21266799b81869c3327ebb60ea57f77f8106118d87dbb4660",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/b.qli",
@@ -8850,7 +9539,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "84b517847833efec5dfd269253aebdd35ec5123c97e13f73e82858dcc300e778",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/identity_reference.qli",
@@ -8886,7 +9577,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fbb778eca2aa4113cb87bc2d1140aa5cf0cbe60c90a64cad7471cb1692b3891e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/x_minus.qli",
@@ -8922,7 +9615,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "dbaeea7a4155a2ebfd7fcb48e8c5cb810110da649644e099891b4ef215a28ff3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/x_plus.qli",
@@ -8958,7 +9653,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5621f558d37eb457d39a92a9448a9251a32bb7c45c43583f4847431d07567aca",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_imaginary.qli",
@@ -8988,7 +9685,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7ad880c0bc045c5a4011c9a9fe43db0cda5d1c063984bbcb7b860668626e3543",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_real.qli",
@@ -9018,7 +9717,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bee078265ecd80e5641b41c59b1605c96fe0f89e0e6d02eafff9379320ffa103",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase2_between_bins.qli",
@@ -9048,7 +9749,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1416711da06c30fe06855530f7a2cdf9d5cb83484aa4ef1cedf74b079ff516d2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_correlated.qli",
@@ -9084,7 +9787,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a8b0238f222b7385f4531aacedc7fa0fe5eaa08beb28b387d45fd6fa2341d280",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_identity_reference.qli",
@@ -9120,7 +9825,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3d3690a20124900801aad83b204df0c8f49d549e37254f43e7a137d53103894e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_x_minus.qli",
@@ -9156,7 +9863,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f49396f3a66e1d8f65e99f117ff19b3aa7b64c2699eeff221f291b68fa8fd438",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_x_plus.qli",
@@ -9192,7 +9901,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d6ab9cb82e8ba373ddc84f0211bf8affb3d0a0c944be0c984cf3397ae78a166a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/teleport_missing_phase.qli",
@@ -9210,7 +9921,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3e6724ef08e5e5437b68192e035ba6ae5d851607d32a2e73d9eebd0da2991ae4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_inline_equivalent.qli",
@@ -9240,7 +9953,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "112cb1411d004b2dd14d6debbd4ce3b54ededbb0f3dc7bce3bfea26c8c8d2405",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/aliased_owner.qli",
@@ -9258,7 +9973,9 @@
           "replacement": "use std::gate::cnot;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8e680b5c22ca000ee2af2e364d8955ac9e119ab22a40275d462e5deb548083b5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli",
@@ -9282,7 +9999,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "cbfd72a2a1d68c1b8311771c2b4d24af25384c36666f1179b7eddf92e111c234",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/spent_owner.qli",
@@ -9306,7 +10025,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c6e88ffe976699cc0fd791026b9e9a4216f8d767304c52eff7cd4c6e3805e24b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/teleport_minus.qli",
@@ -9354,7 +10075,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a00634b0b979e1d682fe5ab13cde6be22b4787f431e14c589ce17b74a45a9dd2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/primitive.qli",
@@ -9372,7 +10095,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5766973e767162e698fa36b6b36075ace44c5a10999c9cb69f361e19405beabc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/zero_width.qli",
@@ -9390,13 +10115,15 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c13162c23bffe846e06a9e3d2c4cf96ff08c998b84bf5d8b1dd6981f0745a167",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-326.qli",
       "before_sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
-      "current_sha256": "4e90e512be7328795d9b58be8a7d9451f8f2c3b3e2bd82ff68633cc473444fae",
+      "current_sha256": "1198813aa45dff067d968389670a7f5285341f97db533a8d336fc5a8f1011060",
       "logical_paths": [
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli"
       ],
@@ -9419,6 +10146,15 @@
           "end": 74,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "4e90e512be7328795d9b58be8a7d9451f8f2c3b3e2bd82ff68633cc473444fae",
+      "layout_edits": [
+        {
+          "start": 40,
+          "end": 41,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -9456,7 +10192,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9472ba4144e3518463b0995a11eb2f596ee0e54feb41be0c418c34877b0c6544",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/long_trajectory/main.qli",
@@ -9492,7 +10230,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "6a66c4266cb1dcf444157c908881cd517f5355cc38aac01235bd10a92f4ab46c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/roundoff_outcome/main.qli",
@@ -9528,7 +10268,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a825312659b1bcdc360ab4762a91c1ec79718d4836161e3031e5d22b517a5493",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/shared_identities/main.qli",
@@ -9552,7 +10294,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "20abdccc138a32fb67c10c4b18a56db55cd04c3e7e78d26d43130c08a6169af0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/toffoli_flat/main.qli",
@@ -9570,7 +10314,9 @@
           "replacement": "use std::gate::toffoli;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "100418d1e8369e2667f994e35d6d83d5d12f100135beeabe942c4fa998077a36",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli",
@@ -9588,7 +10334,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "49f14012c0556e60efe01abcfc8add2cd84ce4636dec3685dfe99dcecded956f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/nested_ensemble/main.qli",
@@ -9612,7 +10360,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f9ad1b1edf65248040125fb06d3134437c4bf5cea4a94882d144749db231b255",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-feedback/main.qli",
@@ -9648,7 +10398,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "dce0ea310093ddc29432264b319757636cca8209204367713c2f29ebf1d07b4f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-readout/main.qli",
@@ -9684,7 +10436,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b1ca7f3033f0a72d67efd1ade37f9feee503d98e2a9fa5c260e9fef7d6f8dccb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli",
@@ -9714,7 +10468,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "06d495977a44efc6baa6e494d1cdcf6f1e2a9417704c06149455b02209957b49",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-feedback/main.qli",
@@ -9750,7 +10506,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fc7f165291e20d64d42b3d8f00eea1e1762413b5e70e4b22310e2aa267a95560",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-readout/main.qli",
@@ -9786,7 +10544,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "253f151fb39c4456306643d551ac5b7b35f43b12f96d5257d1ad533e4792b806",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source/main.qli",
@@ -9816,7 +10576,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e97c91ace52b390632ef108bc5d57df1298af3536945e64e4bd47f7a37227cbb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-unit-drain-readout/main.qli",
@@ -9852,7 +10614,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "310d9ffdbdd0741c6bb5ebd123ad4ff9811a3d7eb98e07fbcc1d2f4e1fb82504",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-drain-readout/main.qli",
@@ -9888,7 +10652,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "f68a95d2e73ed076c22cf0cd9e0f939cf5c2a6c8f910544160840c2ea415a6fc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-forget-readout/main.qli",
@@ -9918,7 +10684,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "eeb0acbb69410b72c467c8e4f0fbd1451536cf458ddf17aeca1bea8c4e8699e5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume/main.qli",
@@ -9942,7 +10710,9 @@
           "replacement": "use std::structure::empty;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "014a0ba39d4f83f14bd69ffcf0c74192127f341c9dc0944c4272d54923588ba8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/direct-preparation.qli",
@@ -9960,7 +10730,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "69f372fd9bde101641ca3c2597f21e5aec3281552f20ebad73e06544c1d3346d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/endomorphic-control.qli",
@@ -9978,7 +10750,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "492cffbbed0181ddc3c7e6bd136fd67d9e62fa9052fdc7a5243fb0d1dd54665d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/arrow-interfaces-v030/attempt-01/endomorphic-unitor-refusal.qli",
@@ -9996,7 +10770,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "db87c8856b280e9972fd1526e736b77e8f06c04eaa51e13f9d7a52434fc4b766",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
@@ -10016,13 +10792,15 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d8d7aa2e1e50ccec53a3625cfcaef3f4e024d2aa1ba6577e7f2a192d8e7b0431",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-348.qli",
       "before_sha256": "8daf1cac76173bea149c12f34302fdb56b12c5ef1468211eb1558c557367d5fa",
-      "current_sha256": "07a58976848e666c18729844ffef1d578da41a08cf1cff86008fc2418707d241",
+      "current_sha256": "5baadfe39daec49dcdeeb14b8665d4e1454a233a54aff7806f6938243cb14ee4",
       "logical_paths": [
         "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
         "tests/fixtures/frontend_v030/capability-naming/current/files/client-004.qli",
@@ -10041,6 +10819,15 @@
           "end": 53,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "07a58976848e666c18729844ffef1d578da41a08cf1cff86008fc2418707d241",
+      "layout_edits": [
+        {
+          "start": 22,
+          "end": 23,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     },
@@ -10062,7 +10849,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "191acf509e8a8ec3e92f1cdd41c2fba070572ebfab5bd6864e5a657ea38f57a8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/dead-static-observation/main.qli",
@@ -10087,7 +10876,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3a751c61cf5c4d887c7c620235138631b13f1b008dbdf269e34df74f1a0ec6e9",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/recursive-observation/main.qli",
@@ -10112,7 +10903,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3f2a7b6d232abe1ee8a89194850b893f8d827e52716a4d76f9ff17a08aab8acc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
@@ -10138,7 +10931,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "40201c83709dabcd01b5fddf3ad5e5017cf32bd543bf18a4d3e74008e24199e8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/adjoint.qli",
@@ -10156,7 +10951,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9845be897a587b3c428f19284ef9a9e31812835b5a9f0a8b77b3d25a40513b1e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/endomorphic-sequence.qli",
@@ -10174,7 +10971,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d3a823c99801d573d0ab719a7946d72db67a64eba5c39c30573d59afc515aa91",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/sequence.qli",
@@ -10192,7 +10991,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "b3e72a612e78fdace54d6afa9aa88e36d8e5ccd6afda173e135a1b54d58cfbab",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/tensor.qli",
@@ -10210,7 +11011,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "cbe109018aa70843b083e58b6d12199760b9aac630926553dcc7b4735520a0a0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-01/wrong-middle.qli",
@@ -10228,7 +11031,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "aea835eee83a9a4bfa185c38035c1b3e7728c306ef7192c0ca0921766e8acedd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli",
@@ -10246,7 +11051,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7fc2387eb02f760301f8ed1c7ce44e9693c60e91ac291ccd3f467245ce6206f4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/repeat-then.qli",
@@ -10264,7 +11071,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "92eb04e4bab04f1a5016c40dcc53ca706aa361353f7f63831eb0620ddb9ad97d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
@@ -10282,7 +11091,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8f13e5434585dd6b15ab244dacf00e906f1b772a5432db99cfc25adfd389a2a2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/adjoint.qli",
@@ -10300,7 +11111,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3004f57ab0a4a6249ecc727694dbc49fb0a8490204c042c5f4554a992f34321f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/sequence.qli",
@@ -10318,7 +11131,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ea540f9e39fcc03cd3de0fd827c64f4448589240e50656fb1be567bc0b831f0c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-01/zero-bad-child.qli",
@@ -10336,7 +11151,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "677d9569fcfb1441e49ca965bf132146bf631b5180d41f5de6d2720df5a8eaf8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-02/tensor.qli",
@@ -10354,7 +11171,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "198f04d049962e5ff1f7bbb25f71053557e93b3410f72a603fe66f3164c306ea",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrow-raw-constructors-v030/attempt-02/wrong-tensor.qli",
@@ -10372,7 +11191,9 @@
           "replacement": "use std::gate::x;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "dc47bd309b616d789271174b87676c635d29fd86216fe4dabe8d6362d40ff2af",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/false-unitary.qli",
@@ -10390,7 +11211,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "29e0b4b39800b6ca7472669f709a4c9b45230fa8d061ea5a7b8b059bb13077ee",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/preparation.qli",
@@ -10408,7 +11231,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "7d9799b11a6e5e6c5b4814afc7c16894f11c2e2a9b7780aecd8fcad1a7692fbd",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/unitor.qli",
@@ -10426,7 +11251,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8504a7eb32eb8de589702da3023a47f21937f916970400e3b6e0914d6cd344fb",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/wrong-input.qli",
@@ -10444,7 +11271,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9e2c621fa69c7d3645b6273436a8b4963d87e31b3ff767590a13894671606f16",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/general-arrows-v030/attempt-02/zero-power.qli",
@@ -10462,7 +11291,9 @@
           "replacement": "use std::state::init0;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4191dcca085c9dee496f0b2bac17ecc4edb4ab123323301bf3edd8e84fb86fad",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/controlled-scalar.qli",
@@ -10486,7 +11317,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "e1554a7453bf717d263437f683c48ddf38f9a1df252ee1714ef06d8385c8e272",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/hidden-inverse.qli",
@@ -10504,7 +11337,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "338dad19572e6d30d869cd40790b8fabeec0b2825855c6030744e1add1e65910",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/nested-control-inverse.qli",
@@ -10522,7 +11357,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "46cd50acde3c1537ea085e4839e2aa25ba26060fb8f38450db8a06b0038dd2f5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-01/reordered-tensor-inverse.qli",
@@ -10540,7 +11377,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "46b82af4d9789711128ac2fa67698748d0ec91284d79f00d24b3ccced8fba5c0",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-raw-access-v030/attempt-02/hidden-controlled-swap.qli",
@@ -10558,7 +11397,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "46e18648312f11ad60ac590a075e5f848e19541b3459a1271eae1f944b2ad1c5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/bad-control.qli",
@@ -10576,7 +11417,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1e613b292dae4ca68aaa524225565c492bdbb0ae723d0b02c466bf3b0448f2c7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/control-provider.qli",
@@ -10594,7 +11437,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4e5bf8d717a3107cf0ed945fed18b7487205b3af5944d3d2f32e6890a26a98a7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/false-meaning.qli",
@@ -10612,7 +11457,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fc53af2d4a35ad60c24425e57333d579e024cf8a362cab9af184de3e64866022",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/unused-false.qli",
@@ -10630,7 +11477,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "af7dcd128e7e198edaaed0cf051056a4fa6441519b93b288174a0dd4f2f0c2b3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/unused-valid.qli",
@@ -10648,7 +11497,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e8b37aa213e2e5d415ea15d33c35ec709b77ebf98d4e60fe31fe59617fc4857e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/refined-source-control-v030/attempt-01/valid-combined.qli",
@@ -10666,7 +11517,9 @@
           "replacement": "use std::gate::x;\nuse std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "bb7f4ecca07faac465d67ff956ab25df4caa935236de18ef418697649f03c950",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli",
@@ -10702,7 +11555,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "859526d0f960ffe63a8682162fe9e113519e257cd5d2cf9603a1ccb406569de3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
@@ -10738,7 +11593,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "332652d79fedee3751629318cfded66c14a393f1eb8c86a3157eaab4246ba6f4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/argument-once.qli",
@@ -10762,7 +11619,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "916085dea97595ff64060844dbb1bbc2497802c1603f7ee15769b8e595131d16",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-bit.qli",
@@ -10786,7 +11645,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "e848da3f2870d3c831fbb410cdbcf29956c9f284ed4616a7b94984bf9506a9d6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-bits0.qli",
@@ -10810,7 +11671,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "c7025dfad0bad7eadd2ff8e7a7d583bfcdb2c0d1861b087ddcc8d37815125246",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-bits1.qli",
@@ -10834,7 +11697,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "aa7752bd6f54201ca7eeca77e935a9ad09f12edf1a0ad2e5ed1fa8bbf0b845c6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-bits2.qli",
@@ -10858,7 +11723,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "cb1e1d88e0853cae87b9fc457bccb21ef7e246bf4383c39355e1997c4dec6e17",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-nested-left.qli",
@@ -10882,7 +11749,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "a3deb327a1a5626a49fa58843d7bdbc746af115b3dcbfdd2b2fc377b0a2748e3",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-nested-right.qli",
@@ -10906,7 +11775,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "8a500b9122456055f5b6478d05694f7fb4f393023c5b36b704140c8c56bb417e",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/left-unit.qli",
@@ -10930,7 +11801,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "f45fa9ff8d7b329daacfe5e78c0a9cd698857e9fae621f4f300f1cd1c354490c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/maps-after-observation.qli",
@@ -10960,7 +11833,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5f2ff6ffabf1900e9f6c7a1ef80875a54db15d13efbfff17edf9ba1fcf46a2bf",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-bit.qli",
@@ -10984,7 +11859,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "22c428fbc0efbccdbd66cc0f0f0caa144b1e8b3e0674772b3bf89f92e580b3dc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-bits0.qli",
@@ -11008,7 +11885,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "9cb2d4097a48aa562bbcfe73cd447fe8606ab4ce8e37d05b11e6f91c160141dc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-bits1.qli",
@@ -11032,7 +11911,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "0c12a17daa9dfbe3235ed38184b545b038b768709883690e41d565c60840537b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-bits2.qli",
@@ -11056,7 +11937,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "b5e2701d2914efba9eaf75dfeaa1efc6f1c59a50e740b5863de8a0ae4c4d79c2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-nested-left.qli",
@@ -11080,7 +11963,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "d91ae5511606bce718a332e8d02ccad110bba2aa768b7f27a6e7846061582047",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-nested-right.qli",
@@ -11104,7 +11989,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "7064b880fe151814d75cc30cba85b5c6cb637d414e6493b2f124f8e94e62d8dc",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/right-unit.qli",
@@ -11128,7 +12015,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "b6fb135f06e6378aaedf0281d0cc33d882ed82c0ed7744adb4e2504f3537d000",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/double-scalar-result.qli",
@@ -11158,7 +12047,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "a0dc43b4655ffe06f2438d68453781d31e56b97a72efc20cf2cf3a2f4550e5f2",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/maps-after-observation.qli",
@@ -11188,7 +12079,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "facf0b62512dfe8a793653cd6d06b2e58402cc52d5dc0df6482b87d5ec162df7",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/scalar-closed.qli",
@@ -11212,7 +12105,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "7ad9b73d1788656daad19209612163bb306d6a3e354175a86f0a1f9a1894d7ee",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/scalar-result.qli",
@@ -11236,7 +12131,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "a27ef396b9b2bbc24ad707131144cceb79d5c9a4765933ca4c40de9c2283510f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/separate-middle-owner.qli",
@@ -11254,7 +12151,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "0baa416a9a453ffa38edbbabd3afffd0ac86bb2949114d3bd54e9e376617b727",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-maps/current/two-fresh-owners.qli",
@@ -11272,7 +12171,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "75013fe7bb6b33027579d3f0e8ca9218dc0a93a32bc3a6c1b57cfefbd9041a8d",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/measure-then-phase-bits.qli",
@@ -11308,7 +12209,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "c6997dedbff4b4f7dc6144274a8527a70a897525f0ec6309c7dd8e644d237f7c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/measure-then-phase.qli",
@@ -11338,7 +12241,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "b9e72e6c13622781fb68027c105c7444e6669f71c4aff1bf9f663882efb59376",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/phase-then-measure-bits.qli",
@@ -11374,7 +12279,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "9740f00d1c3a3d753e83498b6076651dfbcfd987ca16ac4cceaead32660b23ae",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/phase-then-measure.qli",
@@ -11404,7 +12311,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "71772936e09b124cadc3215e1088e326ed5fa168ddfce237809bc5f35571e357",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-bit.qli",
@@ -11428,7 +12337,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "8f4370ae7d126f107beb54835767882ad6021336c72cc0d142db9dd1507fa937",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-unit.qli",
@@ -11452,7 +12363,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "36469c509c998fa156980f237365518e1a04fb48525149d8ea5cd657b8bd5b55",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four/main.qli",
@@ -11476,7 +12389,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "124bdbcf01fa2f94a667a9250d5a040363ae2ae2e414425ec9c422e7b6e33bb4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/controlled-four/main.qli",
@@ -11512,7 +12427,9 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "c8084b86bc61f8b0197fffa82e815978604c2ae31d6e7a1ecba822d4015f5d4a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t0.qli",
@@ -11542,7 +12459,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "a1e9424d9855694d0127821b08e181602d09ad434d6beb90a6eae66464738182",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t1.qli",
@@ -11572,7 +12491,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "fa2d597e569dd01a19b39aefd1fe8e3acda6fe370b843848923191055b7e5f7c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t2.qli",
@@ -11602,7 +12523,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e65c236a04cd5f6fc860bd3d831c88a4b43e9b8641f0147af00fa797612f39fa",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t3.qli",
@@ -11632,7 +12555,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "1a6f45eabd7ade4cde78dc74d16596bf44d73bac5a9fd7ce7cc38b08bd982ef1",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t4.qli",
@@ -11662,7 +12587,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "26f1e397eae757f53cd41fb3907c058786adef2022ba3b53cf23d8038b39630f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t5.qli",
@@ -11692,7 +12619,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c802a0a8d782a68e29c8dac9012858b9338a35d4ba2291fafa717e164081127c",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t6.qli",
@@ -11722,7 +12651,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "5776ee00b9e82157e6c9c9203c267f11cfda936e44194c73b6ca70b21d28cab5",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t7.qli",
@@ -11752,7 +12683,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "09e826c41a6b75b71de147e8b0d9a61aa9b3c282c653bb29a6f4381e9227f375",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xx.qli",
@@ -11794,7 +12727,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "3bbed0c3ecf7bc4cec69faf2f390dc0f1f8af002957d56a666a314a8a145dd43",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xz.qli",
@@ -11836,7 +12771,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "96e6c790ed48198d35087b03ff1222600af622926d80eacbf9c5473f5a6d4824",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zx.qli",
@@ -11878,7 +12815,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4800af09451af7c9311b4848a623e95d4228e8ffce9b335b8651f35a4f91849f",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zz.qli",
@@ -11920,7 +12859,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "c899212c1b8714c151ad5788529d9f133d5a2aefafb52dd0860245b1bb3ce5e4",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t0.qli",
@@ -11950,7 +12891,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "574fad57e8b639b9d6e68f1dfb701beef6bdcd58681379a5aeb469057eec8f83",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t1.qli",
@@ -11980,7 +12923,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d426a69f845d933970a8e6dd8018787ebb9f61e5f717c06c4460e810d4e5b5db",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t2.qli",
@@ -12010,7 +12955,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "482a98841c489ac9873a298013ed44e33db4cc9c31b63f5b67283ddb0272f166",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t3.qli",
@@ -12040,7 +12987,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "ce604b6d32576e9d3d898a71333875e281d6a78bfe0e3405e548e437fec54da6",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t4.qli",
@@ -12070,7 +13019,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "032c561984e36a1dccd54d99b216b65dfcb56b9c70a23e9297abb74270f94266",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t5.qli",
@@ -12100,7 +13051,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "77b2315e3915dae31a803680383539c1bdec500b274a736c4abbe77b01385e40",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t6.qli",
@@ -12130,7 +13083,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "e4718218b8b331809b84956bff1245ef456f967def72a6edda9ada82adc1cf42",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t7.qli",
@@ -12160,7 +13115,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "d8cae86e0cf5b98c508d27fbfab7d23ba3976e6fa48c8ca3f461021b3badc466",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_1000/main.qli",
@@ -12196,7 +13153,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "9f4dbf605e349032417fc57611d82a556834387c114a695341eb80934b9e640b",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_300/main.qli",
@@ -12232,7 +13191,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4da747d116f04f67ee34fac9b9d017320c06c8f9ce3197c2fa55bfbddbe90335",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/repeat_512/main.qli",
@@ -12256,7 +13217,9 @@
           "replacement": "",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "8f58b254a86dead98063a1b159bd61c2b364acbffd799de4c0b69aa5cbdb1733",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/retired-operation-spellings/runtime-group-probe/main.qli",
@@ -12274,7 +13237,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "4b7224afa453f815396f7560d2b65f6bdeefd53b556811033aa02d3315fefe67",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/predicate-domain/grover-trial-v020/kernel.qli",
@@ -12292,7 +13257,9 @@
           "replacement": "use std::gate::z;",
           "kind": "import"
         }
-      ]
+      ],
+      "lexical_sha256": "800da824e3b53921a44301995dbf8dfdff14ebf8ede8e5a083a5e2f7b6af55e8",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/review_v030alpha/hosted-ci-runtime-pattern-repair/phase-through-product.qli",
@@ -12322,13 +13289,15 @@
           "replacement": "global_phase_eighth",
           "kind": "primitive spelling"
         }
-      ]
+      ],
+      "lexical_sha256": "161be0d5b58d431c12d73427bd9d81dfb19124970e4d90776b61ad0655d61d0a",
+      "layout_edits": []
     },
     {
       "before_path": "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-440.qli",
       "before_sha256": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
-      "current_sha256": "788d834ffd70c158f44c7c4f68a8479da211a68a6ac8b6bf21f78e5406ba3e01",
+      "current_sha256": "1cd41a07ce5db7c3aeb2122cf211e2a16f241ba9b19fd9d2a12de90a5bf4a4f1",
       "logical_paths": [
         "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli"
       ],
@@ -12351,6 +13320,15 @@
           "end": 74,
           "replacement": "",
           "kind": "import"
+        }
+      ],
+      "lexical_sha256": "788d834ffd70c158f44c7c4f68a8479da211a68a6ac8b6bf21f78e5406ba3e01",
+      "layout_edits": [
+        {
+          "start": 40,
+          "end": 41,
+          "replacement": "",
+          "kind": "removed-import separator"
         }
       ]
     }
@@ -12425,5 +13403,12 @@
     "scripts/test_lean_hierarchy.py",
     "scripts/test_check_ratification_packet.py"
   ],
-  "edit_order": "Apply manual_edits to original UTF-8 decoded text first; then apply lexical_edits in descending Python Unicode text offsets. Lexical offsets refer to the text after manual edits, never original byte offsets."
+  "edit_order": "Apply manual_edits to original UTF-8 decoded text first, then lexical_edits in descending Python Unicode text offsets, verify lexical_sha256, then layout_edits in descending offsets of that lexical result. Layout removes only whitespace stranded by erased imports; quoted/comment bytes and all line breaks remain unchanged.",
+  "layout_revision": 5,
+  "layout_helper": {
+    "path": "scripts/primitive_source_migration.py",
+    "sha256": "890828ec2f3740d6ee4a836fc38ef95d7d506019148dfbc8d1f5863f23c11eeb",
+    "entrypoint": "migrate_qli_current"
+  },
+  "previous_lexical_helper_sha256": "20d416319c37adcaf3c38fe64b55a3a6b6a93847f3604214ddeb1875bcfdb35e"
 }

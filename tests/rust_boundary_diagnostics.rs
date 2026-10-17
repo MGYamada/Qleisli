@@ -366,7 +366,7 @@ fn user_helpers_and_local_categories_do_not_acquire_rust_name_privileges() {
         Effect::Unitary
     );
 
-    let observing = "use std::state::init0; 
+    let observing = "use std::state::init0;\x20
         observe fn drop(q:Q<Bit>)->Unit{discard(q)}
         pub observe fn main()->Bit{drop(init0());1}";
     let common = closed_bit(observing, true);
@@ -485,8 +485,8 @@ fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
     );
     implicit_loss(&message);
 
-    let retained = "use std::state::init0; 
-        use std::state::reset; 
+    let retained = "use std::state::init0;\x20
+        use std::state::reset;\x20
         pub observe fn reset_owner(q:Q<Bit>)->Q<Bit>{reset(q)}
         pub unitary fn linear_owner(q:Q<Bit>)->Q<Bit>{let q=h(q);q}
         pub observe fn main()->Bit{measure_z(reset_owner(linear_owner(init0())))}";
@@ -645,7 +645,7 @@ fn forbidden_replacement_is_checked_in_unused_branches_and_empty_folds() {
 fn contextual_mut_name_and_explicit_consuming_rebinding_remain_ordinary_rules() {
     closed_bit("pub fn main()->Bit{let mut=0;mut}", false);
     let source = "use std::state::init0;use std::gate::z;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         pub observe fn main()->Bit{let q=init0();let q=h(q);z(ctrl q);h(excl q);measure_z(q)}";
     // H Z H is X: neither consuming rebinding nor explicit access needs mut.
     closed_bit(source, true);

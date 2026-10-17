@@ -24,7 +24,7 @@ fn large_inline_th_repetition_matches_the_same_independent_recurrence() {
 
 fn th_repetition(counts: &[usize], inline_count: usize) {
     let root = SourceRoot::new("");
-    let imports = "use std::state::init0; use std::gate::t; 
+    let imports = "use std::state::init0; use std::gate::t;\x20
         unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}";
     for &count in counts {
         let source =
@@ -404,7 +404,7 @@ fn every_language_primitive_matches_the_existing_source_signature() {
 #[test]
 fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     let root = SourceRoot::new(
-        "use std::state::init0; 
+        "use std::state::init0;\x20
         unitary fn id(q:Q<Bit>)->Q<Bit>{q}
         observe fn main()->Bit{measure_z(apply_contract(id,id,init0()))}",
     );

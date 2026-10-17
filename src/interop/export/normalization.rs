@@ -10,7 +10,8 @@ use crate::contract::exact::Budget;
 use crate::contract::function::RetainedIdentity;
 use crate::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
 use crate::interchange::native::Kernel;
-use crate::interop::{InteropError, InteropErrorKind};
+use crate::interop::profile::{Gate, GateOp, TerminalCircuit};
+use crate::interop::{InteropError, InteropErrorKind, MAX_GATES, MAX_QUBITS};
 use crate::ir::*;
 
 // Zero, one, or two controls have exactly 1 + 2 + 4 polarity profiles.
@@ -64,6 +65,76 @@ impl State {
         // actual adjacent leaves are consumed; all other steps retain order.
         drop(window.drain(..3));
         Ok(Some(replacement))
+    }
+
+    /// Final target-word pass, after every original push has obeyed the gate
+    /// limit. Pure Raw boundaries may separate a word; allocation/observation
+    /// boundaries may not. The accepted source and Raw subject are unchanged.
+    pub(super) fn terminal(
+        &mut self,
+        circuit: &mut TerminalCircuit,
+        barriers: &[bool; MAX_GATES + 1],
+    ) -> Result<(), InteropError> {
+        if circuit.gates.len() > MAX_GATES || circuit.qubits > MAX_QUBITS {
+            return Err(InteropError::limit(
+                "terminal normalization input exceeds target limits",
+            ));
+        }
+        // Account for the full scan and bounded replacement-position storage
+        // before inspecting/copying. This uses the same export-wide counter as
+        // retained function windows, not another exact-work allowance.
+        self.work
+            .charge(circuit.gates.len() + 1)
+            .map_err(|_| InteropError::limit("terminal local normalization work exhausted"))?;
+        if circuit.gates.iter().any(|op| {
+            op.wires.len() != op.gate.arity()
+                || op.wires.iter().any(|&axis| axis >= circuit.qubits)
+                || op
+                    .wires
+                    .iter()
+                    .enumerate()
+                    .any(|(index, axis)| op.wires[..index].contains(axis))
+        }) {
+            return Err(InteropError::new(
+                InteropErrorKind::InvalidIr,
+                "terminal gate word operand binding mismatch",
+            ));
+        }
+        let mut replacements = Vec::new();
+        let mut index = 0;
+        while index + 2 < circuit.gates.len() {
+            let possible = if barriers[index + 1] || barriers[index + 2] {
+                None
+            } else {
+                terminal_candidate(&circuit.gates[index..index + 3])?
+            };
+            if let Some((window, replacement)) = possible {
+                self.check(&window, &replacement)?;
+                replacements.push(index);
+                index += 3;
+            } else {
+                index += 1;
+            }
+        }
+        // Complete every equation check before changing the output word. A
+        // failure retains the original target gates and produces no artifact.
+        if replacements.is_empty() {
+            return Ok(());
+        }
+        let mut positions = replacements.into_iter().peekable();
+        let mut original = std::mem::take(&mut circuit.gates).into_iter().enumerate();
+        while let Some((index, mut op)) = original.next() {
+            if positions.peek() == Some(&index) {
+                positions.next();
+                // The matched actual word has the same one physical operand.
+                // Its checked replacement is the existing exact X definition.
+                op.gate = Gate::X;
+                original.next();
+                original.next();
+            }
+            circuit.gates.push(op);
+        }
+        Ok(())
     }
 
     fn check(
@@ -160,6 +231,65 @@ fn candidate(window: &VecDeque<CircuitStep>) -> Option<CircuitStep> {
             phases: vec![0, 0],
         },
     })
+}
+
+// Read exact semantics from the actual emitted GateOps, including their own
+// operand mappings. No source name, caller label, endpoint type or assumed
+// producer equation supplies the original checked word.
+fn terminal_candidate(
+    word: &[GateOp],
+) -> Result<Option<(VecDeque<CircuitStep>, CircuitStep)>, InteropError> {
+    if word.len() != 3
+        || word[0].gate != Gate::H
+        || word[1].gate != Gate::Z
+        || word[2].gate != Gate::H
+        || word[0].wires.len() != 1
+        || word[0].wires != word[1].wires
+        || word[0].wires != word[2].wires
+    {
+        return Ok(None);
+    }
+    let mapped = |op: &GateOp| -> Result<CircuitStep, InteropError> {
+        let mut step = op.gate.step();
+        let axis = |index: usize| {
+            op.wires.get(index).copied().ok_or_else(|| {
+                InteropError::new(
+                    InteropErrorKind::InvalidIr,
+                    "terminal gate word operand binding mismatch",
+                )
+            })
+        };
+        for control in &mut step.controls {
+            control.index = axis(control.index)?;
+        }
+        match &mut step.action {
+            CircuitAction::Hadamard { target } => *target = axis(*target)?,
+            CircuitAction::Monomial { indices, .. } => {
+                for index in indices {
+                    *index = axis(*index)?;
+                }
+            }
+            _ => {
+                return Err(InteropError::new(
+                    InteropErrorKind::InvalidIr,
+                    "terminal gate word has no exact finite action",
+                ));
+            }
+        }
+        Ok(step)
+    };
+    let window = word
+        .iter()
+        .map(mapped)
+        .collect::<Result<VecDeque<_>, _>>()?;
+    let proposed = mapped(&GateOp {
+        gate: Gate::X,
+        wires: word[0].wires.clone(),
+    })?;
+    if candidate(&window).as_ref() != Some(&proposed) {
+        return Ok(None);
+    }
+    Ok(Some((window, proposed)))
 }
 
 // Compaction is a physical coordinate relabeling only. Keep original ordered
@@ -290,6 +420,189 @@ mod tests {
                 action: CircuitAction::Hadamard { target },
             },
         ]
+    }
+
+    fn terminal_word(word: &[(Gate, &[usize])], width: usize) -> TerminalCircuit {
+        TerminalCircuit {
+            qubits: width,
+            gates: word
+                .iter()
+                .map(|(gate, wires)| GateOp {
+                    gate: *gate,
+                    wires: wires.to_vec(),
+                })
+                .collect(),
+            measurements: vec![],
+        }
+    }
+
+    fn gate_snapshot(circuit: &TerminalCircuit) -> Vec<(Gate, Vec<usize>)> {
+        circuit
+            .gates
+            .iter()
+            .map(|op| (op.gate, op.wires.clone()))
+            .collect()
+    }
+
+    #[test]
+    fn final_target_windows_retain_axes_order_and_nonpure_barriers() {
+        for middle in [Gate::S, Gate::Sdg, Gate::T, Gate::Tdg, Gate::X] {
+            let mut circuit = terminal_word(&[(Gate::H, &[1]), (middle, &[1]), (Gate::H, &[1])], 2);
+            let before = gate_snapshot(&circuit);
+            let mut state = State::default();
+            state
+                .terminal(&mut circuit, &[false; MAX_GATES + 1])
+                .unwrap();
+            assert_eq!(gate_snapshot(&circuit), before, "other exact phase/action");
+            assert!(state.equations.is_empty());
+        }
+        for word in [
+            vec![
+                (Gate::H, &[0][..]),
+                (Gate::Z, &[1][..]),
+                (Gate::H, &[0][..]),
+            ],
+            vec![
+                (Gate::H, &[0][..]),
+                (Gate::Z, &[0][..]),
+                (Gate::T, &[1][..]),
+                (Gate::H, &[0][..]),
+            ],
+            vec![
+                (Gate::H, &[0][..]),
+                (Gate::Cz, &[1, 0][..]),
+                (Gate::H, &[0][..]),
+            ],
+        ] {
+            let mut circuit = terminal_word(&word, 2);
+            let before = gate_snapshot(&circuit);
+            let mut state = State::default();
+            state
+                .terminal(&mut circuit, &[false; MAX_GATES + 1])
+                .unwrap();
+            assert_eq!(
+                gate_snapshot(&circuit),
+                before,
+                "no commuting/control/axis fallback"
+            );
+            assert!(state.equations.is_empty());
+        }
+        for position in [1, 2] {
+            let mut circuit =
+                terminal_word(&[(Gate::H, &[0]), (Gate::Z, &[0]), (Gate::H, &[0])], 1);
+            let before = gate_snapshot(&circuit);
+            let mut barriers = [false; MAX_GATES + 1];
+            barriers[position] = true;
+            let mut state = State::default();
+            state.terminal(&mut circuit, &barriers).unwrap();
+            assert_eq!(
+                gate_snapshot(&circuit),
+                before,
+                "allocation/observation boundary"
+            );
+            assert!(state.equations.is_empty());
+        }
+    }
+
+    #[test]
+    fn final_target_equation_failure_retains_the_original_gates() {
+        let mut circuit = terminal_word(&[(Gate::H, &[1]), (Gate::Z, &[1]), (Gate::H, &[1])], 2);
+        let before = gate_snapshot(&circuit);
+        let mut state = State {
+            work: Budget::new(0),
+            ..State::default()
+        };
+        assert_eq!(
+            state
+                .terminal(&mut circuit, &[false; MAX_GATES + 1])
+                .unwrap_err()
+                .kind,
+            InteropErrorKind::Limit
+        );
+        assert_eq!(gate_snapshot(&circuit), before);
+        state.work = Budget::new(DEFAULT_EXACT_WORK);
+        assert_eq!(
+            state
+                .terminal(&mut circuit, &[false; MAX_GATES + 1])
+                .unwrap_err()
+                .kind,
+            InteropErrorKind::InvalidIr
+        );
+        assert_eq!(gate_snapshot(&circuit), before);
+        assert!(state.equations.is_empty());
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn final_target_native_equations_share_full_receipts_and_preserve_all_columns() {
+        let kernel = Kernel::selected().unwrap();
+        let accepted = kernel.accept_raw(unary(3, vec![])).unwrap();
+        let original = accepted.raw().clone();
+        let mut state = State::for_program(&accepted);
+        // Retained controlled windows and final unary windows share precisely
+        // the same seven full-body profiles, never an eighth cache allowance.
+        for count in 1..=2 {
+            for polarity in 0..1usize << count {
+                let controls = (0..count)
+                    .map(|index| BitControl {
+                        index,
+                        when_one: polarity & (1 << index) != 0,
+                    })
+                    .collect();
+                let window: VecDeque<_> = hzh(controls, 2).into();
+                let replacement = candidate(&window).unwrap();
+                state.check(&window, &replacement).unwrap();
+            }
+        }
+        assert_eq!(state.equations.len(), 6);
+        for target in 0..3 {
+            let mut circuit = terminal_word(
+                &[
+                    (Gate::H, &[target]),
+                    (Gate::Z, &[target]),
+                    (Gate::H, &[target]),
+                ],
+                3,
+            );
+            let before_work = state.work.remaining();
+            state
+                .terminal(&mut circuit, &[false; MAX_GATES + 1])
+                .unwrap();
+            assert_eq!(gate_snapshot(&circuit), vec![(Gate::X, vec![target])]);
+            assert_eq!(state.equations.len(), 7, "only complete compact body reuse");
+            assert!(
+                state.work.remaining() < before_work,
+                "one shared export allowance"
+            );
+            check_emitted(&circuit, expected_x(3, &[], target));
+        }
+        assert_eq!(
+            accepted.raw(),
+            &original,
+            "original source/dependencies untouched"
+        );
+        let mut multiple = terminal_word(
+            &[
+                (Gate::H, &[2]),
+                (Gate::Z, &[2]),
+                (Gate::H, &[2]),
+                (Gate::H, &[0]),
+                (Gate::Z, &[0]),
+                (Gate::H, &[0]),
+            ],
+            3,
+        );
+        state
+            .terminal(&mut multiple, &[false; MAX_GATES + 1])
+            .unwrap();
+        assert_eq!(
+            gate_snapshot(&multiple),
+            vec![(Gate::X, vec![2]), (Gate::X, vec![0])]
+        );
+        assert_eq!(state.equations.len(), 7);
     }
 
     #[test]

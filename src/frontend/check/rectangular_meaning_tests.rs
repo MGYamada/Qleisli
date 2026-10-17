@@ -66,7 +66,7 @@ fn rectangular_meaning_composition_and_tensor_require_exact_ordered_trees() {
 
 #[test]
 fn rectangular_meaning_does_not_hide_observation_or_grant_adjoint() {
-    let observed = "use std::state::init0; 
+    let observed = "use std::state::init0;\x20
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);let _=measure_z(init0());init0()}
         meaning Bad:Unit -> Bit=reference(prepare);";
     assert_eq!(checked(observed).unwrap_err().code, "effect");

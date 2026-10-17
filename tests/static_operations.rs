@@ -63,7 +63,7 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, bits: &[bool], expected: f64) 
 }
 const IMPORTS: &str = "use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t; use std::gate::cnot;
-  
+\x20\x20
  use std::measurement::measure_x;";
 
 #[cfg_attr(
@@ -93,7 +93,7 @@ fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
     root.write(
         "main.qli",
         "use estimation::phase2; use std::state::init0;
-        use std::gate::x; 
+        use std::gate::x;\x20
         observe fn main() -> ((Bit,Bit),Bit) {
             let (phase, q) = phase2(x(init0())); (phase, measure_z(q))
         }",

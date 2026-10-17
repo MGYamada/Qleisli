@@ -258,7 +258,7 @@ unitary fn forget(b: Bit) -> Unit { () }
             let root = SourceRoot::new(&format!(
                 "{source}
                 use std::state::init0;
-                
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                 observe fn main() -> Bit {{
                     let b = measure_z(init0());
                     measure_z(oracle(b,init0()))
@@ -289,7 +289,7 @@ unitary fn forget(b: Bit) -> Unit { () }
     }
     rejected(
         &format!(
-            "{prefix} use std::state::init0; 
+            "{prefix} use std::state::init0;\x20
             observe fn phase(a:Q<Bit>)->Q<Bit>{{let b=measure_z(init0());z(a)}}
             unitary fn oracle(q:Q<Bit>)->Q<Bit>{{with_computed(q,p){{|a|phase(a)}}}}"
         ),

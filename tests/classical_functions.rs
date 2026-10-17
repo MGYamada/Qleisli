@@ -1508,7 +1508,7 @@ fn act_on_two_axes(table: &[u16], state: [(i32, i32); 4]) -> [(i32, i32); 4] {
 )]
 #[test]
 fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         classical fn flip(x: Bit) -> Bit { not x }
         unitary fn lifted(q: Q<Bit>) -> Q<Bit> { basis q as b { flip(b) } }
         pub observe fn main() -> (Bit,Bit) {
@@ -1610,7 +1610,7 @@ fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
 #[test]
 fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
     let source = "use std::state::init0;  use std::gate::z;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn flip(x: Bit) -> Bit { not x }
         meaning Flip: Bit = permutation_by(flip);
         pub unitary fn oracle(q: Q<Bit>) -> Q<Bit> { with_computed(q,flip) { |a| z(a) } }
@@ -1689,7 +1689,7 @@ fn unit_and_nested_products_retain_exact_trees_and_argument_list_arity() {
 )]
 #[test]
 fn eager_argument_effects_belong_to_the_caller_in_source_order() {
-    let source = "use std::state::init0; use std::gate::x; 
+    let source = "use std::state::init0; use std::gate::x;\x20
         classical fn left(a: Bit, b: Bit) -> Bit { a }
         pub observe fn main() -> Bit { left(measure_z(x(init0())),measure_z(init0())) }";
     let graph = both_closed(source, &[true]);
@@ -1711,7 +1711,7 @@ fn eager_argument_effects_belong_to_the_caller_in_source_order() {
             .collect();
         assert_eq!(sequence, ["init", "measure", "init", "measure"]);
     }
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         classical fn both(a: Bit, b: Bit) -> Bit { a and b }
         pub observe fn main() -> Bit { both(0,measure_z(init0())) }";
     let graph = both_closed(source, &[false]);
@@ -1765,7 +1765,7 @@ fn quantum_arguments_and_invalid_unused_declarations_are_rejected_before_native(
     rejected_before_native(&first_source!("quantum-argument"), "type", "type_mismatch");
     for source in [
         "classical fn invalid(x: Bit) -> Unit { x } pub fn main() -> Bit { 0 }",
-        "use std::state::init0; 
+        "use std::state::init0;\x20
          classical fn invalid() -> Bit { measure_z(init0()) }
          pub fn main() -> Bit { 0 }",
     ] {

@@ -17,8 +17,8 @@ const TOLERANCE: f64 = 1e-12;
 const IMPORTS: &str = "
 use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t; use std::gate::cnot;
- 
- use std::state::reset; 
+\x20
+ use std::state::reset;\x20
 ";
 
 type Distribution = BTreeMap<Vec<bool>, f64>;

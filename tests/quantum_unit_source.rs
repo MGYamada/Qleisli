@@ -1233,7 +1233,7 @@ fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
         "unitary fn pair(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){(a,b)}
          pub unitary fn entry(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){power(pair,0)((a,b))}"
             .into(),
-        "use std::state::init0; 
+        "use std::state::init0;\x20
          observe fn pair(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){discard(a);(init0(),b)}
          unitary fn unused(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){power(pair,0)((a,b))}"
             .into(),

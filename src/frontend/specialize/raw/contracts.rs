@@ -751,7 +751,7 @@ mod tests {
     )]
     #[test]
     fn reference_operation_replay_rejects_equal_matrix_receipt_substitution() {
-        let prefix = "use std::state::init0; 
+        let prefix = "use std::state::init0;\x20
             fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
             meaning H:Bit=reference(reference_h);
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}";
@@ -835,7 +835,7 @@ mod tests {
     )]
     #[test]
     fn source_contract_replay_rejects_same_matrix_different_native_pair() {
-        let text = " use std::state::init0; 
+        let text = " use std::state::init0;\x20
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub observe fn main()->Bit{measure_z(apply_contract(implementation,specified,init0()))}";

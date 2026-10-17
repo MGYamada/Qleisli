@@ -116,8 +116,8 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
             deterministic(
                 &format!(
                     "use std::state::init0; use std::gate::x;
-                     
-                    
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                     unitary fn regroup(q: Q<((Bit,Bit),Unit)>) -> Q<(Bit,Bit)> {{
                         basis q as ((a,b),_) {{ (b,a) }}
                     }}
@@ -133,8 +133,8 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     }
     // Removing a singleton basis factor must preserve phase, not just bits.
     deterministic(
-        "use std::state::init0; 
-        
+        "use std::state::init0;\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main() -> Bit {
             let q = basis h(init0()) as a { (a,()) };
             let q = basis q as (a,_) { a };
@@ -299,7 +299,7 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     // The actual fragment's closed classical work is checked along with its
     // exact diagonal action; an unused constant cannot hide a dependency.
     deterministic(
-        "use std::state::init0; 
+        "use std::state::init0;\x20
         classical fn p(b:Bit)->Bit { b }
         unitary fn f(q:Q<Bit>)->Q<Bit> {
             with_computed(q,p) { |a| let unused = 1; a }
@@ -337,7 +337,7 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
 fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     deterministic(
         "use std::state::init0; use std::gate::x;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn keep(pair: (Q<Bit>,Q<Bit>)) -> (Q<Bit>,Bit) {
             let (q,r) = pair;
             (q,0 and measure_z(r))
@@ -364,7 +364,7 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     // when the first result forces an AND result of false.
     let root = SourceRoot::new(
         "use std::state::init0; use std::gate::x;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main() -> Bit {
             measure_z(init0()) and measure_z(x(init0()))
         }",

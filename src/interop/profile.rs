@@ -296,6 +296,10 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     let mut expansion = super::export::ExpansionBudget::for_program(program);
     let mut measured = BTreeMap::new();
     let mut observed = false;
+    // Fixed storage: at most one boundary per original gate position. Record
+    // allocation/observation boundaries before final target normalization;
+    // duplicate zero-gate boundaries cannot grow an unbounded side table.
+    let mut normalization_barriers = [false; MAX_GATES + 1];
     for (index, op) in raw.operations.iter().enumerate() {
         let result = (|| {
             if observed
@@ -312,6 +316,12 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                 return Err(InteropError::unsupported(
                     "quantum operation after terminal observation",
                 ));
+            }
+            if matches!(
+                op,
+                RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }
+            ) {
+                normalization_barriers[circuit.gates.len()] = true;
             }
             match op {
                 RawOp::PackUnit { output } => {
@@ -412,6 +422,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     // supplies this case. Other owners and their axes remain live.
                     let output_axes =
                         if wires.is_empty() && output_wires.len() == 1 && table.as_slice() == [0] {
+                            normalization_barriers[circuit.gates.len()] = true;
                             vec![circuit.allocate_zero()?]
                         } else {
                             let axes = super::export::axis_permutation(
@@ -456,7 +467,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                 .ok_or_else(|| InteropError::unsupported("output must be a measured bit"))?,
         );
     }
-    super::export::fold_phases(&mut circuit);
+    super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
     Ok(circuit)
 }
 

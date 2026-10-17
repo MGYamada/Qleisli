@@ -8,7 +8,7 @@ use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
-const IMPORTS: &str = "use std::state::init0; 
+const IMPORTS: &str = "use std::state::init0;\x20
     use std::gate::x; use std::gate::cnot; ";
 
 #[cfg_attr(
@@ -916,8 +916,8 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
         ),
     ] {
         let source = format!(
-            "{IMPORTS} 
-            
+            "{IMPORTS}\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
             {definition} pub unitary fn f(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{{change(excl q);q}}"
         );
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
@@ -950,7 +950,7 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
 #[test]
 fn reassembled_owner_and_callee_binders_do_not_restore_old_snapshot() {
     let source = format!(
-        "{IMPORTS} 
+        "{IMPORTS}\x20
         unitary fn transform(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{
             let (a,b)=split(q);x(excl a);join(a,b)
         }}

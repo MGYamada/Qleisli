@@ -235,3 +235,45 @@ def migrate_qli(source):
     for start, end, replacement, _ in sorted(edits, reverse=True):
         transformed = transformed[:start] + replacement + transformed[end:]
     return {"source": transformed, "edits": edits, "issues": []}
+
+
+def migrate_qli_current(source):
+    """Add a recorded layout phase for whitespace stranded by erased imports.
+
+    The original lexical translator remains unchanged for already recorded
+    corpus and inline clients. This explicit current-fixture entry point only
+    removes horizontal whitespace adjoining an erased import at line end.
+    Quoted/comment tokens, every line break, and unrelated whitespace remain
+    byte-identical. Layout offsets refer to the lexical result, not the input.
+    """
+    result = migrate_qli(source)
+    if result["issues"]:
+        return result | {"layout_edits": []}
+    text = result["source"]
+    points, shift = [], 0
+    for start, end, replacement, kind in sorted(result["edits"]):
+        if kind == "import" and not replacement:
+            points.append(start + shift)
+        shift += len(replacement) - (end - start)
+    protected = [token for token in tokens(text) if token.kind in {"comment", "quoted"}]
+    intervals = set()
+    for point in points:
+        start, end = point, point
+        while start and text[start - 1] in " \t":
+            start -= 1
+        while end < len(text) and text[end] in " \t":
+            end += 1
+        if start == end or (end < len(text) and text[end] not in "\r\n"):
+            continue
+        if any(token.start < end and start < token.end for token in protected):
+            continue
+        intervals.add((start, end))
+    layout = []
+    for start, end in sorted(intervals):
+        if layout and start <= layout[-1][1]:
+            layout[-1] = (layout[-1][0], max(end, layout[-1][1]), "", "removed-import separator")
+        else:
+            layout.append((start, end, "", "removed-import separator"))
+    for start, end, replacement, _ in reversed(layout):
+        text = text[:start] + replacement + text[end:]
+    return result | {"source": text, "layout_edits": layout}

@@ -156,7 +156,7 @@ fn selected_coherent_native_raw_and_replay_preserve_an_entangled_caller() {
     use qleisli::interchange::native::Kernel;
     use qleisli::sim::{SimulationLimits, run_closed};
     let graph = source(
-        "use std::state::init0; use std::gate::cnot; 
+        "use std::state::init0; use std::gate::cnot;\x20
         pub observe fn f()->(Bit,Bit){let(a,b)=cnot(h(init0()),init0());
             let a=basis a as x {not x}; (measure_z(a),measure_z(b))}",
     );

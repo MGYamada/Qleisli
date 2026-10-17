@@ -95,7 +95,7 @@ fn reference_meaning_requests_do_not_promote_the_entry() {
 )]
 fn operation_instantiations_stay_within_concrete_roots_and_selected_qrate() {
     let root = SourceRoot::new(
-        "use std::gate::x; use std::state::init0; 
+        "use std::gate::x; use std::state::init0;\x20
          unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
          unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
          unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}

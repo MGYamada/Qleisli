@@ -45,7 +45,7 @@ fn misplaced_public_import_has_a_checked_repair() {
 )]
 #[test]
 fn nested_register_pattern_names_the_actual_type_and_repairs() {
-    let source = " 
+    let source = "\x20
         unitary fn run(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{ let ((a,b),c)=split(q); join(join(a,b),c) }";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
@@ -82,7 +82,7 @@ fn nested_register_pattern_names_the_actual_type_and_repairs() {
 )]
 #[test]
 fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
-    let source = "use std::state::init0; use std::gate::cnot; 
+    let source = "use std::state::init0; use std::gate::cnot;\x20
         observe fn main()->(Bit,Bit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();

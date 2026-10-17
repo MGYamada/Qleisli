@@ -12,7 +12,7 @@ use qleisli::ir::{CircuitAction, RawOp};
 use std::collections::BTreeMap;
 
 const IMPORTS: &str = " use std::gate::z; use std::gate::x;
-    use std::state::init0;  
+    use std::state::init0;\x20\x20
     ";
 
 fn parse(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
@@ -506,7 +506,7 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
 #[test]
 fn fixed_fourier_reference_meanings_match_independent_exact_coefficients() {
     // Fixed 2/3-qubit specifications only; no generic QFT implementation.
-    let prefix = "use std::gate::s; use std::gate::t; use std::state::init0; 
+    let prefix = "use std::gate::s; use std::gate::t; use std::state::init0;\x20
         fn ident(q:Q<Bit>)->Q<Bit>{q}
         fn quarter(q:Q<Bit>)->Q<Bit>{s(q)}
         fn eighth(q:Q<Bit>)->Q<Bit>{t(q)}";

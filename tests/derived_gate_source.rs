@@ -48,7 +48,7 @@ fn actual_with_gate_source(
         "use std::gate::{{t,s,sdg,tdg,z,x,cnot,toffoli,id,controlled_phase}};
          use std::transform::{{qft2,qft3}};
          use std::state::init0;
-         
+\x20\x20\x20\x20\x20\x20\x20\x20\x20
          unitary fn probe(q:Q<{ty}>)->Q<{ty}>{{{body}}}
          pub observe fn main()->{result}{{{close}}}"
     );

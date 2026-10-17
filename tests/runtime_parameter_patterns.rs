@@ -42,12 +42,9 @@ fn validation(name: &str) -> String {
         // explicit current translation changes only the retired coherent form;
         // the Unit/product owners, scalar phase and independent oracle remain.
         let original = source("validation-sources/phase-through-product.qli");
-        let current = std::fs::read_to_string(
-            Path::new(env!("CARGO_MANIFEST_DIR")).join(
-                "tests/fixtures/review_v030alpha/hosted-ci-runtime-pattern-repair/phase-through-product.qli",
-            ),
-        )
-        .unwrap();
+        let current = common::current_source_text(
+            "tests/fixtures/review_v030alpha/hosted-ci-runtime-pattern-repair/phase-through-product.qli",
+        );
         assert_eq!(
             current,
             original.replace(

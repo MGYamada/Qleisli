@@ -141,7 +141,7 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
 )]
 #[test]
 fn small_native_receipts_round_trip_shared_source() {
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         unitary fn actual(q:Q<Bit>)->Q<Bit>{q}
         unitary fn specified(q:Q<Bit>)->Q<Bit>{q}
         observe fn main()->Bit{
@@ -232,7 +232,7 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
     ));
     check_project(&repeat_1000.0).unwrap();
     let explicit = SourceRoot::new(
-        "use std::gate::t; use std::state::init0; 
+        "use std::gate::t; use std::state::init0;\x20
          unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}
          unitary fn long(q:Q<Bit>)->Q<Bit>{power(ht,512)(q)}
          observe fn main()->Bit{measure_z(apply_contract(long,long,init0()))}",

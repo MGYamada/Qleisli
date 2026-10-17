@@ -1355,8 +1355,8 @@ fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
 
     // Signature admission does not turn a later body restriction into another
     // target-selection opportunity: lowering still reports its actual error.
-    let source = " 
-        
+    let source = "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         pub observe fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Bits<1>) {
             let b = measure_z(q); let r = h(r); (r,prepend_bit[0](b,empty_bits()))
         }";

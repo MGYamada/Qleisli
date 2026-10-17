@@ -764,7 +764,7 @@ fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
 fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     let valid = lower(&source("unit-zero"));
     let wrong = lower(
-        " 
+        "\x20
          use std::state::init0;
          fn changed(q: Q<Unit>) -> Unit { finish(global_phase_eighth(q)) }
          pub isometry fn entry(q: Q<Unit>) -> Q<Bit> { changed(q); init0() }",

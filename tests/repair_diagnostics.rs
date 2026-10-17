@@ -42,7 +42,7 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Unitary",
         ),
         (
-            "use std::state::init0; 
+            "use std::state::init0;\x20
              fn strong()->Unit{let b=measure_z(init0());()} fn weak()->Unit{()}
              isometry fn bad()->Unit{strong(); weak()}",
             "strong()",
@@ -50,21 +50,21 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Isometry",
         ),
         (
-            "use std::state::init0; 
+            "use std::state::init0;\x20
              fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
-            "use std::state::init0; 
+            "use std::state::init0;\x20
              fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
-            "use std::state::init0; 
+            "use std::state::init0;\x20
              fn strong()->Bit{measure_z(init0())} isometry fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
@@ -104,7 +104,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     let root = SourceRoot::new(source);
     root.write(
         "helper.qli",
-        "use std::state::init0; 
+        "use std::state::init0;\x20
          pub observe fn strong()->Unit{let b=measure_z(init0());()}",
     );
     let error = check_project_diagnostic(&root.0).unwrap_err();

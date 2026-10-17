@@ -2285,7 +2285,7 @@ mod tests {
     #[test]
     fn observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls() {
         let source = elaborate(
-            " 
+            "\x20
             fn reference(q:Q<Bit>)->Bit{measure_z(q)}
             fn implementation(q:Q<Bit>)->Bit{measure_z(h(h(q)))}
             pub observe fn main(q:Q<Bit>)->Bit{apply_contract(implementation,reference,q)}",

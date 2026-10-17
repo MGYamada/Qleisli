@@ -8,8 +8,8 @@ use qleisli::sim::{SimulationLimits, run_closed};
 const PRELUDE: &str = "
 use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t; use std::gate::cnot;
- 
- 
+\x20
+\x20
 unitary fn ident(q:Q<Bit>)->Q<Bit>{q}
 unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
 unitary fn phase(q:Q<Bit>)->Q<Bit>{t(q)}
@@ -673,13 +673,9 @@ fn an_equal_dimension_unitor_is_not_an_endomorphic_static_provider() {
 }
 
 fn composition_study(name: &str, attempt: &str) -> String {
-    std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/authoring_sessions/meaning-composition-v030")
-            .join(attempt)
-            .join(format!("{name}.qli")),
-    )
-    .unwrap()
+    common::current_source_text(&format!(
+        "tests/fixtures/authoring_sessions/meaning-composition-v030/{attempt}/{name}.qli"
+    ))
 }
 
 #[cfg_attr(

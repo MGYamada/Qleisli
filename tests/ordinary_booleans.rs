@@ -342,7 +342,7 @@ fn quantum_bits_raw_boundary_retains_atomic_types_and_zero_width_owner() {
 )]
 #[test]
 fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
-    let source = "use std::state::init0; 
+    let source = "use std::state::init0;\x20
         pub observe fn f(q: Q<Bit>) -> Bit { 0 and measure_z(q) }
         observe fn main() -> Bit { f(h(init0())) }";
     let graph = elaborate(source, "main::f", BTreeMap::new());

@@ -110,7 +110,9 @@ fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
         "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-unit.qli",
         "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-bit.qli",
     ] {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(relative);
+        let path = common::current_namespace_fixture(
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join(relative),
+        );
         let output = selected("check", &path, "main::f")
             .arg("--ir-profile=raw")
             .arg(format!("--lean-kernel={}", kernel().display()))

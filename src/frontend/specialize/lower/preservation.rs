@@ -1861,9 +1861,9 @@ mod tests {
 
         let make = |helper: &str, introduce: &str, eliminate: &str| {
             let source = format!(
-                " 
-                  
-                  
+                "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = {introduce}; let () = {eliminate};
@@ -1968,7 +1968,7 @@ mod tests {
 
     #[test]
     fn source_trace_charges_idle_zero_width_basis_before_frame_cloning() {
-        let source = "   
+        let source = "\x20\x20\x20
             pub observe fn f(q:Q<Bit>,z:Q<((Unit,Unit),(Unit,Unit))>)->(Bits<1>,Q<((Unit,Unit),(Unit,Unit))>){
                 let q=h(q); let b=measure_z(q); (prepend_bit[0](b,empty_bits()),z)
             }";
@@ -2077,10 +2077,10 @@ mod tests {
         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
         let make = |helper: &str, join: &str, split: &str| {
             let source = format!(
-                " 
-                  
-                  
-                  
+                "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = unit(()); let p = {join}; let (u,q) = {split};

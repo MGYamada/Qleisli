@@ -859,7 +859,7 @@ fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference()
     let source = source.replace(
         "pub unitary fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
         "fn open(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
-    ) + "use std::state::init0; 
+    ) + "use std::state::init0;\x20
          pub observe fn main()->Bit{
             let(q,r)=split(open(join(h(init0()),init0())));
             let(u,b)=split(q);finish(u);let _=measure_z(r);measure_z(h(phase[1,3](b)))}";

@@ -696,49 +696,49 @@
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-116.qli",
       "before_sha256": "9bf16e0c714679ea89f195242b24ca90649f60e7d13f5c6dfa0d0dfb1843af6f",
-      "current_sha256": "baabb38190c7c753e76f3818527c48ee7896ffe31b1d4fa5d54d89c3595a4edb"
+      "current_sha256": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-117.qli",
       "before_sha256": "16f73b4cfdae748d95704f67921a9fdd19654cc6d11417eaf3ef10895b0642a8",
-      "current_sha256": "6a572b191294cc42808fbca5ef54c4aa74f6509002ff0b3afcc65c86dedcb55f"
+      "current_sha256": "fbe4d8a0b5e180b3f5505242dd7771247b060ebac974ed4d0e21ee48e6a791c7"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-118.qli",
       "before_sha256": "079e719e08dc6eaad32e80240fae5762f58a6a88fc44e7d076f8ba649f0303bb",
-      "current_sha256": "15dacc87018ab4f66a234e7241fe4f96c1fcf9dba2041702ce74051ffdf23a58"
+      "current_sha256": "b0a0f9307cceb5e650c3e1c119fb4bf2b3c2aec0ba81bac60dbf8979a6984ae4"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-119.qli",
       "before_sha256": "ae0b4b65e575b130007993a9da6c7499fe62333939d947fe1402f7b581cd629e",
-      "current_sha256": "fad4b314b43a4a8072d36c7a7efbadb3e11212773f02e84b3515711bc89ae93a"
+      "current_sha256": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-120.qli",
       "before_sha256": "f881e56854ea81f7927d567ca95ebe28df1eea1dcdc2532f11bdf61aa5ccb812",
-      "current_sha256": "faa97c250598e857765c71783b2f1cb8e3bcd658aa821539e27f4e221eb00860"
+      "current_sha256": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-121.qli",
       "before_sha256": "dc3911335c36bda4a0c0c6322cc2a4d15cd8cf01c384e7f9bad9e5b182d26310",
-      "current_sha256": "62439a2d655051abc146f83ea78f1bb3a4f69c2aac42f0f1cc7b46de0d23f0f7"
+      "current_sha256": "f7422cbbc1b7eb46420fc509791877ff56878c46393b773f36a37fae55ae8fcc"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-122.qli",
       "before_sha256": "76a1279e11880127f8762d8be399f08a80d3792417f7534bc4ec2263735865ff",
-      "current_sha256": "454a2779d7417e7fe82432d3ffb82f41d4a5ed7af6320b20a5ee4683ed56e987"
+      "current_sha256": "3b0f69894ac9614f60a12c4590291a2a8f90a24421ca75a95277e0d9dd90dca9"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-123.qli",
       "before_sha256": "ae2259a7df92b06a812a641200f7110fbc80695c62ddb2b089145217f6bdc800",
-      "current_sha256": "1bda4e1d6166dbe99b709612ef569b291265cd002ea07b8b02b138ef60d7d76d"
+      "current_sha256": "d97c25b025fbb61e9eaa82e3733bc7fd3f4ea0d958aaede4e722fc24ff49bfdb"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/packed-bits/main.qli",
@@ -750,7 +750,7 @@
       "before_path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-125.qli",
       "before_sha256": "ae4b1c37c1794abd8fe845edcde06435416b0165d1e3a0d942c7ba3b3a1e4b1c",
-      "current_sha256": "bc61d9cd782a08e3c5d9fd4f92c8a8a74af66d6a617f9a6c9f1a6e9dd258b323"
+      "current_sha256": "ab6d0853ac621207d5f95d988ecf227d2df879c9473e9c55f33378f4f67eb8f0"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/nested-copy/main.qli",
@@ -1176,7 +1176,7 @@
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-029.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-196.qli",
       "before_sha256": "8012f165f783dffc88421623f5455bf0e5178f9b9e301aeeea829f5c47b0b9f1",
-      "current_sha256": "03cb43ad3688294adaa5894b8aaeceb4e7ec3e1265be253f0fef1f6018c3b124"
+      "current_sha256": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655"
     },
     {
       "before_path": "tests/fixtures/frontend_v030/capability-naming/current/files/client-030.qli",
@@ -1674,7 +1674,7 @@
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-279.qli",
       "before_sha256": "9020a09cb62c8dfac8e1cfd3b03f83dce48421f6200d6e54be848c70037011a3",
-      "current_sha256": "acaba0664a78193d94e99ecd0644c0713006d4a9834993d53d5ab172460f3dad"
+      "current_sha256": "c1b8ae27bfb96841b9324716c4d45f1751570e5b86f377449176924cec40de23"
     },
     {
       "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli",
@@ -1956,7 +1956,7 @@
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-326.qli",
       "before_sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
-      "current_sha256": "4e90e512be7328795d9b58be8a7d9451f8f2c3b3e2bd82ff68633cc473444fae"
+      "current_sha256": "1198813aa45dff067d968389670a7f5285341f97db533a8d336fc5a8f1011060"
     },
     {
       "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/expansion_limit/main.qli",
@@ -2088,7 +2088,7 @@
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-348.qli",
       "before_sha256": "8daf1cac76173bea149c12f34302fdb56b12c5ef1468211eb1558c557367d5fa",
-      "current_sha256": "07a58976848e666c18729844ffef1d578da41a08cf1cff86008fc2418707d241"
+      "current_sha256": "5baadfe39daec49dcdeeb14b8665d4e1454a233a54aff7806f6938243cb14ee4"
     },
     {
       "before_path": "tests/fixtures/frontend_v030/public-effects/current/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
@@ -2640,7 +2640,7 @@
       "before_path": "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/files/client-440.qli",
       "before_sha256": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
-      "current_sha256": "788d834ffd70c158f44c7c4f68a8479da211a68a6ac8b6bf21f78e5406ba3e01"
+      "current_sha256": "1cd41a07ce5db7c3aeb2122cf211e2a16f241ba9b19fd9d2a12de90a5bf4a4f1"
     }
   ],
   "projects": [

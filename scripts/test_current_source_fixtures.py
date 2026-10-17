@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import patch
 
 import current_source_fixtures as fixtures
-from primitive_source_migration import OLD, migrate_qli
+from primitive_source_migration import OLD, migrate_qli, migrate_qli_current
 
 
 class PrimitiveSourceMigration(unittest.TestCase):
@@ -84,6 +84,45 @@ class PrimitiveSourceMigration(unittest.TestCase):
         self.translated('use std::quantum::h;fn use(q:Q<Bit>)->Q<Bit>{h(q)}',
                         'fn use(q:Q<Bit>)->Q<Bit>{h(q)}')
 
+
+
+class CurrentPrimitiveLayout(unittest.TestCase):
+    def test_only_erased_import_separators_at_line_end_are_removed(self):
+        before = 'use std::quantum::init0; use std::observe::measure_z;\nfn f(){()}\n'
+        lexical = migrate_qli(before)
+        result = migrate_qli_current(before)
+        self.assertEqual(lexical['source'], 'use std::state::init0; \nfn f(){()}\n')
+        self.assertEqual(result['source'], 'use std::state::init0;\nfn f(){()}\n')
+        self.assertEqual(result['edits'], lexical['edits'])
+        self.assertEqual(result['layout_edits'], [(22, 23, '', 'removed-import separator')])
+        self.assertEqual(migrate_qli_current(result['source'])['source'], result['source'])
+
+    def test_comments_quoted_text_and_all_line_endings_are_preserved(self):
+        before = ('// retained padding \r\nuse std::quantum::h; \r\n'
+                  '"quoted trailing \t\ntext"\r'
+                  '/* retained block \t\ncomment */\nfn f(){()} \n')
+        result = migrate_qli_current(before)
+        self.assertEqual(result['source'], before.replace('use std::quantum::h; ', ''))
+        self.assertEqual(result['source'].count('\r'), before.count('\r'))
+        self.assertEqual(result['source'].count('\n'), before.count('\n'))
+
+    def test_adjacent_removals_clean_only_their_own_empty_line(self):
+        before = '  use std::quantum::h; \tuse std::quantum::unit; \t\nfn f(){()}  \n\n'
+        result = migrate_qli_current(before)
+        self.assertEqual(result['source'], '\nfn f(){()}  \n\n')
+        self.assertEqual(len(result['layout_edits']), 1)
+
+    def test_import_adjacent_comments_and_nonterminal_gaps_stay_exact(self):
+        for before in ('use std::quantum::h; \t// retained trailing \nfn f(){()}\n',
+                       'use std::quantum::h; \tfn f(){()}\n'):
+            self.assertEqual(migrate_qli_current(before)['source'], migrate_qli(before)['source'])
+
+    def test_refused_source_has_no_layout_fallback(self):
+        before = 'use std::quantum::unknown; \nfn f(){()}\n'
+        result = migrate_qli_current(before)
+        self.assertTrue(result['issues'])
+        self.assertEqual(result['source'], before)
+        self.assertEqual(result['layout_edits'], [])
 
 
 class SourceFixtureIdentity(unittest.TestCase):
@@ -976,12 +1015,15 @@ class SourceFileIdentity(unittest.TestCase):
 
 class RepositoryMigrationTests(unittest.TestCase):
     def test_primitive_derivatives_replay_only_recorded_lexical_and_explicit_type_edits(self):
-        from primitive_source_migration import migrate_qli
+        from primitive_source_migration import migrate_qli, migrate_qli_current
         directory = fixtures.ROOT / "tests/fixtures/frontend_v030/language-primitives"
         mapping = fixtures._read_map(directory / "source-map.json")
         entries = fixtures._file_entries(mapping, "language primitive")
         review = json.loads((directory / "translation-review.json").read_text())
         self.assertEqual(review["status"], "generated-unvalidated")
+        self.assertEqual(review["layout_revision"], 5)
+        self.assertEqual(review["layout_helper"]["sha256"], hashlib.sha256(
+            (fixtures.ROOT / review["layout_helper"]["path"]).read_bytes()).hexdigest())
         self.assertEqual({r["before_path"] for r in review["files"]}, set(entries))
         expected = set()
         for row in review["files"]:
@@ -994,10 +1036,15 @@ class RepositoryMigrationTests(unittest.TestCase):
                 self.assertEqual(edit["after"], "id[type(Bit)](q)")
                 self.assertEqual(text.count(edit["before"]), 1)
                 text = text.replace(edit["before"], edit["after"])
-            translated = migrate_qli(text)
+            lexical = migrate_qli(text)
+            self.assertEqual(row["lexical_sha256"], hashlib.sha256(
+                lexical["source"].encode("utf-8")).hexdigest())
+            translated = migrate_qli_current(text)
             self.assertEqual(translated["issues"], [])
             self.assertEqual(row["lexical_edits"], [dict(start=a, end=b, replacement=c, kind=k)
                              for a, b, c, k in translated["edits"]])
+            self.assertEqual(row["layout_edits"], [dict(start=a, end=b, replacement=c, kind=k)
+                             for a, b, c, k in translated["layout_edits"]])
             self.assertEqual(translated["source"].encode("utf-8"), current.read_bytes())
             expected.add(current)
         for entry in mapping["projects"]:

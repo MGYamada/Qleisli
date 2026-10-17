@@ -21,7 +21,7 @@ use std::sync::Arc;
 const PRELUDE: &str = "
 use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t;
- 
+\x20
 
 classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning:Bit=phase_by(z_phase);
@@ -419,7 +419,7 @@ fn canonical_control_finite_preserves_zero_width_phase_and_owner() {
     for count in [1, 4] {
         let text = format!(
             "use std::state::init0;
-             
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
              unitary fn scalar(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}
              observe fn main()->Bit{{
                  let pair=basis(init0()) as bit {{((),bit)}};
@@ -588,7 +588,7 @@ fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() 
 )]
 #[test]
 fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
-    let text = "use std::state::init0; 
+    let text = "use std::state::init0;\x20
         unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}
         unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(q)}
         unitary fn undo(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}
@@ -1244,7 +1244,7 @@ fn canonical_power_retains_operation_count_and_original_source_spans() {
 fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
     for (count, expected) in [(0, false), (1, true), (2, false)] {
         let text = format!(
-            "use std::gate::x; use std::state::init0; 
+            "use std::gate::x; use std::state::init0;\x20
             unitary fn power(q:Q<Bit>,b:Bit)->Q<Bit>{{q}}
             unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}
             pub observe fn main()->Bit{{measure_z(power(oracle,{count})(power(init0(),0)))}}"

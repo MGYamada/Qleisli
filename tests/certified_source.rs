@@ -12,8 +12,8 @@ use qleisli::sim::{SimulationLimits, run_closed};
 const IMPORTS: &str = "
 use std::state::init0;  use std::gate::x;
 use std::gate::z; use std::gate::t; use std::gate::cnot;
- 
- 
+\x20
+\x20
 classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";

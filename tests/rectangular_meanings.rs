@@ -8,7 +8,7 @@ use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 
 const PREP: &str = "use std::state::init0; use std::gate::x; use std::gate::z;
-    
+\x20\x20\x20\x20
     isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
     meaning Plus:Unit -> Bit=reference(prepare);";
 

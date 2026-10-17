@@ -521,7 +521,7 @@ fn finite_v0_type_shapes_and_zero_wire_ownership() {
     for source in [
         "unitary fn id(q: Q<Unit>) -> Q<Unit> { q }",
         "unitary fn id(b: Bit) -> Bit { b }",
-        " 
+        "\x20
          unitary fn regroup(q: Q<(Unit,Bit)>) -> Q<(Unit,Bit)> {
              let (u, b) = split(q); join(u, b)
          }",
@@ -677,7 +677,7 @@ fn computed_blocks_keep_exact_native_phase_contracts() {
         check_project(&SourceRoot::new(&source).0).unwrap();
         let client = format!(
             "{source}
-             use std::state::init0; 
+             use std::state::init0;\x20
              observe fn main() -> Bit {{ measure_z(oracle(init0())) }}"
         );
         let accepted = compile_project(&SourceRoot::new(&client).0).unwrap();

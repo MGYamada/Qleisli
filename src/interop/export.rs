@@ -7,8 +7,20 @@ mod normalization;
 pub(super) use contracts::ExpansionBudget;
 
 use super::profile::{self, Gate, GateOp, TerminalCircuit};
-use super::{InteropError, MAX_QUBITS};
+use super::{InteropError, MAX_GATES, MAX_QUBITS};
 use crate::ir::{CircuitAction, CircuitStep};
+
+/// Normalize only after the complete original emitted stream obeyed its cap.
+/// Barrier indices refer to that original stream, before either final pass.
+pub(super) fn finish(
+    circuit: &mut TerminalCircuit,
+    expansion: &mut ExpansionBudget,
+    barriers: &[bool; MAX_GATES + 1],
+) -> Result<(), InteropError> {
+    expansion.normalizations.terminal(circuit, barriers)?;
+    fold_phases(circuit);
+    Ok(())
+}
 
 fn phase_word(k: u8) -> &'static [Gate] {
     match k % 8 {

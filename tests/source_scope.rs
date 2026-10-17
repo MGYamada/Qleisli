@@ -10,8 +10,8 @@ use qleisli::sim::{SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
 use std::state::init0;  use std::gate::x;
-use std::gate::z; use std::gate::cnot; 
- 
+use std::gate::z; use std::gate::cnot;\x20
+\x20
 ";
 
 fn assert_distribution(source: &str, expected: BTreeMap<Vec<bool>, f64>) {

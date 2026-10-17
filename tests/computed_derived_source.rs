@@ -214,7 +214,7 @@ fn non_diagonal_and_false_meaning_and_outer_reference_are_refused() {
     assert!(error.message.contains("return both owners"));
     assert!(error.message.contains("does not bypass cleanup checking"));
     let false_meaning = "use std::gate::z;use std::state::init0;
-        
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn keep(b:Bit)->Bit{b} classical fn zero(b:Bit)->Bit{0}
         meaning Identity:Bit=permutation_by(keep);
         unitary fn wrong(q:Q<Bit>)->Q<Bit>{with_computed(q,zero){|a|global_phase_eighth(z(a))}}

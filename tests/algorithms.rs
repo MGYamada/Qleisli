@@ -80,7 +80,7 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
                 "main.qli",
                 &format!(
                     "use search::step;
-                 use std::state::init0; 
+                 use std::state::init0;\x20
                  use std::transform::hadamard2; use std::measurement::measure_z2;
                  observe fn main() -> (Bit, Bit) {{
                      let q = hadamard2(join(init0(), init0()));
@@ -137,7 +137,7 @@ fn bell_recovery_source(a: &str, b: &str, c: &str) -> String {
     format!(
         "use code::encode; use code::recover; use code::decode;
          use std::state::init0;  use std::gate::x; use std::gate::z;
-         use std::gate::cnot;  
+         use std::gate::cnot;\x20\x20
           use std::measurement::measure_x;
          observe fn main() -> ((Bit, Bit), ((Bit, Bit), (Bit, Bit))) {{
              let (reference, logical) = cnot(h(init0()), init0());
@@ -198,7 +198,7 @@ fn parity_measurement_keeps_coherence_within_each_parity_sector() {
     root.write(
         "main.qli",
         "
-        use std::state::init0; 
+        use std::state::init0;\x20
         use std::measurement::parity_zz; use std::measurement::measure_x;
         observe fn main() -> (Bit, (Bit, Bit)) {
             let ((a, b), parity) = parity_zz(h(init0()), h(init0()));
