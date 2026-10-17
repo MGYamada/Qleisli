@@ -23,6 +23,9 @@ and exactness obligations retain their recorded scopes and status.
   executed/original pair may consume 4M/20M plus separately bounded host and
   legacy reconstruction work. The existing n=1,m=3 named-QPE regression still
   exceeds a per-decision structural limit and remains under repair.
+  Adapt CLI/access regressions to ordinary gate bodies, fixed caller equations
+  and mandatory original-source native checks. Numerical simulation assertions
+  retain full distributions and complex states under their existing tolerance.
 
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all
@@ -64,7 +67,7 @@ and exactness obligations retain their recorded scopes and status.
   axes, controls and adjoints under bounded expansion. Exact small-output checks
   remain distinct from general export preservation and resource certificates.
   Document private gate and transform providers and check documentation across
-  all six ordinary bundled modules.
+  all seven ordinary bundled modules.
   Update exact regression oracles to replay retained ordinary function bodies,
   including phase, control, adjoint and ordered branch outputs. Keep source,
   exact-work and specialization-count limits separate in their boundary tests;

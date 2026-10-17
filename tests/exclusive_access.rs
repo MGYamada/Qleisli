@@ -11,6 +11,51 @@ use std::collections::BTreeMap;
 const IMPORTS: &str = "use std::state::init0;\x20
     use std::gate::x; use std::gate::cnot; ";
 
+// Numerical runtime oracles only. Ordinary H Z H introduces f64 rounding;
+// native finite Meaning checks and exact source obligations remain unchanged.
+fn assert_runtime_distribution(
+    actual: &BTreeMap<Vec<bool>, f64>,
+    expected: &BTreeMap<Vec<bool>, f64>,
+) {
+    let width = expected
+        .first_key_value()
+        .expect("nonempty expected distribution")
+        .0
+        .len();
+    for (bits, &probability) in actual {
+        assert_eq!(bits.len(), width, "{actual:?}");
+        assert!(probability.is_finite() && probability >= 0.0, "{actual:?}");
+        let required = expected.get(bits).copied().unwrap_or(0.0);
+        assert!(
+            (probability - required).abs() < 1e-12,
+            "{bits:?}: {actual:?}"
+        );
+    }
+    for (bits, &required) in expected {
+        let probability = actual.get(bits).expect("expected outcome missing");
+        assert!(
+            (probability - required).abs() < 1e-12,
+            "{bits:?}: {actual:?}"
+        );
+    }
+    assert!(
+        (actual.values().sum::<f64>() - 1.0).abs() < 1e-12,
+        "{actual:?}"
+    );
+}
+
+fn assert_runtime_amplitudes(actual: &[[f64; 2]], expected: &[[f64; 2]]) {
+    assert_eq!(actual.len(), expected.len());
+    for (observed, required) in actual.iter().zip(expected) {
+        for (observed, required) in observed.iter().zip(required) {
+            assert!(
+                observed.is_finite() && (observed - required).abs() < 1e-12,
+                "{actual:?} != {expected:?}"
+            );
+        }
+    }
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -239,26 +284,44 @@ fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
             } else {
                 baselines[index] = Some(accepted.raw().clone());
             }
-            let gates: Vec<_> = accepted
-                .raw()
-                .operations
-                .iter()
-                .filter_map(|op| {
-                    if let RawOp::Gate { gate, .. } = op {
-                        Some(*gate)
-                    } else {
-                        None
+            // Ordinary Z is an exact monomial in the finite compiler and
+            // four T actions in direct source lowering. Keep the whole phase
+            // action in its original position rather than filtering it out.
+            let mut gates = Vec::new();
+            for op in &accepted.raw().operations {
+                match op {
+                    RawOp::Gate { gate, .. } => gates.push(*gate),
+                    RawOp::ApplyUnitary { steps, .. } => {
+                        assert_eq!(steps.len(), 1, "{text}");
+                        assert!(steps[0].controls.is_empty(), "{text}");
+                        assert!(
+                            matches!(
+                                &steps[0].action,
+                                qleisli::ir::CircuitAction::Monomial { indices, permutation, phases }
+                                    if indices == &[0] && permutation == &[0, 1] && phases == &[0, 4]
+                            ),
+                            "original exact Z action: {text}"
+                        );
+                        gates.push(SingleGate::Z);
                     }
-                })
-                .collect();
-            assert_eq!(
-                gates,
-                [SingleGate::H, SingleGate::Z, SingleGate::H],
-                "{text}"
+                    _ => {}
+                }
+            }
+            assert!(
+                gates == [SingleGate::H, SingleGate::Z, SingleGate::H]
+                    || gates
+                        == [
+                            SingleGate::H,
+                            SingleGate::T,
+                            SingleGate::T,
+                            SingleGate::T,
+                            SingleGate::T,
+                            SingleGate::H
+                        ],
+                "complete ordered H Z H action: {text}: {gates:?}"
             );
             let distribution = run_closed(accepted, SimulationLimits::default()).unwrap();
-            assert_eq!(distribution.len(), 1, "{text}: {distribution:?}");
-            assert!((distribution[&vec![true]] - 1.0).abs() < 1e-12, "{text}");
+            assert_runtime_distribution(&distribution, &BTreeMap::from([(vec![true], 1.0)]));
         }
     }
 }
@@ -596,8 +659,7 @@ fn updated_owners_survive_nested_blocks_calls_and_measurement() {
         // independently of either frontend's ownership or lowering bookkeeping.
         for accepted in [&finite, &concrete] {
             let actual = run_closed(accepted, SimulationLimits::default()).unwrap();
-            assert_eq!(actual.len(), 1, "{source}: {actual:?}");
-            assert!((actual[&expected] - 1.0).abs() < 1e-12, "{source}");
+            assert_runtime_distribution(&actual, &BTreeMap::from([(expected.clone(), 1.0)]));
         }
     }
 }
@@ -639,9 +701,9 @@ fn global_calls_preserve_exact_coefficient_and_external_reference() {
         .unwrap();
     // The system axis occupies the low bit. X toggles it while the
     // reference index (high bit) and each complex coefficient stay unchanged.
-    assert_eq!(
-        actual.amplitudes,
-        (0..4).map(|i| input[i ^ 1]).collect::<Vec<_>>()
+    assert_runtime_amplitudes(
+        &actual.amplitudes,
+        &(0..4).map(|i| input[i ^ 1]).collect::<Vec<_>>(),
     );
 }
 
@@ -656,9 +718,9 @@ fn finite_nested_runtime_branch_retains_updated_owner() {
         let q=init0();let u=if 1{{x(excl q);()}}else{{()}};measure_z(q)}}"
     );
     let finite = compile_project(&SourceRoot::new(&source).0).unwrap();
-    assert_eq!(
-        run_closed(&finite, SimulationLimits::default()).unwrap(),
-        BTreeMap::from([(vec![true], 1.0)])
+    assert_runtime_distribution(
+        &run_closed(&finite, SimulationLimits::default()).unwrap(),
+        &BTreeMap::from([(vec![true], 1.0)]),
     );
     // Runtime conditional preparation remains outside the existing selected
     // projection profile. Do not silently expand that unrelated contract.
@@ -972,9 +1034,9 @@ fn reassembled_owner_and_callee_binders_do_not_restore_old_snapshot() {
         .accept(proposal.proposal())
         .unwrap();
     for accepted in [&finite, &concrete] {
-        assert_eq!(
-            run_closed(accepted, SimulationLimits::default()).unwrap(),
-            BTreeMap::from([(vec![true, false], 1.0)])
+        assert_runtime_distribution(
+            &run_closed(accepted, SimulationLimits::default()).unwrap(),
+            &BTreeMap::from([(vec![true, false], 1.0)]),
         );
     }
 }
@@ -1245,7 +1307,32 @@ fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
                     .unwrap();
                 let accepted = kernel.accept(proposal.proposal()).unwrap();
                 proposal.validate_source_steps(&accepted).unwrap();
-                assert_eq!(accepted.raw().operations.len(), 9);
+                // One indexed take/put contributes six structural rows,
+                // plus the two reference split/join boundaries. Ordinary X
+                // and Z may contain several actual gate rows; the independent
+                // complete Meaning above fixes their phase, axes and reference.
+                let operations = &accepted.raw().operations;
+                assert_eq!(
+                    operations
+                        .iter()
+                        .filter(|op| matches!(
+                            op,
+                            qleisli::ir::RawOp::Split { .. } | qleisli::ir::RawOp::Join { .. }
+                        ))
+                        .count(),
+                    8
+                );
+                assert!(operations.iter().any(|op| matches!(
+                    op,
+                    qleisli::ir::RawOp::Gate { .. } | qleisli::ir::RawOp::ApplyUnitary { .. }
+                )));
+                assert!(operations.iter().all(|op| matches!(
+                    op,
+                    qleisli::ir::RawOp::Split { .. }
+                        | qleisli::ir::RawOp::Join { .. }
+                        | qleisli::ir::RawOp::Gate { .. }
+                        | qleisli::ir::RawOp::ApplyUnitary { .. }
+                )));
                 if !flip {
                     assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
                 }
@@ -1295,7 +1382,34 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
             .unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         proposal.validate_source_steps(&accepted).unwrap();
-        assert_eq!(accepted.raw().operations.len(), 15);
+        // Two selected bit take/put pairs contribute twelve structural
+        // rows, and the untouched reference adds two. The ordinary controlled
+        // X body joins its operands, applies its retained circuit, then splits
+        // them again. No physical routing gate or hidden effect is permitted.
+        let operations = &accepted.raw().operations;
+        assert_eq!(
+            operations
+                .iter()
+                .filter(|op| matches!(
+                    op,
+                    qleisli::ir::RawOp::Split { .. } | qleisli::ir::RawOp::Join { .. }
+                ))
+                .count(),
+            12 + 2 + 2
+        );
+        assert_eq!(
+            operations
+                .iter()
+                .filter(|op| matches!(op, qleisli::ir::RawOp::ApplyUnitary { .. }))
+                .count(),
+            1
+        );
+        assert!(operations.iter().all(|op| matches!(
+            op,
+            qleisli::ir::RawOp::Split { .. }
+                | qleisli::ir::RawOp::Join { .. }
+                | qleisli::ir::RawOp::ApplyUnitary { .. }
+        )));
     }
     let bad = "use std::gate::cnot;pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{cnot(excl q[2],ctrl q[0]);q}";
     let source = selected(bad)
@@ -1710,11 +1824,11 @@ fn closed_static_branches_and_empty_fold_thread_updated_carry() {
                 },
             )
             .unwrap();
-        assert_eq!(
-            actual.amplitudes,
-            (0..4)
+        assert_runtime_amplitudes(
+            &actual.amplitudes,
+            &(0..4)
                 .map(|i| input[i ^ (rounds as usize % 2)])
-                .collect::<Vec<_>>()
+                .collect::<Vec<_>>(),
         );
     }
 }
@@ -1833,7 +1947,29 @@ fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
                         .count(),
                     8
                 );
-                assert_eq!(raw.operations.len(), if gate.is_empty() { 8 } else { 9 });
+                // Derived X is H Z H; Z retains its exact phase action.
+                // Count structural ownership boundaries separately from their
+                // actual gate work. The complete native Meaning above remains
+                // the independent all-input/phase/reference oracle.
+                let pure = raw
+                    .operations
+                    .iter()
+                    .filter(|op| {
+                        matches!(
+                            op,
+                            qleisli::ir::RawOp::Gate { .. }
+                                | qleisli::ir::RawOp::ApplyUnitary { .. }
+                        )
+                    })
+                    .count();
+                assert_eq!(pure == 0, gate.is_empty());
+                assert!(raw.operations.iter().all(|op| matches!(
+                    op,
+                    qleisli::ir::RawOp::Split { .. }
+                        | qleisli::ir::RawOp::Join { .. }
+                        | qleisli::ir::RawOp::Gate { .. }
+                        | qleisli::ir::RawOp::ApplyUnitary { .. }
+                )));
                 if gate.starts_with('z') {
                     let wrong =
                         FiniteMeaning::phase(required.signature().clone(), vec![0; 1 << (n + 1)])
