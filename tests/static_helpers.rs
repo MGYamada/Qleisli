@@ -61,7 +61,7 @@ fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
 )]
 #[test]
 fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() {
-    let source = "use std::quantum::phase;
+    let source = "
         static fn exponent[const stage:Nat]()->Nat{stage+1}
         pub unitary fn schedule[const count:Nat](q:Q<Bit>)->Q<Bit> requires count<=3 {
             qfor static i in 0..count carry r=q {

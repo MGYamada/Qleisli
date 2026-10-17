@@ -15,7 +15,7 @@ fn parsed(source: &str) -> ParsedProgram {
 #[test]
 fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
     let program = parsed(
-        "use std::quantum::x; pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..n carry a=q{yield x(a);}}",
+        "use std::gate::x; pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..n carry a=q{yield x(a);}}",
     );
     let input = vec![[0.25, 0.5], [-0.75, 0.125], [0.375, -0.5], [-0.25, -0.625]];
     for n in 0..=3 {
@@ -60,7 +60,7 @@ fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
 #[test]
 fn multiple_carried_owners_keep_the_complete_entangled_interface() {
     let program = parsed(
-        "use std::quantum::cnot; pub unitary fn f[const n:Nat](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){qfor static i in 0..n carry pair=(a,b){let(a,b)=pair;yield cnot(a,b);}}",
+        "use std::gate::cnot; pub unitary fn f[const n:Nat](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){qfor static i in 0..n carry pair=(a,b){let(a,b)=pair;yield cnot(a,b);}}",
     );
     let input: Vec<_> = (0..8).map(|i| [i as f64 + 0.125, 0.5 - i as f64]).collect();
     for n in [0, 2] {
@@ -101,7 +101,7 @@ fn multiple_carried_owners_keep_the_complete_entangled_interface() {
 #[test]
 fn zero_width_carry_does_not_erase_its_scalar_operator() {
     let program = parsed(
-        "use std::quantum::phase_eighth; pub unitary fn f(q:Q<Unit>)->Q<Unit>{qfor static i in 0..4 carry a=q{yield phase_eighth(a);}}",
+        " pub unitary fn f(q:Q<Unit>)->Q<Unit>{qfor static i in 0..4 carry a=q{yield global_phase_eighth(a);}}",
     );
     let proposal = program
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())

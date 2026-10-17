@@ -322,10 +322,10 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
 )]
 #[test]
 fn qli_frontend_and_qir_profile_contract() {
-    let p = qleisli::frontend::compile::compile_project(std::path::Path::new(
+    let project = common::current_source_project(std::path::Path::new(
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
-    ))
-    .unwrap();
+    ));
+    let p = qleisli::frontend::compile::compile_project(&project).unwrap();
     let qasm = export_openqasm3(&p).unwrap();
     close(
         probability(&import_openqasm3(&qasm).unwrap(), &[true, true]),
@@ -486,9 +486,9 @@ fn export_has_independent_capacity_checks() {
 // re-import is a separate output-validity check, not an export theorem.
 fn ordinary_terminal(body: &str, definitions: &str, result: &str) -> AcceptedProgram {
     let text = format!(
-        "use std::quantum::{{init0,h,split,join,unit,finish,phase_eighth}};
+        "use std::state::init0;
          use std::gate::t;
-         use std::observe::measure_z;
+\x20\x20\x20\x20\x20\x20\x20\x20\x20
          unitary fn wrapper(q:Q<Bit>)->Q<Bit>{{t(q)}}
          unitary fn unchanged(q:Q<Bit>)->Q<Bit>{{q}}
          {definitions}
@@ -789,7 +789,7 @@ fn adjacent_contract_phases_merge_before_assigning_workspace() {
 fn uncontrolled_unit_contract_phase_is_not_erased_by_export() {
     let program = ordinary_terminal(
         "let u=apply_contract(scalar,scalar,unit(()));finish(u);()",
-        "unitary fn scalar(u:Q<Unit>)->Q<Unit>{phase_eighth(u)}",
+        "unitary fn scalar(u:Q<Unit>)->Q<Unit>{global_phase_eighth(u)}",
         "Unit",
     );
     assert!(has_contract(&program));
@@ -874,4 +874,314 @@ fn ordinary_contract_adjoint_reverses_noncommuting_body_order() {
     exact_target_matrix(&text, expected.clone()).unwrap();
     let wrong_order = text.replace("h q[0];\ntdg q[0];", "tdg q[0];\nh q[0];");
     assert!(exact_target_matrix(&wrong_order, expected).is_err());
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    for (width, body, result, literal, qis) in [
+        (
+            1usize,
+            "measure_z(invoke[readable_flip](init0()))",
+            "Bit",
+            "x q[0];",
+            "x__body",
+        ),
+        (
+            2,
+            "let(a,b)=cnot(init0(),init0());(measure_z(b),measure_z(a))",
+            "(Bit,Bit)",
+            "cx q[0], q[1];",
+            "cnot__body",
+        ),
+        (
+            3,
+            "let((a,b),c)=toffoli(init0(),init0(),init0());((measure_z(c),measure_z(a)),measure_z(b))",
+            "((Bit,Bit),Bit)",
+            "ccx q[1], q[0], q[2];",
+            "ccx__body",
+        ),
+    ] {
+        let program = ordinary_terminal(
+            body,
+            "use std::gate::{z,cnot,toffoli}; unitary fn readable_flip(q:Q<Bit>)->Q<Bit>{h(z(h(q)))} fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}",
+            result,
+        );
+        assert!(
+            has_contract(&program),
+            "actual ordinary function receipts at width {width}"
+        );
+        let text = export_openqasm3(&program).unwrap();
+        assert!(text.contains(literal), "{text}");
+        let (physical_width, emitted) = literal_target(&text);
+        assert_eq!(physical_width, width, "no synthesis workspace");
+        assert_eq!(emitted.len(), 1, "only exact adjacent HZH folds: {text}");
+        assert!(
+            export_qir_base(&program)
+                .unwrap()
+                .contains(&format!("call void @__quantum__qis__{qis}("))
+        );
+        import_openqasm3(&text).unwrap();
+        let dimension = 1usize << width;
+        // Independent full-column specification: flip the final physical axis
+        // iff all preceding controls are one; no scalar-phase quotient.
+        let expected = Matrix::new(
+            dimension,
+            dimension,
+            (0..dimension * dimension)
+                .map(|entry| {
+                    let row = entry / dimension;
+                    let column = entry % dimension;
+                    let mask = (1usize << (width - 1)) - 1;
+                    let image = if column & mask == mask {
+                        column ^ (1 << (width - 1))
+                    } else {
+                        column
+                    };
+                    if row == image {
+                        Exact::one()
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap();
+        exact_target_matrix(&text, expected.clone()).unwrap();
+        assert!(
+            exact_target_matrix(&text.replace(literal, ""), expected.clone()).is_err(),
+            "the flip is required"
+        );
+        let wrong_phase = Matrix::new(
+            dimension,
+            dimension,
+            expected
+                .entries()
+                .iter()
+                .map(|entry| {
+                    if entry == &Exact::one() {
+                        Exact::phase(1)
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap();
+        assert!(
+            exact_target_matrix(&text, wrong_phase).is_err(),
+            "full scalar phase is retained"
+        );
+        if width > 1 {
+            let wrong_axis = if width == 2 {
+                "cx q[1], q[0];"
+            } else {
+                "ccx q[2], q[0], q[1];"
+            };
+            assert!(
+                exact_target_matrix(&text.replace(literal, wrong_axis), expected).is_err(),
+                "target/control axes are distinct obligations"
+            );
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    let program = ordinary_terminal(
+        "let(a,b)=swap(init0(),init0());(measure_z(b),measure_z(a))",
+        "use std::gate::swap;",
+        "(Bit,Bit)",
+    );
+    assert!(has_contract(&program));
+    let text = export_openqasm3(&program).unwrap();
+    assert!(
+        text.contains("cx q[0], q[1];\ncx q[1], q[0];\ncx q[0], q[1];"),
+        "{text}"
+    );
+    assert!(
+        text.contains("c[0] = measure q[1];\nc[1] = measure q[0];"),
+        "{text}"
+    );
+    assert_eq!(literal_target(&text).0, 2);
+    assert_eq!(literal_target(&text).1.len(), 3);
+    assert_eq!(
+        export_qir_base(&program)
+            .unwrap()
+            .matches("call void @__quantum__qis__cnot__body(")
+            .count(),
+        3
+    );
+    import_openqasm3(&text).unwrap();
+    let permutation = [0, 2, 1, 3];
+    let expected = Matrix::new(
+        4,
+        4,
+        (0..16)
+            .map(|entry| {
+                if entry / 4 == permutation[entry % 4] {
+                    Exact::one()
+                } else {
+                    Exact::zero()
+                }
+            })
+            .collect(),
+    )
+    .unwrap();
+    exact_target_matrix(&text, expected.clone()).unwrap();
+    assert!(
+        exact_target_matrix(&text.replace("cx q[1], q[0];\n", ""), expected).is_err(),
+        "all three original windows matter"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_inlined_hzh_exports_literal_x_across_pure_raw_steps() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    let program = ordinary_terminal(
+        "measure_z(readable_flip(init0()))",
+        "use std::gate::z; unitary fn readable_flip(q:Q<Bit>)->Q<Bit>{h(z(h(q)))}",
+        "Bit",
+    );
+    assert!(
+        !has_contract(&program),
+        "this ordinary direct call exercises separate original Raw steps"
+    );
+    let pure: Vec<_> = program
+        .raw()
+        .operations
+        .iter()
+        .filter(|op| matches!(op, RawOp::Gate { .. } | RawOp::ApplyUnitary { .. }))
+        .collect();
+    assert_eq!(pure.len(), 3, "three distinct original Raw operations");
+    assert!(matches!(
+        pure[0],
+        RawOp::Gate {
+            gate: SingleGate::H,
+            ..
+        }
+    ));
+    assert!(matches!(
+        pure[2],
+        RawOp::Gate {
+            gate: SingleGate::H,
+            ..
+        }
+    ));
+    let RawOp::ApplyUnitary { steps, .. } = pure[1] else {
+        panic!("original Z action")
+    };
+    assert_eq!(steps.len(), 1);
+    assert!(steps[0].controls.is_empty());
+    assert!(
+        matches!(&steps[0].action, CircuitAction::Monomial { indices, permutation, phases }
+        if indices == &[0] && permutation == &[0,1] && phases == &[0,4])
+    );
+    let original = program.raw().clone();
+    let text = export_openqasm3(&program).unwrap();
+    let (width, emitted) = literal_target(&text);
+    assert_eq!(width, 1);
+    assert_eq!(emitted.len(), 1);
+    assert!(text.contains("x q[0];"), "{text}");
+    assert!(
+        export_qir_base(&program)
+            .unwrap()
+            .contains("call void @__quantum__qis__x__body(")
+    );
+    let expected = Matrix::new(
+        2,
+        2,
+        vec![Exact::zero(), Exact::one(), Exact::one(), Exact::zero()],
+    )
+    .unwrap();
+    exact_target_matrix(&text, expected.clone()).unwrap();
+    assert!(exact_target_matrix(&text.replace("x q[0];", ""), expected).is_err());
+    let wrong_phase = Matrix::new(
+        2,
+        2,
+        vec![
+            Exact::zero(),
+            Exact::phase(1),
+            Exact::phase(1),
+            Exact::zero(),
+        ],
+    )
+    .unwrap();
+    assert!(exact_target_matrix(&text, wrong_phase).is_err());
+    assert_eq!(program.raw(), &original);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn final_target_window_does_not_cross_fresh_preparation() {
+    for singleton in [false, true] {
+        let mut operations = vec![
+            RawOp::Init0 {
+                output: TokenId(0),
+                wire: WireId(0),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: TokenId(0),
+                output: TokenId(1),
+            },
+        ];
+        if singleton {
+            operations.extend([
+                RawOp::PackUnit { output: TokenId(2) },
+                RawOp::LiftBasis {
+                    input: TokenId(2),
+                    output: TokenId(3),
+                    output_wires: vec![WireId(1)],
+                    table: vec![0],
+                },
+            ]);
+        } else {
+            operations.push(RawOp::Init0 {
+                output: TokenId(3),
+                wire: WireId(1),
+            });
+        }
+        operations.extend([
+            RawOp::Gate {
+                gate: SingleGate::Z,
+                input: TokenId(1),
+                output: TokenId(4),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: TokenId(4),
+                output: TokenId(5),
+            },
+            RawOp::MeasureZ {
+                input: TokenId(5),
+                output: ClassicalId(0),
+            },
+            RawOp::MeasureZ {
+                input: TokenId(3),
+                output: ClassicalId(1),
+            },
+        ]);
+        let program = raw(operations, vec![ClassicalId(0), ClassicalId(1)]);
+        let text = export_openqasm3(&program).unwrap();
+        assert!(text.contains("h q[0];\nz q[0];\nh q[0];"), "{text}");
+        assert!(!text.contains("x q[0];"));
+        assert_eq!(literal_target(&text).0, 2);
+    }
 }

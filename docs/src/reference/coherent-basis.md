@@ -29,10 +29,10 @@ The braces contain exactly one existing `BasisExpr`, not an ordinary block.
 The admitted forms are bound labels, `()`, `0`/`1`, grouping, ordered tuples,
 `not`, `and`, `xor`, calls to declared `classical fn` functions with their exact
 argument-list arity and types, and the existing nullary ordinary
-`empty_bits()` constructor imported from `std::classical`. The constructor produces the exact
+`empty_bits()` language primitive constructor, requiring no import. The constructor produces the exact
 `Bits<0>` label; it introduces no quantum owner. Its resolved primitive identity
 and checked signature are required, so an ordinary same-spelled function gains
-no special permission. Other sealed quantum calls remain excluded. There is no `let`, statement sequence, semicolon,
+no special permission. Other quantum primitive calls remain excluded. There is no `let`, statement sequence, semicolon,
 measurement, ordinary runtime call or nested coherent map in this body.
 `classical fn` declares total ordinary computations. Its body can also be called
 on ordinary runtime values, including measured Bits, under the

@@ -166,12 +166,12 @@ def rejected_sources(sources):
         ('wrong-reinsert-width', xor.replace('put_bit[n,k](a,x)', 'put_bit[n-1,k](a,x)'), 'xor_into', 2),
         ('owner-shadow', xor.replace('let (a,x)', 'let (y,x)'), 'xor_into', 2),
         ('tuple-shape', xor.replace('let (x,y) = pair', 'let ((x,y),z) = pair'), 'xor_into', 2),
-        ('unknown-import', xor.replace('std::quantum::cnot', 'other::quantum::cnot'), 'xor_into', 2),
+        ('unknown-import', xor.replace('std::gate::cnot', 'other::quantum::cnot'), 'xor_into', 2),
         ('nonlinear-size', xor.replace('0..n', '0..n*n'), 'xor_into', 2),
         ('underflow', xor.replace('0..n', '0..n-1'), 'xor_into', 0),
         ('zero-ghz', ghz, 'ghz', 0),
         ('register-capacity', xor, 'xor_into', 9),
-        ('implicit-bit-view', '''use std::quantum::h;
+        ('implicit-bit-view', '''
             pub unitary fn bad[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { h(q) }''', 'bad', 1),
     ]
     results = []
@@ -226,10 +226,10 @@ def main():
         'xor-wrong-axis': ('xor', sources['xor'].replace('take_bit[n,k](y)', 'take_bit[n,n-1-k](y)').replace(
             'put_bit[n,k](b,y)', 'put_bit[n,n-1-k](b,y)')),
         # Keep the injected X gate unshadowed by the source's x register.
-        'xor-phase': ('xor', re.sub(r'\bx\b', 'left', sources['xor']).replace('use std::quantum::cnot;',
-            'use std::quantum::cnot;\nuse std::quantum::h;\nuse std::quantum::x;').replace(
+        'xor-phase': ('xor', re.sub(r'\bx\b', 'left', sources['xor']).replace('use std::gate::cnot;',
+            'use std::gate::cnot;\n\nuse std::gate::x;').replace(
             'yield (put_bit', 'let a = h(x(h(a)));\n        yield (put_bit')),
-        'ghz-no-superposition': ('ghz', sources['ghz'].replace('std::quantum::h', 'std::quantum::x').replace('h(head)', 'x(head)')),
+        'ghz-no-superposition': ('ghz', ('use std::gate::x;\n' + sources['ghz']).replace('h(head)', 'x(head)')),
         'ghz-missing-fanout': ('ghz', sources['ghz'].replace('0..n-1', '0..0')),
     }
     for key, (name, source) in fault_sources.items():

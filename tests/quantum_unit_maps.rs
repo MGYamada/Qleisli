@@ -438,10 +438,10 @@ fn ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner() {
     let root = &graph.definitions()[graph.root()];
     assert_ne!(root.inputs()[0].identity(), root.output().identity());
     assert_eq!(root.steps().len(), 2);
-    assert_eq!(root.steps()[0].primitive(), Some("std::quantum::finish"));
+    assert_eq!(root.steps()[0].primitive(), Some("finish"));
     assert_eq!(root.steps()[0].output().identity(), None);
     assert!(!root.steps()[0].output().ty().is_quantum());
-    assert_eq!(root.steps()[1].primitive(), Some("std::quantum::unit"));
+    assert_eq!(root.steps()[1].primitive(), Some("unit"));
 }
 
 #[cfg_attr(
@@ -460,25 +460,16 @@ fn scalar_arguments_execute_once_and_finish_does_not_erase_phase() {
         let root = &graph.definitions()[graph.root()];
         let expected_steps = if count == 2 {
             vec![
-                "std::quantum::unit",
-                "std::quantum::phase_eighth",
-                "std::quantum::phase_eighth",
-                "std::quantum::finish",
-                "std::quantum::unit",
+                "unit",
+                "global_phase_eighth",
+                "global_phase_eighth",
+                "finish",
+                "unit",
             ]
         } else if return_owner {
-            vec![
-                "std::quantum::unit",
-                "std::quantum::phase_eighth",
-                "std::quantum::finish",
-                "std::quantum::unit",
-            ]
+            vec!["unit", "global_phase_eighth", "finish", "unit"]
         } else {
-            vec![
-                "std::quantum::unit",
-                "std::quantum::phase_eighth",
-                "std::quantum::finish",
-            ]
+            vec!["unit", "global_phase_eighth", "finish"]
         };
         assert_eq!(
             root.steps()
@@ -717,7 +708,7 @@ fn isolated_wrong_types_and_arities_reject_before_argument_evaluation() {
             "static",
         ),
     ] {
-        let text = format!("use std::quantum::{{unit,finish}}; {declaration}");
+        let text = format!(" {declaration}");
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         located(&error, &text, code);
@@ -737,7 +728,7 @@ fn every_isolated_owner_and_unused_zero_iteration_body_is_checked() {
         "pub unitary fn f(u: Unit) -> Unit { u } unitary fn unused(q:Q<Unit>)->Q<Unit>{let ()=finish(q);q}",
         "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { qfor static k in 0..0 carry r=q { let ()=finish(r); yield r; } }",
     ] {
-        let text = format!("use std::quantum::{{unit,finish}}; {declaration}");
+        let text = format!(" {declaration}");
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         located(&error, &text, "ownership");
@@ -754,14 +745,11 @@ fn effects_are_not_hidden_by_the_ordinary_unit_argument_or_result() {
     assert_eq!(root.effect(), "observe");
     assert_eq!(root.steps().len(), 3);
     assert!(root.steps()[0].called_definition().is_some());
-    assert_eq!(root.steps()[1].primitive(), Some("std::quantum::unit"));
-    assert_eq!(root.steps()[2].primitive(), Some("std::quantum::finish"));
+    assert_eq!(root.steps()[1].primitive(), Some("unit"));
+    assert_eq!(root.steps()[2].primitive(), Some("finish"));
     let helper = &graph.definitions()[root.steps()[0].called_definition().unwrap()];
     assert_eq!(helper.steps().len(), 1);
-    assert_eq!(
-        helper.steps()[0].primitive(),
-        Some("std::observe::measure_z")
-    );
+    assert_eq!(helper.steps()[0].primitive(), Some("measure_z"));
     // This first desired source drops its readout. Preserve the separate current
     // readout limitation, rather than mislabeling generic checking as lowering.
     assert_eq!(graph.lower().unwrap_err().code(), "unsupported");
@@ -876,7 +864,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     use qleisli::contract::meaning::FiniteMeaning;
     use qleisli::frontend::compile::compile_project;
     use qleisli::ir::{Effect, TokenId};
-    let text = "use std::quantum::{unit,finish,phase_eighth}; pub unitary fn main()->Q<Unit>{finish(phase_eighth(unit(())));unit(())}";
+    let text = " pub unitary fn main()->Q<Unit>{finish(global_phase_eighth(unit(())));unit(())}";
     let graph = elaborate(text, "main::main");
     let raw = graph.lower_raw().unwrap();
     let native = native::Kernel::selected().unwrap();
@@ -887,7 +875,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     // Check the retained scalar on the supported unary quantum interface,
     // independently of the closed source and its separate finite adapter.
     let scalar = elaborate(
-        "use std::quantum::{unit,finish,phase_eighth};pub unitary fn f(q:Q<Unit>)->Q<Unit>{finish(phase_eighth(q));unit(())}",
+        "pub unitary fn f(q:Q<Unit>)->Q<Unit>{finish(global_phase_eighth(q));unit(())}",
         "main::f",
     );
     let scalar = scalar.lower_raw().unwrap();
@@ -902,7 +890,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
             .is_err()
     );
     // The finite source adapter invokes the same native boundary, separately.
-    let finite_source = "use std::quantum::{unit,finish,phase_eighth};fn main()->Unit{finish(phase_eighth(unit(())));finish(unit(()))}";
+    let finite_source = "fn main()->Unit{finish(global_phase_eighth(unit(())));finish(unit(()))}";
     let finite = compile_project(&common::SourceRoot::new(finite_source).0).unwrap();
     assert_eq!(finite.raw().declared_effect, Effect::Unitary);
     let [
@@ -937,7 +925,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     }
     // Physically indistinguishable empty owners are still different owners.
     let graph = elaborate(
-        "use std::quantum::finish;pub unitary fn f(a:Q<Unit>,b:Q<Unit>)->Q<Unit>{finish(a);b}",
+        "pub unitary fn f(a:Q<Unit>,b:Q<Unit>)->Q<Unit>{finish(a);b}",
         "main::f",
     );
     let raw = graph.lower_raw().unwrap();
@@ -960,7 +948,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
 fn raw_unit_maps_preserve_controlled_scalar_interference_in_both_source_paths() {
     use qleisli::frontend::compile::compile_project;
     use qleisli::sim::{SimulationLimits, run_closed};
-    let text = "use std::quantum::{unit,finish,phase_eighth,h,init0};use std::observe::measure_z;unitary fn scalar(q:Q<Unit>)->Q<Unit>{unit(finish(phase_eighth(q)))}pub observe fn main()->Bit{let(c,u)=controlled(power(scalar,4))(h(init0()),unit(()));finish(u);measure_z(h(c))}";
+    let text = "use std::state::init0;unitary fn scalar(q:Q<Unit>)->Q<Unit>{unit(finish(global_phase_eighth(q)))}pub observe fn main()->Bit{let(c,u)=controlled(power(scalar,4))(h(init0()),unit(()));finish(u);measure_z(h(c))}";
     let finite = compile_project(&common::SourceRoot::new(text).0).unwrap();
     let raw = elaborate(text, "main::main").lower_raw().unwrap();
     let accepted = native::Kernel::selected()

@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Retain three first hosted test-assertion failures after ordinary primitive migration and the unchanged source contracts for their test-only repairs.",
+  "baseline_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+  "project_version": "0.3.0-beta",
+  "author": "Codex subagent; informed repository and hosted-log review; exact deployed model identifier and sampling settings unavailable",
+  "context": "context.md",
+  "record_status": "first hosted failures retained; three completed bounded after-repair commands appended separately",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retrospective byte copies of the three source inputs already committed at the first hosted run. No source was repaired. The first source is the exact decoded Rust IMPORTS plus inline program; the other two are selected immutable current-source fixtures. This is not a pre-run archive.",
+      "sha256": {
+        "not_main.qli": "20d972dfc813083c96e8d18d579431abf9af96f103df1417dd5b9815c24bc692",
+        "canonical_retained_source.qli": "06d495977a44efc6baa6e494d1cdcf6f1e2a9417704c06149455b02209957b49",
+        "unit_drain_readout.qli": "f68a95d2e73ed076c22cf0cd9e0f939cf5c2a6c8f910544160840c2ea415a6fc"
+      },
+      "observations": [
+        "observations-before/source-ir-normal.json",
+        "observations-before/ordinary-types-native.json",
+        "observations-after/normal.json",
+        "observations-after/msrv-ordinary.json",
+        "observations-after/msrv-source-ir.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "attempt-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "immutable_originals": {
+    "tests/source_ir_correspondence.rs": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "8ab8b9275d187472f1da0722a47399658e3265a836a2a61a3081e1a847cba055",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/tests/source_ir_correspondence.rs"
+    },
+    "tests/ordinary_types.rs": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "7f169507a6faaf3a0cf4aeb6091da231bc5f35239547e1592682733d33253553",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/tests/ordinary_types.rs"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-336.qli": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "06d495977a44efc6baa6e494d1cdcf6f1e2a9417704c06149455b02209957b49",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/tests/fixtures/frontend_v030/language-primitives/current/files/client-336.qli"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-341.qli": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "f68a95d2e73ed076c22cf0cd9e0f939cf5c2a6c8f910544160840c2ea415a6fc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/tests/fixtures/frontend_v030/language-primitives/current/files/client-341.qli"
+    },
+    "stdlib/src/state.qli": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/stdlib/src/state.qli"
+    },
+    "stdlib/src/structure.qli": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "bb4e6be285aacde6ac9cf7e1350d86daf5782fde0788f938724349cd3ff8beed",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/stdlib/src/structure.qli"
+    },
+    "stdlib/src/gate.qli": {
+      "git_commit": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "sha256": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795",
+      "url": "https://github.com/MGYamada/Qleisli/blob/bd07cee947f10801375e5e0ef741834ed4904533/stdlib/src/gate.qli"
+    }
+  },
+  "source_selection": {
+    "not_main.qli": {
+      "test": "verified_ir_does_not_by_itself_establish_source_correspondence",
+      "construction": "Exact decoded IMPORTS + newline + unchanged inline source, as passed to SourceRoot by compile().",
+      "test_path": "tests/source_ir_correspondence.rs"
+    },
+    "canonical_retained_source.qli": {
+      "test": "source_bearing_native_evidence_retains_the_actual_canonical_source",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-336.qli",
+      "original": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli"
+    },
+    "unit_drain_readout.qli": {
+      "test": "unit_returning_quantum_consumption_survives_lowering_and_source_event_checks",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-341.qli",
+      "original": "tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-drain-readout/main.qli"
+    }
+  },
+  "scope": "Two existing one-qubit finite programs and one single live Bit plus a zero-width quantum owner with the unchanged two-bit input/reference-vector test. Hosted assertion failures are not parser/type/native rejection or semantic counterexamples. Test-only repairs preserve native gates and independent exact/reference oracles. No source theorem, constitutional admission, release or Issue completion claim.",
+  "repair_packet": {
+    "patch_sha256": "0275fc0834be2aa4220117ee525511f9586a41d077ca51a9e84af4d5503fedea",
+    "independent_review_sha256": "bc2d981a1c519aeee4abb20f880cddbe19b896cc1619feff3c683e18c122559c",
+    "after_results": {
+      "normal": {
+        "passed": 20,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "All 14 ordinary_types and all 6 source_ir_correspondence tests."
+      },
+      "msrv_ordinary": {
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "All ordinary_types tests on Rust 1.85.0."
+      },
+      "msrv_source_ir": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 5,
+        "scope": "Only verified_ir_does_not_by_itself_establish_source_correspondence; the other five source_ir tests were not rerun on MSRV in this observation."
+      },
+      "native_skip_gate": "All three actual commands report zero conditional native skips.",
+      "source_epoch": "Dirty working inputs bound by the per-command stable whole-working digest; Git HEAD alone is not the tested source identity.",
+      "limitations": "This does not claim full latest/MSRV all-target CI, source preservation theorem, refreshed build provenance for the observed CLI, or Issue completion."
+    }
+  }
+}

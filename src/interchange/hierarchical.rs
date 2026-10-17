@@ -72,6 +72,7 @@ impl Prepared {
 /// No independently requested root or source-adequacy claim is included.
 #[derive(Debug)]
 pub struct Reconstructed {
+    checker: PathBuf,
     payload: Arc<[u8]>,
     leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
     structural_work: usize,
@@ -83,12 +84,14 @@ pub struct Reconstructed {
 impl Reconstructed {
     fn new(
         prepared: Prepared,
+        checker: PathBuf,
         leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
         structural_work: usize,
         native_exact_work: usize,
         budget: &Budget,
     ) -> Self {
         Self {
+            checker,
             payload: prepared.payload,
             leaves,
             structural_work,
@@ -96,6 +99,12 @@ impl Reconstructed {
             native_exact_work,
             execution: prepared.execution,
         }
+    }
+
+    /// Canonical path actually invoked for this report, not a binary attestation.
+    /// Retain it without resolving the configured path or environment again.
+    pub(crate) fn checker(&self) -> &Path {
+        &self.checker
     }
 
     pub fn payload(&self) -> &[u8] {
@@ -151,13 +160,14 @@ impl Kernel {
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
-            &super::native::Kernel::new(&self.executable),
+            &super::native::Kernel::new(&response.checker),
             &decoded.value,
             response.indices,
             &mut budget,
         )?;
         Ok(Reconstructed::new(
             prepared,
+            response.checker,
             leaves,
             response.work,
             response.exact_work,
@@ -440,7 +450,7 @@ impl Kernel {
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
-            &super::native::Kernel::new(&self.executable),
+            &super::native::Kernel::new(&response.checker),
             &decoded.actual,
             response.indices,
             &mut budget,
@@ -458,6 +468,7 @@ impl Kernel {
         Ok(CheckedRequest {
             reconstruction: Reconstructed::new(
                 prepared,
+                response.checker,
                 leaves,
                 response.work,
                 response.exact_work,
@@ -544,7 +555,7 @@ impl Kernel {
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
-            &super::native::Kernel::new(&self.executable),
+            &super::native::Kernel::new(&response.checker),
             &decoded.pure.actual,
             response.indices,
             &mut budget,
@@ -558,6 +569,7 @@ impl Kernel {
         Ok(CheckedInstrument {
             reconstruction: Reconstructed::new(
                 prepared,
+                response.checker,
                 leaves,
                 response.work,
                 response.exact_work,
@@ -589,7 +601,7 @@ impl Kernel {
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
-            &super::native::Kernel::new(&self.executable),
+            &super::native::Kernel::new(&response.checker),
             &decoded.provider.actual,
             response.indices,
             &mut budget,
@@ -613,6 +625,7 @@ impl Kernel {
             instrument: CheckedInstrument {
                 reconstruction: Reconstructed::new(
                     prepared,
+                    response.checker,
                     leaves,
                     response.work,
                     response.exact_work,

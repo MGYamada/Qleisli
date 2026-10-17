@@ -20,8 +20,7 @@ fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
             format!("{unsupported} {supported}"),
             format!("{supported} {unsupported}"),
         ] {
-            let source =
-                format!("use std::quantum::init0; use std::observe::measure_z; {declarations}");
+            let source = format!("use std::state::init0;  {declarations}");
             let program =
                 ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
             let graph = program

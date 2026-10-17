@@ -87,7 +87,7 @@ class JsonCliTests(unittest.TestCase):
         return result
 
     def test_check_run_and_distribution_order(self):
-        self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
+        self.source("use std::state::init0;  \n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
         self.assert_requestless_source_check(self.invoke("check", self.root, "--format=json")["result"])
         rows = self.invoke("run", "--format=json", self.root)["result"]["distribution"]
@@ -134,7 +134,7 @@ class JsonCliTests(unittest.TestCase):
             "unknown_name": "observe fn main() -> Unit { missing() }",
             "recursive_call": "unitary fn f() -> Unit { f() }",
             "ownership": "unitary fn f(q:Q<Bit>) -> (Q<Bit>,Q<Bit>) { (q,q) }",
-            "effect": "use std::quantum::init0; unitary fn f() -> Q<Bit> { init0() }",
+            "effect": "use std::state::init0; unitary fn f() -> Q<Bit> { init0() }",
             "arity": "unitary fn f() -> Unit { () } observe fn main() -> Unit { f(1) }",
             "project": "use absent::name;",
         }
@@ -176,7 +176,7 @@ class JsonCliTests(unittest.TestCase):
         self.assertEqual(result["command"], "")
 
     def test_seeded_samples_use_fresh_preparation_and_preserve_correlation(self):
-        self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
+        self.source("use std::state::init0;  \n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
         args = ("sample", self.root, "--shots=64", "--seed=18446744073709551615", "--format=json")
         result = self.invoke(*args)["result"]
@@ -193,7 +193,7 @@ class JsonCliTests(unittest.TestCase):
     def test_text_json_and_interop_samples_keep_the_same_seeded_results(self):
         for source in [
             "observe fn main() -> Unit { () }",
-            "use std::quantum::{init0,h,cnot}; use std::observe::measure_z; "
+            "use std::state::init0; use std::gate::cnot;  "
             "observe fn main() -> (Bit,Bit) { "
             "let (a,b) = cnot(h(init0()),init0()); (measure_z(a),measure_z(b)) }",
         ]:

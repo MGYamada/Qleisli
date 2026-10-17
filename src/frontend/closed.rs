@@ -484,9 +484,32 @@ mod tests {
     use super::*;
 
     fn checked(source: &str) -> CheckedProgram {
-        let module = crate::frontend::parser::parse_module(source).unwrap();
+        use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+        crate::frontend::project::check_bundled_manifest().unwrap();
+        let mut builder = Builder::default();
+        builder
+            .insert(
+                Source::local("main".into(), None, source.into(), ParsePolicy::Project)
+                    .unwrap_or_else(|failure| {
+                        panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                    }),
+            )
+            .unwrap();
+        for bundled in BundledRegistry::sources() {
+            builder
+                .insert(
+                    Source::bundled(bundled, ParsePolicy::Project).unwrap_or_else(|failure| {
+                        panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                    }),
+                )
+                .unwrap();
+        }
+        let sources = builder.finish();
         super::super::check::program_with(
-            BTreeMap::from([("main", &module)]),
+            sources
+                .iter()
+                .map(|(name, source)| (name, source.syntax()))
+                .collect(),
             super::super::check::SourceLimits::selected(),
             |_, _, _, _, _, _, _| Ok(()),
         )
@@ -576,7 +599,7 @@ mod tests {
     #[test]
     fn runtime_closure_rejects_a_rectangular_meaning_declaration() {
         let program = checked(
-            "use std::quantum::{finish,init0};
+            "use std::state::init0;
              isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
              meaning Prepared:Unit -> Bit=reference(prepare);",
         );

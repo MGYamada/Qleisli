@@ -1,13 +1,49 @@
 # Standard-library semantic namespaces
 
 This chapter is normative for the edition-2026 `0.3.0-beta` mathematical
-stdlib namespaces, their admission rules and the path migration adopted in
+stdlib namespaces, their admission rules, canonical distribution version and the
+path migration adopted in
 [#317](https://github.com/MGYamada/Qleisli/issues/317). It is subordinate to the
 [authority hierarchy](authority.md) and [primitive boundary](primitive-boundary.md).
 It specifies intended contracts; a namespace, source comment or successful
 source check is not a proof of its mathematical implementation.
 The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 specifies how unfamiliar derived abstractions lead to their contracts and ordinary source.
+
+## Canonical distribution version
+
+An official Qleisli distribution bundles exactly one canonical `std` qrate
+whose complete product-version identifier equals the toolchain's identifier.
+The equality includes every prerelease and build suffix: Qleisli `0.3.0-beta`
+requires `std` `0.3.0-beta`. A manifest uses the canonical version string without
+a release tag's `v` prefix; ranges, whitespace trimming or a different suffix
+cannot satisfy the equality.
+
+Normal source programs receive this embedded `std` without declaring a separate
+standard-library dependency. To use an older or newer canonical `std`, select
+the corresponding Qleisli toolchain. An ordinary user qrate keeps its own
+independent version; it need not match Qleisli. This is distribution and
+compatibility coupling, not semantic privilege: `std` remains ordinary checked
+source under [#167](https://github.com/MGYamada/Qleisli/issues/167) and the
+[qrate definition](https://github.com/MGYamada/Qleisli/issues/169).
+
+The current private embedded-manifest gate checks schema 2, edition `"2026"`,
+string `[qrate].name = "std"` and string `[qrate].version` equal to the compiler's
+complete `CARGO_PKG_VERSION`. It rejects missing, non-string or mismatched
+identity fields before loading the bundle. Schema and edition retain their
+existing diagnostic precedence. The gate parses the immutable embedded manifest
+once and caches only that packaging result across loads. Ordinary external
+manifests retain fresh schema/edition checks; source, Meaning and native
+acceptance judgments are not cached by this version check.
+
+[#171](https://github.com/MGYamada/Qleisli/issues/171) still requires qargo's
+resolved-environment and lock/build-record pairing checks. This gate implements
+no resolver or new record API. Equal version strings alone cannot detect stale
+or substituted source content, establish official artifact identity, or replace
+the existing source/evidence checks. The separate
+[#255](https://github.com/MGYamada/Qleisli/issues/255) duty to carry authoritative
+edition identity through public/native artifacts also remains open. Packaging
+identity is not a source-preservation proof or a discharge of QS, PR, RS or EXACT.
 
 ## Names follow mathematical meaning
 
@@ -40,6 +76,7 @@ chapter promises neither `qft<N>` nor a future completion target.
 | `std::reflection` | Its defining contract is a phase-fixed reflection about a specified state or subspace, including the exact projector, sign and owner interface. Being unitary alone is not this classification. | `stdlib/src/reflection.qli` |
 | `std::measurement` | Its defining mathematical operation is a complete measurement instrument with declared classical outcomes and residual quantum owners, including destructive measurement or a measurement that retains data. An arbitrary observing routine is not enough. | `stdlib/src/measurement.qli` |
 | `std::gate` | An ordinary checked gate definition has an exact operator, scalar phase and ordered-owner contract. Gate membership confers no primitive or verifier authority. | `stdlib/src/gate.qli` |
+| `std::state` | Its defining contract explicitly prepares a state or replaces an owned state under a complete effect/reference contract. Pure preparation and observation-bearing reset remain distinct. | `stdlib/src/state.qli` |
 | `std::structure` | An ordinary checked structural map explicitly changes an owner partition or representation order. Its exact input/output trees and axis map are part of the contract; it is not a physical gate merely because it denotes a permutation. | `stdlib/src/structure.qli` |
 | `std::arithmetic` (reserved) | Its public identity is a reusable parameterized arithmetic or number-theoretic operation whose contract is independent of one hard-coded circuit instance. | No current bundled module or public export. |
 
@@ -50,19 +87,17 @@ mathematical API. These are design identities, not current callable syntax,
 generic-parameter syntax commitments or delivered operations. No arithmetic
 implementation or algorithm-selection mechanism is introduced here.
 
-The compiler-owned foundation catalogs `std::quantum`, `std::observe`,
-`std::registers` and `std::classical` retain the names and precise source/profile
-contracts in the [primitive inventory](primitive-boundary.md). This mathematical
-namespace migration changes none of those entries or their trust status.
-`std::basis` is ordinary checked source despite its foundational role.
-The final unqualified primitive surface, `global_phase_eighth` spelling,
-retirement of qualified foundation catalogs and remaining active-client
-migration in #369/#167 are still pending. Current qualified primitive imports
-are compiler entries, not aliases for the new ordinary gate definitions.
+Language primitives are bare typed identities resolved only after lexical
+bindings and ordinary declarations/imports. They are not standard-library
+exports or a prelude. `std::quantum`, `std::observe`, `std::registers` and
+`std::classical` are retired without aliases. The
+[primitive boundary](primitive-boundary.md) specifies all 13 retained identities,
+the complete 27-entry migration and concrete profile limits. Ordinary modules,
+including `std::basis`, have no primitive privilege.
 
 ## Current interfaces and contracts
 
-The six bundled ordinary modules expose twenty-one public definitions and five
+The seven bundled ordinary modules expose twenty-five public definitions and five
 private helpers for a classical predicate, scalar phase, parameterized phase,
 packed CNOT and fixed Bit identity.
 Contract identifiers retain their existing meanings after the
@@ -82,6 +117,10 @@ move; they are not constitutional ledger entries or verification badges.
 | `std::gate::cnot` | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Ordinary controlled X. The first owner is the control; outputs retain their order and phase +1. |
 | `std::gate::toffoli` | `unitary fn (Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>,Q<Bit>),Q<Bit>)` | Ordinary control of packed CNOT. Both controls retain their basis labels; target flips iff both are one, with phase +1 and no additional physical wire. |
 | `std::gate::controlled_phase` | Static `[const j:Nat,const k:Nat]`; `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Ordinary control of `phase[j,k]`, exact `diag(1,1,1,exp(2*pi*i*j/2^k))` in control/target order. The phase provider's concrete coefficient/profile conditions remain required. |
+| `std::state::init0` | Nullary `isometry fn () -> Q<Bit>` | Exact `|0>` preparation with coefficient +1, one fresh physical wire and owner, tensored with identity on every retained reference. Ordinary `basis unit(()) as _ { 0 }`, using the existing injective singleton rule. |
+| `std::state::reset` | `observe fn (Q<Bit>) -> Q<Bit>` | Explicit discard followed by `init0`; the fresh zero state is independent of the erased input, with channel `rho_AR -> |0><0| tensor Tr_A(rho_AR)`. It remains Observe on a zero input. |
+| `std::structure::empty` | Nullary `unitary fn () -> Q<Bits<0>>` | Explicit singleton basis map from a fresh Unit owner to the exact Bits<0> tag, coefficient +1, no physical wire. |
+| `std::structure::consume_empty` | `unitary fn (Q<Bits<0>>) -> Unit` | Explicit singleton map to Unit followed by `finish`; complete scalar/reference action retained, no observation or implicit coercion. |
 | `std::structure::permute_axes` | `unitary fn (Q<(Bit,Bit)>) -> Q<(Bit,Bit)>` | Structural two-axis map `[1,0]`, exact phase +1; reversed output wire order, no gate instruction. |
 | `std::reflection::reflect_uniform2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R002: `2|++><++| - I`, with this exact sign; Unitary. |
 | `std::measurement::measure_x` | `fn (Q<Bit>) -> Bit` | R003: destructive X measurement; Observe. |
@@ -107,12 +146,16 @@ Its absence of physical wires does not imply zero synthesis or gate cost.
 Applying the scalar directly to `Q<Bit>` instead gives `zeta_8 I_Bit`, which
 must fail an exact T request. The source definitions and exact requested checks
 remain separate from source/target preservation and quantitative PR/RS evidence.
+`global_phase_eighth` is the bare scalar primitive; `phase_eighth` is not an alias.
 The ordinary T body retains a `CircuitAction::Contract` dependency. The terminal
 OpenQASM 3 and QIR Base exporters expand its actual retained circuit, preserving
 ordered axes, control polarity and adjoints before lowering to target gates.
 This bounded producer path has the same target vocabulary and workspace limits;
-an unsupported body still refuses. Literal-output checks cover exact T phase and
-clean synthesis scratch in small cases. They do not supply a general export
+an unsupported body still refuses. Exact literal-output phase and clean-scratch
+checks are required for the actual migrated source, including the narrow
+zero-input/one-output singleton table for preparation. Their coverage must be
+recorded with the final artifact; this chapter does not report a new execution.
+They do not supply a general export
 preservation theorem or a quantitative resource certificate.
 
 These rows are interface descriptions, not declaration syntax or new function
@@ -198,7 +241,7 @@ retained in `tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/`
 
 ## Checking and later structure
 
-All six modules, their private/unused declarations and caller source undergo
+All seven modules, their private/unused declarations and caller source undergo
 the same mandatory common-source judgment. Concrete lowering and fresh native
 acceptance remain separate stages with profile-specific support. A path grants
 no sealed status, body-derived effect, independent exact Meaning, provider

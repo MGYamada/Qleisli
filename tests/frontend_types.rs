@@ -135,8 +135,8 @@ fn symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics() {
 #[test]
 fn common_basis_empty_constructor_uses_its_exact_ordinary_signature() {
     for source in [
-        "use std::classical::empty_bits; pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {empty_bits()}}",
-        "use std::classical::empty_bits; classical fn label()->Bits<0>{empty_bits()} pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {label()}}",
+        " pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {empty_bits()}}",
+        " classical fn label()->Bits<0>{empty_bits()} pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {label()}}",
         "classical fn empty_bits()->Bit{1} pub isometry fn f(q:Q<Unit>)->Q<Bit>{basis q as () {empty_bits()}}",
     ] {
         let program = parsed(source);
@@ -144,7 +144,7 @@ fn common_basis_empty_constructor_uses_its_exact_ordinary_signature() {
         assert_eq!(program.syntax("main"), Some(&parse_module(source).unwrap()));
     }
     // Matching physical width grants no implicit conversion to the Unit basis.
-    let source = "use std::classical::empty_bits; pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {empty_bits()}}";
+    let source = " pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {empty_bits()}}";
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
     assert_eq!(error.code(), "type");
     assert!(
@@ -163,22 +163,22 @@ fn common_basis_empty_constructor_does_not_admit_other_calls_or_local_capture() 
             "expected `}`, found `::`",
         ),
         (
-            "use std::classical::empty_bits; pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {empty_bits(())}}",
+            " pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {empty_bits(())}}",
             "arity",
             "argument arity mismatch",
         ),
         (
-            "use std::registers::empty; pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {empty()}}",
+            "use std::structure::empty; pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {empty()}}",
             "type",
             "basis expression requires a classical function",
         ),
         (
-            "use std::quantum::init0; pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {init0()}}",
+            "use std::state::init0; pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {init0()}}",
             "type",
             "basis expression requires a classical function",
         ),
         (
-            "use std::classical::empty_bits; fn ordinary()->Bits<0>{empty_bits()} pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {ordinary()}}",
+            " fn ordinary()->Bits<0>{empty_bits()} pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {ordinary()}}",
             "type",
             "basis expression requires a classical function",
         ),
@@ -188,7 +188,7 @@ fn common_basis_empty_constructor_does_not_admit_other_calls_or_local_capture() 
             "a basis value is not callable",
         ),
         (
-            "use std::classical::empty_bits; pub unitary fn f(q:Q<Unit>,outside:Bits<0>)->Q<Bits<0>>{basis q as () {outside}}",
+            " pub unitary fn f(q:Q<Unit>,outside:Bits<0>)->Q<Bits<0>>{basis q as () {outside}}",
             "name",
             "unbound basis value",
         ),

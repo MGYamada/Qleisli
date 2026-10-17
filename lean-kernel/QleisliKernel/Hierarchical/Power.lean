@@ -43,6 +43,49 @@ def identityEquation (artifact : Artifact) (proof : Proof) : Bool :=
     return proof.kind == Kind.equation && proof.bounded && endpoints artifact proof &&
       input.logical == input.physical && output.logical == output.physical).getD false
 
+/-- Full same-artifact preparation and encoding facts. Neither Headers nor
+node/meaning typing alone establishes these indexed proof obligations. -/
+def IdentityContext (artifact : Artifact) : Prop :=
+  ProofEndpoints artifact ∧
+    ∀ (i : Nat) (encoding : Encoding), artifact.encodings[i]? = some encoding →
+      ContractTyping.encodingConditions artifact encoding = true
+
+/-- Only reuse full bounds/endpoints and identity-side equality already checked
+on this immutable artifact. Both actual encoding lookups, body tags and proof
+kind remain executable. The standalone full predicate above is unchanged. -/
+def preparedIdentityEquation (artifact : Artifact) (proof : Proof) : Bool :=
+  (do
+    let input ← artifact.encodings[proof.inputEncoding]?
+    let output ← artifact.encodings[proof.outputEncoding]?
+    let .identity := input.body | none
+    let .identity := output.body | none
+    return proof.kind == Kind.equation).getD false
+
+/-- This is equality of executable predicates, including rejection, for the
+actual indexed proof. It does not establish its rule or discharge its premises. -/
+theorem preparedIdentityEquation_eq (artifact : Artifact) (context : IdentityContext artifact)
+    (index : Nat) (proof : Proof) (found : artifact.proofs[index]? = some proof) :
+    preparedIdentityEquation artifact proof = identityEquation artifact proof := by
+  obtain ⟨bounded,endpointsChecked⟩ := context.1 index proof found
+  cases hi : artifact.encodings[proof.inputEncoding]? with
+  | none => simp [preparedIdentityEquation,identityEquation,hi]
+  | some input =>
+    cases ho : artifact.encodings[proof.outputEncoding]? with
+    | none => simp [preparedIdentityEquation,identityEquation,hi,ho]
+    | some output =>
+      have inputEqual : input.body = .identity → (input.logical == input.physical) = true := by
+        intro body
+        have checked := context.2 proof.inputEncoding input hi
+        simp only [ContractTyping.encodingConditions,body,Bool.and_eq_true] at checked
+        exact checked.2
+      have outputEqual : output.body = .identity → (output.logical == output.physical) = true := by
+        intro body
+        have checked := context.2 proof.outputEncoding output ho
+        simp only [ContractTyping.encodingConditions,body,Bool.and_eq_true] at checked
+        exact checked.2
+      cases bi : input.body <;> cases bo : output.body <;>
+        simp_all [preparedIdentityEquation,identityEquation]
+
 /-- Header work includes the root, its immediate repeat/power nodes, provider,
 and both premise encodings. Body contents remain for the whole-artifact pass. -/
 def stageHeaders (artifact : Artifact) (proof : Proof) : Array Ref :=

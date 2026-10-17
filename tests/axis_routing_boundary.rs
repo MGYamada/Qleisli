@@ -16,7 +16,7 @@ use std::collections::BTreeMap;
 
 fn source(body: &str) -> String {
     format!(
-        "use std::quantum::{{split,join,cnot,init0}};use std::observe::measure_z;
+        "use std::gate::cnot; use std::state::init0;
          use std::gate::swap;use std::structure::permute_axes;
          pub unitary fn probe(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let(a,b)=split(q);{body}}}"
     )
@@ -207,8 +207,8 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
         "let q=join(init0(),x(init0()));permute_axes(excl q);let(a,b)=split(q);(measure_z(a),measure_z(b))",
     ] {
         let text = format!(
-            "use std::gate::swap;use std::structure::permute_axes;use std::quantum::{{init0,x,join,split}};
-             use std::observe::measure_z;pub observe fn main()->(Bit,Bit){{{body}}}"
+            "use std::gate::swap;use std::structure::permute_axes;use std::state::init0; use std::gate::x;
+             pub observe fn main()->(Bit,Bit){{{body}}}"
         );
         for program in [
             compile_project(&SourceRoot::new(&text).0).unwrap(),

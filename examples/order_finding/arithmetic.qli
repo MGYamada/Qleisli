@@ -4,11 +4,11 @@
 //! Full-space contracts, including overflow and value 15, are documented in
 //! Contract identifiers: A001-A003.
 //! These are fixed finite routines, not generalized integer arithmetic.
-use std::quantum::x;
-use std::quantum::cnot;
-use std::quantum::toffoli;
-use std::quantum::split;
-use std::quantum::join;
+use std::gate::x;
+use std::gate::cnot;
+use std::gate::toffoli;
+
+
 
 /// Map |y> to |(y + 1) mod 4> with amplitude +1 for every two-bit input.
 /// The first bit has weight 1 and the second weight 2; overflow wraps.

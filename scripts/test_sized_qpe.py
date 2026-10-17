@@ -26,7 +26,7 @@ DIRECTORY = ROOT/'corpus/sized/qualtran_qpe'
 
 def modules():
     result = {p.stem: current_source_file(p).read_text() for p in DIRECTORY.glob('*.qli')}
-    result['fourier'] = (ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
+    result['fourier'] = current_source_file(ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
     return result
 
 
@@ -168,8 +168,7 @@ def main():
         ('non-basis', 'h(phase[j,d](h(bit)))', 'conjugated'),
         ('global-phase', 'x(phase[j,d](x(phase[j,d](bit))))', 'global'),
     ]:
-        changed = source | {'evolution': source['evolution'].replace('use std::quantum::phase;',
-            'use std::quantum::phase;\nuse std::quantum::h;\nuse std::quantum::x;').replace('phase[j,d](bit)', expression)}
+        changed = source | {'evolution': ('use std::gate::x;\n' + source['evolution']).replace('phase[j,d](bit)', expression)}
         artifacts[name] = compile_case(changed, 1, 3)
         params[name] = (1, 3, 1, 3, kind)
     swap = source['evolution'].replace('put_bit[n,0](bit,rest)', 'put_bit[n,n-1](bit,rest)').replace('phase[j,d](bit)', 'bit')

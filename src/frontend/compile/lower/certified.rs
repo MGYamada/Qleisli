@@ -171,7 +171,7 @@ impl Lowerer<'_, '_> {
             &mut classical_inputs,
         )?;
         let Value::Pair(data, ancilla) =
-            inner.sealed(module, body.span, "std::quantum", "split", vec![input])?
+            inner.primitive_call(module, body.span, PrimitiveId::Split, vec![input])?
         else {
             unreachable!("split returns a pair")
         };
@@ -205,13 +205,8 @@ impl Lowerer<'_, '_> {
         let Value::Pair(data, ancilla) = result else {
             unreachable!("checked pair type")
         };
-        let result = inner.sealed(
-            module,
-            body.span,
-            "std::quantum",
-            "join",
-            vec![*data, *ancilla],
-        )?;
+        let result =
+            inner.primitive_call(module, body.span, PrimitiveId::Join, vec![*data, *ancilla])?;
         let slot = inner.quantum(module, body.span, &result, false)?;
         let raw = RawProgram {
             quantum_inputs,

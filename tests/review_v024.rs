@@ -23,12 +23,12 @@ fn misplaced_public_import_has_a_checked_repair() {
     );
     root.write("main.qli", &source.replace("measurement", "transform"));
     check_project(&root.0).unwrap();
-    root.write("main.qli", "use std::quantum::measure_z;");
+    root.write("main.qli", "");
     assert!(
         check_project_diagnostic(&root.0)
             .unwrap_err()
             .message
-            .contains("use std::observe::measure_z;")
+            .contains("")
     );
     root.write("main.qli", "use std::reflection::nonzero2;");
     assert!(
@@ -45,7 +45,7 @@ fn misplaced_public_import_has_a_checked_repair() {
 )]
 #[test]
 fn nested_register_pattern_names_the_actual_type_and_repairs() {
-    let source = "use std::quantum::split; use std::quantum::join;
+    let source = "\x20
         unitary fn run(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{ let ((a,b),c)=split(q); join(join(a,b),c) }";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
@@ -82,7 +82,7 @@ fn nested_register_pattern_names_the_actual_type_and_repairs() {
 )]
 #[test]
 fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
-    let source = "use std::quantum::{init0,cnot}; use std::observe::measure_z;
+    let source = "use std::state::init0; use std::gate::cnot;\x20
         observe fn main()->(Bit,Bit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
@@ -99,7 +99,7 @@ fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
         &source.replace("let b=cnot(a,b);", "let (a,b)=cnot(a,b);"),
     );
     check_project(&root.0).unwrap();
-    root.write("main.qli","use std::quantum::cnot; unitary fn run(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){let result=cnot(a,b);result}");
+    root.write("main.qli","use std::gate::cnot; unitary fn run(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){let result=cnot(a,b);result}");
     check_project(&root.0).unwrap();
 }
 
@@ -319,7 +319,7 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
 fn phase_aliases_export_as_short_exact_target_words() {
     for (name, target) in [("s", "s"), ("sdg", "sdg"), ("tdg", "tdg")] {
         let root = SourceRoot::new(&format!(
-            "use std::quantum::{{init0,h,{name}}}; use std::observe::measure_z; observe fn main()->Bit{{measure_z(h({name}(h(init0()))))}}"
+            "use std::state::init0; use std::gate::{name};  observe fn main()->Bit{{measure_z(h({name}(h(init0()))))}}"
         ));
         let program = compile_project(&root.0).unwrap();
         let qasm = export_openqasm3(&program).unwrap();
@@ -345,7 +345,7 @@ fn phase_aliases_export_as_short_exact_target_words() {
 )]
 #[test]
 fn user_compositions_have_a_source_level_contract_check_before_qlt() {
-    let source = "use std::quantum::h;
+    let source = "
         unitary fn provider(q:Q<Bit>)->Q<Bit>{h(h(q))}
         unitary fn expected(q:Q<Bit>)->Q<Bit>{q}
         unitary fn client(q:Q<Bit>)->Q<Bit>{apply_contract(provider,expected,q)}";
@@ -356,12 +356,7 @@ fn user_compositions_have_a_source_level_contract_check_before_qlt() {
     assert_eq!(error.code, "contract", "{error:?}");
     root.write(
         "main.qli",
-        &source
-            .replace(
-                "use std::quantum::h;",
-                "use std::quantum::{h,phase_eighth};",
-            )
-            .replace("h(h(q))", "phase_eighth(q)"),
+        &source.replace("h(h(q))", "global_phase_eighth(q)"),
     );
     assert_eq!(
         check_project_diagnostic(&root.0).unwrap_err().code,

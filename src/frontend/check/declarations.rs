@@ -23,7 +23,10 @@ pub(super) fn resolution_error(f: Failure) -> SourceError {
             )
         }
         FailureKind::UnknownPrimitive { module, name } => {
-            format!("sealed module `{module}` has no public name `{name}`")
+            format!(
+                "retired compiler-owned module `{module}` has no public name `{name}`{}",
+                super::super::resolve::retired_public_name_hint(&module, &name).unwrap_or("")
+            )
         }
         FailureKind::Private(name) => format!("`{name}` is not public"),
         FailureKind::Collision(name) | FailureKind::DuplicateImport(name) => {

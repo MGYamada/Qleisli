@@ -1753,9 +1753,7 @@ mod tests {
 
     #[test]
     fn cloned_and_relocated_syntax_keeps_structural_ids_but_rebuilds_lookup() {
-        let original =
-            parse_module("use std::quantum::h;unitary fn f(q:Q<Bit>)->Q<Bit>{let q=h(q);q}")
-                .unwrap();
+        let original = parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{let q=h(q);q}").unwrap();
         let cloned = original.clone();
         let target = Target::Declaration(DefId(9));
         let a = index(DefId(0), &original.decls[0], |n| {

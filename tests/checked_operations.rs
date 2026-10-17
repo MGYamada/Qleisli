@@ -19,10 +19,10 @@ use std::process::Command;
 use std::sync::Arc;
 
 const PRELUDE: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t;
+\x20
+
 classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning:Bit=phase_by(z_phase);
 unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
@@ -30,9 +30,9 @@ unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)
 ";
 
 const DORMANT_UNIT: &str = "
-use std::quantum::phase_eighth;
+
 unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
-unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
 meaning ScalarMeaning:Unit=reference(scalar);
 unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
  requires Applicable(U){U(q)}
@@ -241,7 +241,7 @@ fn dormant_rectangular_meaning_does_not_request_an_unpromised_inverse() {
     );
     root.write(
         "lib.qli",
-        "use std::quantum::{finish,unit,join};
+        "
         pub isometry fn prep(q:Q<Unit>)->Q<(Unit,Unit)>{
             finish(q);join(unit(()),unit(()))
         }",
@@ -257,7 +257,7 @@ fn dormant_rectangular_meaning_does_not_request_an_unpromised_inverse() {
 fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
     use qleisli::contract::exact::{Budget, Matrix};
     use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
-    let text = "use std::quantum::{h,z,init0};use std::observe::measure_z;
+    let text = "use std::gate::z; use std::state::init0;
         unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}
         observe fn main()->Bit{measure_z(adjoint(power(oracle,2))(init0()))}";
     let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
@@ -293,7 +293,7 @@ fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
         (run_closed(&accepted, SimulationLimits::default()).unwrap()[&vec![true]] - 1.0).abs()
             < 1e-12
     );
-    let text = "use std::quantum::{h,z,x,init0};use std::observe::measure_z;
+    let text = "use std::gate::z; use std::gate::x; use std::state::init0;
         unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}
         observe fn main()->Bit{measure_z(adjoint(power(oracle,0))(x(init0())))}";
     let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
@@ -311,8 +311,8 @@ fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
 fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning() {
     use qleisli::contract::exact::{Budget, Matrix};
     use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
-    let text = "use std::quantum::{init0,split,phase_eighth};use std::observe::{discard,measure_z};
-        unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+    let text = "use std::state::init0;
+        unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         observe fn main()->Bit{
             let(unit,bit)=split(basis(init0()) as b{((),b)});
             let unit=adjoint(power(scalar,1))(unit);
@@ -340,7 +340,7 @@ fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meani
         (run_closed(&accepted, SimulationLimits::default()).unwrap()[&vec![false]] - 1.0).abs()
             < 1e-12
     );
-    let text = "use std::quantum::{x,init0};use std::observe::measure_z;
+    let text = "use std::gate::x; use std::state::init0;
         classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
         meaning ZMeaning:Bit=phase_by(z_phase);
         unitary fn liar(q:Q<Bit>)->Q<Bit>{x(q)}
@@ -363,7 +363,7 @@ fn canonical_control_finite_keeps_ordered_axes_and_ordinary_names() {
     use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
     for count in [0, 1, 2] {
         let text = format!(
-            "use std::quantum::{{x,init0}};use std::observe::measure_z;
+            "use std::gate::x; use std::state::init0;
             unitary fn controlled(q:Q<Bit>)->Q<Bit>{{q}}
             unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}
             observe fn main()->(Bit,Bit){{
@@ -418,9 +418,9 @@ fn canonical_control_finite_preserves_zero_width_phase_and_owner() {
     use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
     for count in [1, 4] {
         let text = format!(
-            "use std::quantum::{{init0,h,split,phase_eighth}};
-             use std::observe::{{discard,measure_z}};
-             unitary fn scalar(q:Q<Unit>)->Q<Unit>{{phase_eighth(q)}}
+            "use std::state::init0;
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+             unitary fn scalar(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}
              observe fn main()->Bit{{
                  let pair=basis(init0()) as bit {{((),bit)}};
                  let(unit,bit)=split(pair);
@@ -497,7 +497,7 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
         ),
     ] {
         let text = format!(
-            "use std::quantum::x;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}unitary fn unused{signature}{{{body}}}"
+            "use std::gate::x;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}unitary fn unused{signature}{{{body}}}"
         );
         assert!(check_project(&SourceRoot::new(&text).0).is_err(), "{text}");
         assert!(ParsedProgram::parse(sources(&text)).is_err(), "{text}");
@@ -506,7 +506,7 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
     let error = check_project(&SourceRoot::new(text).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Capability);
     assert!(error.message.contains("Controllable"));
-    let text = "use std::quantum::{x,init0};use std::observe::measure_z;
+    let text = "use std::gate::x; use std::state::init0;
         classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
         meaning ZMeaning:Bit=phase_by(z_phase);
         unitary fn liar(q:Q<Bit>)->Q<Bit>{x(q)}
@@ -524,7 +524,7 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
 )]
 #[test]
 fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() {
-    let text = "use std::quantum::{init0,h,x,cnot};use std::observe::measure_z;
+    let text = "use std::state::init0; use std::gate::x; use std::gate::cnot;
         unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)}
         observe fn recreate(q:Q<Bit>)->Q<Bit>{
             let b=measure_z(q);if b{x(init0())}else{init0()}
@@ -588,7 +588,7 @@ fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() 
 )]
 #[test]
 fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
-    let text = "use std::quantum::{h,init0}; use std::observe::measure_z;
+    let text = "use std::state::init0;\x20
         unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}
         unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(q)}
         unitary fn undo(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}
@@ -1180,10 +1180,9 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
     assert_eq!(instance.elaborate().unwrap_err().code(), "unsupported");
     for honest in [true, false] {
         let provider = if honest { "phase[1,1](q)" } else { "q" };
-        let text = source.replace("power(t,4)(q)", provider).replace(
-            "use std::quantum::init0;",
-            "use std::quantum::init0; use std::quantum::phase;",
-        );
+        let text = source
+            .replace("power(t,4)(q)", provider)
+            .replace("use std::state::init0;", "use std::state::init0; ");
         let source = ParsedProgram::parse(sources(&text))
             .unwrap()
             .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
@@ -1245,7 +1244,7 @@ fn canonical_power_retains_operation_count_and_original_source_spans() {
 fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
     for (count, expected) in [(0, false), (1, true), (2, false)] {
         let text = format!(
-            "use std::quantum::{{x,init0}}; use std::observe::measure_z;
+            "use std::gate::x; use std::state::init0;\x20
             unitary fn power(q:Q<Bit>,b:Bit)->Q<Bit>{{q}}
             unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}
             pub observe fn main()->Bit{{measure_z(power(oracle,{count})(power(init0(),0)))}}"
@@ -1320,7 +1319,7 @@ fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
 )]
 #[test]
 fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
-    let text = "use std::quantum::{x,init0}; use std::observe::measure_z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}";
+    let text = "use std::gate::x; use std::state::init0;  unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}";
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
     let raw = ParsedProgram::parse(sources(text))
         .unwrap()
@@ -1341,7 +1340,7 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
                 < 1e-12
         );
     }
-    let text = "use std::quantum::x; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(oracle,4097)(q)}";
+    let text = "use std::gate::x; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(oracle,4097)(q)}";
     assert!(compile_project(&SourceRoot::new(text).0).is_err());
     assert!(
         ParsedProgram::parse(sources(text))

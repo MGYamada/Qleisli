@@ -342,7 +342,7 @@ fn quantum_bits_raw_boundary_retains_atomic_types_and_zero_width_owner() {
 )]
 #[test]
 fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
-    let source = "use std::quantum::{init0,h}; use std::observe::measure_z;
+    let source = "use std::state::init0;\x20
         pub observe fn f(q: Q<Bit>) -> Bit { 0 and measure_z(q) }
         observe fn main() -> Bit { f(h(init0())) }";
     let graph = elaborate(source, "main::f", BTreeMap::new());
@@ -352,7 +352,7 @@ fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
     assert_eq!(steps.len(), 3);
     assert_eq!(steps[0].boolean_operator(), Some("constant"));
     assert_eq!(steps[0].boolean_literal(), Some(false));
-    assert_eq!(steps[1].primitive(), Some("std::observe::measure_z"));
+    assert_eq!(steps[1].primitive(), Some("measure_z"));
     assert_eq!(steps[1].effect(), "observe");
     assert_eq!(steps[1].inputs()[0].identity(), root.inputs()[0].identity());
     assert_eq!(steps[2].boolean_operator(), Some("and"));
@@ -390,7 +390,7 @@ fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
     assert_eq!(probabilities.len(), 1);
     assert!((probabilities[&vec![false]] - 1.0).abs() < 1e-12);
 
-    let forbidden = "use std::observe::measure_z;
+    let forbidden = "
         unitary fn bad(q: Q<Bit>) -> Bit { 0 and measure_z(q) }
         observe fn main() -> Bit { 0 }";
     sized_reject(forbidden, "effect");
@@ -433,7 +433,7 @@ fn open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments() {
 #[test]
 fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_results() {
     for (a, b) in [(0, 0), (0, 1), (1, 0), (1, 1)] {
-        let source = format!("use std::classical::{{empty_bits,prepend_bit}};
+        let source = format!("
             unitary fn pack(a:Bit,b:Bit)->Bits<2>{{prepend_bit[1](a,prepend_bit[0](b,empty_bits()))}}
             pub unitary fn main()->Bits<2>{{pack({a},{b})}}");
         let graph = elaborate(&source, "main::main", BTreeMap::new());
@@ -443,10 +443,10 @@ fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_result
             BTreeMap::from([(vec![a == 1, b == 1], 1.0)])
         );
     }
-    let source = include_str!(
-        "fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/nested-copy/main.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/nested-copy/main.qli",
     );
-    let graph = elaborate(source, "main::main", BTreeMap::new());
+    let graph = elaborate(&source, "main::main", BTreeMap::new());
     assert_eq!(
         run_closed(&accept(&graph), SimulationLimits::default()).unwrap(),
         BTreeMap::from([(vec![false, true, true, false, true], 1.0)])
@@ -459,7 +459,7 @@ fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_result
 )]
 #[test]
 fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
-    let source = "use std::classical::empty_bits;
+    let source = "
         classical fn copy(b:Bits<0>)->(Bits<0>,Bits<0>){(b,b)}
         unitary fn discard(b:Bits<0>)->Unit{let _=b;()}
         pub unitary fn main()->(Bits<0>,Bits<0>){let b=empty_bits();let _=discard(b);copy(b)}";
@@ -489,10 +489,10 @@ fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
 )]
 #[test]
 fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
-    let source = include_str!(
-        "fixtures/authoring_sessions/ordinary-bits-v030/attempt-03/measured-copy/main.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-03/measured-copy/main.qli",
     );
-    let graph = elaborate(source, "main::main", BTreeMap::new());
+    let graph = elaborate(&source, "main::main", BTreeMap::new());
     let accepted = accept(&graph);
     assert_eq!(accepted.raw().declared_effect, Effect::Observe);
     let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
@@ -502,8 +502,8 @@ fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
     }
     // Dropping an ordinary packed result cannot erase its measurement.
     let graph = elaborate(
-        "use std::classical::{empty_bits,prepend_bit};use std::quantum::init0;
-        use std::observe::measure_z; pub observe fn main()->Unit{
+        "use std::state::init0;
+         pub observe fn main()->Unit{
         let _=prepend_bit[0](measure_z(init0()),empty_bits());()}",
         "main::main",
         BTreeMap::new(),
@@ -586,7 +586,7 @@ fn ordinary_basis_substitutions_keep_register_and_product_tags() {
 #[test]
 fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
     use qleisli::frontend::compile::{BasisBinding, OperationBinding};
-    let text = "use std::classical::{empty_bits,prepend_bit};
+    let text = "
         classical fn copy(b:Bits<2>)->(Bits<2>,Bits<2>){(b,b)}
         unitary fn provider[const B:Basis](q:Q<B>)->Q<B>{
         let b=prepend_bit[1](0,prepend_bit[0](1,empty_bits()));let _=copy(b);q}
@@ -670,7 +670,7 @@ fn register_type_coercions_and_quantum_copy_drop_still_reject() {
 )]
 #[test]
 fn retained_register_source_rejects_another_native_accepted_artifact() {
-    let text = "use std::classical::{empty_bits,prepend_bit};
+    let text = "
         pub unitary fn main()->Bits<2>{prepend_bit[1](0,prepend_bit[0](1,empty_bits()))}";
     let graph = elaborate(text, "main::main", BTreeMap::new());
     let proposal = graph.lower_raw().unwrap();

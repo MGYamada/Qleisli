@@ -1,0 +1,16 @@
+use std::state::init0;
+use std::gate::x;
+
+
+
+use std::transform::qft3;
+
+// Keep the existing finite body as the executable baseline for shared QFT.
+observe fn main() -> (Bit, Bit, Bit) {
+    let q = join(join(x(init0()), init0()), init0());
+    let q = qft3(q);
+    let q = adjoint(qft3)( q);
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    (measure_z(a), measure_z(b), measure_z(c))
+}

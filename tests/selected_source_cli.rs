@@ -110,7 +110,9 @@ fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
         "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-unit.qli",
         "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-bit.qli",
     ] {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(relative);
+        let path = common::current_namespace_fixture(
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join(relative),
+        );
         let output = selected("check", &path, "main::f")
             .arg("--ir-profile=raw")
             .arg(format!("--lean-kernel={}", kernel().display()))
@@ -150,7 +152,24 @@ fn distribution(text: &str, expected: &[(&[bool], f64)]) {
             "duplicate outcome: {text}"
         );
     }
-    assert_eq!(actual.len(), expected.len(), "{text}");
+    // Ordinary H Z H can leave tiny f64 tails on mathematically zero outcomes.
+    // Check every row against the independent distribution, including zeros.
+    // This numerical simulation oracle supplies no exact acceptance evidence.
+    let width = expected
+        .first()
+        .expect("nonempty expected distribution")
+        .0
+        .len();
+    for (bits, &probability) in &actual {
+        assert_eq!(bits.len(), width, "{text}");
+        assert!(probability.is_finite() && probability >= 0.0, "{text}");
+        let required = expected
+            .iter()
+            .find_map(|(wanted, value)| (*wanted == bits.as_slice()).then_some(*value))
+            .unwrap_or(0.0);
+        assert!((probability - required).abs() < 1e-12, "{bits:?}: {text}");
+    }
+    assert!((actual.values().sum::<f64>() - 1.0).abs() < 1e-12, "{text}");
     for &(bits, probability) in expected {
         let observed = actual.get(bits).expect(text);
         assert!((observed - probability).abs() < 1e-12, "{bits:?}: {text}");
@@ -294,7 +313,7 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
     // argument; its zero wire count does not turn it into a closed entry.
     let quantum_unit = SourceRoot::new("pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }");
     let returned_quantum =
-        SourceRoot::new("use std::quantum::init0; pub isometry fn f() -> Q<Bit> { init0() }");
+        SourceRoot::new("use std::state::init0; pub isometry fn f() -> Q<Bit> { init0() }");
     let paths = [
         unit,
         bit.0.join("main.qli"),
@@ -318,14 +337,21 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
     }
     {
         let name = "fine-phase";
+        let path = fixture("counterexamples", name);
         let log = LoggedKernel::new();
-        let mut command = selected("check", &fixture("counterexamples", name), "main::main");
+        let mut command = selected("check", &path, "main::main");
         command.arg("--ir-profile=raw");
         log.attach(&mut command, false);
         let text = result(command.output().unwrap(), "check", false);
         assert!(text.contains("\"code\":\"unsupported\""), "{text}");
         assert!(
-            text.contains("\"primary\":{") && text.contains("main.qli"),
+            text.contains("\"primary\":{")
+                && text.contains("\"module\":\"main\"")
+                && text.contains(&format!("\"path\":\"{}\"", path.display())),
+            "{text}"
+        );
+        assert!(
+            text.contains("requires an exact integral eighth-turn phase"),
             "{text}"
         );
         assert!(log.calls().is_empty(), "{name}: {:?}", log.calls());
@@ -470,20 +496,44 @@ fn selected_open_signature_checks_and_proposals_do_not_claim_closed_execution() 
 #[test]
 #[cfg(unix)]
 fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
-    let h = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
-    let x = "use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
-    // Choose the H request before creating either CLI candidate. Producer
-    // consistency for X must not replace this caller-selected equation.
-    let h_request = ParsedProgram::parse(BTreeMap::from([("main".into(), h.into())]))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap()
-        .lower()
-        .unwrap()
-        .comparison_request()
-        .to_vec();
+    // Exact phase-fixed Euler words with the same primitive action sequence:
+    // H = omega Sdag H Sdag H Sdag; X = omega Tdag H Z H Tdag.
+    // The explicit scalar omega removes the common omega^-1 coefficient.
+    let h = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(phase[3,2](h(phase[3,2](h(phase[3,2](q)))))) }";
+    let x = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(phase[7,3](h(phase[1,1](h(phase[7,3](q)))))) }";
+    let request_for = |source: &str| {
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap()
+            .comparison_request()
+            .to_vec()
+    };
+    // Fix H independently before creating either CLI candidate. The X request
+    // is inspected only to establish the complete lowered transport shell;
+    // it never replaces the caller-selected H equation supplied below.
+    let h_request = request_for(h);
+    let x_request = request_for(x);
+    let h_text = std::str::from_utf8(&h_request).unwrap();
+    let x_text = std::str::from_utf8(&x_request).unwrap();
+    // Compact comparison requests use json::encode's BTreeMap key order.
+    // Match complete phase bodies and preserve every other serialized field.
+    let sdag = r#"{"j":3,"k":2,"tag":"phase"}"#;
+    let tdag = r#"{"j":7,"k":3,"tag":"phase"}"#;
+    let z = r#"{"j":1,"k":1,"tag":"phase"}"#;
+    let marker = r#"{"j":0,"k":0,"tag":"phase"}"#;
+    assert_eq!(h_text.matches(sdag).count(), 3);
+    assert_eq!(x_text.matches(tdag).count(), 2);
+    assert_eq!(x_text.matches(z).count(), 1);
+    assert_eq!(
+        h_text.replace(sdag, marker),
+        x_text.replace(tdag, marker).replace(z, marker),
+        "complete owner/axis/child shell differs before native checking"
+    );
     let files = SourceRoot::new(h);
     std::fs::write(files.0.join("h.request.json"), h_request).unwrap();
     for (source, supplied, success) in [(h, true, true), (x, false, true), (x, true, false)] {
@@ -603,18 +653,19 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
     // An explicitly authored closed provider: take the low bit, multiply |1>
     // by omega = exp(i*pi/4), preserve the empty rest owner, then put it back.
     // Existing composition requests also fix the identity/body/rename shell and
-    // literal interface labels. Labels 115..119 were inspected in the original
-    // n=1,m=1 proposal; the requested phase and equations below are fixed here,
-    // never read from either candidate's proposed meanings or generated request.
+    // literal interface labels. Labels 118..122 were inspected in the preserved
+    // current n=1,m=1 source proposal; the requested phase and equations below
+    // remain independently fixed, never read from either candidate's proposed
+    // meanings or generated request.
     let port = |owner: u32, basis: &str, axes: &str| {
         format!("{{\"owner\":{owner},\"basis\":[{basis}],\"axes\":{axes}}}")
     };
     let side = |ports: &[&str]| format!("{{\"quantum\":[{}],\"classical\":[]}}", ports.join(","));
-    let input = port(115, r#"{"tag":"bits","width":1}"#, "[0]");
-    let bit = port(116, r#"{"tag":"bit"}"#, "[0]");
-    let rest = port(117, r#"{"tag":"bits","width":0}"#, "[]");
-    let phased = port(118, r#"{"tag":"bit"}"#, "[0]");
-    let output = port(119, r#"{"tag":"bits","width":1}"#, "[0]");
+    let input = port(118, r#"{"tag":"bits","width":1}"#, "[0]");
+    let bit = port(119, r#"{"tag":"bit"}"#, "[0]");
+    let rest = port(120, r#"{"tag":"bits","width":0}"#, "[]");
+    let phased = port(121, r#"{"tag":"bit"}"#, "[0]");
+    let output = port(122, r#"{"tag":"bits","width":1}"#, "[0]");
     let a = side(&[&input]);
     let b = side(&[&bit]);
     let c = side(&[&rest]);
@@ -698,7 +749,15 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
         }
         log.attach(&mut command, true);
         let text = result(command.output().unwrap(), action, success);
-        assert_eq!(log.calls(), ["--qpe-instrument-pending"], "{text}");
+        let expected_calls: &[&str] = if success {
+            // Successful canonical checking is followed by the mandatory
+            // original source-graph instrument obligation under the same kernel.
+            &["--qpe-instrument-pending", "--instrument-pending"]
+        } else {
+            // A rejected fixed provider equation cannot reach source replay.
+            &["--qpe-instrument-pending"]
+        };
+        assert_eq!(log.calls(), expected_calls, "{text}");
         if success {
             scope(&text, "measurement::qpe", "hierarchy");
             assert!(text.contains("\"scope\":\"named-qpe\""), "{text}");
@@ -798,9 +857,7 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
 #[test]
 fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
     for call in ["h(&q)", "h(&mut q)", "h(&ctrl q)", "h(ctrl q)"] {
-        let source = format!(
-            "// π\r\nuse std::quantum::h;pub unitary fn main(q:Q<Bit>)->Q<Bit>{{{call};q}}"
-        );
+        let source = format!("// π\r\npub unitary fn main(q:Q<Bit>)->Q<Bit>{{{call};q}}");
         let files = SourceRoot::new(&source);
         for json in [false, true] {
             let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -998,8 +1055,8 @@ fn binding_refusals_precede_native_dispatch_in_text_and_json() {
         ),
     ] {
         let source = format!(
-            "// 日本語\r\nuse std::quantum::init0;use std::quantum::h;
-            use std::observe::measure_z;pub observe fn main()->Bit{{{body}}}"
+            "// 日本語\r\nuse std::state::init0;
+            pub observe fn main()->Bit{{{body}}}"
         );
         let files = SourceRoot::new(&source);
         let absent = files.0.join("must-not-start-a-native-checker");
@@ -1046,10 +1103,10 @@ fn selected_static_places_choose_raw_before_native_acceptance() {
     for call in [
         "x(excl q[1]);",
         "z(ctrl q[1]);",
-        "phase_eighth(ctrl q[0..0]);",
+        "global_phase_eighth(ctrl q[0..0]);",
     ] {
         let files = SourceRoot::new(&format!(
-            "use std::quantum::{{x,z,phase_eighth}};pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{call}q}}"
+            "use std::gate::x; use std::gate::z;pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{call}q}}"
         ));
         for explicit in [false, true] {
             let mut command = selected("check", &files.0.join("main.qli"), "main::main");
@@ -1087,7 +1144,7 @@ fn selected_raw_control_checks_without_weakening_emission() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04");
     for name in ["entangled", "kickback", "overlap"] {
-        let source = path.join(name).join("main.qli");
+        let source = common::current_namespace_fixture(&path.join(name).join("main.qli"));
         let mut command = selected("check", &source, "main::main");
         command
             .arg("--ir-profile=raw")
@@ -1107,7 +1164,7 @@ fn selected_raw_control_checks_without_weakening_emission() {
     ));
     let mut command = selected(
         "emit-proposal",
-        &path.join("entangled/main.qli"),
+        &common::current_namespace_fixture(&path.join("entangled/main.qli")),
         "main::main",
     );
     command

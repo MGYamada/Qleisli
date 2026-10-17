@@ -1,0 +1,22 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Primitive-source migration: Copyright 2026 Qleisli Project Contributors
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/Superposition/ReferenceImplementation.qs
+// Selected symbol: AllStatesWithParitySuperposition_Reference
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::t;
+use std::gate::cnot;
+
+
+
+use kernel::kernel;
+observe fn main() -> ((Bit, Bit), Bit) {
+let q = join(join(init0(), init0()), init0());
+let q = kernel(q);
+let (part2, w2) = split(q);
+let (w0, w1) = split(part2);
+((measure_z(w0), measure_z(w1)), measure_z(w2))
+}

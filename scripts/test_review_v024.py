@@ -17,7 +17,10 @@ import sys
 
 sys.dont_write_bytecode = True
 
-IMPORTS = "use std::quantum::{init0,h,x,z,t,s,sdg,tdg,id,phase_eighth,split,join}; use std::observe::measure_z;"
+IMPORTS = """use std::state::init0; use std::gate::{x,z,t,s,sdg,tdg,id};
+unitary fn bit_identity(q:Q<Bit>)->Q<Bit>{id[type(Bit)](q)}
+unitary fn pair_identity(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{id[type((Bit,Bit))](q)}
+"""
 
 
 def decode(text):
@@ -119,14 +122,14 @@ def cases():
         ty = "Q<(Bit,Bit)>" if width == 2 else "Q<((Bit,Bit),Bit)>"
         yield f"QFT{width}", width, f"use std::transform::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)
     for negative in [False, True]:
-        for gate, k in [("s", 2), ("sdg", 6), ("t", 1), ("tdg", 7), ("phase_eighth", 1)]:
-            arms = f"0=>{gate},1=>id" if negative else f"0=>id,1=>{gate}"
+        for gate, k in [("s", 2), ("sdg", 6), ("t", 1), ("tdg", 7), ("global_phase_eighth", 1)]:
+            arms = f"0=>{gate},1=>bit_identity" if negative else f"0=>bit_identity,1=>{gate}"
             body = f"unitary fn apply(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let (a,b)=split(q);let (a,b)=qif(a,b){{{arms}}};join(a,b)}}"
-            def ref(row, col, negative=negative, k=k, scalar=gate == "phase_eighth"):
+            def ref(row, col, negative=negative, k=k, scalar=gate == "global_phase_eighth"):
                 active = bool(col & 1) != negative and (scalar or bool(col & 2))
                 return (omega ** k if active else 1) if row == col else 0
             yield f"{'negative' if negative else 'positive'}-{gate}", 2, body, ref
-        arms = "0=>h,1=>id" if negative else "0=>id,1=>h"
+        arms = "0=>h,1=>bit_identity" if negative else "0=>bit_identity,1=>h"
         body = f"unitary fn apply(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let (a,b)=split(q);let (a,b)=qif(a,b){{{arms}}};join(a,b)}}"
         def ref_h(row, col, negative=negative):
             if (row & 1) != (col & 1):
@@ -137,8 +140,8 @@ def cases():
         yield f"{'negative' if negative else 'positive'}-H", 2, body, ref_h
     body = "unitary fn apply(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let (a,b)=split(q);let (a,b)=qif(a,b){0=>tdg,1=>t};join(a,b)}"
     yield "both-phase-arms", 2, body, lambda row, col: (omega ** ((1 if col & 1 else -1) * bool(col & 2))) if row == col else 0
-    body = """unitary fn inner(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let (b,c)=split(q);let (b,c)=qif(b,c){0=>id,1=>t};join(b,c)}
-        unitary fn apply(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{let (ab,c)=split(q);let (a,b)=split(ab);let (a,bc)=qif(a,join(b,c)){0=>id,1=>inner};let (b,c)=split(bc);join(join(a,b),c)}"""
+    body = """unitary fn inner(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let (b,c)=split(q);let (b,c)=qif(b,c){0=>bit_identity,1=>t};join(b,c)}
+        unitary fn apply(q:Q<((Bit,Bit),Bit)>)->Q<((Bit,Bit),Bit)>{let (ab,c)=split(q);let (a,b)=split(ab);let (a,bc)=qif(a,join(b,c)){0=>pair_identity,1=>inner};let (b,c)=split(bc);join(join(a,b),c)}"""
     yield "nested-controlled-T", 3, body, lambda row, col: (omega if col == 7 else 1) if row == col else 0
 
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import hashlib
 import unittest
 from unittest.mock import patch
+from current_source_fixtures import current_source_file
 
 from compile_sized_corpus import (Parser, Producer, SourceError, check_moves,
     compile_source, type_shape)
@@ -69,7 +70,7 @@ class LocalResolution(unittest.TestCase):
         source = 'pub unitary fn const(const: Q<Bit>) -> Q<Bit> { const }'
         self.assertEqual(Parser(source, module='register_tools').parse()[0], 'const')
         # Initialization uses the same marker parser without changing its effect.
-        source = 'use std::quantum::init0; pub iso fn fresh[const n: Nat]() -> Q<Bit> { init0() }'
+        source = 'use std::state::init0; pub iso fn fresh[const n: Nat]() -> Q<Bit> { init0() }'
         parser = InstrumentParser(source, module='initialization')
         parser.parse()
         self.assertEqual(parser.effect, 'iso')
@@ -81,7 +82,7 @@ class LocalResolution(unittest.TestCase):
                 parser_class(source, module='register_tools').parse()
 
     def test_isometry_vocabulary_preserves_historical_effect_and_proposal(self):
-        historical = 'use std::quantum::init0; pub iso fn fresh() -> Q<Bit> { init0() }'
+        historical = 'use std::state::init0; pub iso fn fresh() -> Q<Bit> { init0() }'
         canonical = historical.replace('iso fn', 'isometry fn')
         old = InstrumentParser(historical, module='initialization')
         new = InstrumentParser(canonical, module='initialization')
@@ -147,7 +148,7 @@ class LocalResolution(unittest.TestCase):
             ('qualtran_arithmetic/increment.qli', 'increment', 'increment', Parser),
         ]:
             with self.subTest(module=module):
-                parser = parser_class((root/relative).read_text(), {'controls', module}, module=module)
+                parser = parser_class(current_source_file(root/relative).read_text(), {'controls', module}, module=module)
                 declaration = parser.parse()
                 self.assertEqual(declaration[0], function)
                 self.assertNotIn(function, parser.imports)

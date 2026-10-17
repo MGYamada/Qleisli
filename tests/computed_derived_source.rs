@@ -91,7 +91,7 @@ fn request(actual: &RawProgram, basis: BasisType, expected: &Matrix) {
 fn source(body: &str, wrapper: &str) -> String {
     format!(
         "use std::gate::{{z,t}};
-        use std::quantum::init0;use std::observe::measure_z;
+        use std::state::init0;
         classical fn predicate(b:Bit)->Bit{{b}}
         {wrapper}
         unitary fn probe(q:Q<Bit>)->Q<Bit>{{with_computed(q,predicate){{|a|{body}}}}}
@@ -172,10 +172,10 @@ fn ordinary_z_t_and_unrelated_wrappers_use_native_normalization() {
 )]
 #[test]
 fn scalar_on_the_zero_predicate_is_preserved_on_unit_data() {
-    let text = "use std::gate::z;use std::quantum::{phase_eighth,unit,finish};
+    let text = "use std::gate::z;
         classical fn zero(u:Unit)->Bit{0}
         unitary fn probe(q:Q<Unit>)->Q<Unit>{
-            with_computed(q,zero){|a|phase_eighth(z(a))}}
+            with_computed(q,zero){|a|global_phase_eighth(z(a))}}
         pub unitary fn main()->Unit{finish(apply_contract(probe,probe,unit(())))}";
     let (accepted, actual) = probe(text);
     request(&actual, BasisType::Unit, &phase_matrix(&[1]));
@@ -202,7 +202,7 @@ fn scalar_on_the_zero_predicate_is_preserved_on_unit_data() {
 )]
 #[test]
 fn non_diagonal_and_false_meaning_and_outer_reference_are_refused() {
-    let non_diagonal = source("h(a)", "use std::quantum::h;");
+    let non_diagonal = source("h(a)", "");
     let error = compile_project(&SourceRoot::new(&non_diagonal).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Unsupported);
     assert!(error.message.contains("diagonal"));
@@ -213,16 +213,16 @@ fn non_diagonal_and_false_meaning_and_outer_reference_are_refused() {
     );
     assert!(error.message.contains("return both owners"));
     assert!(error.message.contains("does not bypass cleanup checking"));
-    let false_meaning = "use std::gate::z;use std::quantum::{phase_eighth,init0};
-        use std::observe::measure_z;
+    let false_meaning = "use std::gate::z;use std::state::init0;
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn keep(b:Bit)->Bit{b} classical fn zero(b:Bit)->Bit{0}
         meaning Identity:Bit=permutation_by(keep);
-        unitary fn wrong(q:Q<Bit>)->Q<Bit>{with_computed(q,zero){|a|phase_eighth(z(a))}}
+        unitary fn wrong(q:Q<Bit>)->Q<Bit>{with_computed(q,zero){|a|global_phase_eighth(z(a))}}
         unitary fn demand[const U:Op<Bit,Identity>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         pub observe fn main()->Bit{measure_z(demand[wrong](init0()))}";
     let error = compile_project(&SourceRoot::new(false_meaning).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Contract);
-    let hidden_reference = "use std::quantum::h;
+    let hidden_reference = "
         classical fn zero(u:Unit)->Bit{0}
         pub unitary fn subject(q:Q<Unit>,r:Q<Bit>)->(Q<Unit>,Q<Bit>){
             let q=with_computed(q,zero){|a|let r=h(r);a};(q,r)}";
@@ -239,9 +239,9 @@ fn non_diagonal_and_false_meaning_and_outer_reference_are_refused() {
 fn normalized_scalar_survives_named_power_adjoint_and_coherent_control() {
     for (body, phase) in [("power(scalar,2)(q)", 2), ("adjoint(scalar)(q)", 7)] {
         let text = format!(
-            "use std::quantum::{{phase_eighth,init0}};use std::observe::measure_z;
+            "use std::state::init0;
             classical fn zero(b:Bit)->Bit{{0}}
-            unitary fn scalar(q:Q<Bit>)->Q<Bit>{{with_computed(q,zero){{|a|phase_eighth(a)}}}}
+            unitary fn scalar(q:Q<Bit>)->Q<Bit>{{with_computed(q,zero){{|a|global_phase_eighth(a)}}}}
             unitary fn probe(q:Q<Bit>)->Q<Bit>{{{body}}}
             pub observe fn main()->Bit{{measure_z(apply_contract(probe,probe,init0()))}}"
         );
@@ -250,9 +250,9 @@ fn normalized_scalar_survives_named_power_adjoint_and_coherent_control() {
     }
     // Unit data plus one coherent control and one computed ancilla is two
     // physical qubits. The scalar becomes a relative phase on that control.
-    let text = "use std::quantum::{phase_eighth,unit,finish,split,join,init0};use std::observe::measure_z;
+    let text = "use std::state::init0;
         classical fn zero(u:Unit)->Bit{0}
-        unitary fn scalar(q:Q<Unit>)->Q<Unit>{with_computed(q,zero){|a|phase_eighth(a)}}
+        unitary fn scalar(q:Q<Unit>)->Q<Unit>{with_computed(q,zero){|a|global_phase_eighth(a)}}
         unitary fn probe(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{
             let(c,u)=split(q);let(c,u)=controlled(scalar)(c,u);join(c,u)}
         pub observe fn main()->Bit{let(c,u)=split(apply_contract(probe,probe,join(init0(),unit(()))));
@@ -273,7 +273,7 @@ fn normalized_scalar_survives_named_power_adjoint_and_coherent_control() {
 fn existing_canonical_t_chain_keeps_its_raw_length_profile() {
     // 1025 is above the separate function-equation step cap, far below the
     // ordinary source work bound. This is two physical qubits, no dense request.
-    let text = format!("use std::quantum::{{t,init0}};use std::observe::measure_z;
+    let text = format!("use std::gate::t; use std::state::init0;
         classical fn predicate(b:Bit)->Bit{{b}}
         pub observe fn main()->Bit{{let q=with_computed(init0(),predicate){{|a|{}a}};measure_z(q)}}",
         "let a=t(a);".repeat(1025));
@@ -311,7 +311,7 @@ fn compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use() {
     // experiment and its later eager-stdlib source-work refusal are retained;
     // neither that nor the expanded 257/1025 work limits is claimed repaired.
     // There are only two physical qubits in this source program.
-    let text = "use std::gate::t;use std::quantum::init0;use std::observe::measure_z;
+    let text = "use std::gate::t;use std::state::init0;
         classical fn predicate(b:Bit)->Bit{b}
         pub observe fn main()->Bit{
             let q=with_computed(init0(),predicate){|a|
@@ -419,7 +419,7 @@ fn consecutive_proposal_chunks_compose_in_source_order() {
     // mean T*H. Their source composition is T^6; reversing the two chunks
     // would instead be the non-diagonal H*T^6*H. Full original bytes still
     // require a fresh native equation independent of this host proposal.
-    let text = "use std::gate::t;use std::quantum::{h,init0};use std::observe::measure_z;
+    let text = "use std::gate::t;use std::state::init0;
         classical fn predicate(b:Bit)->Bit{b}
         pub observe fn main()->Bit{
             let q=with_computed(init0(),predicate){|a|

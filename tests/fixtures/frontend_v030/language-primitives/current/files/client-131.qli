@@ -1,0 +1,11 @@
+use std::state::init0;
+use std::gate::x;
+
+use std::gate::cnot;
+
+
+pub observe fn main() -> (Bit, Bit) {
+    let q = h(init0());
+    cnot(ctrl q, excl q);
+    (measure_z(q), measure_z(q))
+}

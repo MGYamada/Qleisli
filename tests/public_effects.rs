@@ -15,13 +15,15 @@ use qleisli::ir::Effect;
 use std::collections::BTreeMap;
 
 const IDENTITY: &str = "pub observe fn provider(q:Q<Bit>)->Q<Bit>{q}";
-const RESET: &str = "use std::observe::reset;pub observe fn provider(q:Q<Bit>)->Q<Bit>{reset(q)}";
-const PUBLIC_QUANTUM_PERMISSION_BODIES: [(&str, bool); 2] =
-    [("x", false), ("finish(phase_eighth(unit(())));x", true)];
+const RESET: &str = "use std::state::reset;pub observe fn provider(q:Q<Bit>)->Q<Bit>{reset(q)}";
+const PUBLIC_QUANTUM_PERMISSION_BODIES: [(&str, bool); 2] = [
+    ("x", false),
+    ("finish(global_phase_eighth(unit(())));x", true),
+];
 
 fn classical_interface_with_public_quantum_permission(body: &str) -> String {
     format!(
-        "use std::quantum::{{unit,finish,phase_eighth}};
+        "
         pub unitary fn f(x:Bit)->Bit{{{body}}}
         fn local(x:Bit)->Bit{{f(x)}}"
     )
@@ -57,10 +59,10 @@ fn public_quantum_declarations_require_explicit_effects_even_without_quantum_por
         "pub fn f(q:Q<Bit>)->Q<Bit>{q}",
         "pub fn f(q:Q<Bits<0>>)->Q<Bits<0>>{q}",
         "pub fn f(q:(Unit,Q<Unit>))->(Unit,Q<Unit>){q}",
-        "use std::quantum::h;pub fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
-        "use std::quantum::{unit,finish};pub fn f()->Unit{finish(unit(()))}",
-        "use std::quantum::{unit,finish};fn helper()->Unit{finish(unit(()))}pub fn f()->Unit{helper()}",
-        "use std::quantum::init0;use std::observe::discard;pub fn f()->Unit{discard(init0())}",
+        "pub fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
+        "pub fn f()->Unit{finish(unit(()))}",
+        "fn helper()->Unit{finish(unit(()))}pub fn f()->Unit{helper()}",
+        "use std::state::init0;pub fn f()->Unit{discard(init0())}",
         "pub fn f[const U:Op<Bit>](b:Bit)->Bit{b}",
     ] {
         let modules = BTreeMap::from([("main".into(), source.into())]);
@@ -304,7 +306,7 @@ fn explicit_pure_labels_never_hide_observation_reset_or_discard() {
             effect_refusal(BTreeMap::from([(
                 "main".into(),
                 format!(
-                    "use std::quantum::init0;use std::observe::{{measure_z,reset,discard}};
+                    "use std::state::init0;use std::state::reset;
                     fn hidden(q:Q<Bit>)->Q<Bit>{{{body}}}
                     pub {prefix} fn main(q:Q<Bit>)->Q<Bit>{{hidden(q)}}"
                 ),
@@ -319,7 +321,7 @@ fn explicit_pure_labels_never_hide_observation_reset_or_discard() {
 )]
 #[test]
 fn plain_classical_inference_and_private_quantum_precision_are_retained() {
-    let source = "use std::quantum::{unit,finish};
+    let source = "
         pub fn ordinary(b:Bit)->Bit{b}
         pub classical fn explicit(b:Bit)->Bit{b}
         pub observe fn broad(b:Bit)->Bit{b}
@@ -407,7 +409,7 @@ fn public_observe_identity_retains_actual_unitary_raw_and_same_module_precision(
     // zero-width quantum example tests its actual Raw classification honestly.
     let closed = sources(
         "use library::scalar;pub observe fn main()->Unit{scalar()}",
-        "use std::quantum::{unit,finish};pub observe fn scalar()->Unit{finish(unit(()))}",
+        "pub observe fn scalar()->Unit{finish(unit(()))}",
     );
     let accepted = compile_project(&project(&closed).0).unwrap();
     assert_eq!(accepted.derived_effect(), Effect::Unitary);
@@ -458,9 +460,7 @@ fn body_only_reset_keeps_the_public_contract_and_the_selected_unsupported_barrie
             let error = elaborated.unwrap_err();
             assert_eq!(error.code(), "unsupported", "{error}");
             assert!(
-                error
-                    .message()
-                    .contains("does not support std::observe::reset"),
+                error.message().contains("does not support discard"),
                 "{error}"
             );
         } else {
@@ -477,7 +477,7 @@ fn body_only_reset_keeps_the_public_contract_and_the_selected_unsupported_barrie
 fn provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate() {
     // Identical arrow ports normalize to Op<A>'s Unitary ceiling. Distinct
     // exact trees retain the genuine apply-only general-arrow Isometry bound.
-    let library = "use std::quantum::{split,finish};
+    let library = "
         pub isometry fn provider(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         fn local_apply[const U:Op<(Unit,Bit) -> Bit>](q:Q<(Unit,Bit)>)->Q<Bit>
             requires Applicable(U),Adjointable(U){U(q)}
@@ -488,7 +488,7 @@ fn provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate()
     ] {
         let modules = sources(
             &format!(
-                "use library::{{provider,internal}};use std::quantum::{{unit,join}};
+                "use library::{{provider,internal}};
                 fn apply[const U:Op<(Unit,Bit) -> Bit>](q:Q<(Unit,Bit)>)->Q<Bit> requires Applicable(U){{U(q)}}
                 pub isometry fn entry(q:Q<(Unit,Bit)>)->Q<Bit>{{{body}}}"
             ),

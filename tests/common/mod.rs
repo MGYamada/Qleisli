@@ -39,6 +39,36 @@ print(current_source_file(Path(sys.argv[2])))
     PathBuf::from(selected.trim_end_matches('\n'))
 }
 
+/// Check the recorded project chain, including predecessors of a current root.
+pub(super) fn current_source_project(path: &Path) -> PathBuf {
+    // Python's standard library supplies the repository's fixture hashing,
+    // without adding a Rust dependency or changing production acceptance.
+    let output = Command::new("python3")
+        .args([
+            "-B",
+            "-c",
+            r#"import sys
+from pathlib import Path
+root = Path(sys.argv[1])
+sys.path.insert(0, str(root / 'scripts'))
+from current_source_fixtures import current_source_project
+print(current_source_project(Path(sys.argv[2])))
+"#,
+        ])
+        .arg(env!("CARGO_MANIFEST_DIR"))
+        .arg(path)
+        .output()
+        .expect("Python 3 is required for recorded fixture identity checks");
+    assert!(
+        output.status.success(),
+        "source fixture selection failed for {}: {}",
+        path.display(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let selected = String::from_utf8(output.stdout).expect("fixture paths must be UTF-8");
+    PathBuf::from(selected.trim_end_matches('\n'))
+}
+
 /// Read the current source only after checking every recorded migration link.
 pub(super) fn current_source_text(relative: &str) -> String {
     let selected = current_namespace_fixture(&Path::new(env!("CARGO_MANIFEST_DIR")).join(relative));

@@ -25,13 +25,12 @@ fn plan_refusal(
 
 impl Lowerer<'_, '_> {
     #[allow(clippy::too_many_arguments)]
-    pub(super) fn sealed_static_with_source(
+    pub(super) fn primitive_static_with_source(
         &mut self,
         module: &str,
         source: &Expr,
         supplied_callee: &Ident,
-        namespace: &str,
-        name: &str,
+        primitive: Primitive,
         args: Vec<Value>,
         supplied_args: RuntimeArguments<'_>,
     ) -> Result<Value, CompileError> {
@@ -109,8 +108,7 @@ impl Lowerer<'_, '_> {
                     "original body plan is not a primitive call",
                 )?);
             };
-            if !matches!(callee.target,ResolvedUse::Global(Target::Primitive(id)) if id.module==namespace && id.name==name)
-            {
+            if callee.target != ResolvedUse::Global(Target::Primitive(primitive)) {
                 return Err(plan_refusal(
                     compiler,
                     &mut work,
@@ -152,16 +150,6 @@ impl Lowerer<'_, '_> {
             };
             naturals.push(value);
         }
-        self.compiler
-            .charge(module, source.span, namespace.len() + name.len() + 3)?;
-        let Some(primitive) = Primitive::lookup(&format!("{namespace}::{name}")) else {
-            return Err(self.primitive_refusal(
-                module,
-                source.span,
-                ErrorCode::UnknownName,
-                "unknown typed primitive",
-            )?);
-        };
         self.primitive_naturals(module, source.span, primitive, &naturals, args)
     }
 
@@ -201,7 +189,7 @@ impl Lowerer<'_, '_> {
             )?);
         }
         match primitive {
-            Primitive::Phase | Primitive::ControlledPhase => {
+            Primitive::Phase => {
                 let [j, k] = naturals else {
                     unreachable!("checked arity")
                 };
@@ -229,37 +217,22 @@ impl Lowerer<'_, '_> {
                 for value in &args {
                     self.quantum(module, span, value, true)?;
                 }
-                let controlled = primitive == Primitive::ControlledPhase;
-                let value = if controlled {
-                    self.sealed(module, span, "std::quantum", "join", args)?
-                } else {
-                    args.pop().expect("one phase target")
-                };
+                let value = args.pop().expect("one phase target");
                 let slot = self.quantum(module, span, &value, false)?;
                 self.apply_circuit(
                     slot,
                     vec![CircuitStep {
-                        controls: if controlled {
-                            vec![BitControl {
-                                index: 0,
-                                when_one: true,
-                            }]
-                        } else {
-                            vec![]
-                        },
+                        controls: vec![],
                         action: CircuitAction::Monomial {
-                            indices: vec![usize::from(controlled)],
+                            indices: vec![0],
                             permutation: vec![0, 1],
                             phases: vec![0, exponent],
                         },
                     }],
                 );
-                if controlled {
-                    self.sealed(module, span, "std::quantum", "split", vec![value])
-                } else {
-                    Ok(value)
-                }
+                Ok(value)
             }
+
             Primitive::TakeBit | Primitive::PutBit => {
                 let [n, k] = naturals else {
                     unreachable!("checked arity")
@@ -429,7 +402,7 @@ mod tests {
     use crate::frontend::project::{ModuleOrigin, SourceModule};
 
     fn project() -> Project {
-        let source = "use std::quantum::phase;
+        let source = "
             unitary fn f(q:Q<Bit>)->Q<Bit>{phase[1,4](q)}";
         Project {
             root: PathBuf::from("main.qli"),
@@ -494,12 +467,11 @@ mod tests {
             let value = lower.register(Ty::bit(), vec![wire]);
             let before = lower.compiler.work;
             let failure = lower
-                .sealed_static_with_source(
+                .primitive_static_with_source(
                     "main",
                     original,
                     supplied_callee,
-                    "std::quantum",
-                    "phase",
+                    Primitive::Phase,
                     vec![value],
                     supplied_args,
                 )

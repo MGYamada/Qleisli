@@ -33,7 +33,7 @@ For example, the following fragment uses the current endomorphic Meaning and
 operation-parameter grammar:
 
 ```qli
-use std::quantum::z;
+use std::gate::z;
 
 classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
 meaning ZMeaning: Bit = phase_by(z_phase);
@@ -172,7 +172,7 @@ internal inference inside it. Reference selection, specialization and cached
 evidence cannot recover a sharper external eligibility from the body.
 
 ```qli
-use std::quantum::h;
+
 
 fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
 meaning H: Bit = reference(reference_h);
@@ -234,7 +234,8 @@ on two and three qubits in the existing exact carrier. They are fixed examples,
 not a generic QFT implementation or a new `Fourier` constructor.
 
 ```qli
-use std::quantum::{h,s,t,split,join};
+use std::gate::s;
+use std::gate::t;
 
 fn quarter(q: Q<Bit>) -> Q<Bit> { s(q) }
 fn eighth(q: Q<Bit>) -> Q<Bit> { t(q) }

@@ -8,9 +8,8 @@ use std::process::Command;
 )]
 #[test]
 fn seeded_samples_have_atomic_human_and_json_outputs() {
-    let root = SourceRoot::new(
-        "use std::quantum::init0; use std::observe::measure_z; observe fn main() -> Bit { measure_z(init0()) }",
-    );
+    let root =
+        SourceRoot::new("use std::state::init0;  observe fn main() -> Bit { measure_z(init0()) }");
     for json in [false, true] {
         let mut c = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         c.arg("sample")

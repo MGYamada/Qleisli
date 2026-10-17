@@ -1,0 +1,27 @@
+// Copyright 2023 Google LLC
+// Primitive-source migration: Copyright 2026 Qleisli Project Contributors
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/reflections/reflection_using_prepare.py
+// Selected symbol: ReflectionUsingPrepare
+
+use std::gate::x;
+use std::gate::z;
+use std::gate::s;
+use std::gate::t;
+use std::gate::tdg;
+
+
+use std::gate::toffoli;
+use std::gate::cnot;
+
+
+
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    let (a, b) = qif(x(a), x(b)) { 0 => id, 1 => z };
+    join(a, x(b))
+}
+
+/// Identity on the one-Bit target of a coherent branch.
+unitary fn id(q: Q<Bit>) -> Q<Bit> { q }

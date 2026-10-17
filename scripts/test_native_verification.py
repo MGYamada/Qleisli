@@ -14,10 +14,11 @@ import tomllib
 from native_packet import envelope, inspection_lines
 
 from check_input_corpus import check_manifest, current_project
+from current_source_fixtures import current_source_project
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
-SOURCE = ROOT / "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02"
+SOURCE = current_source_project(ROOT / "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02")
 FINITE = ROOT / "tests/fixtures/verification_v022/finite"
 
 

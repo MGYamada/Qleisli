@@ -1,0 +1,191 @@
+{
+  "format": "qleisli.canonical-std-first-component-observations",
+  "version": 1,
+  "scope": "Current generic schema/edition helper observed all15 strings as ok before private embedded identity gate. No public mutant bundle, CLI, qargo or native semantic decision was executed; a passing observer is not a contract pass. Permanent generic controls consume these exact first inputs; current bundle mutants are separate.",
+  "first_product": "0.3.0-beta",
+  "cases": [
+    {
+      "id": "matching",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.0-beta\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "8f82234943b4bf0d280a0f01b4bb7354ec30dd3c6e281d70128e88b0c910546e",
+      "first_current_result": "ok",
+      "desired_bundled_result": "ok"
+    },
+    {
+      "id": "missing-name",
+      "source": "schema-version = 2\n\n[qrate]\nversion = \"0.3.0-beta\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "bb74420798b274782ecb5196a2af7aa6ab2e6d65799614e82ae5e5598166d06a",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "wrong-name",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"other\"\nversion = \"0.3.0-beta\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "1d7cdacec529b405f3e12bcc7aa9dc6aba85bd083522990e6dc3882d70f94e87",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "name-not-string",
+      "source": "schema-version = 2\n\n[qrate]\nname = 1\nversion = \"0.3.0-beta\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "bbc34220aa2bc70393c203f49eff4e9213142ccecdabd764605bc9036b182a5c",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "missing-version",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "c682684a983b4609750a29657e7b0f73a8b871af9e999ed13d34073a1eb58944",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "version-not-string",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = 1\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "94c757a7a5af2f3bddc44e1cfaeaf96ccb4fe9edf473b7e15ce4768d8afb116e",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "older-version",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.2.9\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "b8c3a5b04fd56ed78fdf90a094201c439e69be1a5c3c8d51517bfeb1fed222e0",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "newer-version",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.1\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "3ccedc581d5f657369bc4804adb60c0fa4c3ade61fabe4485ed80ea1785f6b72",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "release-versus-beta",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.0\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "35abd8eb5c93055135ad1c6ebf56dac984a059e5df0c3a924226670c1879e3a9",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "other-prerelease",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.0-rc.1\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "117d691f3df1e4ca1a7ff2b9eadeb818dcccc20441152cd67d761f7d1401f836",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "leading-v",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"v0.3.0-beta\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "343be2c520d5c54a0e2eb8d974ab1d13e9fbe8e72cb7ccad6ae5827ba0fc8f10",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "version-whitespace",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.0-beta \"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "277de292885de74ef600a754d2cec9d7c2532bb51e625972794916a5a1582f54",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "different-build-identifier",
+      "source": "schema-version = 2\n\n[qrate]\nname = \"std\"\nversion = \"0.3.0-beta+other\"\nedition = \"2026\"\n\n[source]\nroot = \"src\"\n\n[tests]\nroot = \"tests\"\n\n[docs]\nroot = \"docs\"\n",
+      "source_sha256": "8b955654832aa1d571ffdf435876d03fe9442bdbe504b53e8729387c70387678",
+      "first_current_result": "ok",
+      "desired_bundled_result": "project-error"
+    },
+    {
+      "id": "independent-user-version",
+      "source": "schema-version = 2\n[qrate]\nname = \"user\"\nversion = \"0.1.0\"\nedition = \"2026\"\n[source]\nroot = \"src\"\n",
+      "source_sha256": "07eb368e57551e3b31f7c501cc9a0347b66c5f1fa488673262e542330763bd67",
+      "first_current_result": "ok",
+      "scope": "ordinary user control; no bundled identity requirement"
+    },
+    {
+      "id": "edition-only-user",
+      "source": "schema-version = 2\n[qrate]\nedition = \"2026\"\n",
+      "source_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "first_current_result": "ok",
+      "scope": "ordinary user control; no bundled identity requirement"
+    }
+  ],
+  "first_tiny_client": "use std::gate::x;\npub unitary fn main(q: Q<Bit>) -> Q<Bit> { x(q) }\n",
+  "first_tiny_client_sha256": "dc151efc9e914a33e9364cdac144e71948a65b2b3c053427e207fc4d3887a1b7",
+  "stdout": "\nrunning 1 test\ncanonical-std-product 0.3.0-beta\ncanonical-std-observation matching ok\ncanonical-std-observation missing-name ok\ncanonical-std-observation wrong-name ok\ncanonical-std-observation name-not-string ok\ncanonical-std-observation missing-version ok\ncanonical-std-observation version-not-string ok\ncanonical-std-observation older-version ok\ncanonical-std-observation newer-version ok\ncanonical-std-observation release-versus-beta ok\ncanonical-std-observation other-prerelease ok\ncanonical-std-observation leading-v ok\ncanonical-std-observation version-whitespace ok\ncanonical-std-observation different-build-identifier ok\ncanonical-std-observation independent-user-version ok\ncanonical-std-observation edition-only-user ok\ntest frontend::project::edition::tests::canonical_std_pair_current_manifest_observations ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 440 filtered out; finished in 0.00s\n\n",
+  "stderr": "   Compiling qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 15.16s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-ec126c744a504ac1)\n",
+  "observation": {
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--lib",
+      "frontend::project::edition::tests::canonical_std_pair_current_manifest_observations",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "whole_working_before": {
+      "head": "b8755b7f8347f55482c15f98928c1813c30b56f6",
+      "working_inputs_sha256": "b3416b48116073ac85f9f5ab2e7c1bc93cc900dadaf971a93144c3b5948e56c4"
+    },
+    "compiler": {
+      "path": "/opt/homebrew/bin/rustc",
+      "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+      "selection": "explicit normal RUSTC",
+      "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+    },
+    "kernel_sha256": "54c9d60b80f67217abd95c8fe6ec1c06aa262e142d5e6db30f46a20cb90faf07",
+    "exit_code": 0,
+    "interrupted": false,
+    "seconds": "26.340345124946907",
+    "whole_working_after": {
+      "head": "b8755b7f8347f55482c15f98928c1813c30b56f6",
+      "working_inputs_sha256": "b3416b48116073ac85f9f5ab2e7c1bc93cc900dadaf971a93144c3b5948e56c4"
+    },
+    "whole_working_stable": true,
+    "inputs_stable": true,
+    "kernel_stable": true,
+    "seconds_representation": "Exact original driver decimal rendered as text for the bounded integer-only historical JSON reader; original driver bytes/hash retained."
+  },
+  "original_sources": {
+    "Cargo.toml": "3a0bf0acf7e09094930cbd6164fd8640b60c25b43c43b20b7a54983eb5793351",
+    "stdlib/Qargo.toml": "8f82234943b4bf0d280a0f01b4bb7354ec30dd3c6e281d70128e88b0c910546e",
+    "src/frontend/project/edition.rs": "6b68936c818b0910fb685d5113df005b1ea560b3bdecab0db31802831b312ca1"
+  },
+  "temporary_observer_patch_sha256": "1afc9767de9b8d237122a9a513bc5b3f6168fbe9b9eb7777d6f07c315520f80c",
+  "actual_driver_record_sha256": "a8a3c185d26047380de43c071edd830800571e8c863119392d8033d74b6b3ef5",
+  "exact_restoration": {
+    "status": "actual first component observations preserved; temporary observer reversed exactly",
+    "whole_restored": {
+      "head": "b8755b7f8347f55482c15f98928c1813c30b56f6",
+      "working_inputs_sha256": "eccebd7e6ebbd6ce80ef64af31ee57781f955cc6240a6503a6b22a57efaced89"
+    },
+    "source_restored_sha256": "6b68936c818b0910fb685d5113df005b1ea560b3bdecab0db31802831b312ca1",
+    "validation_record_sha256": "a8a3c185d26047380de43c071edd830800571e8c863119392d8033d74b6b3ef5",
+    "stdout": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/canonical-std-pair-first-current-observations-v1.stdout.txt",
+    "stdout_sha256": "73a86d132fc0619901294e07ce4de3c0b9969abe8efb86e871dcdce81499a3f6",
+    "stderr": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/canonical-std-pair-first-current-observations-v1.stderr.txt",
+    "stderr_sha256": "c401c010b62c402dfb43fbd8103082051da5fa995ea4149ba5cc10808efacdb9",
+    "actual_observations": [
+      "canonical-std-observation matching ok",
+      "canonical-std-observation missing-name ok",
+      "canonical-std-observation wrong-name ok",
+      "canonical-std-observation name-not-string ok",
+      "canonical-std-observation missing-version ok",
+      "canonical-std-observation version-not-string ok",
+      "canonical-std-observation older-version ok",
+      "canonical-std-observation newer-version ok",
+      "canonical-std-observation release-versus-beta ok",
+      "canonical-std-observation other-prerelease ok",
+      "canonical-std-observation leading-v ok",
+      "canonical-std-observation version-whitespace ok",
+      "canonical-std-observation different-build-identifier ok",
+      "canonical-std-observation independent-user-version ok",
+      "canonical-std-observation edition-only-user ok"
+    ],
+    "scope": "same current schema/edition helper; no public mutated bundle/native/QLI execution, no171 completion",
+    "procedural_note": "driver was dispatched while application snapshot command was still returning; recorded source and whole-working capture equal applied observer and stable through execution. Future dependencies wait for terminal tool result."
+  }
+}

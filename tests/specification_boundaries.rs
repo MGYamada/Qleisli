@@ -67,8 +67,8 @@ unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
     );
     accepted(
         r#"
-use std::quantum::split;
-use std::quantum::join;
+
+
 unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
     join(b,a)
@@ -115,9 +115,9 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
             let right = if b { "x(init0())" } else { "init0()" };
             deterministic(
                 &format!(
-                    "use std::quantum::init0; use std::quantum::x;
-                    use std::quantum::join; use std::quantum::split;
-                    use std::observe::measure_z;
+                    "use std::state::init0; use std::gate::x;
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                     unitary fn regroup(q: Q<((Bit,Bit),Unit)>) -> Q<(Bit,Bit)> {{
                         basis q as ((a,b),_) {{ (b,a) }}
                     }}
@@ -133,8 +133,8 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     }
     // Removing a singleton basis factor must preserve phase, not just bits.
     deterministic(
-        "use std::quantum::init0; use std::quantum::h;
-        use std::observe::measure_z;
+        "use std::state::init0;\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main() -> Bit {
             let q = basis h(init0()) as a { (a,()) };
             let q = basis q as (a,_) { a };
@@ -151,7 +151,7 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
 #[test]
 fn zero_wire_ownership_requires_explicit_consumption() {
     rejected(
-        "use std::quantum::split;
+        "
         unitary fn remove(q: Q<(Bit,Unit)>) -> Q<Bit> {
             let (b,u) = split(q); b
         }",
@@ -163,12 +163,12 @@ fn zero_wire_ownership_requires_explicit_consumption() {
         ErrorCode::TypeMismatch,
     );
     rejected(
-        "use std::observe::discard;
+        "
         unitary fn remove(q: Q<Unit>) -> Unit { discard(q) }",
         ErrorCode::Effect,
     );
     accepted(
-        "use std::observe::discard;
+        "
         observe fn remove(q: Q<Unit>) -> Unit { discard(q) }",
     );
 }
@@ -212,14 +212,14 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
 )]
 #[test]
 fn computed_auxiliary_shadow_preserves_the_outer_owner() {
-    let prefix = "use std::quantum::z; classical fn p(x: Bit) -> Bit { x }";
+    let prefix = "use std::gate::z; classical fn p(x: Bit) -> Bit { x }";
     deterministic(
         &format!(
             r#"{prefix}
-use std::quantum::init0;
-use std::quantum::x;
-use std::quantum::h;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+
+
 unitary fn keep(a: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
     let q = with_computed(q,p) {{ |a| z(a) }};
     (a,q)
@@ -299,7 +299,7 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     // The actual fragment's closed classical work is checked along with its
     // exact diagonal action; an unused constant cannot hide a dependency.
     deterministic(
-        "use std::quantum::init0; use std::observe::measure_z;
+        "use std::state::init0;\x20
         classical fn p(b:Bit)->Bit { b }
         unitary fn f(q:Q<Bit>)->Q<Bit> {
             with_computed(q,p) { |a| let unused = 1; a }
@@ -336,8 +336,8 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
 #[test]
 fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     deterministic(
-        "use std::quantum::init0; use std::quantum::x;
-        use std::observe::measure_z;
+        "use std::state::init0; use std::gate::x;
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn keep(pair: (Q<Bit>,Q<Bit>)) -> (Q<Bit>,Bit) {
             let (q,r) = pair;
             (q,0 and measure_z(r))
@@ -349,12 +349,12 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
         &[true, false],
     );
     rejected(
-        "use std::observe::measure_z;
+        "
         unitary fn bad(q: Q<Bit>) -> Bit { 0 and measure_z(q) }",
         ErrorCode::Effect,
     );
     rejected(
-        "use std::observe::measure_z;
+        "
         observe fn bad(q: Q<Bit>) -> (Bit,Q<Bit>) {
             (0 and measure_z(q),q)
         }",
@@ -363,8 +363,8 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     // Both measurements must occur exactly once and in source order, even
     // when the first result forces an AND result of false.
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::x;
-        use std::observe::measure_z;
+        "use std::state::init0; use std::gate::x;
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main() -> Bit {
             measure_z(init0()) and measure_z(x(init0()))
         }",
@@ -374,9 +374,13 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     assert!(matches!(
         program.program().operations.as_slice(),
         [
-            RawOp::Init0 { .. },
+            RawOp::PackUnit { .. },
+            RawOp::LiftBasis { .. },
             RawOp::MeasureZ { .. },
-            RawOp::Init0 { .. },
+            RawOp::PackUnit { .. },
+            RawOp::LiftBasis { .. },
+            RawOp::Gate { .. },
+            RawOp::ApplyUnitary { .. },
             RawOp::Gate { .. },
             RawOp::MeasureZ { .. },
             RawOp::ClassicalAnd { .. },
@@ -444,9 +448,9 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
 fn entry_point_accepts_nested_classical_products() {
     deterministic(
         r#"
-use std::quantum::init0;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+
 observe fn main() -> (Unit,(Bit,(Bit,Unit))) {
     ((),(measure_z(init0()),(measure_z(x(init0())),())))
 }

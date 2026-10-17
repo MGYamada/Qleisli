@@ -160,15 +160,15 @@ fn protocol_y_minus_has_the_full_independent_operator_phase() {
     .unwrap();
     root.write(
         "phase_fault.qli",
-        "use states::y_minus; use std::quantum::phase_eighth;\n\
-         pub unitary fn shifted(q:Q<Bit>)->Q<Bit>{phase_eighth(y_minus(q))}\n",
+        "use states::y_minus; \n\
+         pub unitary fn shifted(q:Q<Bit>)->Q<Bit>{global_phase_eighth(y_minus(q))}\n",
     );
     for provider in ["y_minus", "y_plus", "shifted"] {
         root.write(
             "main.qli",
             &format!(
                 "use states::{{y_minus,y_plus}}; use phase_fault::shifted;\n\
-                 use std::quantum::init0; use std::observe::measure_z;\n\
+                 use std::state::init0; \n\
                  unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}\n\
                  observe fn main()->Bit{{measure_z(use_op[{provider}](init0()))}}\n"
             ),
@@ -399,7 +399,7 @@ fn former_static_nat_boundary_executes_the_retained_original_generic_body() {
     assert_eq!(parameter.kind, StaticParamKind::Natural);
     assert_eq!(parameter.name.text, "n");
     let source = format!(
-        "{original}\nuse std::quantum::{{init0,x}};use std::observe::measure_z;\n\
+        "{original}\nuse std::state::init0; use std::gate::x;\n\
          unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}\n\
          observe fn main()->Bit{{measure_z(power[1,flip](init0()))}}"
     );
@@ -421,7 +421,7 @@ fn former_computed_hh_boundary_has_the_independent_exact_identity_meaning() {
 
     let original = fixture("rejected/auxiliary_hh");
     let source = format!(
-        "{original}\nuse std::quantum::init0;use std::observe::measure_z;\n\
+        "{original}\nuse std::state::init0;\n\
          unitary fn independent_identity(q:Q<Bit>)->Q<Bit>{{q}}\n\
          pub observe fn main()->Bit{{measure_z(apply_contract(round_trip,independent_identity,init0()))}}"
     );

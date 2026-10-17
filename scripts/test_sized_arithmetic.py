@@ -151,7 +151,7 @@ def main():
         'wrong-count': (modules | {'addition': modules['addition'].replace('0..K carry', '0..K-1 carry')}, 'addition', 'add_k', dict(n=2,K=3), ('add',2,3)),
         'missing-restore': (modules | {'comparison': modules['comparison'].rsplit('let (left,y) = xor_into[n](left,y);',1)[0]+'(left,y,target)\n}\n'}, 'comparison', 'equals', dict(n=2), ('equals',2,0)),
         'wrong-predicate': (modules | {'comparison': modules['comparison'].replace('let y = invert_bits[n](y);', 'let y = y;',1)}, 'comparison', 'equals', dict(n=2), ('equals',2,0)),
-        'extra-target-phase': (modules | {'comparison': modules['comparison'].replace('use bitwise::xor_into;', 'use bitwise::xor_into;\nuse std::quantum::phase;').replace('(left,y,target)\n}', '(left,y,phase[1,1](target))\n}')}, 'comparison', 'equals', dict(n=2), ('equals',2,0)),
+        'extra-target-phase': (modules | {'comparison': modules['comparison'].replace('use bitwise::xor_into;', 'use bitwise::xor_into;\n').replace('(left,y,target)\n}', '(left,y,phase[1,1](target))\n}')}, 'comparison', 'equals', dict(n=2), ('equals',2,0)),
     }
     for name,(changed,module,entry,sizes,_) in faults.items():
         artifacts[name] = compile_case(changed, module, entry, **sizes)

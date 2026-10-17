@@ -1,0 +1,1 @@
+    pub observe fn f(q: Q<Bit>) -> Bits<1> { prepend_bit[0](measure_z(h(q)),empty_bits()) }

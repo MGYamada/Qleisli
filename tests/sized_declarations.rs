@@ -323,7 +323,7 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
     // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).
     // Expected coefficients below come from that equation, independently of
     // producer meanings. Neither formal receives the other access slots.
-    let provider = "use std::quantum::phase; fn rotate(q:Q<Bit>)->Q<Bit>{phase[1,3](q)} ";
+    let provider = " fn rotate(q:Q<Bit>)->Q<Bit>{phase[1,3](q)} ";
     let (sine, cosine) = std::f64::consts::FRAC_PI_4.sin_cos();
     let input = [
         [0.1, -0.2],

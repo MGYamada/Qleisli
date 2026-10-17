@@ -52,7 +52,7 @@ pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
 )]
 #[test]
 fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
-    let text = "use std::quantum::unit; isometry fn make() -> Q<Unit> { let u = unit(()); u }";
+    let text = " isometry fn make() -> Q<Unit> { let u = unit(()); u }";
     let project = Project {
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(

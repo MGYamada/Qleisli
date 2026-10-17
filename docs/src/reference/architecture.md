@@ -114,10 +114,10 @@ path: read its signature, inspect the ordinary checked `.qli` implementation,
 then follow its calls to language rules and specified primitives. Derived code
 must undergo the same applicable checking as user code. Source location,
 first-party status and documentation generation confer no semantic authority.
-Sealed primitives require their canonical contracts and independent checks;
+Language primitives require their canonical contracts and independent checks;
 reading an implementation cannot reconstruct or authorize a different meaning.
 The [primitive inventory and current limitations](primitive-boundary.md) separate
-this policy from the unfinished complete stdlib migration.
+this policy from the source cutover and its remaining proof/profile obligations.
 
 QLT — Qleisli Testsuite, QDB — Qleisli Debugger and QCP — Qleisli Circuit
 Profiler are planned Qleisli tools. They and qargo, qlidoc and other tools
@@ -142,7 +142,7 @@ measured success rate or permission to infer quantum meaning.
 | Ordinary modules, imports, tuples and binders | Inferable where their ordinary meaning survives. The source/type Reference and located diagnostics identify the exact syntax and predictable classical mistakes. |
 | Quantum owners, effects, access capabilities and Meaning | Explicit discovery through the type, Rust and functional boundary chapters. Classical familiarity cannot supply their quantum obligations. |
 | Derived stdlib abstractions | Explicit discovery through the signature and mathematical contract, then ordinary `.qli` source under `stdlib/src/` and its callees. Source inspection does not itself prove the contract. |
-| Sealed primitives and external providers | Explicit discovery through the primitive and production boundaries. Reading derived source cannot reconstruct or grant their semantic authority. |
+| Language primitives and external providers | Explicit discovery through the primitive and production boundaries. Reading derived source cannot reconstruct or grant their semantic authority. |
 | First-party ecosystem tools, including QLT, QDB and QCP | Explicit discovery through `qleisli --help`, then `qleisli help ecosystem`; each tool's role and current availability are stated there. These are Qleisli-native discovery targets. |
 
 The help path works without a project or native checker and issues no accepted

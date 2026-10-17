@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::gate::cnot;
+fn prep(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+pub isometry fn entry((u,r):(Q<Unit>,Q<Bit>))->(Q<Bit>,Q<Bit>){let a=prep(u);cnot(r,a)}

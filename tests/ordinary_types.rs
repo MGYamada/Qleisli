@@ -13,13 +13,16 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 macro_rules! source {
-    ($name:literal) => {
-        include_str!(concat!(
-            "fixtures/frontend_v030/ordinary-types-independent/sources/",
-            $name,
-            "/main.qli"
-        ))
-    };
+    ($name:literal) => {{
+        static TEXT: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+            common::current_source_text(concat!(
+                "tests/fixtures/frontend_v030/ordinary-types-independent/sources/",
+                $name,
+                "/main.qli"
+            ))
+        });
+        TEXT.as_str()
+    }};
 }
 
 fn parsed(source: &str) -> ParsedProgram {
@@ -135,7 +138,11 @@ fn source_bearing_native_evidence_retains_the_actual_canonical_source() {
             .any(|(module, text)| module == "main" && text == source)
     );
     let distribution = run_closed(&checked, SimulationLimits::default()).unwrap();
-    assert_eq!(distribution, BTreeMap::from([(vec![true], 1.0)]));
+    // The ordinary X body is H Z H, evaluated numerically by this simulator.
+    // Its independent expected distribution still has exactly one outcome of mass one.
+    assert_eq!(distribution.len(), 1);
+    let probability = distribution[&vec![true]];
+    assert!(probability.is_finite() && (probability - 1.0).abs() < 1e-12);
 }
 
 #[test]
@@ -329,26 +336,64 @@ fn unit_returning_quantum_consumption_survives_lowering_and_source_event_checks(
     let validation = proposal
         .validate_initialization_moves_native(&checked)
         .unwrap();
-    assert_eq!(validation.events(), 4);
+    assert_eq!(validation.events(), 5);
     assert_eq!(
         proposal
             .source_events()
             .iter()
             .map(|e| e.kind())
             .collect::<Vec<_>>(),
-        ["pure", "observe", "empty_bits", "prepend_bit"]
+        ["pure", "pure", "observe", "empty_bits", "prepend_bit"]
     );
-    let consumed = &proposal.source_events()[0];
+    // Ordinary consume_empty first converts Bits<0> to Unit, then calls finish.
+    // Both zero-width owners remain explicit, and the untouched Bit keeps its axis.
+    let converted = &proposal.source_events()[0];
+    let conversion_before = converted.input_frame().collect::<Vec<_>>();
+    let conversion_after = converted.output_frame().collect::<Vec<_>>();
+    assert_eq!(conversion_before.len(), 2);
+    assert_eq!(conversion_after.len(), 2);
+    let empty_bits = conversion_before
+        .iter()
+        .find(|p| p.axes().is_empty())
+        .expect("retain the input Bits<0> owner");
+    assert_eq!(empty_bits.basis_kind(), "bits");
+    assert_eq!(empty_bits.basis().width(), Some(0));
+    let unit = conversion_after
+        .iter()
+        .find(|p| p.axes().is_empty())
+        .expect("retain the converted Unit owner until finish");
+    assert_eq!(unit.basis_kind(), "unit");
+    assert_eq!(unit.basis().width(), Some(0));
+    assert_ne!(unit.owner(), empty_bits.owner());
+    let bit = conversion_before.iter().find(|p| p.is_bit()).unwrap();
+    let retained_bit = conversion_after.iter().find(|p| p.is_bit()).unwrap();
+    assert_eq!(retained_bit.owner(), bit.owner());
+    assert_eq!(retained_bit.axes(), bit.axes());
+    let consumed = &proposal.source_events()[1];
     let before = consumed.input_frame().collect::<Vec<_>>();
     let after = consumed.output_frame().collect::<Vec<_>>();
+    assert_eq!(
+        before
+            .iter()
+            .map(|p| (p.owner(), p.basis_kind(), p.axes()))
+            .collect::<Vec<_>>(),
+        conversion_after
+            .iter()
+            .map(|p| (p.owner(), p.basis_kind(), p.axes()))
+            .collect::<Vec<_>>()
+    );
     assert_eq!(before.len(), 2);
     assert_eq!(after.len(), 1);
     let empty_owner = before
         .iter()
         .find(|p| p.axes().is_empty())
         .expect("retain the zero-axis owner until its consume operation");
-    assert!(!empty_owner.is_bit());
+    assert_eq!(empty_owner.basis_kind(), "unit");
+    assert_eq!(empty_owner.owner(), unit.owner());
     assert!(after.iter().all(|p| p.owner() != empty_owner.owner()));
+    assert!(after[0].is_bit());
+    assert_eq!(after[0].owner(), bit.owner());
+    assert_eq!(after[0].axes(), bit.axes());
     let input = [[0.3, 0.2], [-0.4, 0.1], [0.0, 0.7], [0.5, -0.2]];
     let output = checked
         .execute_instrument(

@@ -1,0 +1,23 @@
+// Upstream authors (repository usernames): ixfoduap, Diego, Jay. See upstream metadata.
+// Primitive-source migration: Copyright 2026 Qleisli Project Contributors
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_lcu_blockencoding/demo.py
+// Selected symbol(s): lcu_circuit (Application: Projectors)
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+
+
+use std::gate::z;
+
+
+
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (selector, data) = split(q);
+    let selector = h(selector);
+    let (selector, data) = qif(selector, data) { 0 => id, 1 => z };
+    join(h(selector), data)
+}
+
+/// Identity on the one-Bit target of a coherent branch.
+unitary fn id(q: Q<Bit>) -> Q<Bit> { q }

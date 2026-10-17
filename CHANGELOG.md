@@ -11,6 +11,39 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Stage the #369/#167 cutover to typed, unqualified language primitives and
+  ordinary checked gate, state and structure source. Retired foundation imports
+  receive migration guidance. Migrate active clients, corpus selections,
+  diagnostics and documentation; retain original sources, diagnostics and
+  explicit current-source mappings, including the six historical examples.
+  Register corpus migrations only after source and representative semantic checks.
+  Keep full normal/MSRV/native CI and final-candidate validation unfinished until
+  their required checks succeed.
+  Retain original source intervals for forward isometries and Fourier proposals,
+  with fresh original checking by the executed artifact's canonical checker.
+  Each hierarchy decision keeps its 2M structural/10M exact-work limit; the
+  executed/original pair may consume 4M/20M plus separately bounded host and
+  legacy reconstruction work. Reuse checked full-artifact proof contexts,
+  exact positional maps and each projected circuit node, with equivalence proofs
+  and prepaid failed attempts and fallbacks. Existing named and generic
+  n=1,m=3 QPE regressions now fit the unchanged per-decision limits; this is not
+  a universal previous-success budget guarantee.
+  Check ordinary zero preparation separately from NOT in source/IR mutation
+  tests. Retain the explicit Bits<0>-to-Unit owner transition before finish,
+  untouched reference frames and the existing numerical simulation tolerance.
+  Refresh current-source evidence for the two existing scoped QLV1 guarantees
+  after both Lean packages' builds/audits, fresh kernel/Main replay and fixed
+  type/transport extraction checks. Broader QS/PR/RS/EXACT duties remain pending.
+  Installation checks distinguish internal derived-contract requests from an
+  independently requested entry equation, including text/JSON decision counts.
+
+- Require the embedded std manifest to name `std` and match the compiler's
+  complete product version before loading source. Preserve independent user
+  qrate versions, single manifest parsing and immutable embedded caching.
+  Retain the first component observations and test mismatched identities,
+  prereleases, build identifiers and safely quoted diagnostics. Effective qargo
+  pairing and complete reproducibility records remain unfinished in #171.
+
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all
   targets and subsequent checks with the existing per-command timeout and job
@@ -51,7 +84,7 @@ and exactness obligations retain their recorded scopes and status.
   axes, controls and adjoints under bounded expansion. Exact small-output checks
   remain distinct from general export preservation and resource certificates.
   Document private gate and transform providers and check documentation across
-  all six ordinary bundled modules.
+  all seven ordinary bundled modules.
   Update exact regression oracles to replay retained ordinary function bodies,
   including phase, control, adjoint and ordered branch outputs. Keep source,
   exact-work and specialization-count limits separate in their boundary tests;

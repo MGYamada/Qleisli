@@ -17,7 +17,7 @@ fn shared_basis_nat_provider_checks_zero_and_one_bit_registers() {
     );
     for (source, expected_success) in [
         (original.to_owned(), true),
-        (original.replace("{phase_eighth(q)}", "{q}"), false),
+        (original.replace("{global_phase_eighth(q)}", "{q}"), false),
     ] {
         let files = common::SourceRoot::new(&source);
         for entry in ["zero", "one"] {

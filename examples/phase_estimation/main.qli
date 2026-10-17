@@ -1,7 +1,7 @@
 use estimation::phase3;
-use std::quantum::init0;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+
 
 observe fn main() -> (((Bit, Bit), Bit), Bit) {
     let (phase, q) = phase3(x(init0()));

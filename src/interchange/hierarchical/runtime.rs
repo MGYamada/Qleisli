@@ -421,11 +421,11 @@ mod checker_path_tests {
 
     use crate::interchange::{hierarchical::Kernel, json};
 
-    #[test]
     #[cfg_attr(
         not(qleisli_native_tests),
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
+    #[test]
     fn all_native_modes_retain_invoked_canonical_paths_after_alias_and_target_moves() {
         use std::os::unix::fs::symlink;
         static SERIAL: AtomicU64 = AtomicU64::new(0);
@@ -456,6 +456,7 @@ mod checker_path_tests {
         ))
         .unwrap();
         let mut reports = Vec::new();
+        let mut reconstructed = Vec::new();
         for row in inputs.field("rows").unwrap().array().unwrap() {
             if !row.field("accept").unwrap().boolean().unwrap() {
                 continue;
@@ -466,6 +467,26 @@ mod checker_path_tests {
                 .field("candidate")
                 .ok()
                 .map(|r| json::encode(r).unwrap());
+            // Legacy finite reconstruction retains the same actual invocation
+            // path; no later environment or alias lookup supplies its context.
+            let reconstruction = match row.field("mode").unwrap().text().unwrap() {
+                "inspect" => kernel.inspect(&payload),
+                "request" | "fourier" => kernel
+                    .check_against(&payload, request.as_deref().unwrap())
+                    .map(|report| report.reconstruction),
+                "instrument" => kernel
+                    .check_instrument(&payload, request.as_deref().unwrap())
+                    .map(|report| report.reconstruction),
+                "qpeInstrument" => kernel
+                    .check_qpe_instrument(
+                        &payload,
+                        request.as_deref().unwrap(),
+                        candidate.as_deref().unwrap(),
+                    )
+                    .map(|report| report.instrument.reconstruction),
+                mode => panic!("unexpected mode {mode}"),
+            }
+            .unwrap();
             let report = match row.field("mode").unwrap().text().unwrap() {
                 "inspect" => kernel.inspect_native(&payload),
                 "request" | "fourier" => {
@@ -492,6 +513,8 @@ mod checker_path_tests {
                     &other
                 }
             );
+            assert_eq!(reconstruction.checker(), report.checker());
+            reconstructed.push(reconstruction);
             reports.push(report);
             if reports.len() == 1 {
                 std::fs::remove_file(&alias).unwrap();
@@ -499,10 +522,16 @@ mod checker_path_tests {
             }
         }
         assert_eq!(reports.len(), 5);
+        assert_eq!(reconstructed.len(), 5);
         std::fs::remove_file(&alias).unwrap();
         std::fs::rename(&other, directory.join("moved-checker")).unwrap();
         assert_eq!(reports[0].checker(), original);
         for report in &reports[1..] {
+            assert_eq!(report.checker(), other);
+            assert!(!report.checker().exists());
+        }
+        assert_eq!(reconstructed[0].checker(), original);
+        for report in &reconstructed[1..] {
             assert_eq!(report.checker(), other);
             assert!(!report.checker().exists());
         }

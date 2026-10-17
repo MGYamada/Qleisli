@@ -189,10 +189,10 @@ impl Lowerer<'_, '_> {
                             args: CallArguments::Classical(args),
                         }),
                     ),
-                    Callee::Sealed(namespace, name) if empty_bits_primitive(&namespace, &name) => {
-                        self.sealed(module, expr.span, &namespace, &name, values)
+                    Callee::Primitive(PrimitiveId::EmptyBits) => {
+                        self.primitive_call(module, expr.span, PrimitiveId::EmptyBits, values)
                     }
-                    Callee::Sealed(_, _) => Err(self.error(
+                    Callee::Primitive(_) => Err(self.error(
                         module,
                         callee.span,
                         ErrorCode::TypeMismatch,

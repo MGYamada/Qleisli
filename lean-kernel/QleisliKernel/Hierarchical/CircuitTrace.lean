@@ -86,6 +86,24 @@ def summarize (atoms : Array Atom) (cache : Cache) (index : Nat) (d : Definition
   if decide (d.effect = Effect.unitary) && NodeTyping.quantumOnly d.interface &&
       (wires d.interface.outputs).size == width && valid width trace then some trace else none
 
+/-- Reuse the actual node projected by this step. This omits only a second
+atom lookup/header comparison or structural route extraction; every original
+width/effect/quantum-only check, evaluator and complete trace predicate remains. -/
+def summarizeProjected (cache : Cache) (node : Node) (d : Definition) : Option Trace := do
+  if (wires d.interface.inputs).size > 16 then none else pure ()
+  let children ← node.children.mapM (fun i => (cache[i]?).bind id)
+  let width := (wires d.interface.inputs).size
+  let trace ← eval width node.operation children
+  if decide (d.effect = Effect.unitary) && NodeTyping.quantumOnly d.interface &&
+      (wires d.interface.outputs).size == width && valid width trace then some trace else none
+
+/-- Equality requires the actual atom/wiring projection of this definition.
+A supplied equal-shaped node or cached Boolean cannot establish this premise. -/
+theorem summarizeProjected_eq (atoms : Array Atom) (cache : Cache) (index : Nat)
+    (d : Definition) (node : Node) (projected : project atoms index d = some node) :
+    summarizeProjected cache node d = summarize atoms cache index d := by
+  simp [summarizeProjected, summarize, projected]
+
 inductive Derives (artifact : Artifact) (atoms : Array Atom) : Nat → Trace → Prop where
   | node (index : Nat) (d : Definition) (cache : Cache) (trace : Trace)
       (found : artifact.definitions[index]? = some d)
@@ -100,9 +118,21 @@ structure State where
   visits : Nat
   deriving Repr
 
-/-- Only headers and indices are read before any trace content is copied. -/
+/-- Array lengths and the body tag only. Prepay complete per-port field-count
+and wire-count scans before traversing even malformed/unvalidated interfaces. -/
+def rawScan (atoms : Array Atom) (d : Definition) : Nat :=
+  Wiring.scan d + 32 * (1 + d.interface.scan + Wiring.bodySize d + atoms.size)
+
+/-- Complete ordered equality fields cover atom lookup/header comparison;
+no type/owner uniqueness predicate is omitted or assumed. The separate width
+square prepays structural axisMap/findIdx before project, and port-by-width
+work covers repeated array flattening even with many zero-width owners.
+The same allowance covers the retained summarizeProjected wire scans. -/
 def scan (atoms : Array Atom) (d : Definition) : Nat :=
-  Wiring.scan d + 32 * d.interface.charge + 32 * (1 + atoms.size)
+  let span := 1 + Ports.wireCount d.interface.inputs + Ports.wireCount d.interface.outputs
+  rawScan atoms d +
+    32 * (sideFields d.interface.inputs + sideFields d.interface.outputs) +
+    8 * span^2 + 8 * (1 + d.interface.scan) * span
 
 /-- Current and cached widths bound position lists. The child-count factor
 covers repeated sequence concatenations; the squared span covers route lookup
@@ -120,13 +150,14 @@ def step (artifact : Artifact) (atoms : Array Atom) (remaining : Nat)
     (state : State) (index : Nat) : Except Error State :=
   match artifact.definitions[index]?,state.cache[index]? with
   | some d,some none =>
+    if state.visits + rawScan atoms d > remaining then .error .limit else
     if state.visits + scan atoms d > remaining then .error .limit else
     match project atoms index d with
     | none => .error .contract
     | some node =>
       let cost := charge atoms state.cache node d
       if state.visits + cost > remaining then .error .limit else
-      match summarize atoms state.cache index d with
+      match summarizeProjected state.cache node d with
       | none => .error .contract
       | some trace => .ok ⟨state.cache.setIfInBounds index (some trace),state.visits+cost⟩
   | _,_ => .error .invalidIr
@@ -196,29 +227,33 @@ theorem step_sound (artifact : Artifact) (atoms : Array Atom) (remaining : Nat) 
   next d found empty =>
     split at accepted
     next exceeded => contradiction
-    next scanned =>
+    next rawScanned =>
       split at accepted
-      next absent => contradiction
-      next node projected =>
-        dsimp only at accepted
+      next exceeded => contradiction
+      next scanned =>
         split at accepted
-        next exceeded => contradiction
-        next bounded =>
+        next absent => contradiction
+        next node projected =>
+          dsimp only at accepted
           split at accepted
-          next absent => contradiction
-          next axes computed =>
-            cases Except.ok.inj accepted
-            refine ⟨?_,Nat.le_of_not_gt bounded⟩
-            intro i code present
-            by_cases same : i = index
-            · subst i
-              have inside := (Array.getElem?_eq_some_iff.mp empty).1
-              simp only [Array.getElem?_setIfInBounds_self_of_lt inside,Option.bind_some,id_eq,Option.some.injEq] at present
-              subst code
-              exact .node index d state.cache axes found sound computed
-            · have old : (state.cache[i]?).bind id = some code := by
-                simpa only [Array.getElem?_setIfInBounds_ne (Ne.symm same)] using present
-              exact sound i code old
+          next exceeded => contradiction
+          next bounded =>
+            split at accepted
+            next absent => contradiction
+            next axes computed =>
+              rw [summarizeProjected_eq atoms state.cache index d node projected] at computed
+              cases Except.ok.inj accepted
+              refine ⟨?_,Nat.le_of_not_gt bounded⟩
+              intro i code present
+              by_cases same : i = index
+              · subst i
+                have inside := (Array.getElem?_eq_some_iff.mp empty).1
+                simp only [Array.getElem?_setIfInBounds_self_of_lt inside,Option.bind_some,id_eq,Option.some.injEq] at present
+                subst code
+                exact .node index d state.cache axes found sound computed
+              · have old : (state.cache[i]?).bind id = some code := by
+                  simpa only [Array.getElem?_setIfInBounds_ne (Ne.symm same)] using present
+                exact sound i code old
   next invalid => contradiction
 
 theorem fold_sound (artifact : Artifact) (atoms : Array Atom) (order : List Nat) (remaining : Nat)

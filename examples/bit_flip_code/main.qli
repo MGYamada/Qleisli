@@ -1,12 +1,12 @@
 use code::encode;
 use code::recover;
 use code::decode;
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::split;
-use std::quantum::join;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
+
+
 use std::measurement::measure_x;
 
 observe fn main() -> ((Bit, Bit), (Bit, (Bit, Bit))) {

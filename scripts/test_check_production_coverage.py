@@ -324,6 +324,121 @@ class ProductionCoverage(unittest.TestCase):
                                       'fn doc_reads_one_file_and_does_not_claim_type_checking()',
                                       'fn renamed_documentation_test()')
 
+    def test_terminal_equation_requires_bound_kernel_full_bodies_and_shared_work(self):
+        for marker in (
+            'program.kernel()', 'FunctionEvidence::check_retained_with_kernel(',
+            'equation.implementation() == &original', 'equation.specification() == &proposed',
+            'work: Budget::new(DEFAULT_EXACT_WORK),', 'const MAX_LOCAL_EQUATIONS: usize = 7;',
+        ):
+            with self.subTest(marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source('src/interop/export/normalization.rs', marker, 'removed binding')
+
+    def test_terminal_target_word_requires_actual_operands_boundaries_and_atomic_replacement(self):
+        for path, marker in [('src/interop/profile.rs', 'let mut normalization_barriers = [false; MAX_GATES + 1];'),
+ ('src/interop/profile.rs',
+  'super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;'),
+ ('src/interop/export.rs', 'expansion.normalizations.terminal(circuit, barriers)?;'),
+ ('src/interop/export/normalization.rs', 'if barriers[index + 1] || barriers[index + 2] {'),
+ ('src/interop/export/normalization.rs', '.charge(circuit.gates.len() + 1)'),
+ ('src/interop/export/normalization.rs',
+  'let mapped = |op: &GateOp| -> Result<CircuitStep, InteropError> {\n'
+  '        let mut step = op.gate.step();'),
+ ('src/interop/export/normalization.rs', '|| word[0].wires != word[1].wires'),
+ ('src/interop/export/normalization.rs',
+  'let mut original = std::mem::take(&mut circuit.gates).into_iter().enumerate();')]:
+            self.assertEqual((coverage.ROOT / path).read_text().count(marker), 1)
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed terminal binding')
+
+    def test_terminal_target_word_cannot_omit_new_native_and_negative_regressions(self):
+        for path, name in [('src/interop/export/normalization.rs',
+  'final_target_windows_retain_axes_order_and_nonpure_barriers'),
+ ('src/interop/export/normalization.rs',
+  'final_target_equation_failure_retains_the_original_gates'),
+ ('src/interop/export/normalization.rs',
+  'final_target_native_equations_share_full_receipts_and_preserve_all_columns'),
+ ('tests/interop.rs', 'ordinary_inlined_hzh_exports_literal_x_across_pure_raw_steps'),
+ ('tests/interop.rs', 'final_target_window_does_not_cross_fresh_preparation')]:
+            with self.subTest(path=path, test=name), self.assertRaisesRegex(ValueError, 'missing production path regression'):
+                self.check_changed_source(path, 'fn ' + name + '(', 'fn omitted_terminal_test(')
+
+    def test_fixed_fourier_original_transport_requires_source_graph_and_fresh_checker(self):
+        for path, marker in [('src/frontend/specialize/lower.rs',
+  'pub fn source_trace_graph(&self) -> &[u8] {\n        &self.retained_source_proposal().graph'),
+ ('src/frontend/specialize/lower.rs',
+  '.check_instrument_native(original.payload(), original.comparison_request())'),
+ ('src/frontend/specialize/lower.rs',
+  'if actual_structural_work > 2_000_000\n'
+  '                || checked.structural_work() > 2_000_000\n'
+  '                || actual_exact_work > crate::contract::DEFAULT_EXACT_WORK\n'
+  '                || checked.exact_work() > crate::contract::DEFAULT_EXACT_WORK'),
+ ('src/frontend/specialize/lower.rs',
+  'if forward_isometry && !zero_basis::materialized_without_repeat(operation)? {'),
+ ('src/frontend/specialize/lower/zero_basis.rs',
+  'operations::validate_bound(proposal, event, operation, defs, adjoint)'),
+ ('src/frontend/specialize/lower/zero_basis/operations.rs',
+  'matcher.bound(operation, id, &before, &after, adjoint, 0)'),
+ ('src/interchange/hierarchical.rs',
+  'pub(crate) fn checker(&self) -> &Path {\n        &self.checker'),
+ ('src/frontend/specialize/lower/fourier_transport.rs', 'const RETAINED_BYTES: usize = 16 << 20;'),
+ ('src/frontend/specialize/lower/fourier_transport.rs', 'const RETAINED_CELLS: usize = 100_000;'),
+ ('src/frontend/specialize/lower/fourier_transport.rs', 'const REPLAY_WORK: usize = 2_000_000;'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  '!proposal.source.same_witness_source(&original.source)'),
+ ('src/frontend/specialize/lower/fourier_transport.rs', 'expected.payload != proposal.payload'),
+ ('src/frontend/specialize/lower/fourier_transport.rs', 'expected.bindings != transport.bindings'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'bindings.retain(|binding| mapping.contains_key(&binding.original));')]:
+            self.assertEqual((coverage.ROOT / path).read_text().count(marker), 1)
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed original transport binding')
+
+    def test_fixed_fourier_source_transport_keeps_native_and_source_regressions(self):
+        for path, name in [('src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+  'forward_preparation_operation_retains_its_original_source_interval'),
+ ('src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+  'public_isometry_repetition_retains_its_effect_refusal'),
+ ('src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+  'materialized_unitary_repetition_before_preparation_retains_its_profile_refusal'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'fixed_fourier_transport_retains_every_original_source_root_and_selector'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'outer_fixed_fourier_replacement_retains_subsumed_inner_source_obligations'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'native_original_and_factored_fixed_fourier_keep_complex_reference_and_full_phase'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'native_valid_x_cannot_replace_the_retained_fixed_fourier_h'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'source_validation_requires_a_fresh_original_check_after_main_acceptance'),
+ ('src/interchange/hierarchical/runtime.rs',
+  'all_native_modes_retain_invoked_canonical_paths_after_alias_and_target_moves')]:
+            with self.subTest(path=path, test=name), self.assertRaisesRegex(ValueError, 'missing production path regression'):
+                self.check_changed_source(path, 'fn ' + name + '(', 'fn omitted_original_transport_test(')
+
+    def test_prepared_hierarchy_requires_indexed_equivalence_and_paid_full_fallback(self):
+        for path, marker in [('lean-kernel/QleisliKernel/Hierarchical/Artifact.lean', 'theorem prepare_proofEndpoints'),
+         ('lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean', 'theorem preparedOrdinary_eq'),
+         ('lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean',
+          'let charge := legacy - maps + selectedMapsCost artifact definition'),
+         ('lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean',
+          'let charge := legacy - value.mapsCost artifact + value.selectedMapsCost artifact'),
+         ('lean-kernel/QleisliKernel/Hierarchical/Ports.lean', 'theorem shapeAfterHeaders_eq'),
+         ('lean-kernel/QleisliKernel/Layout.lean', 'theorem identity_structureValid')]:
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed prepared binding')
+
+    def test_trace_project_once_requires_actual_projection_precharge_and_original_checks(self):
+        for path, marker in [('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean', 'theorem summarizeProjected_eq'),
+         ('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+          'if state.visits + rawScan atoms d > remaining then .error .limit else\n'
+          '    if state.visits + scan atoms d > remaining then .error .limit else'),
+         ('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+          'scan atoms d + 8 * (1 + node.children.length) * (1 + events) * (1 + span)^2'),
+         ('lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean',
+          'match CircuitTrace.inspect artifact (atoms candidate) candidate.traceOrder')]:
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed prepared binding')
+
     def test_historical_release_is_not_current_alpha_certification(self):
         for change in (
             lambda d: d['validation']['current_development'].update(status='published and verified'),

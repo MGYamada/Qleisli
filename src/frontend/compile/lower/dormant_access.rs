@@ -409,8 +409,7 @@ mod tests {
 
     fn project(primitive: &str, basis: &str) -> Project {
         let source = format!(
-            "use std::quantum::{primitive};
-             unitary fn guard(q:Q<Unit>)->Q<Unit>{{q}}
+            "             unitary fn guard(q:Q<Unit>)->Q<Unit>{{q}}
              unitary fn unused[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
              requires Applicable(U){{{primitive}(ctrl q);U(q)}}"
         );
@@ -446,7 +445,7 @@ mod tests {
     )]
     #[test]
     fn primitive_control_refuses_a_foreign_expression_and_another_original_owner() {
-        let project = project("phase_eighth", "Unit");
+        let project = project("global_phase_eighth", "Unit");
         let mut compiler = super::super::super::snapshot_tests::compiler(&project);
         let owner = compiler
             .source
@@ -483,7 +482,7 @@ mod tests {
     )]
     #[test]
     fn primitive_control_success_and_budget_refusals_restore_the_previous_owner() {
-        let project = project("phase_eighth", "Unit");
+        let project = project("global_phase_eighth", "Unit");
         let original = expression(&project);
         let mut limited = false;
         let mut successful = false;
@@ -526,7 +525,7 @@ mod tests {
     )]
     #[test]
     fn a_removed_original_owner_refuses_before_entering_its_diagnostic_frame() {
-        let project = project("phase_eighth", "Unit");
+        let project = project("global_phase_eighth", "Unit");
         let original = expression(&project);
         for allowance in [0, 1, MAX_WORK] {
             let mut compiler = super::super::super::snapshot_tests::compiler(&project);
@@ -570,7 +569,7 @@ mod tests {
     )]
     #[test]
     fn primitive_native_refusal_keeps_charged_work_and_restores_the_previous_owner() {
-        let project = project("x", "Bit");
+        let project = project("h", "Bit");
         let mut compiler = super::super::super::snapshot_tests::compiler(&project);
         let owner = compiler
             .source
@@ -599,12 +598,12 @@ mod tests {
     #[test]
     fn local_alias_and_zero_fold_carry_use_the_original_checked_owner_type() {
         for body in [
-            "let renamed=q;x(ctrl renamed);renamed",
-            "qfor static i in 0..0 carry renamed=q {x(ctrl renamed);yield renamed;}",
+            "let renamed=q;h(ctrl renamed);renamed",
+            "qfor static i in 0..0 carry renamed=q {h(ctrl renamed);yield renamed;}",
         ] {
-            let mut project = project("x", "Bit");
+            let mut project = project("h", "Bit");
             let source = format!(
-                "use std::quantum::x;unitary fn guard(q:Q<Unit>)->Q<Unit>{{q}}\n\
+                "unitary fn guard(q:Q<Unit>)->Q<Unit>{{q}}\n\
                 unitary fn unused(q:Q<Bit>)->Q<Bit>{{{body}}}"
             );
             let module = project.modules.get_mut("main").unwrap();

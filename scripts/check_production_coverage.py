@@ -308,13 +308,18 @@ PATHS = {
     ], [('tests/cli.rs', 'doc_reads_one_file_and_does_not_claim_type_checking')]),
     'foreign-export': path_rule('host-transformation', 'foreign', '', [
         ('src/interop/mod.rs', ['pub fn export_openqasm3(program: &AcceptedProgram)', 'pub fn export_qir_base(program: &AcceptedProgram)']),
-        ('src/interop/profile.rs', ['pub(super) fn extract(', 'ExpansionBudget::default()',
+        ('src/interop/profile.rs', ['pub(super) fn extract(', 'ExpansionBudget::for_program(program)',
          'super::export::steps(', '&mut expansion']),
         ('src/interop/export.rs', ['pub(super) fn steps(',
          'contracts::Cursor::new(steps, wires.len(), expansion)?', 'step(circuit, scratch, &merged, wires)?']),
         ('src/interop/export/contracts.rs', ['pub(in crate::interop) struct ExpansionBudget', 'fn reserve(',
          'evidence.expanded_steps()', 'budget.reserve(steps)?', 'body: evidence.circuit().steps()',
          'inverse: frame.inverse ^ *adjoint', 'crate::contract::invert_steps(']),
+        ('src/interop/export/normalization.rs', ['program.kernel()',
+         'FunctionEvidence::check_retained_with_kernel(', 'equation.signature() == &signature',
+         'equation.implementation() == &original', 'equation.specification() == &proposed',
+         'work: Budget::new(DEFAULT_EXACT_WORK),', 'const MAX_LOCAL_EQUATIONS: usize = 7;',
+         'fn candidate(', 'first.controls != middle.controls', 'phases != &[0, 4]']),
     ], [('scripts/test_interop_native.py', 'test_all_actions_formats_use_real_native_checker'),
         ('tests/interop.rs', 'ordinary_contract_export_preserves_t_phase_and_nested_adjoint'),
         ('tests/interop.rs', 'ordinary_contract_export_keeps_reference_axes_and_reordered_owners'),
@@ -323,7 +328,13 @@ PATHS = {
         ('tests/interop.rs', 'uncontrolled_unit_contract_phase_is_not_erased_by_export'),
         ('tests/interop.rs', 'ordinary_contract_adjoint_reverses_noncommuting_body_order'),
         ('src/interop/export/contracts.rs', 'expansion_reservation_is_shared_across_raw_operations'),
-        ('src/interop/export/contracts.rs', 'malformed_mapping_of_checked_dependency_returns_an_error')]),
+        ('src/interop/export/contracts.rs', 'malformed_mapping_of_checked_dependency_returns_an_error'),
+        ('src/interop/export/normalization.rs', 'candidate_requires_exact_adjacent_phase_target_and_ordered_controls'),
+        ('src/interop/export/normalization.rs', 'equation_failure_keeps_the_original_window_and_shared_budget'),
+        ('src/interop/export/normalization.rs', 'existing_native_equation_refuses_wrong_phase_or_control_subjects'),
+        ('src/interop/export/normalization.rs', 'actual_retained_hzh_and_adjoint_preserve_all_columns_controls_and_reference'),
+        ('tests/interop.rs', 'ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase'),
+        ('tests/interop.rs', 'ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order')]),
     'source-configuration': path_rule('configuration', 'source-edition-configuration', '', [
         ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(']),
     ], [('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution')]),
@@ -757,6 +768,91 @@ for _id, _boundaries, _mode, _method, _cli, _check, _test in [
         ('lean/Qleisli/NativeHierarchy.lean', ['theorem checkLeaves_semantics']),
     ], [_test])
 
+# General same-artifact prepared predicates remain equivalent to the complete
+# original checks. These bindings preserve their actual proof/context and paid
+# fallback routes; trace descriptions remain unaccepted data.
+PATHS['hierarchy-inspect']['source_bindings'].extend(
+    [{'path': 'lean-kernel/QleisliKernel/Hierarchical/Artifact.lean',
+      'markers': ['def ProofEndpoints (artifact : Artifact) : Prop :=',
+                  'theorem prepare_proofEndpoints']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Power.lean',
+      'markers': ['def preparedIdentityEquation',
+                  'theorem preparedIdentityEquation_eq',
+                  'let .identity := input.body | none\n'
+                  '    let .identity := output.body | none\n'
+                  '    return proof.kind == Kind.equation']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean',
+      'markers': ['structure PreparedContext (artifact : Artifact) : Prop',
+                  'theorem preparedContext_of_checkAll',
+                  'theorem preparedOrdinary_eq',
+                  'def checkPrepared',
+                  'let scan := initial + 16 * proof.premises.size',
+                  '16 * (1 + proof.premises.size)',
+                  'theorem checkPrepared_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Conditional.lean',
+      'markers': ['(TypedRule.checkPrepared artifact context)',
+                  'TypedRule.preparedContext_of_checkAll artifact order typed typing',
+                  'theorem checkAll_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean',
+      'markers': ['private theorem preparedConditions_eq',
+                  'portsAfterHeaders false definition.interface.inputs callee.interface.inputs '
+                  'input',
+                  'let probe := mapAttempts Ports.identityScanCharge artifact definition',
+                  'let attempt := mapAttempts Ports.identityAttemptCharge artifact definition',
+                  'let charge := legacy - maps + selectedMapsCost artifact definition']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean',
+      'markers': ['private theorem subjectAfterHeaders_eq',
+                  'let probe := value.mapAttempts Ports.identityScanCharge artifact',
+                  'let attempt := value.mapAttempts Ports.identityAttemptCharge artifact',
+                  'let charge := legacy - value.mapsCost artifact + value.selectedMapsCost '
+                  'artifact']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Ports.lean',
+      'markers': ['def positionalIdentity',
+                  'theorem shapeAfterHeaders_eq',
+                  'identityAttemptCharge source destination map +\n'
+                  '    if positionalIdentity source destination map then 0 else workCharge source '
+                  'destination map',
+                  'private theorem dropping_a_zero_owner_is_rejected',
+                  'private theorem equal_width_reordered_type_tree_is_rejected',
+                  'private theorem owner_axis_disagreement_is_rejected',
+                  'private theorem classical_bases_are_complete_types']},
+     {'path': 'lean-kernel/QleisliKernel/Layout.lean',
+      'markers': ['theorem range_permutation', 'theorem identity_structureValid']}]
+)
+PATHS['hierarchy-inspect']['tests'].extend(
+    [{'path': 'tests/hierarchical_host.rs',
+      'test': 'native_phase_fault_remains_an_obligation_under_zero_repeat'},
+     {'path': 'tests/hierarchical_host.rs',
+      'test': 'native_actual_counts_premises_and_encodings_are_checked'}]
+)
+PATHS['hierarchy-qpe']['source_bindings'].extend(
+    [{'path': 'lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+      'markers': ['def summarizeProjected',
+                  'theorem summarizeProjected_eq',
+                  'Wiring.scan d + 32 * (1 + d.interface.scan + Wiring.bodySize d + atoms.size)',
+                  '32 * (sideFields d.interface.inputs + sideFields d.interface.outputs) +\n'
+                  '    8 * span^2 + 8 * (1 + d.interface.scan) * span',
+                  'if state.visits + rawScan atoms d > remaining then .error .limit else\n'
+                  '    if state.visits + scan atoms d > remaining then .error .limit else',
+                  'match summarizeProjected state.cache node d with',
+                  'rw [summarizeProjected_eq atoms state.cache index d node projected] at computed',
+                  'scan atoms d + 8 * (1 + node.children.length) * (1 + events) * (1 + span)^2']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean',
+      'markers': ['let checked ← Conditional.checkAll packet.artifact packet.order',
+                  'theorem checkAll_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean',
+      'markers': ['match CircuitTrace.inspect artifact (atoms candidate) candidate.traceOrder',
+                  'theorem inspect_derives']}]
+)
+PATHS['hierarchy-qpe']['tests'].extend(
+    [{'path': 'src/frontend/specialize/qpe.rs',
+      'test': 'native_named_qpe_commuting_fourier_variants_have_the_same_outcome'},
+     {'path': 'src/frontend/specialize/qpe.rs',
+      'test': 'native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation'},
+     {'path': 'tests/hierarchical_qpe_host.rs',
+      'test': 'qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations'}]
+)
+
 NATIVE_DISPATCH = {
     '--qirf-native': 'QleisliKernel.Cli.runValidity',
     '--qirf-contract': '(QleisliKernel.Cli.runValidity true)',
@@ -869,7 +965,7 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
                               {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
                                'test': 'original_source_obligations_survive_omitted_interval_and_pure_trace_tables'},
                               {'path': 'src/frontend/specialize/lower/zero_basis/tests.rs',
-                               'test': 'zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refusal'},
+                               'test': 'zero_basis_composition_retains_intervals_and_nonzero_tables_keep_profile_refusal'},
                               {'path': 'src/frontend/specialize/lower/preservation/isometry_tests.rs',
                                'test': 'zero_basis_preparation_keeps_exact_phase_reference_and_physical_initialization'}]},
  'contract-acceptance': {'source_bindings': [{'path': 'src/frontend/compile/lower/dormant_access.rs',
@@ -1003,6 +1099,176 @@ def boundary_status(boundary):
 
 
 # Reviewed routes; source loading and simulation cannot mint accepted handles.
+# Completed zero-width source composites retain explicit source/witness faults.
+# These are regression references; presence is not native validation or proof.
+PATHS['sized-proposal']['tests'].extend([
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+         test='named_zero_basis_transforms_retain_all_original_empty_owner_intervals'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+         test='preparation_operation_retains_its_explicit_hierarchy_refusal'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+         test='zero_repetitions_bind_the_original_child_and_literal_count'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+         test='native_valid_identity_cannot_replace_the_original_zero_repeat_child_root'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+         test='native_valid_direction_and_polarity_changes_remain_different_source_actions'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs',
+         test='all_original_composite_constructors_retain_structural_table_dependencies'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs',
+         test='native_valid_other_constructor_trees_cannot_replace_the_original_source'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs',
+         test='native_execution_preserves_composite_full_phase_with_an_untouched_reference'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/composite_tests.rs',
+         test='original_composites_keep_distinct_zero_width_arrow_endpoints'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='checked_finite_overrides_keep_actual_bytes_and_each_original_zero_interval'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='a_zero_repeat_override_cannot_erase_its_original_dormant_source_child'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='reference_meaning_override_retains_both_original_raw_and_actual_receipt_wrapper'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='reference_override_compares_complete_nested_receipt_snapshots_after_native_decode'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='checked_source_witness_cannot_move_to_a_fresh_equal_shaped_source_collection'),
+    dict(path='src/frontend/specialize/lower/zero_basis/transform_tests/native_source_tests.rs',
+         test='retained_witness_ceiling_rejects_before_extending_the_existing_aggregate'),
+])
+
+
+# Exact final target-word bindings; existence is not native validation.
+_terminal_foreign_sources = {'src/interop/profile.rs': ['let mut normalization_barriers = [false; MAX_GATES + 1];',
+                            'RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }',
+                            'normalization_barriers[circuit.gates.len()] = true;',
+                            'super::export::finish(&mut circuit, &mut expansion, '
+                            '&normalization_barriers)?;'],
+ 'src/interop/export.rs': ['pub(super) fn finish(',
+                           'expansion.normalizations.terminal(circuit, barriers)?;',
+                           'fold_phases(circuit);'],
+ 'src/interop/export/normalization.rs': ['pub(super) fn terminal(',
+                                         'if circuit.gates.len() > MAX_GATES || circuit.qubits > '
+                                         'MAX_QUBITS {',
+                                         '.charge(circuit.gates.len() + 1)',
+                                         'if barriers[index + 1] || barriers[index + 2] {',
+                                         'terminal_candidate(&circuit.gates[index..index + 3])?',
+                                         'self.check(&window, &replacement)?;',
+                                         'let mut original = std::mem::take(&mut '
+                                         'circuit.gates).into_iter().enumerate();',
+                                         'fn terminal_candidate(',
+                                         'let mapped = |op: &GateOp| -> Result<CircuitStep, '
+                                         'InteropError> {\n'
+                                         '        let mut step = op.gate.step();',
+                                         '|| word[0].wires != word[1].wires',
+                                         '|| word[0].wires != word[2].wires']}
+for _source in PATHS['foreign-export']['source_bindings']:
+    _source['markers'].extend(_terminal_foreign_sources.get(_source['path'], []))
+PATHS['foreign-export']['tests'].extend(
+    dict(path=_path, test=_test) for _path, _test in [('src/interop/export/normalization.rs',
+  'final_target_windows_retain_axes_order_and_nonpure_barriers'),
+ ('src/interop/export/normalization.rs',
+  'final_target_equation_failure_retains_the_original_gates'),
+ ('src/interop/export/normalization.rs',
+  'final_target_native_equations_share_full_receipts_and_preserve_all_columns'),
+ ('tests/interop.rs', 'ordinary_inlined_hzh_exports_literal_x_across_pure_raw_steps'),
+ ('tests/interop.rs', 'final_target_window_does_not_cross_fresh_preparation')])
+
+# Retained original fixed-Fourier correspondence remains untrusted proposal work.
+_sized_original_preparation = {'path': 'src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+ 'test': 'preparation_operation_retains_its_explicit_hierarchy_refusal'}
+if PATHS['sized-proposal']['tests'].count(_sized_original_preparation) != 1:
+    raise ValueError('reviewed old preparation refusal is missing or duplicated')
+PATHS['sized-proposal']['tests'][PATHS['sized-proposal']['tests'].index(_sized_original_preparation)] = {'path': 'src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+ 'test': 'forward_preparation_operation_retains_its_original_source_interval'}
+_sized_source_extensions = {'src/frontend/specialize/lower.rs': ['pub fn source_trace_graph(&self) -> &[u8] {\n'
+                                      '        &self.retained_source_proposal().graph',
+                                      'pub fn source_events(&self) -> &[SourceEvent] {\n'
+                                      '        &self.retained_source_proposal().events',
+                                      'pub fn initialization_moves(&self) -> &[InitializationMove] '
+                                      '{\n'
+                                      '        &self.retained_source_proposal().moves',
+                                      'checked.reconstruction().checker()',
+                                      'let original = self.retained_source_proposal();',
+                                      '.check_instrument_native(original.payload(), '
+                                      'original.comparison_request())',
+                                      'if checked.checker() != checker {',
+                                      'if actual_structural_work > 2_000_000\n'
+                                      '                || checked.structural_work() > 2_000_000\n'
+                                      '                || actual_exact_work > '
+                                      'crate::contract::DEFAULT_EXACT_WORK\n'
+                                      '                || checked.exact_work() > '
+                                      'crate::contract::DEFAULT_EXACT_WORK',
+                                      'if forward_isometry && '
+                                      '!zero_basis::materialized_without_repeat(operation)? {'],
+ 'src/frontend/specialize/fourier.rs': ['pub(super) fn retained_trace_pair(',
+                                        'fn trace_debit(',
+                                        '*remaining -= initial - work;',
+                                        'staircase(&original_trace, width) && '
+                                        'staircase(&actual_trace, width)',
+                                        'pub(super) fn factor_fourier_with_work('],
+ 'src/frontend/specialize/qpe.rs': ['self.validate_fourier_transport()?;'],
+ 'src/frontend/specialize/lower/zero_basis.rs': ['pub(super) fn materialized_without_repeat(',
+                                                 'pub(super) fn validate_constructor_operation(',
+                                                 'operations::validate_bound(proposal, event, '
+                                                 'operation, defs, adjoint)',
+                                                 'if materialized_constructors {'],
+ 'src/frontend/specialize/lower/zero_basis/operations.rs': ['pub(super) fn validate_bound(',
+                                                            'matcher.bound(operation, id, &before, '
+                                                            '&after, adjoint, 0)'],
+ 'src/frontend/specialize/lower/preservation.rs': ['Some((&children[0], true))',
+                                                   'materialized zero-basis repetition lacks its '
+                                                   'original dormant child transport'],
+ 'src/frontend/specialize/lower/zero_basis/native_source.rs': ['pub(in '
+                                                               'crate::frontend::specialize::lower) '
+                                                               'fn retained_witness('],
+ 'src/interchange/hierarchical.rs': ['pub(crate) fn checker(&self) -> &Path {\n'
+                                     '        &self.checker'],
+ 'src/frontend/specialize/lower/fourier_transport.rs': ['const RETAINED_BYTES: usize = 16 << 20;',
+                                                        'const RETAINED_CELLS: usize = 100_000;',
+                                                        'const REPLAY_WORK: usize = 2_000_000;',
+                                                        'pub(super) original: '
+                                                        'Arc<HierarchyProposal>',
+                                                        'fn source_cells(',
+                                                        'operation.key()',
+                                                        'OperationKey::SourceEffect(Effect::Unitary, '
+                                                        '_)',
+                                                        'original.fourier_transport.is_some()',
+                                                        '!proposal.source.same_witness_source(&original.source)',
+                                                        'expected.payload != proposal.payload',
+                                                        'expected.graph != proposal.graph',
+                                                        'expected.comparison != '
+                                                        'proposal.comparison',
+                                                        'expected.bindings != transport.bindings',
+                                                        'fourier::retained_trace_pair(',
+                                                        'bindings.retain(|binding| '
+                                                        'mapping.contains_key(&binding.original));',
+                                                        'Err(error) if error.code() == "limit" => '
+                                                        'return Ok(original)',
+                                                        'Arc::try_unwrap(fallback)']}
+for _path, _markers in _sized_source_extensions.items():
+    _bindings = [row for row in PATHS['sized-proposal']['source_bindings'] if row['path'] == _path]
+    if len(_bindings) > 1:
+        raise ValueError('duplicate source binding')
+    if _bindings:
+        _bindings[0]['markers'].extend(_markers)
+    else:
+        PATHS['sized-proposal']['source_bindings'].append(dict(path=_path, markers=_markers))
+PATHS['sized-proposal']['tests'].extend(
+    dict(path=_path, test=_test) for _path, _test in [('src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+  'public_isometry_repetition_retains_its_effect_refusal'),
+ ('src/frontend/specialize/lower/zero_basis/transform_tests.rs',
+  'materialized_unitary_repetition_before_preparation_retains_its_profile_refusal'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'fixed_fourier_transport_retains_every_original_source_root_and_selector'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'outer_fixed_fourier_replacement_retains_subsumed_inner_source_obligations'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'native_original_and_factored_fixed_fourier_keep_complex_reference_and_full_phase'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'native_valid_x_cannot_replace_the_retained_fixed_fourier_h'),
+ ('src/frontend/specialize/lower/fourier_transport.rs',
+  'source_validation_requires_a_fresh_original_check_after_main_acceptance'),
+ ('src/interchange/hierarchical/runtime.rs',
+  'all_native_modes_retain_invoked_canonical_paths_after_alias_and_target_moves')])
+
 ROUTES = {'raw': ('tests/native_paths.rs', 'raw_exports_conversions_and_native_reports_share_the_original_byte_gate'), 'contract': ('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'), 'function': ('tests/function_evidence.rs', 'checks_two_raw_functions_and_retains_their_full_snapshots'), 'qirf': ('tests/native_paths.rs', 'raw_exports_conversions_and_native_reports_share_the_original_byte_gate'), 'finite-leaf': ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes'), 'source': ('scripts/test_source_kernel.py', 'test_unused_body_native_rejection_blocks_every_source_action'), 'foreign': ('scripts/test_interop_native.py', 'test_all_actions_formats_use_real_native_checker'), 'native-components': ('tests/hierarchical_host.rs', 'native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes'), 'hierarchy-inspect': ('tests/hierarchical_host.rs', 'native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes'), 'execution': ('tests/sampling.rs', 'stochastic_samples_match_independent_bell_and_reset_feedback_contracts'), 'readout-component': ('scripts/test_hierarchical_readout.py', 'test_native_branches'), 'preparation-component': ('scripts/test_hierarchical_preparation.py', 'test_zero_reference'), 'instrument-composition': ('tests/hierarchical_host.rs', 'native_instrument_binds_all_stages_and_reconstructs_finite_obligations'), 'hierarchy-execution': ('tests/hierarchical_execution.rs', 'small_source_clients_match_independent_complex_reference_branches'), 'sized-source-proposal': ('tests/sized_source.rs', 'rust_source_proposals_check_natively_and_preserve_small_system_coefficients'), 'named-qpe-components': ('tests/hierarchical_qpe_host.rs', 'native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries'), 'source-edition-configuration': ('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution'), 'lean-finite-component-v024': ('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'), 'qirf-native-v028': ('tests/native_paths.rs', 'native_report_retains_the_exact_artifact_request_and_reconstructed_program'), 'qirf-native-v029': ('tests/native_acceptance.rs', 'native_handles_execute_bell_and_feedback_without_legacy_receipts')}
 ROUTES['engineering-pure'] = ('src/interchange/engineering_pure/tests.rs',
                              'native_bound_retains_original_bodies_and_zero_stays_engineering')

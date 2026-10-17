@@ -272,7 +272,7 @@ impl SourceOperation {
     pub(super) fn has_constructed(&self) -> bool {
         self.constructed().is_some() || self.children().iter().any(Self::has_constructed)
     }
-    fn expanded_key_cells(&self) -> usize {
+    pub(super) fn expanded_key_cells(&self) -> usize {
         let action = if self.constructor_cells != 0 {
             self.constructor_cells
         } else {
@@ -471,11 +471,15 @@ impl SourceStep {
             _ => None,
         }
     }
-    pub fn primitive(&self) -> Option<&str> {
+    pub fn primitive_identity(&self) -> Option<crate::frontend::core::PrimitiveId> {
         match &self.kind {
-            StepKind::Primitive(name, _) => Some(name.signature().path),
+            StepKind::Primitive(operation, _) => operation.language_identity(),
             _ => None,
         }
+    }
+    pub fn primitive(&self) -> Option<&str> {
+        self.primitive_identity()
+            .map(crate::frontend::core::PrimitiveId::spelling)
     }
     /// Complete coefficient-+1 label map from the original checked basis body.
     /// This is untrusted source data, not native acceptance or source-meaning evidence.
@@ -642,6 +646,87 @@ pub enum HierarchyEligibility {
 }
 
 impl ElaboratedProgram {
+    /// Immutable original collection identity, not semantic acceptance.
+    pub(super) fn same_witness_source(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.definitions, &other.definitions)
+            && Arc::ptr_eq(
+                &self.instance.program.sources,
+                &other.instance.program.sources,
+            )
+            && Arc::ptr_eq(
+                &self.instance.program.checked,
+                &other.instance.program.checked,
+            )
+            && Arc::ptr_eq(
+                &self.instance.program.projections,
+                &other.instance.program.projections,
+            )
+            && Arc::ptr_eq(
+                &self.instance.program.meaning_targets,
+                &other.instance.program.meaning_targets,
+            )
+            && self.root == other.root
+            && self.contracts.len() == other.contracts.len()
+            && self.contracts.iter().all(|(key, value)| {
+                other
+                    .contracts
+                    .get(key)
+                    .is_some_and(|other| Arc::ptr_eq(value, other))
+            })
+            && self.instruments.len() == other.instruments.len()
+            && self.instruments.iter().all(|(key, value)| {
+                other
+                    .instruments
+                    .get(key)
+                    .is_some_and(|other| Arc::ptr_eq(value, other))
+            })
+            && self.meaning_artifacts.len() == other.meaning_artifacts.len()
+            && self.meaning_artifacts.iter().all(|(key, value)| {
+                other
+                    .meaning_artifacts
+                    .get(key)
+                    .is_some_and(|other| Arc::ptr_eq(value, other))
+            })
+    }
+    /// Charge the copied shell; original sources/definitions/evidence remain shared.
+    pub(super) fn witness_clone_cells(&self) -> usize {
+        let types = |values: &BTreeMap<String, BasisBinding>| {
+            values.iter().fold(0usize, |n, (key, value)| {
+                n.saturating_add(key.len())
+                    .saturating_add(value.ty.cells())
+                    .saturating_add(2)
+            })
+        };
+        let naturals = |values: &BTreeMap<String, u32>| {
+            values.keys().fold(0usize, |n, key| {
+                n.saturating_add(key.len()).saturating_add(2)
+            })
+        };
+        let instance = &self.instance;
+        let mut cells = 32usize
+            .saturating_add(instance.entry.len())
+            .saturating_add(types(&instance.types))
+            .saturating_add(naturals(&instance.naturals));
+        for key in instance.operation_ids.keys() {
+            cells = cells.saturating_add(key.len()).saturating_add(2);
+        }
+        for (key, value) in &instance.operations {
+            cells = cells
+                .saturating_add(key.len())
+                .saturating_add(value.definition.len())
+                .saturating_add(types(&value.types))
+                .saturating_add(naturals(&value.naturals))
+                .saturating_add(4);
+        }
+        cells.saturating_add(
+            4usize.saturating_mul(
+                self.contracts
+                    .len()
+                    .saturating_add(self.instruments.len())
+                    .saturating_add(self.meaning_artifacts.len()),
+            ),
+        )
+    }
     /// Original equality/reference-artifact obligations, including unused declarations.
     pub fn has_function_contracts(&self) -> bool {
         self.instance
@@ -2431,31 +2516,17 @@ impl Builder<'_> {
             return self.operation_step(StepKind::Apply(op), values, frame, span);
         }
         let target = self.resolve(name, scope, frame, span)?;
-        if let Target::Primitive(_) = target {
-            let path = self.program.checked.resolution.target_path(target);
-            // Existing named phase gates use the same exact dyadic operation.
-            let phase_alias = match path.as_str() {
-                "std::quantum::s" => Some(2),
-                "std::quantum::t" => Some(3),
-                _ => None,
-            };
-            if phase_alias.is_some() && !arguments.is_empty() {
-                return Err(error(
-                    "static",
+        if let Target::Primitive(id) = target {
+            let kind = Primitive::from_language(id).ok_or_else(|| {
+                error(
+                    "unsupported",
                     span,
-                    "named phase gates take no static arguments",
-                ));
-            }
-            let kind = phase_alias
-                .map(|_| Primitive::Phase)
-                .or_else(|| Primitive::lookup(&path))
-                .ok_or_else(|| {
-                    error(
-                        "unsupported",
-                        span,
-                        format!("selected concrete preparation does not support {path}"),
-                    )
-                })?;
+                    format!(
+                        "selected concrete preparation does not support {}",
+                        id.spelling()
+                    ),
+                )
+            })?;
             let signature = kind.signature();
             // These contracts reject arity before evaluating the sole
             // argument; its complete work is then retained exactly once.
@@ -2484,7 +2555,6 @@ impl Builder<'_> {
                     natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
                 })
                 .collect::<Result<Vec<_>>>()?;
-            let naturals = phase_alias.map_or(naturals, |denominator| vec![1, denominator]);
             let values = inputs.evaluate(self, scope, frame, depth)?;
             let (types, output, effect) = primitive(
                 kind,
@@ -3389,7 +3459,7 @@ mod access_role_tests {
     fn source() -> ElaboratedProgram {
         ParsedProgram::parse(BTreeMap::from([(
             "main".into(),
-            "use std::quantum::cnot;
+            "use std::gate::cnot;
              pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){
                  cnot(excl t,excl c);(c,t)}"
                 .into(),
@@ -3411,10 +3481,15 @@ mod access_role_tests {
         for (basis, operation, expected) in [
             ("Bit", "h", Some("contract")),
             ("Bit", "z", None),
-            ("Unit", "phase_eighth", None),
+            ("Unit", "global_phase_eighth", None),
         ] {
+            let import = if operation == "z" {
+                "use std::gate::z;"
+            } else {
+                ""
+            };
             let text = format!(
-                "use std::quantum::{operation};pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(ctrl q);q}}"
+                "{import}pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(ctrl q);q}}"
             );
             let prepare = |text: String| {
                 ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
@@ -3450,7 +3525,7 @@ mod access_role_tests {
         }
         for (roles, expected) in [("ctrl t,excl c", None), ("excl t,ctrl c", Some("contract"))] {
             let text = format!(
-                "use std::quantum::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){{cnot({roles});(c,t)}}"
+                "use std::gate::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){{cnot({roles});(c,t)}}"
             );
             let prepare = |text: String| {
                 ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
@@ -3497,7 +3572,7 @@ mod access_role_tests {
                 "Q<Bit>"
             };
             let text = format!(
-                "use std::quantum::h;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}}pub unitary fn f({parameters})->{output}{{{body}}}"
+                "unitary fn oracle(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}}pub unitary fn f({parameters})->{output}{{{body}}}"
             );
             let prepare = |text: String| {
                 ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
@@ -3577,7 +3652,7 @@ mod access_role_tests {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
         let mut source = ParsedProgram::parse(BTreeMap::from([(
             "main".into(),
-            "use std::quantum::{h,cnot};pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){h(excl c);cnot(excl c,excl t);(c,t)}".into(),
+            "use std::gate::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){h(excl c);cnot(excl c,excl t);(c,t)}".into(),
         )])).unwrap().instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap().elaborate().unwrap();
         let proposal = source.lower_raw().unwrap();
@@ -3635,12 +3710,17 @@ mod access_role_tests {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
         for (basis, operation, expected) in [
             ("Bit", "h", Some("contract")),
-            ("Unit", "phase_eighth", None),
+            ("Unit", "global_phase_eighth", None),
         ] {
-            let mut source = ParsedProgram::parse(BTreeMap::from([("main".into(), format!(
-                "use std::quantum::{operation};pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(excl q);q}}"
-            ))])).unwrap().instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                .unwrap().elaborate().unwrap();
+            let mut source = ParsedProgram::parse(BTreeMap::from([(
+                "main".into(),
+                format!("pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(excl q);q}}"),
+            )]))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
             let proposal = source.lower_raw().unwrap();
             let accepted = kernel.accept(proposal.proposal()).unwrap();
             let mut definitions = source.definitions.to_vec();

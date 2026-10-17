@@ -42,7 +42,7 @@ pub(super) fn number(v: &Value) -> Result<usize> {
     usize::try_from(v.number().map_err(transport)?)
         .map_err(|_| invalid("transport integer overflow"))
 }
-fn text(v: &Value) -> Result<&str> {
+pub(super) fn text(v: &Value) -> Result<&str> {
     v.text().map_err(transport)
 }
 pub(super) fn tag(v: &Value) -> Result<&str> {
@@ -250,6 +250,9 @@ impl SourceEvent {
     pub fn span(&self) -> Span {
         self.span
     }
+    /// Node index in `HierarchyProposal::source_trace_graph`, which can differ
+    /// from its executed `pure_graph` after optional Fourier factoring.
+    /// This is unrelated to the checked-source `definition` and `step` indices.
     pub fn unitary_definition(&self) -> Option<usize> {
         self.node
     }
@@ -267,9 +270,11 @@ pub struct InitializationMove {
     crossed: Vec<usize>,
 }
 impl InitializationMove {
+    /// Index in `HierarchyProposal::source_events`.
     pub fn initialization_event(&self) -> usize {
         self.initialization
     }
+    /// Indices in `HierarchyProposal::source_events`.
     pub fn crossed_events(&self) -> &[usize] {
         &self.crossed
     }
@@ -729,6 +734,7 @@ impl Replay<'_> {
         path: &[usize],
         origin: (usize, usize, &SourceStep),
         structural: Option<Primitive>,
+        operation: Option<(&super::SourceOperation, bool)>,
     ) -> Result<Vec<Item>> {
         let event = self
             .events
@@ -746,6 +752,16 @@ impl Replay<'_> {
             ));
         }
         self.event_contract(event, structural, "unitary", false)?;
+        if let Some((operation, adjoint)) = operation {
+            super::zero_basis::validate_constructor_operation(
+                self.proposal,
+                event,
+                operation,
+                self.definitions,
+                adjoint,
+                self.zero_basis_replay,
+            )?;
+        }
         self.next += 1;
         Ok(event.outputs.clone())
     }
@@ -764,6 +780,11 @@ impl Replay<'_> {
             return self.function(id, args, path);
         }
         if let Some(child) = operation.child() {
+            if self.zero_basis_replay {
+                return Err(invalid(
+                    "materialized zero-basis repetition lacks its original dormant child transport",
+                ));
+            }
             let mut output = args;
             for iteration in 0..operation
                 .repeat_count()
@@ -780,7 +801,7 @@ impl Replay<'_> {
             .constructed()
             .ok_or_else(|| invalid("missing retained constructor"))?;
         if ports.effect == crate::ir::Effect::Unitary {
-            return self.constructor_event(&args, path, origin, None);
+            return self.constructor_event(&args, path, origin, None, Some((operation, false)));
         }
         match kind {
             super::OperationConstructor::Then => {
@@ -794,7 +815,8 @@ impl Replay<'_> {
             }
             super::OperationConstructor::Conjugate => {
                 path.push(0);
-                let first = self.constructor_event(&args, path, origin, None);
+                let first =
+                    self.constructor_event(&args, path, origin, None, Some((&children[0], true)));
                 path.pop();
                 path.push(1);
                 let middle = self.operation(&children[1], first?, path, origin);
@@ -806,7 +828,8 @@ impl Replay<'_> {
             }
             super::OperationConstructor::Tensor => {
                 path.push(0);
-                let split = self.constructor_event(&args, path, origin, Some(Primitive::Split));
+                let split =
+                    self.constructor_event(&args, path, origin, Some(Primitive::Split), None);
                 path.pop();
                 let split = split?;
                 let [left, right] = split.as_slice() else {
@@ -821,7 +844,8 @@ impl Replay<'_> {
                 let mut operands = left?;
                 operands.extend(right?);
                 path.push(3);
-                let output = self.constructor_event(&operands, path, origin, Some(Primitive::Join));
+                let output =
+                    self.constructor_event(&operands, path, origin, Some(Primitive::Join), None);
                 path.pop();
                 output
             }
@@ -830,6 +854,13 @@ impl Replay<'_> {
     }
     fn event(&mut self, e: &SourceEvent, step: &SourceStep) -> Result<()> {
         super::zero_basis::validate_call_event(
+            self.proposal,
+            e,
+            step,
+            self.definitions,
+            self.zero_basis_replay,
+        )?;
+        super::zero_basis::validate_operation_event(
             self.proposal,
             e,
             step,
@@ -1586,7 +1617,7 @@ mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
     fn proposal() -> HierarchyProposal {
-        let source = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
+        let source = " use std::state::init0;    pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
         ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1622,7 +1653,7 @@ mod tests {
         use crate::interchange::{RootInterface, Version, hierarchical, native};
         use crate::ir::{CircuitAction, RawOp};
         use std::sync::Arc;
-        let source = "use std::quantum::{h,init0};
+        let source = "use std::state::init0;
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub isometry fn main(q:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=apply_contract(implementation,specified,q);(q,init0())}";
@@ -1854,9 +1885,9 @@ mod tests {
 
         let make = |helper: &str, introduce: &str, eliminate: &str| {
             let source = format!(
-                "use std::quantum::unit; use std::quantum::finish;
-                 use std::quantum::phase_eighth; use std::observe::measure_z;
-                 use std::classical::empty_bits; use std::classical::prepend_bit;
+                "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = {introduce}; let () = {eliminate};
@@ -1884,13 +1915,13 @@ mod tests {
 
         for (helper, introduce, eliminate, changed_step) in [
             (
-                "unitary fn altered(u: Unit) -> Q<Unit> { phase_eighth(unit(u)) }",
+                "unitary fn altered(u: Unit) -> Q<Unit> { global_phase_eighth(unit(u)) }",
                 "altered(())",
                 "finish(u)",
                 0,
             ),
             (
-                "unitary fn altered(q: Q<Unit>) -> Unit { finish(phase_eighth(q)) }",
+                "unitary fn altered(q: Q<Unit>) -> Unit { finish(global_phase_eighth(q)) }",
                 "unit(())",
                 "altered(u)",
                 1,
@@ -1961,7 +1992,7 @@ mod tests {
 
     #[test]
     fn source_trace_charges_idle_zero_width_basis_before_frame_cloning() {
-        let source = "use std::quantum::h; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit;
+        let source = "\x20\x20\x20
             pub observe fn f(q:Q<Bit>,z:Q<((Unit,Unit),(Unit,Unit))>)->(Bits<1>,Q<((Unit,Unit),(Unit,Unit))>){
                 let q=h(q); let b=measure_z(q); (prepend_bit[0](b,empty_bits()),z)
             }";
@@ -2070,10 +2101,10 @@ mod tests {
         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
         let make = |helper: &str, join: &str, split: &str| {
             let source = format!(
-                "use std::quantum::unit; use std::quantum::finish;
-                 use std::quantum::split; use std::quantum::join;
-                 use std::quantum::phase_eighth; use std::observe::measure_z;
-                 use std::classical::empty_bits; use std::classical::prepend_bit;
+                "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                  {helper}
                  pub observe fn f(q: Q<Bit>) -> Bits<1> {{
                      let u = unit(()); let p = {join}; let (u,q) = {split};
@@ -2101,13 +2132,13 @@ mod tests {
             .unwrap();
         for (helper, join, split, changed_step) in [
             (
-                "unitary fn altered(u:Q<Unit>,q:Q<Bit>)->Q<(Unit,Bit)>{join(phase_eighth(u),q)}",
+                "unitary fn altered(u:Q<Unit>,q:Q<Bit>)->Q<(Unit,Bit)>{join(global_phase_eighth(u),q)}",
                 "altered(u,q)",
                 "split(p)",
                 1,
             ),
             (
-                "unitary fn altered(p:Q<(Unit,Bit)>)->(Q<Unit>,Q<Bit>){let(u,q)=split(p);(phase_eighth(u),q)}",
+                "unitary fn altered(p:Q<(Unit,Bit)>)->(Q<Unit>,Q<Bit>){let(u,q)=split(p);(global_phase_eighth(u),q)}",
                 "join(u,q)",
                 "altered(p)",
                 2,

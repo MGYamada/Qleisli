@@ -1,0 +1,5 @@
+use std::state::init0; use std::gate::x;
+observe fn main() -> Bit {
+let q = init0(); // fliplet q = x(q);
+measure_z(q)
+}

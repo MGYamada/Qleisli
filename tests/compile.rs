@@ -51,10 +51,10 @@ fn documented_projects_compile_verify_and_simulate() {
 fn function_branch_preserves_the_callers_quantum_frame() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 unitary fn choose(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { x(q) } else { q }
 }
@@ -79,10 +79,10 @@ observe fn main() -> (Bit, Bit) {
 fn branch_created_wires_and_classical_results_merge() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 observe fn main() -> (Bit, Bit) {
     let b = measure_z(h(init0()));
     let (c, q) = if b {
@@ -105,7 +105,7 @@ observe fn main() -> (Bit, Bit) {
 )]
 #[test]
 fn invalid_source_is_rejected_before_execution() {
-    let imports = "use std::quantum::init0; use std::quantum::h; use std::quantum::x; use std::quantum::z; use std::quantum::split; use std::observe::measure_z; use std::observe::discard;";
+    let imports = "use std::state::init0;  use std::gate::x; use std::gate::z;   ";
     let cases = [
         (
             "observe fn main() -> Unit { let q = init0(); let pair = (q, q); () }",
@@ -203,9 +203,9 @@ fn missing_import_reports_the_call_site_even_in_unused_functions() {
 fn quantum_rebinding_inside_a_branch_cannot_escape_its_scope() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::observe::measure_z;
+use std::state::init0;
+
+
 observe fn main() -> Bit {
     let b = measure_z(init0());
     let q = init0();
@@ -230,13 +230,13 @@ fn bundled_basis_functions_control_a_product_register() {
         r#"
 use std::basis::and2;
 use std::basis::xor2;
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::z;
-use std::quantum::join;
-use std::quantum::split;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+
+
+
 classical fn predicate((a,b): (Bit,Bit)) -> Bit { xor2(and2(a, b), 0) }
 observe fn main() -> (Bit, Bit) {
     let q = join(h(init0()), x(init0()));
@@ -257,12 +257,12 @@ observe fn main() -> (Bit, Bit) {
 fn nested_toffoli_result_reset_and_discard_lower_to_observation() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::x;
-use std::quantum::toffoli;
-use std::observe::reset;
-use std::observe::discard;
-use std::observe::measure_z;
+use std::state::init0;
+use std::gate::x;
+use std::gate::toffoli;
+use std::state::reset;
+
+
 observe fn main() -> (Bit, Bit) {
     let ((a, b), q) = toffoli(x(init0()), x(init0()), init0());
     let a = reset(a);
@@ -282,10 +282,10 @@ observe fn main() -> (Bit, Bit) {
 fn conditional_swap_pairs_different_input_registers() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 observe fn main() -> (Bit, Bit) {
     let c = measure_z(h(init0()));
     let a = init0();
@@ -351,11 +351,11 @@ fn growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack() {
             "let v = ((), v);".repeat(8192)
         ),
         format!(
-            "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
+            " observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
             "let q = basis q as x { (x, x) };".repeat(18)
         ),
         format!(
-            "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
+            " observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
             "let q = basis q as x { ((), x) };".repeat(8192)
         ),
     ];
@@ -410,7 +410,7 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
 fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
     let source = |doublings, wrappers| {
         format!(
-            "use std::observe::discard;
+            "
          observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}
          observe fn main() -> Unit {{ let v = (); {} {} () }}",
             "let q = basis q as x { (x, x) };".repeat(doublings),
@@ -450,7 +450,7 @@ fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
         ),
         // The large register is in the caller's frame, outside noop's Env.
         format!(
-            "use std::observe::discard;
+            "
              unitary fn noop(b: Bit) -> Unit {{ if b {{ () }} else {{ () }} }}
              observe fn f(b: Bit, q: Q<Unit>) -> Unit {{ {} {} discard(q) }}",
             "let q = basis q as x { (x, x) };".repeat(9),
@@ -477,7 +477,7 @@ fn imported_argument_errors_point_to_the_call_and_actual_argument() {
         ("id((), ())", ErrorCode::Arity, 0, 10),
     ] {
         let source = format!(
-            "use helper::id;\r\nuse std::quantum::init0;\r\nuse std::observe::discard;\r\n// 日本語\r\nobserve fn main() -> Unit {{\r\n    discard(id(init0()));\r\n    discard({call})\r\n}}"
+            "use helper::id;\r\nuse std::state::init0;\r\n\r\n// 日本語\r\nobserve fn main() -> Unit {{\r\n    discard(id(init0()));\r\n    discard({call})\r\n}}"
         );
         let root = SourceRoot::new(&source);
         fs::write(
@@ -521,7 +521,7 @@ fn finite_v0_type_shapes_and_zero_wire_ownership() {
     for source in [
         "unitary fn id(q: Q<Unit>) -> Q<Unit> { q }",
         "unitary fn id(b: Bit) -> Bit { b }",
-        "use std::quantum::split; use std::quantum::join;
+        "\x20
          unitary fn regroup(q: Q<(Unit,Bit)>) -> Q<(Unit,Bit)> {
              let (u, b) = split(q); join(u, b)
          }",
@@ -582,9 +582,9 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
         check_project(&SourceRoot::new(&source).0).unwrap();
     }
     for source in [
-        "use std::quantum::init0; isometry fn prepare()->Q<Bit>{init0()}
+        "use std::state::init0; isometry fn prepare()->Q<Bit>{init0()}
          unitary fn caller()->Q<Bit>{prepare()}",
-        "use std::observe::measure_z; observe fn measure(q:Q<Bit>)->Bit{measure_z(q)}
+        " observe fn measure(q:Q<Bit>)->Bit{measure_z(q)}
          isometry fn caller(q:Q<Bit>)->Bit{measure(q)}",
     ] {
         let error = check_project(&SourceRoot::new(source).0).unwrap_err();
@@ -653,7 +653,7 @@ fn finite_v0_basis_lifts_are_injective_and_closed() {
 )]
 #[test]
 fn computed_blocks_keep_exact_native_phase_contracts() {
-    let prefix = "use std::quantum::h; use std::quantum::z; use std::quantum::t;
+    let prefix = " use std::gate::z; use std::gate::t;
                   classical fn p(x: Bit) -> Bit { x }
                   unitary fn phase(a: Q<Bit>) -> Q<Bit> { t(z(a)) }";
     for body in ["a", "phase(a)"] {
@@ -677,7 +677,7 @@ fn computed_blocks_keep_exact_native_phase_contracts() {
         check_project(&SourceRoot::new(&source).0).unwrap();
         let client = format!(
             "{source}
-             use std::quantum::init0; use std::observe::measure_z;
+             use std::state::init0;\x20
              observe fn main() -> Bit {{ measure_z(oracle(init0())) }}"
         );
         let accepted = compile_project(&SourceRoot::new(&client).0).unwrap();
@@ -738,7 +738,7 @@ fn finite_v0_local_names_shadow_static_callees() {
     for source in [
         "classical fn f(x: Bit) -> Bit { x }
          classical fn bad(f: Bit) -> Bit { f(f) }",
-        "use std::quantum::h;
+        "
          unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; adjoint(h)(q) }",
     ] {
         let error = check_project(&SourceRoot::new(source).0).unwrap_err();
@@ -755,11 +755,11 @@ fn finite_v0_local_names_shadow_static_callees() {
 fn resource_rules_pending_mixed_argument_survives_nested_call() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::cnot;
+
 unitary fn choose(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { if b { h(h(q)) } else { x(x(q)) } } else { q }
 }
@@ -790,10 +790,10 @@ observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
 fn resource_rules_pending_tuple_field_survives_branch() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::cnot;
+
 observe fn main() -> (Bit,(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
@@ -816,10 +816,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {
 fn resource_rules_mixed_branch_results_follow_positions() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
     let b = measure_z(h(init0()));
     let a = init0();
@@ -846,11 +846,11 @@ fn resource_rules_zero_width_result_and_frame_are_both_merged() {
 
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::split;
-use std::observe::measure_z;
-use std::observe::discard;
+use std::state::init0;
+
+
+
+
 unitary fn choose(b: Bit, u: Q<Unit>) -> Q<Unit> {
     if b { u } else { u }
 }
@@ -896,11 +896,11 @@ observe fn main() -> (Bit,Bit) {
 fn resource_rules_reset_branch_keeps_reference_and_classical_history() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::observe::measure_z;
-use std::observe::reset;
+use std::state::init0;
+
+use std::gate::cnot;
+
+use std::state::reset;
 observe fn main() -> (Bit,(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
@@ -924,10 +924,10 @@ observe fn main() -> (Bit,(Bit,Bit)) {
 fn resource_rules_nested_classical_results_keep_their_scopes() {
     let root = SourceRoot::new(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 observe fn main() -> (Bit,Bit) {
     let b = measure_z(h(init0()));
     let c = if b {
@@ -952,7 +952,7 @@ fn resource_rules_reject_lost_or_differently_consumed_bindings() {
              let r=if c {a} else {b}; (r,a)
          }",
         // Rebinding the same spelling and slot still creates local ownership.
-        "use std::quantum::h;
+        "
          unitary fn bad(c:Bit,q:Q<Bit>)->Q<Bit>{
              if c { let q=h(q); () } else { () }; q
          }",

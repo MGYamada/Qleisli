@@ -171,6 +171,41 @@ impl Equation {
         let rename = self.rewire(&a, &b, &[0], &[]);
         self.sequence(&a, &b, &[tensor, rename])
     }
+    /// The ordinary init0 body is eta_Unit followed by the singleton
+    /// Unit-to-Bit map. Physical |0> is prepared separately; its pure interval
+    /// consumes exactly the introduced Unit, preserves the fresh Bit, and
+    /// renames that Bit result with coefficient +1.
+    fn prepared_bit(&mut self, introduced: u32, fresh: u32, output: u32, axis: u32) -> usize {
+        let before = vec![unit(introduced), bit(fresh, axis)];
+        let zero = vec![bit(fresh, axis)];
+        let after = vec![bit(output, axis)];
+        let epsilon = self.structural(&[unit(introduced)], &[], "unpack_unit");
+        let idle = self.rewire(&zero, &zero, &[0], &[0]);
+        let consume = self.tensor(&before, &zero, epsilon, idle);
+        let rename = self.rewire(&zero, &after, &[0], &[0]);
+        self.sequence(&before, &after, &[consume, rename])
+    }
+    /// Both exact Hadamard columns are independent of the candidate/source IR.
+    fn hadamard(&mut self, before: &[String], after: &[String]) -> usize {
+        let matrix = Matrix::new(
+            2,
+            2,
+            [1, 1, 1, -1]
+                .into_iter()
+                .map(|n| Exact::new([0, n, 0, 0], 1).unwrap())
+                .collect(),
+        )
+        .unwrap();
+        let description = String::from_utf8(finite_matrix::encode(&matrix).unwrap()).unwrap();
+        self.add(
+            before,
+            after,
+            &format!(
+                r#"{{"tag":"finite","description":{}}}"#,
+                super::super::quote(&description),
+            ),
+        )
+    }
     fn request(&self, before: &[String], after: &[String], entry: usize) -> Vec<u8> {
         format!(r#"{{"format":"qleisli.hierarchy-request","version":1,"profile":"qpe-dyadic8-v1","kind":"equation","effect":"unitary","interface":{},"meanings":[{}],"entry":{entry}}}"#, header(before, after), self.nodes.join(",")).into_bytes()
     }
@@ -219,85 +254,121 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
             (before, after, root)
         }
         "multi-init-order" => {
-            let rest = vec![bit(102, 0), bit(106, 1)];
-            let before = [vec![unit(101)], rest.clone()].concat();
-            let after_phase = [vec![unit(103)], rest.clone()].concat();
-            let after_h = vec![bit(107, 0), bit(106, 1)];
-            let after = vec![bit(106, 1), bit(107, 0)];
+            // Source order fixes eta_a, phase(u), eta_b, epsilon(u), H(a).
+            // Moving the two |0> preparations does not erase either Unit owner.
+            let before = vec![unit(101), bit(103, 0), bit(109, 1)];
+            let after_intro_a = vec![unit(102), unit(101), bit(103, 0), bit(109, 1)];
+            let arranged_a = vec![unit(102), bit(103, 0), unit(101), bit(109, 1)];
+            let after_a = vec![bit(104, 0), unit(101), bit(109, 1)];
+            let phase_input = vec![unit(101), bit(104, 0), bit(109, 1)];
+            let after_phase = vec![unit(105), bit(104, 0), bit(109, 1)];
+            let after_intro_b = vec![unit(108), unit(105), bit(104, 0), bit(109, 1)];
+            let arranged_b = vec![unit(108), bit(109, 1), unit(105), bit(104, 0)];
+            let after_b = vec![bit(110, 1), unit(105), bit(104, 0)];
+            let before_finish = vec![unit(105), bit(110, 1), bit(104, 0)];
+            let before_h = vec![bit(104, 0), bit(110, 1)];
+            let after_h = vec![bit(111, 0), bit(110, 1)];
+            let after = vec![bit(110, 1), bit(111, 0)];
+            let idle = e.rewire(&before, &before, &[0, 1, 2], &[0, 1]);
+            let eta_a = e.structural(&[], &[unit(102)], "pack_unit");
+            let eta_a = e.tensor(&before, &after_intro_a, eta_a, idle);
+            let arrange_a = e.rewire(&after_intro_a, &arranged_a, &[0, 2, 1, 3], &[0, 1]);
+            let prepare_a = e.prepared_bit(102, 103, 104, 0);
+            let rest_a = vec![unit(101), bit(109, 1)];
+            let idle_a = e.rewire(&rest_a, &rest_a, &[0, 1], &[0]);
+            let prepare_a = e.tensor(&arranged_a, &after_a, prepare_a, idle_a);
+            let arrange_phase = e.rewire(&after_a, &phase_input, &[1, 0, 2], &[0, 1]);
+            let scalar = e.scalar(101, 105, 106, 107, phase);
+            let rest = vec![bit(104, 0), bit(109, 1)];
             let idle = e.rewire(&rest, &rest, &[0, 1], &[0, 1]);
-            let scalar = e.scalar(101, 103, 104, 105, phase);
-            let framed_scalar = e.tensor(&before, &after_phase, scalar, idle);
-            let epsilon = e.structural(&[unit(103)], &[], "unpack_unit");
-            let finish = e.tensor(&after_phase, &rest, epsilon, idle);
-            let h = Matrix::new(
-                2,
-                2,
-                [1, 1, 1, -1]
-                    .into_iter()
-                    .map(|n| Exact::new([0, n, 0, 0], 1).unwrap())
-                    .collect(),
-            )
-            .unwrap();
-            let description = String::from_utf8(finite_matrix::encode(&h).unwrap()).unwrap();
-            let leaf = e.add(
-                &[bit(102, 0)],
-                &[bit(107, 0)],
-                &format!(
-                    r#"{{"tag":"finite","description":{}}}"#,
-                    super::super::quote(&description)
-                ),
-            );
-            let idle_b = e.rewire(&[bit(106, 1)], &[bit(106, 1)], &[0], &[0]);
-            let framed_h = e.tensor(&rest, &after_h, leaf, idle_b);
+            let scalar = e.tensor(&phase_input, &after_phase, scalar, idle);
+            let idle = e.rewire(&after_phase, &after_phase, &[0, 1, 2], &[0, 1]);
+            let eta_b = e.structural(&[], &[unit(108)], "pack_unit");
+            let eta_b = e.tensor(&after_phase, &after_intro_b, eta_b, idle);
+            let arrange_b = e.rewire(&after_intro_b, &arranged_b, &[0, 3, 1, 2], &[1, 0]);
+            let prepare_b = e.prepared_bit(108, 109, 110, 1);
+            let rest_b = vec![unit(105), bit(104, 0)];
+            let idle_b = e.rewire(&rest_b, &rest_b, &[0, 1], &[0]);
+            let prepare_b = e.tensor(&arranged_b, &after_b, prepare_b, idle_b);
+            let arrange_finish = e.rewire(&after_b, &before_finish, &[1, 0, 2], &[0, 1]);
+            let epsilon = e.structural(&[unit(105)], &[], "unpack_unit");
+            let rest = vec![bit(110, 1), bit(104, 0)];
+            let idle = e.rewire(&rest, &rest, &[0, 1], &[0, 1]);
+            let finish = e.tensor(&before_finish, &rest, epsilon, idle);
+            let arrange_h = e.rewire(&rest, &before_h, &[1, 0], &[1, 0]);
+            let h = e.hadamard(&[bit(104, 0)], &[bit(111, 0)]);
+            let idle_b = e.rewire(&[bit(110, 1)], &[bit(110, 1)], &[0], &[0]);
+            let h = e.tensor(&before_h, &after_h, h, idle_b);
             let route = e.rewire(&after_h, &after, &[1, 0], &[1, 0]);
-            let root = e.sequence(&before, &after, &[framed_scalar, finish, framed_h, route]);
+            let root = e.sequence(
+                &before,
+                &after,
+                &[
+                    eta_a,
+                    arrange_a,
+                    prepare_a,
+                    arrange_phase,
+                    scalar,
+                    eta_b,
+                    arrange_b,
+                    prepare_b,
+                    arrange_finish,
+                    finish,
+                    arrange_h,
+                    h,
+                    route,
+                ],
+            );
             (before, after, root)
         }
         "closed-zero" | "empty-classical" => {
-            let ports = vec![bit(101, 0)];
-            let root = e.rewire(&ports, &ports, &[0], &[0]);
-            (ports.clone(), ports, root)
-        }
-        "retained-unit" => {
-            let ports = vec![unit(101), bit(102, 0)];
-            let root = e.rewire(&ports, &ports, &[0, 1], &[0]);
-            (ports.clone(), ports, root)
-        }
-        "general-superposition" => {
-            let before = vec![unit(101), bit(102, 0)];
-            let middle = vec![bit(102, 0)];
+            let before = vec![bit(102, 0)];
+            let after_intro = vec![unit(101), bit(102, 0)];
             let after = vec![bit(103, 0)];
-            let epsilon = e.structural(&[unit(101)], &[], "unpack_unit");
-            let idle = e.rewire(&middle, &middle, &[0], &[0]);
-            let finish = e.tensor(&before, &middle, epsilon, idle);
-            let h = Matrix::new(
-                2,
-                2,
-                [1, 1, 1, -1]
-                    .into_iter()
-                    .map(|n| Exact::new([0, n, 0, 0], 1).unwrap())
-                    .collect(),
-            )
-            .unwrap();
-            let description = String::from_utf8(finite_matrix::encode(&h).unwrap()).unwrap();
-            let h = e.add(
-                &middle,
-                &after,
-                &format!(
-                    r#"{{"tag":"finite","description":{}}}"#,
-                    super::super::quote(&description)
-                ),
-            );
-            let root = e.sequence(&before, &after, &[finish, h]);
+            let eta = e.structural(&[], &[unit(101)], "pack_unit");
+            let idle = e.rewire(&before, &before, &[0], &[0]);
+            let eta = e.tensor(&before, &after_intro, eta, idle);
+            let prepare = e.prepared_bit(101, 102, 103, 0);
+            let root = e.sequence(&before, &after, &[eta, prepare]);
             (before, after, root)
         }
-        "unit-zero" => {
-            let before = vec![unit(101), bit(102, 0)];
-            let after = vec![bit(102, 0)];
-            let finish = e.structural(&[unit(101)], &[], "unpack_unit");
-            let idle = e.rewire(&after, &after, &[0], &[0]);
-            let framed = e.tensor(&before, &after, finish, idle);
-            let root = e.sequence(&before, &after, &[framed]);
+        "retained-unit" => {
+            let before = vec![unit(101), bit(103, 0)];
+            let after_intro = vec![unit(102), unit(101), bit(103, 0)];
+            let arranged = vec![unit(102), bit(103, 0), unit(101)];
+            let prepared = vec![bit(104, 0), unit(101)];
+            let after = vec![unit(101), bit(104, 0)];
+            let eta = e.structural(&[], &[unit(102)], "pack_unit");
+            let idle = e.rewire(&before, &before, &[0, 1], &[0]);
+            let eta = e.tensor(&before, &after_intro, eta, idle);
+            let arrange = e.rewire(&after_intro, &arranged, &[0, 2, 1], &[0]);
+            let prepare = e.prepared_bit(102, 103, 104, 0);
+            let retained = e.rewire(&[unit(101)], &[unit(101)], &[0], &[]);
+            let prepare = e.tensor(&arranged, &prepared, prepare, retained);
+            let leave = e.rewire(&prepared, &after, &[1, 0], &[0]);
+            let root = e.sequence(&before, &after, &[eta, arrange, prepare, leave]);
+            (before, after, root)
+        }
+        "general-superposition" | "unit-zero" => {
+            let before = vec![unit(101), bit(103, 0)];
+            let zero = vec![bit(103, 0)];
+            let introduced = vec![unit(102), bit(103, 0)];
+            let prepared = vec![bit(104, 0)];
+            let epsilon = e.structural(&[unit(101)], &[], "unpack_unit");
+            let idle = e.rewire(&zero, &zero, &[0], &[0]);
+            let finish = e.tensor(&before, &zero, epsilon, idle);
+            let eta = e.structural(&[], &[unit(102)], "pack_unit");
+            let eta = e.tensor(&zero, &introduced, eta, idle);
+            let prepare = e.prepared_bit(102, 103, 104, 0);
+            let mut steps = vec![finish, eta, prepare];
+            let after = if name == "general-superposition" {
+                let after = vec![bit(105, 0)];
+                steps.push(e.hadamard(&prepared, &after));
+                after
+            } else {
+                prepared
+            };
+            let root = e.sequence(&before, &after, &steps);
             (before, after, root)
         }
         "unit-phase" | "fresh-unit-phase" | "helper-phase" => {
@@ -306,7 +377,11 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
             let out_unit = if helper { 103 } else { 102 };
             let scalar_a = out_unit + 1;
             let scalar_b = scalar_a + 1;
-            let zero = bit(scalar_b + 1, u32::from(helper));
+            let init_unit = scalar_b + 1;
+            let zero_owner = init_unit + 1;
+            let output_owner = zero_owner + 1;
+            let axis = u32::from(helper);
+            let zero = bit(zero_owner, axis);
             let rest = if helper {
                 vec![bit(102, 0), zero]
             } else {
@@ -319,6 +394,7 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
                 after_intro.clone()
             };
             let after_phase = [vec![unit(out_unit)], rest.clone()].concat();
+            let init_frame = [vec![unit(init_unit)], rest.clone()].concat();
             let mut steps = vec![];
             let idle = e.rewire(
                 &rest,
@@ -334,49 +410,95 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
             steps.push(e.tensor(&after_intro, &after_phase, scalar, idle));
             let epsilon = e.structural(&[unit(out_unit)], &[], "unpack_unit");
             steps.push(e.tensor(&after_phase, &rest, epsilon, idle));
-            let root = e.sequence(&before, &rest, &steps);
-            (before, rest, root)
+            let eta = e.structural(&[], &[unit(init_unit)], "pack_unit");
+            steps.push(e.tensor(&rest, &init_frame, eta, idle));
+            let prepare = e.prepared_bit(init_unit, zero_owner, output_owner, axis);
+            let after = if helper {
+                let arranged = vec![unit(init_unit), bit(zero_owner, 1), bit(102, 0)];
+                let prepared = vec![bit(output_owner, 1), bit(102, 0)];
+                let after = vec![bit(102, 0), bit(output_owner, 1)];
+                steps.push(e.rewire(&init_frame, &arranged, &[0, 2, 1], &[1, 0]));
+                let retained = e.rewire(&[bit(102, 0)], &[bit(102, 0)], &[0], &[0]);
+                steps.push(e.tensor(&arranged, &prepared, prepare, retained));
+                steps.push(e.rewire(&prepared, &after, &[1, 0], &[1, 0]));
+                after
+            } else {
+                steps.push(prepare);
+                vec![bit(output_owner, 0)]
+            };
+            let root = e.sequence(&before, &after, &steps);
+            (before, after, root)
         }
         "caller-frame" => {
-            let before = vec![unit(101), bit(102, 0), bit(103, 1)];
-            let pair = vec![bit(102, 0), bit(103, 1)];
-            let after = vec![bit(105, 0), bit(106, 1)];
+            let before = vec![unit(101), bit(102, 0), bit(104, 1)];
+            let rest = vec![bit(102, 0), bit(104, 1)];
+            let introduced = vec![unit(103), bit(102, 0), bit(104, 1)];
+            let arranged = vec![unit(103), bit(104, 1), bit(102, 0)];
+            let prepared = vec![bit(105, 1), bit(102, 0)];
+            let pair = vec![bit(102, 0), bit(105, 1)];
+            let after = vec![bit(116, 0), bit(117, 1)];
             let epsilon = e.structural(&[unit(101)], &[], "unpack_unit");
-            let idle = e.rewire(&pair, &pair, &[0, 1], &[0, 1]);
-            let finish = e.tensor(&before, &pair, epsilon, idle);
-            // Exact X (or the deliberately wrong I) on the second, high axis.
-            let matrix = Matrix::new(
-                2,
-                2,
-                if wrong {
-                    vec![Exact::one(), Exact::zero(), Exact::zero(), Exact::one()]
-                } else {
-                    vec![Exact::zero(), Exact::one(), Exact::one(), Exact::zero()]
-                },
-            )
-            .unwrap();
-            let description = String::from_utf8(finite_matrix::encode(&matrix).unwrap()).unwrap();
-            let leaf = e.add(
-                &[bit(1, 0)],
-                &[bit(2, 0)],
+            let idle = e.rewire(&rest, &rest, &[0, 1], &[0, 1]);
+            let finish = e.tensor(&before, &rest, epsilon, idle);
+            let eta = e.structural(&[], &[unit(103)], "pack_unit");
+            let eta = e.tensor(&rest, &introduced, eta, idle);
+            let arrange = e.rewire(&introduced, &arranged, &[0, 2, 1], &[1, 0]);
+            let prepare = e.prepared_bit(103, 104, 105, 1);
+            let retained = e.rewire(&[bit(102, 0)], &[bit(102, 0)], &[0], &[0]);
+            let prepare = e.tensor(&arranged, &prepared, prepare, retained);
+            let route = e.rewire(&prepared, &pair, &[1, 0], &[1, 0]);
+
+            // Independently spell the actual ordinary X body H Z H. For the
+            // negative equation Z is replaced by I, so H I H is exactly I.
+            // All coefficients are phase-fixed and the same ordered context
+            // is retained; no producer matrix or source name grants equality.
+            let h_first = e.hadamard(&[bit(108, 0)], &[bit(109, 0)]);
+            let z_before = vec![bit(110, 0)];
+            let z_after = vec![bit(111, 0)];
+            let z = e.add(
+                &z_before,
+                &z_before,
                 &format!(
-                    r#"{{"tag":"finite","description":{}}}"#,
-                    super::super::quote(&description)
+                    r#"{{"tag":"phase","j":{},"k":1}}"#,
+                    if wrong { 0 } else { 1 },
                 ),
             );
-            let enter = e.rewire(&[bit(103, 1)], &[bit(1, 0)], &[0], &[0]);
-            let leave = e.rewire(&[bit(2, 0)], &[bit(104, 1)], &[0], &[0]);
-            let x = e.sequence(&[bit(103, 1)], &[bit(104, 1)], &[enter, leaf, leave]);
-            let rename_x = e.rewire(&[bit(104, 1)], &[bit(103, 1)], &[0], &[0]);
-            let closed = e.sequence(&[bit(103, 1)], &[bit(103, 1)], &[x, rename_x]);
-            let controlled = e.add(
-                &pair,
-                &pair,
-                &format!(r#"{{"tag":"control","child":{closed},"polarity":true}}"#),
+            let z_rename = e.rewire(&z_before, &z_after, &[0], &[0]);
+            let z_step = e.sequence(&z_before, &z_after, &[z, z_rename]);
+            let z_root = e.sequence(&z_before, &z_after, &[z_step]);
+            let enter_z = e.rewire(&[bit(109, 0)], &z_before, &[0], &[0]);
+            let leave_z = e.rewire(&z_after, &[bit(112, 0)], &[0], &[0]);
+            let z_call = e.sequence(&[bit(109, 0)], &[bit(112, 0)], &[enter_z, z_root, leave_z]);
+            let h_last = e.hadamard(&[bit(112, 0)], &[bit(113, 0)]);
+            let x = e.sequence(&[bit(108, 0)], &[bit(113, 0)], &[h_first, z_call, h_last]);
+            let x_identity = e.rewire(&[bit(108, 0)], &[bit(108, 0)], &[0], &[0]);
+            let close_x = e.rewire(&[bit(113, 0)], &[bit(108, 0)], &[0], &[0]);
+            let closed_x = e.sequence(&[bit(108, 0)], &[bit(108, 0)], &[x_identity, x, close_x]);
+            let enter_x = e.rewire(&[bit(107, 1)], &[bit(108, 0)], &[0], &[0]);
+            let leave_x = e.rewire(&[bit(108, 0)], &[bit(107, 1)], &[0], &[0]);
+            let bound_x = e.sequence(
+                &[bit(107, 1)],
+                &[bit(107, 1)],
+                &[enter_x, closed_x, leave_x],
             );
-            let rename = e.rewire(&pair, &after, &[0, 1], &[0, 1]);
-            let cnot = e.sequence(&pair, &after, &[controlled, rename]);
-            let root = e.sequence(&before, &after, &[finish, cnot]);
+            let cnot_input = vec![bit(106, 0), bit(107, 1)];
+            let cnot_output = vec![bit(114, 0), bit(115, 1)];
+            let controlled = e.add(
+                &cnot_input,
+                &cnot_input,
+                &format!(r#"{{"tag":"control","child":{bound_x},"polarity":true}}"#,),
+            );
+            let cnot_rename = e.rewire(&cnot_input, &cnot_output, &[0, 1], &[0, 1]);
+            let cnot_step = e.sequence(&cnot_input, &cnot_output, &[controlled, cnot_rename]);
+            let cnot = e.sequence(&cnot_input, &cnot_output, &[cnot_step]);
+            let enter_cnot = e.rewire(&pair, &cnot_input, &[0, 1], &[0, 1]);
+            let leave_cnot = e.rewire(&cnot_output, &after, &[0, 1], &[0, 1]);
+            let cnot = e.sequence(&pair, &after, &[enter_cnot, cnot, leave_cnot]);
+            let root = e.sequence(
+                &before,
+                &after,
+                &[finish, eta, arrange, prepare, route, cnot],
+            );
             (before, after, root)
         }
         _ => panic!("unknown independently specified preparation"),
@@ -434,17 +556,17 @@ fn request(proposal: &HierarchyProposal, name: &str, wrong: bool) -> Vec<u8> {
         .cloned()
         .collect();
     let (expected_initial, expected_fresh) = match name {
-        "closed-zero" | "empty-classical" => (vec![], vec![bit(101, 0)]),
-        "fresh-unit-phase" => (vec![], vec![bit(105, 0)]),
+        "closed-zero" | "empty-classical" => (vec![], vec![bit(102, 0)]),
+        "fresh-unit-phase" => (vec![], vec![bit(106, 0)]),
         "unit-zero" | "retained-unit" | "general-superposition" => {
-            (vec![unit(101)], vec![bit(102, 0)])
+            (vec![unit(101)], vec![bit(103, 0)])
         }
-        "unit-phase" => (vec![unit(101)], vec![bit(105, 0)]),
-        "caller-frame" => (vec![unit(101), bit(102, 0)], vec![bit(103, 1)]),
-        "helper-phase" => (vec![unit(101), bit(102, 0)], vec![bit(106, 1)]),
+        "unit-phase" => (vec![unit(101)], vec![bit(106, 0)]),
+        "caller-frame" => (vec![unit(101), bit(102, 0)], vec![bit(104, 1)]),
+        "helper-phase" => (vec![unit(101), bit(102, 0)], vec![bit(107, 1)]),
         "basis-zero" => (vec![unit(101)], vec![bit(102, 0)]),
         "basis-phase-reference" => (vec![bit(101, 0), unit(102)], vec![bit(106, 1)]),
-        "multi-init-order" => (vec![unit(101)], vec![bit(102, 0), bit(106, 1)]),
+        "multi-init-order" => (vec![unit(101)], vec![bit(103, 0), bit(109, 1)]),
         _ => panic!("unknown preparation interface"),
     };
     assert_eq!(
@@ -518,7 +640,7 @@ fn zero_basis_preparation_keeps_exact_phase_reference_and_physical_initializatio
         ),
         (
             "basis-phase-reference",
-            "use std::quantum::phase_eighth;pub isometry fn entry(r:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>){(r,basis phase_eighth(u) as () {0})}",
+            "pub isometry fn entry(r:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>){(r,basis global_phase_eighth(u) as () {0})}",
         ),
     ] {
         let proposal = lower(text);
@@ -627,7 +749,7 @@ fn isometry_roots_match_independently_authored_exact_composition_requests() {
 #[test]
 fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
     let proposal = lower(
-        "use std::quantum::{finish,init0};
+        "use std::state::init0;
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
         pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
@@ -654,7 +776,7 @@ fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
 )]
 #[test]
 fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request() {
-    let text = "use std::quantum::{finish,init0,h,x};
+    let text = "use std::state::init0; use std::gate::x;
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
         fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
         pub isometry fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}";
@@ -667,12 +789,13 @@ fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request(
     let accepted = kernel()
         .check_instrument_native(wrong.payload(), wrong.comparison_request())
         .unwrap();
-    // Initialization movement alone intentionally does not check H versus X.
-    // The retained failed experiment exposed that scope; require the separate
-    // independently authored exact equation for the actual operation.
-    wrong
+    // Ordinary init0 retains original basis intervals, activating complete
+    // source replay. Native-valid X must now also fail that original H binding;
+    // the independent exact H equation below remains a separate check.
+    let error = wrong
         .validate_initialization_moves_native(&accepted)
-        .unwrap();
+        .unwrap_err();
+    assert_eq!(error.code(), "preservation");
     let expected = request(&valid, "general-superposition", false);
     kernel()
         .check_instrument_native(valid.payload(), &expected)
@@ -764,9 +887,9 @@ fn isometry_helper_retains_entangled_caller_frame_and_axis_order() {
 fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     let valid = lower(&source("unit-zero"));
     let wrong = lower(
-        "use std::quantum::finish; use std::quantum::phase_eighth;
-         use std::quantum::init0;
-         fn changed(q: Q<Unit>) -> Unit { finish(phase_eighth(q)) }
+        "\x20
+         use std::state::init0;
+         fn changed(q: Q<Unit>) -> Unit { finish(global_phase_eighth(q)) }
          pub isometry fn entry(q: Q<Unit>) -> Q<Bit> { changed(q); init0() }",
     );
     let mut bad = wrong.clone();
@@ -794,7 +917,10 @@ fn isometry_native_valid_phased_finish_cannot_implement_original_source() {
     assert_eq!(error.code(), "preservation");
     assert_eq!(
         error.message(),
-        "actual Unit source map differs from its canonical structural node"
+        // Ordinary init0 now retains its own exact source interval. The
+        // substituted source collection fails that stronger binding first;
+        // native validity and the independent omega amplitude remain above.
+        "source event substitutes its original zero-basis interval"
     );
 }
 
@@ -839,10 +965,12 @@ fn isometry_two_moved_initializations_keep_reversed_axes_and_reference() {
 )]
 #[test]
 fn constructor_sequence_matches_independent_exact_equation_and_rejects_gate_substitution() {
-    let source = current_source_text(
+    let original = current_source_text(
         "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli",
-    )
-    .replace("finish,init0,h,split", "finish,init0,h,x,split");
+    );
+    // The current source uses bare language primitives; X is an ordinary gate
+    // import required by the independently native-valid H-to-X counterexample.
+    let source = format!("use std::gate::x;\n{original}");
     let valid = lower(&source);
     // The existing independently authored Unit elimination / H equation fixes
     // +1 structural action, both complex H columns and reviewed port placement.
@@ -859,10 +987,13 @@ fn constructor_sequence_matches_independent_exact_equation_and_rejects_gate_subs
     let accepted = kernel()
         .check_instrument_native(wrong.payload(), wrong.comparison_request())
         .unwrap();
-    // Stable initialization extraction alone intentionally does not check H/X.
-    wrong
+    // Complete source replay now retains this original constructor's H child.
+    // Native acceptance of X cannot grant that correspondence; the independent
+    // exact H request still supplies the separate mathematical counterexample.
+    let error = wrong
         .validate_initialization_moves_native(&accepted)
-        .unwrap();
+        .unwrap_err();
+    assert_eq!(error.code(), "preservation");
     assert!(
         kernel()
             .check_instrument_native(wrong.payload(), &expected)

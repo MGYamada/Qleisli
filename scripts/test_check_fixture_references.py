@@ -2,6 +2,7 @@
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 import json
+import hashlib
 import contextlib
 import io
 import os
@@ -100,6 +101,83 @@ class ReferenceGraph(unittest.TestCase):
                     manifest: '{"file":"first.bin","file":"second.bin"}'}
         files = {manifest, "tests/fixtures/probe/first.bin", "tests/fixtures/probe/second.bin"}
         self.assertEqual(self.missing(contents, files), files - {manifest})
+
+
+class RetainedSourceGraph(unittest.TestCase):
+    def example(self):
+        prefix = "tests/fixtures/authoring_sessions/"
+        source = "use std::quantum::h;\n"
+        session = dict(format=1, kind="informed_first_attempt", source_records=[dict(id="related-01", sha256={
+            "examples/probe.qli": hashlib.sha256(source.encode()).hexdigest()})])
+        session_text = json.dumps(session)
+        entry = dict(kind="source_record", session="probe/session.json", id="related-01", path="examples/probe.qli",
+                     session_sha256=hashlib.sha256(session_text.encode()).hexdigest(), sha256=hashlib.sha256(source.encode()).hexdigest(),
+                     git_commit="a" * 40, git_blob=hashlib.sha1(b"blob " + str(len(source.encode())).encode() + b"\0" + source.encode()).hexdigest())
+        copy = prefix + "retained-source-records-v1/probe/related-01/examples/probe.qli.txt"
+        contents = {"scripts/check_authoring_sessions.py": "inspect_sessions()",
+                    check.RETAINED_INDEX: json.dumps(dict(format=1, entries=[entry])),
+                    prefix + "probe/session.json": session_text, copy: source}
+        return contents, copy, entry
+
+    def test_validated_fixed_index_retains_exact_source_bytes_only(self):
+        contents, copy, _ = self.example()
+        paths = set(contents)
+        self.assertIn(copy, check.reachability(contents, paths))
+        orphan = "tests/fixtures/authoring_sessions/other/unrelated.txt"
+        self.assertNotIn(orphan, check.reachability(contents, paths | {orphan}))
+
+    def test_retained_source_bytes_are_inert_not_transitive_consumers(self):
+        contents, copy, entry = self.example()
+        neighbor = "tests/fixtures/authoring_sessions/other/unrelated.txt"
+        source = 'load("' + neighbor + '")\n'
+        contents[copy] = source
+        session_name = "tests/fixtures/authoring_sessions/probe/session.json"
+        session = json.loads(contents[session_name])
+        entry["sha256"] = hashlib.sha256(source.encode()).hexdigest()
+        session["source_records"][0]["sha256"][entry["path"]] = entry["sha256"]
+        contents[session_name] = json.dumps(session)
+        entry["session_sha256"] = hashlib.sha256(contents[session_name].encode()).hexdigest()
+        entry["git_blob"] = hashlib.sha1(b"blob " + str(len(source.encode())).encode() + b"\0" + source.encode()).hexdigest()
+        contents[check.RETAINED_INDEX] = json.dumps(dict(format=1, entries=[entry]))
+        reached = check.reachability(contents, set(contents) | {neighbor})
+        self.assertIn(copy, reached)
+        self.assertNotIn(neighbor, reached)
+
+    def test_directory_link_without_valid_index_cannot_retain_copy(self):
+        contents, copy, _ = self.example()
+        contents.pop(check.RETAINED_INDEX)
+        contents["scripts/check_authoring_sessions.py"] = 'load("tests/fixtures/authoring_sessions/retained-source-records-v1")'
+        self.assertNotIn(copy, check.reachability(contents, set(contents)))
+
+    def test_wrong_bytes_or_path_or_class_cannot_grant_archive_references(self):
+        for field, value in [("path", "../outside.qli"), ("path", "examples/other.qli"), ("kind", "attempt"),
+                             ("sha256", "0" * 64), ("session_sha256", "0" * 64), ("git_blob", "0" * 40)]:
+            with self.subTest(field=field, value=value):
+                contents, copy, entry = self.example()
+                entry[field] = value
+                contents[check.RETAINED_INDEX] = json.dumps(dict(format=1, entries=[entry]))
+                self.assertNotIn(copy, check.reachability(contents, set(contents)))
+        contents, copy, _ = self.example()
+        contents[copy] = "changed"
+        self.assertNotIn(copy, check.reachability(contents, set(contents)))
+
+    def test_unknown_candidate_path_field_cannot_root_neighbor(self):
+        contents, copy, entry = self.example()
+        neighbor = "tests/fixtures/authoring_sessions/other/unrelated.txt"
+        entry["retained_path"] = neighbor
+        contents[check.RETAINED_INDEX] = json.dumps(dict(format=1, entries=[entry]))
+        reached = check.reachability(contents, set(contents) | {neighbor})
+        self.assertNotIn(copy, reached)
+        self.assertNotIn(neighbor, reached)
+
+    def test_extra_archive_member_and_unrooted_reader_do_not_grant_reachability(self):
+        contents, copy, _ = self.example()
+        extra = check.RETAINED_PREFIX + "unrelated.qli.txt"
+        reached = check.reachability(contents, set(contents) | {extra})
+        self.assertNotIn(copy, reached)
+        self.assertNotIn(extra, reached)
+        contents.pop("scripts/check_authoring_sessions.py")
+        self.assertNotIn(copy, check.reachability(contents, set(contents)))
 
 
 class GitInspection(unittest.TestCase):

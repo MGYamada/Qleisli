@@ -24,7 +24,7 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
         ("moved-local-shadows-import", true, false),
         ("declaration-call-cycle", true, false),
     ] {
-        let root = fixture.join(case);
+        let root = common::current_source_project(&fixture.join(case));
         let sources = fs::read_dir(&root)
             .unwrap()
             .map(|entry| entry.unwrap().path())
@@ -67,7 +67,7 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
 #[test]
 fn unused_concrete_declaration_still_requires_native_eligible_effects() {
     let root = common::SourceRoot::new(
-        "use std::quantum::init0; unitary fn unused()->Q<Bit>{init0()} observe fn main()->Bit{0}",
+        "use std::state::init0; unitary fn unused()->Q<Bit>{init0()} observe fn main()->Bit{0}",
     );
     assert_eq!(check_project(&root.0).unwrap_err().code, ErrorCode::Effect);
 }
@@ -82,11 +82,11 @@ fn same_named_host_providers_keep_distinct_definition_and_instance_identity() {
         ),
         (
             "a".into(),
-            "use std::quantum::h; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}".into(),
+            " pub unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}".into(),
         ),
         (
             "b".into(),
-            "use std::quantum::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
+            "use std::gate::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
         ),
     ]))
     .unwrap();

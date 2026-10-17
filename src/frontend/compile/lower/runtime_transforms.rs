@@ -309,17 +309,16 @@ impl Lowerer<'_, '_> {
                     when_one: true,
                 });
             }
-            let joined = self.sealed(
+            let joined = self.primitive_call(
                 module,
                 original.span,
-                "std::quantum",
-                "join",
+                PrimitiveId::Join,
                 vec![control, packed],
             )?;
             let joined_slot = self.quantum(module, original.span, &joined, false)?;
             self.apply_circuit(joined_slot, steps);
             let split =
-                self.sealed(module, original.span, "std::quantum", "split", vec![joined])?;
+                self.primitive_call(module, original.span, PrimitiveId::Split, vec![joined])?;
             let Value::Pair(control, packed) = split else {
                 unreachable!("structural pair split")
             };
@@ -386,7 +385,7 @@ impl Lowerer<'_, '_> {
         let middle = count / 2;
         let left = self.pack_runtime_fields(module, span, fields, middle)?;
         let right = self.pack_runtime_fields(module, span, fields, count - middle)?;
-        self.sealed(module, span, "std::quantum", "join", vec![left, right])
+        self.primitive_call(module, span, PrimitiveId::Join, vec![left, right])
     }
 
     fn unpack_runtime_group(
@@ -448,7 +447,7 @@ impl Lowerer<'_, '_> {
                 "structural transform unpacking requires a nonempty owner group",
             )?);
         }
-        let split = self.sealed(module, span, "std::quantum", "split", vec![packed])?;
+        let split = self.primitive_call(module, span, PrimitiveId::Split, vec![packed])?;
         let Value::Pair(left, right) = split else {
             unreachable!("structural pair split")
         };

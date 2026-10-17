@@ -175,10 +175,7 @@ fn expected_types_do_not_choose_physics_or_manufacture_access_and_effects() {
             "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{U(q)}",
             "access",
         ),
-        (
-            "use std::observe::measure_z; pub unitary fn f(q:Q<Bit>)->Bit{measure_z(q)}",
-            "effect",
-        ),
+        (" pub unitary fn f(q:Q<Bit>)->Bit{measure_z(q)}", "effect"),
     ] {
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();

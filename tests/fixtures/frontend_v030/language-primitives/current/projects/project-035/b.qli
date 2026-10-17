@@ -1,0 +1,1 @@
+unitary fn g(q:Q<Bit>)->Q<Bit>{q}

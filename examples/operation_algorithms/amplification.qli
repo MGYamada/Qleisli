@@ -1,7 +1,7 @@
 //! Fixed-width amplification clients, reusing preparation and oracle arguments.
 //! Success depends on the oracle/preparation and iteration count, not typing.
-use std::quantum::init0;
-use std::quantum::join;
+use std::state::init0;
+
 use std::transform::hadamard2;
 use oracles::zero_reflection;
 

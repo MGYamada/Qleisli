@@ -226,6 +226,7 @@ impl HierarchyProposal {
     /// it. This can reject equivalent circuits outside the producer shape.
     /// Success requires fresh `Kernel::check_qpe_instrument` before execution.
     pub fn qpe_binding(&self, independent_provider_request: &[u8]) -> Result<QpeBindingProposal> {
+        self.validate_fourier_transport()?;
         build(self, independent_provider_request)
             .map_err(|e| Error::new("unsupported", Span::default(), e.to_string()))
     }
@@ -237,6 +238,20 @@ mod tests {
     use crate::frontend::compile::{OperationBinding, ParsedProgram};
     use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
     use std::collections::BTreeMap;
+    fn current_source_text(path: &str) -> String {
+        let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+        let output = std::process::Command::new("python3")
+            .args(["-B", "-c", script, path])
+            .current_dir(env!("CARGO_MANIFEST_DIR"))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    }
     fn source(n: u32, m: u32, j: u32) -> HierarchyProposal {
         source_with_fourier(n, m, j, None)
     }
@@ -260,16 +275,7 @@ mod tests {
             } else {
                 None
             }
-            .unwrap_or_else(|| {
-                let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
-                let output = std::process::Command::new("python3")
-                    .args(["-c", script, path])
-                    .current_dir(env!("CARGO_MANIFEST_DIR"))
-                    .output()
-                    .unwrap();
-                assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
-                String::from_utf8(output.stdout).unwrap()
-            });
+            .unwrap_or_else(|| current_source_text(path));
             let body = if name == "fourier" {
                 // Preserve historical QFT bytes; translate only this test input.
                 let old = "fourier[static n: Nat]";
@@ -442,8 +448,8 @@ mod tests {
                 .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
                 .expect("kernel path"),
         );
-        let delayed = include_str!(
-            "../../../tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+        let delayed = current_source_text(
+            "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
         );
         for m in [2, 3] {
             let textbook = source(1, m, 1);
@@ -451,7 +457,7 @@ mod tests {
             // circuit. Existing native QPE tests separately check its phase
             // against the low-bit mathematical formula and mutate the provider.
             let provider = frozen_provider(&textbook);
-            let reordered = source_with_fourier(1, m, 1, Some(delayed));
+            let reordered = source_with_fourier(1, m, 1, Some(delayed.as_str()));
             let mut outcomes = vec![];
             for (variant, proposal) in [("textbook", &textbook), ("delayed", &reordered)] {
                 let binding = proposal.qpe_binding(&provider).unwrap();
@@ -513,8 +519,12 @@ mod tests {
                                 );
                             }
                         }
-                        let changed =
-                            source_with_fourier(1, m, 2, (variant == "delayed").then_some(delayed));
+                        let changed = source_with_fourier(
+                            1,
+                            m,
+                            2,
+                            (variant == "delayed").then_some(delayed.as_str()),
+                        );
                         let changed_binding = changed.qpe_binding(&provider).unwrap();
                         let error = kernel
                             .check_qpe_instrument(

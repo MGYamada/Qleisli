@@ -19,20 +19,21 @@ class SourceError(ValueError):
     pass
 
 
+# Ordinary .qli reference adapters for this bounded, untrusted comparison reader.
+# Production source preservation/native admission is checked separately.
 IMPORTS = {
-    'std::quantum::h': 'h', 'std::quantum::x': 'x',
-    'std::quantum::cnot': 'cnot',
-    'std::quantum::controlled_phase': 'controlled_phase',
-    'std::quantum::phase': 'phase',
-    'std::registers::take_bit': 'take_bit',
-    'std::registers::put_bit': 'put_bit',
+    'std::gate::x': 'x', 'std::gate::cnot': 'cnot',
+    'std::gate::controlled_phase': 'controlled_phase',
 }
+LANGUAGE_BUILTINS = {name: name for name in ('h', 'phase', 'take_bit', 'put_bit')}
+
 TOKEN = re.compile(r'\s+|//[^\n]*|::|->|\.\.|>=|<=|==|!=|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[][(){}<>,:;=+\-^]')
 RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'qfor', 'in', 'carry', 'yield', 'use', 'requires', 'if', 'else', 'adjoint', 'controlled', 'repeat_op'}
 
 
 class Parser:
-    primitive_imports = IMPORTS
+    reference_imports = IMPORTS
+    language_builtins = LANGUAGE_BUILTINS
 
     def __init__(self, source, modules=(), *, module):
         if (not isinstance(module, str) or
@@ -73,7 +74,7 @@ class Parser:
         self.operations = {}
 
     def definition(self, name):
-        return self.local_functions.get(name, self.imports.get(name))
+        return self.local_functions.get(name, self.imports.get(name, self.language_builtins.get(name)))
 
     def peek(self):
         return self.tokens[self.index]
@@ -334,9 +335,9 @@ class Parser:
             self.need(';')
             path = '::'.join(parts)
             ordinary = len(parts) == 2 and parts[0] != 'std' and parts[0] in self.modules
-            if (path not in self.primitive_imports and not ordinary) or parts[-1] in self.imports:
+            if (path not in self.reference_imports and not ordinary) or parts[-1] in self.imports:
                 raise SourceError(f'unsupported or duplicate import {path}')
-            self.imports[parts[-1]] = self.primitive_imports.get(path, path)
+            self.imports[parts[-1]] = self.reference_imports.get(path, path)
         self.need('pub')
         self.function_effect()
         self.need('fn')

@@ -233,3 +233,14 @@ tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authori
 # Token/provenance checks retain their hashes; other whitespace rules apply.
 tests/fixtures/frontend_v030/capability-naming/current/files/client-001.qli -text whitespace=-blank-at-eof
 tests/fixtures/frontend_v030/capability-naming/current/files/client-002.qli -text whitespace=-blank-at-eof
+
+# Exact language-primitive derivatives retain these three existing fixture rules.
+# EOFs descend from const-client-headers abstract-split/assumed-unit; the complete
+# padding comment descends from ordinary-type-cutover review_v020/shared_identities.
+tests/fixtures/frontend_v030/language-primitives/current/files/client-276.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/language-primitives/current/files/client-277.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/language-primitives/current/files/client-330.qli -text -whitespace
+
+# Exact decoded IMPORTS from the retained bd07 source-IR test keep two trailing
+# spaces; every other whitespace rule still applies to this historical copy.
+tests/fixtures/authoring_sessions/ordinary-primitive-test-regressions-v030/attempt-01/not_main.qli -text whitespace=-blank-at-eol

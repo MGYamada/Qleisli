@@ -1,0 +1,609 @@
+{
+  "format": 1,
+  "kind": "explicit-counterexample-source-migration",
+  "issue": 369,
+  "project_version": "0.3.0-beta",
+  "created_utc": "2026-10-17T05:01:55.348823+00:00",
+  "context": "Register all63 preserved semantic-fault sources and4 source-contract negatives after actual current source checks. The unchanged quick oracle detected its four existing selected semantic faults;59 others have only source-check evidence here. Capture-time registration:false is retained. No transport/profile failure counts as fault detection; no general source-preservation or completion claim.",
+  "projects": [
+    "semantic_faults/majority_replaced_by_parity",
+    "semantic_faults/swapped_bell_labels",
+    "semantic_faults/missing_add_two",
+    "semantic_faults/low_bit_equality_only",
+    "semantic_faults/missing_lcu_unprepare",
+    "semantic_faults/erased_rotation_scalar",
+    "semantic_faults/incomplete_swap",
+    "semantic_faults/unconditional_fredkin",
+    "semantic_faults/xor_constant_wrong_bit",
+    "semantic_faults/partial_bitwise_not",
+    "semantic_faults/rx_missing_scalar",
+    "semantic_faults/kickback_wrong_secret",
+    "semantic_faults/parity_prepared_even",
+    "semantic_faults/singlet_phase_after_flip",
+    "semantic_faults/threshold_wrong_polarity",
+    "semantic_faults/equals_constant_wrong_endian",
+    "semantic_faults/ry_second_column_sign",
+    "semantic_faults/zz_erased_scalar",
+    "semantic_faults/negative_control_changed_to_positive",
+    "semantic_faults/bell_change_reversed_phase",
+    "semantic_faults/subtract_wrong_borrow_order",
+    "semantic_faults/qrom_reversed_target_bits",
+    "semantic_faults/negative_rx_missing_scalar",
+    "semantic_faults/negative_ry_wrong_sign",
+    "semantic_faults/cz_replaced_by_identity",
+    "semantic_faults/toffoli_ignored_second_control",
+    "semantic_faults/less_equal_changed_to_strict",
+    "semantic_faults/greater_than_input_not_restored",
+    "semantic_faults/mixed_rotation_order_reversed",
+    "semantic_faults/mixer_erased_scalar",
+    "semantic_faults/uniform_phase_conjugated",
+    "semantic_faults/graph_edge_erased",
+    "semantic_faults/reflection_minus_missing_phase",
+    "semantic_faults/controlled_reflection_missing_phase",
+    "semantic_faults/half_rotation_order_reversed",
+    "semantic_faults/negative_zz_missing_scalar",
+    "semantic_faults/controlled_h_unconditional",
+    "semantic_faults/bitstring_wrong_target",
+    "semantic_faults/even_numbers_wrong_low_bit",
+    "semantic_faults/increment_wrong_carry_order",
+    "semantic_faults/greater_constant_wrong_threshold",
+    "semantic_faults/xor_constant_missing_high_bit",
+    "semantic_faults/half_rx_missing_scalar",
+    "semantic_faults/half_zz_missing_scalar",
+    "semantic_faults/edge_layer_reversed_order",
+    "semantic_faults/two_bitstrings3_fault",
+    "semantic_faults/w2_retained3_fault",
+    "semantic_faults/even_parity3_fault",
+    "semantic_faults/controlled_increment2_fault",
+    "semantic_faults/equals1_fault",
+    "semantic_faults/reflection_zero2_fault",
+    "semantic_faults/rotation_negative_x_positive_y_fault",
+    "semantic_faults/qaoa_negative_mixer2_fault",
+    "semantic_faults/qaoa_path_layer3_fault",
+    "semantic_faults/minus_preparation_wrong_extension",
+    "semantic_faults/negative_phase_conjugated",
+    "semantic_faults/uniform_missing_middle_h",
+    "semantic_faults/decrement_lost_high_borrow",
+    "semantic_faults/zero_predicate_input_not_restored",
+    "semantic_faults/basis_reflection_wrong_label",
+    "semantic_faults/negative_rotations_reversed",
+    "semantic_faults/path_cost_lost_second_phase",
+    "semantic_faults/negative_edge_cost_sign",
+    "negative/duplicate_owner",
+    "negative/measured_owner",
+    "negative/measurement_adjoint",
+    "negative/dirty_auxiliary"
+  ],
+  "files": {
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": {
+      "before": "86614711f7e5382be6ad15cda98581f099f4b6e7f93190aae0e86ea73eb4ad0d",
+      "after": "3d64dd339372b29e84e97b8305fd71b4d0949b3b063141f90d6281c72404fdd3"
+    },
+    "semantic_faults/majority_replaced_by_parity/main.qli": {
+      "before": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+      "after": "58b3833b857ef585851ef29cd8674252fe071479258cb2d4af5c8f22a1729c5b"
+    },
+    "semantic_faults/swapped_bell_labels/kernel.qli": {
+      "before": "6d5092d88b8ab81089af990a6273e6c3f61636f0e7f478156c0bfb6622b393fe",
+      "after": "14c1f38da5d892215814324c18731ed83fde4ad55d2439870c283af67e55e6f0"
+    },
+    "semantic_faults/swapped_bell_labels/main.qli": {
+      "before": "1e94e885c7e305531e4a91691981ed658e213f8481dd005428bf4b6b14864c4f",
+      "after": "a4b9dcb0de9ea03519ab935e208d70c9e2c3d6d5a315500fb4777a7863fbeaf2"
+    },
+    "semantic_faults/missing_add_two/kernel.qli": {
+      "before": "9556a77b70769fee377fa7bb3fcaae721cf16b4962faa6e3697275b68a70bbf7",
+      "after": "876bf719da01529a00b32d7c2290c732b7693af262064aa6cdb8a3dc0d82bcc2"
+    },
+    "semantic_faults/missing_add_two/main.qli": {
+      "before": "84f22d1370e8acc252365240b8b484b54a1c62dbbba7323aa9a69cb42702a529",
+      "after": "170f6667d86f03f1153e38e9f685c3378055e86be6f24fa4a63b81980e8c8308"
+    },
+    "semantic_faults/low_bit_equality_only/kernel.qli": {
+      "before": "5235aec86b9e0de10108633c2b9bbc7bb9cbf4a602c4ceb7e41b959a33f89d00",
+      "after": "f54253c30c3dff08ea37d347a8879faa4483cc29ba2ef786158c4fdd2b679352"
+    },
+    "semantic_faults/low_bit_equality_only/main.qli": {
+      "before": "825ebe84dbd2eaa7e6ae8e81a6f1e9aa1494111f685bdd838fbc5d37bca10b3c",
+      "after": "bc7963255d64f92d00b8818ef74d675734798befb2cb592e7f2ebd25da2b858d"
+    },
+    "semantic_faults/missing_lcu_unprepare/kernel.qli": {
+      "before": "8708134788ae9bbbc0224ed85359da2c0426664007a0516de4a2ede043242495",
+      "after": "9f48b3e53ab7e9f786ee72467ce3c13b4d36ce9bf1d0b4bd1e07ca82a65ee405"
+    },
+    "semantic_faults/missing_lcu_unprepare/main.qli": {
+      "before": "9befad3797a547b4f22f57ed0db172af111726d21d368d0e014721216fe54144",
+      "after": "6467fcba46ce3cc2454abf59f6f656f64b8067b0977f44f689a0b48f37b710d6"
+    },
+    "semantic_faults/erased_rotation_scalar/kernel.qli": {
+      "before": "1e66717b6a5ee785de5e0e613d4d82e9ea7c11d152c5b0fb0d53cbec0af96a5c",
+      "after": "c41722a9160c6f57e2500d843f558af555b61e5575ce8bf6ce1dd70243d9b2bc"
+    },
+    "semantic_faults/erased_rotation_scalar/main.qli": {
+      "before": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "after": "8d171949f5a3282e7888f629f8cac52bb2f7b6839a6f4c79bda3765d2d5cd70b"
+    },
+    "semantic_faults/incomplete_swap/kernel.qli": {
+      "before": "eabd4424976075585bf57fa5fadf83e712743352d535678062553fa0cb4c0c44",
+      "after": "0aac6db02521229f9a14f5eb29cd4bc3007f5b7e8319a9cce9369d9e62f4336a"
+    },
+    "semantic_faults/incomplete_swap/main.qli": {
+      "before": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59",
+      "after": "5671a9268f675dae59fe20f97f08a8dc1f448b0ef8e1281e951544f24e1a1230"
+    },
+    "semantic_faults/unconditional_fredkin/kernel.qli": {
+      "before": "5710ed89d9d534dbcc48a14167fa423b231bab4f36a3b87db740a442f53b085b",
+      "after": "975711bbf7409a35617c4d8a60eaa79596b9a16ca188e8f180f2c6cb03dcc55b"
+    },
+    "semantic_faults/unconditional_fredkin/main.qli": {
+      "before": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be",
+      "after": "986f0dd5e672beb0cbccabde30cd54510791b543b214d519f7b811c1305ab603"
+    },
+    "semantic_faults/xor_constant_wrong_bit/kernel.qli": {
+      "before": "e062d5d9dc4d97cd16b042abf62dc25df4f8c5b17531e00881662ab9d6f8566c",
+      "after": "6cdecce95fbfee4d9c273b9820856373674117f33529d5a3a73403369bb1b651"
+    },
+    "semantic_faults/xor_constant_wrong_bit/main.qli": {
+      "before": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d",
+      "after": "fbe1cb5b4cf44355d23193e236d76f088c5022342a834420c91a852e2e54e644"
+    },
+    "semantic_faults/partial_bitwise_not/kernel.qli": {
+      "before": "e3b7f2a5968744457ab08d26f3bd0784cffa79700176c12897509fe4d0b2a0d7",
+      "after": "a4e576de50461b32209d6bdbdf708b502c71027ca2cdd8bc966101dbadef6605"
+    },
+    "semantic_faults/partial_bitwise_not/main.qli": {
+      "before": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77",
+      "after": "f0e0eadc90eca9b6292d2d676cb7950ea990655ee98b9cca87f9bc7c325f6a11"
+    },
+    "semantic_faults/rx_missing_scalar/kernel.qli": {
+      "before": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+      "after": "7293a3df1c6f2d9ab68f91ae9e362a920f3b532e174834828c4e3af78f246a05"
+    },
+    "semantic_faults/rx_missing_scalar/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "0e20e15ac1b0bc831bbf5078f43986c8dcaddf2219089e93e3a06f4637657acd"
+    },
+    "semantic_faults/kickback_wrong_secret/kernel.qli": {
+      "before": "afcf3f847b32a26121b6f61f2c2b6a887d7c5bdb37f683d12ad2e5d533cf2b55",
+      "after": "078b453981e18067a99dbc3ff0706edc7d4bf85926527576f2eb2c7ce0fd20f0"
+    },
+    "semantic_faults/kickback_wrong_secret/main.qli": {
+      "before": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440",
+      "after": "3b08c8b94a667de89281dbff6f90889c285be6ba59c4aaaccf22eab3d42d4ba2"
+    },
+    "semantic_faults/parity_prepared_even/kernel.qli": {
+      "before": "224edd2720c3229aa3c42ddd229094f566d8cea250a6032e0b804b0ff03b52b3",
+      "after": "7d282ab63e0c9a4cbd196b09e8f648e1752a516c65d29dbc844c22699d651d35"
+    },
+    "semantic_faults/parity_prepared_even/main.qli": {
+      "before": "00fdf87f493af1c2adcfc88c66de03ae4a726cb250cdb4659c00016a77bedf76",
+      "after": "01d69310030a77f322a719cabb179b978484a29d145bd97f849107d22f295232"
+    },
+    "semantic_faults/singlet_phase_after_flip/kernel.qli": {
+      "before": "85a3df9326bafa672b669969e0f9612040f86648ff6296d746adc4ef9648ade6",
+      "after": "dacf6c44a4fc42fe8e008b89c58f19e2494ef2470795a9b18727e25ec0bd9b39"
+    },
+    "semantic_faults/singlet_phase_after_flip/main.qli": {
+      "before": "e6b66a4fd1b65791974688a4970104e8f60de2e0e0ff4c02e53acfd1309266b1",
+      "after": "2817916714de7e1487036a71eb7b8ef0d43dce73fb93883a87ff466c43836c3c"
+    },
+    "semantic_faults/threshold_wrong_polarity/kernel.qli": {
+      "before": "317c055e9b4fefe85911247e552ee9cff93ae53e02fd7a09654daef098b64e55",
+      "after": "83299409b6ee980d4dbd4ecc8070047a4c1ebbae2edaba9c24c549a93277e64d"
+    },
+    "semantic_faults/threshold_wrong_polarity/main.qli": {
+      "before": "c832f5262cbb2a597a968c5133d69ec30d450150f5cba282da8f0d8c21a379cd",
+      "after": "324eb8f05b3f68532133a89f55412010394bc303a046e41e6728e68c2d598887"
+    },
+    "semantic_faults/equals_constant_wrong_endian/kernel.qli": {
+      "before": "87b03e799b6a3abc6d24f6740daf7f3e895df46193bd4d20b476cc4f9bea0f29",
+      "after": "7c1452b08f494d0ce5ff05156ee09a9bdad761d949529e6fa15408531de4ebea"
+    },
+    "semantic_faults/equals_constant_wrong_endian/main.qli": {
+      "before": "9bf57c99a9d85b4910c5ee182bf909b8d5e9935da155ed40c55fae64370ff878",
+      "after": "9c611e135d1a2178f0a5beebaf89b23e5e95e5e2b96f58cadbdea0803a888228"
+    },
+    "semantic_faults/ry_second_column_sign/kernel.qli": {
+      "before": "8cbc23b19a16cfbe9652747d3aa4eca875de2221bbe0bf1df2e6748e72ccbc8a",
+      "after": "176f85b6a90e2f428a91784001328edf6d10bb6b2a517306ba50ac71bf208986"
+    },
+    "semantic_faults/ry_second_column_sign/main.qli": {
+      "before": "f9d90bfeb68b0192a1031e03030c6640078df155b58b95dafb20b0d002ba824e",
+      "after": "9c1658e538f79f2f3b9ba61e702a143498d6ccbee201dbfb08a4b4063aa73d53"
+    },
+    "semantic_faults/zz_erased_scalar/kernel.qli": {
+      "before": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+      "after": "32c565a23901ee6f2529abe77bfe5482fc0cc0aab9966d97d56a7612e5c0bc4d"
+    },
+    "semantic_faults/zz_erased_scalar/main.qli": {
+      "before": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "after": "545fc4652248c69322e9f68dc35be6e3eb39a62e23b89afb7ef48d8b030e4240"
+    },
+    "semantic_faults/negative_control_changed_to_positive/kernel.qli": {
+      "before": "ea12917b7fe17b955bd38bf8a472afbac0921e69172ab39c12a9ba60cbe10c2d",
+      "after": "9deaea1f595158bf0b3bca9eec5a0175bd3ee48a7fba89243d20e5294bf2c3c3"
+    },
+    "semantic_faults/negative_control_changed_to_positive/main.qli": {
+      "before": "23fdc6890b58dc653e67ea637ba28533106ab127e6ab9c98c1d83bd4f3655952",
+      "after": "94dc89202c7231ff8734672179ff372a76e57a5751aca4bf8034555783d9c6f0"
+    },
+    "semantic_faults/bell_change_reversed_phase/kernel.qli": {
+      "before": "898e189d772f87a6f8b5fb6c4c6255c479af32e4ef8d771fa9e1e22c31e038e6",
+      "after": "59b8159156ddc731bc6299ad2cf45e19763ba0515a0fec2aaa6b28005feba20f"
+    },
+    "semantic_faults/bell_change_reversed_phase/main.qli": {
+      "before": "2e637d4ffa305dfc326e36764b4c65d0822cd0764230cab2374560168779be8c",
+      "after": "7b8d0a430989757ef699ae5bd562e25e41d07523188e55d0e9fab6db9e4f7d1e"
+    },
+    "semantic_faults/subtract_wrong_borrow_order/kernel.qli": {
+      "before": "d8d5f46fcb87024bb03c7ebcd4c4571cadeb5086a5c53aa1123dd54ca488afb1",
+      "after": "bd194b5feee3f9e7016bc2c12aada4700e8d8df5cc1265d37d12f9a9db3a9982"
+    },
+    "semantic_faults/subtract_wrong_borrow_order/main.qli": {
+      "before": "66c19a8a4ef00327d2c7b88acd537b6631915a675c417ea5d10a322bcdb3b38b",
+      "after": "47f0673998e71e213bc6722596013c76a3238ea20a9dae0dc48f2f4327922b87"
+    },
+    "semantic_faults/qrom_reversed_target_bits/kernel.qli": {
+      "before": "6c91fb7fed6f899de5a7aaba54c4a05125d5df6e67d77663ea309ce77ee84117",
+      "after": "7999495dc7fdbe89874b2ba0384cc3a3b445fa72d48281a167d620996e796df7"
+    },
+    "semantic_faults/qrom_reversed_target_bits/main.qli": {
+      "before": "0a62eb78bae356cb9ec767a0487fad857624a130aacdd812b499821e17bbffb0",
+      "after": "d20d3435ce680f05cc1bcb862761a98487e2b42dd28921efa65b9f9abf1a3ca2"
+    },
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": {
+      "before": "46dca261d29f38299a20c202ce1def5d0ac46fb8bcf4f96ae73ebe751e707c63",
+      "after": "a458a6682eed905a6fb22d2d2d8f998e9d5509f229359659b49ff0f2427e9431"
+    },
+    "semantic_faults/negative_rx_missing_scalar/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "0e20e15ac1b0bc831bbf5078f43986c8dcaddf2219089e93e3a06f4637657acd"
+    },
+    "semantic_faults/negative_ry_wrong_sign/kernel.qli": {
+      "before": "170331d79ba227b89019b3944e9e6d9e619b139bd12f7c915735a7f55e0776f6",
+      "after": "1775051cec0000228d84ad03368fc9a89056e816d3b0ebb2cdca7e4c6b978fe3"
+    },
+    "semantic_faults/negative_ry_wrong_sign/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "0e20e15ac1b0bc831bbf5078f43986c8dcaddf2219089e93e3a06f4637657acd"
+    },
+    "semantic_faults/cz_replaced_by_identity/kernel.qli": {
+      "before": "b3ab68f4bc08cbfa14882a59afbdd55582a753f78da9c84e2ad1aeac5c8e25d7",
+      "after": "1e9ff8bd2b7c4457eaea36cc757384da4208a15063e37d4e7f64714073f458e7"
+    },
+    "semantic_faults/cz_replaced_by_identity/main.qli": {
+      "before": "7d8b5b26c2eb5ea12fc0e7de64af6cec9eb198e05586d5f9976e427b1986b4ed",
+      "after": "fcab4a015406374fbd59b657302c58785618f010fa22ae62407340db4b24080d"
+    },
+    "semantic_faults/toffoli_ignored_second_control/kernel.qli": {
+      "before": "a3b51d661e104a61f58aa9cbc6b670283a06b7524d46eb146b40aefdc0a5bc2f",
+      "after": "ba1672fa8ea074bfbc6dd618ff816cf6cc3342c1855eb5a970287d62dfa7027d"
+    },
+    "semantic_faults/toffoli_ignored_second_control/main.qli": {
+      "before": "4df69769fa4cbf303806ce70950cc9989cf8b7e18349484430c100dd1d6ff40f",
+      "after": "e0cbe5bb7a5db7ae6f6ebed0feec6d111c7c4f6a067f630ec41d1f6cbad104b7"
+    },
+    "semantic_faults/less_equal_changed_to_strict/kernel.qli": {
+      "before": "b86493557abbaf7f529c09586666265edb1b545bec71fe4b821da6ecf1d296b7",
+      "after": "1e535a5ae6efdd12d9d70e90b09104e4a673b91deaa8110b420c051cf7499c96"
+    },
+    "semantic_faults/less_equal_changed_to_strict/main.qli": {
+      "before": "da509fb98e6b259a9aa2f3a4f010231dbdd99b2d59d8290900a1080e046d238b",
+      "after": "481561d580428865c6d5e7a2ab6696d730c97f90ffef5cbace646038631fc38e"
+    },
+    "semantic_faults/greater_than_input_not_restored/kernel.qli": {
+      "before": "50f334e7e6b6e0f7a6bb03e5031d3c53c86dd7383aed32539438291ea20794c1",
+      "after": "c13a364fd4d87333505f0d456e89a44694b279ac23ef12adcd93f4f6cceadcc9"
+    },
+    "semantic_faults/greater_than_input_not_restored/main.qli": {
+      "before": "9bb5eb20858d8d62c2f90d81498cdc73d8a0436ef0184522d2c307fd5ef77d86",
+      "after": "1a9f65ace8028904c417e0a5d093cba7174006af1fe7494701f36c7286634ef5"
+    },
+    "semantic_faults/mixed_rotation_order_reversed/kernel.qli": {
+      "before": "3b6493d4946561310b75506b6f993c08aa2774adf4028ab2ec64474d55460f04",
+      "after": "68e6e48eaeb86222ccd2182a670cbedd203f8eb440e1e9b5e8aa9c4e65d577e1"
+    },
+    "semantic_faults/mixed_rotation_order_reversed/main.qli": {
+      "before": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "after": "e92578c42b840132ba80b586cc2bbef7cca7e9eea15497089c9968cfb44a7bde"
+    },
+    "semantic_faults/mixer_erased_scalar/kernel.qli": {
+      "before": "afb7a2b67f0e3898ec3827746f1c14d71ac492c2b07326a21a798e3ce5f86f8d",
+      "after": "009f1529913e744ba97a1be9166c9e42aec9e4727822a447c2f4c81f24c69c7a"
+    },
+    "semantic_faults/mixer_erased_scalar/main.qli": {
+      "before": "19a122dd93e2dd96df20d5fc23eb2745efb940949facbe77b65da0870a5b8d98",
+      "after": "aef05123b1021594e5867be850c5411bc306322eb6755600a4efcb7de9dff56b"
+    },
+    "semantic_faults/uniform_phase_conjugated/kernel.qli": {
+      "before": "d6680a07b739330bebc8331f1b7b073b9ef5fc2d13593f2aa80f514202c9655e",
+      "after": "f2226dc2faaf86e84c49449c63e4651cabb8dcfa81abef97aa0a9043577b891b"
+    },
+    "semantic_faults/uniform_phase_conjugated/main.qli": {
+      "before": "e58efec3793206a8e58cbe07bc186c22b4b04d64e5cfd8119a896e67b1482154",
+      "after": "c5d70e13c6f45455c1ef5184586b1605d3fb24e7e0e7e61ff923f09c0bada972"
+    },
+    "semantic_faults/graph_edge_erased/kernel.qli": {
+      "before": "fdde3fc40fab8793a0739631881bf1748ae7b7bbf3f3860fd4ed0930a55b1ab2",
+      "after": "41f08288a4d07da31cc58338019c84420e910f7f02ad44a8b7bfdaca2e7c0541"
+    },
+    "semantic_faults/graph_edge_erased/main.qli": {
+      "before": "9ec23c8043ec9545e6a18c100d4aaf67d10740d011baa1700482579ea7ecc192",
+      "after": "207ce5754c214b1951ab6f3e631d18ff955abc39783ecff4a3f0997b34860f8d"
+    },
+    "semantic_faults/reflection_minus_missing_phase/kernel.qli": {
+      "before": "d4e8e161fc1a93fd16abf7ddfeef1f1de0dc407e141cb58f64f060cb1c4ad0aa",
+      "after": "7e05477461f9491ed47cd9627b4e9aeba0f2933fbb56cb0e1ed798e6d1e35298"
+    },
+    "semantic_faults/reflection_minus_missing_phase/main.qli": {
+      "before": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+      "after": "a1f1041148dd8793fc1600ae6c3b98d23d7fc947565d9a5c8df0425653d4b880"
+    },
+    "semantic_faults/controlled_reflection_missing_phase/kernel.qli": {
+      "before": "952d2527f437962ccfc4ab3974043b3515a1d3a10c7c3764104d7c2adaaef9eb",
+      "after": "7eae7f5c33cf47ef616060be614369640ca66a6a665683e3f28471a8405f4a10"
+    },
+    "semantic_faults/controlled_reflection_missing_phase/main.qli": {
+      "before": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+      "after": "7e434631b85ca60460622b62de0693171667dd033f9a5ceba12221948e700bce"
+    },
+    "semantic_faults/half_rotation_order_reversed/kernel.qli": {
+      "before": "b07afb5a3df55688cf654f583a964dba7930c9bd7952ecf3c30b66446224900e",
+      "after": "662f0ea9a0ef35023d71d0116ef90078443c3b5fb1598977fd4350d117790371"
+    },
+    "semantic_faults/half_rotation_order_reversed/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "0e20e15ac1b0bc831bbf5078f43986c8dcaddf2219089e93e3a06f4637657acd"
+    },
+    "semantic_faults/negative_zz_missing_scalar/kernel.qli": {
+      "before": "e8d95abb345dacd4b2b755c96d44262e9d60ecba82eb22def6642215dabbb6eb",
+      "after": "d2d2aac7b3d23864ecceb43000c66b16b10597271654978323ea0f211d298162"
+    },
+    "semantic_faults/negative_zz_missing_scalar/main.qli": {
+      "before": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "after": "7aea722e3173a6be9fe3bde98d31cbbf163106370747c81677ff40a6ae06f503"
+    },
+    "semantic_faults/controlled_h_unconditional/kernel.qli": {
+      "before": "047260e308762b62326cb45239fa869ad2ac5d49b91ef8ca9ece088b876d3fb7",
+      "after": "f38056236500bb16ff9390449e13919a53d8a20c81297732bf8e86988274ecc4"
+    },
+    "semantic_faults/controlled_h_unconditional/main.qli": {
+      "before": "d11976401b0662cbd034f984b73ae0dac9a8c47b5ba355d0d6d1bcc3a3393d89",
+      "after": "2901ac8d8426119f90ac56de3f09a8322f3ecfdd2b298507aff33ba4a160a265"
+    },
+    "semantic_faults/bitstring_wrong_target/kernel.qli": {
+      "before": "0062d02ca1b8d4f3a3a89ff5533865360ee8798559b2338f77a79ea7a3a08825",
+      "after": "14176b871973f3eaf3a786b75155cae87aac2e89084095af61f51b7e15f66e8b"
+    },
+    "semantic_faults/bitstring_wrong_target/main.qli": {
+      "before": "b095a8ef09f2f4a46d6a9de0c294a971464f698beccf20a9e7000c7cdddaa5df",
+      "after": "20583e58724137929986606ab182caaffb8944e34f90cb1b87bf788bd90f981f"
+    },
+    "semantic_faults/even_numbers_wrong_low_bit/kernel.qli": {
+      "before": "fde46261aac96f20e5ff385913deb685fb3a9e4e99c5b6686b8b78f5ab2d5e15",
+      "after": "584296479901d6c97fe43306b6d7c0f07fb812cd61d9c2e8514d155ab6414995"
+    },
+    "semantic_faults/even_numbers_wrong_low_bit/main.qli": {
+      "before": "627b37deb00be3af952f9f7c13376c7ddf19feb761346a0e8a65e62b84c3152e",
+      "after": "1d7430b15ea1eefe75e43e8352c02b9bb80e154f80f67cc17e9c8f2d4ed29be1"
+    },
+    "semantic_faults/increment_wrong_carry_order/kernel.qli": {
+      "before": "cde8332edbbb672e6328f53823524b68f52308609645527a4353d7bb6cfdd996",
+      "after": "163110a4802dd23141468ff48262945b34101275d1787db9c7bbe9733ef25513"
+    },
+    "semantic_faults/increment_wrong_carry_order/main.qli": {
+      "before": "2b1e743d4e2a1f35e5c029a660ed9df616f6401fbc18eee3ca487def82afb49f",
+      "after": "5f620626e3a57a799e38b493287ae6d7499763d97c043e0057014ea8cde1de5b"
+    },
+    "semantic_faults/greater_constant_wrong_threshold/kernel.qli": {
+      "before": "0f2c7d5a7267258f833ebc611d8729ed94715813d587f97471c32bdcb7c1a177",
+      "after": "3979b2c7115bb926b504820a82d977d30ca3012b26a0a5b2486e53981c4e944c"
+    },
+    "semantic_faults/greater_constant_wrong_threshold/main.qli": {
+      "before": "86f6c53186e2879872c43bb786e9e92c7ee036f83cecb633def833ad3d28e59f",
+      "after": "e5a264d65c2b330a436cbf5adbe82926e8f85ad0149ffcd100b34bbdc4ff5773"
+    },
+    "semantic_faults/xor_constant_missing_high_bit/kernel.qli": {
+      "before": "01fa6507007292d83d22fa89b0b41bf7e4e109682c4f396dbc1c294d1b5f529a",
+      "after": "f8df0734311e58b74d7165788323af797d3e71fa4ce9652fc1f693d049d11f6b"
+    },
+    "semantic_faults/xor_constant_missing_high_bit/main.qli": {
+      "before": "0daf41dc717bf58ea8b9e418eb42e6f77dc88ed5edeb52f2cb03ffc028664b9c",
+      "after": "04f54bcb9284e484f524268c77d34fd9a1e2db7decec18202b16a1e8f0e5033d"
+    },
+    "semantic_faults/half_rx_missing_scalar/kernel.qli": {
+      "before": "328975a43a3ae09eb353c5703493a55c350b12e8192509b324b7fbb67d111a38",
+      "after": "eb756141db805fbbdac7c6851a649f93b6128f66d72f1fb795210556fc3373cf"
+    },
+    "semantic_faults/half_rx_missing_scalar/main.qli": {
+      "before": "d56c4488c2c780f2bcffb26857c28d70c1537d329e6a189bbb1dbb74c0fd7dc8",
+      "after": "ca4542958f1f22acbbc4e1899afb286e3e3dadb26955819f6314c0bafa910fb3"
+    },
+    "semantic_faults/half_zz_missing_scalar/kernel.qli": {
+      "before": "f8f5ff2eaac2e9efabc240eea67cf86849d540ca0aa940bb06a0c135aca49647",
+      "after": "ac530d2f0c78c73a17b7c59703f67f33767c1cc03e83e591bf1853454a299097"
+    },
+    "semantic_faults/half_zz_missing_scalar/main.qli": {
+      "before": "53fe081a72d9d1dfeba52fb69832de6c3f145c8499a436969b705e46f1ffe298",
+      "after": "7a7a90063dbddea2b239a91f3ff35f4f16610851b33aa3bfe13453d34b53985a"
+    },
+    "semantic_faults/edge_layer_reversed_order/kernel.qli": {
+      "before": "1a08563fa2408db76f65b49224fabf7d736fde86244b7e059afd4e21a15daf96",
+      "after": "3aa8b3c4b407da6dc51b6bfd458692ffeae2f1a3cf89dbdfe6c0752eab9d3a5f"
+    },
+    "semantic_faults/edge_layer_reversed_order/main.qli": {
+      "before": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "after": "0d92927f21f32479fe58893baa8287799c9bda1a511ee7d60247ab8c68839ffa"
+    },
+    "semantic_faults/two_bitstrings3_fault/kernel.qli": {
+      "before": "2542dff51f27184a46df0df2ef4f6ac0210aedb3176356447a6421483a18dfaa",
+      "after": "9130484afe198aae81efab2bf5dc10ec5ad67ce7be351cd86a0b4c88970e1da4"
+    },
+    "semantic_faults/two_bitstrings3_fault/main.qli": {
+      "before": "f4f2804f7a3f913d5902adde264e6157a0257bdbab40d0897d239dee88a0d103",
+      "after": "75913e4664116b4450e5d442425e579b8552857b711aca4dc05253e540f4e0f7"
+    },
+    "semantic_faults/w2_retained3_fault/kernel.qli": {
+      "before": "d31befde35368f2e176e990a2b87fe867b1722dd4e17dfaf43e98a1bdebbb716",
+      "after": "7792cdb589678428adde0aa6359e3252b895e57716b5c09036985b8bc9b398e8"
+    },
+    "semantic_faults/w2_retained3_fault/main.qli": {
+      "before": "4a091cf7913fce4de0e6507b1dbdfa61863b638e6c90c7166bd4eb67712ded62",
+      "after": "6adbc2d664e90e824e3ee614761bad85e09ebd6aff434bf376009433c829cc3f"
+    },
+    "semantic_faults/even_parity3_fault/kernel.qli": {
+      "before": "6bf71ec20f13fec6fcab473f320b25038ab74c7bd2188a2e74f296f7e9a27894",
+      "after": "b92cf2f57beb0a6247088f0f05f82fc5aa236157f2b082f5a077eeb3a2134073"
+    },
+    "semantic_faults/even_parity3_fault/main.qli": {
+      "before": "02f372310d686be5918d4f9986784a97110531570f2ee57a6a598cf3be525f95",
+      "after": "89ccb33e4a46c9b647a3f9e2a23042acfedf300f97fb09c957716a5663ad6567"
+    },
+    "semantic_faults/controlled_increment2_fault/kernel.qli": {
+      "before": "dec2e45d0e4456bec5445010b2d4e19c341d1058ebfe58f1eb23071350fdcfc6",
+      "after": "64f9ec87b47afabf8025eea80d7c709e440768439301dc5d1f038bfe988a07a6"
+    },
+    "semantic_faults/controlled_increment2_fault/main.qli": {
+      "before": "ee8d9b07856ce3a832b04c74ab275b5482fdb6ff7d0dbdab89aba2e8cd1e383a",
+      "after": "209f625c2fa837c6806976096e459574e3ff1f7f7b6789c031c11f2e5cda8e3a"
+    },
+    "semantic_faults/equals1_fault/kernel.qli": {
+      "before": "95f553b23cd512c5a5caa5bc22a27a5b1d73239d7f1f47c0492df70f07e41b7c",
+      "after": "d550011bf634d038b0445dbf0e820550a594d7d3acf038684cbb6bf7f36123ca"
+    },
+    "semantic_faults/equals1_fault/main.qli": {
+      "before": "6c4bb1f9717f916c8b5bfabac21123b175db715ad98638aa06040115e2c80fce",
+      "after": "411d0b86c6f7b76932cfa898aeae95dbfbfdb6418de0b7d5ebe44835957b92f6"
+    },
+    "semantic_faults/reflection_zero2_fault/kernel.qli": {
+      "before": "63b5bdbe2cf6cbfc373de121d1c99d71ef3b1e0218d6581e19a4a69fb77da705",
+      "after": "5619a6d698bb9583dbce7b75e34bb926ad4454628e71d8d5a391860c839fe3d6"
+    },
+    "semantic_faults/reflection_zero2_fault/main.qli": {
+      "before": "4b357e0a20b1f866cbef2bd14d5b6896ef49a17d51a1bdf4bc40861916d96d8b",
+      "after": "feaa8d88997c0cbcfea66dfa938e5926d4884808058fa1867f2a193c12be79e2"
+    },
+    "semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": {
+      "before": "c501630bbfa8599b9362529a458985bcc6ddff805899facb84dd487069f4359f",
+      "after": "7842c9c96fb2d405201ea6a90f2f97ca46d90dabf9b2cfabde0f74b2ddaf0eb0"
+    },
+    "semantic_faults/rotation_negative_x_positive_y_fault/main.qli": {
+      "before": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "after": "81551326ed47bef9b1fe76d62f501074ca0a4af9d3a75f3033aaeebdf95488db"
+    },
+    "semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": {
+      "before": "1995cf7819eae9576acabe25dde187c5831c6dd5b2fb0573541b804c1dec73a1",
+      "after": "88ea50429613034dc10f30c532615c83b3a43dfd37d9f19a1d97ac10ccaca39a"
+    },
+    "semantic_faults/qaoa_negative_mixer2_fault/main.qli": {
+      "before": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "after": "5081aa86bab53832adfc5b0bdae7140372c8d7818310c75797fd3ef7ee44089c"
+    },
+    "semantic_faults/qaoa_path_layer3_fault/kernel.qli": {
+      "before": "879e9cca89ae77fd96e926c49e206caef3f63f71a1f57442a25827f907278bc3",
+      "after": "949e83b9a4abf0748526b3f82f370ffbdf2888284f802ce2eb596fdc5d707b6a"
+    },
+    "semantic_faults/qaoa_path_layer3_fault/main.qli": {
+      "before": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "after": "cbbfe8aa897a0892edc17bf011b52538f8ff82f64714207e4b085c31496f91f4"
+    },
+    "semantic_faults/minus_preparation_wrong_extension/kernel.qli": {
+      "before": "478c6ffdc3cbf3be23463967135f83490d78212dc65580fbd51ea9f4096e9bf9",
+      "after": "c141f33530727c476f57c0822f777c33ccae8f5ac2e480238d31529a9b845af6"
+    },
+    "semantic_faults/minus_preparation_wrong_extension/main.qli": {
+      "before": "b7b4f37b841e747ae8d945f46461dca272ef7937c467528e1f78825b354da2f7",
+      "after": "cd20c4bad91ca440b2f307fa41cc762756a52efbd1d4120745bcaa3ee874ecbe"
+    },
+    "semantic_faults/negative_phase_conjugated/kernel.qli": {
+      "before": "02f3b8b51447f7d00c67f77362008af6934d02ed41f8cfd501b7dac35179f0ab",
+      "after": "3a69dd1bd6d98ac86208b5a996e8c7bf827c8278c39087f7772d18679d1c95cf"
+    },
+    "semantic_faults/negative_phase_conjugated/main.qli": {
+      "before": "4d5d9ad8988938817eb587723589e50d0cc2a7a235249d458698881f6c908912",
+      "after": "c4c663dca4351fac3d2d9757b6bf57c70ddb7e2185d140cc9ca5f014cafecab2"
+    },
+    "semantic_faults/uniform_missing_middle_h/kernel.qli": {
+      "before": "9610a9919c5967bbc806b73d288b7fa1cef5583538116e4c7f6c4ce1c40511bb",
+      "after": "a3b2f4748a82eb06a3d3b283f303fd5858b45f5599723bb01804cd8107290a8d"
+    },
+    "semantic_faults/uniform_missing_middle_h/main.qli": {
+      "before": "0fe676ed0c88768c274f51240ade90decb5297df28f3589a1907bd27bc421a2d",
+      "after": "48d8d93b73ea2c9ab7376590dcfb89341764be313575ce7d043c15d1a30d78d6"
+    },
+    "semantic_faults/decrement_lost_high_borrow/kernel.qli": {
+      "before": "e3b67905cd8a3db0c2932273a0b9d2fa5001ea37fe8ca4c168fd7a8ac41d5f26",
+      "after": "36325350038567fc447771bc67804a5a184d710513d4e3145b5412be6d28fda3"
+    },
+    "semantic_faults/decrement_lost_high_borrow/main.qli": {
+      "before": "eb385750b531f871fc8ed6f00dd0f23a5ef40c30e1ae7e6ca6c2687c37db692c",
+      "after": "16e3ae51513bd534f45807eb31059ac42dba03221ac3ed2634b972a3684ccfc6"
+    },
+    "semantic_faults/zero_predicate_input_not_restored/kernel.qli": {
+      "before": "c77f899918b4c049577c9e3c86c7eac095169a93462ab2649d8be96098abadab",
+      "after": "8048e5a8e827086e4992900513ba521e7e93a9eceb83cd12589e3fa3069eb9c9"
+    },
+    "semantic_faults/zero_predicate_input_not_restored/main.qli": {
+      "before": "c423ce8ba1755e4acf86bbe57e09878fb4b11afde828577699cfcbed6a87a8f0",
+      "after": "18bcbbe9d290173040555064905680d0a3e696d06742298221f34bcdc1d19a46"
+    },
+    "semantic_faults/basis_reflection_wrong_label/kernel.qli": {
+      "before": "49a68b2e680193cc6b228c135add8bd6efec8bdf6270b480dbe547147253a4e9",
+      "after": "3edf0bc74d6cb32d3a7ef60a6fb8fb564b48db908f90b6935215a461c8f57db7"
+    },
+    "semantic_faults/basis_reflection_wrong_label/main.qli": {
+      "before": "e6282ee846e3b360d28873798d0129b0aad53109822fadf2b0342ed93a93e34b",
+      "after": "bebf8b952b672411b2f2a03ea435287e28d3f753456eaaa2fe712be1e3ba3b43"
+    },
+    "semantic_faults/negative_rotations_reversed/kernel.qli": {
+      "before": "acff4f57e6c09f8ba387803ce9070682767f69c4f2f63306eb78fa41885ff57b",
+      "after": "61d988c4691b1d0e3274c67e4933afad8ef367cfd60829b20ffcbb13d9b45241"
+    },
+    "semantic_faults/negative_rotations_reversed/main.qli": {
+      "before": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "after": "61bd1a86d048ce54d4151b2c330e9a7b69e00972eb12d06452bd045962ea0aea"
+    },
+    "semantic_faults/path_cost_lost_second_phase/kernel.qli": {
+      "before": "143069b8d408e7fef9395e744dd168be4cca76899a4dbc4a47e0d362766c2740",
+      "after": "249fefeca272c87ae9fa2cc297a5bde04a9b01f75300def3ac53f72a2fc4e3c0"
+    },
+    "semantic_faults/path_cost_lost_second_phase/main.qli": {
+      "before": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "after": "a0d3fa866e9d652af7fb8560047f9a0e68427c77a7b403001ef0163c9504232c"
+    },
+    "semantic_faults/negative_edge_cost_sign/kernel.qli": {
+      "before": "fff837c8f1257f567f9601057e5acd1b633293228f76c53384ee0d82ae4de86f",
+      "after": "4c75210ac03fc9730f4456c125bc577b2f772b555e171370bf90675cc299b695"
+    },
+    "semantic_faults/negative_edge_cost_sign/main.qli": {
+      "before": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "after": "9e094a3758c1c065c11572f109c40c94bc8f7965437b557187c5bbb0496a46d9"
+    },
+    "negative/duplicate_owner/main.qli": {
+      "before": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+      "after": "3e4bc55f62be177c504e513e01eb08fcec4bcc4602b4c3c8737f4beca9db8c97"
+    },
+    "negative/measured_owner/main.qli": {
+      "before": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+      "after": "ca2d9d6766a2b16fb4eee60aca3501a0904c5521f58acff3039b8d774c1aaa57"
+    },
+    "negative/measurement_adjoint/main.qli": {
+      "before": "e9127d7520f343bbf0c09c8c698f06e812ee4a5fe48f106ebd2fe08bf2a1f34c",
+      "after": "af5cc3170d4c4b31c8217e5794ee793a9dcb0f3c818e8d78182e294970f4a578"
+    },
+    "negative/dirty_auxiliary/main.qli": {
+      "before": "58eb819f711ebaa0a7b2a2903c8419465f56c97da004f653ccfe63d5ba951345",
+      "after": "3ba8991adf1476fdde8baff1407cbf62279e4c785120fc5ef4895d386c04e003"
+    }
+  },
+  "observations": [
+    "counterexample-checks.json"
+  ],
+  "source_selection": "snapshot",
+  "baselines": {
+    "semantic_faults/manifest.json": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+    "negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "transformation": "language-owned-primitives"
+}

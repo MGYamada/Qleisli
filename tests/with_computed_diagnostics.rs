@@ -12,10 +12,10 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::cnot;
+\x20
+
 classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";

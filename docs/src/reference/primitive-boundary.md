@@ -1,183 +1,195 @@
 # Primitive boundary and admission
 
-This chapter records the current production catalogs and the admission process
-required by the adopted QS, PR and RS interpretations. It is subordinate to the
-[authority hierarchy](authority.md), repository `TRUSTBOUNDARY.md` and
-`STDLIB.md`. It adds no primitive, source grammar, target schema, trusted axiom
-or discharged guarantee. The remaining decisions in
-[#154](https://github.com/MGYamada/Qleisli/issues/154),
-[#65](https://github.com/MGYamada/Qleisli/issues/65) and
-[#131](https://github.com/MGYamada/Qleisli/issues/131) remain in those Issues;
-this inventory does not adopt every proposal in them.
-
-The current implementation is `0.3.0-beta`, in constitutional edition 2026.
-The common original-source judgment uses canonical ordinary `Unit`, `Bit` and
-`Bits<n>` types and one typed sealed catalog. The tables below distinguish the
-existing concrete finite and selected lowering subsets, whose emitter support
-remains distinct. Source recognition and typing do not supply concrete
-capability, native acceptance or semantic evidence. Source paths identify files
-in the [Qleisli repository](https://github.com/MGYamada/Qleisli).
-The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
-distinguishes inspectable derived source from primitive or external semantic authority.
+This chapter specifies the edition-2026 `0.3.0-beta` source primitive boundary
+and records the audit and migration of the 27 earlier qualified source entries.
+It is subordinate to the [authority hierarchy](authority.md),
+`TRUSTBOUNDARY.md` and `STDLIB.md`. The cutover in
+[#369](https://github.com/MGYamada/Qleisli/issues/369) and
+[#167](https://github.com/MGYamada/Qleisli/issues/167) changes source access and
+ordinary definitions, not the meaning of the existing Raw constructors or the
+native acceptance authority. This inventory is a technical classification;
+it is neither a human adoption of a minimal generating set nor a new
+constitutional interpretation or guarantee.
 
 ## Meaning, spelling and implementation
 
 | Category | Authority and obligation |
 | --- | --- |
-| Semantic primitive or irreducible semantic rule | Defines an operation, instrument, ownership transition or effect rule at the semantic/checking boundary. Its independent intended meaning, premises and actual acceptance rule require review. Writing it in Lean, another package or a backend does not remove that obligation. |
-| Sealed source entry | A compiler-owned name/signature that user source cannot replace. Some entries expose existing primitive rules; others are aliases or compositions. Catalog membership alone supplies neither semantic evidence nor a new admitted meaning. |
-| Alias or elaborated construction | Lowers to already specified operations with the exact interface, phase and effect. It introduces no independent acceptance authority; its source correspondence still requires evidence. |
-| Derived library definition | Ordinary checked `.qli` source. Its mathematical contract is reviewed independently, and its implementation goes through the normal checking path. Placement under `std::` does not exempt it. |
-| Backend implementation intrinsic | Implements an existing meaning through a target instruction, decomposition or optimization. Its actual output needs the applicable realization/preservation checks; backend availability cannot grant a new source meaning. |
+| Semantic primitive or irreducible semantic rule | An existing operation, instrument, ownership transition or effect rule at the independent semantic/checking boundary. Intended meaning, premises and actual acceptance require review. Moving a rule into a backend or package does not remove these duties. |
+| Language primitive | One typed `PrimitiveId`, available by its bare spelling only when lexical and ordinary declaration/import resolution leave that spelling unbound. The identity fixes typing and effect rules; it grants no native acceptance or general inverse/control capability. |
+| Derived library definition | Inspectable ordinary `.qli` checked like user source, with a separately reviewed contract. Its `std::` home grants no privilege. |
+| Backend implementation intrinsic | An implementation of an existing meaning. Actual target output, phase, axes, workspace and resources retain their separate preservation and realization obligations. Internal operation tags are not additional source primitives. |
 
-`std`'s reviewed mathematical specifications are intended meanings under the
-trust-boundary policy. This assumption is about specification intent, not the
-correctness of every library implementation or name containing `std`. The
-native Lean checker alone issues production acceptance. Rust catalogs,
-recognizers, lowering, simulation and target emission supply no such authority.
+Native Lean checking alone issues new production accepted handles. Parsing,
+Rust catalogs, lowering, simulation and exporter output do not. Intended
+mathematical specifications remain independent of acceptance and require
+specification review. A technical inventory, refreshed source hash or successful
+test is not primitive admission, proof of irreducibility or source preservation.
 
-`src/frontend/check/primitive.rs::Primitive::ALL` is the typed common-source
-catalog of **27 distinct names**, preserving their exact static/runtime arity,
-type trees, principal effects and owner transitions. It introduces no new
-native primitive or semantic axiom. Concrete finite lowering has adapters for
-all **27 entries**, subject to their finite coefficient, width and work limits.
-The 19-entry legacy finite catalog, canonical empty-label guard and original
-static-primitive adapter jointly implement that coverage. The selected concrete
-catalog retains **19 entries**, with its existing phase-alias adapter and
-separate emitter limits. These implementations are recorded in
-`src/frontend/core.rs::PRIMITIVES`,
-`src/frontend/compile/lower/{primitives,static_primitives}.rs` and
-`src/frontend/specialize/primitive.rs`; catalog counts do not establish semantic
-preservation or final primitive minimality.
-A known common name unavailable to a requested emitter yields a located
-unsupported concrete-profile error, not another source grammar or fallback.
+## Bare lookup and ordinary shadowing
 
-## Finite lowering subset of sealed names
+Unqualified callable resolution has this order:
 
-All entries in this table are compiler-owned imports. `A` and `B` are
-specification metavariables for the currently supported finite basis trees.
-Explicit opaque Basis/Nat formals are checked by the common source judgment and
-closed with all ordered actuals before finite body lowering. Argument-list arity and
-tuple result shape are distinct. Every supplied quantum owner is consumed by
-the source call and explicitly represented in its returned or eliminated
-interface. Separate owners may be entangled.
+1. A lexical runtime or static binding, including a moved binding or a binding
+   of the wrong callable category, determines the use. Its ownership/category
+   error is final; lookup never retries a same-named declaration or primitive.
+2. A same-module ordinary declaration or explicitly imported ordinary public
+   declaration determines the use under the usual visibility and collision
+   rules. Its signature, public effect, access requirements and body obligations
+   apply even when its spelling matches a primitive.
+3. Only a genuinely unbound spelling may resolve to the corresponding typed
+   language primitive. An unknown name remains a name error.
 
-Let `ζ = exp(iπ/4)`. Each equation below specifies exact amplitude, including
-phase. Gate actions on a larger system act with the identity on the retained
-reference; this is an intended semantic contract, not a claim that all source
-and runtime preservation links are already proved.
+This is a lexical rule, not overload selection by argument type. A failed type,
+arity, effect, capability, concrete-profile or native check never selects another
+callee or authority. Parameters, lets, fold binders, static providers and
+restricted classical/basis expressions preserve their existing category and
+scope rules. An ordinary function named `h` receives ordinary source checking;
+its name cannot grant Hadamard meaning. A moved local `h` still shadows both.
 
-| Entry | Current signature; effect | Meaning, owners and lowering provenance |
+Primitives are not imports, prelude declarations, reserved identifiers or hidden
+aliases. Call `h(q)` or `global_phase_eighth(q)` without a `use`. Ordinary gates
+and state/structure definitions require ordinary declarations or explicit
+imports. The four former compiler foundation namespaces `std::quantum`,
+`std::observe`, `std::registers` and `std::classical` have no callable entries or
+compatibility aliases. Importing a retired path rejects with migration guidance;
+that guidance is never a lookup path. The bare name `phase_eighth` is not an
+alias for `global_phase_eighth`.
+
+## Typed source inventory and exact contracts
+
+`src/frontend/primitive.rs::PrimitiveId` and its `ALL` list contain the 13
+retained source identities below. Common typing consumes these identities in
+`src/frontend/check/primitive.rs`; finite and selected adapters consume the same
+identity rather than classifying names by string. A concrete adapter may refuse
+an unsupported identity. Its refusal does not restore qualified lookup or
+replace the source judgment. Historical internal tags such as X, Cnot, Init0
+and Empty remain transport/emitter vocabulary with no language identity.
+
+Let `ζ = exp(i*pi/4)`. `A` and `B` stand for complete supported Basis trees,
+not merely bit counts. Runtime argument-list arity and tuple result shape are
+separate. Every quantum argument evaluates once, in source order, and its owner
+is consumed and explicitly returned or eliminated. All quantum equations extend
+with identity on an arbitrary retained reference. Distinct owners may be
+entangled; zero-axis owners remain linear. The following table gives intended
+contracts, not a claim of completed general preservation proofs.
+
+| Typed identity; bare spelling | Static/runtime interface; principal effect | Exact action and retained boundary duty |
 | --- | --- | --- |
-| `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Evaluates its argument once and introduces one fresh zero-axis owner with coefficient +1. Emits `RawOp::PackUnit`; no physical wire or static argument is added. |
-| `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Consumes exactly one Unit owner while retaining all preceding scalar phase. Emits `RawOp::UnpackUnit`; no measurement, discard or physical-wire removal occurs. |
-| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Introduces a fresh owner/wire in zero. Emits `RawOp::Init0`; no input-state promise about other owners. |
-| `std::quantum::h` | `Q<Bit> -> Q<Bit>`; Unitary | Exact Hadamard, `H|b> = (|0> + (-1)^b|1>)/√2`; emits `Gate(H)` and a fresh output token on the same wire. |
-| `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ |b xor 1>` with amplitude +1; emits `Gate(X)`. |
-| `std::quantum::z` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ (-1)^b|b>`; emits `Gate(Z)`. |
-| `std::quantum::t` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ ζ^b|b>`; emits `Gate(T)`. |
-| `std::quantum::s` | `Q<Bit> -> Q<Bit>`; Unitary | Alias for two successive T actions, `diag(1,i)`; no new gate constructor or acceptance rule. |
-| `std::quantum::sdg` | `Q<Bit> -> Q<Bit>`; Unitary | Alias for six T actions, `diag(1,-i)`; exact phase is retained. |
-| `std::quantum::tdg` | `Q<Bit> -> Q<Bit>`; Unitary | Alias for seven T actions, `diag(1,ζ⁻¹)`; exact phase is retained. |
-| `std::quantum::id` | `Q<A> -> Q<A>`; Unitary | Returns the owned value with no emitted gate. This is linear passage of the owner, not duplication. |
-| `std::quantum::phase_eighth` | `Q<A> -> Q<A>`; Unitary | Exact scalar `ζ I`, including on `Q<Unit>`. Emits `ApplyUnitary` with an existing zero-axis monomial, permutation `[0]` and phase exponent `[1]`; adds no physical wire. |
-| `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | `|c,t> ↦ |c,t xor c>`; emits `Cnot`, preserves control/target order and returns both owners. Aliased operands reject. |
-| `std::quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)`; Unitary | `|a,b,t> ↦ |a,b,t xor (a and b)>`; emits `Toffoli` and preserves this nested result tree. All three owners must be distinct. |
-| `std::quantum::split` | `Q<(A,B)> -> (Q<A>, Q<B>)`; Unitary | Explicitly replaces one binary-product owner with two ordered owners over the same wire list. Emits `Split`; no measurement or separability claim. An arbitrary tuple tree is not flattened. |
-| `std::quantum::join` | `(Q<A>, Q<B>) -> Q<(A,B)>`; Unitary | Explicitly combines distinct owners into the ordered binary-product owner, concatenating left then right wires. Emits `Join`; no assertion that the inputs form a product state. |
-| `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Destructive Z measurement. Consumes the quantum owner and creates an ordinary result; emits `MeasureZ`. The complete unnormalized outcome family is relevant with references. |
-| `std::observe::reset` | `Q<Bit> -> Q<Bit>`; Observe | Ends the input logical wire and returns a fresh logical owner/wire in zero. Emits `Reset`; it is an observing reset channel, not pure inverse computation or clean-release evidence. |
-| `std::observe::discard` | `Q<A> -> Unit`; Observe | Explicitly consumes the owner with discard semantics. Emits `Discard`; it is not implicit scope cleanup or proof of a zero state. |
-| `std::classical::empty_bits` | `() -> Bits<0>`; Unitary | Existing total ordinary empty-label constructor, selected by its canonical typed identity. Produces a distinct copyable value without a classical identity, quantum owner or Raw operation. The same constructor is usable in restricted classical/basis bodies. |
-| `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | Exact `diag(1,exp(2*pi*i*j/2^k))`. Finite lowering requires `k <= 8`, `j < 2^k` and an integral eighth-root exponent; an unrepresentable phase rejects without rounding. |
-| `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>,Q<Bit>) -> (Q<Bit>,Q<Bit>)`; Unitary | Exact controlled phase under the same finite coefficient conditions, with the first owner on the low control axis and both owners returned in order. |
-| `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>,Q<Bits<n-1>>)`; Unitary | Explicit Split/Join routing extracts axis k; remaining axes keep their order. Requires `k < n <= 12`. A zero-width remainder remains owned. |
-| `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>,Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Explicit Split/Join routing inserts the first owner's axis at k. Requires `k < n <= 12`, exact types and distinct owners. No physical SWAP is implied. |
-| `std::registers::empty` | `() -> Q<Bits<0>>`; Unitary | Explicit zero-width register owner introduction using the existing Raw PackUnit representation; the source Bits tag remains distinct from Unit. |
-| `std::registers::consume_empty` | `Q<Bits<0>> -> Unit`; Unitary | Explicit consumption through existing Raw UnpackUnit after checking the exact zero-width register type. It does not discard a nonzero register or erase scalar phase. |
-| `std::classical::prepend_bit` | Static `[n]`; `(Bit,Bits<n>) -> Bits<n+1>`; Unitary | Retains head then tail as ordered classical identities, requiring `n < 12`. It creates no quantum owner or action. |
+| `H`; `h` | No static arguments; one `Q<Bit> -> Q<Bit>`; Unitary | `H|b>=(|0>+(-1)^b|1>)/sqrt(2)`, same axis. Retains the existing amplitude-mixing action; a deterministic basis map alone cannot express that superposition. |
+| `Phase`; `phase` | `[j,k]`; one `Q<Bit> -> Q<Bit>`; Unitary | `diag(1,exp(2*pi*i*j/2^k))`, with exact dyadic arguments and coefficient/profile checks. This is a relative Bit phase, distinct from a scalar. |
+| `GlobalPhaseEighth`; `global_phase_eighth` | No static arguments; one `Q<A> -> Q<A>`; Unitary | `ζ I_A`, including Unit/Bits<0> and full packaged trees. Retains explicit scalar phase with no physical wire. This audit does not prove that no alternative algebraic derivation exists. |
+| `Unit`; `unit` | No static arguments; one ordinary `Unit -> Q<Unit>`; Unitary | Fresh zero-axis owner, coefficient +1. `unit(())` is unary. Explicit owner introduction is a semantic transition, not classical `()` or implicit preparation. |
+| `Finish`; `finish` | No static arguments; one `Q<Unit> -> Unit`; Unitary | Consumes exactly that zero-axis owner with coefficient +1, retaining all preceding scalar work. No observation or clean-state inference for another basis. |
+| `Split`; `split` | No static arguments; one `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Explicit binary owner partition, complete child trees and left/right axes retained, coefficient +1. No implicit flattening or separability promise. |
+| `Join`; `join` | No static arguments; two `(Q<A>,Q<B>) -> Q<(A,B)>`; Unitary | Consumes two distinct owners, returns one ordered product owner, coefficient +1. This is not a one-tuple-argument call or physical SWAP. |
+| `MeasureZ`; `measure_z` | No static arguments; one `Q<Bit> -> Bit`; Observe | Complete destructive Z instrument `K_b=<b|`, including every unnormalized reference branch. Consumes the logical owner. Observation cannot be represented by a pure label. |
+| `Discard`; `discard` | No static arguments; one `Q<A> -> Unit`; Observe | Explicit partial trace of the complete subsystem, retaining reference marginal and every erasure history. Not clean release, a zero-state proof or implicit scope destruction. |
+| `TakeBit`; `take_bit` | `[n,k]`; one `Q<Bits<n>> -> (Q<Bit>,Q<Bits<n-1>>)`; Unitary | Requires `k<n`; extracts coordinate k and preserves remaining order, phase +1. The zero-width remainder remains owned. Explicit atomic-register routing/type rule. |
+| `PutBit`; `put_bit` | `[n,k]`; two `(Q<Bit>,Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Requires `k<n` and distinct owners; inserts the first coordinate at k, retaining the rest and phase +1. No physical SWAP or width-only coercion. |
+| `EmptyBits`; `empty_bits` | No static arguments; nullary `() -> Bits<0>`; Unitary | Exact ordinary empty label, copyable and owner-free. In restricted basis/classical expressions only this resolved typed identity receives the existing constructor rule; a same-named ordinary function does not gain it. |
+| `PrependBit`; `prepend_bit` | `[n]`; two `(Bit,Bits<n>) -> Bits<n+1>`; Unitary | Ordinary head-before-tail label construction with no quantum action. Retains the existing sized-label/type rule, not preparation or a measurement. |
 
-Declarations and source-side effect/owner transitions are in
-`src/frontend/core.rs` and `src/frontend/compile/lower/primitives.rs`.
-`src/frontend/compile/lower/transforms.rs` also constructs static gate/provider
-descriptions; those descriptions require their independent evidence. A compiler
-declaration, comment or successful lowering is not itself a proof of the table's
-mathematical meaning.
+Retaining a rule records the existing semantic interface needed by this
+implementation; it is not a mathematical proof of global minimality. Any
+further derivation or removal must first express the whole recorded interface
+in ordinary checked source and provide the applicable independent phase, type,
+reference, owner/effect, cleanup and resource correspondence. Apparent gate
+identities up to phase or matching widths are insufficient. The admission
+process below applies to genuinely new authority.
 
-## Selected lowering subset of sealed names
+`Unitary` classifies quantum action at fixed ordinary inputs; it does not make
+ordinary copying or dropping reversible classical computation. `Bit`, `Bits<1>`,
+`Unit`, `Bits<0>`, nested/flat tuple trees and products of separate owners remain
+distinct. Effect inference checks bodies independently of public annotations;
+external callers, specialization and provider selection use public effects.
+Observe/reset/discard cannot be concealed behind Unitary or Isometry labels.
+Unitarity alone does not grant inverse or control access.
 
-`src/frontend/specialize/primitive.rs` records the selected concrete subset used by
-its projection/concrete elaborator after common source checking. Its internal `TypeShape::Bit` and
-`Bits` labels still denote quantum source values, while internal `CBit` and
-`CBits` labels denote ordinary values. These private catalog labels are not
-source spellings. The table spells the actual source types explicitly. Square-bracketed
-parameters below are static natural arguments.
+## Audit and migration of all 27 former entries
 
-| Entry | Current signature; effect | Meaning, owners and lowering provenance |
+Every old source entry is accounted for below. These rows preserve migration
+history, not callable aliases. Derived code has its ordinary public interface
+and declared static actuals; replacing an import is not a same-name fallback.
+
+| Former qualified entry | Current source access | Derivation or retained semantic rule |
 | --- | --- | --- |
-| `std::quantum::h` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact Hadamard meaning; a finite leaf is bound to actual source ports. |
-| `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact bit flip; a finite leaf is bound to actual source ports. |
-| `std::quantum::z` | `Q<Bit> -> Q<Bit>`; Unitary | Exact `diag(1,-1)` on the same axis, through existing finite leaf and Raw `Gate(Z)` proposals. Independent source-step replay retains this action under inverse and control; there is no scalar or same-width type coercion. |
-| `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled X over the ordered control/target owners, followed by explicit owner routing. |
-| `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
-| `std::quantum::phase_eighth` | One `Q<A> -> Q<A>` for any supported closed Basis tree, including packaged tuples; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
-| `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Exact coefficient +1 via existing structural `pack_unit`. Evaluates its argument fully once and creates one fresh zero-axis Unit owner. No static arguments; `unit(())` is unary. |
-| `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Exact coefficient +1 via existing structural `unpack_unit`. Consumes exactly that Unit owner, preserving preceding scalar work and any surrounding reference. No static arguments, measurement, discard or implicit conversion. |
-| `std::quantum::split` | `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Exact coefficient +1 via existing structural `split_tuple`. Consumes one binary-product owner and returns two fresh ordered owners, retaining each complete basis tree and its axes. |
-| `std::quantum::join` | Two arguments `(Q<A>,Q<B>) -> Q<(A,B)>`; Unitary | Exact coefficient +1 via existing structural `join_tuple`. Consumes two distinct owners and returns a fresh owner over their ordered concatenated axes. Neither argument need be separable from the other or from a retained reference. |
-| `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
-| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Fresh-zero preparation in the instrument profile. The hierarchy instrument lowerer rejects initialization after observation where the needed preservation is unavailable. |
-| `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
-| `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>, Q<Bits<n-1>>)`; Unitary | Removes axis `k` into the first returned owner; the remaining axes keep their order. Requires `k < n`. Emits a structural `take_bit` proposal. |
-| `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>, Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Inserts the first owner's axis at position `k` in the remaining ordered axes. Requires `k < n`; emits structural `put_bit`. |
-| `std::registers::empty` | `() -> Q<Bits<0>>`; Unitary | Explicitly introduces a zero-width owner through structural `pack_empty_bits`. Zero physical width does not remove the owner obligation. |
-| `std::registers::consume_empty` | `Q<Bits<0>> -> Unit`; Unitary | Explicitly consumes that zero-width owner through structural `unpack_empty_bits`; it is not a general discard operation. |
-| `std::classical::empty_bits` | `() -> Bits<0>`; Unitary | Constructs the empty ordinary bit list. No quantum owner or measurement is introduced. |
-| `std::classical::prepend_bit` | Static `[n]`; `(Bit, Bits<n>) -> Bits<n+1>`; Unitary | Packs the first ordinary bit before the existing ordered list; no quantum action. |
+| `std::quantum::h` | bare `h` | Existing Hadamard action and exact amplitude rule. |
+| `std::quantum::phase` | bare `phase` | Existing exact dyadic relative-phase rule. |
+| `std::quantum::phase_eighth` | bare `global_phase_eighth` | Existing full scalar `ζ I`, explicitly named to distinguish T. |
+| `std::quantum::unit` | bare `unit` | Explicit zero-axis Unit owner introduction. |
+| `std::quantum::finish` | bare `finish` | Explicit Unit owner elimination with phase retained. |
+| `std::quantum::split` | bare `split` | Explicit ordered binary owner partition. |
+| `std::quantum::join` | bare `join` | Explicit ordered owner combination. |
+| `std::quantum::init0` | ordinary `std::state::init0` | `basis unit(()) as _ { 0 }`: the existing injective singleton-to-Bit rule, table `[0]`, coefficient +1. Isometry; one fresh physical wire. |
+| `std::quantum::x` | ordinary `std::gate::x` | `h(z(h(q)))`, exact X including coefficient +1. |
+| `std::quantum::z` | ordinary `std::gate::z` | `phase[1,1]`, exact `diag(1,-1)`. |
+| `std::quantum::t` | ordinary `std::gate::t` | Coherent control of `global_phase_eighth` on an explicit Unit owner, then `finish`; exact `diag(1,ζ)`, no auxiliary physical wire. |
+| `std::quantum::s` | ordinary `std::gate::s` | `phase[1,2]`, exact `diag(1,i)`. Readability does not require a power of T. |
+| `std::quantum::sdg` | ordinary `std::gate::sdg` | `adjoint(s)`, exact `diag(1,-i)`. |
+| `std::quantum::tdg` | ordinary `std::gate::tdg` | `adjoint(t)`, exact `diag(1,ζ^-1)`. |
+| `std::quantum::id` | ordinary `std::gate::id[type(A)]` | Return the same owner, coefficient +1; explicit Basis actual preserves the complete tree. |
+| `std::quantum::cnot` | ordinary `std::gate::cnot` | Ordinary coherent control of X, control first, target second; both owners returned in order. |
+| `std::quantum::toffoli` | ordinary `std::gate::toffoli` | Ordinary control of packed CNOT; three distinct owners and the original nested result tree. |
+| `std::quantum::controlled_phase` | ordinary `std::gate::controlled_phase[j,k]` | Ordinary control of the phase provider, exact control/target order; same coefficient/profile premises. |
+| `std::observe::measure_z` | bare `measure_z` | Existing complete destructive measurement rule. |
+| `std::observe::discard` | bare `discard` | Existing explicit subsystem erasure rule. |
+| `std::observe::reset` | ordinary `std::state::reset` | `discard(q); init0()`, Observe. Returns a fresh zero owner; the erased input is not cleanly uncomputed. |
+| `std::registers::take_bit` | bare `take_bit` | Existing typed atomic-register extraction rule. |
+| `std::registers::put_bit` | bare `put_bit` | Existing typed atomic-register insertion rule. |
+| `std::registers::empty` | ordinary `std::structure::empty` | `basis unit(()) as _ { empty_bits() }`: explicit Unit-to-Bits<0> singleton representation, phase +1, one zero-axis owner. |
+| `std::registers::consume_empty` | ordinary `std::structure::consume_empty` | `finish(basis q as _ { () })`: exact Bits<0>-to-Unit singleton representation followed by explicit owner elimination. |
+| `std::classical::empty_bits` | bare `empty_bits` | Existing ordinary empty-label constructor. |
+| `std::classical::prepend_bit` | bare `prepend_bit` | Existing ordinary sized head/tail constructor. |
 
-`Unitary` here classifies the quantum action at fixed classical inputs. It does
-not make arbitrary classical copying, dropping or packing into a reversible
-classical computation. The empty ordinary result has type `Unit` and value
-`()`. `Bits<0>` and `Q<Bits<0>>` are distinct from Unit and from each other.
+Reset has channel `rho_AR -> |0><0|_A tensor Tr_A(rho_AR)` with a fresh
+output owner; this formula includes arbitrary reference correlations. The Unit
+and Bits<0> conversions above are explicit source maps, never definitional type
+equality or inserted coercions. Scalar phase accumulated before their use remains
+in the composition. Pure structural elimination does not invoke discard.
 
-Common source signatures and input-dependent results are checked in
-`src/frontend/check/primitive.rs`. `phase_eighth` takes no static arguments and
-exactly one `Q<A>` owner, evaluated once, preserving any complete Basis tree A,
-including a packaged tuple. Ordinary Unit and tuples of separate owners reject.
-Its scalar contract is `ζ I`, not the Bit phase gate. The selected concrete
-`src/frontend/specialize/primitive.rs::quantum_endomorphism` preserves the complete
-closed Basis tree, including packaged tuples, subject to the existing concrete
-type and backend-profile limits. `src/frontend/specialize/bindings.rs` checks closed substitutions
-and explicit bindings against the common checked interfaces. The selected
-concrete catalog is `src/frontend/specialize/primitive.rs`;
-`src/frontend/specialize/elaborate.rs::primitive` materializes its concrete
-signatures and guards. Concrete phase arguments require
-`k <= 8` and `j < 2^k`; concrete register operations require `k < n <= 8`;
-classical prepend requires `n < 8`. These are current preparation capacities,
-not general-size semantic theorems. Aggregate elaboration and backend-profile
-limits apply in addition.
+## Concrete profiles, source retention and resources
 
-`unit` and `finish` expose independently checked Unit structure through
-`RawOp::PackUnit` / `RawOp::UnpackUnit` in finite and selected Raw lowering,
-and `pack_unit` / `unpack_unit` nodes in the selected hierarchy. These paths
-retain the zero-width owner and exact scalar action; neither operation is an
-observing discard or an acceptance exception. Source correspondence remains a
-separate obligation. The selected hierarchy's
-`split`/`join` maps retain exact nested Unit/Bit/Bits/tuple bases, take no static
-arguments and evaluate their arguments once in source order. `split` requires
-an immediate binary tuple; a matching total width does not suffice. Together
-with `unit`/`finish` they provide explicit packaged left/right unitors. No
-implicit reassociation or owner conversion is inserted. Their independent
-source-step check binds the actual structural constructor, complete basis tree,
-ordered axes and full caller frame; matching endpoints alone is insufficient.
+All 13 identities have common source typing. Existing finite and selected
+profiles still have independent capacities. Finite Raw R8 phase lowering
+requires an integral eighth-root exponent, with `k<=8` and `j<2^k`; unsupported
+coefficients reject rather than round. Selected dyadic hierarchy preparation
+retains its `k<=8`, `j<2^k` and symbolic-word profile; those sufficient checks
+are not a complete semantic normal form. Finite register routing remains
+`k<n<=12`; selected routing remains `k<n<=8`, and ordinary prepend uses its
+existing `n<12` / `n<8` concrete bounds. Aggregate type, width, depth, work and
+native limits apply as well. The selected Discard adapter remains unavailable;
+ordinary reset therefore does not acquire selected support merely by moving
+into std. Instrument initialization after observation retains its existing
+profile refusal. No old-route retry is supplied.
 
-`src/frontend/specialize/lower.rs` emits hierarchy/finite-leaf, structural and
-instrument proposals. Source signature acceptance does not imply that every
-root/interface is supported by every lowering profile. The dedicated native
-hierarchy checks remain necessary. The
-[production boundary](production-boundary.md) identifies these routes and the
-remaining source-to-operator preservation gap. Common names across the two
-lowering subsets do not establish emitter convergence or source preservation.
+Ordinary calls retain original definition, caller instance, static actuals,
+public effect and full source/dependency identity. Checked Meaning overrides
+retain the exact original Raw witness and actual checked leaf, matrix, both
+ports and reference receipts; a same-width endpoint or digest alone is not
+source correspondence. Original zero-repeat children retain their checking
+obligations. A dormant repeat-zero witness is not an equation between an
+arbitrary hierarchy and finite implementation. These bounded engineering
+source checks do not claim a general source-preservation theorem.
+
+The ordinary preparation uses the existing Raw `LiftBasis` 0-to-1 table `[0]`;
+finite target export must inspect that actual table and fresh wire/owner mapping.
+It cannot replace arbitrary rectangular maps by initialization. Structural
+singleton maps retain their full Unit/Bits<0> trees and original roots under
+composition, repeat, control and adjoint wherever the concrete profile supports
+them. Explicit cleanup and rejected observation/phase/width cases remain part
+of that profile. Source recognition alone enables none of these emitters.
+
+Semantic ownership, clean/dirty scratch and target workspace are separate.
+The T definition's Unit owner has zero physical wires, but does not promise
+zero target T cost. SWAP's three ordinary CNOT calls differ from structural
+`permute_axes` output routing even when a fixed-coordinate matrix agrees.
+A representation sharing count, logical instruction count or checker-work
+budget is not quantitative Resource Safety. Every target/resource claim needs
+its own actual artifact, model, units and evidence. Exact cleanup must hold
+for every permitted input and reference; approximation never excuses dirty
+scratch. General QS, PR, quantitative RS and EXACT duties remain pending;
+the two admitted ordinary QLV1 ownership/classical-scope scopes remain protected.
 
 ## Core forms and independent meaning
 
@@ -222,12 +234,12 @@ target-realization or quantitative resource theorem.
 
 ## Ordinary library and module resolution
 
-`src/frontend/source.rs::BundledRegistry` embeds **six ordinary source
-modules with twenty-one public definitions** and five private helpers for
+`src/frontend/source.rs::BundledRegistry` embeds **seven ordinary source
+modules with twenty-five public definitions** and five private helpers for
 reflection, scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
-Both loaders retain all six complete original sources
+Both loaders retain all seven complete original sources
 and their fixed manifest. They receive normal common declaration, type, owner,
-access, dependency and effect checking rather than `ImportOrigin::Sealed`.
+access, dependency and effect checking rather than a compiler-import exception.
 Concrete materialization and native checking occur under the actual consumer's
 scope; selected source checking alone does not natively certify every bundled
 specialization:
@@ -238,7 +250,8 @@ specialization:
 | `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H; positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. Fourier interfaces remain fixed-width. |
 | `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection `2|s><s| - I` with exact computed-auxiliary cleanup. Private `nonzero2` is a normal basis helper; Hadamard is imported from ordinary transform source. |
 | `std::gate`, `stdlib/src/gate.qli` | `id`, `t`, `s`, `sdg`, `tdg`, `z`, `x`, `controlled_phase`, `cnot`, `toffoli`, `swap` | Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner; phase/Pauli and controlled gates derive through ordinary providers. SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee. |
-| `std::structure`, `stdlib/src/structure.qli` | `permute_axes` | Structural two-axis map `[1,0]`, exact phase +1, with reversed output axes and no physical gate instruction. Generic register/permutation interfaces remain unsupported. |
+| `std::state`, `stdlib/src/state.qli` | `init0`, `reset` | Ordinary explicit singleton-to-Bit preparation and observing discard/preparation; original owner, phase and complete reference instrument retained. |
+| `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `empty`, `consume_empty` | Structural two-axis map `[1,0]`, exact phase +1, with reversed output axes and no physical gate instruction. Explicit zero-width Bits owner introduction/elimination use singleton basis maps. Generic register/permutation interfaces remain unsupported. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
 
 The [semantic namespace Reference](stdlib.md) gives every mathematical module's
@@ -265,11 +278,12 @@ permitted. Same-module private lookup remains available; cross-module imports
 and host entries require public declarations. Import spelling supplies no
 runtime initialization or evidence.
 
-Both loaders reserve `std` and `std::`. Compiler-owned modules expose only the
-fixed common catalog; an unknown sealed name is an error, not a fallback to
-caller source. Ordinary bundles retain their provenance and original ASTs,
+Both loaders reserve `std` and `std::` for the ordinary bundled registry.
+The retired foundation catalogs expose no importable entries. Unknown or retired
+paths reject; bare primitive lookup occurs only after lexical and ordinary
+resolution leave the name unbound. Ordinary bundles retain their provenance and original ASTs,
 with bundled bytes checked under each loader's byte policy before
-parsing/copying. The selected loader additionally reserves all six bundled
+parsing/copying. The selected loader additionally reserves all seven bundled
 module slots and counts their bytes toward its aggregate limit. The finite
 loader retains its separate bounded and explicit legacy byte policies and
 local filesystem discovery limits. No ambient source replacement or checking
@@ -462,7 +476,7 @@ the common and concrete catalogs, public constructor families and their fields. 
 unlisted production checking sources. `scripts/check_production_coverage.py`
 checks classified public routes and native dispatch. These checks detect drift;
 refreshing their metadata is not primitive admission or proof. The inventory
-pins the common and concrete sealed catalog sources, discovers new checking
+pins the typed source identity and concrete adapter sources, discovers new checking
 files, and separately records public Raw/finite/hierarchy constructor families
 and fields. Its mutation suite rejects a new Raw constructor even if its
 source digest is refreshed. Production coverage independently binds public
@@ -470,13 +484,20 @@ routes and native dispatch. Review the source, catalog/constructor inventory
 and affected acceptance/proof contracts together; updated hashes cannot supply
 human specification review or a constitutional judgment.
 
+The typed inventory guard additionally fixes the `PrimitiveId` members, their
+`ALL` order, canonical bare spellings and unbound-only lookup body. Adding a
+source identity cannot pass by refreshing a file digest or inserting an
+internal selected-emitter row. Its mutation calibration separately exercises
+typed source growth and an unhandled selected adapter; these are drift/coverage
+checks, not judgments of irreducibility or admission.
+
 The existing regression sources include:
 
-- `tests/review_v021.rs::every_sealed_declaration_matches_the_existing_source_signature`;
+- `tests/review_v021.rs` source-signature checks;
 - `tests/sized_source.rs::primitive_signatures_agree_through_symbolic_and_concrete_preparation`
   and `concrete_phase_and_repeat_limits_check_zero_and_unused_providers`;
 - `tests/project.rs::std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules`,
-  `unknown_sealed_name_is_not_reinterpreted_as_user_code`,
+  the retired-foundation-path refusal checks,
   `semantic_stdlib_modules_are_bundled_source_with_private_helpers` and
   `import_only_cycles_load_but_call_cycles_and_name_collisions_reject`;
 - `tests/semantic_contracts.rs::primitive_evidence_preserves_exact_phase`,

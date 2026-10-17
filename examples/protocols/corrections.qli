@@ -1,6 +1,6 @@
 //! Classical bits select gates; they do not coherently control a qubit.
-use std::quantum::x;
-use std::quantum::z;
+use std::gate::x;
+use std::gate::z;
 
 /// Apply Z^phase_bit X^parity_bit to the quantum input (X executes first).
 /// The bits are copyable; q is consumed and its updated owner is returned.

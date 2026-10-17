@@ -1,0 +1,24 @@
+// Upstream authors (repository usernames): timmysilv. See upstream metadata.
+// Primitive-source migration: Copyright 2026 Qleisli Project Contributors
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_teleportation/demo.py
+// Selected symbol(s): teleport; measure_and_update
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+use std::gate::cnot;
+
+
+pub observe fn teleport(q: Q<Bit>) -> ((Bit, Bit), Q<Bit>) {
+    let (alice, bob) = cnot(h(init0()), init0());
+    let (q, alice) = cnot(q, alice);
+    let phase = measure_z(h(q));
+    let parity = measure_z(alice);
+    let bob = if parity { x(bob) } else { bob };
+    let bob = if phase { z(bob) } else { bob };
+    ((phase, parity), bob)
+}

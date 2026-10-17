@@ -168,7 +168,7 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
         &[("default", Effect::Unitary), ("client", Effect::Unitary)],
     );
     checked_finite_effects(
-        "use std::quantum::init0; fn default()->Q<Bit>{init0()}\n\
+        "use std::state::init0; fn default()->Q<Bit>{init0()}\n\
          pub isometry fn client()->Q<Bit>{default()}",
         &[("default", Effect::Isometry), ("client", Effect::Isometry)],
     );
@@ -194,7 +194,7 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
         &[("default", Effect::Unitary), ("client", Effect::Unitary)],
     );
     checked_finite_effects(
-        "use std::quantum::{unit,finish}; fn default()->Q<Unit>{unit(())}\n\
+        " fn default()->Q<Unit>{unit(())}\n\
          pub unitary fn client()->Unit{finish(default())}",
         &[("default", Effect::Unitary), ("client", Effect::Unitary)],
     );
@@ -215,12 +215,12 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
 fn false_unitary_assertions_cannot_hide_default_named_preparation() {
     for (source, marker) in [
         (
-            "use std::quantum::init0; unitary fn default()->Q<Bit>{init0()}\n\
+            "use std::state::init0; unitary fn default()->Q<Bit>{init0()}\n\
              pub isometry fn client()->Q<Bit>{default()}",
             "init0()",
         ),
         (
-            "use std::quantum::init0; fn default()->Q<Bit>{init0()}\n\
+            "use std::state::init0; fn default()->Q<Bit>{init0()}\n\
              pub unitary fn client()->Q<Bit>{default()}",
             "default()",
         ),
@@ -247,7 +247,7 @@ fn false_unitary_assertions_cannot_hide_default_named_preparation() {
 
 #[test]
 fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
-    let explicit = "use std::quantum::{unit,finish}; fn default()->Q<Unit>{unit(())}\n\
+    let explicit = " fn default()->Q<Unit>{unit(())}\n\
         pub unitary fn client()->Unit{finish(default())}";
     let common = ParsedProgram::parse(sources(explicit)).unwrap();
     for name in ["default", "client"] {

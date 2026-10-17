@@ -61,7 +61,7 @@ pub struct CheckedUnitaryLeaf {
     payload: Arc<[u8]>,
     boundary: UnitaryBoundary,
     program: AcceptedProgram,
-    meaning: Matrix,
+    meaning: Arc<Matrix>,
     exact_work: usize,
 }
 
@@ -82,6 +82,12 @@ impl CheckedUnitaryLeaf {
         &self.meaning
     }
 
+    /// Share this same immutable checked target with private source retention.
+    /// This creates no equation or accepted handle and does not encode a copy.
+    pub(crate) fn shared_meaning(&self) -> Arc<Matrix> {
+        Arc::clone(&self.meaning)
+    }
+
     /// Exact work spent by this reconstruction/equation, excluding tokenization.
     pub fn exact_work(&self) -> usize {
         self.exact_work
@@ -89,7 +95,9 @@ impl CheckedUnitaryLeaf {
 
     /// Full structural binding, never pointer identity or a producer hash.
     pub fn matches(&self, payload: &[u8], boundary: &UnitaryBoundary, meaning: &Matrix) -> bool {
-        self.payload.as_ref() == payload && &self.boundary == boundary && &self.meaning == meaning
+        self.payload.as_ref() == payload
+            && &self.boundary == boundary
+            && self.meaning.as_ref() == meaning
     }
 }
 
@@ -256,7 +264,7 @@ pub(crate) fn check_with_kernel(
         payload: Arc::from(payload),
         boundary: boundary.clone(),
         program,
-        meaning: meaning.clone(),
+        meaning: Arc::new(meaning.clone()),
         exact_work: before - budget.remaining(),
     })
 }

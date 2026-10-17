@@ -11,18 +11,24 @@ use qleisli::interchange::native::Kernel;
 use std::collections::BTreeMap;
 use std::process::Command;
 
-const ADJOINT: &str = include_str!(
-    "fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/adjoint-observe/main.qli"
-);
-const MISSING_ELSE: &str = include_str!(
-    "fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/missing-else/main.qli"
-);
+static ADJOINT: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/adjoint-observe/main.qli",
+    )
+});
+static MISSING_ELSE: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/missing-else/main.qli",
+    )
+});
 const QUALIFIED: &str = include_str!(
     "fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/qualified-call/main.qli"
 );
-const REBIND: &str = include_str!(
-    "fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/live-rebinding/main.qli"
-);
+static REBIND: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/common-diagnostics-v030/attempt-01/live-rebinding/main.qli",
+    )
+});
 
 fn refusal(source: &str, code: &str, span: Span, message: &str) {
     let selected =
@@ -43,7 +49,10 @@ fn refusal(source: &str, code: &str, span: Span, message: &str) {
 
 #[test]
 fn non_endomorphic_adjoint_names_the_effect_obligation_without_guessing_body_effects() {
-    for source in [ADJOINT.to_owned(), ADJOINT.replace("observe fn m", "fn m")] {
+    for source in [
+        ADJOINT.as_str().to_owned(),
+        ADJOINT.as_str().replace("observe fn m", "fn m"),
+    ] {
         let start = source.find("adjoint(m)").unwrap() + "adjoint(".len();
         refusal(
             &source,
@@ -56,7 +65,7 @@ fn non_endomorphic_adjoint_names_the_effect_obligation_without_guessing_body_eff
 
 #[test]
 fn endomorphic_observing_provider_still_reports_its_inferred_effect() {
-    let source = "use std::quantum::init0; use std::observe::measure_z;
+    let source = "use std::state::init0;\x20
         fn m(q:Q<Bit>)->Q<Bit>{let b=measure_z(q); init0()}
         fn client(q:Q<Bit>)->Q<Bit>{adjoint(m)(q)}";
     let start = source.find("adjoint(m)").unwrap() + "adjoint(".len();
@@ -71,7 +80,7 @@ fn endomorphic_observing_provider_still_reports_its_inferred_effect() {
 #[test]
 fn missing_else_points_at_its_if_including_static_nested_and_eof_cases() {
     for (source, marker) in [
-        (MISSING_ELSE, "if m"),
+        (MISSING_ELSE.as_str(), "if m"),
         ("fn f()->Bit{if static 1 == 1 {1}}", "if static"),
         ("fn f()->Unit{if 1 {()} else {if 0 {()}}}", "if 0"),
         ("// 日本語\r\nfn f()->Unit{if 1 {()}", "if 1"),
@@ -146,9 +155,9 @@ fn explicit_static_else_executes_only_the_selected_ordinary_arm() {
 
 #[test]
 fn live_quantum_rebinding_quotes_the_owner_and_keeps_the_ownership_refusal() {
-    let start = REBIND.rfind("let a").unwrap() + 4;
+    let start = REBIND.as_str().rfind("let a").unwrap() + 4;
     refusal(
-        REBIND,
+        REBIND.as_str(),
         "ownership",
         Span::new(start, start + 1),
         "binding `a` would drop a live quantum owner",
@@ -158,9 +167,9 @@ fn live_quantum_rebinding_quotes_the_owner_and_keeps_the_ownership_refusal() {
 #[test]
 fn source_refusals_use_one_category_in_cli_text_and_json() {
     for (source, code) in [
-        (MISSING_ELSE, "parse"),
+        (MISSING_ELSE.as_str(), "parse"),
         (QUALIFIED, "parse"),
-        (REBIND, "ownership"),
+        (REBIND.as_str(), "ownership"),
     ] {
         let root = SourceRoot::new(source);
         for json in [false, true] {
@@ -226,15 +235,14 @@ fn selected_native_rejections_keep_one_category_and_fail_closed_in_text_and_json
 )]
 #[test]
 fn explicit_else_imports_and_inferred_unitary_adjoint_still_execute() {
-    let imports = "use std::quantum::{init0, x}; use std::observe::measure_z;";
+    let imports = "use std::state::init0; use std::gate::x; ";
     for source in [
-        MISSING_ELSE.replace("if m { x(excl r); }", "if m { x(excl r); () } else { () };"),
+        MISSING_ELSE
+            .as_str()
+            .replace("if m { x(excl r); }", "if m { x(excl r); () } else { () };"),
         QUALIFIED
             .replace("std::observe::measure_z(init0())", "measure_z(init0())")
-            .replace(
-                "use std::quantum::init0;",
-                "use std::quantum::init0; use std::observe::measure_z;",
-            ),
+            .replace("use std::quantum::init0;", "use std::state::init0;"),
         format!(
             "{imports} observe fn m(q:Q<Bit>)->Q<Bit>{{x(q)}} observe fn main()->Bit{{measure_z(adjoint(m)(init0()))}}"
         ),

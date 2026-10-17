@@ -5,8 +5,13 @@ use super::preservation::{self as p, SourceEvent};
 use super::*;
 use crate::interchange::json::{self, Value};
 
+mod native_source;
+mod operations;
+pub(super) use native_source::NativeSourceTrace;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod transform_tests;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
@@ -91,6 +96,144 @@ pub(super) fn operation_uses_table(
             }
         }
     }
+}
+
+/// Restrict this transport extension to original pure structural-table bodies.
+/// Nonzero tables and preparation keep their existing profile refusal.
+/// Native semantics and acceptance of the existing nodes remain in Lean.
+pub(super) fn operation_has_structural_tables(
+    source: &ElaboratedProgram,
+    operation: &SourceOperation,
+) -> Result<bool> {
+    let mut pending = vec![operation];
+    let mut definitions = vec![];
+    let mut seen = BTreeSet::new();
+    let mut visits = 0usize;
+    loop {
+        while let Some(operation) = pending.pop() {
+            visits += 1;
+            if visits > 10_000 {
+                return Err(limit(
+                    "zero-basis source operation traversal exceeds definition capacity",
+                ));
+            }
+            if operation
+                .constructed()
+                .is_some_and(|(_, _, ports)| ports.effect != Effect::Unitary)
+            {
+                return Ok(false);
+            }
+            if let Some(id) = operation.definition() {
+                definitions.push(id);
+            }
+            pending.extend(operation.children());
+        }
+        let Some(id) = definitions.pop() else {
+            return Ok(true);
+        };
+        if !seen.insert(id) {
+            continue;
+        }
+        let definition = source.definitions().get(id).ok_or_else(|| {
+            p::invalid("source operation references an absent original definition")
+        })?;
+        if definition.effect() != "unitary" {
+            return Ok(false);
+        }
+        for step in definition.steps() {
+            visits += 1;
+            if visits > 10_000 {
+                return Err(limit(
+                    "zero-basis source operation traversal exceeds definition capacity",
+                ));
+            }
+            if step.basis_table().is_some() && classify(step) != Some(Kind::Structural) {
+                return Ok(false);
+            }
+            if let Some(id) = step.called_definition() {
+                definitions.push(id);
+            }
+            if let Some(operation) = step.operation() {
+                pending.push(operation);
+            }
+        }
+    }
+}
+
+/// Preserve the existing refusal for repetition on a materialized forward
+/// path: zero iterations do not retain the original dormant child. Pure
+/// constructed branches remain atomic and use their existing child binding.
+pub(super) fn materialized_without_repeat(operation: &SourceOperation) -> Result<bool> {
+    let mut pending = vec![operation];
+    let mut visits = 0usize;
+    while let Some(operation) = pending.pop() {
+        visits += 1;
+        if visits > 10_000 {
+            return Err(limit(
+                "forward operation traversal exceeds definition capacity",
+            ));
+        }
+        if operation.child().is_some() {
+            return Ok(false);
+        }
+        if operation
+            .constructed()
+            .is_some_and(|(_, _, ports)| ports.effect == Effect::Unitary)
+        {
+            continue;
+        }
+        pending.extend(operation.children());
+    }
+    Ok(true)
+}
+
+/// Match a pure child materialized inside an Isometry constructor at the
+/// exact original tree path supplied by Replay. Split/join events are checked
+/// separately against their original tensor constructor and complete frame.
+pub(super) fn validate_constructor_operation(
+    proposal: &HierarchyProposal,
+    event: &SourceEvent,
+    operation: &SourceOperation,
+    defs: &[Value],
+    adjoint: bool,
+    enabled: bool,
+) -> Result<()> {
+    if !enabled {
+        return Ok(());
+    }
+    // Every materialized pure child needs its original binding, including
+    // table-free siblings of preparation. Matching endpoints is insufficient.
+    if !operation_has_structural_tables(&proposal.source, operation)? {
+        return Err(p::invalid(
+            "materialized pure child is outside the structural-table transport profile",
+        ));
+    }
+    operations::validate_bound(proposal, event, operation, defs, adjoint)
+}
+
+/// Bind transformed structural-table events without changing native acceptance.
+pub(super) fn validate_operation_event(
+    proposal: &HierarchyProposal,
+    event: &SourceEvent,
+    step: &SourceStep,
+    defs: &[Value],
+    enabled: bool,
+) -> Result<()> {
+    if !enabled {
+        return Ok(());
+    }
+    let Some(operation) = step.operation() else {
+        return Ok(());
+    };
+    if !operation_uses_table(&proposal.source, operation)? {
+        return Ok(());
+    }
+    if !operation_has_structural_tables(&proposal.source, operation)? {
+        return Err(p::invalid(
+            "zero-basis transform is outside the retained source transport profile",
+        ));
+    }
+    operations::validate(proposal, event, step, operation, defs)
 }
 
 fn unpack(ty: &SourceType) -> Result<&'static str> {
@@ -327,7 +470,10 @@ fn identity(defs: &[Value], id: usize, before: &[Port], after: &[Port]) -> Resul
 
 pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
     if !needs_replay(proposal) {
-        return if proposal.zero_basis.is_empty() && proposal.pure_traces.is_empty() {
+        return if proposal.zero_basis.is_empty()
+            && proposal.pure_traces.is_empty()
+            && proposal.native_sources.is_empty()
+        {
             Ok(())
         } else {
             Err(p::invalid(
@@ -356,6 +502,7 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
         ));
     }
     let defs = p::array(p::field(&graph, "definitions")?)?;
+    let mut materialized_constructors = false;
     for event in &proposal.events {
         let step = proposal
             .source
@@ -364,6 +511,19 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
             .and_then(|definition| definition.steps().get(event.step))
             .ok_or_else(|| p::invalid("source event lacks its original source step"))?;
         validate_call_event(proposal, event, step, defs, true)?;
+        let materialized = step.kind() == "apply"
+            && step.effect() == "iso"
+            && step
+                .operation()
+                .is_some_and(SourceOperation::has_constructed);
+        if materialized {
+            // The event retains the outer origin, not an atomic application
+            // of the entire Isometry. Replay below binds its exact child path,
+            // source operands and split/join or pure-child interval instead.
+            materialized_constructors = true;
+        } else {
+            validate_operation_event(proposal, event, step, defs, true)?;
+        }
         if step.basis_table().is_some() {
             validate_event(proposal, event)?;
         }
@@ -380,7 +540,14 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
         ));
     }
     let reachable = reachable(defs, root)?;
+    native_source::validate(proposal, &graph, &reachable)?;
+    let mut source_roots = BTreeSet::new();
     for trace in &proposal.pure_traces {
+        if !source_roots.insert(trace.definition) {
+            return Err(p::invalid(
+                "original pure definition has duplicate source roots",
+            ));
+        }
         if !reachable.contains(&trace.root) {
             return Err(p::invalid(
                 "original pure source root is not linked from the actual entry",
@@ -503,6 +670,16 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
                 ));
             }
         }
+    }
+    if materialized_constructors {
+        // Once for the complete original body, never once per event. The
+        // existing bounded replay must succeed before deferring an outer
+        // operation's atomic matcher can count as a valid source binding.
+        // The public initializer gate also replays to return its move report.
+        if !proposal.instrument {
+            return Err(p::invalid("materialized Isometry requires an instrument"));
+        }
+        p::validate(proposal)?;
     }
     Ok(())
 }
@@ -640,4 +817,12 @@ pub(super) fn validate_event(proposal: &HierarchyProposal, event: &SourceEvent) 
         ));
     }
     Ok(())
+}
+
+/// Remap only the exact native-source node references; witness bytes stay fixed.
+pub(super) fn remap_native_sources(
+    traces: &mut [NativeSourceTrace],
+    mapping: &BTreeMap<usize, usize>,
+) -> Result<()> {
+    native_source::remap(traces, mapping)
 }

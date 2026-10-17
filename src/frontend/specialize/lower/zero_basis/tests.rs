@@ -51,7 +51,7 @@ fn zero_basis_maps_preserve_distinct_empty_atoms_and_native_owner_obligations() 
                 "empty_bits()"
             };
             let source = format!(
-                "use std::classical::empty_bits;pub unitary fn entry(q:Q<{input}>)->Q<{output}>{{basis q as label {{{label}}}}}"
+                "pub unitary fn entry(q:Q<{input}>)->Q<{output}>{{basis q as label {{{label}}}}}"
             );
             let proposal = lower(&source);
             validate(&proposal).unwrap();
@@ -108,9 +108,8 @@ fn zero_basis_preparation_replay_rejects_table_and_fresh_axis_substitution() {
 
 #[test]
 fn retained_zero_interval_cannot_replace_the_actual_pure_entry_or_ordered_root() {
-    let valid = lower(
-        "use std::classical::empty_bits;pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}",
-    );
+    let valid =
+        lower("pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}");
     let mut wrong = valid.clone();
     let interval = wrong.zero_basis[0].node;
     change_graph(&mut wrong, |graph| {
@@ -152,11 +151,10 @@ fn retained_zero_interval_cannot_replace_the_actual_pure_entry_or_ordered_root()
 )]
 #[test]
 fn a_native_valid_extra_scalar_cannot_use_an_unchanged_zero_interval_as_source_evidence() {
-    let valid = lower(
-        "use std::classical::empty_bits;pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}",
-    );
+    let valid =
+        lower("pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}");
     let mut changed = lower(
-        "use std::classical::empty_bits;use std::quantum::phase_eighth;pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};phase_eighth(z)}",
+        "pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};global_phase_eighth(z)}",
     );
     kernel()
         .check_against_native(changed.payload(), changed.comparison_request())
@@ -177,7 +175,7 @@ fn a_native_valid_extra_scalar_cannot_use_an_unchanged_zero_interval_as_source_e
 #[test]
 fn pure_atomic_helpers_bind_their_original_child_root_and_complete_caller_frame() {
     let valid = lower(
-        "use std::classical::empty_bits;use std::quantum::phase_eighth;unitary fn helper(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};phase_eighth(z)}pub isometry fn entry(r:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Bits<0>>){(r,helper(q))}",
+        "unitary fn helper(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};global_phase_eighth(z)}pub isometry fn entry(r:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Bits<0>>){(r,helper(q))}",
     );
     validate(&valid).unwrap();
     p::validate(&valid).unwrap();
@@ -212,17 +210,13 @@ fn pure_atomic_helpers_bind_their_original_child_root_and_complete_caller_frame(
 }
 
 #[test]
-fn zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refusal() {
+fn zero_basis_composition_retains_intervals_and_nonzero_tables_keep_profile_refusal() {
     let source = elaborate(
-        "unitary fn zero(q:Q<Unit>)->Q<Unit>{basis q as label {()}}pub unitary fn entry(q:Q<Unit>)->Q<Unit>{power(zero,0)(q)}",
+        "unitary fn zero(q:Q<Unit>)->Q<Unit>{basis q as label {()}} fn invoke[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){U(q)} pub unitary fn entry(q:Q<Unit>)->Q<Unit>{invoke[then_op(zero,zero)](q)}",
     );
-    assert!(
-        source
-            .lower()
-            .unwrap_err()
-            .message()
-            .contains("ordinary source calls")
-    );
+    let proposal = source.lower().unwrap();
+    validate(&proposal).unwrap();
+    assert_eq!(proposal.zero_basis.len(), 1);
     let source = elaborate("pub unitary fn entry(q:Q<Bit>)->Q<Bit>{basis q as label {not label}}");
     assert!(
         source
@@ -235,9 +229,8 @@ fn zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refu
 
 #[test]
 fn aggregate_pure_trace_exhaustion_precedes_another_event_copy() {
-    let proposal = lower(
-        "use std::classical::empty_bits;pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}",
-    );
+    let proposal =
+        lower("pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}");
     let trace = &proposal.pure_traces[0];
     let event = &trace.events[0];
     let step = &proposal.source.definitions()[event.definition].steps()[event.step];
@@ -271,9 +264,8 @@ fn aggregate_pure_trace_exhaustion_precedes_another_event_copy() {
 
 #[test]
 fn original_source_obligations_survive_omitted_interval_and_pure_trace_tables() {
-    let pure = lower(
-        "use std::classical::empty_bits;pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}",
-    );
+    let pure =
+        lower("pub unitary fn entry(q:Q<Unit>)->Q<Bits<0>>{basis q as label {empty_bits()}}");
     for (intervals, traces) in [(true, false), (false, true), (true, true)] {
         let mut wrong = pure.clone();
         if intervals {
@@ -295,7 +287,7 @@ fn original_source_obligations_survive_omitted_interval_and_pure_trace_tables() 
         "original preparation event requires its interval"
     );
     let mut helper = lower(
-        "use std::classical::empty_bits;use std::quantum::phase_eighth;unitary fn helper(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};phase_eighth(z)}pub isometry fn entry(r:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Bits<0>>){(r,helper(q))}",
+        "unitary fn helper(q:Q<Unit>)->Q<Bits<0>>{let z=basis q as label {empty_bits()};global_phase_eighth(z)}pub isometry fn entry(r:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Bits<0>>){(r,helper(q))}",
     );
     helper.zero_basis.clear();
     helper.pure_traces.clear();
