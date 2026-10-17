@@ -11,6 +11,11 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Split latest/MSRV native-gated Rust all-target testing into two explicit
+  commands with complete, disjoint Cargo target inventory checks. Preserve all
+  targets and subsequent checks with the existing per-command timeout and job
+  limits; aggregate available test time increases without claiming a speedup.
+
 - Materialize closed Basis/Nat/Op instances through the common original-source
   plans and ordinary finite lowering, including nonzero registers, static
   branches/folds and symbolic powers. Keep exact type trees, zero-width owners,
