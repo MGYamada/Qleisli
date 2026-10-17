@@ -1,13 +1,49 @@
 # Standard-library semantic namespaces
 
 This chapter is normative for the edition-2026 `0.3.0-beta` mathematical
-stdlib namespaces, their admission rules and the path migration adopted in
+stdlib namespaces, their admission rules, canonical distribution version and the
+path migration adopted in
 [#317](https://github.com/MGYamada/Qleisli/issues/317). It is subordinate to the
 [authority hierarchy](authority.md) and [primitive boundary](primitive-boundary.md).
 It specifies intended contracts; a namespace, source comment or successful
 source check is not a proof of its mathematical implementation.
 The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 specifies how unfamiliar derived abstractions lead to their contracts and ordinary source.
+
+## Canonical distribution version
+
+An official Qleisli distribution bundles exactly one canonical `std` qrate
+whose complete product-version identifier equals the toolchain's identifier.
+The equality includes every prerelease and build suffix: Qleisli `0.3.0-beta`
+requires `std` `0.3.0-beta`. A manifest uses the canonical version string without
+a release tag's `v` prefix; ranges, whitespace trimming or a different suffix
+cannot satisfy the equality.
+
+Normal source programs receive this embedded `std` without declaring a separate
+standard-library dependency. To use an older or newer canonical `std`, select
+the corresponding Qleisli toolchain. An ordinary user qrate keeps its own
+independent version; it need not match Qleisli. This is distribution and
+compatibility coupling, not semantic privilege: `std` remains ordinary checked
+source under [#167](https://github.com/MGYamada/Qleisli/issues/167) and the
+[qrate definition](https://github.com/MGYamada/Qleisli/issues/169).
+
+The current private embedded-manifest gate checks schema 2, edition `"2026"`,
+string `[qrate].name = "std"` and string `[qrate].version` equal to the compiler's
+complete `CARGO_PKG_VERSION`. It rejects missing, non-string or mismatched
+identity fields before loading the bundle. Schema and edition retain their
+existing diagnostic precedence. The gate parses the immutable embedded manifest
+once and caches only that packaging result across loads. Ordinary external
+manifests retain fresh schema/edition checks; source, Meaning and native
+acceptance judgments are not cached by this version check.
+
+[#171](https://github.com/MGYamada/Qleisli/issues/171) still requires qargo's
+resolved-environment and lock/build-record pairing checks. This gate implements
+no resolver or new record API. Equal version strings alone cannot detect stale
+or substituted source content, establish official artifact identity, or replace
+the existing source/evidence checks. The separate
+[#255](https://github.com/MGYamada/Qleisli/issues/255) duty to carry authoritative
+edition identity through public/native artifacts also remains open. Packaging
+identity is not a source-preservation proof or a discharge of QS, PR, RS or EXACT.
 
 ## Names follow mathematical meaning
 

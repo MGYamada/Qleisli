@@ -30,6 +30,17 @@ and exactness obligations retain their recorded scopes and status.
   existing proof gates, native limits and original regression references.
   Name private artifact-byte charging explicitly, preserving its numeric
   accounting and diagnostics while avoiding an ambiguous account identifier.
+  Align the registry Bell quickstart with the same ordinary state/gate imports
+  and bare primitives used by the repository quickstart.
+  Keep internal derived-contract requests distinct from an unrequested entry
+  in installation checks, with matching text and JSON decision counts.
+
+- Require the embedded std manifest to name `std` and match the compiler's
+  complete product version before loading source. Preserve independent user
+  qrate versions, single manifest parsing and immutable embedded caching.
+  Retain the first component observations and test mismatched identities,
+  prereleases, build identifiers and safely quoted diagnostics. Effective qargo
+  pairing and complete reproducibility records remain unfinished in #171.
 
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all

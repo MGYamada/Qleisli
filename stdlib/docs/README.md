@@ -5,6 +5,19 @@ schema 2: name `std`, product version `0.3.0-beta`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
 
+The canonical bundled `std` has the same complete product version as its
+official Qleisli distribution, including prerelease and build suffixes. Normal
+programs receive it automatically; user qrates retain their own independent
+versions. Select the corresponding Qleisli toolchain to select an older or newer
+canonical `std`. Distribution coupling grants no semantic privilege.
+
+The compiler checks the embedded manifest's `std` name and exact product version
+alongside schema and edition in one parse, caching only that immutable packaging
+result. Ordinary external-manifest and source/evidence checks remain fresh.
+The [canonical-version Reference](../../docs/src/reference/stdlib.md#canonical-distribution-version)
+explains the remaining qargo pairing/record, stale-content identity and
+[#255](https://github.com/MGYamada/Qleisli/issues/255) edition-binding gaps.
+
 The compiler embeds seven ordinary [source modules](../src): `std::basis`,
 `std::transform`, `std::reflection`, `std::measurement`, `std::gate` and
 `std::structure` and `std::state`, with twenty-five public definitions and five private reflection,
@@ -47,8 +60,8 @@ qargo check --manifest-path=stdlib/Qargo.toml
 Qargo chooses its linked checker; record that tool identity separately from
 this qrate's version and edition. A successful qargo check is ordinary source/IR
 validation, not an algorithm proof or certification of all intended contracts.
-The tested qargo 0.1.3 development executable links Qleisli 0.2.1 and currently
-fails after manifest capture: its local-module loader rejects `basis.qli` as a
+The recorded qargo 0.1.3 development experiment linked Qleisli 0.2.1 and
+failed after manifest capture: its local-module loader rejects `basis.qli` as a
 reserved module name. Standalone std-qrate checking needs a specified namespace
 adapter in qargo; a full manifest alone does not supply it. Keep the existing
 `std::basis` API and embedded-library checking intact. This observed integration

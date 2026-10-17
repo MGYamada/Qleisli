@@ -80,6 +80,32 @@ def check_documentation(root, package):
     return source, manifest, historical
 
 
+def native_decision_counts(text):
+    matches = re.findall(
+        r"^native decisions: ([0-9]+); independent requests checked: ([0-9]+)$",
+        text, re.MULTILINE,
+    )
+    require(len(matches) == 1, "Bell text check requires exactly one native count line")
+    decisions, requests = map(int, matches[0])
+    # Derived ordinary std providers have independent contract requests even
+    # though Bell's enclosing entry has no requested meaning.
+    require(0 < requests <= decisions,
+            "Bell text check must retain positive derived-contract request counts")
+    require("native decision metadata truncated" not in text,
+            "Bell text native-decision metadata is incomplete")
+    return decisions, requests
+
+
+def check_native_decision_summary(expected_counts, roots, decisions):
+    require(type(decisions["count"]) is int
+            and type(decisions["requests_checked"]) is int
+            and (decisions["count"], decisions["requests_checked"]) == expected_counts
+            and roots["local"] == 1 and roots["bundled"] > 0
+            and decisions["count"] >= roots["local"] + roots["bundled"]
+            and decisions["complete"] is True,
+            "Bell check did not retain matching complete concrete-root/native-decision metadata")
+
+
 def check(root, binary):
     package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
     source, manifest, historical = check_documentation(root, package)
@@ -122,12 +148,12 @@ def check(root, binary):
         require(rejected.returncode == 1 and json.loads(rejected.stdout)["diagnostics"][0]["code"] == "project",
                 "missing native checker must reject without discovery or download")
         checked_text = invoke("check", "bell", structured=False)
+        text_counts = native_decision_counts(checked_text)
         require(f"checker: {env['QLEISLI_KERNEL']}\n" in checked_text
                 and "checker identity: unpinned\n" in checked_text
-                and "independent requests checked: 0\n" in checked_text
                 and "entry request checked: false\n" in checked_text
                 and "source preservation: not proved\n" in checked_text,
-                "Bell text check did not report the actual checker and request-free scope")
+                "Bell text check did not report the actual checker and entry request scope")
         output = invoke("run", "bell", structured=False)
         text_distribution = {bits: float(weight) for bits, weight in
                              (row.split(": ") for row in output.splitlines())}
@@ -143,10 +169,7 @@ def check(root, binary):
                 and "verified" not in checked,
                 "Bell JSON check did not report the actual checker and request-free scope")
         roots, decisions = checked["concrete_ir_roots"], checked["native_decisions"]
-        require(roots["local"] == 1 and roots["bundled"] > 0
-                and decisions["count"] >= roots["local"] + roots["bundled"]
-                and decisions["requests_checked"] == 0 and decisions["complete"] is True,
-                "Bell check did not retain complete concrete-root/native-decision metadata")
+        check_native_decision_summary(text_counts, roots, decisions)
         sampled = invoke("sample", "bell", "--shots=8", "--seed=0")
         shots = sampled["result"]["shots"]
         require(len(shots) == 8 and all(s["bits"] in [[False, False], [True, True]]
