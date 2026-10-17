@@ -28,6 +28,8 @@ and exactness obligations retain their recorded scopes and status.
   retain full distributions and complex states under their existing tolerance.
   Refresh actual-source inventory and coverage bindings while retaining all
   existing proof gates, native limits and original regression references.
+  Name private artifact-byte charging explicitly, preserving its numeric
+  accounting and diagnostics while avoiding an ambiguous account identifier.
 
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all

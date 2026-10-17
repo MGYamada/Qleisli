@@ -5752,7 +5752,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "2d2fac3d85ce7ff0a11b18e27964f20f12192692dd5e297b1564a91adc08e2c0",
+      "sha256": "1986283bd448954c95e39ff69ee0d8548a194da3f93d1139293e665817d73023",
       "group": "sized-source",
       "surface": {
         "declarations": [],
