@@ -15,7 +15,7 @@ pub(in crate::interchange) enum Request<'a> {
     Instrument {
         actual: &'a Signature,
         expected: &'a Signature,
-        identity: (&'a str, &'a str, &'a [(String, String)]),
+        identity: (&'a str, &'a str, crate::contract::function::SourceView<'a>),
     },
 }
 

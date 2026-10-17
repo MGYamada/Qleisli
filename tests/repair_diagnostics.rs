@@ -177,28 +177,26 @@ fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
 #[test]
 fn snapshot_limit_errors_explain_the_retained_sources() {
     for body in ["apply[p](q)", "apply_contract(p,p,q)"] {
-        let root = SourceRoot::new(&format!(
+        let source = format!(
             "unitary fn p(q:Q<Bit>)->Q<Bit>{{q}}
              unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
              unitary fn client(q:Q<Bit>)->Q<Bit>{{{body}}}"
-        ));
+        );
+        let root = SourceRoot::new(&source);
         check_project(&root.0).unwrap();
-        // This file alone exceeds the existing shared work budget when copied.
-        // A020-10 removes repeated copies, not the bounded initial snapshot.
-        root.write("unrelated.qli", &format!("// {}", "a".repeat(1_000_000)));
+        let comments = format!("// {}", "a".repeat(1_000_000));
+        root.write("unrelated.qli", &comments);
+        check_project(&root.0).unwrap();
+        // The same original bytes matter when they belong to the actual provider.
+        // Relevant bytes are never stripped or allowed to bypass the work bound.
+        root.write("main.qli", &format!("{source}\n{comments}"));
         let error = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(error.code, "limit", "{error:?}");
         assert!(
-            error.message.contains("shared project snapshot"),
+            error.message.contains("relevant source closure"),
             "{error:?}"
         );
         assert!(error.message.contains("charged once"), "{error:?}");
-        assert!(
-            error
-                .message
-                .contains("all loaded modules, comments and bundled std"),
-            "{error:?}"
-        );
     }
 }
 
@@ -292,7 +290,12 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
         ),
     ))
     .unwrap();
-    let root = SourceRoot::new(&original);
+    // The unchanged historical H H body now has an exact native identity
+    // equation. Use a separately authored non-diagonal body for the hint.
+    check_project_diagnostic(&SourceRoot::new(&original).0).unwrap();
+    assert!(original.contains("h(h(flag))"));
+    let unsupported = original.replace("h(h(flag))", "h(flag)");
+    let root = SourceRoot::new(&unsupported);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     assert_eq!(error.code, "unsupported");
     assert!(
@@ -303,7 +306,7 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     assert!(error.message.contains("return both owners"));
     assert!(error.message.contains("does not bypass cleanup checking"));
     let location = error.primary.unwrap();
-    assert!(original[location.span.start..location.span.end].contains("h(h(flag))"));
+    assert!(unsupported[location.span.start..location.span.end].contains("h(flag)"));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         command.arg("check").arg(&root.0);

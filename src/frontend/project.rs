@@ -298,6 +298,9 @@ fn io_error(path: &Path, failure: std::io::Error) -> LoadFailure {
 
 impl Project {
     fn public_name_hint(&self, name: &str, excluded: &str) -> String {
+        if let Some(hint) = super::resolve::retired_public_name_hint(excluded, name) {
+            return hint.to_owned();
+        }
         let mut candidates: Vec<_> = self
             .modules
             .values()

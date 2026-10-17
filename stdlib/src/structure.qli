@@ -1,0 +1,14 @@
+//! Ordinary owner/coordinate structure maps for edition 2026.
+//! These bodies receive no primitive or verification privilege.
+//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::split;
+use std::quantum::join;
+
+/// Explicit two-axis representation reordering, with old/new map [1,0].
+/// Consume the pair and return every owner in reversed axis order, phase +1.
+/// Split/join changes output wire order and inserts no physical SWAP gate.
+/// This is not binding exchange; actual target routing costs remain separate.
+pub unitary fn permute_axes(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    join(b,a)
+}

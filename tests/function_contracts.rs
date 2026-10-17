@@ -417,14 +417,12 @@ fn unrelated_source_comments_do_not_multiply_contract_reuse_work() {
     assert_eq!(attached.len(), 2);
     assert!(Arc::ptr_eq(attached[0], attached[1]));
     assert_eq!(attached[0].depth(), 5);
-    // Source binding remains exact and retains the whole loaded project.
-    assert!(
-        attached[0]
-            .identity()
-            .sources
-            .iter()
-            .any(|(name, text)| name == "unrelated" && text == &comments)
-    );
+    // The complete original implementation module stays bound. Unused comment
+    // modules do not become dependencies merely because the loader found them.
+    let sources = &attached[0].identity().sources;
+    assert!(sources.iter().any(|(name, text)| name == "main"
+        && text == &std::fs::read_to_string(root.0.join("main.qli")).unwrap()));
+    assert!(!sources.iter().any(|(name, _)| name == "unrelated"));
     probability(
         &run_closed(&program, SimulationLimits::default()).unwrap(),
         &[false],
@@ -758,4 +756,36 @@ fn apply_contract_is_reserved_and_has_exact_static_name_syntax() {
     })
     .join()
     .unwrap();
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn observing_contract_receipts_keep_each_original_caller_module() {
+    let root = SourceRoot::new(
+        "use left::left_read;use right::right_read;use std::quantum::init0;
+        observe fn main()->(Bit,Bit){(left_read(init0()),right_read(init0()))}",
+    );
+    root.write(
+        "specified.qli",
+        "use std::observe::measure_z;
+        pub observe fn actual(q:Q<Bit>)->Bit{measure_z(q)}
+        pub observe fn reference(q:Q<Bit>)->Bit{measure_z(q)}",
+    );
+    for (module, name) in [("left", "left_read"), ("right", "right_read")] {
+        root.write(
+            &format!("{module}.qli"),
+            &format!(
+                "use specified::{{actual,reference}};
+                pub observe fn {name}(q:Q<Bit>)->Bit{{apply_contract(actual,reference,q)}}"
+            ),
+        );
+    }
+    let program = compile_project(&root.0).unwrap();
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap()[&vec![false, false]],
+        1.0
+    );
 }

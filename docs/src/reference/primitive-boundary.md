@@ -39,14 +39,16 @@ recognizers, lowering, simulation and target emission supply no such authority.
 `src/frontend/check/primitive.rs::Primitive::ALL` is the typed common-source
 catalog of **27 distinct names**, preserving their exact static/runtime arity,
 type trees, principal effects and owner transitions. It introduces no new
-native primitive or semantic axiom. Concrete finite lowering supports
-**20 entries**: the 19-entry legacy finite catalog and the existing ordinary
-empty-label constructor selected by the common typed catalog. Selected lowering
-supports **19 entries**, with twelve names overlapping:
-`std::quantum::{h,x,z,cnot,init0,phase_eighth,unit,finish,split,join}` and
-`std::observe::measure_z` and `std::classical::empty_bits`. These subsets are recorded in
-`src/frontend/core.rs::PRIMITIVES`, the canonical EmptyBits guard in finite
-lowering, and `src/frontend/specialize/primitive.rs`.
+native primitive or semantic axiom. Concrete finite lowering has adapters for
+all **27 entries**, subject to their finite coefficient, width and work limits.
+The 19-entry legacy finite catalog, canonical empty-label guard and original
+static-primitive adapter jointly implement that coverage. The selected concrete
+catalog retains **19 entries**, with its existing phase-alias adapter and
+separate emitter limits. These implementations are recorded in
+`src/frontend/core.rs::PRIMITIVES`,
+`src/frontend/compile/lower/{primitives,static_primitives}.rs` and
+`src/frontend/specialize/primitive.rs`; catalog counts do not establish semantic
+preservation or final primitive minimality.
 A known common name unavailable to a requested emitter yields a located
 unsupported concrete-profile error, not another source grammar or fallback.
 
@@ -54,8 +56,8 @@ unsupported concrete-profile error, not another source grammar or fallback.
 
 All entries in this table are compiler-owned imports. `A` and `B` are
 specification metavariables for the currently supported finite basis trees.
-Explicit opaque Basis formals are checked by the common source judgment but
-remain outside finite concrete eligibility. Argument-list arity and
+Explicit opaque Basis/Nat formals are checked by the common source judgment and
+closed with all ordered actuals before finite body lowering. Argument-list arity and
 tuple result shape are distinct. Every supplied quantum owner is consumed by
 the source call and explicitly represented in its returned or eliminated
 interface. Separate owners may be entangled.
@@ -87,6 +89,13 @@ and runtime preservation links are already proved.
 | `std::observe::reset` | `Q<Bit> -> Q<Bit>`; Observe | Ends the input logical wire and returns a fresh logical owner/wire in zero. Emits `Reset`; it is an observing reset channel, not pure inverse computation or clean-release evidence. |
 | `std::observe::discard` | `Q<A> -> Unit`; Observe | Explicitly consumes the owner with discard semantics. Emits `Discard`; it is not implicit scope cleanup or proof of a zero state. |
 | `std::classical::empty_bits` | `() -> Bits<0>`; Unitary | Existing total ordinary empty-label constructor, selected by its canonical typed identity. Produces a distinct copyable value without a classical identity, quantum owner or Raw operation. The same constructor is usable in restricted classical/basis bodies. |
+| `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | Exact `diag(1,exp(2*pi*i*j/2^k))`. Finite lowering requires `k <= 8`, `j < 2^k` and an integral eighth-root exponent; an unrepresentable phase rejects without rounding. |
+| `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>,Q<Bit>) -> (Q<Bit>,Q<Bit>)`; Unitary | Exact controlled phase under the same finite coefficient conditions, with the first owner on the low control axis and both owners returned in order. |
+| `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>,Q<Bits<n-1>>)`; Unitary | Explicit Split/Join routing extracts axis k; remaining axes keep their order. Requires `k < n <= 12`. A zero-width remainder remains owned. |
+| `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>,Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Explicit Split/Join routing inserts the first owner's axis at k. Requires `k < n <= 12`, exact types and distinct owners. No physical SWAP is implied. |
+| `std::registers::empty` | `() -> Q<Bits<0>>`; Unitary | Explicit zero-width register owner introduction using the existing Raw PackUnit representation; the source Bits tag remains distinct from Unit. |
+| `std::registers::consume_empty` | `Q<Bits<0>> -> Unit`; Unitary | Explicit consumption through existing Raw UnpackUnit after checking the exact zero-width register type. It does not discard a nonzero register or erase scalar phase. |
+| `std::classical::prepend_bit` | Static `[n]`; `(Bit,Bits<n>) -> Bits<n+1>`; Unitary | Retains head then tail as ordered classical identities, requiring `n < 12`. It creates no quantum owner or action. |
 
 Declarations and source-side effect/owner transitions are in
 `src/frontend/core.rs` and `src/frontend/compile/lower/primitives.rs`.
@@ -213,9 +222,10 @@ target-realization or quantitative resource theorem.
 
 ## Ordinary library and module resolution
 
-`src/frontend/source.rs::BundledRegistry` embeds **five ordinary source
-modules with eleven public definitions**; one additional private basis helper is
-used by `std::reflection`. Both loaders retain all five complete original sources
+`src/frontend/source.rs::BundledRegistry` embeds **six ordinary source
+modules with twenty-one public definitions** and five private helpers for
+reflection, scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
+Both loaders retain all six complete original sources
 and their fixed manifest. They receive normal common declaration, type, owner,
 access, dependency and effect checking rather than `ImportOrigin::Sealed`.
 Concrete materialization and native checking occur under the actual consumer's
@@ -227,7 +237,8 @@ specialization:
 | `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary basis-label maps. Neither is injective over its two-input domain; a coherent enclosing construction must meet its own obligations. |
 | `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H; positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. Fourier interfaces remain fixed-width. |
 | `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection `2|s><s| - I` with exact computed-auxiliary cleanup. Private `nonzero2` is a normal basis helper; Hadamard is imported from ordinary transform source. |
-| `std::gate`, `stdlib/src/gate.qli` (provisional) | `swap`, `permute_axes` | Ordinary two-Bit physical SWAP with three CNOTs versus structural axis map `[1,0]`; neither is a new sealed primitive. Generic register/permutation interfaces remain unsupported. |
+| `std::gate`, `stdlib/src/gate.qli` | `id`, `t`, `s`, `sdg`, `tdg`, `z`, `x`, `controlled_phase`, `cnot`, `toffoli`, `swap` | Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner; phase/Pauli and controlled gates derive through ordinary providers. SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee. |
+| `std::structure`, `stdlib/src/structure.qli` | `permute_axes` | Structural two-axis map `[1,0]`, exact phase +1, with reversed output axes and no physical gate instruction. Generic register/permutation interfaces remain unsupported. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
 
 The [semantic namespace Reference](stdlib.md) gives every mathematical module's
@@ -258,7 +269,7 @@ Both loaders reserve `std` and `std::`. Compiler-owned modules expose only the
 fixed common catalog; an unknown sealed name is an error, not a fallback to
 caller source. Ordinary bundles retain their provenance and original ASTs,
 with bundled bytes checked under each loader's byte policy before
-parsing/copying. The selected loader additionally reserves all five bundled
+parsing/copying. The selected loader additionally reserves all six bundled
 module slots and counts their bytes toward its aggregate limit. The finite
 loader retains its separate bounded and explicit legacy byte policies and
 local filesystem discovery limits. No ambient source replacement or checking

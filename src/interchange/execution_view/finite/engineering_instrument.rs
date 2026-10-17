@@ -41,7 +41,7 @@ pub(in crate::interchange) fn complete(
             w.identity((
                 &identity.implementation,
                 &identity.specification,
-                &identity.sources,
+                crate::contract::function::SourceView::Flat(&identity.sources),
             ))?;
             let dyadic =
                 |w: &mut View<'_>, q: crate::interchange::engineering_pure::DyadicBound| {

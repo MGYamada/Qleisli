@@ -183,7 +183,7 @@ fn with_request<T>(value: &json::Value, describe: impl FnOnce(Request<'_>) -> T)
                 identity: (
                     id.field("implementation").unwrap().text().unwrap(),
                     id.field("specification").unwrap().text().unwrap(),
-                    &sources,
+                    crate::contract::function::SourceView::Flat(&sources),
                 ),
             })
         }

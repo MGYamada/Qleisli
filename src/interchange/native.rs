@@ -109,6 +109,7 @@ impl Prepared {
                 source_instruments: Arc::from([]),
                 source_instrument_calls: Arc::from([]),
                 source_pure_equations: Arc::from([]),
+                source_computed_normalizations: Arc::from([]),
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -442,6 +443,10 @@ pub struct AcceptedProgram {
     // Separate source-associated pure equations, exposed by the getter below
     // and inspected by the rectangular Meaning regressions.
     source_pure_equations: Arc<[Arc<super::pure_leaf::SourcePureEquation>]>,
+    // Inert exact equations for the actual local ancilla fragments normalized
+    // to protected diagonal use. Native decisions precede attachment; this is
+    // neither execution input nor a whole-source preservation certificate.
+    source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
 }
 impl AcceptedProgram {
     pub fn artifact(&self) -> &[u8] {
@@ -500,6 +505,21 @@ impl AcceptedProgram {
         equations: Vec<Arc<super::pure_leaf::SourcePureEquation>>,
     ) -> Self {
         self.source_pure_equations = equations.into();
+        self
+    }
+    /// Exact local equations retain the proposed original fragment and its
+    /// canonical diagonal reference. They do not prove whole-source lowering,
+    /// computed-scope cleanup, or target/resource preservation.
+    pub fn source_computed_normalizations(
+        &self,
+    ) -> &[Arc<super::finite_leaf::SourceUnitaryEquation>] {
+        &self.source_computed_normalizations
+    }
+    pub(crate) fn retain_computed_normalizations(
+        mut self,
+        equations: Vec<Arc<super::finite_leaf::SourceUnitaryEquation>>,
+    ) -> Self {
+        self.source_computed_normalizations = equations.into();
         self
     }
     pub(crate) fn kernel(&self) -> Kernel {

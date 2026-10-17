@@ -56,7 +56,10 @@ law or the whole parent Issue.
 The following table preserves the earlier implementation snapshot used to plan
 convergence. It is not a report of current completion: both consumers now use
 the mandatory common original-source judgment, and selected Raw transports
-bounded ordinary Bits values. The [type Reference](../reference/type-model.md)
+bounded ordinary Bits values. Ordinary project lowering now also closes
+explicit Basis/Nat/Op instances, static branches and carry folds within its
+existing finite limits; those additions do not rewrite this historical table.
+The [type Reference](../reference/type-model.md)
 records current source rules and the remaining concrete consumer restrictions.
 Paths refer to the
 [repository](https://github.com/MGYamada/Qleisli).

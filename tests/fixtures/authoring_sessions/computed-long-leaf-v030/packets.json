@@ -1,0 +1,164 @@
+{
+  "format": "qleisli.computed-long-leaf-retention",
+  "version": 1,
+  "scope": "One inert complete packet; all 24 original files, three informed sources, saved observer drivers, pre-call metadata and full first streams retained unchanged. Expanded 1025/257 derived-T attempts retain source-work refusals; compact 257-fold retains a separate finite FunctionEvidence refusal. No commands/source executed, clean-build attestation or proof claimed. Future replays are separate.",
+  "archives": [
+    {
+      "id": "first",
+      "original_directory": "/private/tmp/qleisli-computed-long-leaf-first-h2o26w73",
+      "archive": "first.tar.gz",
+      "archive_bytes": 21322,
+      "archive_sha256": "83ac8effbbeca702adaab514f1f6fe54ea1ab29700ff9d08e2db94abad31d9ef",
+      "tar_bytes": 286720,
+      "tar_sha256": "2a76a27e773f037838a7ef66cabf228f818d6f3f80a1b9e980f90fb45bdef72c",
+      "file_count": 24,
+      "expanded_bytes": 266614,
+      "files": [
+        {
+          "path": "attempt-01/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "attempt-01/main.qli",
+          "bytes": 20721,
+          "sha256": "817f6a9ea87d5a642d3861321710458fed6bca1bb4fba75e52ca3dd0f109bf23",
+          "original_mode": "0644"
+        },
+        {
+          "path": "attempt-02/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "attempt-02/main.qli",
+          "bytes": 5361,
+          "sha256": "dbb73d713dc1968957916ec09e5f19ce4ce21c544c0a8dd497ea0b64cc64e155",
+          "original_mode": "0644"
+        },
+        {
+          "path": "attempt-03/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "attempt-03/main.qli",
+          "bytes": 269,
+          "sha256": "b7f23d2df7fc37eb2e74c7cc1d52d97541d42f67b427c866aa345d35d3176810",
+          "original_mode": "0644"
+        },
+        {
+          "path": "capture.py",
+          "bytes": 2625,
+          "sha256": "e45f8c3b891b23e7acd5dc98ea97ba916a37ee4b45e11b5e89f1c760de2698f3",
+          "original_mode": "0644"
+        },
+        {
+          "path": "capture_compact.py",
+          "bytes": 2639,
+          "sha256": "4a6a2c4492574df9daee700ec2d46067eb0b305402fcb3cf0404775297f5efaa",
+          "original_mode": "0644"
+        },
+        {
+          "path": "capture_translation.py",
+          "bytes": 2667,
+          "sha256": "5bdf2a3c5d1cfa815929ef51a475e55e5ab7d7516df0364ccc9f14a583736317",
+          "original_mode": "0644"
+        },
+        {
+          "path": "compact-check.json",
+          "bytes": 49353,
+          "sha256": "a861719d6eadd76f12677cdb23d8fb8842b6da805ddd9d621a9b3d9fc08d4e16",
+          "original_mode": "0644"
+        },
+        {
+          "path": "compact-check.started.json",
+          "bytes": 26668,
+          "sha256": "f2a59e6374da60f18471663b4688e598c9e1ee86ca9944492f0b0908baac930f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "compact-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "compact-check.stdout.txt",
+          "bytes": 323,
+          "sha256": "409acc221a0e4ab919604f2d97850797fb5265b3211445009f636cdd7519461f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "compact-source.json",
+          "bytes": 846,
+          "sha256": "a6a97e9a513bc9c602ae337ae9771fdf1d657a0c6eb7d655b499e100c2c7dafa",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-check.json",
+          "bytes": 49353,
+          "sha256": "786255de296702306cd68ac8f177114645c6e6d5c30fbc4dfe2747321b4aa107",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-check.started.json",
+          "bytes": 26668,
+          "sha256": "ea41159a48c6f00da3fa6272b6404b25eabaf9e65b42a96fc62b1969516f0a6c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-check.stdout.txt",
+          "bytes": 459,
+          "sha256": "219aabe7db971cf4bb3714ada8e2a3a4bf0856ebe00f45b0f22e7b3239f49ef2",
+          "original_mode": "0644"
+        },
+        {
+          "path": "first-source.json",
+          "bytes": 1122,
+          "sha256": "ab0ed0d3a5af1d28dedd401a1bd04f022c2df29220f1bb87f2960f41dbb60fff",
+          "original_mode": "0644"
+        },
+        {
+          "path": "translation-check.json",
+          "bytes": 49354,
+          "sha256": "a4063ecaa09b8999abe2f7a598311d38a4bfa8a9273040ba58c4c937803c731c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "translation-check.started.json",
+          "bytes": 26668,
+          "sha256": "bcbba99922a0692b1166cf15d7ad6b7db200dfb999df7f7b9ca2f1c32d32a866",
+          "original_mode": "0644"
+        },
+        {
+          "path": "translation-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "translation-check.stdout.txt",
+          "bytes": 461,
+          "sha256": "d805a58400a284923fc6f09aeabcedf1be2aeed8462911f65e1130c3840a457e",
+          "original_mode": "0644"
+        },
+        {
+          "path": "translation-source.json",
+          "bytes": 922,
+          "sha256": "d13331d4adda3e5704076afb14b834b9f77cd0e394fd3020b13eef2ff8beb131",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

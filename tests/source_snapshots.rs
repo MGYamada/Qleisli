@@ -60,32 +60,16 @@ fn full_256_specializations_survive_a_100kb_project_and_unrelated_comments() {
         assert_eq!(result[&vec![false]], 1.0);
         let identity = attached[255].identity();
         let retained_bytes: usize = identity.sources.iter().map(|(_, text)| text.len()).sum();
-        let bundled_bytes: usize = identity
-            .sources
-            .iter()
-            .filter(|(name, _)| name.starts_with("std::"))
-            .map(|(_, text)| text.len())
-            .sum();
-        assert_eq!(
-            retained_bytes,
-            100_000 + bundled_bytes + comments.as_ref().map_or(0, String::len)
-        );
+        // The historical stress remains ignored; its metadata assertion follows
+        // the current relevant-closure policy. Original observations stay in Git.
+        assert_eq!(retained_bytes, 100_000);
         assert!(
             identity
                 .sources
                 .iter()
                 .any(|(name, text)| name == "main" && text == &source)
         );
-        if let Some(comments) = &comments {
-            // Legacy inspection still exposes every module and its exact bytes.
-            assert!(
-                attached[255]
-                    .identity()
-                    .sources
-                    .iter()
-                    .any(|(name, text)| { name == "unrelated" && text == comments })
-            );
-        }
+        assert!(!identity.sources.iter().any(|(name, _)| name == "unrelated"));
     }
     // Sharing source storage does not relax the separate specialization cap.
     root.write("main.qli", &providers(257, |i| format!("apply[p{i}](q)")));
@@ -96,7 +80,7 @@ fn full_256_specializations_survive_a_100kb_project_and_unrelated_comments() {
 
 #[test]
 #[ignore = "historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274"]
-fn distinct_contract_pairs_and_static_providers_share_one_project_snapshot() {
+fn distinct_contract_pairs_and_static_providers_share_original_source_rows() {
     for contracts_only in [true, false] {
         let source = providers(256, |i| {
             if contracts_only || i % 2 == 0 {
@@ -227,4 +211,109 @@ fn small_native_specializations_retain_exact_shared_sources() {
         let result = run_closed(&program, SimulationLimits::default()).unwrap();
         assert_eq!(result[&vec![false]], 1.0);
     }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn unrelated_large_sources_do_not_become_ordinary_gate_dependencies() {
+    let source = "use std::gate::t;use std::quantum::{init0,h};use std::observe::measure_z;
+        unitary fn specified(q:Q<Bit>)->Q<Bit>{t(q)}
+        observe fn main()->Bit{measure_z(apply_contract(specified,specified,h(init0())))}";
+    let root = SourceRoot::new(source);
+    // Source loading permits these independent comments under the legacy API;
+    // the small exact gate dependency must not retain the entire loaded project.
+    for i in 0..129 {
+        root.write(
+            &format!("unrelated_{i}.qli"),
+            &format!("//{}", "x".repeat(8192)),
+        );
+    }
+    let program = compile_project(&root.0).unwrap();
+    let attached = receipts(&program.raw().operations);
+    assert_eq!(attached.len(), 1);
+    let identity = attached[0].identity();
+    assert!(
+        identity
+            .sources
+            .iter()
+            .any(|(name, text)| name == "main" && text == source)
+    );
+    assert!(
+        identity
+            .sources
+            .iter()
+            .any(|(name, text)| name == "std::gate"
+                && text == include_str!("../stdlib/src/gate.qli"))
+    );
+    assert!(
+        !identity
+            .sources
+            .iter()
+            .any(|(name, _)| name.starts_with("unrelated_"))
+    );
+    // Every loaded declaration still goes through the ordinary effect checker.
+    root.write(
+        "unrelated_0.qli",
+        "use std::observe::measure_z;pub unitary fn wrong(q:Q<Bit>)->Bit{measure_z(q)}",
+    );
+    assert!(compile_project(&root.0).is_err());
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn bound_pure_actual_retains_its_original_source_through_a_generic_provider() {
+    let root = SourceRoot::new("use adapter::forward;use preparation::zero;use std::quantum::unit;use std::observe::measure_z;
+        isometry fn invoke[const U:Op<Unit -> Bit>](u:Q<Unit>)->Q<Bit> requires Applicable(U){U(u)}
+        observe fn main()->Bit{measure_z(invoke[forward[zero]](unit(())))}");
+    let adapter = "pub isometry fn forward[const U:Op<Unit -> Bit>](u:Q<Unit>)->Q<Bit> requires Applicable(U){U(u)}";
+    let preparation = "pub isometry fn zero(u:Q<Unit>)->Q<Bit>{basis u as () {0}}";
+    root.write("adapter.qli", adapter);
+    root.write("preparation.qli", preparation);
+    root.write("unrelated.qli", "// not a source dependency");
+    let program = compile_project(&root.0).unwrap();
+    let equation = program
+        .source_pure_equations()
+        .iter()
+        .find(|equation| equation.names().0 == "adapter::forward")
+        .expect("actual specialized pure provider equation");
+    assert!(
+        equation
+            .sources()
+            .iter()
+            .any(|(name, text)| name == "adapter" && text == adapter)
+    );
+    assert!(
+        equation
+            .sources()
+            .iter()
+            .any(|(name, text)| name == "preparation" && text == preparation)
+    );
+    assert!(
+        !equation
+            .sources()
+            .iter()
+            .any(|(name, _)| name == "unrelated")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap()[&vec![false]],
+        1.0
+    );
+    root.write("preparation.qli", &preparation.replace("{0}", "{1}"));
+    let changed = compile_project(&root.0).unwrap();
+    assert_eq!(
+        run_closed(&changed, SimulationLimits::default()).unwrap()[&vec![true]],
+        1.0
+    );
+    assert!(
+        equation
+            .sources()
+            .iter()
+            .any(|(name, text)| name == "preparation" && text == preparation)
+    );
 }

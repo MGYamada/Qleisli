@@ -220,15 +220,15 @@ impl Checker<'_, '_> {
             );
             error
         })?;
+        for (key, binding) in owners {
+            scope.moved.remove(&binding.identity);
+            scope.values.insert(key, binding);
+        }
         if arguments
             .iter()
             .any(|argument| argument.access == QuantumAccess::Ctrl)
         {
             self.obligation(span, ObligationKind::ControlSectors, scope)?;
-        }
-        for (key, binding) in owners {
-            scope.moved.remove(&binding.identity);
-            scope.values.insert(key, binding);
         }
         Ok(Ty::unit())
     }

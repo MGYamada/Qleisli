@@ -3,7 +3,7 @@
 use super::*;
 use crate::frontend::project::{ModuleOrigin, SourceModule};
 
-fn checked_compiler(project: &Project) -> Compiler<'_> {
+pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
     let PreparedSource {
         checked: source,
         occurrences,
@@ -31,11 +31,14 @@ fn checked_compiler(project: &Project) -> Compiler<'_> {
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
-        function_sources: None,
+        source_rows: BTreeMap::new(),
+        source_sets: BTreeMap::new(),
         pure_equations: Vec::new(),
+        computed_normalizations: Vec::new(),
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
         instances: Vec::new(),
+        concrete_context: Default::default(),
         work: 0,
         checking: None,
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
@@ -68,12 +71,11 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
     let key = compiler.source.resolution.qualified("main::make").unwrap();
     let caller_span = Span { start: 0, end: 3 };
     let caller_origin = Some(("main".to_owned(), caller_span));
-    let mut body_refusals = 0;
     let mut refusals_after_allocation = 0;
     let mut successes = 0;
     // Vary host work around one zero-qubit body. This is not a maximum-width
     // quantum case, and no rejected result is submitted for native acceptance.
-    for remaining in 0..=128 {
+    for remaining in 0..=4096 {
         let started = MAX_WORK - remaining;
         compiler.work = started;
         let mut lower = Lowerer {
@@ -99,17 +101,21 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
         assert_eq!(lower.effect, Effect::Observe);
         assert_eq!(lower.contract_effect, Effect::Observe);
         assert_eq!(lower.effect_source, caller_origin);
+        assert_eq!(lower.compiler.checking, None);
+        assert_eq!(lower.compiler.current_instance_owner(), None);
+        assert!(lower.compiler.concrete_context.current.is_none());
+        assert!(lower.compiler.concrete_context.naturals.is_empty());
         assert_eq!(lower.raw.registers[&suspended].token, suspended_token);
         assert_eq!(lower.raw.registers[&suspended].basis, Ty::empty_bits());
         assert!(lower.compiler.work >= started);
         match result {
             Err(error) => {
                 assert_eq!(error.code, ErrorCode::Limit);
-                if error.span != lower.compiler.declarations[&key].span {
-                    body_refusals += 1;
-                }
                 if lower.raw.registers.len() > 1 {
                     refusals_after_allocation += 1;
+                    // Work diagnostics are anchored to the active original
+                    // declaration. A retained body allocation independently
+                    // witnesses entry into the callee's private effect frame.
                     // A failed body retains its issued identity. The next
                     // token must be later than every still-retained owner.
                     let maximum = lower
@@ -128,11 +134,10 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
                 successes += 1;
             }
         }
+        if successes > 0 && refusals_after_allocation > 0 {
+            break;
+        }
     }
-    assert!(
-        body_refusals > 0,
-        "must exercise errors after callee effect reset"
-    );
     assert!(
         refusals_after_allocation > 0,
         "must exercise a partially emitted body"

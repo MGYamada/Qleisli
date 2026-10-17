@@ -2,11 +2,15 @@
 
 mod common;
 
+use std::collections::BTreeMap;
 use std::ops::{Add, Mul, Neg};
 
 use common::SourceRoot;
 use qleisli::frontend::compile::compile_project;
-use qleisli::ir::{CircuitAction, CircuitStep, RawOp};
+use qleisli::ir::{
+    BitControl, CircuitAction, CircuitStep, ClassicalId, RawOp, RawProgram, ScalarPhase,
+    SingleGate, TokenId, UnitaryStep, WireId,
+};
 
 // Z[zeta, 1/2], where zeta = exp(i*pi/4) and zeta^4 = -1.
 // Normalization makes equality exact; checked arithmetic fails on overflow.
@@ -42,6 +46,19 @@ impl Exact {
         let mut coefficients = [0; 4];
         coefficients[exponent % 4] = if exponent < 4 { 1 } else { -1 };
         Self::new(coefficients, 0)
+    }
+
+    fn conjugate(self) -> Self {
+        let [a, b, c, d] = self.coefficients;
+        Self::new(
+            [
+                a,
+                d.checked_neg().unwrap(),
+                c.checked_neg().unwrap(),
+                b.checked_neg().unwrap(),
+            ],
+            self.denominator_power,
+        )
     }
 
     fn inverse_sqrt_two() -> Self {
@@ -134,67 +151,456 @@ fn compiled_steps(definitions: &str, preparation: &str, operation: &str) -> Vec<
     steps
 }
 
-// Execute the specified circuit action on each basis column, independently of
-// the production simulator and compiler's inversion/remapping helpers. Axis 0
-// is the least significant bit, matching the finite IR's ordered basis.
-fn assert_operator(width: usize, steps: &[CircuitStep], expected: impl Fn(usize, usize) -> Exact) {
+// Interpret the retained implementation, rather than its cached matrix or the
+// production simulator/extractor. This deliberately small pure Raw profile
+// rejects unsupported commands instead of treating function calls as identity.
+// Axis 0 is the least significant bit throughout, including output owner order.
+fn raw_operator(raw: &RawProgram, depth: usize) -> Vec<Vec<Exact>> {
+    assert!(depth <= 32, "bounded retained function evidence depth");
+    assert_eq!(raw.quantum_inputs.len(), 1);
+    assert_eq!(raw.quantum_outputs.len(), 1);
+    assert!(raw.classical_inputs.is_empty() && raw.classical_outputs.is_empty());
+    assert_eq!(raw.declared_effect, qleisli::ir::Effect::Unitary);
+    let port = &raw.quantum_inputs[0];
+    let width = port.wires.len();
+    assert!(
+        width <= 3,
+        "this exact checker covers small implementations"
+    );
+    assert_eq!(usize::from(port.shape.bits), width);
+    let axes: BTreeMap<_, _> = port
+        .wires
+        .iter()
+        .enumerate()
+        .map(|(axis, wire)| (*wire, axis))
+        .collect();
+    assert_eq!(axes.len(), width);
+    let dimension = 1 << width;
+    let mut columns = vec![vec![Exact::ZERO; dimension]; dimension];
+    for (column, values) in columns.iter_mut().enumerate() {
+        let mut state = RawState {
+            owners: BTreeMap::from([(port.token, port.wires.clone())]),
+            classical: BTreeMap::new(),
+            axes: axes.clone(),
+            amplitudes: vec![Exact::ZERO; dimension],
+            depth,
+        };
+        state.amplitudes[column] = Exact::ONE;
+        state.operations(&raw.operations);
+        let output = state.take(raw.quantum_outputs[0]);
+        assert!(state.owners.is_empty());
+        assert_eq!(output.len(), width);
+        let output_axes = state.indices(&output);
+        let mut ordered_axes = output_axes.clone();
+        ordered_axes.sort_unstable();
+        assert_eq!(ordered_axes, (0..width).collect::<Vec<_>>());
+        for (basis, amplitude) in state.amplitudes.into_iter().enumerate() {
+            let row = label(basis, &output_axes);
+            values[row] = values[row] + amplitude;
+        }
+    }
+    (0..dimension)
+        .map(|row| columns.iter().map(|column| column[row]).collect())
+        .collect()
+}
+
+struct RawState {
+    owners: BTreeMap<TokenId, Vec<WireId>>,
+    classical: BTreeMap<ClassicalId, bool>,
+    axes: BTreeMap<WireId, usize>,
+    amplitudes: Vec<Exact>,
+    depth: usize,
+}
+
+impl RawState {
+    fn take(&mut self, token: TokenId) -> Vec<WireId> {
+        self.owners.remove(&token).expect("live Raw owner")
+    }
+
+    fn put(&mut self, token: TokenId, wires: Vec<WireId>) {
+        assert!(self.owners.insert(token, wires).is_none());
+    }
+
+    fn indices(&self, wires: &[WireId]) -> Vec<usize> {
+        wires.iter().map(|wire| self.axes[wire]).collect()
+    }
+
+    fn apply(&mut self, steps: &[CircuitStep], wires: &[WireId]) {
+        let axes = self.indices(wires);
+        apply_steps(&mut self.amplitudes, steps, &axes, self.depth);
+    }
+
+    fn operations(&mut self, operations: &[RawOp]) {
+        for op in operations {
+            match op {
+                RawOp::PackUnit { output } => self.put(*output, vec![]),
+                RawOp::UnpackUnit { input } => assert!(self.take(*input).is_empty()),
+                RawOp::Split {
+                    input,
+                    left,
+                    right,
+                    left_bits,
+                } => {
+                    let mut wires = self.take(*input);
+                    let right_wires = wires.split_off(usize::from(*left_bits));
+                    self.put(*left, wires);
+                    self.put(*right, right_wires);
+                }
+                RawOp::Join {
+                    left,
+                    right,
+                    output,
+                } => {
+                    let mut wires = self.take(*left);
+                    wires.extend(self.take(*right));
+                    self.put(*output, wires);
+                }
+                RawOp::Gate {
+                    gate,
+                    input,
+                    output,
+                } => {
+                    let wires = self.take(*input);
+                    assert_eq!(wires.len(), 1);
+                    self.apply(&[gate_step(*gate, 0)], &wires);
+                    self.put(*output, wires);
+                }
+                RawOp::Cnot {
+                    control,
+                    target,
+                    control_out,
+                    target_out,
+                } => {
+                    let control_wires = self.take(*control);
+                    let target_wires = self.take(*target);
+                    assert_eq!(control_wires.len(), 1);
+                    assert_eq!(target_wires.len(), 1);
+                    let wires = [control_wires[0], target_wires[0]];
+                    let step = CircuitStep {
+                        controls: vec![BitControl {
+                            index: 0,
+                            when_one: true,
+                        }],
+                        action: gate_step(SingleGate::X, 1).action.clone(),
+                    };
+                    self.apply(&[step], &wires);
+                    self.put(*control_out, control_wires);
+                    self.put(*target_out, target_wires);
+                }
+                RawOp::Toffoli {
+                    control_a,
+                    control_b,
+                    target,
+                    control_a_out,
+                    control_b_out,
+                    target_out,
+                } => {
+                    let a = self.take(*control_a);
+                    let b = self.take(*control_b);
+                    let target_wires = self.take(*target);
+                    assert_eq!((a.len(), b.len(), target_wires.len()), (1, 1, 1));
+                    let mut step = gate_step(SingleGate::X, 2);
+                    step.controls.extend([0, 1].map(|index| BitControl {
+                        index,
+                        when_one: true,
+                    }));
+                    self.apply(&[step], &[a[0], b[0], target_wires[0]]);
+                    self.put(*control_a_out, a);
+                    self.put(*control_b_out, b);
+                    self.put(*target_out, target_wires);
+                }
+                RawOp::LiftBasis {
+                    input,
+                    output,
+                    output_wires,
+                    table,
+                } => {
+                    let wires = self.take(*input);
+                    assert_eq!(
+                        &wires, output_wires,
+                        "pure table keeps its full wire interface"
+                    );
+                    let step = CircuitStep {
+                        controls: vec![],
+                        action: CircuitAction::Monomial {
+                            indices: (0..wires.len()).collect(),
+                            permutation: table.clone(),
+                            phases: vec![0; table.len()],
+                        },
+                    };
+                    self.apply(&[step], &wires);
+                    self.put(*output, wires);
+                }
+                RawOp::ApplyUnitary {
+                    input,
+                    output,
+                    steps,
+                } => {
+                    let wires = self.take(*input);
+                    self.apply(steps, &wires);
+                    self.put(*output, wires);
+                }
+                RawOp::QuantumIf {
+                    control,
+                    target,
+                    control_out,
+                    target_out,
+                    zero_ops,
+                    one_ops,
+                } => {
+                    let control_wires = self.take(*control);
+                    let target_wires = self.take(*target);
+                    assert_eq!(control_wires.len(), 1);
+                    let mut wires = target_wires.clone();
+                    wires.extend(&control_wires);
+                    for (when_one, operations) in [(false, zero_ops), (true, one_ops)] {
+                        for operation in operations {
+                            let mut step = unitary_step(operation);
+                            step.controls.push(BitControl {
+                                index: target_wires.len(),
+                                when_one,
+                            });
+                            self.apply(&[step], &wires);
+                        }
+                    }
+                    self.put(*control_out, control_wires);
+                    self.put(*target_out, target_wires);
+                }
+                RawOp::ClassicalConst { value, output } => {
+                    self.classical.insert(*output, *value);
+                }
+                RawOp::ClassicalNot { input, output } => {
+                    self.classical.insert(*output, !self.classical[input]);
+                }
+                RawOp::ClassicalXor {
+                    left,
+                    right,
+                    output,
+                } => {
+                    self.classical
+                        .insert(*output, self.classical[left] ^ self.classical[right]);
+                }
+                RawOp::ClassicalAnd {
+                    left,
+                    right,
+                    output,
+                } => {
+                    self.classical
+                        .insert(*output, self.classical[left] & self.classical[right]);
+                }
+                RawOp::ClassicalBranch {
+                    condition,
+                    then_ops,
+                    else_ops,
+                    quantum_phis,
+                    classical_phis,
+                } => {
+                    let branch = self.classical[condition];
+                    let mut classical = self.classical.clone();
+                    self.operations(if branch { then_ops } else { else_ops });
+                    let mut owners = BTreeMap::new();
+                    let mut renamed_axes = vec![];
+                    for phi in quantum_phis {
+                        let wires = self.take(if branch {
+                            phi.then_token
+                        } else {
+                            phi.else_token
+                        });
+                        assert_eq!(wires.len(), phi.output_wires.len());
+                        // Phi IDs name the same ordered physical coordinates.
+                        // Collect every rename before replacing any mapping.
+                        renamed_axes
+                            .extend(phi.output_wires.iter().copied().zip(self.indices(&wires)));
+                        assert!(
+                            owners
+                                .insert(phi.output, phi.output_wires.clone())
+                                .is_none()
+                        );
+                    }
+                    assert!(
+                        self.owners.is_empty(),
+                        "branch must return every live owner"
+                    );
+                    self.owners = owners;
+                    self.axes.extend(renamed_axes);
+                    for phi in classical_phis {
+                        let value = self.classical[&if branch { phi.then_id } else { phi.else_id }];
+                        classical.insert(phi.output, value);
+                    }
+                    self.classical = classical;
+                }
+                _ => panic!("outside the small pure Raw oracle profile"),
+            }
+        }
+    }
+}
+
+fn gate_step(gate: SingleGate, target: usize) -> CircuitStep {
+    CircuitStep {
+        controls: vec![],
+        action: match gate {
+            SingleGate::H => CircuitAction::Hadamard { target },
+            SingleGate::X | SingleGate::Z | SingleGate::T => CircuitAction::Monomial {
+                indices: vec![target],
+                permutation: if gate == SingleGate::X {
+                    vec![1, 0]
+                } else {
+                    vec![0, 1]
+                },
+                phases: vec![
+                    0,
+                    match gate {
+                        SingleGate::Z => 4,
+                        SingleGate::T => 1,
+                        _ => 0,
+                    },
+                ],
+            },
+        },
+    }
+}
+
+fn unitary_step(step: &UnitaryStep) -> CircuitStep {
+    match step {
+        UnitaryStep::Gate { gate, target_index } => gate_step(*gate, *target_index),
+        UnitaryStep::Cnot {
+            control_index,
+            target_index,
+        } => {
+            let mut step = gate_step(SingleGate::X, *target_index);
+            step.controls.push(BitControl {
+                index: *control_index,
+                when_one: true,
+            });
+            step
+        }
+        UnitaryStep::Toffoli {
+            control_a_index,
+            control_b_index,
+            target_index,
+        } => {
+            let mut step = gate_step(SingleGate::X, *target_index);
+            step.controls.extend(
+                [*control_a_index, *control_b_index].map(|index| BitControl {
+                    index,
+                    when_one: true,
+                }),
+            );
+            step
+        }
+        UnitaryStep::ScalarPhase(phase) => CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![],
+                permutation: vec![0],
+                phases: vec![match phase {
+                    ScalarPhase::MinusOne => 4,
+                    ScalarPhase::EighthTurn => 1,
+                }],
+            },
+        },
+    }
+}
+
+fn label(basis: usize, axes: &[usize]) -> usize {
+    axes.iter().enumerate().fold(0, |label, (place, axis)| {
+        label | (((basis >> axis) & 1) << place)
+    })
+}
+
+fn replace_label(basis: usize, axes: &[usize], value: usize) -> usize {
+    axes.iter()
+        .enumerate()
+        .fold(basis, |output, (place, axis)| {
+            (output & !(1 << axis)) | (((value >> place) & 1) << axis)
+        })
+}
+
+fn apply_steps(amplitudes: &mut Vec<Exact>, steps: &[CircuitStep], axes: &[usize], depth: usize) {
+    for step in steps {
+        let contract = match &step.action {
+            CircuitAction::Contract {
+                indices, evidence, ..
+            } => {
+                assert_eq!(indices.len(), evidence.signature().bits().unwrap());
+                Some(raw_operator(evidence.implementation(), depth + 1))
+            }
+            _ => None,
+        };
+        let mut next = vec![Exact::ZERO; amplitudes.len()];
+        for (basis, amplitude) in amplitudes.iter().copied().enumerate() {
+            if !step
+                .controls
+                .iter()
+                .all(|control| ((basis >> axes[control.index]) & 1 != 0) == control.when_one)
+            {
+                next[basis] = next[basis] + amplitude;
+                continue;
+            }
+            match &step.action {
+                CircuitAction::Contract {
+                    indices, adjoint, ..
+                } => {
+                    let targets: Vec<_> = indices.iter().map(|index| axes[*index]).collect();
+                    let column = label(basis, &targets);
+                    let matrix = contract.as_ref().unwrap();
+                    for (row, values) in matrix.iter().enumerate() {
+                        let coefficient = if *adjoint {
+                            matrix[column][row].conjugate()
+                        } else {
+                            values[column]
+                        };
+                        let output = replace_label(basis, &targets, row);
+                        next[output] = next[output] + amplitude * coefficient;
+                    }
+                }
+                CircuitAction::Hadamard { target } => {
+                    let mask = 1 << axes[*target];
+                    let zero = basis & !mask;
+                    let scaled = amplitude * Exact::inverse_sqrt_two();
+                    next[zero] = next[zero] + scaled;
+                    next[zero | mask] =
+                        next[zero | mask] + if basis & mask == 0 { scaled } else { -scaled };
+                }
+                CircuitAction::Monomial {
+                    indices,
+                    permutation,
+                    phases,
+                } => {
+                    let targets: Vec<_> = indices.iter().map(|index| axes[*index]).collect();
+                    let column = label(basis, &targets);
+                    let output = replace_label(basis, &targets, usize::from(permutation[column]));
+                    next[output] =
+                        next[output] + amplitude * Exact::phase(usize::from(phases[column]));
+                }
+            }
+        }
+        *amplitudes = next;
+    }
+}
+
+fn operator(width: usize, steps: &[CircuitStep]) -> Vec<Vec<Exact>> {
     assert!(
         width <= 3,
         "this exact checker intentionally covers small examples"
     );
     let dimension = 1 << width;
+    let axes: Vec<_> = (0..width).collect();
+    let mut matrix = vec![vec![Exact::ZERO; dimension]; dimension];
     for column in 0..dimension {
         let mut amplitudes = vec![Exact::ZERO; dimension];
         amplitudes[column] = Exact::ONE;
-        for step in steps {
-            let mut next = vec![Exact::ZERO; dimension];
-            for (basis, amplitude) in amplitudes.into_iter().enumerate() {
-                if !step
-                    .controls
-                    .iter()
-                    .all(|control| ((basis >> control.index) & 1 != 0) == control.when_one)
-                {
-                    next[basis] = next[basis] + amplitude;
-                    continue;
-                }
-                match &step.action {
-                    CircuitAction::Contract { .. } => {
-                        panic!(
-                            "function evidence is covered by the dedicated function contract suite"
-                        )
-                    }
-                    CircuitAction::Hadamard { target } => {
-                        let mask = 1 << target;
-                        let zero = basis & !mask;
-                        let scaled = amplitude * Exact::inverse_sqrt_two();
-                        next[zero] = next[zero] + scaled;
-                        next[zero | mask] =
-                            next[zero | mask] + if basis & mask == 0 { scaled } else { -scaled };
-                    }
-                    CircuitAction::Monomial {
-                        indices,
-                        permutation,
-                        phases,
-                    } => {
-                        let label = indices.iter().enumerate().fold(0, |label, (place, axis)| {
-                            label | (((basis >> axis) & 1) << place)
-                        });
-                        let output =
-                            indices
-                                .iter()
-                                .enumerate()
-                                .fold(basis, |output, (place, axis)| {
-                                    (output & !(1 << axis))
-                                        | (((usize::from(permutation[label]) >> place) & 1) << axis)
-                                });
-                        next[output] =
-                            next[output] + amplitude * Exact::phase(usize::from(phases[label]));
-                    }
-                }
-            }
-            amplitudes = next;
-        }
+        apply_steps(&mut amplitudes, steps, &axes, 0);
         for (row, amplitude) in amplitudes.into_iter().enumerate() {
+            matrix[row][column] = amplitude;
+        }
+    }
+    matrix
+}
+
+fn assert_operator(width: usize, steps: &[CircuitStep], expected: impl Fn(usize, usize) -> Exact) {
+    for (row, entries) in operator(width, steps).into_iter().enumerate() {
+        for (column, amplitude) in entries.into_iter().enumerate() {
             assert_eq!(
                 amplitude,
                 expected(row, column),
@@ -212,9 +618,116 @@ fn exact_scalar_arithmetic_matches_cyclotomic_and_hadamard_identities() {
     assert_eq!(Exact::inverse_sqrt_two() * Exact::inverse_sqrt_two(), half);
     assert_eq!(half + half, Exact::ONE);
     assert_eq!(half + -half, Exact::ZERO);
+    assert_eq!(
+        Exact::inverse_sqrt_two().conjugate(),
+        Exact::inverse_sqrt_two()
+    );
+    assert_eq!(determinant_exponent(1, &[gate_step(SingleGate::H, 0)]), 4);
     for i in 0..8 {
+        assert_eq!(Exact::phase(i).conjugate(), Exact::phase(8 - i));
         for j in 0..8 {
             assert_eq!(Exact::phase(i) * Exact::phase(j), Exact::phase(i + j));
+        }
+    }
+}
+
+// A small direct oracle check, without a compiler/native roundtrip: phi wire
+// IDs are new names for the selected ordered coordinates, not new physical axes.
+#[test]
+fn exact_raw_oracle_retains_fresh_phi_axes_for_both_closed_branches() {
+    use qleisli::ir::{BasisShape, Effect, QuantumPhi, QuantumPort};
+    let t = TokenId;
+    let w = WireId;
+    for branch in [false, true] {
+        let raw = RawProgram {
+            quantum_inputs: vec![QuantumPort {
+                token: t(0),
+                wires: vec![w(0), w(1)],
+                shape: BasisShape { bits: 2 },
+            }],
+            classical_inputs: vec![],
+            operations: vec![
+                RawOp::ClassicalConst {
+                    value: branch,
+                    output: ClassicalId(0),
+                },
+                RawOp::ClassicalBranch {
+                    condition: ClassicalId(0),
+                    then_ops: vec![
+                        RawOp::Split {
+                            input: t(0),
+                            left: t(1),
+                            right: t(2),
+                            left_bits: 1,
+                        },
+                        RawOp::Gate {
+                            gate: SingleGate::H,
+                            input: t(1),
+                            output: t(3),
+                        },
+                        RawOp::Join {
+                            left: t(2),
+                            right: t(3),
+                            output: t(4),
+                        },
+                    ],
+                    else_ops: vec![
+                        RawOp::Split {
+                            input: t(0),
+                            left: t(5),
+                            right: t(6),
+                            left_bits: 1,
+                        },
+                        RawOp::Gate {
+                            gate: SingleGate::X,
+                            input: t(5),
+                            output: t(7),
+                        },
+                        RawOp::Join {
+                            left: t(7),
+                            right: t(6),
+                            output: t(8),
+                        },
+                    ],
+                    quantum_phis: vec![QuantumPhi {
+                        then_token: t(4),
+                        else_token: t(8),
+                        output: t(9),
+                        output_wires: vec![w(10), w(11)],
+                    }],
+                    classical_phis: vec![],
+                },
+                RawOp::ApplyUnitary {
+                    input: t(9),
+                    output: t(10),
+                    steps: vec![gate_step(SingleGate::T, 0)],
+                },
+            ],
+            quantum_outputs: vec![t(10)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let matrix = raw_operator(&raw, 0);
+        for (row, entries) in matrix.iter().enumerate() {
+            for (column, actual) in entries.iter().enumerate() {
+                let (a, b) = (column & 1, column >> 1);
+                let expected = if branch {
+                    // H on a, return (b,r), then T on the first returned axis.
+                    if row & 1 == b {
+                        Exact::inverse_sqrt_two() * Exact::phase(b + 4 * a * (row >> 1))
+                    } else {
+                        Exact::ZERO
+                    }
+                } else if row == (1 - a) | (b << 1) {
+                    Exact::phase(1 - a)
+                } else {
+                    Exact::ZERO
+                };
+                assert_eq!(
+                    *actual, expected,
+                    "branch {branch}, matrix entry ({row}, {column})"
+                );
+            }
         }
     }
 }
@@ -546,48 +1059,31 @@ fn permutation_is_odd(permutation: &[usize]) -> bool {
     odd
 }
 
-// Exact determinant of the small monomial/H circuits in this review. This is
-// an independent necessary obstruction, not a synthesis decision procedure.
+// Leibniz determinant of the independently replayed matrix, including retained
+// functions and all scalar phases. At most eight rows; no division or simulator.
 fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
-    let dimension = 1 << width;
-    steps
-        .iter()
-        .map(|step| match &step.action {
-            CircuitAction::Hadamard { .. } => {
-                4 * ((1usize << (width - step.controls.len() - 1)) % 2)
+    fn expand(matrix: &[Vec<Exact>], row: usize, columns: &mut Vec<usize>) -> Exact {
+        if row == matrix.len() {
+            return if permutation_is_odd(columns) {
+                -Exact::ONE
+            } else {
+                Exact::ONE
+            };
+        }
+        let mut sum = Exact::ZERO;
+        for column in 0..matrix.len() {
+            if !columns.contains(&column) && matrix[row][column] != Exact::ZERO {
+                columns.push(column);
+                sum = sum + matrix[row][column] * expand(matrix, row + 1, columns);
+                columns.pop();
             }
-            CircuitAction::Monomial {
-                indices,
-                permutation,
-                phases,
-            } => {
-                let mut mapping = Vec::new();
-                let mut exponent = 0;
-                for basis in 0..dimension {
-                    if !step
-                        .controls
-                        .iter()
-                        .all(|c| ((basis >> c.index) & 1 != 0) == c.when_one)
-                    {
-                        mapping.push(basis);
-                        continue;
-                    }
-                    let label = indices
-                        .iter()
-                        .enumerate()
-                        .fold(0, |label, (i, axis)| label | (((basis >> axis) & 1) << i));
-                    exponent += usize::from(phases[label]);
-                    mapping.push(indices.iter().enumerate().fold(basis, |output, (i, axis)| {
-                        (output & !(1 << axis))
-                            | (((usize::from(permutation[label]) >> i) & 1) << axis)
-                    }));
-                }
-                (exponent + 4 * usize::from(permutation_is_odd(&mapping))) % 8
-            }
-            CircuitAction::Contract { .. } => panic!("outside this determinant regression"),
-        })
-        .sum::<usize>()
-        % 8
+        }
+        sum
+    }
+    let determinant = expand(&operator(width, steps), 0, &mut vec![]);
+    (0..8)
+        .find(|exponent| determinant == Exact::phase(*exponent))
+        .expect("determinant is an exact eighth root in this regression")
 }
 
 #[cfg_attr(
@@ -637,6 +1133,22 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
         Exact::phase(row * column) * Exact::inverse_sqrt_two() * Exact::new([1, 0, 0, 0], 1)
     });
     assert_eq!(determinant_exponent(3, &steps), 2, "det(F8) = i exactly");
+    // Exercise conjugate transpose on retained ordinary function evidence too.
+    let inverse = compiled_steps(
+        "use std::transform::qft3;",
+        "let q = join(join(init0(),init0()),init0());",
+        "adjoint(qft3)(q)",
+    );
+    assert_operator(3, &inverse, |row, column| {
+        Exact::phase((8 - (row * column) % 8) % 8)
+            * Exact::inverse_sqrt_two()
+            * Exact::new([1, 0, 0, 0], 1)
+    });
+    assert_eq!(
+        determinant_exponent(3, &inverse),
+        6,
+        "det(F8†) = -i exactly"
+    );
     // Embedded H/T/X and NCT generate only +/-1 at width 3 and +1 at width 4.
     for width in [3, 4] {
         let allowed = if width == 3 { vec![0, 4] } else { vec![0] };

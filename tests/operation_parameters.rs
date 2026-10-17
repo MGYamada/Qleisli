@@ -501,14 +501,25 @@ fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics()
         // This deliberately wrong Op basis fails before a concrete width limit.
         ErrorCode::TypeMismatch,
     );
-    let mut source = String::new();
-    // Structurally different, valid identity descriptions remain distinct instances.
-    for n in 0..257 {
+    // Distinct closed Nat actuals remain distinct specializations even when
+    // their emitted identity is equal. A fixed small syntax tree keeps source
+    // traversal separate from the number of concrete loop substitutions.
+    let source = |count| {
+        let mut source = String::from(
+            "use std::gate::id;\n\
+             unitary fn keep[const n:Nat](q:Q<Bit>)->Q<Bit>{q}\n",
+        );
+        // The bundled Bit identity already occupies one project-wide instance.
+        // Reuse that exact Basis instance explicitly; 1 + 255 instances = 256.
+        source.push_str("unitary fn all(q:Q<Bit>)->Q<Bit>{let q=id[type(Bit)](q);\n");
         source.push_str(&format!(
-            "unitary fn f{n}(q:Q<Bit>)->Q<Bit>{{use_op[power(ident,{n})](q)}}"
+            "qfor static i in 0..{count} carry r=q{{yield keep[i](r)}}}}"
         ));
-    }
-    let root = SourceRoot::new(&format!("{PRELUDE}{source}"));
+        source
+    };
+    let root = SourceRoot::new(&source(255));
+    check_project(&root.0).unwrap();
+    let root = SourceRoot::new(&source(256));
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit);
     assert!(error.message.contains("256 distinct"), "{error}");

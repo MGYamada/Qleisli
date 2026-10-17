@@ -50,6 +50,7 @@ impl Error for ExactError {}
 pub struct Budget {
     remaining: usize,
     source_storage: Vec<Arc<Vec<(String, String)>>>,
+    source_rows: Vec<Arc<(String, String)>>,
 }
 
 impl fmt::Debug for Budget {
@@ -66,6 +67,7 @@ impl Budget {
         Self {
             remaining: limit,
             source_storage: Vec::new(),
+            source_rows: Vec::new(),
         }
     }
 
@@ -79,6 +81,18 @@ impl Budget {
 
     pub fn remaining(&self) -> usize {
         self.remaining
+    }
+
+    pub(crate) fn charge_source_row(
+        &mut self,
+        row: &Arc<(String, String)>,
+    ) -> Result<(), ExactError> {
+        self.charge(self.source_rows.len() + 1)?;
+        if !self.source_rows.iter().any(|seen| Arc::ptr_eq(seen, row)) {
+            self.charge(row.0.len() + row.1.len())?;
+            self.source_rows.push(Arc::clone(row));
+        }
+        Ok(())
     }
 
     /// Charge immutable source storage once per derivation. Keep a strong

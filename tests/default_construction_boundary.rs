@@ -189,20 +189,15 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
         .unwrap()
         .elaborate()
         .unwrap();
-    // First execution exposed the existing finite type-argument restriction.
-    // A valid common judgment does not supply that missing concrete lowering.
-    let finite = project_effects_with_kernel(
-        &SourceRoot::new(generic).0,
-        SourcePolicy::default(),
-        &Kernel::selected().unwrap(),
-    )
-    .unwrap_err();
-    assert_eq!(finite.code, "unsupported");
-    assert_eq!(
-        finite.message,
-        "static argument is outside the finite lowering profile"
+    checked_finite_effects(
+        generic,
+        &[("default", Effect::Unitary), ("client", Effect::Unitary)],
     );
-    assert_eq!(finite.primary.unwrap().span, at(generic, "type(Bit)", 0, 9));
+    checked_finite_effects(
+        "use std::quantum::{unit,finish}; fn default()->Q<Unit>{unit(())}\n\
+         pub unitary fn client()->Unit{finish(default())}",
+        &[("default", Effect::Unitary), ("client", Effect::Unitary)],
+    );
 
     let local = "fn default()->Bit{0} pub fn client()->Bit{let default=0;default()}";
     let message = shared_rejection(
@@ -264,8 +259,8 @@ fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
             Effect::Unitary
         );
     }
-    // Finite concrete lowering deliberately does not materialize these maps.
-    // Existing quantum_unit_maps supplies independent native/scalar equations.
+    // This source check preserves the explicit owner boundary. The native
+    // positive above also checks ordinary lowering of these explicit maps.
     common
         .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
         .unwrap()

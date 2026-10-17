@@ -39,7 +39,8 @@ chapter promises neither `qft<N>` nor a future completion target.
 | `std::transform` | Its defining contract is a mathematical basis transform with an explicit whole-input operator and ordered coordinates, such as Hadamard or Fourier transformation. A contract defined as reflection about a subspace belongs in `reflection`; a measurement belongs in `measurement`. | `stdlib/src/transform.qli` |
 | `std::reflection` | Its defining contract is a phase-fixed reflection about a specified state or subspace, including the exact projector, sign and owner interface. Being unitary alone is not this classification. | `stdlib/src/reflection.qli` |
 | `std::measurement` | Its defining mathematical operation is a complete measurement instrument with declared classical outcomes and residual quantum owners, including destructive measurement or a measurement that retains data. An arbitrary observing routine is not enough. | `stdlib/src/measurement.qli` |
-| `std::gate` (provisional) | An ordinary checked gate or explicit routing helper has an exact ordered-axis contract. Physical action and structural representation order remain distinct. | `stdlib/src/gate.qli` |
+| `std::gate` | An ordinary checked gate definition has an exact operator, scalar phase and ordered-owner contract. Gate membership confers no primitive or verifier authority. | `stdlib/src/gate.qli` |
+| `std::structure` | An ordinary checked structural map explicitly changes an owner partition or representation order. Its exact input/output trees and axis map are part of the contract; it is not a physical gate merely because it denotes a permutation. | `stdlib/src/structure.qli` |
 | `std::arithmetic` (reserved) | Its public identity is a reusable parameterized arithmetic or number-theoretic operation whose contract is independent of one hard-coded circuit instance. | No current bundled module or public export. |
 
 The reserved shape `std::arithmetic::modexp<N>` represents modular
@@ -54,11 +55,17 @@ The compiler-owned foundation catalogs `std::quantum`, `std::observe`,
 contracts in the [primitive inventory](primitive-boundary.md). This mathematical
 namespace migration changes none of those entries or their trust status.
 `std::basis` is ordinary checked source despite its foundational role.
+The final unqualified primitive surface, `global_phase_eighth` spelling,
+retirement of qualified foundation catalogs and remaining active-client
+migration in #369/#167 are still pending. Current qualified primitive imports
+are compiler entries, not aliases for the new ordinary gate definitions.
 
 ## Current interfaces and contracts
 
-The five bundled ordinary modules expose eleven public definitions and one private
-classical helper. Contract identifiers retain their existing meanings after the
+The six bundled ordinary modules expose twenty-one public definitions and five
+private helpers for a classical predicate, scalar phase, parameterized phase,
+packed CNOT and fixed Bit identity.
+Contract identifiers retain their existing meanings after the
 move; they are not constitutional ledger entries or verification badges.
 
 | Public path | Exact interface | Source contract / principal effect |
@@ -68,16 +75,22 @@ move; they are not constitutional ledger entries or verification badges.
 | `std::transform::hadamard2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R001: ordered H tensor H; Unitary. |
 | `std::transform::qft2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | F001: positive F4 with included reversal; Unitary. |
 | `std::transform::qft3` | `fn (Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)>` | F002: positive F8 with included reversal; Unitary. |
-| `std::gate::swap` (provisional) | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Physical two-Bit SWAP, exact phase +1; three CNOTs, original output wire order. |
-| `std::gate::permute_axes` (provisional) | `unitary fn (Q<(Bit,Bit)>) -> Q<(Bit,Bit)>` | Structural two-axis map `[1,0]`, exact phase +1; reversed output wire order, no gate instruction. |
+| `std::gate::swap` | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Two-Bit SWAP, exact phase +1; three ordinary CNOT calls with retained controlled-X work, original output wire order. Actual target gate costs require a checked realization. |
+| `std::gate::t` | `unitary fn (Q<Bit>) -> Q<Bit>` | Exact `diag(1, exp(i*pi/4))`, derived by controlling the scalar phase on a fresh `Q<Unit>` owner and explicitly consuming that owner. No additional physical wire. |
+| `std::gate::{s,sdg,tdg,z,x}` | Each `unitary fn (Q<Bit>) -> Q<Bit>` | S and Z use the quarter-turn and half-turn phases `phase[1,2]` and `phase[1,1]`; S† and T† use `adjoint(s)` and `adjoint(t)`. X is `H Z H`. Each preserves the full exact phase and the original returned owner interface. |
+| `std::gate::id` | Static `[const A:Basis]`; `unitary fn (Q<A>) -> Q<A>` | Identity with coefficient +1, retaining the full Basis tree and every zero-width owner. No physical instruction or implicit type conversion. |
+| `std::gate::cnot` | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Ordinary controlled X. The first owner is the control; outputs retain their order and phase +1. |
+| `std::gate::toffoli` | `unitary fn (Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>,Q<Bit>),Q<Bit>)` | Ordinary control of packed CNOT. Both controls retain their basis labels; target flips iff both are one, with phase +1 and no additional physical wire. |
+| `std::gate::controlled_phase` | Static `[const j:Nat,const k:Nat]`; `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Ordinary control of `phase[j,k]`, exact `diag(1,1,1,exp(2*pi*i*j/2^k))` in control/target order. The phase provider's concrete coefficient/profile conditions remain required. |
+| `std::structure::permute_axes` | `unitary fn (Q<(Bit,Bit)>) -> Q<(Bit,Bit)>` | Structural two-axis map `[1,0]`, exact phase +1; reversed output wire order, no gate instruction. |
 | `std::reflection::reflect_uniform2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R002: `2|++><++| - I`, with this exact sign; Unitary. |
 | `std::measurement::measure_x` | `fn (Q<Bit>) -> Bit` | R003: destructive X measurement; Observe. |
 | `std::measurement::measure_z2` | `fn (Q<(Bit, Bit)>) -> (Bit, Bit)` | R004: destructive ordered two-bit Z measurement; Observe. |
 | `std::measurement::parity_zz` | `fn (Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit)` | R005: nondestructive Z-parity measurement of the data; Observe. |
 
-The provisional `std::gate` functions are ordinary `.qli`, not sealed
-compiler entries. Their two-Bit interfaces are explicit: generic register SWAP
-and arbitrary permutation witnesses remain unsupported. `swap(excl a, excl b)`
+The `std::gate` and `std::structure` functions are ordinary `.qli`, not sealed
+compiler entries. The two-Bit interfaces of `swap` and `permute_axes` are explicit:
+generic register SWAP and arbitrary permutation witnesses remain unsupported. `swap(excl a, excl b)`
 returns authority to the updated original owners; `permute_axes(q)` consumes
 and returns its pair with the explicit axis map. Neither is binding exchange.
 Under fixed input/output coordinates both denote `|a,b> -> |b,a>` with phase
@@ -86,6 +99,21 @@ no optimizer permission to replace one routing implementation by the other.
 Actual target routing and quantitative resource claims need their own checked
 correspondence and accounting; zero source gate instructions are not a promise
 of zero physical routing cost.
+
+For T, the private scalar helper has exact meaning `zeta_8 I_Unit`. Coherent
+control gives `diag(1,zeta_8)` on the retained Bit; the zero-width target is a
+logical owner, explicitly introduced with `unit(())` and consumed with `finish`.
+Its absence of physical wires does not imply zero synthesis or gate cost.
+Applying the scalar directly to `Q<Bit>` instead gives `zeta_8 I_Bit`, which
+must fail an exact T request. The source definitions and exact requested checks
+remain separate from source/target preservation and quantitative PR/RS evidence.
+The ordinary T body retains a `CircuitAction::Contract` dependency. The terminal
+OpenQASM 3 and QIR Base exporters expand its actual retained circuit, preserving
+ordered axes, control polarity and adjoints before lowering to target gates.
+This bounded producer path has the same target vocabulary and workspace limits;
+an unsupported body still refuses. Literal-output checks cover exact T phase and
+clean synthesis scratch in small cases. They do not supply a general export
+preservation theorem or a quantitative resource certificate.
 
 These rows are interface descriptions, not declaration syntax or new function
 types. Public quantum functions have explicit checked effect contracts under
@@ -141,6 +169,7 @@ controlled access.
 | `std::routines::hadamard2` | `std::transform::hadamard2` |
 | `std::routines::reflect_uniform2` | `std::reflection::reflect_uniform2` |
 | `std::routines::{measure_x,measure_z2,parity_zz}` | `std::measurement::{measure_x,measure_z2,parity_zz}` |
+| `std::gate::permute_axes` | `std::structure::permute_axes` |
 | `std::arithmetic::{increment2,add2,mul2_mod15}` | Local `arithmetic` source in `examples/order_finding/arithmetic.qli`; no canonical std export. |
 
 The grouped path notation in this table is a migration abbreviation, not new
@@ -169,7 +198,7 @@ retained in `tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/`
 
 ## Checking and later structure
 
-All five modules, their private/unused declarations and caller source undergo
+All six modules, their private/unused declarations and caller source undergo
 the same mandatory common-source judgment. Concrete lowering and fresh native
 acceptance remain separate stages with profile-specific support. A path grants
 no sealed status, body-derived effect, independent exact Meaning, provider

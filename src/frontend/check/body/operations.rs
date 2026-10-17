@@ -898,6 +898,10 @@ impl Checker<'_, '_> {
             );
             error
         })?;
+        for (key, binding) in owners {
+            scope.moved.remove(&binding.identity);
+            scope.values.insert(key, binding);
+        }
         if arguments
             .iter()
             .any(|argument| argument.access == QuantumAccess::Ctrl)
@@ -905,10 +909,6 @@ impl Checker<'_, '_> {
             // Retain the original obligation even when specialization never
             // visits this declaration, branch, loop body or provider call.
             self.obligation(span, ObligationKind::ControlSectors, scope)?;
-        }
-        for (key, binding) in owners {
-            scope.moved.remove(&binding.identity);
-            scope.values.insert(key, binding);
         }
         Ok(Ty::unit())
     }

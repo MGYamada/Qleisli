@@ -5,6 +5,42 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [long ordinary computed-leaf first history](computed-long-leaf-v030/README.md)
+retains three separate sources and all first diagnostics: expanded 1,025/257 T
+calls exhaust source work, while a compact 257-fold reaches the separate finite
+FunctionEvidence limit. Saved observers, dirty input windows and stable binary
+identities remain distinct from successful replays, build attestations and proofs.
+
+The [zero-basis derivation first history](zero-basis-v030/README.md) retains
+four desired sources, their 12 original Raw/hierarchy/entry observations, and
+four separate accepted ordinary wrappers. The unsaved stdin observer, limited
+source window and prior CLI identity remain explicit; later design notes and
+current native preservation checks remain separate from first diagnostics.
+
+The [computed-body and preparation histories](computed-preparation-v030/README.md)
+retain twelve original/repair computed refusals, a 1,025-action sealed-T baseline
+accept and six separate preparation check/run observations. First entry mistakes,
+minimal repairs, scalar/ownership barriers and missing observer/source windows
+remain distinct from current normalization, exact native equations and proofs.
+
+The [derived phase and fixed QFT first history](derived-phase-qft-v030/README.md)
+retains four original Basis-wrapper refusals, two controlled-phase successes and
+four separate translated QFT successes on two/three bits. Full streams and
+reported native counts remain distinct from independent requests; the missing
+stdin driver and source-freeze window are disclosed without reconstruction.
+
+The [runtime transform first histories](runtime-transforms-v030/README.md)
+retain two separate packets and all 16 baseline refusals, including the original
+generic-classical header, tuple argument and phase-provider mistakes. Repaired
+translations, stale predictions and observed prior executable identities remain
+separate from current implementation and preservation evidence.
+
+The [general static runtime histories](general-static-runtime-v030/README.md)
+retain four complete informed studies, 23 original checks and all first errors,
+including Basis wrapper repairs and the dormant primitive X gap. Prior executable
+identities, predictions and profile refusals remain separate from current
+implementation validation, native requests and source-preservation proofs.
+
 The [dormant control owner-order study](dormant-control-owner-order-v030/README.md)
 retains two unchanged mixed-owner sources and both actual baseline accepts,
 including the intended bit-Ctrl refusal. Predictions, dirty integration and

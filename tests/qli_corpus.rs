@@ -15,8 +15,6 @@ type Distribution = BTreeMap<Vec<bool>, f64>;
 const STATES: &[&str] = &["zero", "one", "plus", "minus", "y_plus", "y_minus", "magic"];
 const REJECTED: &[(&str, &str)] = &[
     ("basis_type_parameter", "parse"),
-    // Shared syntax represents Nat; the finite lowering profile still rejects it.
-    ("static_nat", "unsupported"),
     ("meaning_pair_predicate", "type_mismatch"),
     ("product_association", "type_mismatch"),
     ("sealed_provider", "type_mismatch"),
@@ -26,7 +24,6 @@ const REJECTED: &[(&str, &str)] = &[
     ("dropped_owner", "ownership"),
     ("missing_adjoint", "capability"),
     ("controlled_is_not_apply", "capability"),
-    ("auxiliary_hh", "unsupported"),
 ];
 
 fn fixture(name: &str) -> String {
@@ -395,6 +392,102 @@ fn type_correct_forward_qft_fault_negates_the_phase_label() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn former_static_nat_boundary_executes_the_retained_original_generic_body() {
+    let original = fixture("rejected/static_nat");
+    let module = parse_module(&original).unwrap();
+    let parameter = &module.decls[0].static_params[0];
+    assert_eq!(parameter.kind, StaticParamKind::Natural);
+    assert_eq!(parameter.name.text, "n");
+    let source = format!(
+        "{original}\nuse std::quantum::{{init0,x}};use std::observe::measure_z;\n\
+         unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}\n\
+         observe fn main()->Bit{{measure_z(power[1,flip](init0()))}}"
+    );
+    distribution(&execute(&SourceRoot::new(&source)), &[(vec![true], 1.0)]);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn former_computed_hh_boundary_has_the_independent_exact_identity_meaning() {
+    use qleisli::contract::exact::{Budget, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::interchange::native::Proposal;
+    use qleisli::interchange::{RootInterface, Version};
+    use qleisli::ir::{CircuitAction, QuantumPort, RawOp};
+
+    let original = fixture("rejected/auxiliary_hh");
+    let source = format!(
+        "{original}\nuse std::quantum::init0;use std::observe::measure_z;\n\
+         unitary fn independent_identity(q:Q<Bit>)->Q<Bit>{{q}}\n\
+         pub observe fn main()->Bit{{measure_z(apply_contract(round_trip,independent_identity,init0()))}}"
+    );
+    let accepted = compile_project(&SourceRoot::new(&source).0).unwrap();
+    let implementation = accepted
+        .raw()
+        .operations
+        .iter()
+        .find_map(|operation| {
+            let RawOp::ApplyUnitary { steps, .. } = operation else {
+                return None;
+            };
+            steps.iter().find_map(|step| match &step.action {
+                CircuitAction::Contract { evidence, .. }
+                    if evidence.identity().implementation == "main::round_trip" =>
+                {
+                    Some(evidence.implementation())
+                }
+                _ => None,
+            })
+        })
+        .expect("retained original computed-body implementation");
+    let [input] = implementation.quantum_inputs.as_slice() else {
+        panic!("one original Bit owner");
+    };
+    let [output] = implementation.quantum_outputs.as_slice() else {
+        panic!("one returned Bit owner");
+    };
+    let boundary = UnitaryBoundary::new(
+        BasisType::Bit,
+        input.clone(),
+        QuantumPort {
+            token: *output,
+            wires: input.wires.clone(),
+            shape: input.shape,
+        },
+    )
+    .unwrap();
+    let proposal = Proposal::from_raw(
+        implementation,
+        Some(&RootInterface {
+            input: BasisType::Bit,
+            output: BasisType::Bit,
+        }),
+        Version::V2,
+        None,
+    )
+    .unwrap();
+    check_unitary(
+        proposal.artifact(),
+        &boundary,
+        &Matrix::identity(2).unwrap(),
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
+    distribution(
+        &run_closed(&accepted, SimulationLimits::default()).unwrap(),
+        &[(vec![false], 1.0)],
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
     for &(name, code) in REJECTED {
         let source = fixture(&format!("rejected/{name}"));
@@ -407,20 +500,6 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
             root.0.join("main.qli").canonicalize().unwrap()
         );
         assert!(source.get(location.span.start..location.span.end).is_some());
-        if name == "static_nat" {
-            // Preserve the source limitation without requiring a second parser.
-            let module = parse_module(&source).unwrap();
-            let parameter = &module.decls[0].static_params[0];
-            assert_eq!(parameter.kind, StaticParamKind::Natural);
-            assert_eq!(parameter.name.text, "n");
-            assert_eq!(location.span, parameter.name.span);
-            assert_eq!((location.line, location.column), (1, 24));
-            assert_eq!(&source[location.span.start..location.span.end], "n");
-            assert_eq!(
-                error.message,
-                "finite profile does not support static Nat parameters"
-            );
-        }
         // Precise binding provenance is tested in authoring_ergonomics.rs.
     }
     distribution(
@@ -530,6 +609,9 @@ fn every_source_fixture_belongs_to_an_exercised_case() {
     for &(name, _) in REJECTED {
         expected.insert(format!("rejected/{name}"));
     }
+    // These original limitation fixtures now have positive semantic tests.
+    expected.insert("rejected/static_nat".into());
+    expected.insert("rejected/auxiliary_hh".into());
     for name in [
         "teleport_missing_phase",
         "teleport_swapped_message",

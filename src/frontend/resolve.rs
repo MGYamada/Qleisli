@@ -75,6 +75,15 @@ pub(super) struct Failure {
     pub kind: FailureKind,
 }
 
+pub(super) fn retired_public_name_hint(module: &str, name: &str) -> Option<&'static str> {
+    match (module, name) {
+        ("std::gate", "permute_axes") => Some(
+            "; help: import `std::structure::permute_axes`; physical SWAP remains `std::gate::swap`",
+        ),
+        _ => None,
+    }
+}
+
 impl Resolution {
     pub fn new<'a>(
         modules: impl IntoIterator<Item = (&'a str, &'a Module)>,

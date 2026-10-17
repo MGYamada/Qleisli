@@ -1,5 +1,9 @@
 # Standard-library contribution conventions
 
+The standard library is code for people to read. Prioritize clarity, concision
+and simplicity in its source, comments and examples. Express each operation
+directly with the clearest available language forms.
+
 Status: **initial contribution discipline adopted on 2026-09-30; conventions
 will be refined through corpus examples**. The user selects a mathlib-style
 open-source library effort from v0.5.0: shared mathematical conventions,
@@ -15,10 +19,12 @@ continues; existing fixed-QFT implementations retain their contracts and
 regression evidence. Historical family studies are not current release gates.
 
 The normative [semantic namespace Reference](docs/src/reference/stdlib.md)
-defines mathematical admission and naming rules. The five ordinary bundled
+defines mathematical admission and naming rules. The six ordinary bundled
 modules are `std::basis`, `std::transform`, `std::reflection` and
-`std::measurement` and provisional `std::gate`, with eleven public definitions and one private reflection
-helper. Public names describe mathematical operations; algorithm selection
+`std::measurement`, `std::gate` and `std::structure`, with twenty-one public
+definitions and five private reflection, scalar-phase, phase-provider,
+packed-control and fixed-identity helpers.
+Public names describe mathematical operations; algorithm selection
 belongs in an explicit parameter, policy or configuration layer. Genuine
 parameterized families own their canonical semantic identity, while reservations
 and fixed interfaces alone promise no available generic family.

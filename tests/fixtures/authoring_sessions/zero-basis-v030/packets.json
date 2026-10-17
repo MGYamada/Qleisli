@@ -1,0 +1,369 @@
+{
+  "format": "qleisli.zero-basis-retention",
+  "version": 1,
+  "scope": "Two inert packets. first retains the complete immediate original tree except translations-01, including the unchanged initial proposal and two separately identified later notes. translations-01 retains that entire separate wrapper subtree. Fifty-four original files plus two later notes remain byte-identical. The first stdin observer was not saved; no driver is reconstructed and no recorded command/source is executed.",
+  "archives": [
+    {
+      "id": "first",
+      "original_directory": "/private/tmp/qleisli-zero-basis-first-37g9fz7_",
+      "archive": "first.tar.gz",
+      "archive_bytes": 6821,
+      "archive_sha256": "5e13fefce4c2e747a7204c1dd482033c8b9954997b808c76040c50521f86a6a8",
+      "tar_bytes": 61440,
+      "tar_sha256": "a5576c6b89804ab6eac70ce772cdefead436fb62c8405662170be600e24fde9f",
+      "file_count": 37,
+      "expanded_bytes": 25685,
+      "files": [
+        {
+          "path": "consume_empty/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty/main.qli",
+          "bytes": 97,
+          "sha256": "201ee437121cac5a27020d396a8b62a4533dc5069aa1ddd3988c189976555b40",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.hierarchy.stderr.txt",
+          "bytes": 112,
+          "sha256": "71794b7a7a1d6144e0f5cf3d1fc433aaa5bd1ca0420539bc5b0c0474994996bc",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.hierarchy.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.ordinary.stderr.txt",
+          "bytes": 156,
+          "sha256": "33bb5fe0b1d07e597ddee12ef2ed45859c39895f798e15b7401944f81e793450",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.ordinary.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.raw.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.raw.stdout.txt",
+          "bytes": 510,
+          "sha256": "d666977c8b5e0b72335f640417f4f1856f7afa729b16d822b4675bfa76ecea9c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "design-review-update-01.md",
+          "bytes": 2833,
+          "sha256": "b73bed11a4e8b3be2d66169066a09a4745deb1bd8907f98cc734ad5826a7641d",
+          "original_mode": "0644"
+        },
+        {
+          "path": "design-review.md",
+          "bytes": 3708,
+          "sha256": "05b169f6824db0174bfc3677ffa63fc76289ca79b740db0ffad2d167e45d6649",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty/main.qli",
+          "bytes": 126,
+          "sha256": "d93def5ae2925eeb2a4fb5f93e8258a3a4809000fe183a861fe44ed2a213706d",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.hierarchy.stderr.txt",
+          "bytes": 113,
+          "sha256": "df8221fce0585a50acb4b763f781dddff268b8717f365cbd172575859d86e529",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.hierarchy.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.ordinary.stderr.txt",
+          "bytes": 153,
+          "sha256": "7971cc51f7fe9615a1c24f76299baa8ee5fd020540c677175e971ec51b79f960",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.ordinary.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.raw.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.raw.stdout.txt",
+          "bytes": 510,
+          "sha256": "d666977c8b5e0b72335f640417f4f1856f7afa729b16d822b4675bfa76ecea9c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "observations.json",
+          "bytes": 11009,
+          "sha256": "026fb435affd936ee40f3242582e065c5f5169438cbfaa750a7832d1c9d8e08f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference/main.qli",
+          "bytes": 127,
+          "sha256": "fa85bf034ddc4fa6700676ea20f58daa18b64fb912599d8669a0cbedd40d3efc",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.hierarchy.stderr.txt",
+          "bytes": 113,
+          "sha256": "4f5e9ae4efc12ff43685822f24277de9eb432ec98209ad6f86252e1144e3cd6c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.hierarchy.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.ordinary.stderr.txt",
+          "bytes": 158,
+          "sha256": "1dbb863d6a80012e790cc6cbc031a403aabe9f867cd63919a5f689bb0d62228f",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.ordinary.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.raw.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.raw.stdout.txt",
+          "bytes": 510,
+          "sha256": "d666977c8b5e0b72335f640417f4f1856f7afa729b16d822b4675bfa76ecea9c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "plan.json",
+          "bytes": 2711,
+          "sha256": "200c03b917870566372186e5c6a9365cc43435b35f7499327aa5d87853360f58",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero/main.qli",
+          "bytes": 81,
+          "sha256": "033d3e3dc5f1174cef85135bdb8d6713f7fa232e393f928ec88fca9555b4b40a",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.hierarchy.stderr.txt",
+          "bytes": 112,
+          "sha256": "ebf562545ce84c7b5ab8dfd0c54b60395511391a7e2f9cf42176733289c28fac",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.hierarchy.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.ordinary.stderr.txt",
+          "bytes": 155,
+          "sha256": "267a55a0ca4cb8e237661e2d8d1379d8730bf7f6c9898d372533eb602d2645e6",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.ordinary.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.raw.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.raw.stdout.txt",
+          "bytes": 510,
+          "sha256": "d666977c8b5e0b72335f640417f4f1856f7afa729b16d822b4675bfa76ecea9c",
+          "original_mode": "0644"
+        },
+        {
+          "path": "summary.json",
+          "bytes": 1701,
+          "sha256": "0b8d7e8d9bbe68e5a68717291ec7e8fb284155ec46af9eebb506a81719d9967f",
+          "original_mode": "0644"
+        }
+      ]
+    },
+    {
+      "id": "translations-01",
+      "original_directory": "/private/tmp/qleisli-zero-basis-first-37g9fz7_/translations-01",
+      "archive": "translations-01.tar.gz",
+      "archive_bytes": 3047,
+      "archive_sha256": "6a76f902b7f71670fa3b29769206eb1716b9d6379a625950fd03d96d70ca75a4",
+      "tar_bytes": 30720,
+      "tar_sha256": "f33c2e3ff431b74a023dabebdeea47cfbadb42802f3accd4ca06b10b347b2596",
+      "file_count": 19,
+      "expanded_bytes": 10666,
+      "files": [
+        {
+          "path": "capture.py",
+          "bytes": 2894,
+          "sha256": "65246dba5efa6b5ab7bc1e222b0e032367e764e02d9ffb4bffd2d548bda154c4",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty/main.qli",
+          "bytes": 178,
+          "sha256": "c19c316d0db4014f1ed93158edf243d0fed4dfb53b058c8eca1e26addaee6799",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "consume_empty.stdout.txt",
+          "bytes": 448,
+          "sha256": "bb5c20465c0af2227a62ffd2038acd4d66f30f7711ff9c1773c4c925e171d0a4",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty/main.qli",
+          "bytes": 205,
+          "sha256": "fb7c9730a61b226d13b1ffc357e576a609e990fb7633f738390271c926193760",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "make_empty.stdout.txt",
+          "bytes": 445,
+          "sha256": "ecfe74e2a03988a1ed84c9ee147da097773374f593b8fe2ab68816d950108953",
+          "original_mode": "0644"
+        },
+        {
+          "path": "observations.json",
+          "bytes": 3470,
+          "sha256": "3996834fbcbef19a5618db7ca787fc7800fd3c6a311430be30752d9eec560999",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference/main.qli",
+          "bytes": 265,
+          "sha256": "bb7aea1629516d72815e1188c9b0ba12a05bb35715018667f391ecccb0b47ec0",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "phase_reference.stdout.txt",
+          "bytes": 450,
+          "sha256": "ddde7ed29b5757f6e91638b6715708c4ecb8d0f81f1d64f581a024a704c7658e",
+          "original_mode": "0644"
+        },
+        {
+          "path": "plan.json",
+          "bytes": 1519,
+          "sha256": "367d836567cf8f5e244b1a8c912169b7565bf3e727248aae30c780aaf0f125ca",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero/Qargo.toml",
+          "bytes": 45,
+          "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero/main.qli",
+          "bytes": 165,
+          "sha256": "7455c5f066b8e07f2edecbf451ab7cdfab2f31cb0bcc52843866934a405edc69",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "original_mode": "0644"
+        },
+        {
+          "path": "prepare_zero.stdout.txt",
+          "bytes": 447,
+          "sha256": "a306c757bddf22c1594d7f2e35e57945079641193638421a3efa6880005168e3",
+          "original_mode": "0644"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-//! Provisional two-Bit std::gate contracts and bounded routing comparisons.
+//! Physical gate versus structural axis-map contracts and routing comparisons.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
@@ -17,7 +17,7 @@ use std::collections::BTreeMap;
 fn source(body: &str) -> String {
     format!(
         "use std::quantum::{{split,join,cnot,init0}};use std::observe::measure_z;
-         use std::gate::{{swap,permute_axes}};
+         use std::gate::swap;use std::structure::permute_axes;
          pub unitary fn probe(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let(a,b)=split(q);{body}}}"
     )
 }
@@ -42,7 +42,7 @@ fn selected(text: &str) -> AcceptedProgram {
     selected_at(text, "main::probe")
 }
 
-fn finite(text: &str) -> AcceptedProgram {
+fn finite(text: &str) -> (AcceptedProgram, String) {
     // The project entry is closed. Retain its open provider through the normal
     // function-evidence path. Self-comparison here is only producer consistency;
     // the separate independent_swap equation below decides the tested meaning.
@@ -70,10 +70,11 @@ fn finite(text: &str) -> AcceptedProgram {
             }
         })
         .expect("retained actual provider");
-    Kernel::selected()
+    let program = Kernel::selected()
         .unwrap()
         .accept_raw(implementation)
-        .unwrap()
+        .unwrap();
+    (program, closed)
 }
 
 fn independent_swap() -> RawProgram {
@@ -117,20 +118,19 @@ fn compare(program: &AcceptedProgram, text: &str) -> Result<FunctionEvidence, Co
 )]
 #[test]
 fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
-    for (body, gates, reversed) in [
+    for (body, cnots, controlled_actions, reversed) in [
         (
             "let(a,b)=cnot(a,b);let(b,a)=cnot(b,a);let(a,b)=cnot(a,b);join(a,b)",
             3,
+            0,
             false,
         ),
-        ("join(b,a)", 0, true),
-        ("let(a,b)=swap(a,b);join(a,b)", 3, false),
-        ("permute_axes(join(a,b))", 0, true),
+        ("join(b,a)", 0, 0, true),
+        ("let(a,b)=swap(a,b);join(a,b)", 0, 3, false),
+        ("permute_axes(join(a,b))", 0, 0, true),
     ] {
         let text = source(body);
-        let finite = finite(&text);
-        let selected = selected(&text);
-        for program in [&finite, &selected] {
+        for (program, original_source) in [finite(&text), (selected(&text), text.clone())] {
             let input: Vec<_> = program
                 .raw()
                 .quantum_inputs
@@ -157,13 +157,28 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
                     .iter()
                     .filter(|op| matches!(op, RawOp::Cnot { .. }))
                     .count(),
-                gates
+                cnots
+            );
+            assert_eq!(
+                program
+                    .raw()
+                    .operations
+                    .iter()
+                    .filter(|op| matches!(op, RawOp::ApplyUnitary { .. }))
+                    .count(),
+                controlled_actions
             );
             assert!(program.raw().operations.iter().all(|op| matches!(
                 op,
-                RawOp::Split { .. } | RawOp::Join { .. } | RawOp::Cnot { .. }
+                RawOp::Split { .. }
+                    | RawOp::Join { .. }
+                    | RawOp::Cnot { .. }
+                    | RawOp::ApplyUnitary { .. }
             )));
-            let evidence = compare(program, &text).unwrap();
+            // Nested ordinary gate receipts retain the entire original project
+            // snapshot, including the finite entry wrapper. Bind that same
+            // source here; the swap equation itself stays independently fixed.
+            let evidence = compare(&program, &original_source).unwrap();
             // Check every exact complex coefficient, not probabilities or an
             // inverse round trip. Equality is under the stated output ordering.
             for row in 0..4 {
@@ -192,7 +207,7 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
         "let q=join(init0(),x(init0()));permute_axes(excl q);let(a,b)=split(q);(measure_z(a),measure_z(b))",
     ] {
         let text = format!(
-            "use std::gate::{{swap,permute_axes}};use std::quantum::{{init0,x,join,split}};
+            "use std::gate::swap;use std::structure::permute_axes;use std::quantum::{{init0,x,join,split}};
              use std::observe::measure_z;pub observe fn main()->(Bit,Bit){{{body}}}"
         );
         for program in [
@@ -200,8 +215,16 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
             selected_at(&text, "main::main"),
         ] {
             let result = run_closed(&program, SimulationLimits::default()).unwrap();
-            assert_eq!(result.len(), 1);
-            assert_eq!(result[&vec![true, false]], 1.0);
+            for (outcome, probability) in &result {
+                let expected = if *outcome == vec![true, false] {
+                    1.0
+                } else {
+                    0.0
+                };
+                assert!((probability - expected).abs() < 1e-12, "{result:?}");
+            }
+            assert!((result.get(&vec![true, false]).copied().unwrap_or(0.0) - 1.0).abs() < 1e-12);
+            assert!((result.values().sum::<f64>() - 1.0).abs() < 1e-12);
         }
     }
 }
@@ -214,9 +237,9 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
 fn native_valid_missing_or_wrong_swap_work_fails_the_independent_equation() {
     for body in ["join(a,b)", "let(a,b)=cnot(a,b);join(a,b)"] {
         let text = source(body);
-        for program in [finite(&text), selected(&text)] {
+        for (program, original_source) in [finite(&text), (selected(&text), text.clone())] {
             assert_eq!(
-                compare(&program, &text).unwrap_err(),
+                compare(&program, &original_source).unwrap_err(),
                 ContractError::EquationMismatch
             );
         }

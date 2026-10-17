@@ -32,23 +32,23 @@ pub(super) fn invalid(message: impl Into<String>) -> Error {
 fn transport(e: crate::interchange::Error) -> Error {
     invalid(e.to_string())
 }
-fn field<'a>(v: &'a Value, name: &str) -> Result<&'a Value> {
+pub(super) fn field<'a>(v: &'a Value, name: &str) -> Result<&'a Value> {
     v.field(name).map_err(transport)
 }
-fn array(v: &Value) -> Result<&[Value]> {
+pub(super) fn array(v: &Value) -> Result<&[Value]> {
     v.array().map_err(transport)
 }
-fn number(v: &Value) -> Result<usize> {
+pub(super) fn number(v: &Value) -> Result<usize> {
     usize::try_from(v.number().map_err(transport)?)
         .map_err(|_| invalid("transport integer overflow"))
 }
 fn text(v: &Value) -> Result<&str> {
     v.text().map_err(transport)
 }
-fn tag(v: &Value) -> Result<&str> {
+pub(super) fn tag(v: &Value) -> Result<&str> {
     text(field(v, "tag")?)
 }
-fn indices(v: &Value) -> Result<Vec<usize>> {
+pub(super) fn indices(v: &Value) -> Result<Vec<usize>> {
     array(v)?.iter().map(number).collect()
 }
 fn port(v: &Value) -> Result<Port> {
@@ -154,7 +154,7 @@ fn side(v: &Value) -> Result<Vec<Port>> {
     unique(&ports)?;
     Ok(ports)
 }
-fn endpoints(v: &Value) -> Result<(Vec<Port>, Vec<Port>)> {
+pub(super) fn endpoints(v: &Value) -> Result<(Vec<Port>, Vec<Port>)> {
     if text(field(v, "effect")?)? != "unitary" {
         return Err(invalid("crossed actual definition is not unitary"));
     }
@@ -218,15 +218,16 @@ impl FramePort<'_> {
 /// packing remains present even though it leaves the quantum frame unchanged.
 #[derive(Clone, Debug)]
 pub struct SourceEvent {
-    definition: usize,
-    step: usize,
+    pub(super) definition: usize,
+    pub(super) step: usize,
     call_path: Vec<usize>,
     module: String,
     span: Span,
     kind: &'static str,
-    node: Option<usize>,
-    inputs: Vec<Item>,
-    outputs: Vec<Item>,
+    pub(super) node: Option<usize>,
+    pub(super) inputs: Vec<Item>,
+    pub(super) outputs: Vec<Item>,
+    pub(super) preparation: Option<Port>,
     before: Vec<Port>,
     after: Vec<Port>,
 }
@@ -358,6 +359,62 @@ fn quantum_ref(item: &Item) -> Option<&Port> {
     }
 }
 
+/// Reserve a pure trace event against the aggregate retained trace budget
+/// before the caller copies its output ports. Nested pure definitions share
+/// this monotonically increasing counter, rather than each receiving a new
+/// 100,000-cell temporary allowance.
+pub(super) fn reserve_pure_trace(
+    state: &Instrument,
+    inputs: &[Item],
+    outputs: &[Port],
+    used: &mut usize,
+    step: &SourceStep,
+) -> Result<()> {
+    let selected = |port: &Port| {
+        inputs
+            .iter()
+            .filter_map(quantum_ref)
+            .any(|input| input.owner == port.owner)
+    };
+    let before_extra = basis_trace_extra(state.current.iter())?;
+    let output_extra = basis_trace_extra(outputs.iter())?;
+    let after_extra = basis_trace_extra(state.current.iter().filter(|port| !selected(port)))?
+        .checked_add(output_extra)
+        .ok_or_else(|| {
+            Error::new("limit", step.span(), "pure trace accounting overflow")
+                .in_module(step.module())
+        })?;
+    let input_extra = basis_trace_extra(inputs.iter().filter_map(quantum_ref))?;
+    let cost = state
+        .current
+        .len()
+        .checked_mul(2)
+        .and_then(|n| n.checked_add(inputs.len()))
+        .and_then(|n| n.checked_add(outputs.len()))
+        .and_then(|n| n.checked_add(16))
+        .and_then(|n| n.checked_add(before_extra))
+        .and_then(|n| n.checked_add(after_extra))
+        .and_then(|n| n.checked_add(input_extra))
+        .and_then(|n| n.checked_add(output_extra))
+        .ok_or_else(|| {
+            Error::new("limit", step.span(), "pure trace accounting overflow")
+                .in_module(step.module())
+        })?;
+    let total = used.checked_add(cost).ok_or_else(|| {
+        Error::new("limit", step.span(), "pure trace accounting overflow").in_module(step.module())
+    })?;
+    if total > 100_000 {
+        return Err(Error::new(
+            "limit",
+            step.span(),
+            "pure source traces exceed retained cell budget",
+        )
+        .in_module(step.module()));
+    }
+    *used = total;
+    Ok(())
+}
+
 pub(super) fn record(
     state: &mut Instrument,
     definition: usize,
@@ -367,8 +424,33 @@ pub(super) fn record(
     outputs: Vec<Item>,
     node: Option<usize>,
 ) -> Result<()> {
-    let kind = step.primitive_kind().map(trace_kind).unwrap_or("pure");
-    if (kind == "pure") != node.is_some() {
+    record_prepared(
+        state,
+        (definition, step_index),
+        step,
+        inputs,
+        outputs,
+        node,
+        None,
+    )
+}
+
+pub(super) fn record_prepared(
+    state: &mut Instrument,
+    location: (usize, usize),
+    step: &SourceStep,
+    inputs: Vec<Item>,
+    outputs: Vec<Item>,
+    node: Option<usize>,
+    preparation: Option<Port>,
+) -> Result<()> {
+    let (definition, step_index) = location;
+    let kind = if preparation.is_some() {
+        "basis_init"
+    } else {
+        step.primitive_kind().map(trace_kind).unwrap_or("pure")
+    };
+    if matches!(kind, "pure" | "basis_init") != node.is_some() {
         return Err(invalid("trace kind differs from actual primitive"));
     }
     // Count the actual retained frame trees while still borrowing them. An
@@ -383,7 +465,7 @@ pub(super) fn record(
     let output_extra = basis_trace_extra(outputs.iter().filter_map(quantum_ref))?;
     let after_extra = match kind {
         "init0" => before_extra.checked_add(output_extra),
-        "pure" => basis_trace_extra(
+        "pure" | "basis_init" => basis_trace_extra(
             state
                 .current
                 .iter()
@@ -411,6 +493,7 @@ pub(super) fn record(
         .and_then(|n| n.checked_add(after_extra))
         .and_then(|n| n.checked_add(input_extra))
         .and_then(|n| n.checked_add(output_extra))
+        .and_then(|n| n.checked_add(if preparation.is_some() { 4 } else { 0 }))
         .ok_or_else(|| invalid("trace accounting overflow"))?;
     let total = state
         .trace_cells
@@ -433,7 +516,7 @@ pub(super) fn record(
         .collect();
     let after = match kind {
         "init0" => [before.clone(), quantum(&outputs)].concat(),
-        "pure" => [quantum(&outputs), rest].concat(),
+        "pure" | "basis_init" => [quantum(&outputs), rest].concat(),
         "observe" => rest,
         _ => before.clone(),
     };
@@ -447,6 +530,7 @@ pub(super) fn record(
         node,
         inputs,
         outputs,
+        preparation,
         before,
         after: after.clone(),
     });
@@ -457,13 +541,14 @@ pub(super) fn propose_moves(events: &[SourceEvent]) -> Vec<InitializationMove> {
     let mut pure = vec![];
     let mut moves = vec![];
     for (i, e) in events.iter().enumerate() {
-        if e.kind == "pure" {
-            pure.push(i);
-        } else if e.kind == "init0" {
+        if matches!(e.kind, "init0" | "basis_init") {
             moves.push(InitializationMove {
                 initialization: i,
                 crossed: pure.clone(),
             });
+        }
+        if e.node.is_some() {
+            pure.push(i);
         }
     }
     moves
@@ -547,6 +632,8 @@ fn take(
 struct Replay<'a> {
     proposal: &'a HierarchyProposal,
     definitions: &'a [Value],
+    events: &'a [SourceEvent],
+    zero_basis_replay: bool,
     next: usize,
     calls: usize,
     current: Vec<Port>,
@@ -588,7 +675,6 @@ impl Replay<'_> {
                 args.extend(take(input, &mut env, true)?);
             }
             let atomic = self
-                .proposal
                 .events
                 .get(self.next)
                 .is_some_and(|e| e.definition == id && e.step == i && e.call_path == *path);
@@ -613,7 +699,6 @@ impl Replay<'_> {
                 output?
             } else {
                 let event = self
-                    .proposal
                     .events
                     .get(self.next)
                     .ok_or_else(|| invalid("source event was omitted"))?;
@@ -646,7 +731,6 @@ impl Replay<'_> {
         structural: Option<Primitive>,
     ) -> Result<Vec<Item>> {
         let event = self
-            .proposal
             .events
             .get(self.next)
             .ok_or_else(|| invalid("constructor source event was omitted"))?;
@@ -661,7 +745,7 @@ impl Replay<'_> {
                 "constructor event differs from retained source tree/path/operands",
             ));
         }
-        self.event_contract(event, structural, "unitary")?;
+        self.event_contract(event, structural, "unitary", false)?;
         self.next += 1;
         Ok(event.outputs.clone())
     }
@@ -745,6 +829,19 @@ impl Replay<'_> {
         }
     }
     fn event(&mut self, e: &SourceEvent, step: &SourceStep) -> Result<()> {
+        super::zero_basis::validate_call_event(
+            self.proposal,
+            e,
+            step,
+            self.definitions,
+            self.zero_basis_replay,
+        )?;
+        if step.basis_table().is_some() {
+            super::zero_basis::validate_event(self.proposal, e)?;
+            if super::zero_basis::classify(step) == Some(super::zero_basis::Kind::Prepare) {
+                return self.basis_preparation(e);
+            }
+        }
         if let Some(key) = step.contract() {
             let expected = self
                 .proposal
@@ -761,7 +858,12 @@ impl Replay<'_> {
                 ));
             }
         }
-        self.event_contract(e, step.primitive_kind(), step.effect())
+        self.event_contract(
+            e,
+            step.primitive_kind(),
+            step.effect(),
+            super::zero_basis::classify(step) == Some(super::zero_basis::Kind::Structural),
+        )
     }
     // Overrides originate only in replay of the retained constructor tree,
     // never in producer metadata or an event's claimed kind/effect.
@@ -770,7 +872,13 @@ impl Replay<'_> {
         e: &SourceEvent,
         primitive: Option<Primitive>,
         effect: &str,
+        basis_structural: bool,
     ) -> Result<()> {
+        if e.preparation.is_some() {
+            return Err(invalid(
+                "ordinary source event carries an extra preparation",
+            ));
+        }
         if self.current != e.before {
             return Err(invalid("source full frames do not compose"));
         }
@@ -807,7 +915,10 @@ impl Replay<'_> {
                 {
                     return Err(invalid("non-unitary source step proposed as pure"));
                 }
-                if !self.measured.is_empty() && !primitive.is_some_and(structural) {
+                if !self.measured.is_empty()
+                    && !primitive.is_some_and(structural)
+                    && !basis_structural
+                {
                     return Err(invalid("quantum gate crossed observation"));
                 }
                 let d = self
@@ -967,6 +1078,66 @@ impl Replay<'_> {
         self.current = expected;
         Ok(())
     }
+
+    fn basis_preparation(&mut self, e: &SourceEvent) -> Result<()> {
+        if self.current != e.before
+            || e.kind != "basis_init"
+            || e.node.is_none()
+            || !self.measured.is_empty()
+        {
+            return Err(invalid(
+                "basis preparation changes its source frame or observation order",
+            ));
+        }
+        unique(&e.before)?;
+        unique(&e.after)?;
+        let selected = quantum(&e.inputs);
+        let outputs = quantum(&e.outputs);
+        let ([input], [output]) = (selected.as_slice(), outputs.as_slice()) else {
+            return Err(invalid(
+                "basis preparation changes its unary owner interface",
+            ));
+        };
+        let fresh = e
+            .preparation
+            .as_ref()
+            .ok_or_else(|| invalid("basis preparation omits its fresh physical Bit"))?;
+        if e.inputs.len() != 1
+            || e.outputs.len() != 1
+            || !self.current.contains(input)
+            || fresh.kind != PortKind::Bit
+            || fresh.axes.len() != 1
+            || output.basis != fresh.basis
+            || output.axes != fresh.axes
+            || self.seen_owners.contains(&fresh.owner)
+            || self.seen_owners.contains(&output.owner)
+            || fresh.owner == output.owner
+            || self.seen_axes.contains(&fresh.axes[0])
+        {
+            return Err(invalid(
+                "basis preparation aliases or substitutes an owner/axis",
+            ));
+        }
+        let rest = self
+            .current
+            .iter()
+            .filter(|p| p.owner != input.owner)
+            .cloned()
+            .collect::<Vec<_>>();
+        let output_owner = output.owner;
+        let expected = [outputs, rest].concat();
+        if e.after != expected {
+            return Err(invalid(
+                "basis preparation changes an untouched caller owner",
+            ));
+        }
+        self.seen_axes.insert(fresh.axes[0]);
+        self.seen_owners.insert(fresh.owner);
+        self.seen_owners.insert(output_owner);
+        self.fresh.push(fresh.clone());
+        self.current = expected;
+        Ok(())
+    }
 }
 
 // Independently inspect the actual serialized interval. Only identity coordinate
@@ -1078,7 +1249,7 @@ fn route(defs: &[Value], i: usize, before: &[Port], after: &[Port]) -> Result<()
     }
     Ok(())
 }
-fn pure_root(
+pub(super) fn pure_root(
     defs: &[Value],
     root: usize,
     inputs: &[Port],
@@ -1152,6 +1323,66 @@ fn pure_root(
     Ok(())
 }
 
+pub(super) fn validate_pure_definition(
+    proposal: &HierarchyProposal,
+    trace: &super::zero_basis::DefinitionTrace,
+    definitions: &[Value],
+) -> Result<()> {
+    let source = proposal
+        .source
+        .definitions()
+        .get(trace.definition)
+        .ok_or_else(|| invalid("pure trace lacks its original definition"))?;
+    if source.effect() != "unitary" || trace.events.len() != source.steps().len() {
+        return Err(invalid(
+            "pure trace changes its original source effect or step count",
+        ));
+    }
+    unique(&trace.inputs)?;
+    let mut replay = Replay {
+        proposal,
+        definitions,
+        events: &trace.events,
+        zero_basis_replay: super::zero_basis::needs_replay(proposal),
+        next: 0,
+        calls: 0,
+        current: trace.inputs.clone(),
+        seen_owners: trace.inputs.iter().map(|port| port.owner).collect(),
+        seen_axes: wires(&trace.inputs).into_iter().collect(),
+        measured: vec![],
+        fresh: vec![],
+    };
+    let returned = replay.function(
+        trace.definition,
+        trace.inputs.iter().cloned().map(Item::Quantum).collect(),
+        &mut vec![],
+    )?;
+    if replay.next != trace.events.len()
+        || returned
+            .iter()
+            .any(|item| matches!(item, Item::Classical(_)))
+        || quantum(&returned) != trace.outputs
+        || replay.current.len() != trace.outputs.len()
+        || replay
+            .current
+            .iter()
+            .any(|port| !trace.outputs.contains(port))
+        || !replay.fresh.is_empty()
+        || !replay.measured.is_empty()
+    {
+        return Err(invalid(
+            "pure trace changes the original complete source return/frame",
+        ));
+    }
+    pure_root(
+        definitions,
+        trace.root,
+        &trace.inputs,
+        &trace.outputs,
+        &trace.events,
+    )
+}
+
 pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValidation> {
     if !proposal.instrument {
         return Err(invalid(
@@ -1176,6 +1407,8 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
     let mut replay = Replay {
         proposal,
         definitions: defs,
+        events: &proposal.events,
+        zero_basis_replay: super::zero_basis::needs_replay(proposal),
         next: 0,
         calls: 0,
         current: initial.clone(),
@@ -1241,7 +1474,7 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
         .events
         .iter()
         .enumerate()
-        .filter(|(_, e)| e.kind == "init0")
+        .filter(|(_, e)| matches!(e.kind, "init0" | "basis_init"))
         .map(|(i, _)| InitializationMove {
             initialization: i,
             crossed: (0..i)
@@ -1256,10 +1489,13 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
     }
     for movement in &proposal.moves {
         let init = &proposal.events[movement.initialization];
-        let fresh = quantum(&init.outputs);
+        let fresh = init
+            .preparation
+            .as_ref()
+            .map_or_else(|| quantum(&init.outputs), |p| vec![p.clone()]);
         for &prior in &movement.crossed {
             let e = &proposal.events[prior];
-            if e.kind != "pure"
+            if !matches!(e.kind, "pure" | "basis_init")
                 || fresh.iter().any(|f| {
                     e.before
                         .iter()

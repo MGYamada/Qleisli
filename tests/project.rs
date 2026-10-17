@@ -341,3 +341,28 @@ fn semantic_stdlib_public_paths_resolve_without_retired_namespace_aliases() {
         }
     }
 }
+
+#[test]
+fn structural_axis_import_has_a_concrete_migration_without_a_gate_alias() {
+    let root = TempRoot::new();
+    root.write("main.qli", "use std::gate::permute_axes;");
+    let failure = Project::load(root.path()).unwrap_err();
+    assert!(
+        failure.message.contains("std::structure::permute_axes"),
+        "{failure}"
+    );
+    assert!(failure.message.contains("std::gate::swap"), "{failure}");
+    root.write(
+        "main.qli",
+        "use std::structure::permute_axes;use std::gate::swap;",
+    );
+    let loaded = Project::load(root.path()).unwrap();
+    assert_eq!(
+        loaded.module("main").unwrap().imports["permute_axes"].module,
+        "std::structure"
+    );
+    assert_eq!(
+        loaded.module("main").unwrap().imports["swap"].module,
+        "std::gate"
+    );
+}

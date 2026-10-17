@@ -348,6 +348,7 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
         "std::gate",
         "std::measurement",
         "std::reflection",
+        "std::structure",
         "std::transform",
     ]);
     expected.sort_unstable();
@@ -2118,12 +2119,15 @@ fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
     assert!(error.message().contains("dependency cycle"));
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
-    use qleisli::frontend::{
-        compile::{ErrorCode, check_project},
-        parser::parse_module,
-    };
+fn finite_common_forms_reach_ordinary_checking() {
+    use qleisli::frontend::{compile::check_project, parser::parse_module};
+    // The unused Nat formal remains conditional; declaration checking does not
+    // claim that every concrete instance of its generic family was executed.
     for source in [
         "pub unitary fn f(q:Q<Bits<1>>)->Q<Bits<1>>{q}",
         "pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{q}",
@@ -2131,10 +2135,16 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
     ] {
         parse_module(source).unwrap();
         let root = common::SourceRoot::new(source);
-        let error = check_project(&root.0).unwrap_err();
-        assert_eq!(error.code, ErrorCode::Unsupported, "{source}: {error}");
-        assert!(error.span.start <= error.span.end && error.span.end <= source.len());
+        check_project(&root.0).unwrap_or_else(|error| panic!("{source}: {error}"));
     }
+}
+
+#[test]
+fn common_syntax_does_not_grant_missing_type_or_capability_support() {
+    use qleisli::frontend::{
+        compile::{ErrorCode, check_project},
+        parser::parse_module,
+    };
     // An empty body has Unit result, so the source type error precedes eligibility.
     let source = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{}";
     let error = check_project(&common::SourceRoot::new(source).0).unwrap_err();

@@ -62,8 +62,17 @@ fn unused_static_arguments_share_exact_work_across_calls() {
     let base = common::current_source_text(
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
     );
-    let expression = format!("{}p{}", "power(".repeat(10), ",150)".repeat(10));
-    let once = base.replace("power(power(p,150),150)", &expression);
+    // Original closed actuals are checked during the call and again while
+    // replaying dormant obligations. Four layers fit once; two calls exceed
+    // the unchanged exact-work ceiling even though keep never applies U.
+    let original = "power(power(p,150),150)";
+    assert_eq!(
+        base.matches(original).count(),
+        1,
+        "static-budget fixture drift"
+    );
+    let expression = format!("{}p{}", "power(".repeat(4), ",150)".repeat(4));
+    let once = base.replace(original, &expression);
     let root = SourceRoot::new(&once);
     check_project(&root.0).unwrap();
     let calls = format!("let q=keep[{expression}](q);keep[{expression}](q)");

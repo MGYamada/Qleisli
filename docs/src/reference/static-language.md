@@ -231,10 +231,13 @@ arguments and the normalized affine result. Template arithmetic uses checked
 signed 128-bit intermediate values, then requires a nonnegative unsigned 32-bit
 result. Ordinary concrete natural arithmetic retains its checked unsigned
 32-bit operations. Capacity failures do not introduce modular arithmetic.
-Every concrete natural visit and helper argument/term allocation is charged to
-the existing 100,000-cell accounting allowance. Each evaluated helper call also
-counts toward the existing aggregate 1,024-call allowance, shared with runtime
-function specialization. Template preparation consumes the common source budget.
+In selected elaboration, every concrete natural visit and helper argument/term
+allocation is charged to the existing 100,000-cell accounting allowance. Each
+evaluated helper call also counts toward its aggregate 1,024-call allowance,
+shared with runtime function specialization. Ordinary finite lowering charges
+its original natural visits and helper work to the existing project-wide
+1,000,000-unit allowance; it does not import the selected consumer's counters.
+Template preparation consumes the common source budget.
 
 For an indexed exact phase schedule, a helper such as
 `static fn exponent[const stage: Nat]() -> Nat { stage+1 }` supplies
@@ -440,9 +443,14 @@ Only an unqualified two-stage `power(...)(...)` denotes this runtime form.
 Ordinary single-stage `power(a, b)`, declarations and module imports retain
 normal resolution. Direct qualified runtime calls remain outside the existing
 grammar. Static-operation argument positions interpret `power`
-explicitly as the constructor. The finite profile supports literal counts in
-`0..=4096` subject to its existing step/work limits; symbolic counts and `2^e`
-require the selected concrete profile and complete natural bindings.
+explicitly as the constructor. The finite profile evaluates symbolic counts and
+`2^e` with complete original natural bindings and checked u32 intermediates.
+Every nested count must fit `0..=4096`, including inside an outer zero, subject
+to the existing step/work limits. The direct runtime-transform adapter also
+requires the product of its nested repetition counts to fit 4096. That product
+guard is specific to direct runtime transforms; opaque operation descriptions
+retain their own materialization step/work limits. Selected elaboration retains
+its own count, exponent and aggregate-work limits.
 
 `repeat_op(count, U)` and `repeat_static(count, U, q)` are retired and reject
 at their constructor tokens. Migrate them to `power(U, count)` and
@@ -482,13 +490,14 @@ metadata, not independently checked evidence. Retention alone does not
 discharge an unmaterialized generic obligation or widen a concrete profile.
 In particular, selected-specialization validity of a harmless entry does not
 check a false Meaning request in an unselected generic body. A separate finite
-Op-only pass checks closed Meaning requests and each closed static actual in
-uninstantiated bodies. It borrows original operation occurrences, visits both
+dormant pass checks available closed Meaning requests and each closed static
+actual in uninstantiated bodies, retaining the original Basis/Nat/Op scope.
+It borrows original operation occurrences, visits both
 siblings even when one depends on an unbound formal, and retains zero-count
 children. Each concrete actual uses the ordinary exact-port, phase-fixed Meaning
 and requested-access gates. When every actual is closed, the complete concrete
-body reaches ordinary lowering and native checking without entering the
-declaration-only ordinary-root cache. A Meaning comparison does not itself
+body reaches ordinary lowering and native checking under its complete instance
+identity, rather than a declaration-only ordinary-root cache. A Meaning comparison does not itself
 request every capability in the source's available-access summary.
 
 Requested paths also reach each maximal closed fragment of a partially
@@ -515,10 +524,12 @@ physical axis set is empty. The existing control-request capacity applies to
 this explicit request; ordinary calls retain their separate finite profile.
 
 Unbound actuals remain conditional; closed siblings still undergo their own
-contract checks. Primitive and unbound local-Op callees, caller-frame and
-clean-workspace obligations, and other dormant expressions retain their
-corresponding checking duties. Full dormant materialization and general
-Basis/Nat instances remain concrete adapter obligations.
+contract checks. The ordinary finite adapter binds complete Basis/Nat/Op
+instances, checks closed bodies and dormant operation roots, and submits
+concrete Ctrl calls through the existing native sector gate. In a provably
+inactive region, a Nat-dependent premise may remain conditional; independently
+closed siblings and fixed owner/Meaning/access mismatches cannot be deferred.
+Caller-frame and clean-workspace obligations retain their separate scopes.
 
 Finite ordinary runtime calls additionally bind the borrowed plan to the exact
 original expression, callee and ordered static/runtime operand slices. A cloned
@@ -527,9 +538,13 @@ counter compares complete operation descriptions within its shared work budget:
 both exact ports, phase, source effect, access, constructors, ordered children,
 repetition counts and issued native dependency identities. A zero power retains
 its child identity. Matching matrices alone do not identify two descriptions.
-This counter is not an executable cache, and a refused comparison is not a
-cache miss. These checks do not enable general Basis/Nat materialization or
-discharge the outstanding runtime-expression obligations.
+The same complete identity keys the private body/provider registry. Every
+reuse repeats original actual/interface/access checks and a fresh native check
+of the retained immutable body before copying its action. A refused comparison
+is not a cache miss. Body entry and failure restore the original instance,
+static environment and caller context; issued identities and charged work do
+not rewind. This bounded materialization supplies no source-preservation theorem
+or general caller-frame/cleanup guarantee.
 
 The current common judgment has a 1,000,000-unit work allowance. Its selected
 profile also limits retained scope storage to 16,384 cells. Natural-expression

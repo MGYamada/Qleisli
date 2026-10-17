@@ -14,12 +14,14 @@ mod basis;
 mod calls;
 mod circuit;
 mod dormant;
+mod instances;
 mod interfaces;
 mod lower;
 mod naturals;
 mod operations;
 mod profile;
 mod report;
+mod sources;
 mod types;
 
 use types::finite_type;
@@ -124,32 +126,33 @@ impl fmt::Display for CompileError {
 impl std::error::Error for CompileError {}
 
 use super::types::{Kind, Stage, TreeSize};
-// Finite lowering admits the exact empty register only. This private size
-// representation cannot contain a nonzero register or erase its Bits tag.
+// Closed sizes retain their exact unsigned representation. Admitting a source
+// form remains the profile's separate decision; this representation grants no
+// generic binding, conversion or accepted handle.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct EmptyRegister;
-
-impl fmt::Display for EmptyRegister {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("0")
-    }
+enum RegisterWidthError {
+    Unresolved,
+    Capacity,
 }
 
 trait FiniteRegisterSize {
-    fn is_exact_zero(&self) -> bool;
+    fn finite_width(&self) -> Result<u32, RegisterWidthError>;
 }
 impl FiniteRegisterSize for u32 {
-    fn is_exact_zero(&self) -> bool {
-        *self == 0
+    fn finite_width(&self) -> Result<u32, RegisterWidthError> {
+        Ok(*self)
     }
 }
 impl FiniteRegisterSize for check::Linear {
-    fn is_exact_zero(&self) -> bool {
-        self.constant == 0 && self.terms.is_empty()
+    fn finite_width(&self) -> Result<u32, RegisterWidthError> {
+        if !self.terms.is_empty() {
+            return Err(RegisterWidthError::Unresolved);
+        }
+        u32::try_from(self.constant).map_err(|_| RegisterWidthError::Capacity)
     }
 }
 
-type Ty = super::types::Type<EmptyRegister>;
+type Ty = super::types::Type<u32>;
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -161,21 +164,21 @@ impl Ty {
         match &self.kind {
             Kind::Unit => Some(0),
             Kind::Bit => Some(1),
-            Kind::Bits(EmptyRegister) => Some(0),
+            Kind::Bits(size) => usize::try_from(*size).ok(),
             Kind::Tuple(fields) => fields
                 .iter()
-                .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
+                .try_fold(0usize, |bits, field| bits.checked_add(field.basis_bits()?)),
             Kind::Q(_) | Kind::Parameter(_) => None,
         }
     }
     fn classical(&self) -> bool {
         !self.linear()
     }
-    fn runtime(&self) -> super::types::DisplayType<'_, EmptyRegister> {
+    fn runtime(&self) -> super::types::DisplayType<'_, u32> {
         self.display(Stage::Runtime)
     }
     fn empty_bits() -> Self {
-        Self::bits(EmptyRegister)
+        Self::bits(0)
     }
 }
 
@@ -234,14 +237,20 @@ struct Compiler<'a> {
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
-    instrument_evidence: BTreeMap<(Key, Key), Arc<crate::contract::instrument::InstrumentEvidence>>,
-    // One immutable, full-project snapshot. It is copied only when evidence is
-    // first needed and charged before allocation. Individual receipts share it.
-    function_sources: Option<Arc<Vec<(String, String)>>>,
+    instrument_evidence: BTreeMap<
+        (Key, Key, Key, Option<usize>),
+        Arc<crate::contract::instrument::InstrumentEvidence>,
+    >,
+    // Complete original module rows are copied once; each receipt retains its
+    // relevant lexical/evidence closure without coupling unrelated modules.
+    source_rows: BTreeMap<String, Arc<(String, String)>>,
+    source_sets: BTreeMap<Vec<String>, crate::contract::function::SourceRows>,
     pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
+    computed_normalizations: Vec<Arc<crate::interchange::finite_leaf::SourceUnitaryEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
-    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::Operation>,
-    instances: Vec<(Key, Vec<operations::Operation>)>,
+    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::CachedProvider>,
+    instances: Vec<instances::Record>,
+    concrete_context: instances::Context,
     work: usize,
     checking: Option<Key>,
     exact_work: crate::contract::exact::Budget,
@@ -330,67 +339,6 @@ impl<'a> Compiler<'a> {
         Ok(())
     }
 
-    fn retained_sources(
-        &mut self,
-        module: &str,
-        span: Span,
-    ) -> Result<Arc<Vec<(String, String)>>, CompileError> {
-        if let Some(sources) = &self.function_sources {
-            return Ok(Arc::clone(sources));
-        }
-        // The evidence checker independently checks the metadata again. This
-        // preflight bounds the vector and source/path storage before cloning.
-        if self.project.modules.len() > crate::contract::function::MAX_FUNCTION_SOURCES {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "function identity exceeds its metadata profile (at most 128 source modules)",
-            ));
-        }
-        let source_bytes = total_size(self.project.modules.values().map(|s| s.source.len()));
-        self.charge(module, span, source_bytes).map_err(|mut error| {
-            error.message.push_str(&format!(
-                "; retaining {source_bytes} source bytes in the shared project snapshot (all loaded modules, comments and bundled std); this snapshot is charged once across static providers and function contracts"
-            ));
-            error
-        })?;
-        // Loaded module paths are already bounded by the filesystem. Keep the
-        // evidence profile explicit here instead of cloning arbitrary strings.
-        if self
-            .project
-            .modules
-            .keys()
-            .any(|name| name.len() > crate::contract::function::MAX_IDENTITY_NAME_BYTES)
-        {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "function source identity paths exceed their 4096-byte limit",
-            ));
-        }
-        let retained_bytes =
-            source_bytes.saturating_add(total_size(self.project.modules.keys().map(String::len)));
-        if retained_bytes > crate::contract::function::MAX_FUNCTION_SOURCE_BYTES {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Limit,
-                "shared function source snapshot exceeds 1 MiB including module names",
-            ));
-        }
-        let sources = Arc::new(
-            self.project
-                .modules
-                .iter()
-                .map(|(name, source)| (name.clone(), source.source.clone()))
-                .collect(),
-        );
-        self.function_sources = Some(Arc::clone(&sources));
-        Ok(sources)
-    }
-
     fn check_tree(&mut self, module: &str, span: Span, size: TreeSize) -> Result<(), CompileError> {
         if size.nodes > MAX_TREE_NODES || size.depth > MAX_TREE_DEPTH {
             return Err(self.error(
@@ -423,8 +371,8 @@ impl<'a> Compiler<'a> {
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
+        let module = self.dormant_module(*key, decl.span)?;
         let interface = &self.source.interfaces[key];
-        let module = self.source.resolution.declaration(*key).name.0.clone();
         assert_eq!(interface.module, module, "checked interface module");
         assert_eq!(interface.kind, decl.kind, "checked declaration kind");
         assert_eq!(
@@ -518,7 +466,37 @@ impl<'a> Compiler<'a> {
         definition: Key,
         span: Span,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
-        self.close_instance_interface(definition, BTreeMap::new(), BTreeMap::new(), span)
+        let module = self.dormant_module(definition, span)?;
+        let current = self
+            .concrete_context
+            .current
+            .as_ref()
+            .filter(|instance| instance.definition == definition);
+        let mut work = self.work;
+        let bindings: Result<_, CompileError> = (|| {
+            if let Some(instance) = current {
+                for (key, ty) in &instance.interface.bases {
+                    self.charge_at(
+                        &mut work,
+                        &module,
+                        span,
+                        key.name.len() + ty.tree_size().nodes + 1,
+                    )?;
+                }
+                for key in instance.interface.naturals.keys() {
+                    self.charge_at(&mut work, &module, span, key.name.len() + 2)?;
+                }
+                Ok((
+                    instance.interface.bases.clone(),
+                    instance.interface.naturals.clone(),
+                ))
+            } else {
+                Ok((BTreeMap::new(), BTreeMap::new()))
+            }
+        })();
+        self.work = work;
+        let (bases, naturals) = bindings?;
+        self.close_instance_interface(definition, bases, naturals, span)
     }
 
     fn close_instance_interface(
@@ -528,48 +506,55 @@ impl<'a> Compiler<'a> {
         naturals: BTreeMap<BinderKey, u32>,
         span: Span,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
-        let module = &self.source.resolution.declaration(definition).name.0;
-        let mut work = self.work;
-        let mut charge_error = None;
+        let module = self.dormant_module(definition, span)?;
+        let work = std::cell::Cell::new(self.work);
+        let charge_error = std::cell::RefCell::new(None);
         let result = (|| {
             // Preserve the adapter's original located work-limit diagnostic.
             // A temporary source error only propagates out of the closer; the
             // actual CompileError is returned below, without conversion loss.
-            let mut charge = |span, cells| {
-                self.charge_at(&mut work, module, span, cells)
+            let charge = |span, cells| {
+                let mut used = work.get();
+                let result = self
+                    .charge_at(&mut used, &module, span, cells)
                     .map_err(|error| {
-                        charge_error = Some(error);
+                        *charge_error.borrow_mut() = Some(error);
                         SourceError::new("limit", span, "finite closed-interface work limit")
-                    })
+                    });
+                work.set(used);
+                result
             };
+            for basis in bases.values() {
+                types::closed_basis_capacity(basis, span, &mut |span, cells| charge(span, cells))?;
+            }
             let checked = super::closed::CheckedInterface::original(
                 &self.source,
                 definition,
                 span,
-                &mut charge,
+                &mut |span, cells| charge(span, cells),
             )?;
             let substitution = super::closed::ClosedSubstitution::binders_budgeted(
                 checked,
                 bases,
                 naturals,
                 "finite runtime function",
-                &mut charge,
+                &mut |span, cells| charge(span, cells),
             )?;
             // The bounded finite copy below still applies this adapter's exact
             // constructor, tree and width limits. This callback grants nothing.
             super::closed::close_interface_budgeted(
                 substitution,
                 "finite runtime function",
-                &mut charge,
-                |_, _| Ok(()),
+                &mut |span, cells| charge(span, cells),
+                |ty, span| types::closed_capacity(ty, span, &mut |span, cells| charge(span, cells)),
             )
         })();
-        self.work = work;
-        if let Some(error) = charge_error {
+        self.work = work.get();
+        if let Some(error) = charge_error.into_inner() {
             return Err(error);
         }
         let closed = result.map_err(|error| {
-            source_error(self.project, &self.project.root, error.in_module(module))
+            source_error(self.project, &self.project.root, error.in_module(&module))
         })?;
         self.validate_interface_naturals(definition, &closed, span)?;
         Ok(closed)
@@ -957,11 +942,14 @@ fn process_loaded_project_details(
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
-        function_sources: None,
+        source_rows: BTreeMap::new(),
+        source_sets: BTreeMap::new(),
         pure_equations: Vec::new(),
+        computed_normalizations: Vec::new(),
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
         instances: vec![],
+        concrete_context: instances::Context::default(),
         work: 0,
         checking: None,
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
@@ -1103,6 +1091,7 @@ fn process_loaded_project_details(
             program
                 .retain_instruments(compiler.instrument_evidence.into_values().collect())
                 .retain_pure_equations(compiler.pure_equations)
+                .retain_computed_normalizations(compiler.computed_normalizations)
         }),
         effects,
         concrete_local_roots,
@@ -1245,11 +1234,14 @@ mod snapshot_tests {
             checked: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
-            function_sources: None,
+            source_rows: BTreeMap::new(),
+            source_sets: BTreeMap::new(),
             pure_equations: Vec::new(),
+            computed_normalizations: Vec::new(),
             meanings: BTreeMap::new(),
             providers: BTreeMap::new(),
             instances: vec![],
+            concrete_context: instances::Context::default(),
             work: 0,
             checking: None,
             exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
@@ -1342,19 +1334,30 @@ mod snapshot_tests {
         for extra in [0, 25_003] {
             let project = project(extra);
             let mut compiler = compiler(&project);
-            let snapshots = (0..256)
-                .map(|_| compiler.retained_sources("main", Span::default()).unwrap())
-                .collect::<Vec<_>>();
-            assert_eq!(compiler.work, 100_000 + extra);
-            assert_eq!(
-                total_size(snapshots[0].iter().map(|(_, source)| source.len())),
-                100_000 + extra
+            let mut snapshots = Vec::new();
+            for i in 0..256 {
+                // Different closures share the exact same interned main record.
+                let names = if i % 2 == 0 {
+                    vec!["main".to_owned()]
+                } else {
+                    vec!["main".to_owned(), "unrelated".to_owned()]
+                };
+                snapshots.push(
+                    compiler
+                        .retain_source_modules("main", Span::default(), names)
+                        .unwrap(),
+                );
+            }
+            assert!(
+                compiler.work < 150_000 + extra,
+                "source bytes were recopied across closures"
             );
             assert!(
                 snapshots
                     .iter()
-                    .all(|source| Arc::ptr_eq(source, &snapshots[0]))
+                    .all(|source| Arc::ptr_eq(&source[0], &snapshots[0][0]))
             );
+            assert_eq!(snapshots[0][0].1, project.modules["main"].source);
             assert_ne!(
                 snapshots[0][0].1.as_ptr(),
                 project.modules["main"].source.as_ptr()
@@ -1369,20 +1372,27 @@ mod snapshot_tests {
     #[test]
     fn the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary() {
         let project = project(25_003);
+        let names = vec!["main".to_owned(), "unrelated".to_owned()];
+        let mut probe = compiler(&project);
+        probe
+            .retain_source_modules("main", Span::default(), names.clone())
+            .unwrap();
+        let required = probe.work;
         let mut accepted = compiler(&project);
-        accepted.work = MAX_WORK - 125_003;
-        accepted.retained_sources("main", Span::default()).unwrap();
-        assert_eq!(accepted.work, MAX_WORK);
-        accepted.retained_sources("main", Span::default()).unwrap();
+        accepted.work = MAX_WORK - required;
+        accepted
+            .retain_source_modules("main", Span::default(), names.clone())
+            .unwrap();
         assert_eq!(accepted.work, MAX_WORK);
         let mut rejected = compiler(&project);
-        rejected.work = MAX_WORK - 125_002;
+        rejected.work = MAX_WORK - required + 1;
         let error = rejected
-            .retained_sources("main", Span::default())
+            .retain_source_modules("main", Span::default(), names)
             .unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit);
         assert!(error.message.contains("charged once"));
-        assert!(rejected.function_sources.is_none());
+        assert!(rejected.source_rows.is_empty());
+        assert!(rejected.source_sets.is_empty());
     }
 
     #[cfg_attr(
@@ -1408,12 +1418,14 @@ mod snapshot_tests {
                 project.modules.insert(name, empty.clone());
             }
             let mut compiler = compiler(&project);
+            let names = project.modules.keys().cloned().collect();
             let error = compiler
-                .retained_sources("main", Span::default())
+                .retain_source_modules("main", Span::default(), names)
                 .unwrap_err();
             assert_eq!(error.code, ErrorCode::Limit);
             assert!(error.message.contains(message), "{error}");
-            assert!(compiler.function_sources.is_none());
+            assert!(compiler.source_rows.is_empty());
+            assert!(compiler.source_sets.is_empty());
         }
     }
 }

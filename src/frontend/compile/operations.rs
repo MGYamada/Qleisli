@@ -27,12 +27,16 @@ pub(super) struct Operation {
     pub access: [bool; 3],
     pub meaning: Option<Matrix>,
     pub effect: Effect,
-    node: Arc<Node>,
+    pub(super) node: Arc<Node>,
     depth: usize,
     nodes: usize,
 }
+pub(super) struct CachedProvider {
+    pub operation: Operation,
+    pub body: AcceptedProgram,
+}
 #[derive(Debug)]
-enum Node {
+pub(super) enum Node {
     Provider(Arc<FunctionEvidence>),
     Pure(PureProvider),
     Inverse(Operation),
@@ -41,17 +45,46 @@ enum Node {
     Controlled(Operation),
     Repeat(u16, Operation),
     Conjugate(Operation, Operation),
+    Requested(Key, Operation),
+}
+#[derive(Clone, Copy)]
+pub(super) enum Constructor {
+    Inverse,
+    Then,
+    Tensor,
+    Controlled,
+    Repeat(u16),
+    Conjugate,
 }
 #[derive(Clone, Debug)]
-struct PureProvider {
-    leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
-    inverse: Option<Arc<FunctionEvidence>>,
+pub(super) struct PureProvider {
+    pub(super) origin: Option<Arc<PureOrigin>>,
+    pub(super) leaf: Arc<crate::interchange::pure_leaf::CheckedPureLeaf>,
+    pub(super) inverse: Option<Arc<FunctionEvidence>>,
+}
+#[derive(Debug)]
+pub(super) struct PureOrigin {
+    pub(super) definition: Key,
+    pub(super) table: Arc<crate::frontend::resolve::locals::Table>,
+    pub(super) meaning: Option<Key>,
+    pub(super) equation: Arc<crate::interchange::pure_leaf::SourcePureEquation>,
 }
 mod bindings;
 #[cfg(test)]
 mod identity_tests;
 mod pure;
 pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
+
+/// Exact bounded type-node count without a temporary traversal allocation.
+pub(super) fn port_nodes(ty: &Ty) -> usize {
+    match &ty.kind {
+        Kind::Q(child) => 1 + port_nodes(child),
+        Kind::Tuple(fields) => fields.iter().fold(1usize, |cells, field| {
+            cells.saturating_add(port_nodes(field))
+        }),
+        _ => 1,
+    }
+}
 
 /// Required metadata from the complete checked declaration; never executable.
 pub(super) struct RequiredOperation {
@@ -67,7 +100,7 @@ pub(super) fn contract_basis(ty: &Ty) -> BasisType {
     match &ty.kind {
         Kind::Unit => BasisType::Unit,
         Kind::Bit => BasisType::Bit,
-        Kind::Bits(EmptyRegister) => BasisType::Bits(0),
+        Kind::Bits(size) => BasisType::Bits(*size),
         Kind::Tuple(fields) if fields.len() == 2 => {
             BasisType::pair(contract_basis(&fields[0]), contract_basis(&fields[1]))
         }
@@ -111,6 +144,7 @@ pub(super) fn control_matrix(m: &Matrix, budget: &mut Budget) -> Result<Matrix, 
 impl Compiler<'_> {
     /// This registry counts distinct descriptions; it is not an executable
     /// cache. Callers discharge actual ports/access/Meaning before every visit.
+    #[cfg(test)]
     pub(super) fn record_operation_instance(
         &mut self,
         definition: Key,
@@ -121,48 +155,27 @@ impl Compiler<'_> {
         if identity.is_empty() {
             return Ok(());
         }
-        let mut work = self.work;
-        let found = (|| {
-            for (candidate, operations) in &self.instances {
-                self.charge_at(&mut work, module, span, 1)?;
-                if *candidate != definition || operations.len() != identity.len() {
-                    continue;
-                }
-                let mut equal = true;
-                for (left, right) in operations.iter().zip(&identity) {
-                    self.charge_at(&mut work, module, span, 1)?;
-                    if !left.same_descriptor_budgeted(right, &mut |cells| {
-                        self.charge_at(&mut work, module, span, cells)
-                    })? {
-                        equal = false;
-                        break;
-                    }
-                }
-                if equal {
-                    return Ok(true);
-                }
-            }
-            Ok::<_, CompileError>(false)
-        })();
-        // A refused comparison is neither inequality nor a cache miss.
-        self.work = work;
-        if found? {
-            return Ok(());
-        }
-        if self.instances.len() >= 256 {
-            return Err(self.error(
+        let source_effect = self.effect_in_module(module, definition).ok_or_else(|| {
+            self.error(
                 module,
                 span,
-                ErrorCode::Limit,
-                "project exceeds 256 distinct operation specializations",
-            ));
-        }
-        if self.instances.len() == self.instances.capacity() {
-            self.charge(module, span, self.instances.len().saturating_add(1))?;
-            self.instances.reserve_exact(1);
-        }
-        self.charge(module, span, 1)?;
-        self.instances.push((definition, identity));
+                ErrorCode::Effect,
+                "specialization has no available source effect",
+            )
+        })?;
+        self.charge(module, span, identity.len())?;
+        self.record_instance_identity(
+            instances::Identity {
+                definition,
+                arguments: identity
+                    .into_iter()
+                    .map(instances::Argument::Operation)
+                    .collect(),
+                source_effect,
+            },
+            module,
+            span,
+        )?;
         Ok(())
     }
 
@@ -346,9 +359,10 @@ impl Compiler<'_> {
                 .map_err(|e| self.op_error(&name.0, span, e))?;
             (raw, matrix, None)
         } else {
-            let sources = self.retained_sources(&name.0, span)?;
+            let sources = self.retained_sources(&name.0, span, &[*key], &Bindings::new(), &[])?;
             let path = self.source.resolution.path(*key);
-            let identity = || RetainedIdentity::shared(path.clone(), path.clone(), sources.clone());
+            let identity =
+                || RetainedIdentity::interned(path.clone(), path.clone(), sources.clone());
             let mut references = BTreeMap::new();
             for id in target.references() {
                 let program = self.checked.get(&id).ok_or_else(|| {
@@ -399,13 +413,14 @@ impl Compiler<'_> {
             )),
         }
     }
-    pub(super) fn required_bindings(
+    pub(super) fn required_bindings_closed(
         &mut self,
         key: &Key,
+        closed: &super::super::closed::ClosedInterface,
     ) -> Result<BTreeMap<BinderKey, RequiredOperation>, CompileError> {
         let decl = self.declarations[key];
-        let key_name = self.source.resolution.declaration(*key).name.clone();
-        self.signature(key)?;
+        let module = self.dormant_module(*key, decl.span)?;
+        self.charge(&module, decl.span, decl.static_params.len() + 1)?;
         let mut bindings = BTreeMap::new();
         for (ordinal, parameter) in decl.static_params.iter().enumerate() {
             let StaticParamKind::Operation {
@@ -414,17 +429,19 @@ impl Compiler<'_> {
                 meaning: original_meaning,
             } = &parameter.kind
             else {
-                return Err(self.error(
-                    &key_name.0,
-                    parameter.name.span,
-                    ErrorCode::Unsupported,
-                    "finite profile does not support Nat or Basis parameters",
-                ));
+                continue;
             };
+            self.charge(
+                &module,
+                parameter.name.span,
+                self.source.interfaces[key].statics[ordinal].key.name.len()
+                    + parameter.name.text.len()
+                    + 3,
+            )?;
             let formal = &self.source.interfaces[key].statics[ordinal];
             let StaticKind::Operation {
-                basis: checked_basis,
-                codomain: checked_codomain,
+                basis: _,
+                codomain: _,
                 meaning: checked_meaning,
                 access,
             } = &formal.kind
@@ -441,6 +458,15 @@ impl Compiler<'_> {
             let parameter_key = formal.key.clone();
             let access = *access;
             let meaning_key = *checked_meaning;
+            let checked_operation = &closed.operations[&parameter_key];
+            let checked_basis = checked_operation
+                .input
+                .quantum_basis()
+                .expect("closed operation input owner");
+            let checked_codomain = checked_operation
+                .output()
+                .quantum_basis()
+                .expect("closed operation output owner");
             assert_eq!(
                 meaning_key.is_some(),
                 original_meaning.is_some(),
@@ -450,7 +476,7 @@ impl Compiler<'_> {
             let basis = finite_type(
                 self,
                 &mut work,
-                &key_name.0,
+                &module,
                 original_basis,
                 checked_basis,
                 Stage::Basis,
@@ -461,18 +487,19 @@ impl Compiler<'_> {
             let codomain = finite_type(
                 self,
                 &mut work,
-                &key_name.0,
+                &module,
                 original_codomain.as_deref().unwrap_or(original_basis),
-                checked_codomain.as_ref().unwrap_or(checked_basis),
+                checked_codomain,
                 Stage::Basis,
-            )?;
+            );
             self.work = work;
+            let codomain = codomain?;
             contract_basis(&codomain)
                 .bits()
-                .map_err(|e| self.op_error(&key_name.0, parameter.name.span, e))?;
+                .map_err(|e| self.op_error(&module, parameter.name.span, e))?;
             contract_basis(&basis)
                 .bits()
-                .map_err(|error| self.op_error(&key_name.0, original_basis.span, error))?;
+                .map_err(|error| self.op_error(&module, original_basis.span, error))?;
             let meaning = if let Some(meaning_key) = meaning_key {
                 let original_meaning = original_meaning
                     .as_ref()
@@ -483,16 +510,26 @@ impl Compiler<'_> {
                     "checked Meaning declaration identity"
                 );
                 let target = &self.meanings[&meaning_key];
-                if target.basis != basis || target.codomain != codomain {
+                let mut work = self.work;
+                let same = (|| {
+                    let mut charge =
+                        |cells| self.charge_at(&mut work, &module, original_meaning.span, cells);
+                    Ok::<_, CompileError>(
+                        same_port_budgeted(&target.basis, &basis, &mut charge)?
+                            && same_port_budgeted(&target.codomain, &codomain, &mut charge)?,
+                    )
+                })();
+                self.work = work;
+                if !same? {
                     return Err(self.error(
-                        &key_name.0,
+                        &module,
                         original_meaning.span,
                         ErrorCode::TypeMismatch,
                         "parameter and meaning basis trees differ",
                     ));
                 }
-                let cost = target.matrix.entries().len();
-                self.charge(&key_name.0, original_meaning.span, cost)?;
+                let cost = self.meanings[&meaning_key].matrix.entries().len();
+                self.charge(&module, original_meaning.span, cost)?;
                 Some(self.meanings[&meaning_key].matrix.clone())
             } else {
                 None
@@ -531,7 +568,6 @@ impl Compiler<'_> {
             }
         };
         let decl = self.declarations[&key];
-        let key_name = self.source.resolution.declaration(key).name.clone();
         let effect = self.effect_in_module(module, key).ok_or_else(|| {
             self.error(
                 module,
@@ -598,42 +634,98 @@ impl Compiler<'_> {
         // to a caller whose public contract only promises Isometry.
         let cache = (key, mkey, effect);
         if let Some(op) = self.providers.get(&cache) {
-            let cost = op.copy_size();
+            let cost = op.operation.copy_size();
             self.charge(module, name.span, cost)?;
-            return Ok(self.providers[&cache].clone());
+            return Ok(self.providers[&cache].operation.clone());
         }
+        self.charge(
+            module,
+            name.span,
+            basis.tree_size().nodes
+                + codomain.tree_size().nodes
+                + codomain.basis_bits().unwrap_or(0)
+                + 8,
+        )?;
+        let program = self
+            .checked
+            .get(&key)
+            .ok_or_else(|| {
+                self.error(
+                    module,
+                    name.span,
+                    ErrorCode::InvalidIr,
+                    "provider has not been independently checked",
+                )
+            })?
+            .clone();
+        let operation = self.provider_program(
+            module,
+            name.span,
+            key,
+            mkey,
+            effect,
+            (**basis).clone(),
+            (**codomain).clone(),
+            &program,
+            &Bindings::new(),
+        )?;
+        self.charge(module, name.span, operation.copy_size() + 1)?;
+        self.providers.insert(
+            cache,
+            CachedProvider {
+                operation: operation.clone(),
+                body: program,
+            },
+        );
+        Ok(operation)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn provider_program(
+        &mut self,
+        module: &str,
+        span: Span,
+        key: Key,
+        meaning: Option<Key>,
+        effect: Effect,
+        basis: Ty,
+        codomain: Ty,
+        program: &AcceptedProgram,
+        bindings: &Bindings,
+    ) -> Result<Operation, CompileError> {
+        contract_basis(&basis)
+            .bits()
+            .map_err(|error| self.op_error(module, span, error))?;
+        contract_basis(&codomain)
+            .bits()
+            .map_err(|error| self.op_error(module, span, error))?;
         if effect == Effect::Isometry || basis != codomain {
-            let op = self.pure_provider(
-                module,
-                name.span,
-                key,
-                mkey,
-                (**basis).clone(),
-                (**codomain).clone(),
-            )?;
-            self.providers.insert(cache, op.clone());
-            return Ok(op);
+            return self.pure_provider_program(
+                module, span, key, meaning, basis, codomain, effect, program, bindings,
+            );
         }
-        let sources = self.retained_sources(module, name.span)?;
-        let program = self.checked.get(&key).ok_or_else(|| {
-            self.error(
-                module,
-                name.span,
-                ErrorCode::InvalidIr,
-                "provider has not been independently checked",
-            )
-        })?;
-        let implementation = program.program().clone();
-        let identity = RetainedIdentity::shared(
-            format!("{}::{}", key_name.0, key_name.1),
-            mkey.as_ref().map_or_else(
-                || format!("{}::{}", key_name.0, key_name.1),
-                |m| format!("meaning {}", self.source.resolution.path(*m)),
+        let raw = program.raw();
+        let raw_work = crate::frontend::raw_state::operations_size(&raw.operations)
+            .saturating_add(raw.classical_inputs.len())
+            .saturating_add(raw.classical_outputs.len())
+            .saturating_add(raw.quantum_outputs.len())
+            .saturating_add(total_size(
+                raw.quantum_inputs.iter().map(|port| port.wires.len() + 3),
+            ));
+        self.charge(module, span, raw_work.saturating_mul(2))?;
+        let implementation = raw.clone();
+        let roots: Vec<_> = [Some(key), meaning].into_iter().flatten().collect();
+        let sources = self.retained_sources(module, span, &roots, bindings, &[program.raw()])?;
+        let identity = RetainedIdentity::interned(
+            self.source.resolution.path(key),
+            meaning.map_or_else(
+                || self.source.resolution.path(key),
+                |meaning| format!("meaning {}", self.source.resolution.path(meaning)),
             ),
             sources,
         );
-        let evidence = if let Some(mkey) = &mkey {
-            let target = &self.meanings[mkey];
+        let evidence = if let Some(meaning) = meaning {
+            let target = &self.meanings[&meaning];
             if let Ok(finite) = target.target.finite() {
                 MeaningEvidence::check_retained_with_kernel(
                     &self.kernel,
@@ -642,7 +734,7 @@ impl Compiler<'_> {
                     identity,
                     &mut self.exact_work,
                 )
-                .map(|e| e.receipt())
+                .map(|evidence| evidence.receipt())
             } else {
                 FunctionEvidence::check_retained_with_kernel(
                     &self.kernel,
@@ -653,40 +745,39 @@ impl Compiler<'_> {
                     &mut self.exact_work,
                 )
                 .map(Arc::new)
-                .map_err(|e| e.error)
+                .map_err(|error| error.error)
             }
         } else {
             FunctionEvidence::check_retained_with_kernel(
                 &self.kernel,
-                contract_basis(basis),
+                contract_basis(&basis),
                 implementation.clone(),
                 implementation,
                 identity,
                 &mut self.exact_work,
             )
             .map(Arc::new)
-            .map_err(|diagnostic| diagnostic.error)
+            .map_err(|error| error.error)
         }
-        .map_err(|e| self.op_error(module, name.span, e))?;
-        let op = Operation {
-            basis: (**basis).clone(),
-            codomain: (**codomain).clone(),
-            access: [true, true, basis == codomain],
+        .map_err(|error| self.op_error(module, span, error))?;
+        let operation = Operation {
+            basis,
+            codomain,
+            access: [true; 3],
             meaning: Some(evidence.meaning().clone()),
             effect,
             node: Arc::new(Node::Provider(evidence)),
             depth: 1,
             nodes: 1,
         };
-        self.charge(module, name.span, op.copy_size())?;
-        self.providers.insert(cache, op.clone());
-        Ok(op)
+        self.charge(module, span, operation.copy_size())?;
+        Ok(operation)
     }
-    pub(super) fn construct(
+    pub(super) fn construct_closed(
         &mut self,
         module: &str,
         span: Span,
-        kind: &StaticOpKind,
+        kind: Constructor,
         a: Operation,
         b: Option<Operation>,
     ) -> Result<Operation, CompileError> {
@@ -700,7 +791,16 @@ impl Compiler<'_> {
                 "static description exceeds its node/depth limit",
             ));
         }
-        self.charge(module, span, nodes)?;
+        self.charge(
+            module,
+            span,
+            nodes
+                .saturating_add(a.copy_size().saturating_mul(2))
+                .saturating_add(
+                    b.as_ref()
+                        .map_or(0, |operation| operation.copy_size().saturating_mul(2)),
+                ),
+        )?;
         let mut basis = a.basis.clone();
         let mut codomain = a.codomain.clone();
         let effect = a
@@ -709,8 +809,8 @@ impl Compiler<'_> {
         let caps = a.access;
         if let Some(b) = &b {
             if match kind {
-                StaticOpKind::Then(..) => a.codomain != b.basis,
-                StaticOpKind::Conjugate(..) => a.basis != b.basis || b.basis != b.codomain,
+                Constructor::Then => a.codomain != b.basis,
+                Constructor::Conjugate => a.basis != b.basis || b.basis != b.codomain,
                 _ => false,
             } {
                 return Err(self.error(
@@ -722,16 +822,24 @@ impl Compiler<'_> {
             }
         }
         let (access, node) = match kind {
-            StaticOpKind::Inverse(..) => {
+            Constructor::Inverse => {
                 std::mem::swap(&mut basis, &mut codomain);
                 ([caps[1], caps[0], caps[2]], Node::Inverse(a))
             }
-            StaticOpKind::Controlled(..) => {
+            Constructor::Controlled => {
+                if basis != codomain {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "control requires identical input/output types",
+                    ));
+                }
                 basis = Ty::pair(Ty::bit(), basis);
                 codomain = basis.clone();
                 ([caps[2]; 3], Node::Controlled(a))
             }
-            StaticOpKind::Repeat(count, ..) => {
+            Constructor::Repeat(n) => {
                 if basis != codomain {
                     return Err(self.error(
                         module,
@@ -740,40 +848,25 @@ impl Compiler<'_> {
                         "repeat requires identical input/output types",
                     ));
                 }
-                let Count::Natural(Natural {
-                    kind: NatKind::Number(n),
-                    ..
-                }) = count
-                else {
+                if n > 4096 {
                     return Err(self.error(
                         module,
                         span,
-                        ErrorCode::Unsupported,
-                        "finite repetition requires a literal count",
+                        ErrorCode::Limit,
+                        "static repetition exceeds 4096",
                     ));
-                };
-                let n = u16::try_from(*n)
-                    .ok()
-                    .filter(|n| *n <= 4096)
-                    .ok_or_else(|| {
-                        self.error(
-                            module,
-                            span,
-                            ErrorCode::Limit,
-                            "static repetition exceeds 4096",
-                        )
-                    })?;
+                }
                 (caps, Node::Repeat(n, a))
             }
-            StaticOpKind::Then(..) | StaticOpKind::Tensor(..) | StaticOpKind::Conjugate(..) => {
+            Constructor::Then | Constructor::Tensor | Constructor::Conjugate => {
                 let b = b.expect("binary constructor");
                 let mut access = std::array::from_fn(|i| caps[i] && b.access[i]);
                 let node = match kind {
-                    StaticOpKind::Then(..) => {
+                    Constructor::Then => {
                         codomain = b.codomain.clone();
                         Node::Then(a, b)
                     }
-                    StaticOpKind::Tensor(..) => {
+                    Constructor::Tensor => {
                         basis = Ty::pair(basis, b.basis.clone());
                         codomain = Ty::pair(codomain, b.codomain.clone());
                         Node::Tensor(a, b)
@@ -787,7 +880,6 @@ impl Compiler<'_> {
                 };
                 (access, node)
             }
-            _ => unreachable!("constructor"),
         };
         self.check_tree(module, span, basis.tree_size())?;
         self.check_tree(module, span, codomain.tree_size())?;
@@ -809,6 +901,65 @@ impl Compiler<'_> {
             node: Arc::new(node),
             depth,
             nodes,
+        })
+    }
+
+    pub(super) fn validate_operation_meaning(
+        &mut self,
+        operation: &Operation,
+        meaning: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<(), CompileError> {
+        let expected = self.meanings.get(&meaning).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "operation specification is not an original Meaning",
+            )
+        })?;
+        let cost = port_nodes(&expected.basis)
+            + port_nodes(&expected.codomain)
+            + expected.matrix.entries().len()
+            + 1;
+        self.charge(module, span, cost)?;
+        let expected = &self.meanings[&meaning];
+        let required = RequiredOperation {
+            basis: expected.basis.clone(),
+            codomain: expected.codomain.clone(),
+            access: [false; 3],
+            meaning: Some(expected.matrix.clone()),
+        };
+        self.validate_required_operation(&required, operation, module, span)
+    }
+
+    pub(super) fn bind_operation_meaning(
+        &mut self,
+        operation: Operation,
+        meaning: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<Operation, CompileError> {
+        self.validate_operation_meaning(&operation, meaning, module, span)?;
+        if operation.depth >= MAX_DEPTH || operation.nodes >= MAX_TREE_NODES {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "checked_op description exceeds its node/depth limit",
+            ));
+        }
+        self.charge(module, span, operation.copy_size() + 2)?;
+        Ok(Operation {
+            basis: operation.basis.clone(),
+            codomain: operation.codomain.clone(),
+            access: operation.access,
+            effect: operation.effect,
+            meaning: operation.meaning.clone(),
+            depth: operation.depth + 1,
+            nodes: operation.nodes + 1,
+            node: Arc::new(Node::Requested(meaning, operation)),
         })
     }
 }
@@ -868,6 +1019,7 @@ impl Node {
         Ok(match self {
             Self::Provider(e) => Some(e.meaning().clone()),
             Self::Pure(e) => Some(e.leaf.meaning().clone()),
+            Self::Requested(_, operation) => operation.meaning.clone(),
             Self::Inverse(a) => a.meaning.as_ref().map(|m| m.adjoint(budget)).transpose()?,
             Self::Controlled(a) => a
                 .meaning
@@ -935,8 +1087,14 @@ impl Operation {
                 a == b // FunctionEvidence compares issued proof identity only.
             }
             (Node::Pure(a), Node::Pure(b)) => {
-                charge(2)?;
-                Arc::ptr_eq(&a.leaf, &b.leaf) && a.inverse == b.inverse
+                charge(3)?;
+                Arc::ptr_eq(&a.leaf, &b.leaf)
+                    && a.inverse == b.inverse
+                    && match (&a.origin, &b.origin) {
+                        (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+                        (None, None) => true,
+                        _ => false,
+                    }
             }
             (Node::Inverse(a), Node::Inverse(b)) | (Node::Controlled(a), Node::Controlled(b)) => {
                 charge(1)?;
@@ -946,6 +1104,10 @@ impl Operation {
                 charge(2)?;
                 // Zero repetitions retain the original child and dependency.
                 n == m && a.same_descriptor_budgeted(b, charge)?
+            }
+            (Node::Requested(left, a), Node::Requested(right, b)) => {
+                charge(2)?;
+                left == right && a.same_descriptor_budgeted(b, charge)?
             }
             (Node::Then(a, b), Node::Then(c, d))
             | (Node::Tensor(a, b), Node::Tensor(c, d))
@@ -960,8 +1122,8 @@ impl Operation {
     /// Cloning shares the description DAG/receipt, but copies its root matrix
     /// and exact type tree. Charge these before populating binding caches.
     pub(super) fn copy_size(&self) -> usize {
-        self.basis.tree_size().nodes
-            + self.codomain.tree_size().nodes
+        port_nodes(&self.basis)
+            + port_nodes(&self.codomain)
             + self.meaning.as_ref().map_or(0, |m| m.entries().len())
             + 1
     }
@@ -1048,6 +1210,7 @@ impl Operation {
             Ok(a)
         };
         let steps = match self.node.as_ref() {
+            Node::Requested(_, operation) => operation.materialize(access)?,
             Node::Pure(PureProvider { inverse: None, .. }) => {
                 return Err(ContractError::Type(
                     "rectangular preparation requires its original Raw body",

@@ -2,6 +2,8 @@
 """Check source-runner failures, input binding and shared command coverage.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
+import contextlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -18,7 +20,7 @@ class SourceChecksTests(unittest.TestCase):
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
             'test_check_fixture_budget', 'test_check_fixture_references',
-            'test_ci_profiles', 'test_ci_source_checks', 'test_ci_actions',
+            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition', 'test_ci_actions',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel', 'test_run_kernel_tests')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
@@ -59,7 +61,15 @@ class SourceChecksTests(unittest.TestCase):
             self.assertEqual(spec['preparation_commands'], 3)
             self.assertIn('lean', spec['tools'])
             self.assertIn('QLEISLI_KERNEL', spec['environment'])
-            self.assertIn('--all-targets', commands[spec['preparation_commands'] + (group == 'rust-latest')])
+            start = spec['preparation_commands'] + (group == 'rust-latest')
+            self.assertEqual(commands[start],
+                             ['python3', 'scripts/check_rust_test_partition.py', '--group', group])
+            import check_rust_test_partition as partition
+            heavy, rest = partition.selection(group, checks.definition(group)['commands'])
+            self.assertEqual(heavy, ['frontend_ownership_differential', 'source_ir_correspondence'])
+            self.assertEqual(len(rest), 120)
+            self.assertTrue(all(argv[:3] == ['python3', 'scripts/run_kernel_tests.py', '--']
+                                for argv in (commands[start + 1], commands[start + 3])))
         with patch.object(checks, 'definition', return_value={'prepare': ['loop']}):
             with self.assertRaisesRegex(ValueError, 'cyclic'):
                 checks.describe('loop')
@@ -153,15 +163,19 @@ class SourceChecksTests(unittest.TestCase):
             root = Path(directory); output = root / 'out'
             commands = [['python3', 'first.py'], ['python3', 'second.py']]
             log = root / 'failed.log'; log.write_text('actual failure')
-            failed = dict(status='failed', log=str(log), error='exit 2', commands=[])
+            failed = dict(status='timed-out', log=str(log), error='command exceeded 3600 seconds', commands=[])
+            stderr = io.StringIO()
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
                     patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                     patch.object(checks, 'plan', return_value=commands),
                     patch.object(checks, 'toolchain', return_value={}),
-                    patch.object(checks.ci_runtime, 'run_task', return_value=failed)):
+                    patch.object(checks.ci_runtime, 'run_task', return_value=failed),
+                    contextlib.redirect_stderr(stderr)):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
+            self.assertIn('command exceeded 3600 seconds', stderr.getvalue())
+            self.assertIn('actual failure', stderr.getvalue())
             report = json.loads((output / 'results.json').read_text())
-            self.assertEqual([row['status'] for row in report['commands']], ['failed', 'not-run'])
+            self.assertEqual([row['status'] for row in report['commands']], ['timed-out', 'not-run'])
             before = (output / 'results.json').read_bytes()
             with self.assertRaises(FileExistsError): checks.execute('source-integrity', None, output)
             self.assertEqual((output / 'results.json').read_bytes(), before)
@@ -173,6 +187,32 @@ class SourceChecksTests(unittest.TestCase):
             report = json.loads((output / 'results.json').read_text())
             self.assertEqual(report['status'], 'failed')
             self.assertIn('unknown source-check group', report['error'])
+
+    def test_failed_partition_or_guard_cannot_credit_later_rust_checks(self):
+        commands = checks.plan('rust-latest')
+        guard = ['python3', 'scripts/check_rust_test_partition.py', '--group', 'rust-latest']
+        guard_indices = [index for index, command in enumerate(commands) if command == guard]
+        self.assertEqual(len(guard_indices), 2)
+        for failure_at in [*guard_indices, *(index + 1 for index in guard_indices)]:
+            with self.subTest(failure_at=failure_at), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / 'out'
+                log = Path(directory) / 'command.log'; log.write_text('actual retained failure')
+                def result(task, *_args):
+                    return dict(status='failed' if int(task['id']) == failure_at else 'passed',
+                                error='partition or inventory failed' if int(task['id']) == failure_at else None,
+                                log=str(log), commands=[])
+                with (patch.object(checks, 'snapshot', return_value=dict(head='bound-source')),
+                      patch.dict(checks.os.environ, {'GITHUB_SHA': 'bound-source'}),
+                      patch.object(checks, 'digest', return_value='bound-bytes'),
+                      patch.object(checks, 'toolchain', return_value={}),
+                      patch.object(checks.ci_runtime, 'run_task', side_effect=result) as run,
+                      contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO())):
+                    self.assertEqual(checks.execute('rust-latest', None, output), 1)
+                self.assertEqual(run.call_count, failure_at + 1)
+                report = json.loads((output / 'results.json').read_text())
+                self.assertEqual([row['argv'] for row in report['commands']], commands)
+                self.assertEqual(report['status'], 'failed')
+                self.assertTrue(all(row['status'] == 'not-run' for row in report['commands'][failure_at + 1:]))
 
 
 if __name__ == '__main__':

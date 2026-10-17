@@ -135,62 +135,74 @@ impl Lowerer<'_, '_> {
         &mut self,
         module: &str,
         expr: &StaticOp,
-        env: &Env,
+        _env: &Env,
     ) -> Result<Operation, CompileError> {
-        self.compiler.tick(module, expr.span)?;
-        // Parser and each constructed description bound recursive depth.
-        match &expr.kind {
-            StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
-                Err(self.error(
+        use crate::frontend::check::plans::{
+            BodyStaticKind, BodyStaticOriginal, StaticCategory, original_body_static,
+        };
+        let mut work = self.compiler.work;
+        let original = (|| {
+            self.compiler
+                .charge_at(&mut work, module, expr.span, module.len() + 4)?;
+            let lookup = self.compiler.locals();
+            let owner = lookup
+                .try_node_id_static_op(expr)
+                .map(|node| node.definition())
+                .ok_or_else(|| {
+                    self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "operation is not an original source occurrence",
+                    )
+                })?;
+            let declaration = self.compiler.source.resolution.declaration(owner);
+            if declaration.name.0 != module || self.compiler.current_instance_owner() != Some(owner)
+            {
+                return Err(self.error(
                     module,
                     expr.span,
-                    ErrorCode::Unsupported,
-                    "static argument is outside the finite lowering profile",
-                ))
+                    ErrorCode::TypeMismatch,
+                    "operation differs from its active original source owner",
+                ));
             }
-            StaticOpKind::Name(name) => {
-                self.static_name(module, name, env)?;
-                if let Some(op) = self.bound_operation(name) {
-                    let cost = op.copy_size();
-                    self.compiler.charge(module, name.span, cost)?;
-                    return Ok(self
-                        .bound_operation(name)
-                        .expect("retained static binding")
-                        .clone());
-                }
-                self.compiler.provider(module, name, None)
-            }
-            StaticOpKind::Bind {
-                implementation,
-                meaning,
-            } => {
-                for name in [implementation, meaning] {
-                    self.static_name(module, name, env)?;
-                    if self.bound_operation(name).is_some() {
-                        return Err(self.error(
-                            module,
-                            name.span,
-                            ErrorCode::TypeMismatch,
-                            "checked_op requires closed declarations",
-                        ));
-                    }
-                }
-                self.compiler
-                    .provider(module, implementation, Some(meaning))
-            }
-            StaticOpKind::Inverse(a) | StaticOpKind::Controlled(a) | StaticOpKind::Repeat(_, a) => {
-                let a = self.operation(module, a, env)?;
-                self.compiler
-                    .construct(module, expr.span, &expr.kind, a, None)
-            }
-            StaticOpKind::Then(a, b)
-            | StaticOpKind::Tensor(a, b)
-            | StaticOpKind::Conjugate(a, b) => {
-                let a = self.operation(module, a, env)?;
-                let b = self.operation(module, b, env)?;
-                self.compiler
-                    .construct(module, expr.span, &expr.kind, a, Some(b))
-            }
+            let plan = original_body_static(
+                &self.compiler.source,
+                &lookup,
+                owner,
+                declaration.module,
+                BodyStaticOriginal::Operation(expr),
+                &mut |span, cells| self.compiler.charge_at(&mut work, module, span, cells),
+                &|span, message| self.error(module, span, ErrorCode::TypeMismatch, message),
+            )?;
+            let BodyStaticKind::Operation { operation, .. } = &plan.kind else {
+                return Err(self.error(
+                    module,
+                    expr.span,
+                    ErrorCode::TypeMismatch,
+                    "original operation plan has a different kind",
+                ));
+            };
+            self.compiler.charge_at(&mut work, module, expr.span, 2)?;
+            Ok((Arc::clone(operation), Arc::clone(&plan.environment)))
+        })();
+        self.compiler.work = work;
+        let (operation, environment) = original?;
+        match self.compiler.evaluate_source_static(
+            &operation,
+            &environment,
+            StaticCategory::Operation,
+            [false; 3],
+            &self.bindings,
+            module,
+        )? {
+            super::super::instances::StaticValue::Operation(operation) => Ok(operation),
+            _ => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::TypeMismatch,
+                "operation remains unbound in the concrete instance",
+            )),
         }
     }
 
@@ -214,53 +226,6 @@ impl Lowerer<'_, '_> {
             ));
         }
         Ok(())
-    }
-
-    pub(super) fn bind_operations(
-        &mut self,
-        key: &Key,
-        args: &[StaticOp],
-        env: &Env,
-        site: CallSite<'_>,
-    ) -> Result<Bindings, CompileError> {
-        let decl = self.compiler.declarations[key];
-        if decl.static_params.len() != args.len() {
-            return Err(self.error(
-                site.module,
-                site.span,
-                ErrorCode::Arity,
-                "explicit static argument count does not match",
-            ));
-        }
-        if args.is_empty() {
-            return Ok(Bindings::new());
-        }
-        let expected = self.compiler.required_bindings(key)?;
-        self.compiler
-            .charge(site.module, site.span, args.len().saturating_mul(2))?;
-        let mut bindings = Bindings::new();
-        let mut identity = Vec::with_capacity(args.len());
-        for (param, arg) in decl.static_params.iter().zip(args) {
-            let actual = self.operation(site.module, arg, env)?;
-            let binding = self.compiler.locals().binder(&param.name);
-            let required = &expected[self.compiler.locals().key(binding)];
-            self.compiler
-                .validate_required_operation(required, &actual, site.module, arg.span)?;
-            self.compiler.charge(
-                site.module,
-                arg.span,
-                actual
-                    .copy_size()
-                    .saturating_mul(2)
-                    .saturating_add(self.compiler.locals().key(binding).name.len())
-                    .saturating_add(1),
-            )?;
-            identity.push(actual.clone());
-            bindings.insert(self.compiler.locals().key(binding).clone(), actual);
-        }
-        self.compiler
-            .record_operation_instance(*key, identity, site.module, site.span)?;
-        Ok(bindings)
     }
 
     pub(super) fn operation_steps(
@@ -300,9 +265,49 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
         bindings: Bindings,
     ) -> Result<Value, CompileError> {
+        let declaration = self.compiler.declarations[key];
+        let own_module = self.compiler.dormant_module(*key, declaration.span)?;
+        let (module, span) = site.map_or((own_module.as_str(), declaration.span), |site| {
+            (site.module, site.span)
+        });
+        let instance = self.compiler.prepare_instance(
+            *key,
+            BTreeMap::new(),
+            BTreeMap::new(),
+            bindings,
+            module,
+            span,
+        )?;
+        self.call_instance(key, args, site, instance)
+    }
+
+    pub(super) fn call_instance(
+        &mut self,
+        key: &Key,
+        args: Vec<Value>,
+        site: Option<CallSite<'_>>,
+        instance: Arc<super::super::instances::ClosedInstance>,
+    ) -> Result<Value, CompileError> {
+        let own_module = self
+            .compiler
+            .dormant_module(*key, self.compiler.declarations[key].span)?;
+        let (module, span) = site.map_or(
+            (own_module.as_str(), self.compiler.declarations[key].span),
+            |site| (site.module, site.span),
+        );
+        for (key, operation) in &instance.operations {
+            self.compiler
+                .charge(module, span, key.name.len() + operation.copy_size() + 1)?;
+        }
+        self.compiler.charge(module, span, 1)?;
+        self.compiler
+            .check_dormant_instance(Arc::clone(&instance), module, span)?;
+        let bindings = instance.operations.clone();
+        let frame = self.compiler.enter_instance(instance, module, span)?;
         let previous = std::mem::replace(&mut self.bindings, bindings);
         let result = self.call_user(key, args, site);
         self.bindings = previous;
+        self.compiler.leave_instance(frame);
         result
     }
 }

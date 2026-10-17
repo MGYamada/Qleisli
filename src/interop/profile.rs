@@ -283,6 +283,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     };
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
     let mut scratch = Vec::new();
+    let mut expansion = super::export::ExpansionBudget::default();
     let mut measured = BTreeMap::new();
     let mut observed = false;
     for (index, op) in raw.operations.iter().enumerate() {
@@ -383,7 +384,13 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     steps,
                 } => {
                     let wires = owners.remove(input).expect("verified owner");
-                    super::export::steps(&mut circuit, &mut scratch, steps, &wires)?;
+                    super::export::steps(
+                        &mut circuit,
+                        &mut scratch,
+                        steps,
+                        &wires,
+                        &mut expansion,
+                    )?;
                     owners.insert(*output, wires);
                 }
                 RawOp::LiftBasis {

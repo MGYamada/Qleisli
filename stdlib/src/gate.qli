@@ -1,26 +1,85 @@
-//! Provisional two-Bit gate and axis-routing interfaces for edition 2026.
+//! Ordinary phase-fixed gate definitions for edition 2026.
 //!
-//! Ordinary checked source, not compiler intrinsics. General register SWAP
-//! and arbitrary permutation witnesses are not implemented by these functions.
+//! Every body uses the same source and native checks as user code. No function
+//! here is a sealed gate intrinsic or a structural axis-routing helper.
 //! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
-use std::quantum::cnot;
+use std::quantum::h;
+use std::quantum::phase_eighth;
+use std::quantum::phase;
+use std::quantum::unit;
+use std::quantum::finish;
 use std::quantum::split;
 use std::quantum::join;
 
+/// Identity preserves the exact Basis tree, including zero-width owners.
+pub unitary fn id[const A: Basis](q: Q<A>) -> Q<A> { q }
+
+/// Exact scalar zeta_8 I on one logical Unit owner, including its phase.
+unitary fn scalar_eighth(u: Q<Unit>) -> Q<Unit> {
+    phase_eighth(u)
+}
+
+/// T = diag(1,zeta_8), with exact phase for every input and external reference.
+/// Coherent control exposes the scalar as relative phase. The Unit target has
+/// no physical wire, but remains owned until finish; realized T cost is separate.
+pub unitary fn t(q: Q<Bit>) -> Q<Bit> {
+    let (q,u) = controlled(scalar_eighth)(q,unit(()));
+    finish(u);
+    q
+}
+
+/// Quarter-turn phase: diag(1,i).
+pub unitary fn s(q: Q<Bit>) -> Q<Bit> { phase[1,2](q) }
+
+/// Inverse S: diag(1,-i).
+pub unitary fn sdg(q: Q<Bit>) -> Q<Bit> { adjoint(s)(q) }
+
+/// Inverse T: diag(1,zeta_8^-1).
+pub unitary fn tdg(q: Q<Bit>) -> Q<Bit> { adjoint(t)(q) }
+
+/// Half-turn phase: diag(1,-1).
+pub unitary fn z(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
+
+/// Bit flip: H Z H = |1><0| + |0><1|.
+pub unitary fn x(q: Q<Bit>) -> Q<Bit> { h(z(h(q))) }
+
+/// Dyadic phase provider for coherent control: diag(1,exp(2*pi*i*j/2^k)).
+unitary fn phase_leaf[const j: Nat, const k: Nat](q: Q<Bit>) -> Q<Bit> {
+    phase[j,k](q)
+}
+
+/// Exact diag(1,1,1,exp(2*pi*i*j/2^k)) in control/target axis order.
+/// The phase provider retains its own concrete coefficient/profile conditions.
+/// Both owners return; no measurement, workspace or implicit phase quotient.
+pub unitary fn controlled_phase[const j: Nat, const k: Nat](a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    controlled(phase_leaf[j,k])(a,b)
+}
+
+/// Exact controlled bit flip, derived from the ordinary X provider.
+pub unitary fn cnot(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    controlled(x)(a,b)
+}
+
+/// Packed CNOT: preserve the first axis and flip the second iff the first is one.
+unitary fn cnot_pair(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let (a,b) = cnot(a,b);
+    join(a,b)
+}
+
+/// Two controls retain their basis values and the target flips iff both are one.
+pub unitary fn toffoli(a: Q<Bit>, b: Q<Bit>, c: Q<Bit>) -> ((Q<Bit>,Q<Bit>),Q<Bit>) {
+    let (a,q) = controlled(cnot_pair)(a,join(b,c));
+    let (b,c) = split(q);
+    ((a,b),c)
+}
+
 /// Physical SWAP: |a,b> -> |b,a>, with exact coefficient +1, for all inputs
 /// and external references. The returned owners keep their original wire order.
-/// Three CNOTs are actual work; no allocation, observation or cleanup occurs.
+/// Three ordinary CNOT calls retain their controlled-X work. Target gate costs
+/// depend on a checked realization; no physical workspace is allocated here.
 pub unitary fn swap(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
     let (a,b) = cnot(a,b);
     let (b,a) = cnot(b,a);
     cnot(a,b)
-}
-
-/// Explicit two-axis representation reordering, with old/new map [1,0].
-/// Consume the pair and return every owner in reversed axis order, phase +1.
-/// Split/join changes the output wire order and inserts no physical gate.
-/// This is not binding exchange; target routing costs need separate evidence.
-pub unitary fn permute_axes(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-    let (a,b) = split(q);
-    join(b,a)
 }

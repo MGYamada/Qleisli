@@ -90,7 +90,7 @@ pub struct SourcePureEquation {
     implementation: Arc<CheckedPureLeaf>,
     specification: Arc<CheckedPureLeaf>,
     names: (String, String),
-    sources: Arc<Vec<(String, String)>>,
+    sources: crate::contract::function::SourceSnapshot,
 }
 impl SourcePureEquation {
     pub fn implementation(&self) -> &CheckedPureLeaf {
@@ -103,13 +103,16 @@ impl SourcePureEquation {
         (&self.names.0, &self.names.1)
     }
     pub fn sources(&self) -> &[(String, String)] {
-        &self.sources
+        self.sources.exposed()
+    }
+    pub(crate) fn source_view(&self) -> crate::contract::function::SourceView<'_> {
+        self.sources.view()
     }
     pub(crate) fn bind(
         implementation: Arc<CheckedPureLeaf>,
         specification: Arc<CheckedPureLeaf>,
         names: (String, String),
-        sources: Arc<Vec<(String, String)>>,
+        sources: crate::contract::function::SourceRows,
     ) -> Result<Self> {
         if implementation.boundary().domain() != specification.boundary().domain()
             || implementation.boundary().codomain() != specification.boundary().codomain()
@@ -121,7 +124,7 @@ impl SourcePureEquation {
             implementation,
             specification,
             names,
-            sources,
+            sources: crate::contract::function::SourceSnapshot::new(sources),
         })
     }
 }

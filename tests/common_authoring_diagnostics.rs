@@ -1,4 +1,4 @@
-//! Regression coverage for issue #368; accepted language and native authority stay fixed.
+//! Diagnostic coverage for issue #368, including ordinary static execution.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
@@ -124,23 +124,24 @@ fn incomplete_qualified_paths_do_not_suggest_importing_a_module_as_a_function() 
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 #[test]
-fn explicit_static_else_preserves_its_existing_profile_boundary() {
-    let source = "observe fn main()->Bit{if static 1 == 1 {1} else {0}}";
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
-    let root = SourceRoot::new(source);
-    let failure = check_project_with_kernel(
-        &root.0,
-        SourcePolicy::default(),
-        &Kernel::new(root.0.join("must-not-invoke-native")),
-    )
-    .unwrap_err();
-    assert_eq!(failure.code, "unsupported");
-    assert!(
-        failure
-            .message
-            .contains("outside the finite lowering profile")
-    );
+fn explicit_static_else_executes_only_the_selected_ordinary_arm() {
+    for (predicate, expected) in [("1 == 1", true), ("1 == 0", false)] {
+        let source = format!("observe fn main()->Bit{{if static {predicate} {{1}} else {{0}}}}");
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+        let program = compile_project(&SourceRoot::new(&source).0).unwrap();
+        let outcomes =
+            qleisli::sim::run_closed(&program, qleisli::sim::SimulationLimits::default()).unwrap();
+        assert_eq!(
+            outcomes,
+            BTreeMap::from([(vec![expected], 1.0)]),
+            "{source}"
+        );
+    }
 }
 
 #[test]

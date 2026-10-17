@@ -17,7 +17,10 @@ pub(super) fn resolution_error(f: Failure) -> SourceError {
         FailureKind::InvalidPath => "import needs a module and a name".into(),
         FailureKind::MissingModule(m) => format!("missing module `{m}`"),
         FailureKind::MissingName { module, name } => {
-            format!("module `{module}` has no name `{name}`")
+            format!(
+                "module `{module}` has no name `{name}`{}",
+                super::super::resolve::retired_public_name_hint(&module, &name).unwrap_or("")
+            )
         }
         FailureKind::UnknownPrimitive { module, name } => {
             format!("sealed module `{module}` has no public name `{name}`")

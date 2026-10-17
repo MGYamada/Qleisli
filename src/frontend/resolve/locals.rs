@@ -687,6 +687,15 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.occurrences.bindings[&(std::ptr::from_ref(name) as usize)]
     }
+    /// Fallible original binding lookup; callers charge the bounded lookups.
+    pub fn try_binder(&self, name: &Ident) -> Option<BinderId> {
+        let id = *self
+            .occurrences
+            .bindings
+            .get(&(std::ptr::from_ref(name) as usize))?;
+        self.associated_table(id.definition)?.try_binder(id)?;
+        Some(id)
+    }
     pub fn info(&self, id: BinderId) -> &'view BinderInfo {
         self.tables[&id.definition].binder(id)
     }
@@ -718,6 +727,12 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
             return None;
         }
         Some(table)
+    }
+    /// Bind a borrowed occurrence view to one actual checked collection.
+    /// Equal numeric IDs and equal-shaped syntax do not identify its Table.
+    pub fn original_table_is(&self, definition: DefId, table: &Table) -> bool {
+        self.associated_table(definition)
+            .is_some_and(|original| std::ptr::eq(original, table))
     }
     #[cfg_attr(
         not(test),
@@ -768,6 +783,18 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
         self.associated_table(id.definition)?.try_node(id)?;
         Some(id)
     }
+    /// Fallible original description lookup; foreign syntax has no association.
+    pub fn try_node_id_static_op(&self, node: &StaticOp) -> Option<NodeId> {
+        let id = *self
+            .occurrences
+            .nodes
+            .get(&(NodeKind::StaticOp, std::ptr::from_ref(node) as usize))?;
+        if id.kind != NodeKind::StaticOp {
+            return None;
+        }
+        self.associated_table(id.definition)?.try_node(id)?;
+        Some(id)
+    }
     #[cfg_attr(
         not(test),
         expect(dead_code, reason = "original node lookup for the next plan adapter")
@@ -781,6 +808,18 @@ impl<'view, 'ast> Lookup<'view, 'ast> {
     )]
     pub fn node_id_natural(&self, node: &Natural) -> NodeId {
         self.node_id(NodeKind::Natural, std::ptr::from_ref(node) as usize)
+    }
+    /// Fallible original Nat lookup; foreign syntax has no association.
+    pub fn try_node_id_natural(&self, node: &Natural) -> Option<NodeId> {
+        let id = *self
+            .occurrences
+            .nodes
+            .get(&(NodeKind::Natural, std::ptr::from_ref(node) as usize))?;
+        if id.kind != NodeKind::Natural {
+            return None;
+        }
+        self.associated_table(id.definition)?.try_node(id)?;
+        Some(id)
     }
     #[cfg_attr(
         not(test),

@@ -2,7 +2,8 @@
 use super::*;
 
 impl Compiler<'_> {
-    pub(super) fn pure_provider(
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn pure_provider_program(
         &mut self,
         module: &str,
         span: Span,
@@ -10,23 +11,10 @@ impl Compiler<'_> {
         meaning: Option<Key>,
         basis: Ty,
         codomain: Ty,
+        effect: Effect,
+        body: &AcceptedProgram,
+        bindings: &Bindings,
     ) -> Result<Operation, CompileError> {
-        let effect = self.effect_in_module(module, key).ok_or_else(|| {
-            self.error(
-                module,
-                span,
-                ErrorCode::Effect,
-                "pure provider has no available source effect",
-            )
-        })?;
-        let body = self.checked.get(&key).ok_or_else(|| {
-            self.error(
-                module,
-                span,
-                ErrorCode::InvalidIr,
-                "provider has not been independently checked",
-            )
-        })?;
         let expected = meaning.map(|key| &self.meanings[&key].matrix);
         let evidence = crate::frontend::pure::check(
             &self.kernel,
@@ -56,17 +44,24 @@ impl Compiler<'_> {
                 |id| self.source.resolution.path(id),
             ),
         );
-        let sources = self.retained_sources(module, span)?;
+        let roots: Vec<_> = [Some(key), meaning].into_iter().flatten().collect();
+        let sources = self.retained_sources(module, span, &roots, bindings, &[body.raw()])?;
         let equation = crate::interchange::pure_leaf::SourcePureEquation::bind(
             evidence.clone(),
             specification,
             names,
-            sources,
+            Arc::clone(&sources),
         )
         .map_err(|e| self.error(module, span, ErrorCode::Contract, e.to_string()))?;
-        self.pure_equations.push(Arc::new(equation));
+        let equation = Arc::new(equation);
+        let origin = Arc::new(PureOrigin {
+            definition: key,
+            table: Arc::clone(&self.source.lexical[&key]),
+            meaning,
+            equation: Arc::clone(&equation),
+        });
+        self.pure_equations.push(equation);
         let inverse = if effect == Effect::Unitary {
-            let sources = self.retained_sources(module, span)?;
             let raw = evidence.program().raw().clone();
             Some(Arc::new(
                 FunctionEvidence::check_retained_with_kernel(
@@ -74,7 +69,7 @@ impl Compiler<'_> {
                     contract_basis(&basis),
                     raw.clone(),
                     raw,
-                    RetainedIdentity::shared(
+                    RetainedIdentity::interned(
                         self.source.resolution.path(key),
                         self.source.resolution.path(key),
                         sources,
@@ -98,6 +93,7 @@ impl Compiler<'_> {
             effect,
             meaning: Some(evidence.meaning().clone()),
             node: Arc::new(Node::Pure(PureProvider {
+                origin: Some(origin),
                 leaf: evidence,
                 inverse,
             })),
@@ -119,7 +115,9 @@ impl Operation {
             Node::Then(a, b) | Node::Tensor(a, b) | Node::Conjugate(a, b) => {
                 a.needs_raw() || b.needs_raw()
             }
-            Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) => a.needs_raw(),
+            Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) | Node::Requested(_, a) => {
+                a.needs_raw()
+            }
             Node::Provider(_) => false,
         }
     }
@@ -131,6 +129,9 @@ impl Operation {
         compiler: &mut Compiler<'_>,
     ) -> Result<crate::interchange::pure_leaf::CheckedPureLeaf, CompileError> {
         self.require(module, span, access, compiler)?;
+        if let Node::Requested(_, operation) = self.node.as_ref() {
+            return operation.raw(module, span, access, compiler);
+        }
         let (basis, codomain) = match access {
             Access::Apply => (self.basis.clone(), self.codomain.clone()),
             Access::Adjoint => (self.codomain.clone(), self.basis.clone()),

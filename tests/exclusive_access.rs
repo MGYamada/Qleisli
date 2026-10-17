@@ -1170,12 +1170,11 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
     proposal.validate_source_steps(&accepted).unwrap();
     let error = check_project(&SourceRoot::new(text).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Unsupported);
-    assert!(
-        error
-            .message
-            .contains("register types are outside the finite lowering profile"),
-        "{error}"
+    assert_eq!(
+        error.message,
+        "finite profile does not yet lower indexed quantum access"
     );
+    assert_eq!(&text[error.span.start..error.span.end], "excl q[0]");
     // An invalid source must fail the common judgment before either lowerer.
     let invalid = text.replace("q[0]", "q[2]");
     assert_eq!(

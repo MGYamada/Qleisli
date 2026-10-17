@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "606a6f1936800ac0f8602bf84040a5c9daed78cc17e10a56946debd9d8c774cb",
+  "surface_sha256": "b93649e28564ecfa0dfc96ca7e0fcfccf803219708c5b1b95a4de6b79fbf1acb",
   "groups": [
     {
       "id": "raw-core",
@@ -153,7 +153,9 @@
         "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
         "lean-kernel/Tests.lean",
         "tests/pure_leaf.rs",
-        "tests/rectangular_meanings.rs"
+        "tests/rectangular_meanings.rs",
+        "tests/computed_derived_source.rs",
+        "src/frontend/compile/lower/computed_phase.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -195,7 +197,17 @@
         "tests/finite_empty_bits.rs",
         "tests/selected_coherent_basis.rs",
         "scripts/test_empty_basis_first.py",
-        "src/frontend/specialize/elaborate/basis.rs"
+        "src/frontend/specialize/elaborate/basis.rs",
+        "tests/general_static_runtime.rs",
+        "tests/dormant_primitive_access.rs",
+        "src/frontend/compile/instances/tests.rs",
+        "src/frontend/compile/dormant/tests.rs",
+        "src/frontend/check/plans/body_statics/tests.rs",
+        "tests/derived_gate_source.rs",
+        "stdlib/src/structure.qli",
+        "scripts/test_generic_dormant_first.py",
+        "tests/computed_derived_source.rs",
+        "src/frontend/compile/lower/computed_phase.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -687,7 +699,9 @@
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/function_evidence.rs",
-        "tests/native_raw.rs"
+        "tests/native_raw.rs",
+        "tests/computed_derived_source.rs",
+        "src/frontend/compile/lower/computed_phase.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -810,7 +824,9 @@
         "src/frontend/closed.rs",
         "tests/selected_coherent_basis.rs",
         "src/frontend/specialize/elaborate/basis.rs",
-        "scripts/test_empty_basis_first.py"
+        "scripts/test_empty_basis_first.py",
+        "src/frontend/specialize/lower/zero_basis/tests.rs",
+        "src/frontend/specialize/lower/preservation/isometry_tests.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -861,7 +877,9 @@
         "lean/Qleisli/FiniteBasisTransport.lean",
         "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean",
         "tests/finite_empty_bits.rs",
-        "tests/selected_coherent_basis.rs"
+        "tests/selected_coherent_basis.rs",
+        "tests/general_static_runtime.rs",
+        "src/frontend/compile/lower/value.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1278,7 +1296,9 @@
         "finite_leaf::{check_unitary,check_serialized_unitary}",
         "PureBoundary::new",
         "pure_leaf::check_pure",
-        "AcceptedProgram::source_pure_equations"
+        "AcceptedProgram::source_pure_equations",
+        "SourceUnitaryEquation::{implementation,specification,names,sources} (inert read-only association)",
+        "AcceptedProgram::source_computed_normalizations (inert read-only association)"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -1286,7 +1306,9 @@
         "tests/finite_leaf.rs",
         "tests/pure_leaf.rs",
         "tests/rectangular_meanings.rs",
-        "lean/Qleisli/NativePureLeaf.lean"
+        "lean/Qleisli/NativePureLeaf.lean",
+        "tests/computed_derived_source.rs",
+        "src/frontend/compile/lower/computed_phase.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1309,6 +1331,7 @@
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "paths": [
+        "checked-views",
         "contract-acceptance",
         "finite-proposal",
         "source-meaning-check"
@@ -1340,7 +1363,10 @@
         "scripts/test_public_effects_first.py",
         "tests/finite_empty_bits.rs",
         "tests/selected_coherent_basis.rs",
-        "scripts/test_empty_basis_first.py"
+        "scripts/test_empty_basis_first.py",
+        "tests/general_static_runtime.rs",
+        "tests/dormant_primitive_access.rs",
+        "tests/derived_gate_source.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -1363,6 +1389,7 @@
         "MIG-5"
       ],
       "paths": [
+        "checked-views",
         "ordinary-acceptance",
         "source-documentation"
       ]
@@ -1694,7 +1721,9 @@
         "tests/mixed_booleans.rs",
         "tests/selected_coherent_basis.rs",
         "src/frontend/specialize/elaborate/basis.rs",
-        "scripts/test_empty_basis_first.py"
+        "scripts/test_empty_basis_first.py",
+        "src/frontend/specialize/lower/zero_basis/tests.rs",
+        "src/frontend/specialize/lower/preservation/isometry_tests.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2372,6 +2401,83 @@
             "theorem check_sound",
             "theorem check_scopeSafe"
           ]
+        },
+        {
+          "path": "src/frontend/check/plans/body_statics.rs",
+          "markers": [
+            "fn original_body_static",
+            "locals.original_table_is(owner, table)"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/instances.rs",
+          "markers": [
+            "fn prepare_instance(",
+            "conditional_naturals",
+            "fn enter_instance("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/instances/bindings.rs",
+          "markers": [
+            "fn bind_source_instance_partial(",
+            "fn evaluate_source_static("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/instances/provider.rs",
+          "markers": [
+            "fn materialize_instance(",
+            "self.check_dormant_instance",
+            "BodyState::Ready"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/operations.rs",
+          "markers": [
+            "fn call_instance(",
+            "check_dormant_instance"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/statics.rs",
+          "markers": [
+            "fn static_branch(",
+            "fn static_fold("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/runtime_transforms.rs",
+          "markers": [
+            "fn runtime_transform(",
+            "ResolvedUse::Local",
+            "BodyStaticKind::Operation"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "markers": [
+            "pub(super) fn retained_sources(",
+            "fn root(",
+            "original_table_is(key, table)",
+            "fn operation(",
+            "origin.equation.source_view()",
+            "fn raw(",
+            "expected != source.source"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/operations.rs",
+          "markers": [
+            "self.retained_sources(module, span, &roots, bindings, &[program.raw()])?"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "&[implementation, specification, caller]",
+            "RetainedIdentity::interned("
+          ]
         }
       ],
       "tests": [
@@ -2490,13 +2596,81 @@
         {
           "path": "tests/public_effects.rs",
           "test": "explicit_pure_labels_never_hide_observation_reset_or_discard"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "original_basis_instances_keep_unit_empty_register_bit_and_word_distinct"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "static_fold_initializes_once_and_uses_original_index_in_selected_arm"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "direct_symbolic_counts_and_specialized_adjoint_retain_exact_phase"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "concrete_fold_index_calls_recheck_bound_ctrl_inside_their_empty_callee_fold"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "outer_zero_repetition_does_not_hide_an_invalid_inner_count"
+        },
+        {
+          "path": "tests/general_static_runtime.rs",
+          "test": "classical_static_headers_keep_their_existing_source_contract"
+        },
+        {
+          "path": "tests/dormant_primitive_access.rs",
+          "test": "dormant_primitive_x_refuses_at_its_original_action_like_a_direct_call"
+        },
+        {
+          "path": "src/frontend/compile/instances/tests.rs",
+          "test": "closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body"
+        },
+        {
+          "path": "src/frontend/compile/dormant/tests.rs",
+          "test": "inactive_carry_checks_bound_ops_with_the_actual_original_nat_owner_type"
+        },
+        {
+          "path": "src/frontend/check/plans/body_statics/tests.rs",
+          "test": "posttransfer_access_rejects_a_different_checked_collection_with_identical_ids"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "original_closure_keeps_nat_meaning_and_inactive_edges_but_not_unused_imports"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "local_operation_shadow_does_not_retain_its_global_diagnostic_candidate"
+        },
+        {
+          "path": "src/frontend/compile/sources.rs",
+          "test": "foreign_equal_shaped_lexical_origin_is_not_a_current_source_root"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "unrelated_large_sources_do_not_become_ordinary_gate_dependencies"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contract_receipts_keep_each_original_caller_module"
+        },
+        {
+          "path": "tests/repair_diagnostics.rs",
+          "test": "snapshot_limit_errors_explain_the_retained_sources"
+        },
+        {
+          "path": "tests/cli_sampling.rs",
+          "test": "cli_new_default_has_an_explicit_legacy_escape"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
       "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
       "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
-      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted. Newly eligible closed Bits<0> source roots use the same ordinary native gate; complete source type trees and observing schemas remain frontend/evidence obligations, not a new theorem admission.",
-      "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem. Passing finite zero-register tests does not prove source lowering, effect/CPTP semantics, PR, quantitative RS or EXACT discharge."
+      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted. Newly eligible complete closed Basis/Nat/Op instances, nonzero ordinary/quantum registers and static-control roots use the same ordinary native gate; complete source type trees and observing schemas remain frontend/evidence obligations, not a new theorem admission.",
+      "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem. Passing finite generic/register/dormant-control tests does not prove source lowering, effect/CPTP semantics, PR, quantitative RS or EXACT discharge."
     },
     {
       "id": "contract-acceptance",
@@ -2531,7 +2705,7 @@
         {
           "path": "src/frontend/compile/operations/pure.rs",
           "markers": [
-            "fn pure_provider(",
+            "fn pure_provider_program(",
             "SourcePureEquation::bind(",
             "crate::frontend::pure::check("
           ]
@@ -2760,6 +2934,38 @@
             "#check @Qleisli.NativeContract.check_sound",
             "#print Qleisli.NativeContract.LeafMeaning"
           ]
+        },
+        {
+          "path": "src/frontend/compile/lower/dormant_access.rs",
+          "markers": [
+            "fn check_action(",
+            "fn refuse("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "markers": [
+            "fn computed_phase_proposal(",
+            "fn computed_unitary_leaf(",
+            "fn computed_canonical_witness(",
+            "finite_leaf::check_with_kernel",
+            "SourceUnitaryEquation::bind",
+            "fn computed_canonical_transport_bound("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/operations/pure.rs",
+          "markers": [
+            "self.retained_sources(module, span, &roots, bindings, &[body.raw()])?",
+            "let origin = Arc::new(PureOrigin {"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "markers": [
+            "let sources = self.compiler.retained_sources(",
+            "&self.bindings,"
+          ]
         }
       ],
       "tests": [
@@ -2846,12 +3052,56 @@
         {
           "path": "tests/public_effects.rs",
           "test": "dormant_external_observe_obligations_cannot_reuse_an_internal_pure_pair"
+        },
+        {
+          "path": "tests/dormant_primitive_access.rs",
+          "test": "dormant_zero_width_primitive_actions_each_require_a_fresh_native_request"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "ordinary_z_t_and_unrelated_wrappers_use_native_normalization"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "scalar_on_the_zero_predicate_is_preserved_on_unit_data"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "non_diagonal_and_false_meaning_and_outer_reference_are_refused"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "existing_canonical_t_chain_keeps_its_raw_length_profile"
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "test": "native_normalization_rejects_same_relative_phase_with_wrong_global_scalar"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use"
+        },
+        {
+          "path": "tests/computed_derived_source.rs",
+          "test": "consecutive_proposal_chunks_compose_in_source_order"
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "test": "canonical_transport_bound_covers_all_eight_actions_and_u32_ids"
+        },
+        {
+          "path": "src/frontend/compile/lower/computed_phase.rs",
+          "test": "native_canonical_witness_refuses_altered_use_and_owner_frame"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "bound_pure_actual_retains_its_original_source_through_a_generic_provider"
         }
       ],
-      "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
+      "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project and supported selected Raw control calls with original-byte control requests through the same version-paired native mode; unsupported hierarchy/profile cases refuse",
       "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
       "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> checkRetained (original result projection); instrument -> Protocol.InstrumentContract.check -> checkRetained -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
-      "proof_scope": "ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
+      "proof_scope": "ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project and supported selected Raw ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; general source preservation, unsupported hierarchy/operator cases and wider alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {
@@ -2902,12 +3152,73 @@
             "pub fn export_openqasm3(program: &AcceptedProgram)",
             "pub fn export_qir_base(program: &AcceptedProgram)"
           ]
+        },
+        {
+          "path": "src/interop/profile.rs",
+          "markers": [
+            "pub(super) fn extract(",
+            "ExpansionBudget::default()",
+            "super::export::steps(",
+            "&mut expansion"
+          ]
+        },
+        {
+          "path": "src/interop/export.rs",
+          "markers": [
+            "pub(super) fn steps(",
+            "contracts::Cursor::new(steps, wires.len(), expansion)?",
+            "step(circuit, scratch, &merged, wires)?"
+          ]
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "markers": [
+            "pub(in crate::interop) struct ExpansionBudget",
+            "fn reserve(",
+            "evidence.expanded_steps()",
+            "budget.reserve(steps)?",
+            "body: evidence.circuit().steps()",
+            "inverse: frame.inverse ^ *adjoint",
+            "crate::contract::invert_steps("
+          ]
         }
       ],
       "tests": [
         {
           "path": "scripts/test_interop_native.py",
           "test": "test_all_actions_formats_use_real_native_checker"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_export_preserves_t_phase_and_nested_adjoint"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_export_keeps_reference_axes_and_reordered_owners"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "controlled_ordinary_contract_export_returns_scratch_exactly"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "adjacent_contract_phases_merge_before_assigning_workspace"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "uncontrolled_unit_contract_phase_is_not_erased_by_export"
+        },
+        {
+          "path": "tests/interop.rs",
+          "test": "ordinary_contract_adjoint_reverses_noncommuting_body_order"
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "test": "expansion_reservation_is_shared_across_raw_operations"
+        },
+        {
+          "path": "src/interop/export/contracts.rs",
+          "test": "malformed_mapping_of_checked_dependency_returns_an_error"
         }
       ],
       "entry_path": "interop::{export_openqasm3,export_qir_base}; corresponding CLI/Python exports",
@@ -3153,6 +3464,23 @@
             "fn operation(",
             "RawOp::ClassicalAnd",
             "RawOp::ClassicalXor"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis.rs",
+          "markers": [
+            "fn classify(",
+            "fn needs_replay(",
+            "fn validate_call_event(",
+            "fn validate(proposal:"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/lower/preservation.rs",
+          "markers": [
+            "fn validate_pure_definition(",
+            "fn pure_root(",
+            "fn reserve_pure_trace("
           ]
         }
       ],
@@ -3400,13 +3728,37 @@
         {
           "path": "tests/public_effects.rs",
           "test": "host_selected_public_providers_use_public_bounds_even_when_unused"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+          "test": "zero_basis_maps_preserve_distinct_empty_atoms_and_native_owner_obligations"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+          "test": "a_native_valid_extra_scalar_cannot_use_an_unchanged_zero_interval_as_source_evidence"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+          "test": "pure_atomic_helpers_bind_their_original_child_root_and_complete_caller_frame"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+          "test": "original_source_obligations_survive_omitted_interval_and_pure_trace_tables"
+        },
+        {
+          "path": "src/frontend/specialize/lower/zero_basis/tests.rs",
+          "test": "zero_basis_static_transforms_and_nonzero_tables_keep_an_explicit_profile_refusal"
+        },
+        {
+          "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
+          "test": "zero_basis_preparation_keeps_exact_phase_reference_and_physical_initialization"
         }
       ],
       "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
       "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata; complete exact type/provider substitutions and original generic module bytes are retained",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
-      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation. Bounded selected coherent-basis tables and explicit Unit owner maps use existing Raw constructors and independent retained-step replay; native acceptance remains a separate requirement.",
-      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete. Opaque type checking and bounded phase/reference tests do not prove generic/source preservation or admit a guarantee; Op<A,M> and final project-profile integration remain pending. Coherent-table injectivity and exact Raw event/table replay do not establish AST-to-step preservation or a general source theorem; hierarchy coherent-table support remains refused."
+      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem. Independent Raw source-step replay remains an untrusted bounded correspondence check, not AST-to-step preservation. Bounded selected coherent tables and explicit Unit owner maps use existing Raw constructors. The narrow ordinary hierarchy singleton-[0] zero-basis bridge uses existing structural/preparation nodes and source-derived complete operand/return/frame/root/child/reachability replay, including omission controls. Native acceptance remains independently mandatory; no new native schema, rule or guarantee follows.",
+      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding, mixed Raw replay and narrow hierarchy zero-basis replay remain bounded additional checks, not general AST-to-IR/source preservation. General hierarchical operator closure, unsupported table-backed static transforms (including zero repetition), nonzero/general hierarchy tables, preparation after observation, open runtime invocation and remaining profile convergence stay separate. Existing closed refined operation/Meaning requests are checked under their own original evidence; unclosed generic requests remain pending. Opaque type checking and bounded phase/reference tests admit no constitutional guarantee; generic QFT stays excluded."
     },
     {
       "id": "checked-views",
@@ -3414,7 +3766,9 @@
       "boundaries": [
         "contract",
         "function",
-        "named-qpe-components"
+        "named-qpe-components",
+        "source",
+        "finite-leaf"
       ],
       "native_modes": [],
       "source_bindings": [
@@ -3437,19 +3791,91 @@
             "pub fn instrument(",
             "pub fn candidate("
           ]
+        },
+        {
+          "path": "src/interchange/finite_leaf.rs",
+          "markers": [
+            "pub struct SourceUnitaryEquation",
+            "pub fn implementation(&self) -> &CheckedUnitaryLeaf",
+            "pub fn specification(&self) -> &CheckedUnitaryLeaf",
+            "pub fn names(&self)",
+            "pub fn sources(&self)"
+          ]
+        },
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "pub fn source_computed_normalizations("
+          ]
+        },
+        {
+          "path": "src/contract/function.rs",
+          "markers": [
+            "pub(crate) enum SourceView",
+            "pub(crate) struct SourceSnapshot",
+            "RetainedIdentity::Interned",
+            "budget.charge_source_row(row)?"
+          ]
+        },
+        {
+          "path": "src/contract/exact.rs",
+          "markers": [
+            "pub(crate) fn charge_source_row(",
+            "Arc::ptr_eq(seen, row)",
+            "self.source_rows.push(Arc::clone(row))"
+          ]
+        },
+        {
+          "path": "src/interchange/pure_leaf.rs",
+          "markers": [
+            "pub fn sources(&self)",
+            "self.sources.exposed()"
+          ]
+        },
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "fn evidence_fields(",
+            "for (path, text) in snapshot.iter()",
+            "pub(crate) fn function_snapshot_key("
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite.rs",
+          "markers": [
+            "fn sources(",
+            "for (path, text) in sources.iter()",
+            "w.sources(identity.2)"
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/function_evidence.rs",
           "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+        },
+        {
+          "path": "src/contract/function.rs",
+          "test": "overlapping_interned_closures_charge_shared_rows_once_without_exposing_copies"
+        },
+        {
+          "path": "src/contract/function.rs",
+          "test": "interned_source_storage_preserves_native_snapshot_and_proposal_bytes"
+        },
+        {
+          "path": "src/interchange/execution_view/finite/tests.rs",
+          "test": "identity_storage_views_preserve_exact_qdv_bytes_and_source_order"
+        },
+        {
+          "path": "tests/source_snapshots.rs",
+          "test": "shared_receipts_keep_exact_bindings_and_outlive_source_changes"
         }
       ],
-      "entry_path": "CheckedContract::{check_binding,check_entry}, FunctionEvidence/MeaningEvidence::check_binding, CheckedQpeInstrument::{instrument,candidate}",
-      "checked_artifact": "Existing checked report and retained artifact/object identity",
+      "entry_path": "CheckedContract::{check_binding,check_entry}, FunctionEvidence/MeaningEvidence::check_binding, CheckedQpeInstrument::{instrument,candidate}; SourceUnitaryEquation::{implementation,specification,names,sources} and AcceptedProgram::source_computed_normalizations",
+      "checked_artifact": "Existing checked report and retained artifact/object identity; inert original/canonical finite-leaf pair and source provenance, with no serialized acceptance flag or new native request kind",
       "checker": "Host binding/accessor checks; no fresh semantic acceptance",
       "proof_scope": "Existing immutable snapshot/binding regressions.",
-      "gaps": "A binding check or accessor cannot widen the original native report scope or create a new semantic guarantee."
+      "gaps": "A binding check or accessor cannot widen the original native report scope or create a new semantic guarantee. The computed pair grants no accepted function descriptor or inverse/control, adds no whole-root independent request and does not prove computed cleanup, source lowering, target/resources or QS/PR/RS/EXACT. Original expanded1025/257 derived-T studies still retain source-work refusals; compact first257-fold retains its original FunctionEvidence refusal beside separate future replays. Current retained_sources keeps complete original module bytes for the relevant declaration/bound-Op/Raw-dependency closure, shares immutable module rows and retains the unchanged128-module/1MiB metadata and aggregate native transport limits. This provenance selection does not change all-loaded source checking or prove source preservation. Later compact257 and expanded/eager forms may still fail unchanged source-work limits; a205-action whole-original leaf regression is not general long-source support."
     },
     {
       "id": "finite-component",

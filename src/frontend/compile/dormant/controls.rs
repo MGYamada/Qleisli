@@ -7,17 +7,22 @@ use crate::contract::BasisType;
 use crate::frontend::resolve::locals::{BindingKind, NodeId};
 use crate::ir::Effect;
 
+type ClosedControlInterface = (Vec<BasisType>, Vec<usize>);
+
 impl<'a> Compiler<'a> {
     pub(in crate::frontend::compile) fn check_dormant_controls(
         &mut self,
     ) -> Result<(), CompileError> {
         let previous = self.checking;
-        let result = self.check_dormant_controls_inner();
+        let result = self.check_dormant_controls_inner(None);
         self.checking = previous;
         result
     }
 
-    fn check_dormant_controls_inner(&mut self) -> Result<(), CompileError> {
+    pub(super) fn check_dormant_controls_inner(
+        &mut self,
+        owner_filter: Option<Key>,
+    ) -> Result<(), CompileError> {
         let Some((&first, declaration)) = self.declarations.first_key_value() else {
             return Ok(());
         };
@@ -27,147 +32,170 @@ impl<'a> Compiler<'a> {
             self.charge(&root_module, root_span, 4)?;
             let obligation = &self.source.obligations[ordinal];
             if !matches!(obligation.kind, check::ObligationKind::ControlSectors)
-                || self.declarations[&obligation.definition]
-                    .static_params
-                    .is_empty()
+                || owner_filter.is_some_and(|owner| owner != obligation.definition)
             {
                 continue;
             }
             let (owner, node, span) =
                 (obligation.definition, obligation.plan.node, obligation.span);
             let module = self.dormant_module(owner, span)?;
-            self.checking = Some(owner);
-            let expression = self.original_control_expression(owner, node, &module, span)?;
-            self.charge(&module, span, 5)?;
-            let obligation = &self.source.obligations[ordinal];
-            if !matches!(obligation.plan.subject, EvidenceSubject::Expression)
-                || obligation.plan.environment.owner != owner
-                || obligation.plan.environment.module
-                    != self.source.resolution.declaration(owner).module
-            {
-                return Err(self.dormant_error(
-                    &module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "control obligation differs from its original owner or environment",
-                )?);
-            }
-            let environment = Arc::clone(&obligation.plan.environment);
-            let ExprKind::AccessCall { callee, args, .. } = &expression.kind else {
-                return Err(self.dormant_error(
-                    &module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "control obligation lacks its original access call",
-                )?);
-            };
-            self.charge(&module, span, args.len().saturating_mul(3) + 10)?;
-            if args.is_empty()
-                || args.len() > 64
-                || !args
-                    .iter()
-                    .any(|argument| argument.access == QuantumAccess::Ctrl)
-            {
-                return Err(self.dormant_error(
-                    &module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "control obligation lacks its original ordered Ctrl arguments",
-                )?);
-            }
-            // Indexed places belong to their existing separate profile gate.
-            // This pass neither materializes nor discharges that obligation.
-            if args.iter().any(|argument| argument.selection.is_some()) {
-                continue;
-            }
-            let Some(callee_site) = self.locals().try_reference_site(callee) else {
-                return Err(self.dormant_error(
-                    &module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "control callee lacks its original reference association",
-                )?);
-            };
-            if callee_site.definition() != owner {
-                return Err(self.dormant_error(
-                    &module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "control callee belongs to another original owner",
-                )?);
-            }
-            let target = self.locals().usage(callee).target;
-            match target {
-                ResolvedUse::Local(_) => {
-                    // No dummy actual stands in for an unbound original Op.
-                    self.unbound_operation(&module, callee, &environment)?;
-                    continue;
+            self.charge(&module, span, 1)?;
+            let environment = Arc::clone(&self.source.obligations[ordinal].plan.environment);
+            self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
+                compiler.check_dormant_control_site(ordinal, owner, node, span, &module, inactive)
+            })?;
+        }
+        Ok(())
+    }
+
+    fn check_dormant_control_site(
+        &mut self,
+        ordinal: usize,
+        owner: Key,
+        node: NodeId,
+        span: Span,
+        module: &str,
+        inactive: bool,
+    ) -> Result<(), CompileError> {
+        let expression = self.original_control_expression(owner, node, module, span)?;
+        self.charge(module, span, 5)?;
+        let obligation = &self.source.obligations[ordinal];
+        if !matches!(obligation.plan.subject, EvidenceSubject::Expression)
+            || obligation.plan.environment.owner != owner
+            || obligation.plan.environment.module
+                != self.source.resolution.declaration(owner).module
+        {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control obligation differs from its original owner or environment",
+            )?);
+        }
+        let environment = Arc::clone(&obligation.plan.environment);
+        let ExprKind::AccessCall { callee, args, .. } = &expression.kind else {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control obligation lacks its original access call",
+            )?);
+        };
+        self.charge(module, span, args.len().saturating_mul(3) + 10)?;
+        if args.is_empty()
+            || args.len() > 64
+            || !args
+                .iter()
+                .any(|argument| argument.access == QuantumAccess::Ctrl)
+        {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control obligation lacks its original ordered Ctrl arguments",
+            )?);
+        }
+        // Indexed places belong to their existing separate profile gate.
+        // This pass neither materializes nor discharges that obligation.
+        if args.iter().any(|argument| argument.selection.is_some()) {
+            return Ok(());
+        }
+        let Some(callee_site) = self.locals().try_reference_site(callee) else {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control callee lacks its original reference association",
+            )?);
+        };
+        if callee_site.definition() != owner {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control callee belongs to another original owner",
+            )?);
+        }
+        let target = self.locals().usage(callee).target;
+        match target {
+            ResolvedUse::Local(_) => {
+                // No dummy actual stands in for an unbound original Op.
+                if !self.unbound_operation(module, callee, &environment)? {
+                    lower::check_dormant_primitive_control(self, owner, expression)?;
                 }
-                ResolvedUse::Global(Target::Primitive(_)) => {
-                    // Primitive calls have no StaticCallPlan. Their runtime
-                    // owner/type association remains an explicit pending slice.
-                    continue;
-                }
-                ResolvedUse::Global(Target::Declaration(_)) => {}
-                ResolvedUse::Unresolved => {
-                    return Err(self.dormant_error(
-                        &module,
-                        span,
-                        ErrorCode::TypeMismatch,
-                        "control callee is unresolved in its original collection",
-                    )?);
-                }
+                return Ok(());
             }
-            let (site, target) = self.original_control_call(owner, &module, expression)?;
-            if site != callee_site {
+            ResolvedUse::Global(Target::Primitive(_)) => {
+                // Primitive calls have no StaticCallPlan. Reuse retained
+                // original owner types and the ordinary action/native gate.
+                match lower::check_dormant_primitive_control(self, owner, expression)? {
+                    lower::PrimitiveControlVisit::CheckedAction => {}
+                    lower::PrimitiveControlVisit::NotCovered => {}
+                }
+                return Ok(());
+            }
+            ResolvedUse::Global(Target::Declaration(_)) => {}
+            ResolvedUse::Unresolved => {
                 return Err(self.dormant_error(
-                    &module,
+                    module,
                     span,
                     ErrorCode::TypeMismatch,
-                    "control call has a different original reference site",
+                    "control callee is unresolved in its original collection",
                 )?);
             }
-            let Some(bindings) = self.closed_call_bindings(site, &module, span)? else {
-                // Closed siblings have still reached all ordinary actual gates.
-                continue;
+        }
+        let (site, _target) = self.original_control_call(owner, module, expression)?;
+        if site != callee_site {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control call has a different original reference site",
+            )?);
+        }
+        let Some(instance) = self.closed_call_instance(site, module, span)? else {
+            // Closed siblings have still reached all ordinary actual gates.
+            return Ok(());
+        };
+        let Some((signatures, axes)) =
+            self.closed_control_interface(site, args, &instance, module, span)?
+        else {
+            return Ok(());
+        };
+        if inactive && self.instance_is_active(&instance, module, span)? {
+            return Ok(());
+        }
+        let actual = self.materialize_instance(instance, module, span)?;
+        // Fresh native reconstruction uses the actual ordered Raw ports and
+        // complete body. No producer matrix or earlier decision replaces it.
+        if let Err(failure) =
+            self.kernel
+                .check_control_owners(actual.raw(), &signatures, &axes, &mut self.exact_work)
+        {
+            self.charge(
+                module,
+                span,
+                failure.code.len()
+                    + failure.message.len()
+                    + failure.json_pointer.len()
+                    + crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION.len()
+                    + 16,
+            )?;
+            let code = match failure.code {
+                "contract" => ErrorCode::Contract,
+                "limit" => ErrorCode::Limit,
+                "io" | "kernel" => ErrorCode::Project,
+                _ => ErrorCode::InvalidIr,
             };
-            let (signatures, axes) = self.closed_control_interface(site, args, &module, span)?;
-            self.checking = Some(target);
-            let actual = lower::lower_bound_function(self, &target, bindings)?;
-            self.checking = Some(owner);
-            // Fresh native reconstruction uses the actual ordered Raw ports and
-            // complete body. No producer matrix or earlier decision replaces it.
-            if let Err(failure) = self.kernel.check_control_owners(
-                actual.raw(),
-                &signatures,
-                &axes,
-                &mut self.exact_work,
-            ) {
-                self.charge(
-                    &module,
-                    span,
-                    failure.code.len()
-                        + failure.message.len()
-                        + failure.json_pointer.len()
-                        + crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION.len()
-                        + 16,
-                )?;
-                let code = match failure.code {
-                    "contract" => ErrorCode::Contract,
-                    "limit" => ErrorCode::Limit,
-                    "io" | "kernel" => ErrorCode::Project,
-                    _ => ErrorCode::InvalidIr,
-                };
-                return Err(self.error(
-                    &module,
-                    span,
-                    code,
-                    format!(
-                        "{failure}; {}",
-                        crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
-                    ),
-                ));
-            }
+            return Err(self.error(
+                module,
+                span,
+                code,
+                format!(
+                    "{failure}; {}",
+                    crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
+                ),
+            ));
         }
         Ok(())
     }
@@ -281,44 +309,60 @@ impl<'a> Compiler<'a> {
         &mut self,
         site: UseSiteId,
         args: &[AccessArgument],
+        instance: &instances::ClosedInstance,
         module: &str,
         span: Span,
-    ) -> Result<(Vec<BasisType>, Vec<usize>), CompileError> {
+    ) -> Result<Option<ClosedControlInterface>, CompileError> {
         self.tick(module, span)?;
-        let target = self.source.static_calls[&site].target;
-        let declaration = self.declarations[&target];
-        let (parameters, result) = self.signature(&target)?;
-        let target_module = &self.source.resolution.declaration(target).name.0;
+        let mut work = self.work;
+        let source = (|| {
+            let plan = &self.source.static_calls[&site];
+            self.charge_at(&mut work, module, span, plan.parameters.len() + 2)?;
+            for ty in &plan.parameters {
+                charge_source_type_copy(ty, &mut |cells| {
+                    self.charge_at(&mut work, module, span, cells)
+                })?;
+            }
+            charge_source_type_copy(&plan.result, &mut |cells| {
+                self.charge_at(&mut work, module, span, cells)
+            })?;
+            Ok::<_, CompileError>((
+                plan.parameters.clone(),
+                plan.result.clone(),
+                Arc::clone(&plan.environment),
+            ))
+        })();
+        self.work = work;
+        let (source_parameters, source_result, environment) = source?;
+        // These source ports contain the original CALLER substitution. Closing
+        // the target's formal keys here would confuse distinct lexical owners.
+        self.charge(module, span, source_parameters.len())?;
+        let mut parameters = Vec::with_capacity(source_parameters.len());
+        let mut complete = true;
+        for ty in &source_parameters {
+            match self.close_source_type_partial(ty, &environment, span)? {
+                Some(ty) => parameters.push(ty),
+                None => complete = false,
+            }
+        }
+        let result = self.close_source_type_partial(&source_result, &environment, span)?;
+        let Some(result) = result.filter(|_| complete) else {
+            return Ok(None);
+        };
         let mut work = self.work;
         let same = (|| {
-            let plan = &self.source.static_calls[&site];
-            self.charge_at(&mut work, module, span, parameters.len() + 1)?;
-            for (ordinal, parameter) in parameters.iter().enumerate() {
-                let original = finite_type(
-                    self,
-                    &mut work,
-                    target_module,
-                    &declaration.params[ordinal].ty,
-                    &plan.parameters[ordinal],
-                    Stage::Runtime,
-                )?;
-                if !operations::same_port_budgeted(parameter, &original, &mut |cells| {
-                    self.charge_at(&mut work, module, span, cells)
-                })? {
-                    return Ok(false);
-                }
+            let mut charge = |cells| self.charge_at(&mut work, module, span, cells);
+            charge(parameters.len() + 1)?;
+            if parameters.len() != instance.interface.parameters.len() {
+                return Ok(false);
             }
-            let original = finite_type(
-                self,
-                &mut work,
-                target_module,
-                &declaration.return_type,
-                &plan.result,
-                Stage::Runtime,
-            )?;
-            operations::same_port_budgeted(&result, &original, &mut |cells| {
-                self.charge_at(&mut work, module, span, cells)
-            })
+            let mut same = true;
+            for (parameter, actual) in parameters.iter().zip(&instance.interface.parameters) {
+                same &= operations::same_port_budgeted(parameter, actual, &mut charge)?;
+            }
+            same &=
+                operations::same_port_budgeted(&result, &instance.interface.result, &mut charge)?;
+            Ok::<_, CompileError>(same)
         })();
         self.work = work;
         if !same? {
@@ -398,7 +442,7 @@ impl<'a> Compiler<'a> {
             }
             offset += width;
         }
-        Ok((signatures, axes))
+        Ok(Some((signatures, axes)))
     }
 }
 

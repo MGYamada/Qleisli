@@ -386,6 +386,7 @@ pub(super) struct CheckedProgram {
     pub lexical: BTreeMap<DefId, Arc<Table>>,
     pub obligations: Vec<Obligation>,
     pub static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
+    pub body_statics: BTreeMap<super::resolve::locals::NodeId, plans::BodyStaticPlan>,
     pub dependency_order: Vec<DefId>,
 }
 impl CheckedProgram {
@@ -509,6 +510,7 @@ struct Program<'a> {
     interfaces: BTreeMap<DefId, Interface>,
     obligations: Vec<Obligation>,
     static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
+    body_statics: BTreeMap<super::resolve::locals::NodeId, plans::BodyStaticPlan>,
     unitary_regions: Vec<(DefId, Span, BodyEffects)>,
     budget: Rc<Budget>,
 }
@@ -782,6 +784,7 @@ pub(super) fn program_with<'a, R>(
         interfaces: BTreeMap::new(),
         obligations: Vec::new(),
         static_calls: BTreeMap::new(),
+        body_statics: BTreeMap::new(),
         unitary_regions: Vec::new(),
         budget,
     };
@@ -941,6 +944,7 @@ pub(super) fn program_with<'a, R>(
             lexical,
             obligations: program.obligations,
             static_calls: program.static_calls,
+            body_statics: program.body_statics,
             dependency_order,
         },
         output,

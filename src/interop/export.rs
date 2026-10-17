@@ -2,6 +2,9 @@
 //! adapters, not kernel rules or resource certificates. Conjunction workspace
 //! starts in zero, is explicitly uncomputed, and counts toward the target cap.
 
+mod contracts;
+pub(super) use contracts::ExpansionBudget;
+
 use super::profile::{self, Gate, GateOp, TerminalCircuit};
 use super::{InteropError, MAX_QUBITS};
 use crate::ir::{CircuitAction, CircuitStep};
@@ -158,19 +161,20 @@ pub(super) fn step(
 }
 
 /// Recover diagonal words before assigning synthesis workspace. In particular
-/// the source alias S lowers to two controlled T steps, whose combined even
-/// exponent has an ancilla-free realization. Controls and ordered axes must
+/// adjacent controlled eighth-turn actions combine to an even exponent with
+/// an ancilla-free realization. Controls and ordered axes must
 /// match exactly; no operation is commuted across another step.
 pub(super) fn steps(
     circuit: &mut TerminalCircuit,
     scratch: &mut Vec<usize>,
     steps: &[CircuitStep],
     wires: &[usize],
+    expansion: &mut ExpansionBudget,
 ) -> Result<(), InteropError> {
-    let mut index = 0;
-    while index < steps.len() {
-        let mut merged = steps[index].clone();
-        index += 1;
+    let mut cursor = contracts::Cursor::new(steps, wires.len(), expansion)?;
+    let mut pending = cursor.next()?;
+    while let Some(mut merged) = pending.take() {
+        pending = cursor.next()?;
         if let CircuitAction::Monomial {
             indices,
             permutation,
@@ -182,7 +186,7 @@ pub(super) fn steps(
                 .enumerate()
                 .all(|(i, &j)| i == usize::from(j))
             {
-                while let Some(next) = steps.get(index) {
+                while let Some(next) = &pending {
                     let CircuitAction::Monomial {
                         indices: next_indices,
                         permutation: next_perm,
@@ -200,7 +204,7 @@ pub(super) fn steps(
                     for (a, b) in phases.iter_mut().zip(next_phases) {
                         *a = (*a + *b) % 8;
                     }
-                    index += 1;
+                    pending = cursor.next()?;
                 }
             }
         }

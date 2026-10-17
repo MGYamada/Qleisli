@@ -533,9 +533,15 @@ admitted QLV1 guarantees cover original-root ownership and classical scope;
 they do not certify source lowering, target emission or quantitative bounds.
 
 The current terminal exporter in `src/interop/export.rs` performs bounded
-untrusted rewrites after program verification. It explicitly allocates and
-uncomputes conjunction scratch and rejects output exceeding its physical
-qubit capacity. The independent `scripts/test_review_v024.py` oracle checks
+untrusted rewrites after program verification. A borrowed cursor expands actual
+retained function circuits, including nested controls, adjoints and ordered axis
+maps, before merging adjacent diagonal actions. Contract expansion shares the
+existing 1,000,000-step function limit across the whole export; this is a producer
+work limit, not a target-resource bound. Flat input and emitted-gate limits remain
+unchanged. The exporter explicitly allocates and uncomputes conjunction scratch
+and rejects output exceeding its physical qubit capacity. A nontrivial
+uncontrolled scalar still has no terminal-gate realization in this profile.
+The independent `scripts/test_review_v024.py` oracle checks
 emitted small QFT/control circuits, including complex phase, output axes and
 zero-return scratch. Such bounded numerical validation is distinct from a
 general transformation proof or resource certificate. External schema entries

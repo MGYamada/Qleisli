@@ -4,7 +4,10 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 use super::*;
-use crate::frontend::check::plans::{EvidenceSubject, ResolvedStatic, StaticEnvironment};
+use crate::frontend::check::plans::{
+    BodyStaticKind, BodyStaticOriginal, EvidenceSubject, ResolvedStatic, ResolvedStaticKind,
+    StaticEnvironment, original_body_static,
+};
 use crate::frontend::resolve::locals::{OriginalNode, UseSiteId};
 use operations::{Bindings, Operation, RequiredOperation};
 
@@ -12,7 +15,7 @@ mod controls;
 #[cfg(test)]
 mod tests;
 
-fn charge_port_copy(
+pub(super) fn charge_port_copy(
     ty: &Ty,
     copies: usize,
     charge: &mut impl FnMut(usize) -> Result<(), CompileError>,
@@ -33,6 +36,36 @@ fn charge_port_copy(
     Ok(())
 }
 
+pub(super) fn charge_source_type_copy(
+    ty: &check::Ty,
+    charge: &mut impl FnMut(usize) -> Result<(), CompileError>,
+) -> Result<(), CompileError> {
+    charge(2)?;
+    match &ty.kind {
+        Kind::Bits(size) => {
+            charge(size.terms.len())?;
+            for key in size.terms.keys() {
+                charge(key.name.len() + 1)?;
+            }
+        }
+        Kind::Parameter(parameter) => {
+            charge(parameter.name.len() + 1)?;
+            if let Some(key) = &parameter.key {
+                charge(key.name.len() + 1)?;
+            }
+        }
+        Kind::Q(child) => charge_source_type_copy(child, charge)?,
+        Kind::Tuple(fields) => {
+            charge(fields.len())?;
+            for field in fields {
+                charge_source_type_copy(field, charge)?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
 impl<'a> Compiler<'a> {
     fn dormant_error(
         &mut self,
@@ -45,7 +78,11 @@ impl<'a> Compiler<'a> {
         Ok(self.error(module, span, code, message))
     }
 
-    fn dormant_module(&mut self, owner: Key, span: Span) -> Result<String, CompileError> {
+    pub(super) fn dormant_module(
+        &mut self,
+        owner: Key,
+        span: Span,
+    ) -> Result<String, CompileError> {
         let name = &self.source.resolution.declaration(owner).name.0;
         let mut work = self.work;
         let charged = self.charge_at(&mut work, name, span, name.len() + 1);
@@ -83,121 +120,244 @@ impl<'a> Compiler<'a> {
         }
     }
 
+    pub(super) fn dormant_operation_bindings(
+        &mut self,
+        module: &str,
+        span: Span,
+    ) -> Result<Bindings, CompileError> {
+        let current = self.concrete_context.current.as_ref();
+        let mut work = self.work;
+        let result = (|| {
+            let Some(current) = current else {
+                return Ok(Bindings::new());
+            };
+            for (key, operation) in &current.operations {
+                self.charge_at(
+                    &mut work,
+                    module,
+                    span,
+                    key.name.len() + operation.copy_size() + 1,
+                )?;
+            }
+            Ok(current.operations.clone())
+        })();
+        self.work = work;
+        result
+    }
+
+    fn visit_dormant_owner<T>(
+        &mut self,
+        owner: Key,
+        module: &str,
+        span: Span,
+        visit: impl FnOnce(&mut Self) -> Result<T, CompileError>,
+    ) -> Result<T, CompileError> {
+        if self.current_instance_owner() == Some(owner) {
+            return visit(self);
+        }
+        let frame = self.enter_dormant_owner(owner, module, span)?;
+        let result = visit(self);
+        self.leave_instance(frame);
+        result
+    }
+
+    fn dormant_region_active(
+        &mut self,
+        environment: &StaticEnvironment,
+        module: &str,
+        span: Span,
+    ) -> Result<Option<bool>, CompileError> {
+        use check::plans::StaticRegion;
+        let mut complete = true;
+        for region in &environment.regions {
+            self.tick(module, span)?;
+            match region {
+                StaticRegion::Predicate {
+                    left,
+                    comparison,
+                    right,
+                    truth,
+                    ..
+                } => {
+                    let left = self.evaluate_plan_natural_partial(left, environment)?;
+                    let right = self.evaluate_plan_natural_partial(right, environment)?;
+                    if let (Some(left), Some(right)) = (left, right) {
+                        let actual = match comparison {
+                            Compare::Eq => left == right,
+                            Compare::Ne => left != right,
+                            Compare::Lt => left < right,
+                            Compare::Le => left <= right,
+                            Compare::Gt => left > right,
+                            Compare::Ge => left >= right,
+                        };
+                        if actual != *truth {
+                            return Ok(Some(false));
+                        }
+                    } else {
+                        complete = false;
+                    }
+                }
+                StaticRegion::Fold { start, end, .. } => {
+                    let start = self.evaluate_plan_natural_partial(start, environment)?;
+                    let end = self.evaluate_plan_natural_partial(end, environment)?;
+                    if let (Some(start), Some(end)) = (start, end) {
+                        if start > end {
+                            return Err(self.dormant_error(
+                                module,
+                                span,
+                                ErrorCode::TypeMismatch,
+                                "active original static fold has reversed bounds",
+                            )?);
+                        }
+                        if start == end {
+                            return Ok(Some(false));
+                        }
+                    } else {
+                        complete = false;
+                    }
+                }
+            }
+        }
+        Ok(complete.then_some(true))
+    }
+
+    fn visit_dormant_environment<T>(
+        &mut self,
+        environment: &StaticEnvironment,
+        module: &str,
+        span: Span,
+        visit: impl FnOnce(&mut Self, bool) -> Result<T, CompileError>,
+    ) -> Result<T, CompileError> {
+        self.visit_dormant_owner(environment.owner, module, span, |compiler| {
+            let inactive =
+                compiler.dormant_region_active(environment, module, span)? == Some(false);
+            if inactive {
+                // Retain closed independent siblings while original formals in
+                // an inactive region remain conditional. Never replay n-1 at
+                // n=0 outside the premise under which its source was checked.
+                let frame = compiler.enter_inactive_region(environment.owner, module, span)?;
+                let result = visit(compiler, true);
+                compiler.leave_instance(frame);
+                result
+            } else {
+                visit(compiler, false)
+            }
+        })
+    }
+
     fn closed_operation(
         &mut self,
         module: &str,
-        original: &StaticOp,
+        value: &ResolvedStatic,
         environment: &StaticEnvironment,
         requested: [bool; 3],
-        depth: usize,
     ) -> Result<Option<Operation>, CompileError> {
-        self.tick(module, original.span)?;
-        if depth > MAX_DEPTH {
-            return Err(self.dormant_error(
+        self.original_operation(environment.owner, module, value)?;
+        let outer = self.dormant_operation_bindings(module, value.span)?;
+        match self.evaluate_source_static(
+            value,
+            environment,
+            check::plans::StaticCategory::Operation,
+            requested,
+            &outer,
+            module,
+        )? {
+            instances::StaticValue::Operation(operation) => Ok(Some(operation)),
+            instances::StaticValue::Deferred => Ok(None),
+            _ => Err(self.dormant_error(
                 module,
-                original.span,
-                ErrorCode::Limit,
-                "dormant operation exceeds the static depth limit",
-            )?);
+                value.span,
+                ErrorCode::TypeMismatch,
+                "dormant operation differs from its original static category",
+            )?),
         }
-        match &original.kind {
-            StaticOpKind::Name(name) => {
-                if self.unbound_operation(module, name, environment)? {
-                    return Ok(None);
+    }
+
+    fn dormant_operation_root(
+        &mut self,
+        module: &str,
+        operation: &ResolvedStatic,
+        environment: &StaticEnvironment,
+        requested: [bool; 3],
+        inactive: bool,
+    ) -> Result<(), CompileError> {
+        let original = self.original_operation(environment.owner, module, operation)?;
+        let mut leaf = original;
+        while let StaticOpKind::Repeat(_, child) = &leaf.kind {
+            self.tick(module, leaf.span)?;
+            leaf = child;
+        }
+        let name = match &leaf.kind {
+            StaticOpKind::Name(name) | StaticOpKind::Specialize { name, .. } => Some(name),
+            _ => None,
+        };
+        let direct = if let Some(name) = name {
+            self.charge(module, name.span, 8)?;
+            self.locals().try_reference_site(name).and_then(|site| {
+                (site.definition() == environment.owner)
+                    .then(|| (site, self.locals().usage(name).target))
+            })
+        } else {
+            None
+        };
+        if let Some((site, ResolvedUse::Global(target))) = direct {
+            // Direct runtime declaration/group transforms and legacy sealed
+            // literal repetition are not opaque one-owner Op providers.
+            // Their retained ordinary Nat counts still visit every child,
+            // including under zero copies or an unresolved outer count.
+            let mut value = operation;
+            while let ResolvedStaticKind::Repeat {
+                power,
+                count,
+                child,
+            } = &value.kind
+            {
+                if let Some(count_value) = self.evaluate_plan_natural_partial(count, environment)? {
+                    self.closed_repeat_count(count_value, *power, module, count.span)?;
                 }
-                self.provider(module, name, None).map(Some)
+                value = child;
             }
-            StaticOpKind::Bind {
-                implementation,
-                meaning,
-            } => {
-                // A local implementation remains conditional, but its Meaning
-                // reference must still name the original closed declaration.
-                self.meaning_key(module, meaning)?;
-                if self.unbound_operation(module, implementation, environment)? {
-                    return Ok(None);
-                }
-                self.provider(module, implementation, Some(meaning))
-                    .map(Some)
-            }
-            StaticOpKind::Inverse(child)
-            | StaticOpKind::Controlled(child)
-            | StaticOpKind::Repeat(_, child) => {
-                let child_requests = match &original.kind {
-                    // Forming adjoint itself requires the operand's J path.
-                    StaticOpKind::Inverse(_) => [requested[1], true, requested[2]],
-                    // Each requested path of the constructed controlled object
-                    // uses the operand's C path; formation alone requests none.
-                    StaticOpKind::Controlled(_) => {
-                        [false, false, requested[0] || requested[1] || requested[2]]
+            match target {
+                Target::Declaration(target) => {
+                    self.charge(module, operation.span, 12)?;
+                    let Some(plan) = self.source.static_calls.get(&site) else {
+                        return Err(self.dormant_error(
+                            module,
+                            operation.span,
+                            ErrorCode::TypeMismatch,
+                            "direct dormant transform lacks its original call plan",
+                        )?);
+                    };
+                    if plan.owner != environment.owner
+                        || plan.module != environment.module
+                        || plan.target != target
+                        || plan.callee.site != site
+                        || plan.callee.target != ResolvedUse::Global(Target::Declaration(target))
+                        || plan.callee.local.is_some()
+                        || requested
+                            .iter()
+                            .zip(plan.access)
+                            .any(|(requested, available)| *requested && !available)
+                    {
+                        return Err(self.dormant_error(module, operation.span, ErrorCode::TypeMismatch,
+                            "direct dormant transform differs from its original call identity or access")?);
                     }
-                    // Even zero copies first materialize the original child.
-                    _ => requested,
-                };
-                let Some(child) =
-                    self.closed_operation(module, child, environment, child_requests, depth + 1)?
-                else {
-                    return Ok(None);
-                };
-                if matches!(original.kind, StaticOpKind::Inverse(_)) {
-                    self.validate_operation_access(
-                        &child,
-                        [false, true, false],
-                        module,
-                        original.span,
-                    )?;
-                }
-                self.construct(module, original.span, &original.kind, child, None)
-                    .map(Some)
-            }
-            StaticOpKind::Then(left, right)
-            | StaticOpKind::Tensor(left, right)
-            | StaticOpKind::Conjugate(left, right) => {
-                let left_requests = if matches!(original.kind, StaticOpKind::Conjugate(..)) {
-                    let needed = requested[0] || requested[1] || requested[2];
-                    [needed, needed, false]
-                } else {
-                    requested
-                };
-                let closed_left =
-                    self.closed_operation(module, left, environment, left_requests, depth + 1)?;
-                // Do not short-circuit: a deferred left operand cannot hide a
-                // closed request in the right operand.
-                let closed_right =
-                    self.closed_operation(module, right, environment, requested, depth + 1)?;
-                match (closed_left, closed_right) {
-                    (Some(left), Some(right)) => self
-                        .construct(module, original.span, &original.kind, left, Some(right))
-                        .map(Some),
-                    (closed_left, closed_right) => {
-                        // Only maximal closed fragments need separate access
-                        // checks. Complete composites retain their whole gate.
-                        if let Some(operation) = closed_left {
-                            self.validate_operation_access(
-                                &operation,
-                                left_requests,
-                                module,
-                                left.span,
-                            )?;
+                    if let Some(instance) =
+                        self.closed_call_instance(site, module, operation.span)?
+                    {
+                        if !inactive
+                            || !self.instance_is_active(&instance, module, operation.span)?
+                        {
+                            self.materialize_instance(instance, module, operation.span)?;
                         }
-                        if let Some(operation) = closed_right {
-                            self.validate_operation_access(
-                                &operation, requested, module, right.span,
-                            )?;
-                        }
-                        Ok(None)
                     }
+                    return Ok(());
                 }
-            }
-            StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
-                Err(self.dormant_error(
-                    module,
-                    original.span,
-                    ErrorCode::Unsupported,
-                    "static argument is outside the finite lowering profile",
-                )?)
+                Target::Primitive(_) => return Ok(()),
             }
         }
+        self.closed_operation(module, operation, environment, requested)
+            .map(|_| ())
     }
 
     fn unbound_operation(
@@ -221,7 +381,11 @@ impl<'a> Compiler<'a> {
             && binding.kind == super::super::resolve::locals::BindingKind::StaticOperation
             && environment.operations.contains_key(&binding.key)
         {
-            return Ok(true);
+            return Ok(self
+                .concrete_context
+                .current
+                .as_ref()
+                .is_none_or(|instance| !instance.operations.contains_key(&binding.key)));
         }
         Err(self.dormant_error(
             module,
@@ -233,183 +397,295 @@ impl<'a> Compiler<'a> {
 
     pub(super) fn check_dormant_operations(&mut self) -> Result<(), CompileError> {
         let previous = self.checking;
-        let result = self.check_dormant_operations_inner();
+        let result = self.check_dormant_operations_inner(None);
         self.checking = previous;
         result
     }
 
-    fn check_dormant_operations_inner(&mut self) -> Result<(), CompileError> {
+    /// Every concrete owner revisits its original dead/zero source obligations
+    /// before executable-body reuse. No placeholder actual or function handle
+    /// stands in for a genuinely unbound original formal.
+    pub(super) fn check_dormant_instance(
+        &mut self,
+        instance: Arc<instances::ClosedInstance>,
+        module: &str,
+        span: Span,
+    ) -> Result<(), CompileError> {
+        let owner = instance.definition;
+        let frame = self.enter_instance(instance, module, span)?;
+        let result = (|| {
+            self.check_dormant_operations_inner(Some(owner))?;
+            self.check_dormant_controls_inner(Some(owner))
+        })();
+        self.leave_instance(frame);
+        result
+    }
+
+    fn check_dormant_operations_inner(
+        &mut self,
+        owner_filter: Option<Key>,
+    ) -> Result<(), CompileError> {
         let Some((&first, declaration)) = self.declarations.first_key_value() else {
             return Ok(());
         };
         let at = declaration.span;
         let root_module = self.dormant_module(first, at)?;
-        // The complete original obligation collection is retained unchanged.
-        // Runtime-expression subjects need their actual owner/frame gates;
-        // this pass does not claim to discharge those conditional obligations.
         for ordinal in 0..self.source.obligations.len() {
             self.tick(&root_module, at)?;
             let obligation = &self.source.obligations[ordinal];
             let check::ObligationKind::MeaningEquality { required, .. } = obligation.kind else {
                 continue;
             };
-            if self.declarations[&obligation.definition]
-                .static_params
-                .is_empty()
-            {
+            if owner_filter.is_some_and(|owner| owner != obligation.definition) {
                 continue;
             }
             let EvidenceSubject::Operation { .. } = &obligation.plan.subject else {
                 continue;
             };
-            let owner = obligation.definition;
-            let span = obligation.span;
+            let (owner, span) = (obligation.definition, obligation.span);
             let module = self.dormant_module(owner, span)?;
             self.charge(&module, span, 2)?;
             let obligation = &self.source.obligations[ordinal];
             let EvidenceSubject::Operation { operation, .. } = &obligation.plan.subject else {
-                unreachable!("borrowed original operation subject")
+                unreachable!()
             };
             let operation = Arc::clone(operation);
             let environment = Arc::clone(&obligation.plan.environment);
-            self.checking = Some(owner);
-            let original = self.original_operation(owner, &module, &operation)?;
-            if let Some(actual) =
-                self.closed_operation(&module, original, &environment, [false; 3], 1)?
-            {
-                let meaning = &self.meanings[&required];
-                let mut work = self.work;
+            self.visit_dormant_environment(&environment, &module, span, |compiler, _inactive| {
+                let Some(actual) =
+                    compiler.closed_operation(&module, &operation, &environment, [false; 3])?
+                else {
+                    return Ok(());
+                };
+                let meaning = &compiler.meanings[&required];
+                let mut work = compiler.work;
                 let charged = (|| {
-                    let mut charge = |cells| self.charge_at(&mut work, &module, span, cells);
+                    let mut charge = |cells| compiler.charge_at(&mut work, &module, span, cells);
                     charge_port_copy(&meaning.basis, 1, &mut charge)?;
                     charge_port_copy(&meaning.codomain, 1, &mut charge)?;
                     charge(meaning.matrix.entries().len() + 1)
                 })();
-                self.work = work;
+                compiler.work = work;
                 charged?;
-                let meaning = &self.meanings[&required];
-                let required = RequiredOperation {
+                let meaning = &compiler.meanings[&required];
+                let requirement = RequiredOperation {
                     basis: meaning.basis.clone(),
                     codomain: meaning.codomain.clone(),
-                    // Explicit checked_op captures available access here,
-                    // not a demand for every capability. Formal/constructor
-                    // requests are checked separately at their actual sites.
                     access: [false; 3],
                     meaning: Some(meaning.matrix.clone()),
                 };
-                self.validate_required_operation(&required, &actual, &module, original.span)?;
-            }
+                compiler.validate_required_operation(&requirement, &actual, &module, operation.span)
+            })?;
         }
-
-        // Copy only numeric occurrence identities once, with charged storage.
-        // Repeated nth() searches or deep plan clones would evade this budget.
+        // Standalone original body statics do not require an incidental call
+        // or Meaning obligation. Visit their closed siblings even when an
+        // initializer is unused or a fold executes zero times.
+        self.charge(&root_module, at, self.source.body_statics.len() + 1)?;
+        let nodes: Vec<_> = self.source.body_statics.keys().copied().collect();
+        for node in nodes {
+            self.tick(&root_module, at)?;
+            let plan = &self.source.body_statics[&node];
+            if owner_filter.is_some_and(|owner| owner != plan.owner)
+                || matches!(plan.kind, BodyStaticKind::PrimitiveCall { .. })
+            {
+                continue;
+            }
+            let (owner, module_id) = (plan.owner, plan.module);
+            let declaration_span = self.declarations[&owner].span;
+            let module = self.dormant_module(owner, declaration_span)?;
+            let mut work = self.work;
+            let captured = (|| {
+                let Some(original) = self.locals().original_node_budgeted(node, |at, cells| {
+                    self.charge_at(&mut work, &module, at, cells)
+                })?
+                else {
+                    let message = "dormant static root lacks its original source association";
+                    self.charge_at(&mut work, &module, declaration_span, message.len() + 1)?;
+                    return Err(self.error(
+                        &module,
+                        declaration_span,
+                        ErrorCode::TypeMismatch,
+                        message,
+                    ));
+                };
+                let span = original.span();
+                let source = match original {
+                    OriginalNode::Operation(original) => BodyStaticOriginal::Operation(original),
+                    OriginalNode::Natural(original) => BodyStaticOriginal::Natural(original),
+                    OriginalNode::Expression(original) => BodyStaticOriginal::Expression(original),
+                    _ => {
+                        let message =
+                            "dormant static root has a different original syntax category";
+                        self.charge_at(&mut work, &module, span, message.len() + 1)?;
+                        return Err(self.error(&module, span, ErrorCode::TypeMismatch, message));
+                    }
+                };
+                let plan = original_body_static(
+                    &self.source,
+                    &self.locals(),
+                    owner,
+                    module_id,
+                    source,
+                    &mut |at, cells| self.charge_at(&mut work, &module, at, cells),
+                    &|at, message| self.error(&module, at, ErrorCode::TypeMismatch, message),
+                )?;
+                self.charge_at(&mut work, &module, span, 6)?;
+                let (naturals, operation, range) = match &plan.kind {
+                    BodyStaticKind::Binding { value, .. } | BodyStaticKind::Natural { value } => {
+                        (vec![Arc::clone(value)], None, false)
+                    }
+                    BodyStaticKind::Predicate { left, right, .. } => {
+                        (vec![Arc::clone(left), Arc::clone(right)], None, false)
+                    }
+                    BodyStaticKind::Fold { start, end, .. } => {
+                        (vec![Arc::clone(start), Arc::clone(end)], None, true)
+                    }
+                    BodyStaticKind::Operation {
+                        operation,
+                        requested,
+                        ..
+                    } => (Vec::new(), Some((Arc::clone(operation), *requested)), false),
+                    BodyStaticKind::PrimitiveCall { .. } => {
+                        unreachable!("primitive operands retain separate natural roots")
+                    }
+                };
+                Ok::<_, CompileError>((
+                    naturals,
+                    operation,
+                    range,
+                    Arc::clone(&plan.environment),
+                    span,
+                ))
+            })();
+            self.work = work;
+            let (naturals, operation, range, environment, span) = captured?;
+            self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
+                let mut start = None;
+                for (ordinal, natural) in naturals.iter().enumerate() {
+                    let value = compiler.evaluate_plan_natural_partial(natural, &environment)?;
+                    if ordinal == 0 {
+                        start = value;
+                    } else if range
+                        && matches!((start,value),(Some(start),Some(end)) if start > end)
+                    {
+                        return Err(compiler.dormant_error(
+                            &module,
+                            span,
+                            ErrorCode::TypeMismatch,
+                            "original static fold has reversed closed bounds",
+                        )?);
+                    }
+                }
+                if let Some((operation, requested)) = &operation {
+                    compiler.dormant_operation_root(
+                        &module,
+                        operation,
+                        &environment,
+                        *requested,
+                        inactive,
+                    )?;
+                }
+                Ok(())
+            })?;
+        }
         self.charge(&root_module, at, self.source.static_calls.len() + 1)?;
         let sites: Vec<_> = self.source.static_calls.keys().copied().collect();
         for site in sites {
             self.tick(&root_module, at)?;
             let plan = &self.source.static_calls[&site];
-            if plan.arguments.is_empty() || self.declarations[&plan.owner].static_params.is_empty()
-            {
+            if plan.arguments.is_empty() || owner_filter.is_some_and(|owner| owner != plan.owner) {
                 continue;
             }
-            let (owner, target) = (plan.owner, plan.target);
-            let at = self.declarations[&owner].span;
-            let module = self.dormant_module(owner, at)?;
-            if let Some(bindings) = self.closed_call_bindings(site, &module, at)? {
-                self.checking = Some(target);
-                lower::lower_bound_function(self, &target, bindings)?;
-            }
+            let (owner, span) = (plan.owner, self.declarations[&plan.owner].span);
+            let module = self.dormant_module(owner, span)?;
+            self.charge(&module, span, 1)?;
+            let environment = Arc::clone(&self.source.static_calls[&site].environment);
+            self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
+                if let Some(instance) = compiler.closed_call_instance(site, &module, span)? {
+                    // All actuals and their formal contracts were checked by
+                    // the binder. An inactive edge back to this exact active
+                    // instance cannot execute; its selected body is already
+                    // being checked. Independent closed callees still recurse.
+                    if !inactive || !compiler.instance_is_active(&instance, &module, span)? {
+                        compiler.materialize_instance(instance, &module, span)?;
+                    }
+                }
+                Ok(())
+            })?;
         }
         Ok(())
     }
 
-    /// Every closed actual reaches the same gates, including siblings of an
-    /// unbound formal. None retains an unfinished call, never a successful one.
-    fn closed_call_bindings(
+    /// Check all original categories/siblings and formal access demands before
+    /// deferral; only a complete substitution can obtain an actual instance.
+    fn closed_call_instance(
         &mut self,
         site: UseSiteId,
         module: &str,
         at: Span,
-    ) -> Result<Option<Bindings>, CompileError> {
+    ) -> Result<Option<Arc<instances::ClosedInstance>>, CompileError> {
         self.tick(module, at)?;
         let plan = &self.source.static_calls[&site];
-        let (owner, target, count) = (plan.owner, plan.target, plan.arguments.len());
-        self.charge(module, at, 2 + count * 2)?;
-        let environment = Arc::clone(&self.source.static_calls[&site].environment);
-        self.checking = Some(owner);
-        let required = self.required_bindings(&target)?;
-        let mut bindings = Bindings::new();
-        let mut identity = Vec::with_capacity(count);
-        let mut complete = true;
-        for ordinal in 0..count {
-            let actual = &self.source.static_calls[&site].arguments[ordinal];
-            self.charge(module, actual.value.span, 1)?;
-            let actual = &self.source.static_calls[&site].arguments[ordinal];
-            let value = Arc::clone(&actual.value);
-            let original = self.original_operation(owner, module, &value)?;
-            // Obtain the actual formal demand before deciding whether the
-            // complete argument closes. Deferral cannot erase this demand.
-            let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-            self.charge(
+        let (owner, target, node) = (plan.owner, plan.target, plan.node);
+        let mut work = self.work;
+        let arguments = (|| {
+            self.charge_at(
+                &mut work,
                 module,
-                original.span,
-                (formal.name.len() + 2).saturating_mul(required.len() + 1),
+                at,
+                plan.arguments.len().saturating_mul(2) + 16,
             )?;
-            let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-            let requested = required[formal].access;
-            if let Some(operation) =
-                self.closed_operation(module, original, &environment, requested, 1)?
+            if self
+                .source
+                .resolution
+                .try_declaration(owner)
+                .is_none_or(|declaration| {
+                    declaration.module != plan.module || declaration.name.0 != module
+                })
+                || plan.environment.owner != owner
+                || plan.environment.module != plan.module
+                || self
+                    .source
+                    .lexical
+                    .get(&owner)
+                    .is_none_or(|table| !self.locals().original_table_is(owner, table))
+                || self
+                    .source
+                    .lexical
+                    .get(&owner)
+                    .and_then(|table| table.try_usage(site))
+                    .is_none_or(|usage| {
+                        usage.target != ResolvedUse::Global(Target::Declaration(target))
+                    })
+                || plan.source_effect != self.effect_in_module(module, target)
             {
-                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                self.charge(
-                    module,
-                    original.span,
-                    (formal.name.len() + 2).saturating_mul(required.len() + 1),
-                )?;
-                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                self.validate_required_operation(
-                    &required[formal],
-                    &operation,
-                    module,
-                    original.span,
-                )?;
-                let formal = &self.source.static_calls[&site].arguments[ordinal].formal;
-                self.charge(
-                    module,
-                    original.span,
-                    (formal.name.len() + 2).saturating_mul(bindings.len() + 1),
-                )?;
-                let mut work = self.work;
-                let charged = (|| {
-                    let mut charge =
-                        |cells| self.charge_at(&mut work, module, original.span, cells);
-                    charge_port_copy(&operation.basis, 2, &mut charge)?;
-                    charge_port_copy(&operation.codomain, 2, &mut charge)?;
-                    charge(
-                        operation
-                            .meaning
-                            .as_ref()
-                            .map_or(0, |m| m.entries().len())
-                            .saturating_mul(2)
-                            + 2,
-                    )
-                })();
-                self.work = work;
-                charged?;
-                let formal = self.source.static_calls[&site].arguments[ordinal]
-                    .formal
-                    .clone();
-                identity.push(operation.clone());
-                bindings.insert(formal, operation);
-            } else {
-                complete = false;
+                let message = "dormant call differs from its original collection and source effect";
+                self.charge_at(&mut work, module, at, message.len() + 1)?;
+                return Err(self.error(module, at, ErrorCode::TypeMismatch, message));
             }
-        }
-        if complete {
-            self.record_operation_instance(target, identity, module, at)?;
-            Ok(Some(bindings))
-        } else {
-            Ok(None)
-        }
+            if !matches!(
+                self.locals()
+                    .original_node_budgeted(node, |span, cells| self
+                        .charge_at(&mut work, module, span, cells))?,
+                Some(OriginalNode::Expression(_))
+            ) {
+                let message = "dormant call lacks its original expression association";
+                self.charge_at(&mut work, module, at, message.len() + 1)?;
+                return Err(self.error(module, at, ErrorCode::TypeMismatch, message));
+            }
+            for actual in &plan.arguments {
+                self.charge_at(
+                    &mut work,
+                    module,
+                    actual.value.span,
+                    actual.formal.name.len() + 2,
+                )?;
+            }
+            Ok((plan.arguments.clone(), Arc::clone(&plan.environment)))
+        })();
+        self.work = work;
+        let (arguments, environment) = arguments?;
+        let outer = self.dormant_operation_bindings(module, at)?;
+        self.bind_source_instance_partial(target, &arguments, &environment, &outer, module, at)
     }
 }

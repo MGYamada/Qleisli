@@ -296,14 +296,16 @@ fn ordinary_bit_literals_and_operators_have_their_truth_tables() {
 )]
 #[test]
 fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
-    // The computed certificate still accepts only a complete empty/Z/T IR
-    // sequence, even when an extra classical instruction is harmless.
-    rejected(
-        "classical fn p(b:Bit)->Bit { b }
+    // The actual fragment's closed classical work is checked along with its
+    // exact diagonal action; an unused constant cannot hide a dependency.
+    deterministic(
+        "use std::quantum::init0; use std::observe::measure_z;
+        classical fn p(b:Bit)->Bit { b }
         unitary fn f(q:Q<Bit>)->Q<Bit> {
             with_computed(q,p) { |a| let unused = 1; a }
-        }",
-        ErrorCode::Unsupported,
+        }
+        observe fn main()->Bit { measure_z(f(init0())) }",
+        &[false],
     );
     for source in [
         "unitary fn bad() -> Bit { not () }",
