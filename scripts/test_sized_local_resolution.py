@@ -6,6 +6,7 @@ from pathlib import Path
 import hashlib
 import unittest
 from unittest.mock import patch
+from current_source_fixtures import current_source_file
 
 from compile_sized_corpus import (Parser, Producer, SourceError, check_moves,
     compile_source, type_shape)
@@ -147,7 +148,7 @@ class LocalResolution(unittest.TestCase):
             ('qualtran_arithmetic/increment.qli', 'increment', 'increment', Parser),
         ]:
             with self.subTest(module=module):
-                parser = parser_class((root/relative).read_text(), {'controls', module}, module=module)
+                parser = parser_class(current_source_file(root/relative).read_text(), {'controls', module}, module=module)
                 declaration = parser.parse()
                 self.assertEqual(declaration[0], function)
                 self.assertNotIn(function, parser.imports)

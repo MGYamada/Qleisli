@@ -36,6 +36,12 @@ and exactness obligations retain their recorded scopes and status.
   in installation checks, with matching text and JSON decision counts.
   Select the retained current native-validation project through its complete
   source map, preserving original inputs and all native rejection assertions.
+  Apply the same checked source selection to sized and observation clients.
+  Retain six historical example sources separately at their original hashes,
+  with an exact inert-copy inventory and rejection of extra or special files.
+  Register the preserved finite corpus primitive-source snapshots after all
+  154 source checks and the existing representative execution oracle pass.
+  Preserve original sources and report the reduced semantic coverage explicitly.
 
 - Require the embedded std manifest to name `std` and match the compiler's
   complete product version before loading source. Preserve independent user

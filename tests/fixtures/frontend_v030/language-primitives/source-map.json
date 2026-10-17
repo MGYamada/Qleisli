@@ -3546,6 +3546,22 @@
           "current_sha256": "4a8be6461937db945e574549fff6700a9eb62788bdc5d342e53219a543c7c3a9"
         }
       ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/projects/project-056",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+          "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "7bb9d32991caeed09d69c9a331f4b35afc52cc342d5c16d2825ec39515f5cfaa",
+          "current_sha256": "92f928cff509c39403b86972d950b26f240ee39618ee35a65eeaf153a42fff3b"
+        }
+      ]
     }
   ]
 }

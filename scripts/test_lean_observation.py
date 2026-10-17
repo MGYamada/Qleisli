@@ -21,6 +21,7 @@ import test_lean_finite as finite
 import test_lean_raw as raw
 import observation_sources
 from check_input_corpus import current_project as current_corpus_project
+from current_source_fixtures import current_source_project
 from check_verification_inventory import variants
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -404,7 +405,8 @@ def source_cases(log, record, compiler=None):
     with tempfile.TemporaryDirectory(prefix='qleisli-observation-source-') as directory:
         for index,path in enumerate(paths):
             project = (current_corpus_project({'project': path.removeprefix('corpus/')})
-                       if path.startswith('corpus/') else ROOT/path)
+                       if path.startswith('corpus/') else current_source_project(ROOT/path)
+                       if path.startswith('tests/fixtures/') else ROOT/path)
             output=Path(directory)/f'{index}.json'
             exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)
             original=output.read_bytes();artifact=json.loads(original)

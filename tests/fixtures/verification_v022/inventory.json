@@ -3756,7 +3756,7 @@
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "14cd6e4a520227df5c8e54b12a3ef0e1e955c4d374fa013b4ddd5fb9a372618a",
+      "sha256": "bd48e6f32cbbbc75099febaa41fd2f8501c2802791366c6b6ea5f83022f7353c",
       "group": "raw-core",
       "surface": null
     },

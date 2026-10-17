@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def sources():
     result = {p.stem: current_source_file(p).read_text() for directory in ('tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients',
               'corpus/sized/qualtran_qpe') for p in (ROOT/directory).glob('*.qli')}
-    result['fourier'] = (ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
+    result['fourier'] = current_source_file(ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
     return result
 
 

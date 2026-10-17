@@ -141,6 +141,13 @@ unchanged algorithm replays and deliberate ownership/algorithm counterexamples.
 Analytical expectations, actual outputs and executable identities distinguish
 numerical observations from general proofs and source-preservation claims.
 
+Six related example files later received the language-primitive import migration.
+Their original logical paths, hashes and session JSON remain unchanged. The
+[retained-source index](retained-source-records-v1.json) binds exact Git-recovered
+bytes in inert `.qli.txt` copies to that original session and each source record.
+The strict reader checks the complete copy inventory without Git or replaying
+commands; current executable examples remain separate.
+
 The [observing-contract boundary study](instrument-contract-v030/README.md)
 preserves four first projects and their actual selected Raw results. A separate
 bounded experiment matches thirteen native histories with an independent exact

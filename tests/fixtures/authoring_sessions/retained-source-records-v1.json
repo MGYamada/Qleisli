@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-grover",
+      "path": "examples/grover/oracle.qli",
+      "sha256": "b5a3b7925eb6d7b792d89a326fef1ae8f8ef0187bf6322c763347c37a6709a5c",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "dfa001b41c51a3cd2f2a7cd382d34abf43aec7e4"
+    },
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-grover",
+      "path": "examples/grover/search.qli",
+      "sha256": "3123f5b9ce146ee3948f1857f1af061fa89830f9b1e3e35d4a4d9ead79a282b5",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "228175c0a621c406007834725ceddd7008529d43"
+    },
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-bernstein_vazirani",
+      "path": "examples/bernstein_vazirani/interference.qli",
+      "sha256": "b3067ef1cdb63932ecfd945717d7210ce99c4a54bf09b32a9b39434d52124528",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "83650e71336736f80f2bc5559bd67d6b7e2b4548"
+    },
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-bernstein_vazirani",
+      "path": "examples/bernstein_vazirani/oracle.qli",
+      "sha256": "683b49e830b975108a7eeb1aa25bd722553360322ca0b8ecbe78b7dc8ec56094",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "2dd7db8026021e519fe160ed55da624b5e315b24"
+    },
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-feedback",
+      "path": "examples/feedback/control.qli",
+      "sha256": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "c2d96d7d82e344212340e81ce89cae0698dd4b17"
+    },
+    {
+      "kind": "source_record",
+      "session": "cli-playground-v030/session.json",
+      "session_sha256": "e1c9b65e97725952205cf4cd9839933ad29f2631c1083bb4b04e879673081bae",
+      "id": "existing-feedback",
+      "path": "examples/feedback/main.qli",
+      "sha256": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9",
+      "git_commit": "5ddbe7316df901414fb3d1c48fe039914d5c2097",
+      "git_blob": "6b2e9ee81cb6258eee21636c015b7601b95dcfc6"
+    }
+  ]
+}
