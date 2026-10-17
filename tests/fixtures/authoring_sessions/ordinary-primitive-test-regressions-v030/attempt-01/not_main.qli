@@ -1,0 +1,8 @@
+
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ use std::state::reset; 
+
+
+observe fn main() -> Bit { measure_z(basis init0() as b { not b }) }

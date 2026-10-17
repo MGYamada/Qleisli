@@ -11,37 +11,31 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
-- Stage the typed, unqualified language-primitive surface and retirement of
-  imported foundation catalogs for #369/#167. Keep state preparation, observing
-  reset and empty-owner structure helpers in ordinary checked source. Preserve
-  original fixture/corpus inputs and explicit current-source mappings. Initial
-  bounded native and CLI checks have run; corpus registration, remaining target
-  regressions and full normal/MSRV/CI validation are unfinished.
+- Stage the #369/#167 cutover to typed, unqualified language primitives and
+  ordinary checked gate, state and structure source. Retired foundation imports
+  receive migration guidance. Migrate active clients, corpus selections,
+  diagnostics and documentation; retain original sources, diagnostics and
+  explicit current-source mappings, including the six historical examples.
+  Register corpus migrations only after source and representative semantic checks.
+  Keep full normal/MSRV/native CI and final-candidate validation unfinished until
+  their required checks succeed.
   Retain original source intervals for forward isometries and Fourier proposals,
   with fresh original checking by the executed artifact's canonical checker.
   Each hierarchy decision keeps its 2M structural/10M exact-work limit; the
   executed/original pair may consume 4M/20M plus separately bounded host and
-  legacy reconstruction work. The existing n=1,m=3 named-QPE regression still
-  exceeds a per-decision structural limit and remains under repair.
-  Adapt CLI/access regressions to ordinary gate bodies, fixed caller equations
-  and mandatory original-source native checks. Numerical simulation assertions
-  retain full distributions and complex states under their existing tolerance.
-  Refresh actual-source inventory and coverage bindings while retaining all
-  existing proof gates, native limits and original regression references.
-  Name private artifact-byte charging explicitly, preserving its numeric
-  accounting and diagnostics while avoiding an ambiguous account identifier.
-  Align the registry Bell quickstart with the same ordinary state/gate imports
-  and bare primitives used by the repository quickstart.
-  Keep internal derived-contract requests distinct from an unrequested entry
-  in installation checks, with matching text and JSON decision counts.
-  Select the retained current native-validation project through its complete
-  source map, preserving original inputs and all native rejection assertions.
-  Apply the same checked source selection to sized and observation clients.
-  Retain six historical example sources separately at their original hashes,
-  with an exact inert-copy inventory and rejection of extra or special files.
-  Register the preserved finite corpus primitive-source snapshots after all
-  154 source checks and the existing representative execution oracle pass.
-  Preserve original sources and report the reduced semantic coverage explicitly.
+  legacy reconstruction work. Reuse checked full-artifact proof contexts,
+  exact positional maps and each projected circuit node, with equivalence proofs
+  and prepaid failed attempts and fallbacks. Existing named and generic
+  n=1,m=3 QPE regressions now fit the unchanged per-decision limits; this is not
+  a universal previous-success budget guarantee.
+  Check ordinary zero preparation separately from NOT in source/IR mutation
+  tests. Retain the explicit Bits<0>-to-Unit owner transition before finish,
+  untouched reference frames and the existing numerical simulation tolerance.
+  Refresh current-source evidence for the two existing scoped QLV1 guarantees
+  after both Lean packages' builds/audits, fresh kernel/Main replay and fixed
+  type/transport extraction checks. Broader QS/PR/RS/EXACT duties remain pending.
+  Installation checks distinguish internal derived-contract requests from an
+  independently requested entry equation, including text/JSON decision counts.
 
 - Require the embedded std manifest to name `std` and match the compiler's
   complete product version before loading source. Preserve independent user

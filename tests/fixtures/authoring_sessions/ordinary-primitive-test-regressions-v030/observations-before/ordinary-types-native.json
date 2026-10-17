@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "command": [
+    "python3",
+    "scripts/run_native_ci.py",
+    "--workers",
+    "4",
+    "--output",
+    "$RUNNER_TEMP/native-comparisons"
+  ],
+  "command_scope": "Tokenized displayed workflow command. $RUNNER_TEMP is the literal environment placeholder in the log, not an asserted execve argv. Its artifact destination is separately printed as /home/runner/work/_temp/native-comparisons/.",
+  "exit_code": 1,
+  "exit_scope": "The containing recorded workflow command exits 1. This does not assert an unprinted numeric child-Cargo exit status.",
+  "recorded_utc": "2026-10-17T15:27:44Z",
+  "recorded_utc_scope": "Provider retrieval clock recorded by the read-only CI audit; execution timestamps remain verbatim on the retained log lines.",
+  "transcript_scope": "Focused verbatim command/target/panic/exit sections, concatenated in original order. Omitted unrelated sections are not represented as a complete stdout/stderr stream.",
+  "transcript": "2026-10-17T14:03:49.5557490Z ##[group]Run python3 scripts/run_native_ci.py --workers \"4\" --output \"$RUNNER_TEMP/native-comparisons\"\n2026-10-17T14:03:49.5558104Z \u001b[36;1mpython3 scripts/run_native_ci.py --workers \"4\" --output \"$RUNNER_TEMP/native-comparisons\"\u001b[0m\n2026-10-17T14:03:49.5625464Z shell: /usr/bin/bash -e {0}\n2026-10-17T14:03:49.5625690Z env:\n2026-10-17T14:03:49.5625865Z   RUSTUP_TOOLCHAIN: 1.98.1\n2026-10-17T14:03:49.5626241Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel\n2026-10-17T14:03:49.5626652Z ##[endgroup]\n\n2026-10-17T14:21:17.5857854Z {\"command\": [\"cargo\", \"+1.98.1\", \"test\", \"--test\", \"ordinary_types\"], \"executed_command\": [\"cargo\", \"test\", \"--test\", \"ordinary_types\"]}\n2026-10-17T14:21:17.5858359Z    Compiling qleisli v0.3.0-beta (/home/runner/work/Qleisli/Qleisli)\n2026-10-17T14:21:17.5858699Z     Finished `test` profile [unoptimized] target(s) in 0.44s\n2026-10-17T14:21:17.5859083Z      Running tests/ordinary_types.rs (target/debug/deps/ordinary_types-8495c88e0e58189a)\n2026-10-17T14:21:17.5859346Z \n2026-10-17T14:21:17.5859418Z running 14 tests\n2026-10-17T14:21:17.5859714Z test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok\n2026-10-17T14:21:17.5860391Z test finite_boolean_actions_match_an_independent_truth_result ... ok\n2026-10-17T14:21:17.5860831Z test finite_measurement_and_feedforward_keep_their_correlated_action ... ok\n2026-10-17T14:21:17.5861262Z test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok\n2026-10-17T14:21:17.5861671Z test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok\n2026-10-17T14:21:17.5862187Z test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok\n2026-10-17T14:21:17.5862621Z test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok\n2026-10-17T14:21:17.5863037Z test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok\n2026-10-17T14:21:17.5863452Z test finite_words_and_selected_execution_profile_limits_remain_explicit ... ok\n2026-10-17T14:21:17.5863838Z test sized_unit_patterns_consume_only_actual_unit_values ... ok\n2026-10-17T14:21:17.5864211Z test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok\n2026-10-17T14:21:17.5864652Z test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... FAILED\n2026-10-17T14:21:17.5865151Z test source_bearing_native_evidence_retains_the_actual_canonical_source ... FAILED\n2026-10-17T14:21:17.5865598Z test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok\n2026-10-17T14:21:17.5865844Z \n2026-10-17T14:21:17.5865921Z failures:\n2026-10-17T14:21:17.5866018Z \n2026-10-17T14:21:17.5866251Z ---- unit_returning_quantum_consumption_survives_lowering_and_source_event_checks stdout ----\n2026-10-17T14:21:17.5866822Z \n2026-10-17T14:21:17.5867192Z thread 'unit_returning_quantum_consumption_survives_lowering_and_source_event_checks' (164340) panicked at tests/ordinary_types.rs:335:5:\n2026-10-17T14:21:17.5867729Z assertion `left == right` failed\n2026-10-17T14:21:17.5867954Z   left: 5\n2026-10-17T14:21:17.5868120Z  right: 4\n2026-10-17T14:21:17.5868398Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-10-17T14:21:17.5868658Z \n2026-10-17T14:21:17.5868857Z ---- source_bearing_native_evidence_retains_the_actual_canonical_source stdout ----\n2026-10-17T14:21:17.5869139Z \n2026-10-17T14:21:17.5869472Z thread 'source_bearing_native_evidence_retains_the_actual_canonical_source' (164281) panicked at tests/ordinary_types.rs:141:5:\n2026-10-17T14:21:17.5869956Z assertion `left == right` failed\n2026-10-17T14:21:17.5870302Z   left: {[true]: 1.0000000000000004}\n2026-10-17T14:21:17.5870529Z  right: {[true]: 1.0}\n2026-10-17T14:21:17.5870652Z \n2026-10-17T14:21:17.5870655Z \n2026-10-17T14:21:17.5870726Z failures:\n2026-10-17T14:21:17.5870981Z     source_bearing_native_evidence_retains_the_actual_canonical_source\n2026-10-17T14:21:17.5871407Z     unit_returning_quantum_consumption_survives_lowering_and_source_event_checks\n2026-10-17T14:21:17.5871683Z \n2026-10-17T14:21:17.5872195Z test result: FAILED. 12 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.75s\n2026-10-17T14:21:17.5872515Z \n2026-10-17T14:21:17.5872653Z error: test failed, to rerun pass `--test ordinary_types`\n\n2026-10-17T14:25:47.7876487Z Native CI: failed or incomplete comparison: sized-source-native\n2026-10-17T14:25:47.7972313Z ##[error]Process completed with exit code 1.\n",
+  "log_sections": [
+    {
+      "first_line": 428,
+      "last_line": 434
+    },
+    {
+      "first_line": 665,
+      "last_line": 710
+    },
+    {
+      "first_line": 713,
+      "last_line": 714
+    }
+  ],
+  "source": {
+    "repository": "MGYamada/Qleisli",
+    "pull_request": 419,
+    "head": "bd07cee947f10801375e5e0ef741834ed4904533",
+    "checkout": "671cae37759dcdb2716f0e2a17ae43d5d0ac5896",
+    "job_id": 117413570020,
+    "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/39038279446/job/117413570020",
+    "full_provider_record_sha256": "c900a854c2f73b49c9322ef5f022d729b89ac6bf58f8ac5ce815827e66000bac",
+    "full_log_sha256": "ef82315838b90aa7e8e90d9a8ad87328f2f61d954aac7ced49f49c0028dbef8d",
+    "provider_log_truncated": false
+  },
+  "after_repair": "not recorded in this first-failure snapshot",
+  "reported_child": {
+    "command": [
+      "cargo",
+      "+1.98.1",
+      "test",
+      "--test",
+      "ordinary_types"
+    ],
+    "executed_command": [
+      "cargo",
+      "test",
+      "--test",
+      "ordinary_types"
+    ],
+    "numeric_exit_code": null,
+    "outcome": "test result FAILED: 12 passed, 2 failed, 0 ignored",
+    "note": "These two argv arrays are printed verbatim by the comparison runner. Numeric child exit was not printed in the fetched log; no value is inferred."
+  }
+}

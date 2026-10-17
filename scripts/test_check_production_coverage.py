@@ -415,6 +415,30 @@ class ProductionCoverage(unittest.TestCase):
             with self.subTest(path=path, test=name), self.assertRaisesRegex(ValueError, 'missing production path regression'):
                 self.check_changed_source(path, 'fn ' + name + '(', 'fn omitted_original_transport_test(')
 
+    def test_prepared_hierarchy_requires_indexed_equivalence_and_paid_full_fallback(self):
+        for path, marker in [('lean-kernel/QleisliKernel/Hierarchical/Artifact.lean', 'theorem prepare_proofEndpoints'),
+         ('lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean', 'theorem preparedOrdinary_eq'),
+         ('lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean',
+          'let charge := legacy - maps + selectedMapsCost artifact definition'),
+         ('lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean',
+          'let charge := legacy - value.mapsCost artifact + value.selectedMapsCost artifact'),
+         ('lean-kernel/QleisliKernel/Hierarchical/Ports.lean', 'theorem shapeAfterHeaders_eq'),
+         ('lean-kernel/QleisliKernel/Layout.lean', 'theorem identity_structureValid')]:
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed prepared binding')
+
+    def test_trace_project_once_requires_actual_projection_precharge_and_original_checks(self):
+        for path, marker in [('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean', 'theorem summarizeProjected_eq'),
+         ('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+          'if state.visits + rawScan atoms d > remaining then .error .limit else\n'
+          '    if state.visits + scan atoms d > remaining then .error .limit else'),
+         ('lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+          'scan atoms d + 8 * (1 + node.children.length) * (1 + events) * (1 + span)^2'),
+         ('lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean',
+          'match CircuitTrace.inspect artifact (atoms candidate) candidate.traceOrder')]:
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed prepared binding')
+
     def test_historical_release_is_not_current_alpha_certification(self):
         for change in (
             lambda d: d['validation']['current_development'].update(status='published and verified'),

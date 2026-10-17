@@ -768,6 +768,91 @@ for _id, _boundaries, _mode, _method, _cli, _check, _test in [
         ('lean/Qleisli/NativeHierarchy.lean', ['theorem checkLeaves_semantics']),
     ], [_test])
 
+# General same-artifact prepared predicates remain equivalent to the complete
+# original checks. These bindings preserve their actual proof/context and paid
+# fallback routes; trace descriptions remain unaccepted data.
+PATHS['hierarchy-inspect']['source_bindings'].extend(
+    [{'path': 'lean-kernel/QleisliKernel/Hierarchical/Artifact.lean',
+      'markers': ['def ProofEndpoints (artifact : Artifact) : Prop :=',
+                  'theorem prepare_proofEndpoints']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Power.lean',
+      'markers': ['def preparedIdentityEquation',
+                  'theorem preparedIdentityEquation_eq',
+                  'let .identity := input.body | none\n'
+                  '    let .identity := output.body | none\n'
+                  '    return proof.kind == Kind.equation']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean',
+      'markers': ['structure PreparedContext (artifact : Artifact) : Prop',
+                  'theorem preparedContext_of_checkAll',
+                  'theorem preparedOrdinary_eq',
+                  'def checkPrepared',
+                  'let scan := initial + 16 * proof.premises.size',
+                  '16 * (1 + proof.premises.size)',
+                  'theorem checkPrepared_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Conditional.lean',
+      'markers': ['(TypedRule.checkPrepared artifact context)',
+                  'TypedRule.preparedContext_of_checkAll artifact order typed typing',
+                  'theorem checkAll_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean',
+      'markers': ['private theorem preparedConditions_eq',
+                  'portsAfterHeaders false definition.interface.inputs callee.interface.inputs '
+                  'input',
+                  'let probe := mapAttempts Ports.identityScanCharge artifact definition',
+                  'let attempt := mapAttempts Ports.identityAttemptCharge artifact definition',
+                  'let charge := legacy - maps + selectedMapsCost artifact definition']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean',
+      'markers': ['private theorem subjectAfterHeaders_eq',
+                  'let probe := value.mapAttempts Ports.identityScanCharge artifact',
+                  'let attempt := value.mapAttempts Ports.identityAttemptCharge artifact',
+                  'let charge := legacy - value.mapsCost artifact + value.selectedMapsCost '
+                  'artifact']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/Ports.lean',
+      'markers': ['def positionalIdentity',
+                  'theorem shapeAfterHeaders_eq',
+                  'identityAttemptCharge source destination map +\n'
+                  '    if positionalIdentity source destination map then 0 else workCharge source '
+                  'destination map',
+                  'private theorem dropping_a_zero_owner_is_rejected',
+                  'private theorem equal_width_reordered_type_tree_is_rejected',
+                  'private theorem owner_axis_disagreement_is_rejected',
+                  'private theorem classical_bases_are_complete_types']},
+     {'path': 'lean-kernel/QleisliKernel/Layout.lean',
+      'markers': ['theorem range_permutation', 'theorem identity_structureValid']}]
+)
+PATHS['hierarchy-inspect']['tests'].extend(
+    [{'path': 'tests/hierarchical_host.rs',
+      'test': 'native_phase_fault_remains_an_obligation_under_zero_repeat'},
+     {'path': 'tests/hierarchical_host.rs',
+      'test': 'native_actual_counts_premises_and_encodings_are_checked'}]
+)
+PATHS['hierarchy-qpe']['source_bindings'].extend(
+    [{'path': 'lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean',
+      'markers': ['def summarizeProjected',
+                  'theorem summarizeProjected_eq',
+                  'Wiring.scan d + 32 * (1 + d.interface.scan + Wiring.bodySize d + atoms.size)',
+                  '32 * (sideFields d.interface.inputs + sideFields d.interface.outputs) +\n'
+                  '    8 * span^2 + 8 * (1 + d.interface.scan) * span',
+                  'if state.visits + rawScan atoms d > remaining then .error .limit else\n'
+                  '    if state.visits + scan atoms d > remaining then .error .limit else',
+                  'match summarizeProjected state.cache node d with',
+                  'rw [summarizeProjected_eq atoms state.cache index d node projected] at computed',
+                  'scan atoms d + 8 * (1 + node.children.length) * (1 + events) * (1 + span)^2']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean',
+      'markers': ['let checked ← Conditional.checkAll packet.artifact packet.order',
+                  'theorem checkAll_conditions']},
+     {'path': 'lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean',
+      'markers': ['match CircuitTrace.inspect artifact (atoms candidate) candidate.traceOrder',
+                  'theorem inspect_derives']}]
+)
+PATHS['hierarchy-qpe']['tests'].extend(
+    [{'path': 'src/frontend/specialize/qpe.rs',
+      'test': 'native_named_qpe_commuting_fourier_variants_have_the_same_outcome'},
+     {'path': 'src/frontend/specialize/qpe.rs',
+      'test': 'native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation'},
+     {'path': 'tests/hierarchical_qpe_host.rs',
+      'test': 'qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations'}]
+)
+
 NATIVE_DISPATCH = {
     '--qirf-native': 'QleisliKernel.Cli.runValidity',
     '--qirf-contract': '(QleisliKernel.Cli.runValidity true)',

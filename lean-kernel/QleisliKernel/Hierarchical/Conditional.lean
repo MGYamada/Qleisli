@@ -99,15 +99,15 @@ theorem localCheck_conditions (artifact : Artifact) (index remaining : Nat) (che
   localCheckWith_conditions artifact (Rule.check artifact)
     (Rule.check_conditions artifact) index remaining checked accepted
 
-def typedLocalCheck (artifact : Artifact) (_context : TypedRule.Context artifact) (index remaining : Nat) : Except Error Local :=
-  localCheckWith artifact (TypedRule.check artifact) index remaining
+def typedLocalCheck (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (index remaining : Nat) : Except Error Local :=
+  localCheckWith artifact (TypedRule.checkPrepared artifact context) index remaining
 
 -- Simplification also retains the existing generated congruence declaration.
-theorem typedLocalCheck_conditions (artifact : Artifact) (context : TypedRule.Context artifact) (index remaining : Nat) (checked : Local)
+theorem typedLocalCheck_conditions (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (index remaining : Nat) (checked : Local)
     (accepted : typedLocalCheck artifact context index remaining = .ok checked) :
     checked.visits ≤ remaining ∧ remaining ≤ 2000000 ∧ checked.Valid artifact index :=
-  localCheckWith_conditions artifact (TypedRule.check artifact)
-    (TypedRule.check_conditions artifact context) index remaining checked (by simpa only [typedLocalCheck] using accepted)
+  localCheckWith_conditions artifact (TypedRule.checkPrepared artifact context)
+    (TypedRule.checkPrepared_conditions artifact context) index remaining checked (by simpa only [typedLocalCheck] using accepted)
 
 structure State where
   cache : Array Bool
@@ -212,10 +212,10 @@ theorem step_conditions (artifact : Artifact) (state next : State) (index : Nat)
   (stepWith_conditions artifact (localCheck artifact)
     (localCheck_conditions artifact) state next index accepted).conditions
 
-def typedStep (artifact : Artifact) (context : TypedRule.Context artifact) (state : State) (index : Nat) : Except Failure State :=
+def typedStep (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (state : State) (index : Nat) : Except Failure State :=
   stepWith artifact (typedLocalCheck artifact context) state index
 
-theorem typedStep_conditions (artifact : Artifact) (context : TypedRule.Context artifact) (state next : State) (index : Nat)
+theorem typedStep_conditions (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (state next : State) (index : Nat)
     (accepted : typedStep artifact context state index = .ok next) :
     state.visits ≤ next.visits ∧ next.visits ≤ 2000000 ∧
     next.cache = state.cache.setIfInBounds index true ∧
@@ -255,7 +255,7 @@ theorem step_invariant (artifact : Artifact) (state next : State) (index : Nat)
     (stepWith_conditions artifact (localCheck artifact)
       (localCheck_conditions artifact) state next index accepted)
 
-theorem typedStep_invariant (artifact : Artifact) (context : TypedRule.Context artifact) (state next : State) (index : Nat)
+theorem typedStep_invariant (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (state next : State) (index : Nat)
     (previous : Invariant artifact state)
     (accepted : typedStep artifact context state index = .ok next) : Invariant artifact next :=
   preserve_invariant artifact state next index previous
@@ -286,7 +286,7 @@ theorem step_requests (artifact : Artifact) (state next : State) (index : Nat)
     (stepWith_conditions artifact (localCheck artifact)
       (localCheck_conditions artifact) state next index accepted)
 
-theorem typedStep_requests (artifact : Artifact) (context : TypedRule.Context artifact) (state next : State) (index : Nat)
+theorem typedStep_requests (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (state next : State) (index : Nat)
     (previous : RequestsBound artifact state.requests)
     (accepted : typedStep artifact context state index = .ok next) : RequestsBound artifact next.requests :=
   preserve_requests artifact state next index previous
@@ -296,7 +296,7 @@ theorem typedStep_requests (artifact : Artifact) (context : TypedRule.Context ar
 def scan (artifact : Artifact) (order : List Nat) (state : State) : Except Failure State :=
   order.foldlM (step artifact) state
 
-def typedScan (artifact : Artifact) (context : TypedRule.Context artifact) (order : List Nat) (state : State) : Except Failure State :=
+def typedScan (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (order : List Nat) (state : State) : Except Failure State :=
   order.foldlM (typedStep artifact context) state
 
 private theorem fold_invariants (artifact : Artifact)
@@ -329,7 +329,7 @@ theorem scan_invariants (artifact : Artifact) (order : List Nat) (state final : 
   fold_invariants artifact (step artifact) (step_invariant artifact)
     (step_requests artifact) order state final previous bound (by simpa only [scan] using accepted)
 
-theorem typedScan_invariants (artifact : Artifact) (context : TypedRule.Context artifact) (order : List Nat) (state final : State)
+theorem typedScan_invariants (artifact : Artifact) (context : TypedRule.PreparedContext artifact) (order : List Nat) (state final : State)
     (previous : Invariant artifact state) (bound : RequestsBound artifact state.requests)
     (accepted : typedScan artifact context order state = .ok final) :
     Invariant artifact final ∧ RequestsBound artifact final.requests :=
@@ -349,7 +349,7 @@ def checkAll (artifact : Artifact) (order : Array Nat) : Except Failure Pending 
   | .ok typed =>
     let start := typed.totalVisits + 6 * (order.size + artifact.proofs.size)
     if start > Limits.maxVisits then .error ⟨.limit,none⟩ else
-    match typedScan artifact (TypedRule.context_of_checkAll artifact order typed typing)
+    match typedScan artifact (TypedRule.preparedContext_of_checkAll artifact order typed typing)
         (Derivation.proofOrder artifact order)
         ⟨Array.replicate artifact.proofs.size false,#[],start,0⟩ with
     | .error failure => .error failure
@@ -380,7 +380,7 @@ theorem checkAll_conditions (artifact : Artifact) (order : Array Nat) (pending :
     split at accepted
     next exceeded => contradiction
     next start =>
-      let context := TypedRule.context_of_checkAll artifact order typed ht
+      let context := TypedRule.preparedContext_of_checkAll artifact order typed ht
       cases hs : typedScan artifact context (Derivation.proofOrder artifact order)
           ⟨Array.replicate artifact.proofs.size false,#[],typed.totalVisits + 6 * (order.size + artifact.proofs.size),0⟩ with
       | error failure => simp [hs] at accepted

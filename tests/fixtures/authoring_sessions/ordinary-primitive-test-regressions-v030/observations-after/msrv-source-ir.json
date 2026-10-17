@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "command": [
+    "python3",
+    "-B",
+    "scripts/run_kernel_tests.py",
+    "python3",
+    "-B",
+    "scripts/run_msrv.py",
+    "test",
+    "--test",
+    "source_ir_correspondence",
+    "verified_ir_does_not_by_itself_establish_source_correspondence",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-17T15:59:21Z",
+  "recorded_utc_scope": "Actual clock-tool observation immediately before read-only preparation; the driver records elapsed seconds, not a command start clock.",
+  "transcript": "   Compiling qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 1.19s\n     Running tests/source_ir_correspondence.rs (target/debug/deps/source_ir_correspondence-fec93f08b0771871)\n\nrunning 1 test\ntest verified_ir_does_not_by_itself_establish_source_correspondence ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 1.72s\n\nnative test gate: zero conditional native skips\n",
+  "transcript_scope": "Complete actual driver stdout, including forwarded Cargo output and native skip gate. stderr is retained separately verbatim below.",
+  "raw_stderr": "",
+  "raw_streams_sha256": {
+    "stdout": "7c50fc7b6651ab278cf5b9a7721d7117d36a3e2cb6a917fba78363273029bf20",
+    "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "driver_record": {
+    "original_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/three-ci-tests-msrv-source-ir-v1.json",
+    "sha256": "2006827b67266721ae2fc16b3e0a2a076799c90284e0e00fad19a0ac1d37523f",
+    "byte_length": 76008,
+    "scope": "Complete original root-owned record is hash-bound; the projection below omits only the repeated full input maps. This is not a complete driver copy or build attestation."
+  },
+  "driver_projection": {
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/run_kernel_tests.py",
+      "python3",
+      "-B",
+      "scripts/run_msrv.py",
+      "test",
+      "--test",
+      "source_ir_correspondence",
+      "verified_ir_does_not_by_itself_establish_source_correspondence",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "pid": 3343,
+    "pgid": 3343,
+    "whole_working_before": {
+      "head": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "working_inputs_sha256": "a77d531435e25e5b76a70cb5f13f63266193afb80b9c06a51938c3a0c708ec14"
+    },
+    "compiler": {
+      "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+      "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+      "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+      "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+    },
+    "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+    "outer_environment": {
+      "RUSTC": "/opt/homebrew/bin/rustc",
+      "RUSTDOC": "/opt/homebrew/bin/rustdoc",
+      "CARGO_TARGET_DIR": "/Users/masa/git/Qleisli/target",
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0"
+    },
+    "exit_code": 0,
+    "interrupted": false,
+    "seconds": 7.282450458966196,
+    "whole_working_after": {
+      "head": "bd07cee947f10801375e5e0ef741834ed4904533",
+      "working_inputs_sha256": "a77d531435e25e5b76a70cb5f13f63266193afb80b9c06a51938c3a0c708ec14"
+    },
+    "whole_working_stable": true,
+    "observed_cli_after_sha256": "ba99534f8e8bbbca7ae328dc47972d4326d506f3026ccd36255c49ea2d059c2f",
+    "inputs_stable": true,
+    "kernel_stable": true
+  },
+  "input_map_identity": {
+    "count": 346,
+    "before_after_equal": true,
+    "canonical_json_sha256": "d132131def12f265014af396b97159c58d34ca0c815832ead325b88d9ddd870d",
+    "canonical_json_encoding": "UTF-8 JSON; sort_keys=True, separators=(',',':'), ensure_ascii=True; no final newline",
+    "changed_test_inputs": {
+      "tests/ordinary_types.rs": "552b563740ee1c8556679a4fe7b9e3ce20e0c832422eefcb6328c7bb9757c43c",
+      "tests/source_ir_correspondence.rs": "cbe07523229fab7d672f0460f01abec192b3f5c8b89df86cf145d5a8bf36392c"
+    }
+  },
+  "scope": "Actual bounded native-gated test result only. The observed CLI hash is not a rebuilt CLI claim. No full CI, source theorem, guarantee admission or Issue completion follows. Recorded commands are inert evidence, never replay instructions."
+}

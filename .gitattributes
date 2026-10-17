@@ -240,3 +240,7 @@ tests/fixtures/frontend_v030/capability-naming/current/files/client-002.qli -tex
 tests/fixtures/frontend_v030/language-primitives/current/files/client-276.qli -text whitespace=-blank-at-eof
 tests/fixtures/frontend_v030/language-primitives/current/files/client-277.qli -text whitespace=-blank-at-eof
 tests/fixtures/frontend_v030/language-primitives/current/files/client-330.qli -text -whitespace
+
+# Exact decoded IMPORTS from the retained bd07 source-IR test keep two trailing
+# spaces; every other whitespace rule still applies to this historical copy.
+tests/fixtures/authoring_sessions/ordinary-primitive-test-regressions-v030/attempt-01/not_main.qli -text whitespace=-blank-at-eol

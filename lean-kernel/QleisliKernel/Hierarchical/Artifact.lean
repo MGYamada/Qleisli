@@ -572,6 +572,57 @@ theorem project_headers (artifact : Artifact) (projected : Projection)
             exact projectRows_conditions _ _ (fun state i next => projectEncoding_headers artifact state next i) _ _ _ _ he i
               (Nat.zero_le _) (by simpa using (Array.getElem?_eq_some_iff.mp found).1) e found
 
+/-- Every indexed proof's complete original bound and endpoints were checked
+by this artifact's projection. This proposition is not wire data or semantic
+acceptance; finite requests, encodings and proof rules remain independent. -/
+def ProofEndpoints (artifact : Artifact) : Prop :=
+  ∀ (i : Nat) (proof : Proof), artifact.proofs[i]? = some proof →
+    proof.bounded = true ∧ endpoints artifact proof = true
+
+private theorem projectProof_endpoints (artifact : Artifact) (state next : Projection)
+    (i : Nat) (proof : Proof) (found : artifact.proofs[i]? = some proof)
+    (accepted : projectProof artifact state i = .ok next) :
+    proof.bounded = true ∧ endpoints artifact proof = true := by
+  unfold projectProof at accepted
+  simp only [found, bind, Except.bind, pure, Except.pure] at accepted
+  split at accepted
+  next failure rejected => contradiction
+  next middle added =>
+    split at accepted
+    next invalid => contradiction
+    next valid =>
+      exact ⟨add_valid artifact ⟨.proof,i⟩ state middle proof.referenceCount
+        (endpointCost sideScan artifact proof) 0
+        (fun _ => 1 + proof.witness.parameters.size + endpointCost sideCharge artifact proof)
+        (fun _ => proof.references) (fun _ => proof.bounded) added,
+        by simpa using valid⟩
+
+theorem project_proofEndpoints (artifact : Artifact) (projected : Projection)
+    (accepted : project artifact = .ok projected) : ProofEndpoints artifact := by
+  unfold project at accepted
+  split at accepted
+  next invalid => simp [bind, Except.bind] at accepted
+  next bounded =>
+    simp only [bind, Except.bind, pure, Except.pure] at accepted
+    cases hd : projectRows (projectDefinition artifact) artifact.definitions.size 0 {} with
+    | error failure => simp [hd] at accepted
+    | ok definitions =>
+      simp only [hd] at accepted
+      cases hm : projectRows (projectMeaning artifact) artifact.meanings.size 0 definitions with
+      | error failure => simp [hm] at accepted
+      | ok meanings =>
+        simp only [hm] at accepted
+        cases he : projectRows (projectEncoding artifact) artifact.encodings.size 0 meanings with
+        | error failure => simp [he] at accepted
+        | ok encodings =>
+          simp only [he] at accepted
+          intro i proof found
+          exact projectRows_conditions _ _
+            (fun state i next checked proof found =>
+              projectProof_endpoints artifact state next i proof found checked)
+            artifact.proofs.size 0 encodings projected accepted i
+            (Nat.zero_le _) (by simpa using (Array.getElem?_eq_some_iff.mp found).1) proof found
+
 structure Prepared where
   projection : Projection
   schedule : Graph.Schedule
@@ -651,6 +702,11 @@ theorem prepare_conditions (artifact : Artifact) (order : Array Nat) (prepared :
 theorem prepare_headers (artifact : Artifact) (order : Array Nat) (prepared : Prepared)
     (accepted : prepare artifact order = .ok prepared) : Headers artifact :=
   project_headers artifact prepared.projection
+    (prepare_conditions artifact order prepared accepted).1
+
+theorem prepare_proofEndpoints (artifact : Artifact) (order : Array Nat) (prepared : Prepared)
+    (accepted : prepare artifact order = .ok prepared) : ProofEndpoints artifact :=
+  project_proofEndpoints artifact prepared.projection
     (prepare_conditions artifact order prepared accepted).1
 
 /-- The checked graph is the projection of this artifact, not a supplied list.
