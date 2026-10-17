@@ -47,6 +47,11 @@ and exactness obligations retain their recorded scopes and status.
   remain distinct from general export preservation and resource certificates.
   Document private gate and transform providers and check documentation across
   all six ordinary bundled modules.
+  Update exact regression oracles to replay retained ordinary function bodies,
+  including phase, control, adjoint and ordered branch outputs. Keep source,
+  exact-work and specialization-count limits separate in their boundary tests;
+  ordinary Bits copy/drop tests retain quantum-owner and implicit-conversion
+  refusals.
 
 - Normalize supported computed-ancilla bodies through native equations for
   the complete original one-Bit fragment and a canonical witness built from

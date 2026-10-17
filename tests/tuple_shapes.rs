@@ -224,6 +224,10 @@ fn flat_arity_and_nested_depth_have_distinct_bounds() {
 fn documented_type_categories_and_explicit_only_conversions() {
     for source in [
         "unitary fn f(x:Bit)->Unit{()}",
+        "unitary fn f(x:Bits<3>)->Unit{()}",
+        "unitary fn f(x:Bits<3>)->(Bits<3>,Bits<3>){(x,x)}",
+        "unitary fn f(x:Bits<0>)->Unit{()}",
+        "unitary fn f(x:Bits<0>)->(Bits<0>,Bits<0>){(x,x)}",
         "unitary fn f(x:Q<Bit>)->Q<Bit>{x}",
         "classical fn f(x:Bit)->Bit{x}",
     ] {
@@ -235,10 +239,25 @@ fn documented_type_categories_and_explicit_only_conversions() {
         "unitary fn f(x:Q<(Bit,Bit)>)->(Q<Bit>,Q<Bit>){x}",
         "unitary fn f(x:Q<Unit>)->Unit{x}",
         "unitary fn f(x:(Unit,Bit))->Bit{x}",
-        "unitary fn f(x:Bits<3>)->Unit{()}",
+        "unitary fn f(x:Bits<1>)->Bit{x}",
+        "unitary fn f(x:Bits<0>)->Unit{x}",
     ] {
         let root = SourceRoot::new(&format!("{source} observe fn main()->Unit{{()}}"));
         assert!(check_project(&root.0).is_err(), "{source}");
+    }
+    // Ordinary registers are unrestricted; quantum registers retain their owners,
+    // including zero-width registers. Neither permits an implicit type conversion.
+    for width in [0, 3] {
+        reject(
+            &format!("unitary fn f(x:Q<Bits<{width}>>)->Unit{{()}}"),
+            ErrorCode::Ownership,
+        );
+        reject(
+            &format!(
+                "unitary fn f(x:Q<Bits<{width}>>)->(Q<Bits<{width}>>,Q<Bits<{width}>>){{(x,x)}}"
+            ),
+            ErrorCode::Ownership,
+        );
     }
     let root = SourceRoot::new(
         "classical fn id((a,b,c):(Unit,Bit,Unit))->(Unit,Bit,Unit){(a,b,c)}
