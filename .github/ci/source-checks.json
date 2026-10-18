@@ -141,6 +141,10 @@
         [
           "python3",
           "scripts/test_generic_dormant_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_native_edition_first.py"
         ]
       ],
       "prepare": []

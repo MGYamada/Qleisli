@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Preserve the original native-edition source/diagnostic study as bounded inert
+  history with exact-byte integrity checks; edition propagation remains pending.
+
 Unpublished development snapshot. Selecting beta does not complete the v0.3.0
 feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
