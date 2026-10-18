@@ -5,6 +5,11 @@ schema 2: name `std`, product version `0.3.0-beta`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
 
+The [qrate and artifact Reference](../../docs/src/reference/packages-and-artifacts.md)
+fixes the canonical toolchain/std version pair and artifact-authority boundary;
+matching versions grant no semantic privilege or proof. The embedded-manifest
+gate is implemented; complete qargo/resolved-pair binding remains unfinished.
+
 The canonical bundled `std` has the same complete product version as its
 official Qleisli distribution, including prerelease and build suffixes. Normal
 programs receive it automatically; user qrates retain their own independent

@@ -11,6 +11,12 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Specify qrate, module and file identity and the semantic, evidence,
+  observational, realization and organizational roles of external artifacts.
+  Distinguish canonical names from storage, configuration from language rules,
+  and the canonical std/toolchain pair from semantic authority. Full qargo
+  dependency/pairing records and native edition binding remain unfinished.
+
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports
   receive migration guidance. Migrate active clients, corpus selections,

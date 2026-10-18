@@ -8,6 +8,9 @@ It does not supply a binding mathematical interpretation of QS, PR or RS.
 The top-level [architecture principle](architecture.md) explains how policy
 becomes a formal obligation, the Constitution preserves its guarantees, and
 the compiler executes the authorized rules.
+The [qrate and external-artifact boundary](packages-and-artifacts.md) applies
+that hierarchy to program identity, package configuration, generation and
+canonical std distribution without granting those artifacts semantic authority.
 
 Edition 2026 was ratified effective 2026-10-04 (Asia/Tokyo). The repository record
 `governance/ratification-2026.json` identifies the exact adopted text and the

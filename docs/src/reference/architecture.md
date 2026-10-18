@@ -7,6 +7,9 @@ This is Qleisli's top-level architecture principle, specified by
 [the authority hierarchy](authority.md), the ratified Constitution and the
 recorded human interpretations. It defines no new mathematical interpretation
 or discharged guarantee.
+The [qrate and external-artifact boundary](packages-and-artifacts.md) distinguishes
+semantic, evidence, observational, realization and organizational roles, with
+explicit current package and edition-binding limitations.
 
 ## Policy as Theorem
 

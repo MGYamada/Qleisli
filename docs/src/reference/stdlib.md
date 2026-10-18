@@ -7,6 +7,10 @@ path migration adopted in
 [authority hierarchy](authority.md) and [primitive boundary](primitive-boundary.md).
 It specifies intended contracts; a namespace, source comment or successful
 source check is not a proof of its mathematical implementation.
+The [qrate and artifact Reference](packages-and-artifacts.md#canonical-std-and-the-selected-toolchain)
+specifies canonical std/toolchain version coupling as distribution compatibility,
+with no semantic privilege. The embedded-manifest gate is implemented; complete
+qargo/resolved-pair binding remains unfinished.
 The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 specifies how unfamiliar derived abstractions lead to their contracts and ordinary source.
 
@@ -24,8 +28,9 @@ standard-library dependency. To use an older or newer canonical `std`, select
 the corresponding Qleisli toolchain. An ordinary user qrate keeps its own
 independent version; it need not match Qleisli. This is distribution and
 compatibility coupling, not semantic privilege: `std` remains ordinary checked
-source under [#167](https://github.com/MGYamada/Qleisli/issues/167) and the
-[qrate definition](https://github.com/MGYamada/Qleisli/issues/169).
+source under [#167](https://github.com/MGYamada/Qleisli/issues/167), the
+[qrate definition #170](https://github.com/MGYamada/Qleisli/issues/170) and the
+[external-artifact boundary #169](https://github.com/MGYamada/Qleisli/issues/169).
 
 The current private embedded-manifest gate checks schema 2, edition `"2026"`,
 string `[qrate].name = "std"` and string `[qrate].version` equal to the compiler's

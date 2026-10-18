@@ -12,6 +12,9 @@ come from the same original-source checker in `src/frontend/check.rs` and
 `src/frontend/check/`. Every declaration is checked, including private and
 unused siblings, both arms and zero-iteration bodies. Parsing alone confers
 neither source approval nor native verification evidence.
+The [qrate and artifact Reference](packages-and-artifacts.md) distinguishes
+canonical module/declaration identity from source-file storage and resolved
+configuration. Its edition-binding gaps are separate from scanner/parser checks.
 
 The [elaboration whitelist](elaboration.md) specifies permitted surface-to-core
 expansion, evaluation order, owners, phase, original locations and remaining
