@@ -1,0 +1,3 @@
+unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
+         meaning I:Bit=reference(identity);
+         observe fn main()->Bit{0}

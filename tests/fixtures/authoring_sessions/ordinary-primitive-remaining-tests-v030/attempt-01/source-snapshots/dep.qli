@@ -1,0 +1,1 @@
+use helper::gate; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{gate(q)}

@@ -987,7 +987,7 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
                                    {'path': 'tests/computed_derived_source.rs',
                                     'test': 'non_diagonal_and_false_meaning_and_outer_reference_are_refused'},
                                    {'path': 'tests/computed_derived_source.rs',
-                                    'test': 'existing_canonical_t_chain_keeps_its_raw_length_profile'},
+                                    'test': 'expanded_ordinary_t_chain_reports_its_source_work_limit'},
                                    {'path': 'src/frontend/compile/lower/computed_phase.rs',
                                     'test': 'native_normalization_rejects_same_relative_phase_with_wrong_global_scalar'},
                                    {'path': 'tests/computed_derived_source.rs',

@@ -8,6 +8,20 @@ use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::sync::Arc;
 
+fn assert_one_bit_outcome(
+    distribution: &std::collections::BTreeMap<Vec<bool>, f64>,
+    expected: bool,
+) {
+    assert!(distribution.contains_key(&vec![expected]));
+    for (bits, probability) in distribution {
+        assert_eq!(bits.len(), 1);
+        assert!(probability.is_finite() && *probability >= 0.0);
+        let mass = if bits[0] == expected { 1.0 } else { 0.0 };
+        assert!((probability - mass).abs() < 1e-12);
+    }
+    assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
+}
+
 fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {
     let mut source = String::from(
         "use std::state::init0; use std::gate::x;\x20
@@ -174,9 +188,9 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
                 receipt.specification(),
             )
             .unwrap();
-        assert_eq!(
-            run_closed(&program, SimulationLimits::default()).unwrap()[&vec![true]],
-            1.0
+        assert_one_bit_outcome(
+            &run_closed(&program, SimulationLimits::default()).unwrap(),
+            true,
         );
     }
 }
@@ -209,7 +223,7 @@ fn small_native_specializations_retain_exact_shared_sources() {
             );
         }
         let result = run_closed(&program, SimulationLimits::default()).unwrap();
-        assert_eq!(result[&vec![false]], 1.0);
+        assert_one_bit_outcome(&result, false);
     }
 }
 

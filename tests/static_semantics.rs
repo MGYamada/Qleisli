@@ -1109,22 +1109,22 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
         }}"
     ));
     let verified = compile_project(&root.0).unwrap();
-    let table = verified
+    // Ordinary init0 now introduces one-wire basis injections first. Select
+    // the unique four-wire action by its interface, before checking its table.
+    let mut tables = verified
         .program()
         .operations
         .iter()
-        .find_map(|op| match op {
+        .filter_map(|op| match op {
             RawOp::LiftBasis {
                 table,
                 output_wires,
                 ..
-            } => {
-                assert_eq!(output_wires.len(), 4);
-                Some(table)
-            }
+            } if output_wires.len() == 4 => Some(table),
             _ => None,
-        })
-        .unwrap();
+        });
+    let table = tables.next().expect("one four-wire C3X basis action");
+    assert!(tables.next().is_none(), "unique four-wire basis action");
     let expected: Vec<u16> = (0..14).chain([15, 14]).collect();
     assert_eq!(table, &expected);
     assert!(permutation_is_odd(

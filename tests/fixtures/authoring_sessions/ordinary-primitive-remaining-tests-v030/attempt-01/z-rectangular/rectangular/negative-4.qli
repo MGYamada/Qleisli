@@ -1,0 +1,5 @@
+use std::state::init0; use std::gate::x; use std::gate::z;
+    
+    isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+    meaning Plus:Unit -> Bit=reference(prepare);
+            fn invoke[const U:Op<Unit -> Bit,Plus>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)} fn control(c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Bit>){controlled(prepare)(c,q)} pub observe fn main()->Bit{measure_z(init0())}

@@ -24,6 +24,41 @@ fn success(output: Output) -> String {
     String::from_utf8(output.stdout).unwrap()
 }
 
+// Counts describe every completed native invocation, including the ordinary
+// bundled contracts. They do not confer an independent request on the entry.
+fn native_counts(text: &str) -> (usize, usize) {
+    assert!(
+        !text.contains("native decision metadata truncated"),
+        "{text}"
+    );
+    let lines: Vec<_> = text
+        .lines()
+        .filter_map(|line| line.strip_prefix("native decisions: "))
+        .collect();
+    assert_eq!(lines.len(), 1, "{text}");
+    let (decisions, requests) = lines[0]
+        .split_once("; independent requests checked: ")
+        .unwrap();
+    for count in [decisions, requests] {
+        assert!(
+            !count.is_empty() && count.bytes().all(|byte| byte.is_ascii_digit()),
+            "{text}"
+        );
+    }
+    let counts = (decisions.parse().unwrap(), requests.parse().unwrap());
+    assert!(counts.1 <= counts.0, "{text}");
+    counts
+}
+
+fn assert_json_native_counts(json: &str, (decisions, requests): (usize, usize)) {
+    assert!(
+        json.contains(&format!(
+            "\"native_decisions\":{{\"count\":{decisions},\"requests_checked\":{requests},\"complete\":true}}"
+        )),
+        "{json}"
+    );
+}
+
 fn checker() -> PathBuf {
     std::fs::canonicalize(std::env::var_os("QLEISLI_KERNEL").unwrap()).unwrap()
 }
@@ -34,6 +69,7 @@ fn checker() -> PathBuf {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn requestless_entry_and_mainless_library_have_explicit_success_scopes() {
+    let mut bundled_requests = None;
     for (source, entry) in [
         ("observe fn main() -> Bit { 0 }", true),
         ("pub classical fn identity(x: Bit) -> Bit { x }", false),
@@ -46,7 +82,13 @@ fn requestless_entry_and_mainless_library_have_explicit_success_scopes() {
             "{text}"
         );
         assert!(text.contains("checker identity: unpinned"), "{text}");
-        assert!(text.contains("independent requests checked: 0"), "{text}");
+        let counts = native_counts(&text);
+        assert!(counts.1 > 0, "bundled ordinary contracts: {text}");
+        if let Some(expected) = bundled_requests {
+            assert_eq!(counts.1, expected, "{text}");
+        } else {
+            bundled_requests = Some(counts.1);
+        }
         assert!(text.contains("source preservation: not proved"), "{text}");
         assert!(!text.contains("verified"), "{text}");
         assert!(
@@ -58,10 +100,7 @@ fn requestless_entry_and_mainless_library_have_explicit_success_scopes() {
             "{text}"
         );
         let json = success(cli("check", &root.0, true));
-        assert!(
-            json.contains("\"requests_checked\":0,\"complete\":true"),
-            "{json}"
-        );
+        assert_json_native_counts(&json, counts);
         assert!(
             json.contains(if entry {
                 "\"entry\":{\"present\":true,\"request_checked\":false}"
@@ -98,6 +137,9 @@ fn requestless_entry_and_mainless_library_have_explicit_success_scopes() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn partial_meaning_requests_do_not_become_an_entry_request() {
+    let ordinary = SourceRoot::new("observe fn main() -> Bit { 0 }");
+    let baseline = native_counts(&success(cli("check", &ordinary.0, false)));
+    assert!(baseline.1 > 0);
     let root = SourceRoot::new(
         "unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
          meaning I:Bit=reference(identity);
@@ -105,16 +147,17 @@ fn partial_meaning_requests_do_not_become_an_entry_request() {
     );
     let text = success(cli("check", &root.0, false));
     assert!(text.contains("entry request checked: false"), "{text}");
+    let counts = native_counts(&text);
     assert!(
-        !text.contains("independent requests checked: 0\n"),
-        "{text}"
+        counts.1 > baseline.1,
+        "reference Meaning adds a request: {text}"
     );
     let json = success(cli("check", &root.0, true));
     assert!(
         json.contains("\"entry\":{\"present\":true,\"request_checked\":false}"),
         "{json}"
     );
-    assert!(!json.contains("\"requests_checked\":0,"), "{json}");
+    assert_json_native_counts(&json, counts);
     assert!(
         json.contains("\"source_preservation_verified\":false"),
         "{json}"

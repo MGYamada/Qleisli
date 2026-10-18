@@ -1,0 +1,3 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::phase;
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[1,4](q) }

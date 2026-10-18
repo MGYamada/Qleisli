@@ -1,0 +1,3 @@
+// 日本語
+observe fn hidden() -> Bit { measure_z(init0()) }
+observe fn main() -> Unit { () }

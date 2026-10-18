@@ -1,0 +1,11 @@
+use std::state::init0; use std::gate::x; use std::gate::z;
+    
+    isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+    meaning Plus:Unit -> Bit=reference(prepare);
+        unitary fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+        meaning Strip:(Unit,Bit) -> Bit=reference(strip);
+        fn invoke[const U:Op<(Unit,Bit) -> Bit,Strip>](q:Q<(Unit,Bit)>)->Q<Bit> requires Applicable(U){U(q)}
+        pub observe fn main()->Bit{
+            let b=invoke[checked_op(strip,Strip)](join(unit(()),x(init0())));
+            let(u,b)=split(adjoint(strip)(b));finish(u);measure_z(b)
+        }

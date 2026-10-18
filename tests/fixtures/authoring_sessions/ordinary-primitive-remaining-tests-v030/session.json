@@ -1,0 +1,223 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Retain the actual remaining normal native-test failures after ordinary standard-library migration, exact first inputs and separately identified environment-only retry.",
+  "baseline_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "project_version": "0.3.0-beta",
+  "author": "Codex subagent; informed retrospective source and actual-log review; exact model identifier and sampling settings unavailable",
+  "context": "context.md",
+  "record_status": "Closed BEFORE:128harnesses35failures. One separate environment-only AFTER; semantic repair AFTER is not yet recorded.",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retrospective exact source copies from frozen author packets and immutable original Rust drivers. Separate storage inputs, not one executed project. No QLI repair or pre-run archival claim.",
+      "sha256": {
+        "classical/common-explicit-else-main.qli": "e8e88c0d6dd8861c81518583061e23e35c0740928613d9e206c90b8ba735aec2",
+        "classical/common-inferred-adjoint-main.qli": "d5483f7caadd0748ec8c59550287f80347ce7680b7a6840ea1cb4b80e0295413",
+        "classical/common-repaired-import-main.qli": "3ee4fae41c61bdce5fc4328d350d389e1e340dc16eafd77375f456c6f90b631f",
+        "classical/eager-argument-existing-effect-negative.qli": "8864955de21a8cc0f870e2f0019e31208f1b9c5864e14ae286c90a2ae8ce7a4a",
+        "classical/eager_argument_effects_belong_to_the_caller_in_source_order-0.qli": "62a72d7ca6c9a0ca6b7902e717c9394bcc0f2ca61257fef1c02f24d0cb2a702f",
+        "classical/eager_argument_effects_belong_to_the_caller_in_source_order-1.qli": "aba6c65ef74c21a8fe5e6175677bc692e3dba4fcd777e8bdb329c1ccbeaaf516",
+        "classical/repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller-0.qli": "3c111a6b5b0f52a79365b9573de592a1ea0b0b0cd1ad8fd1b889ac9c3b9d4714",
+        "scope-sampling/mainless_library.qli": "f0d0a8946465fec46aa565c7ac5027e45ab6cd655f211a2b9c40577e5417510f",
+        "scope-sampling/operation_instantiation.qli": "189c46b84ef7d397b43ea76a89967158ba0892be8ca09417cd4702ae1a70f1cd",
+        "scope-sampling/ordinary_entry.qli": "540aa862117846cb05f7945083d6ca053b5b2524878a72b551d03236f5a9b6f2",
+        "scope-sampling/partial_reference.qli": "4613b72b89cbc11b8f0238315e97c118a815f26a08346b2f77c74a7043c03bec",
+        "scope-sampling/reference_h.qli": "0366c85d618a11283ad5d5f21714ef9cd039be1c7f1b2ac8fafb2b9a94b3a477",
+        "scope-sampling/sample_init0.qli": "c6622b5b47621fd20b42fceb1a6d401cca0cd8c42df8460cee982a9eac5d5af0",
+        "scope-sampling/unused_finite.qli": "d8037922bd4679ad828913f6246099cfc182a2b47eb83fb9b2478ab3b053b362",
+        "ordinary-gate/checked-provider.qli": "035c483587a12651cfb30041002c71afbad084fce7dbad34ad5a9214c2c05aaf",
+        "ordinary-gate/private-wrapper.qli": "d8d7aa2e1e50ccec53a3625cfcaef3f4e024d2aa1ba6577e7f2a192d8e7b0431",
+        "ordinary-gate/zero-power-order.qli": "9e447cec20e4a0ef822f097df043b68ea15356ed9121b36e8e60f7f9c269a878",
+        "root-profile/first-missing-import.qli": "28759b4d51b608a9c8d7c8c94a1a3c1cceddd111e59ce9559434b784f6a66d4a",
+        "root-profile/first-expanded-t.qli": "8a107e82139901414b8512e6b7ff9724c02ef2b953f4623ce0bcccd69a16f6ae",
+        "pi8/outside-profile/main.qli": "6bb57ed46d2d8ec5beaadc95e46140886e768370ef94ae51fad9315188e9baca",
+        "pi8/pi8/main.qli": "55a40645aa974e363c2d8b0849991e9cad67223d0ce31a5cf2c0849617202f48",
+        "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-0.qli": "6951e6bb1b93b8ce79ab31a30abfda0c74417e122ec14c91097d9e2355426ac0",
+        "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-1.qli": "c40ef144c59ddb4cdf4a525d459132f4483c45b451c05f664f11b9773eec98bf",
+        "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-2.qli": "04d2cae573b515e8e3e4f024946b5702229cc8908d46ee0fe98707067bf37fb5",
+        "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-1-0.qli": "0ea257ffff71d6453d1cee3bd9f92fab0095017794e831f1234053dd12ce5562",
+        "function-contracts/nested_function_evidence_survives_external_inverse_and_control-0-0.qli": "9e4fae056ab6fcbd41dc9db7e0ad09cde4505b5d19d1c5bdcec54f2a4ac9ce8a",
+        "function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-0.qli": "bb075d91c578c2f06efa250e7e36bb231f3390a797fb524b63075ddaa8239804",
+        "function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-1.qli": "1598f7e2cfca2bb6eeb4694e9d85f9c1a5f08f71591ae6d955bed1885648fd16",
+        "function-contracts/repeated_nested_contracts_share_one_execution_budget-0-0.qli": "27020b627e92896d9b11884882d545a7576696ce5123cc2aa051e5296ccfd6d1",
+        "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-0-0.qli": "a8ff332d04dbced660b9bb97ce37227488c49b7844e4af20b7cd0705ef39fdd2",
+        "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-0.qli": "49684e0002fa8a963305a233dff5611f16bb1ef0d6fc12a1b0788dfb7974fd62",
+        "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-1.qli": "0da57ec7cdf6d5962402e42a3330da66627e5f82501d9b0ebcee2542ee9db993",
+        "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-2.qli": "99ed3ef2c8677f180b3f8c95d08b7c5983f69af8183fc9d836f7a61d5d798642",
+        "finite-empty/empty_operation.qli": "413e6db6e8085d0c829e6bcdffc02b6d1a2c0025ab25aa6543f6937ff7773c2e",
+        "finite-empty/empty_phase.qli": "2a9cfac72b136fab3f30fdc9dbb46209c506d321207caec581f2fec539b23e01",
+        "finite-empty/controlled_empty.qli": "5afb60a7a71059a42a460d36a627038646cfceb757e4c6a741c84161061336fa",
+        "finite-empty/empty_product.qli": "3b74656f203b40e62d78f2ea1c168cd77da34a82cb3dbe74b8996f2d37e42828",
+        "qfor/quantum_fold_preserves_an_external_reference_and_zero_iteration_identity.qli": "8ee6adfe04e2c8e5a24d133e0cef794fe0f11561f7ecdd85ec1fd69aa5df15fa",
+        "qfor/multiple_carried_owners_keep_the_complete_entangled_interface.qli": "8b0e05715dd60132e49493a1b258a18a9d9f007cfe1657184d27743233e1cd9b",
+        "review019/explicit-crlf-repair-main.qli": "4e1165be8dce6d75beb390afdbaa9b4c2d54779bcc07329142a8ec3f423769c1",
+        "review019/historical-main.qli": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+        "review019/selected-cr-main.qli": "1cd41a07ce5db7c3aeb2122cf211e2a16f241ba9b19fd9d2a12de90a5bf4a4f1",
+        "review024/current-empty.qli": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "review024/current-misplaced-qft2.qli": "665f2463b43d525717a10d2db97adecd39c136a00477eb80fd6e5569b7b7661f",
+        "review024/current-repaired-qft2.qli": "98027928a15d3458f14c23c593bf68436593f13ba51be786887ba89c4e7bf0d3",
+        "review024/historical-misplaced-measure.qli": "dbe452569792943f4e90edfac58194401ebe4bd48caa644b2ee88573d3464d0f",
+        "z-rectangular/rectangular/11-False.qli": "746d127e796e81a2843ed85521a2cc9170744f89dae8fea0a42d54602b73ff5c",
+        "z-rectangular/rectangular/11-True.qli": "1c25da6cc88bf95ffbb7948282054d9ec25ace1fdccdbf1561bf7f884564f058",
+        "z-rectangular/rectangular/13.qli": "14e2c4d2eb7192b15c69275ce26c62878e5b9e1c93c4f85a5564c13685e7afa6",
+        "z-rectangular/rectangular/15.qli": "d4443272cf70fac6e667c62b0473f2ce7ceb82b147ccac5b8ffb559fd3a0a86b",
+        "z-rectangular/rectangular/17.qli": "9e9530e47cf94a31da64ec05857681ecc2ef787bc4555bed900115b11ea6fb7b",
+        "z-rectangular/rectangular/19.qli": "4aa33fec7d6a5403f5ef459a42a275bba6ab98622765cff1bf921335cbf03669",
+        "z-rectangular/rectangular/negative-0.qli": "9c7d19ba33fdddf6071c82e9be098aaa6516684e04ac8e27ea02713e2830996b",
+        "z-rectangular/rectangular/negative-1.qli": "127679eb01eccb12fc558b052b3ff12ed166d3f7b885d8a140a37f236251a992",
+        "z-rectangular/rectangular/negative-2.qli": "115b2e1cb5107239ee611f80716f43919c6133fd40575ebe025d47451ddd092f",
+        "z-rectangular/rectangular/negative-3.qli": "faf978bf13611f3b79da90821f1a994f00382123cef896bb43a8b75e5d480579",
+        "z-rectangular/rectangular/negative-4.qli": "60f1e3d8c0a8755d7b1ffafd07fff904ae7fd9f674f8acb89a4c4b8ad69ffc41",
+        "z-rectangular/z/0-selected.qli": "0cf643e6f88bd1d249bd45f5e813b885a0412d4f65bac27fa270bc79bb90030b",
+        "z-rectangular/z/1-selected.qli": "afa5680556398a134f5c68c2bf14ff762392c868a9c9cf7416945e297e524b93",
+        "z-rectangular/z/2-selected.qli": "6ecc1b97cd61aed95ca289e8c49b93b4cf2c4eed454856b189d3e27d875004bd",
+        "z-rectangular/z/3-selected.qli": "1a6b379e15733ed755694e22d8426aad9fdf6f34e48851bd03836afc87af2b5f",
+        "z-rectangular/z/fixed-wrong-x.qli": "0481b7bbf5aba7eef8e7d5b79717789ad953655bf87f5b2ddbfccdc32798a684",
+        "z-rectangular/z/fixed-z.qli": "658ecbbf5dc160e2cfcdcba698cce024ed512a077f1962f331bd3e59c29b5014",
+        "shared-resolution/a.qli": "546afbfac86f7fe67a4e2f9478ebd50fe118cf195966b2a61f5027f87fd8b532",
+        "shared-resolution/b.qli": "fab892eacf5526f22ec1858884266efd1b1f852dcfe3a37c4300b4d1e240e462",
+        "shared-resolution/main.qli": "61081269ab89ef225720f388a02fc2cf47f5851f07adc0db80f2b693c698ad18",
+        "source-snapshots/dep.qli": "46330c1fc595beb5a1e704b693a617fa063d86c2a7d2bb0e47253f24860d678d",
+        "source-snapshots/helper-mutation.qli": "59374e3c9fff1614f8a11fab81e1b42648a3b2b5f7eb3676868bcbdbada55367",
+        "source-snapshots/helper-original.qli": "fab892eacf5526f22ec1858884266efd1b1f852dcfe3a37c4300b4d1e240e462",
+        "source-snapshots/providers-four-contract-main.qli": "cad98129ad5cdb83639c31e1417fb6d1547804e5bc3b38b4ec3ac63b3e0b44b9",
+        "source-snapshots/providers-four-static-main.qli": "09bf9b006ceabd0a0ece15f1c11d9603ee52c17241f63b8dde2d647887651125",
+        "source-snapshots/shared-checked-op-main.qli": "a7e7836105872343a9b3dc5df2c7cbd3ef300968d3ab2528f63c4cfbe680aa0e",
+        "source-snapshots/shared-contract-main.qli": "7e66cf9cbbbd8317aa149bf9283e4243e0e10230906af8b0924bf0664e6cc7a9",
+        "static-c3x/c3x.qli": "56bcf70d8ea71361f0f60276d40f0bfaf321bce00c6640e1072c878636eb0bf0",
+        "static-c3x/complete-c3x-project-main.qli": "a4083eaeddb8ccb6e81b7db5385bb6eaa939a6f5c0207c99c09486295757f3c5",
+        "tuple/classical-unit-frame.qli": "475942a2c78127c4b0b6a5d5551f24bdc340a3a34b09051aa56e1b9d0252b517",
+        "tuple/discarded-quantum-owner.qli": "ec1ddaf21f766d2867298b56a77f7256d1837af5be0fb467f336f5bed8f6c88c",
+        "tuple/duplicate-quantum-owner.qli": "c9bc3a0d678a66286de97a2bae56a47ad7f8b9f5c99ab882e2cb6ed8e1582022",
+        "tuple/ordered-quantum-branch-frame.qli": "e5fe5f0c3c68de6678064acf39e7d841da2825cc223bb19b94d21aa55392dd80"
+      },
+      "observations": [
+        "observations-before/remaining-normal.json",
+        "observations-after/process-tree-environment.json"
+      ],
+      "reports": [
+        "source-index.json",
+        "reports/terminal-bindings.json",
+        "reports/repair-validation-after-v4.json",
+        "reports/proof-consumer-first-compile.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "attempt-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "immutable_originals": {
+    "tests/classical_functions.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/classical_functions.rs"
+    },
+    "tests/common_authoring_diagnostics.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/common_authoring_diagnostics.rs"
+    },
+    "tests/check_scope_cli.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/check_scope_cli.rs"
+    },
+    "tests/check_scope_report.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/check_scope_report.rs"
+    },
+    "tests/cli_sampling.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/cli_sampling.rs"
+    },
+    "tests/body_effects.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/body_effects.rs"
+    },
+    "tests/checked_operations.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/checked_operations.rs"
+    },
+    "tests/compile.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/compile.rs"
+    },
+    "tests/computed_derived_source.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/computed_derived_source.rs"
+    },
+    "scripts/test_engineering_boundary_baseline.py": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "0693be3eed280566ee87154c12cc9a48715c01a26d5425be0e5e225dbaa0f35d",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/scripts/test_engineering_boundary_baseline.py"
+    },
+    "tests/function_contracts.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/function_contracts.rs"
+    },
+    "tests/finite_empty_bits.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/finite_empty_bits.rs"
+    },
+    "tests/engineering_boundary_baseline.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/engineering_boundary_baseline.rs"
+    },
+    "tests/qfor.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/qfor.rs"
+    },
+    "tests/review_v019.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/review_v019.rs"
+    },
+    "tests/review_v024.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/review_v024.rs"
+    },
+    "tests/quantum_unit_source.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/quantum_unit_source.rs"
+    },
+    "tests/rectangular_meanings.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/rectangular_meanings.rs"
+    },
+    "tests/shared_resolution.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/shared_resolution.rs"
+    },
+    "tests/source_snapshots.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/source_snapshots.rs"
+    },
+    "tests/static_semantics.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/static_semantics.rs"
+    },
+    "tests/tuple_shapes.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/tuple_shapes.rs"
+    }
+  },
+  "scope": "Retrospective inert archival record of the actual unsuccessful normal run, not a new replay or acceptance decision. HEAD477 identifies Git provenance; whole-working aaa5 includes earlier axis/mixed test repairs and is not clean Git477. The 79 stored QLI inputs are separate historical/current/helper/counterexample inputs, not 79 executions or one project. Original unmet/after-unreached cases receive no negative credit. No full MSRV/current-CI, proof, release, issue completion or new guarantee claim."
+}

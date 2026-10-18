@@ -101,7 +101,34 @@ fn same_named_host_providers_keep_distinct_definition_and_instance_identity() {
             .unwrap()
             .elaborate()
             .unwrap();
-        assert_eq!(source.definitions()[0].path(), path);
+        let definitions = source.definitions();
+        let selected: Vec<_> = definitions
+            .iter()
+            .enumerate()
+            .filter(|(_, definition)| definition.path() == path)
+            .collect();
+        assert_eq!(selected.len(), 1);
+        let (provider, definition) = selected[0];
+        assert!(definition.types().is_empty());
+        assert!(definition.naturals().is_empty());
+        let instance = source.instantiation();
+        assert_eq!(instance.entry(), "main::f");
+        assert_eq!(instance.operations().len(), 1);
+        assert_eq!(
+            instance.operations()["U"],
+            OperationBinding::new(path, BTreeMap::new())
+        );
+        let entry = &definitions[source.root()];
+        assert_eq!(entry.path(), "main::f");
+        assert_eq!(entry.operations().len(), 1);
+        assert_eq!(entry.operations()["U"].definition(), Some(provider));
+        assert_eq!(entry.steps().len(), 1);
+        let application = &entry.steps()[0];
+        assert_eq!(application.kind(), "apply");
+        assert_eq!(
+            application.operation().unwrap().definition(),
+            Some(provider)
+        );
         proposals.push(source.lower().unwrap().payload().to_vec());
     }
     assert_ne!(proposals[0], proposals[1]);

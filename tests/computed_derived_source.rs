@@ -270,34 +270,24 @@ fn normalized_scalar_survives_named_power_adjoint_and_coherent_control() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn existing_canonical_t_chain_keeps_its_raw_length_profile() {
-    // 1025 is above the separate function-equation step cap, far below the
-    // ordinary source work bound. This is two physical qubits, no dense request.
+fn expanded_ordinary_t_chain_reports_its_source_work_limit() {
+    // Keep the original 1,025-call source. Ordinary T expands its checked body
+    // and reaches the separate source-work limit before Raw compilation.
+    // The compact 205-call test below checks an accepted emitted body above
+    // the function-equation step cap. Both programs use two physical qubits.
     let text = format!("use std::gate::t; use std::state::init0;
         classical fn predicate(b:Bit)->Bit{{b}}
         pub observe fn main()->Bit{{let q=with_computed(init0(),predicate){{|a|{}a}};measure_z(q)}}",
         "let a=t(a);".repeat(1025));
-    let accepted = compile_project(&SourceRoot::new(&text).0).unwrap();
-    let uses = accepted
-        .raw()
-        .operations
-        .iter()
-        .find_map(|operation| {
-            let RawOp::ComputeUseUncompute { use_ops, .. } = operation else {
-                return None;
-            };
-            Some(use_ops)
-        })
-        .unwrap();
-    assert_eq!(uses.len(), 1025);
-    assert!(uses.iter().all(|usage| matches!(
-        usage,
-        ProtectedUse::ProtectedGate {
-            gate: SingleGate::T,
-            ..
-        }
-    )));
-    assert!(accepted.source_computed_normalizations().is_empty());
+    let error = compile_project(&SourceRoot::new(&text).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Limit);
+    assert!(
+        error
+            .message
+            .contains("source expansion exceeds the project-wide work limit of 1000000"),
+        "{error}"
+    );
+    assert!(error.path.ends_with("std/gate.qli"), "{error}");
 }
 
 #[cfg_attr(

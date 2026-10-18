@@ -1302,10 +1302,32 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
             .unwrap();
         raw.validate_source_steps(&accepted).unwrap();
     }
-    // This request's signature and exact matrix are fixed independently of
-    // the emitter: it must check Z, and must refuse the native-valid X source.
+    // This request is authored from ordinary Z's phase[1,1] source body and
+    // the explicit call/frame renames. These labels record source placement;
+    // the intended phase and complete independent matrix are fixed below.
     let a = side(101, r#"{"tag":"bit"}"#, 1);
-    let b = side(102, r#"{"tag":"bit"}"#, 1);
+    let z_input = side(102, r#"{"tag":"bit"}"#, 1);
+    let z_output = side(103, r#"{"tag":"bit"}"#, 1);
+    let b = side(104, r#"{"tag":"bit"}"#, 1);
+    let required = request(
+        &a,
+        &b,
+        &[
+            meaning(&z_input, &z_input, r#"{"tag":"phase","j":1,"k":1}"#),
+            meaning(&z_input, &z_output, &rename(1)),
+            meaning(
+                &z_input,
+                &z_output,
+                r#"{"tag":"sequence","children":[0,1]}"#,
+            ),
+            meaning(&z_input, &z_output, r#"{"tag":"sequence","children":[2]}"#),
+            meaning(&a, &z_input, &rename(1)),
+            meaning(&z_output, &b, &rename(1)),
+            meaning(&a, &b, r#"{"tag":"sequence","children":[4,3,5]}"#),
+            meaning(&a, &b, r#"{"tag":"sequence","children":[6]}"#),
+        ],
+        7,
+    );
     let matrix = Matrix::new(
         2,
         2,
@@ -1315,43 +1337,83 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
             .collect(),
     )
     .unwrap();
-    let description = String::from_utf8(finite_matrix::encode(&matrix).unwrap()).unwrap();
-    let required = request(
-        &a,
-        &b,
-        &[
-            meaning(
-                &a,
-                &b,
-                &format!(
-                    r#"{{"tag":"finite","description":{}}}"#,
-                    quote(&description)
-                ),
-            ),
-            meaning(&a, &b, r#"{"tag":"sequence","children":[0]}"#),
-        ],
-        1,
-    );
     let direct = "use std::gate::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}";
-    let z = elaborate(direct, "main::f", BTreeMap::new())
-        .lower()
-        .unwrap();
+    let source = elaborate(direct, "main::f", BTreeMap::new());
+    let z = source.lower().unwrap();
     kernel()
         .check_against_native(z.payload(), &required)
         .unwrap();
-    let x = elaborate(
+
+    // Independently bind the entire actual Raw body to exact diag(1,-1).
+    // The hierarchy graph's phase constructor is not a substitute for this
+    // full 2x2 coefficient check, including global phase and ordered ports.
+    let raw_kernel = native::Kernel::selected().unwrap();
+    let raw_equation = |source: &ElaboratedProgram, honest: bool| {
+        let raw = source.lower_raw().unwrap();
+        let accepted = raw_kernel.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        assert_eq!(accepted.output_ports().len(), 1);
+        let boundary = qleisli::interchange::finite_leaf::UnitaryBoundary::new(
+            BasisType::Bit,
+            accepted.raw().quantum_inputs[0].clone(),
+            accepted.output_ports()[0].clone(),
+        )
+        .unwrap();
+        let equation = check_unitary(
+            raw.proposal().artifact(),
+            &boundary,
+            &matrix,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        );
+        if honest {
+            equation.unwrap();
+        } else {
+            assert_eq!(equation.unwrap_err().code, "contract");
+        }
+    };
+    raw_equation(&source, true);
+
+    // S is a native-valid source with the exact same complete graph shell.
+    // Only the two actual dyadic phase fields change: definition and meaning.
+    // Its refusal must reach the native phase check, not child-arity pairing.
+    let s_source = elaborate(
+        &direct.replace("::z", "::s").replace("{z(q)}", "{s(q)}"),
+        "main::f",
+        BTreeMap::new(),
+    );
+    let s = s_source.lower().unwrap();
+    kernel().inspect_native(s.payload()).unwrap();
+    let z_payload = std::str::from_utf8(z.payload()).unwrap();
+    let s_payload = std::str::from_utf8(s.payload()).unwrap();
+    assert_eq!(z_payload.matches(r#""k":1"#).count(), 2);
+    assert_eq!(s_payload.matches(r#""k":2"#).count(), 2);
+    assert_eq!(z_payload.replace(r#""k":1"#, r#""k":2"#), s_payload);
+    let error = kernel()
+        .check_against_native(s.payload(), &required)
+        .unwrap_err();
+    assert_eq!(error.code, "contract");
+    assert!(
+        error.message.contains("the native checker rejected"),
+        "{error}"
+    );
+    raw_equation(&s_source, false);
+
+    // Retain the original native-valid X counterexample and check its exact
+    // Raw coefficients too, so arity refusal cannot be its only Z oracle.
+    let x_source = elaborate(
         &direct.replace("::z", "::x").replace("{z(q)}", "{x(q)}"),
         "main::f",
         BTreeMap::new(),
-    )
-    .lower()
-    .unwrap();
+    );
+    let x = x_source.lower().unwrap();
     kernel().inspect_native(x.payload()).unwrap();
     assert!(
         kernel()
             .check_against_native(x.payload(), &required)
             .is_err()
     );
+    raw_equation(&x_source, false);
 }
 
 #[cfg_attr(

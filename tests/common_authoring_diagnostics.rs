@@ -258,6 +258,17 @@ fn explicit_else_imports_and_inferred_unitary_adjoint_still_execute() {
         } else {
             vec![false]
         };
-        assert_eq!(outcomes, BTreeMap::from([(expected, 1.0)]), "{source}");
+        // Ordinary H Z H is numerical here; retain every ordered outcome and
+        // check any mathematical-zero tail with the existing engineering bound.
+        assert_eq!(expected.len(), program.raw().classical_outputs.len());
+        let probability = outcomes.get(&expected).expect("expected ordered output");
+        assert!((probability - 1.0).abs() < 1e-12, "{source}");
+        for (bits, probability) in &outcomes {
+            let requested = if bits == &expected { 1.0 } else { 0.0 };
+            assert_eq!(bits.len(), expected.len());
+            assert!(probability.is_finite() && *probability >= 0.0);
+            assert!((probability - requested).abs() < 1e-12, "{source}");
+        }
+        assert!((outcomes.values().sum::<f64>() - 1.0).abs() < 1e-12);
     }
 }

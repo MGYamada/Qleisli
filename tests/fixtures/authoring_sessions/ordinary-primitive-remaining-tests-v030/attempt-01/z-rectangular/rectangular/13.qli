@@ -1,0 +1,14 @@
+use std::state::init0; use std::gate::x; use std::gate::z;
+    
+    isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+    meaning Plus:Unit -> Bit=reference(prepare);
+        unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+        meaning X:Bit=reference(flip);
+        meaning PX:Unit -> Bit=compose(Plus,X);
+        meaning Both:(Unit,Bit) -> (Bit,Bit)=tensor(PX,X);
+        isometry fn px(q:Q<Unit>)->Q<Bit>{flip(prepare(q))}
+        fn invoke[const U:Op<(Unit,Bit) -> (Bit,Bit),Both>](q:Q<(Unit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){U(q)}
+        pub observe fn main()->(Bit,Bit){
+            let (a,b)=split(invoke[tensor_op(checked_op(px,PX),checked_op(flip,X))](join(unit(()),init0())));
+            (measure_z(a),measure_z(b))
+        }

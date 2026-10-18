@@ -1,0 +1,35 @@
+{
+  "format": "qleisli.exact-pi8-current-translations",
+  "version": 1,
+  "history": "tests/fixtures/authoring_sessions/exact-pi8-v030/first-observations.json",
+  "history_sha256": "29dfe905de1b3594fb36d925419797aef7dda5302c3cd828bad8d280bcf16d9c",
+  "transformation": "remove-only-retired-phase-import; preserve every other byte including its newline",
+  "sources": [
+    {
+      "name": "pi8",
+      "original_source": "pi8/main.qli",
+      "original_source_sha256": "55a40645aa974e363c2d8b0849991e9cad67223d0ce31a5cf2c0849617202f48",
+      "current_source": "pi8/main.qli",
+      "current_source_sha256": "78f6a789724665419034169eb38d559b1ac4bcab286e879c72d6cc0b30bd2e13",
+      "manifest": "pi8/Qargo.toml",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "removed_import_span": [
+        85,
+        109
+      ]
+    },
+    {
+      "name": "outside-profile",
+      "original_source": "outside-profile/main.qli",
+      "original_source_sha256": "6bb57ed46d2d8ec5beaadc95e46140886e768370ef94ae51fad9315188e9baca",
+      "current_source": "outside-profile/main.qli",
+      "current_source_sha256": "ac5177b802a0dbcc0f5e41f880f2a659f4e7578c94effbef6280b708c77d1ff8",
+      "manifest": "outside-profile/Qargo.toml",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "removed_import_span": [
+        85,
+        109
+      ]
+    }
+  ]
+}

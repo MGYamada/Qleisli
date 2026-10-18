@@ -1,0 +1,14 @@
+use std::state::init0; use std::gate::x; use std::gate::z;
+    
+    isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+    meaning Plus:Unit -> Bit=reference(prepare);
+        use std::gate::cnot;
+        isometry fn duplicate(q:Q<Bit>)->Q<(Bit,Bit)>{let(a,b)=cnot(q,init0());join(a,b)}
+        meaning Copy:Bit -> (Bit,Bit)=reference(duplicate);
+        unitary fn ident(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}
+        fn invoke[const U:Op<Bit -> (Bit,Bit),Copy>](q:Q<Bit>)->Q<(Bit,Bit)> requires Applicable(U){U(q)}
+        pub observe fn main()->(Bit,Bit,Bit){
+            let(a,r)=cnot(h(init0()),init0());
+            let(a,b)=split(invoke[then_op(checked_op(duplicate,Copy),ident)](a));
+            (measure_z(a),measure_z(b),measure_z(r))
+        }

@@ -1,0 +1,7 @@
+classical fn labels(x:(Bits<0>,(Bit,Unit)))->(Bits<0>,(Bit,Unit)){x}
+         meaning Identity:(Bits<0>,(Bit,Unit))=permutation_by(labels);
+         unitary fn identity(q:Q<(Bits<0>,(Bit,Unit))>)->Q<(Bits<0>,(Bit,Unit))>{q}
+         unitary fn audited(q:Q<(Bits<0>,(Bit,Unit))>)->Q<(Bits<0>,(Bit,Unit))>{
+             apply_contract(identity,Identity,q)
+         }
+         fn main()->Unit{()}

@@ -537,10 +537,36 @@ fn private_wrapper_suggestions_do_not_require_an_effect_annotation() {
     let source = common::current_source_text(
         "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
     );
-    let root = SourceRoot::new(&source);
-    let error = check_project(&root.0).unwrap_err();
+    // X is ordinary checked source now; it is no longer a sealed-provider refusal.
+    let ordinary = ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+    assert_eq!(
+        ordinary.function_effect("main::f").unwrap().inferred(),
+        Effect::Unitary
+    );
+
+    // Bare H still has the actual finite static-provider boundary and wrapper hint.
+    let primitive = source
+        .replace("use std::gate::x;\n", "")
+        .replace("apply[x]", "apply[h]");
+    let error = check_project(&SourceRoot::new(&primitive).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
     assert!(error.message.contains("inferred Unitary body effect"));
     assert!(error.message.contains("`fn wrapped_gate"));
     assert!(!error.message.contains("declared unitary"));
+
+    // The suggested private wrapper needs no effect annotation; common inference
+    // checks its real H body and keeps the explicit public caller effect separate.
+    let wrapped = format!(
+        "fn wrapped_gate(q:Q<Bit>)->Q<Bit>{{h(q)}}\n{}",
+        primitive.replace("apply[h]", "apply[wrapped_gate]")
+    );
+    let wrapped = ParsedProgram::parse(BTreeMap::from([("main".into(), wrapped)])).unwrap();
+    let effect = wrapped.function_effect("main::wrapped_gate").unwrap();
+    assert_eq!(effect.inferred(), Effect::Unitary);
+    assert_eq!(effect.asserted(), None);
+    assert_eq!(effect.public_effect(), None);
+    assert_eq!(
+        wrapped.function_effect("main::f").unwrap().public_effect(),
+        Some(Effect::Unitary)
+    );
 }

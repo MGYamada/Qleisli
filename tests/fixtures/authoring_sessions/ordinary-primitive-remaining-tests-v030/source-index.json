@@ -1,0 +1,2716 @@
+{
+  "baseline_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "predecessor": {
+    "manifest": "/private/tmp/qleisli-477-ci-before-retention-j1b9pow9/MANIFEST-v2.json",
+    "sha256": "1b42a573b723fa09e1b04d2bfa944ebea337042ab9bd33190c4165f8e6a4fe58",
+    "unchanged_file_map": {
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/Qargo.toml": {
+        "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "bytes": 45
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/finite_project.qli": {
+        "sha256": "505331ecc398ffc55cb799402ca1df89bd0a1aab397b36f07c192c6879b19b0d",
+        "bytes": 407
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/mixed_bell_xor.qli": {
+        "sha256": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02",
+        "bytes": 300
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/mixed_pending_argument.qli": {
+        "sha256": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b",
+        "bytes": 377
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/mixed_provider.qli": {
+        "sha256": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655",
+        "bytes": 351
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/mixed_repeated_helper.qli": {
+        "sha256": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299",
+        "bytes": 268
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/attempt-01/selected_probe.qli": {
+        "sha256": "495a32b85943efd1bc8738430a23505f91ed76bef69632c703187760dc481961",
+        "bytes": 252
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/context.md": {
+        "sha256": "852cec2a33907ad3b2967189c77012a6fad4b582605963a2c9c0d855dc84279e",
+        "bytes": 4209
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/lean-117451780089.json": {
+        "sha256": "91c597886f25b3c18f92dbe0d367f5257f9202e51c0b757a06574d0876445a39",
+        "bytes": 6684
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/lean-117452443338.json": {
+        "sha256": "b14436753f93342b5d5dd4ad591f51e759b579b49391c50cc280ca37da18d462",
+        "bytes": 6676
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/local-axis-and-mixed.json": {
+        "sha256": "9bb6f311c47a152b037517ea7ded0ba84b995d2cd50539bcd97cc264308eeb29",
+        "bytes": 8143
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/rust-117451780110.json": {
+        "sha256": "13d1819ef88604367a8e6e8fc3c5f64f0d305336cf2a9a90ecbc6aa5ef92703a",
+        "bytes": 9640
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/rust-117451780165.json": {
+        "sha256": "c5df1774bfeb3b9ddbb6654a9260f05b31719ddecff6bd8d8e743a734bc254d0",
+        "bytes": 9619
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/rust-117452443294.json": {
+        "sha256": "9518151b7a881c95972a78d2cec2ddbd4257ff14107f42068c15603224e36b28",
+        "bytes": 9632
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/observations-before/rust-117452443345.json": {
+        "sha256": "69ab57aa1fc0f1f1a27f03e6474bdcc56331347ed736a6166d2888d887065a42",
+        "bytes": 9611
+      },
+      "tests/fixtures/authoring_sessions/ordinary-primitive-ci-followup-v030/session.json": {
+        "sha256": "8b51dbba110fe6521ea483b79f7959adbb20c58639d45b92a808cd083d53cf21",
+        "bytes": 10773
+      }
+    }
+  },
+  "storage_manifest": {
+    "path": "attempt-01/Qargo.toml",
+    "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "bytes": 45,
+    "meaning": "Storage edition for separate Rust inputs; also an exact shared copy of both actual first pi8 project manifests. These separate inputs were not executed as one storage project.",
+    "original_manifest_bindings": [
+      {
+        "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/first-sources/pi8/Qargo.toml",
+        "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "bytes": 45
+      },
+      {
+        "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/first-sources/outside-profile/Qargo.toml",
+        "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "bytes": 45
+      }
+    ]
+  },
+  "candidate_status_notes": [
+    "Finite empty V2 is reviewed/frozen; only the same four immutable V1 original BEFORE sources are consumed. New baseline-main remains excluded because it is a desired control, not an observed first failing source.",
+    "Function contract one-call budget and bareH desired controls are excluded from original BEFORE source inventory.",
+    "The eager argument existing effect negative is retained as original driver source but was not reached after the first actual assertion failure; no negative outcome is credited."
+  ],
+  "status": "FINAL CLOSED BEFORE RETENTION; no semantic AFTER included",
+  "sources": [
+    {
+      "stored_source": "classical/common-explicit-else-main.qli",
+      "sha256": "e8e88c0d6dd8861c81518583061e23e35c0740928613d9e206c90b8ba735aec2",
+      "bytes": 209,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/common-explicit-else-main.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/common-inferred-adjoint-main.qli",
+      "sha256": "d5483f7caadd0748ec8c59550287f80347ce7680b7a6840ea1cb4b80e0295413",
+      "bytes": 133,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/common-inferred-adjoint-main.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/common-repaired-import-main.qli",
+      "sha256": "3ee4fae41c61bdce5fc4328d350d389e1e340dc16eafd77375f456c6f90b631f",
+      "bytes": 76,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/common-repaired-import-main.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/eager-argument-existing-effect-negative.qli",
+      "sha256": "8864955de21a8cc0f870e2f0019e31208f1b9c5864e14ae286c90a2ae8ce7a4a",
+      "bytes": 158,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/eager-argument-existing-effect-negative.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/eager_argument_effects_belong_to_the_caller_in_source_order-0.qli",
+      "sha256": "62a72d7ca6c9a0ca6b7902e717c9394bcc0f2ca61257fef1c02f24d0cb2a702f",
+      "bytes": 184,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/eager_argument_effects_belong_to_the_caller_in_source_order-0.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/eager_argument_effects_belong_to_the_caller_in_source_order-1.qli",
+      "sha256": "aba6c65ef74c21a8fe5e6175677bc692e3dba4fcd777e8bdb329c1ccbeaaf516",
+      "bytes": 152,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/eager_argument_effects_belong_to_the_caller_in_source_order-1.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "classical/repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller-0.qli",
+      "sha256": "3c111a6b5b0f52a79365b9573de592a1ea0b0b0cd1ad8fd1b889ac9c3b9d4714",
+      "bytes": 344,
+      "original_external_source": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-sources/repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller-0.qli",
+      "group": "classical",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/classical_functions.rs",
+        "tests/common_authoring_diagnostics.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/mainless_library.qli",
+      "sha256": "f0d0a8946465fec46aa565c7ac5027e45ab6cd655f211a2b9c40577e5417510f",
+      "bytes": 46,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/mainless_library.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/operation_instantiation.qli",
+      "sha256": "189c46b84ef7d397b43ea76a89967158ba0892be8ca09417cd4702ae1a70f1cd",
+      "bytes": 312,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/operation_instantiation.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/ordinary_entry.qli",
+      "sha256": "540aa862117846cb05f7945083d6ca053b5b2524878a72b551d03236f5a9b6f2",
+      "bytes": 30,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/ordinary_entry.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/partial_reference.qli",
+      "sha256": "4613b72b89cbc11b8f0238315e97c118a815f26a08346b2f77c74a7043c03bec",
+      "bytes": 119,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/partial_reference.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/reference_h.qli",
+      "sha256": "0366c85d618a11283ad5d5f21714ef9cd039be1c7f1b2ac8fafb2b9a94b3a477",
+      "bytes": 138,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/reference_h.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/sample_init0.qli",
+      "sha256": "c6622b5b47621fd20b42fceb1a6d401cca0cd8c42df8460cee982a9eac5d5af0",
+      "bytes": 71,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/sample_init0.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "scope-sampling/unused_finite.qli",
+      "sha256": "d8037922bd4679ad828913f6246099cfc182a2b47eb83fb9b2478ab3b053b362",
+      "bytes": 119,
+      "original_external_source": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/first-sources/unused_finite.qli",
+      "group": "scope-sampling",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/check_scope_cli.rs",
+        "tests/check_scope_report.rs",
+        "tests/cli_sampling.rs"
+      ]
+    },
+    {
+      "stored_source": "ordinary-gate/checked-provider.qli",
+      "sha256": "035c483587a12651cfb30041002c71afbad084fce7dbad34ad5a9214c2c05aaf",
+      "bytes": 403,
+      "original_external_source": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-sources/checked-provider.qli",
+      "group": "ordinary-gate",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/body_effects.rs",
+        "tests/checked_operations.rs"
+      ]
+    },
+    {
+      "stored_source": "ordinary-gate/private-wrapper.qli",
+      "sha256": "d8d7aa2e1e50ccec53a3625cfcaef3f4e024d2aa1ba6577e7f2a192d8e7b0431",
+      "bytes": 139,
+      "original_external_source": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-sources/private-wrapper.qli",
+      "group": "ordinary-gate",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/body_effects.rs",
+        "tests/checked_operations.rs"
+      ]
+    },
+    {
+      "stored_source": "ordinary-gate/zero-power-order.qli",
+      "sha256": "9e447cec20e4a0ef822f097df043b68ea15356ed9121b36e8e60f7f9c269a878",
+      "bytes": 439,
+      "original_external_source": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-sources/zero-power-order.qli",
+      "group": "ordinary-gate",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/body_effects.rs",
+        "tests/checked_operations.rs"
+      ]
+    },
+    {
+      "stored_source": "root-profile/first-missing-import.qli",
+      "sha256": "28759b4d51b608a9c8d7c8c94a1a3c1cceddd111e59ce9559434b784f6a66d4a",
+      "bytes": 95,
+      "original_external_source": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/first-missing-import.qli",
+      "group": "root-profile",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/compile.rs",
+        "tests/computed_derived_source.rs"
+      ]
+    },
+    {
+      "stored_source": "root-profile/first-expanded-t.qli",
+      "sha256": "8a107e82139901414b8512e6b7ff9724c02ef2b953f4623ce0bcccd69a16f6ae",
+      "bytes": 11455,
+      "original_external_source": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/first-expanded-t.qli",
+      "group": "root-profile",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/compile.rs",
+        "tests/computed_derived_source.rs"
+      ]
+    },
+    {
+      "stored_source": "pi8/outside-profile/main.qli",
+      "sha256": "6bb57ed46d2d8ec5beaadc95e46140886e768370ef94ae51fad9315188e9baca",
+      "bytes": 166,
+      "original_external_source": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/first-sources/outside-profile/main.qli",
+      "group": "pi8",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "scripts/test_engineering_boundary_baseline.py",
+        "tests/engineering_boundary_baseline.rs"
+      ]
+    },
+    {
+      "stored_source": "pi8/pi8/main.qli",
+      "sha256": "55a40645aa974e363c2d8b0849991e9cad67223d0ce31a5cf2c0849617202f48",
+      "bytes": 166,
+      "original_external_source": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/first-sources/pi8/main.qli",
+      "group": "pi8",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "scripts/test_engineering_boundary_baseline.py",
+        "tests/engineering_boundary_baseline.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-0.qli",
+      "sha256": "6951e6bb1b93b8ce79ab31a30abfda0c74417e122ec14c91097d9e2355426ac0",
+      "bytes": 439,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-1.qli",
+      "sha256": "c40ef144c59ddb4cdf4a525d459132f4483c45b451c05f664f11b9773eec98bf",
+      "bytes": 431,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-1.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-2.qli",
+      "sha256": "04d2cae573b515e8e3e4f024946b5702229cc8908d46ee0fe98707067bf37fb5",
+      "bytes": 430,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-2.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-1-0.qli",
+      "sha256": "0ea257ffff71d6453d1cee3bd9f92fab0095017794e831f1234053dd12ce5562",
+      "bytes": 339,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/exact_source_types_declared_effects_and_ordinary_targets_are_required-1-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/nested_function_evidence_survives_external_inverse_and_control-0-0.qli",
+      "sha256": "9e4fae056ab6fcbd41dc9db7e0ad09cde4505b5d19d1c5bdcec54f2a4ac9ce8a",
+      "bytes": 1086,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/nested_function_evidence_survives_external_inverse_and_control-0-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-0.qli",
+      "sha256": "bb075d91c578c2f06efa250e7e36bb231f3390a797fb524b63075ddaa8239804",
+      "bytes": 484,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-1.qli",
+      "sha256": "1598f7e2cfca2bb6eeb4694e9d85f9c1a5f08f71591ae6d955bed1885648fd16",
+      "bytes": 481,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-1.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/repeated_nested_contracts_share_one_execution_budget-0-0.qli",
+      "sha256": "27020b627e92896d9b11884882d545a7576696ce5123cc2aa051e5296ccfd6d1",
+      "bytes": 585,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/repeated_nested_contracts_share_one_execution_budget-0-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-0-0.qli",
+      "sha256": "a8ff332d04dbced660b9bb97ce37227488c49b7844e4af20b7cd0705ef39fdd2",
+      "bytes": 748,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/unchanged_client_requires_one_specification_across_private_layouts-0-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-0.qli",
+      "sha256": "49684e0002fa8a963305a233dff5611f16bb1ef0d6fc12a1b0788dfb7974fd62",
+      "bytes": 311,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/unchanged_client_requires_one_specification_across_private_layouts-1-0.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-1.qli",
+      "sha256": "0da57ec7cdf6d5962402e42a3330da66627e5f82501d9b0ebcee2542ee9db993",
+      "bytes": 346,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/unchanged_client_requires_one_specification_across_private_layouts-1-1.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-2.qli",
+      "sha256": "99ed3ef2c8677f180b3f8c95d08b7c5983f69af8183fc9d836f7a61d5d798642",
+      "bytes": 374,
+      "original_external_source": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-sources/unchanged_client_requires_one_specification_across_private_layouts-1-2.qli",
+      "group": "function-contracts",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/function_contracts.rs"
+      ]
+    },
+    {
+      "stored_source": "finite-empty/empty_operation.qli",
+      "sha256": "413e6db6e8085d0c829e6bcdffc02b6d1a2c0025ab25aa6543f6937ff7773c2e",
+      "bytes": 260,
+      "original_external_source": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/first-sources/empty_operation.qli",
+      "group": "finite-empty",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/finite_empty_bits.rs"
+      ]
+    },
+    {
+      "stored_source": "finite-empty/empty_phase.qli",
+      "sha256": "2a9cfac72b136fab3f30fdc9dbb46209c506d321207caec581f2fec539b23e01",
+      "bytes": 358,
+      "original_external_source": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/first-sources/empty_phase.qli",
+      "group": "finite-empty",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/finite_empty_bits.rs"
+      ]
+    },
+    {
+      "stored_source": "finite-empty/controlled_empty.qli",
+      "sha256": "5afb60a7a71059a42a460d36a627038646cfceb757e4c6a741c84161061336fa",
+      "bytes": 495,
+      "original_external_source": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/first-sources/controlled_empty.qli",
+      "group": "finite-empty",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/finite_empty_bits.rs"
+      ]
+    },
+    {
+      "stored_source": "finite-empty/empty_product.qli",
+      "sha256": "3b74656f203b40e62d78f2ea1c168cd77da34a82cb3dbe74b8996f2d37e42828",
+      "bytes": 393,
+      "original_external_source": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/first-sources/empty_product.qli",
+      "group": "finite-empty",
+      "source_status": "Retrospective exact original test input; no source repair. Per-case execution/reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/finite_empty_bits.rs"
+      ]
+    },
+    {
+      "stored_source": "qfor/quantum_fold_preserves_an_external_reference_and_zero_iteration_identity.qli",
+      "sha256": "8ee6adfe04e2c8e5a24d133e0cef794fe0f11561f7ecdd85ec1fd69aa5df15fa",
+      "bytes": 111,
+      "original_external_source": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/first-sources/quantum_fold_preserves_an_external_reference_and_zero_iteration_identity.qli",
+      "group": "qfor",
+      "source_status": "Original unchanged source from Git477 Rust literal; actual completed target failed at full-complex equality after native success.",
+      "test_drivers": [
+        "tests/qfor.rs"
+      ]
+    },
+    {
+      "stored_source": "qfor/multiple_carried_owners_keep_the_complete_entangled_interface.qli",
+      "sha256": "8b0e05715dd60132e49493a1b258a18a9d9f007cfe1657184d27743233e1cd9b",
+      "bytes": 158,
+      "original_external_source": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/first-sources/multiple_carried_owners_keep_the_complete_entangled_interface.qli",
+      "group": "qfor",
+      "source_status": "Original unchanged source from Git477 Rust literal; actual completed target failed at full-complex equality after native success.",
+      "test_drivers": [
+        "tests/qfor.rs"
+      ]
+    },
+    {
+      "stored_source": "review019/explicit-crlf-repair-main.qli",
+      "sha256": "4e1165be8dce6d75beb390afdbaa9b4c2d54779bcc07329142a8ec3f423769c1",
+      "bytes": 123,
+      "original_external_source": "/private/tmp/qleisli-review-v019-probability-usccrch1/first-sources/explicit-crlf-repair-main.qli",
+      "group": "review019",
+      "source_status": "Exact existing test CRLF repair actually reached before numerical first failure; not a new source repair.",
+      "test_drivers": [
+        "tests/review_v019.rs"
+      ]
+    },
+    {
+      "stored_source": "review019/historical-main.qli",
+      "sha256": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+      "bytes": 156,
+      "original_external_source": "/private/tmp/qleisli-review-v019-probability-usccrch1/first-sources/historical-main.qli",
+      "group": "review019",
+      "source_status": "Historical source provenance only; not current BEFORE execution.",
+      "test_drivers": [
+        "tests/review_v019.rs"
+      ]
+    },
+    {
+      "stored_source": "review019/selected-cr-main.qli",
+      "sha256": "1cd41a07ce5db7c3aeb2122cf211e2a16f241ba9b19fd9d2a12de90a5bf4a4f1",
+      "bytes": 122,
+      "original_external_source": "/private/tmp/qleisli-review-v019-probability-usccrch1/first-sources/selected-cr-main.qli",
+      "group": "review019",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/review_v019.rs"
+      ]
+    },
+    {
+      "stored_source": "review024/current-empty.qli",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "original_external_source": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/first-sources/current-empty.qli",
+      "group": "review024",
+      "source_status": "Exact current empty source actually returned Ok before obsolete unwrap_err assertion failed.",
+      "test_drivers": [
+        "tests/review_v024.rs"
+      ]
+    },
+    {
+      "stored_source": "review024/current-misplaced-qft2.qli",
+      "sha256": "665f2463b43d525717a10d2db97adecd39c136a00477eb80fd6e5569b7b7661f",
+      "bytes": 81,
+      "original_external_source": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/first-sources/current-misplaced-qft2.qli",
+      "group": "review024",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/review_v024.rs"
+      ]
+    },
+    {
+      "stored_source": "review024/current-repaired-qft2.qli",
+      "sha256": "98027928a15d3458f14c23c593bf68436593f13ba51be786887ba89c4e7bf0d3",
+      "bytes": 79,
+      "original_external_source": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/first-sources/current-repaired-qft2.qli",
+      "group": "review024",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/review_v024.rs"
+      ]
+    },
+    {
+      "stored_source": "review024/historical-misplaced-measure.qli",
+      "sha256": "dbe452569792943f4e90edfac58194401ebe4bd48caa644b2ee88573d3464d0f",
+      "bytes": 28,
+      "original_external_source": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/first-sources/historical-misplaced-measure.qli",
+      "group": "review024",
+      "source_status": "Historical source provenance only; not current BEFORE execution.",
+      "test_drivers": [
+        "tests/review_v024.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/11-False.qli",
+      "sha256": "746d127e796e81a2843ed85521a2cc9170744f89dae8fea0a42d54602b73ff5c",
+      "bytes": 349,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/11-False.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/11-True.qli",
+      "sha256": "1c25da6cc88bf95ffbb7948282054d9ec25ace1fdccdbf1561bf7f884564f058",
+      "bytes": 371,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/11-True.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/13.qli",
+      "sha256": "14e2c4d2eb7192b15c69275ce26c62878e5b9e1c93c4f85a5564c13685e7afa6",
+      "bytes": 753,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/13.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/15.qli",
+      "sha256": "d4443272cf70fac6e667c62b0473f2ce7ceb82b147ccac5b8ffb559fd3a0a86b",
+      "bytes": 758,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/15.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/17.qli",
+      "sha256": "9e9530e47cf94a31da64ec05857681ecc2ef787bc4555bed900115b11ea6fb7b",
+      "bytes": 618,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/17.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/19.qli",
+      "sha256": "4aa33fec7d6a5403f5ef459a42a275bba6ab98622765cff1bf921335cbf03669",
+      "bytes": 587,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/19.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/negative-0.qli",
+      "sha256": "9c7d19ba33fdddf6071c82e9be098aaa6516684e04ac8e27ea02713e2830996b",
+      "bytes": 418,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/negative-0.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/negative-1.qli",
+      "sha256": "127679eb01eccb12fc558b052b3ff12ed166d3f7b885d8a140a37f236251a992",
+      "bytes": 431,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/negative-1.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/negative-2.qli",
+      "sha256": "115b2e1cb5107239ee611f80716f43919c6133fd40575ebe025d47451ddd092f",
+      "bytes": 375,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/negative-2.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/negative-3.qli",
+      "sha256": "faf978bf13611f3b79da90821f1a994f00382123cef896bb43a8b75e5d480579",
+      "bytes": 374,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/negative-3.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/rectangular/negative-4.qli",
+      "sha256": "60f1e3d8c0a8755d7b1ffafd07fff904ae7fd9f674f8acb89a4c4b8ad69ffc41",
+      "bytes": 398,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/rectangular/negative-4.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/0-selected.qli",
+      "sha256": "0cf643e6f88bd1d249bd45f5e813b885a0412d4f65bac27fa270bc79bb90030b",
+      "bytes": 100,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/0-selected.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/1-selected.qli",
+      "sha256": "afa5680556398a134f5c68c2bf14ff762392c868a9c9cf7416945e297e524b93",
+      "bytes": 114,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/1-selected.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/2-selected.qli",
+      "sha256": "6ecc1b97cd61aed95ca289e8c49b93b4cf2c4eed454856b189d3e27d875004bd",
+      "bytes": 137,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/2-selected.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/3-selected.qli",
+      "sha256": "1a6b379e15733ed755694e22d8426aad9fdf6f34e48851bd03836afc87af2b5f",
+      "bytes": 178,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/3-selected.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/fixed-wrong-x.qli",
+      "sha256": "0481b7bbf5aba7eef8e7d5b79717789ad953655bf87f5b2ddbfccdc32798a684",
+      "bytes": 58,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/fixed-wrong-x.qli",
+      "group": "z-rectangular",
+      "source_status": "Original existing wrong-X counterexample, not reached after earlier Z request child-arity first failure; no negative outcome credited.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "z-rectangular/z/fixed-z.qli",
+      "sha256": "658ecbbf5dc160e2cfcdcba698cce024ed512a077f1962f331bd3e59c29b5014",
+      "bytes": 58,
+      "original_external_source": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-sources/z/fixed-z.qli",
+      "group": "z-rectangular",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/quantum_unit_source.rs",
+        "tests/rectangular_meanings.rs"
+      ]
+    },
+    {
+      "stored_source": "shared-resolution/a.qli",
+      "sha256": "546afbfac86f7fe67a4e2f9478ebd50fe118cf195966b2a61f5027f87fd8b532",
+      "bytes": 44,
+      "original_external_source": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/first-sources/a.qli",
+      "group": "shared-resolution",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/shared_resolution.rs"
+      ]
+    },
+    {
+      "stored_source": "shared-resolution/b.qli",
+      "sha256": "fab892eacf5526f22ec1858884266efd1b1f852dcfe3a37c4300b4d1e240e462",
+      "bytes": 61,
+      "original_external_source": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/first-sources/b.qli",
+      "group": "shared-resolution",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/shared_resolution.rs"
+      ]
+    },
+    {
+      "stored_source": "shared-resolution/main.qli",
+      "sha256": "61081269ab89ef225720f388a02fc2cf47f5851f07adc0db80f2b693c698ad18",
+      "bytes": 80,
+      "original_external_source": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/first-sources/main.qli",
+      "group": "shared-resolution",
+      "source_status": "Exact original source from frozen packet. Storage does not credit per-case reach/outcome.",
+      "test_drivers": [
+        "tests/shared_resolution.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/dep.qli",
+      "sha256": "46330c1fc595beb5a1e704b693a617fa063d86c2a7d2bb0e47253f24860d678d",
+      "bytes": 74,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/dep.qli",
+      "group": "source-snapshots",
+      "source_status": "Exact unchanged current source used before observed numerical failure; helper-mutation is the existing deliberate binding fault.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/helper-mutation.qli",
+      "sha256": "59374e3c9fff1614f8a11fab81e1b42648a3b2b5f7eb3676868bcbdbada55367",
+      "bytes": 40,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/helper-mutation.qli",
+      "group": "source-snapshots",
+      "source_status": "Exact unchanged current source used before observed numerical failure; helper-mutation is the existing deliberate binding fault.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/helper-original.qli",
+      "sha256": "fab892eacf5526f22ec1858884266efd1b1f852dcfe3a37c4300b4d1e240e462",
+      "bytes": 61,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/helper-original.qli",
+      "group": "source-snapshots",
+      "source_status": "Exact unchanged current source used before observed numerical failure; helper-mutation is the existing deliberate binding fault.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/providers-four-contract-main.qli",
+      "sha256": "cad98129ad5cdb83639c31e1417fb6d1547804e5bc3b38b4ec3ac63b3e0b44b9",
+      "bytes": 100000,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/providers-four-contract-main.qli",
+      "group": "source-snapshots",
+      "source_status": "Existing second loop variant, preserved source but not reached after first numerical assertion failed.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/providers-four-static-main.qli",
+      "sha256": "09bf9b006ceabd0a0ece15f1c11d9603ee52c17241f63b8dde2d647887651125",
+      "bytes": 100000,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/providers-four-static-main.qli",
+      "group": "source-snapshots",
+      "source_status": "Exact unchanged current source used before observed numerical failure; helper-mutation is the existing deliberate binding fault.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/shared-checked-op-main.qli",
+      "sha256": "a7e7836105872343a9b3dc5df2c7cbd3ef300968d3ab2528f63c4cfbe680aa0e",
+      "bytes": 434,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/shared-checked-op-main.qli",
+      "group": "source-snapshots",
+      "source_status": "Exact unchanged current source used before observed numerical failure; helper-mutation is the existing deliberate binding fault.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "source-snapshots/shared-contract-main.qli",
+      "sha256": "7e66cf9cbbbd8317aa149bf9283e4243e0e10230906af8b0924bf0664e6cc7a9",
+      "bytes": 435,
+      "original_external_source": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/first-sources/shared-contract-main.qli",
+      "group": "source-snapshots",
+      "source_status": "Existing second loop variant, preserved source but not reached after first numerical assertion failed.",
+      "test_drivers": [
+        "tests/source_snapshots.rs"
+      ]
+    },
+    {
+      "stored_source": "static-c3x/c3x.qli",
+      "sha256": "56bcf70d8ea71361f0f60276d40f0bfaf321bce00c6640e1072c878636eb0bf0",
+      "bytes": 369,
+      "original_external_source": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/first-sources/c3x.qli",
+      "group": "static-c3x",
+      "source_status": "Exact unchanged first source; per-case reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/static_semantics.rs"
+      ]
+    },
+    {
+      "stored_source": "static-c3x/complete-c3x-project-main.qli",
+      "sha256": "a4083eaeddb8ccb6e81b7db5385bb6eaa939a6f5c0207c99c09486295757f3c5",
+      "bytes": 597,
+      "original_external_source": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/first-sources/complete-c3x-project-main.qli",
+      "group": "static-c3x",
+      "source_status": "Exact unchanged first source; per-case reach is not inferred from storage.",
+      "test_drivers": [
+        "tests/static_semantics.rs"
+      ]
+    },
+    {
+      "stored_source": "tuple/classical-unit-frame.qli",
+      "sha256": "475942a2c78127c4b0b6a5d5551f24bdc340a3a34b09051aa56e1b9d0252b517",
+      "bytes": 244,
+      "original_external_source": "/private/tmp/qleisli-tuple-probability-758wh7ay/first-sources/classical-unit-frame.qli",
+      "group": "tuple",
+      "source_status": "Exact unchanged embedded source before the actual final probability failure.",
+      "test_drivers": [
+        "tests/tuple_shapes.rs"
+      ]
+    },
+    {
+      "stored_source": "tuple/discarded-quantum-owner.qli",
+      "sha256": "ec1ddaf21f766d2867298b56a77f7256d1837af5be0fb467f336f5bed8f6c88c",
+      "bytes": 56,
+      "original_external_source": "/private/tmp/qleisli-tuple-probability-758wh7ay/first-sources/discarded-quantum-owner.qli",
+      "group": "tuple",
+      "source_status": "Exact unchanged embedded source before the actual final probability failure.",
+      "test_drivers": [
+        "tests/tuple_shapes.rs"
+      ]
+    },
+    {
+      "stored_source": "tuple/duplicate-quantum-owner.qli",
+      "sha256": "c9bc3a0d678a66286de97a2bae56a47ad7f8b9f5c99ab882e2cb6ed8e1582022",
+      "bytes": 57,
+      "original_external_source": "/private/tmp/qleisli-tuple-probability-758wh7ay/first-sources/duplicate-quantum-owner.qli",
+      "group": "tuple",
+      "source_status": "Exact unchanged embedded source before the actual final probability failure.",
+      "test_drivers": [
+        "tests/tuple_shapes.rs"
+      ]
+    },
+    {
+      "stored_source": "tuple/ordered-quantum-branch-frame.qli",
+      "sha256": "e5fe5f0c3c68de6678064acf39e7d841da2825cc223bb19b94d21aa55392dd80",
+      "bytes": 271,
+      "original_external_source": "/private/tmp/qleisli-tuple-probability-758wh7ay/first-sources/ordered-quantum-branch-frame.qli",
+      "group": "tuple",
+      "source_status": "Exact unchanged embedded source before the actual final probability failure.",
+      "test_drivers": [
+        "tests/tuple_shapes.rs"
+      ]
+    }
+  ],
+  "immutable_originals": {
+    "tests/classical_functions.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/classical_functions.rs"
+    },
+    "tests/common_authoring_diagnostics.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/common_authoring_diagnostics.rs"
+    },
+    "tests/check_scope_cli.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/check_scope_cli.rs"
+    },
+    "tests/check_scope_report.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/check_scope_report.rs"
+    },
+    "tests/cli_sampling.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/cli_sampling.rs"
+    },
+    "tests/body_effects.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/body_effects.rs"
+    },
+    "tests/checked_operations.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/checked_operations.rs"
+    },
+    "tests/compile.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/compile.rs"
+    },
+    "tests/computed_derived_source.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/computed_derived_source.rs"
+    },
+    "scripts/test_engineering_boundary_baseline.py": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "0693be3eed280566ee87154c12cc9a48715c01a26d5425be0e5e225dbaa0f35d",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/scripts/test_engineering_boundary_baseline.py"
+    },
+    "tests/function_contracts.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/function_contracts.rs"
+    },
+    "tests/finite_empty_bits.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/finite_empty_bits.rs"
+    },
+    "tests/engineering_boundary_baseline.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/engineering_boundary_baseline.rs"
+    },
+    "tests/qfor.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/qfor.rs"
+    },
+    "tests/review_v019.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/review_v019.rs"
+    },
+    "tests/review_v024.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/review_v024.rs"
+    },
+    "tests/quantum_unit_source.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/quantum_unit_source.rs"
+    },
+    "tests/rectangular_meanings.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/rectangular_meanings.rs"
+    },
+    "tests/shared_resolution.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/shared_resolution.rs"
+    },
+    "tests/source_snapshots.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/source_snapshots.rs"
+    },
+    "tests/static_semantics.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/static_semantics.rs"
+    },
+    "tests/tuple_shapes.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/tuple_shapes.rs"
+    }
+  },
+  "packet_records": [
+    {
+      "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/FIRST-v1.json",
+      "bytes": 1607,
+      "sha256": "41f49c56753d32fed4b61ed78370d9d447d17b60c3910fb76d7b7c79a331272c",
+      "group": "classical"
+    },
+    {
+      "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/FIRST-common-v1.json",
+      "bytes": 529,
+      "sha256": "365e29c397e8cefdc9573eb301df27f4b8517e60ab983e7bfae595cb1c4a087d",
+      "group": "classical"
+    },
+    {
+      "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/FIRST-other-sources-v2.json",
+      "bytes": 1012,
+      "sha256": "32c640b831f6531f56f369340aee96fcc97bcb1c3fa70ae4a1202faba2afcb80",
+      "group": "classical"
+    },
+    {
+      "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+      "bytes": 4553,
+      "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8",
+      "group": "classical"
+    },
+    {
+      "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/BEFORE-v1.json",
+      "bytes": 1740,
+      "sha256": "87b7b1c72e00adabbe3810a3ab12c19510b33f5ce067bfccc8287827e935f0d5",
+      "group": "scope-sampling"
+    },
+    {
+      "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/sampling-BEFORE-v1.json",
+      "bytes": 943,
+      "sha256": "78713dec94b181305e2d49e681c3fbf1c5bac25de01af1b737e8cc03e0300ff4",
+      "group": "scope-sampling"
+    },
+    {
+      "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+      "bytes": 4607,
+      "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de",
+      "group": "scope-sampling"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/MANIFEST-v1.json",
+      "bytes": 3482,
+      "sha256": "ee16fa3d53ab03890ee09c5436817efd6cc4fc3fa3da8aa1f6b1ae16e48a8150",
+      "group": "ordinary-gate"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+      "bytes": 2086,
+      "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1",
+      "group": "ordinary-gate"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/HANDOFF-v2.json",
+      "bytes": 963,
+      "sha256": "643612910e8f28a424da65c329c8cd6b09c20c196561a379175cb09af7f2fa1b",
+      "group": "ordinary-gate"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/before-observations.json",
+      "bytes": 1318,
+      "sha256": "7a1d08a6f062c67fe4da544fb2a7908dbe64c631977dc4804226e04314e462c3",
+      "group": "root-profile"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/MANIFEST-v1.json",
+      "bytes": 666,
+      "sha256": "6114decb91a51ac55987eb65184437765c71bf21844f841a354cafff662e8ffe",
+      "group": "root-profile"
+    },
+    {
+      "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+      "bytes": 1232,
+      "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5",
+      "group": "root-profile"
+    },
+    {
+      "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/BEFORE-v1.json",
+      "bytes": 1274,
+      "sha256": "c3829c20c20e8e2bbb077800a79adf20a0a9d2774d96e7c62b1e6ec790a6da49",
+      "group": "pi8"
+    },
+    {
+      "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/MANIFEST-v1.json",
+      "bytes": 2991,
+      "sha256": "ca7beffea5d4cbf0f16c78d7ec8608ec16f802f070f4d07cf9d998fc99dd6599",
+      "group": "pi8"
+    },
+    {
+      "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+      "bytes": 4905,
+      "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410",
+      "group": "function-contracts"
+    },
+    {
+      "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/FIRST-SOURCES-v1.json",
+      "bytes": 2171,
+      "sha256": "53c260da1bd369f0408679fd7aa77f98c25db4aa91f0d53ceaab605916677cd7",
+      "group": "function-contracts"
+    },
+    {
+      "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/START.json",
+      "bytes": 780,
+      "sha256": "d1e065857f5acfd9f127f493ed607d3940ab75d1991a8dbf4dab181bed35b27b",
+      "group": "function-contracts"
+    },
+    {
+      "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/MANIFEST-v1.json",
+      "bytes": 2811,
+      "sha256": "3262ac2ef05f3c9e001205ecc76ff38c2d48a6a007d960e1cfc0b402c9f3f4c0",
+      "group": "finite-empty"
+    },
+    {
+      "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/BEFORE-v1.json",
+      "bytes": 1110,
+      "sha256": "ca6141dab63d03df28a61f0275575442a9c4b0d15f4370311158669a66974938",
+      "group": "finite-empty"
+    },
+    {
+      "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+      "bytes": 1188,
+      "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d",
+      "group": "finite-empty",
+      "status": "Latest reviewed repair candidate; immutable V1 four BEFORE source hashes unchanged."
+    },
+    {
+      "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/BEFORE-v1.json",
+      "bytes": 1398,
+      "sha256": "fd1ea6125678f2a4c4d6597938a994a889cf464472502db32f8185f2f07cdd0e",
+      "group": "qfor"
+    },
+    {
+      "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+      "bytes": 1556,
+      "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1",
+      "group": "qfor"
+    },
+    {
+      "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/MANIFEST-v1.json",
+      "sha256": "b86f974f1917cfa38afbc2a1a373eda9c13ff17fe04f21eabd1a7e103f4236fc",
+      "bytes": 1639,
+      "group": "review019"
+    },
+    {
+      "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/FIRST-v1.json",
+      "sha256": "78c8116f30dbfe6173c9980ccf6a73d2986e4b4bf85675b9c322efde9f6677bb",
+      "bytes": 3259,
+      "group": "review019"
+    },
+    {
+      "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/MANIFEST-v1.json",
+      "sha256": "edf4c2c73e18c9ada3b256893cd81e178e2cf6f0b86f30b4838725b167ca1004",
+      "bytes": 2918,
+      "group": "review024"
+    },
+    {
+      "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/BEFORE-v1.json",
+      "sha256": "ddfe678659892db5b516c5af10f9ade78c234db7d83efac4f01b991dcc9fd2b9",
+      "bytes": 2190,
+      "group": "review024"
+    },
+    {
+      "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+      "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f",
+      "bytes": 5181,
+      "group": "z-rectangular"
+    },
+    {
+      "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/FIRST-SOURCES-v1.json",
+      "sha256": "4373f7bc112bf93d39f94efaeb995baefdf0e1727fcb50330d38a383c12027f7",
+      "bytes": 2289,
+      "group": "z-rectangular"
+    },
+    {
+      "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/START.json",
+      "sha256": "a24e565acbb9977614fdb796c9a27fa198586bcb9a76d86942910d1c2745eba1",
+      "bytes": 774,
+      "group": "z-rectangular"
+    },
+    {
+      "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/MANIFEST-v1.json",
+      "sha256": "eba2988b550d1bfa971a741f931f764d12154472476ac24ce43dfab174d697b4",
+      "bytes": 1939,
+      "group": "shared-resolution"
+    },
+    {
+      "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/FIRST-v1.json",
+      "sha256": "cb407ea3ee4a243d9564a64a97b4f4852be21f8e2c4ba5d04534935aaa671dc1",
+      "bytes": 2430,
+      "group": "shared-resolution"
+    },
+    {
+      "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/FIRST-v1.json",
+      "sha256": "2f08a41b1b5bfde1538ca25e076879850360e071a4a6d289074251bdd994fac6",
+      "bytes": 3767,
+      "group": "source-snapshots"
+    },
+    {
+      "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+      "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+      "bytes": 1983,
+      "group": "source-snapshots"
+    },
+    {
+      "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/BEFORE-v1.json",
+      "sha256": "9c2ca0d9af679d5aac1668db8795589d4bceb590f88d61d91625fb55f16444e6",
+      "bytes": 1764,
+      "group": "static-c3x"
+    },
+    {
+      "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/MANIFEST-v1.json",
+      "sha256": "206b12df734c6ef702c8d714c13bf2a34e9ee4b6d2772c022e12cf0443f88bb5",
+      "bytes": 1707,
+      "group": "static-c3x"
+    },
+    {
+      "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/FIRST-v1.json",
+      "sha256": "5600383bd976828d8fe7a26ec8b2e50be2c2d4f60a423aac40ac2db9c010c73f",
+      "bytes": 2554,
+      "group": "tuple"
+    },
+    {
+      "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/MANIFEST-v1.json",
+      "sha256": "4344509b4525296b3970fa77c2ce3af611449246c977da920f5913db2ca17659",
+      "bytes": 1657,
+      "group": "tuple"
+    }
+  ],
+  "actual_archives": {
+    "driver": {
+      "path": "reports/remaining-normal.driver.json.gz",
+      "sha256": "3ba97976d4230986b2dd371e438f15f9a1384755e50ca660632435ebb979a213",
+      "bytes": 33469,
+      "expanded_sha256": "7d7d72845090c95e120e9e97d3b82141b65ca5a51cfda0382d5c9ab0c024c594",
+      "expanded_bytes": 75768,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.json",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "started": {
+      "path": "reports/remaining-normal.started.json.gz",
+      "sha256": "11a34195865c25c426c0a73f53f7d26acb1931d3eff8c8de2232dcc23c507898",
+      "bytes": 17198,
+      "expanded_sha256": "8a8d7b33e112ddc005b75083305a968fb755596dbc223b94ff9596ce75c6c079",
+      "expanded_bytes": 38270,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.started.json",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "stdout": {
+      "path": "reports/remaining-normal.stdout.txt.gz",
+      "sha256": "20c517fa64ab9df748b22bba8a6600acc23ff6b405fad32353efd8deae7df4a4",
+      "bytes": 82101,
+      "expanded_sha256": "8bc3ba6c2fcf55814192f3e5c094cb8bc85f18fa1c98aef4fa3ee985198e9ed3",
+      "expanded_bytes": 565450,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.stdout.txt",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "stderr": {
+      "path": "reports/remaining-normal.stderr.txt.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "expanded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expanded_bytes": 0,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.stderr.txt",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "invocation": {
+      "path": "reports/remaining-normal.invocation.py.txt.gz",
+      "sha256": "62ebc0feb7fe9cc19df13c0c80024d41c8e38e020a18ed4906a6b61a873f8f9f",
+      "bytes": 1071,
+      "expanded_sha256": "b7a85478309ee4d85aef6d7df8b99925185767df2f623f1de1faf81e69689d32",
+      "expanded_bytes": 3872,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.py",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "observer": {
+      "path": "reports/root-observer.py.txt.gz",
+      "sha256": "cf9530a3d6c1a04adb9c190d8e9620d2cca99fc1f05b8496b2ee2622ba321785",
+      "bytes": 1562,
+      "expanded_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+      "expanded_bytes": 4100,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/run_v3.py",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    }
+  },
+  "diagnostic_bindings": [
+    {
+      "original_external_projection": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-diagnostics/eager_argument_effects_belong_to_the_caller_in_source_order.txt",
+      "sha256": "c6f6ea49b649c95609de9be5d5b6a6d9a113985d89f0224a7645872a2437d8a3",
+      "bytes": 377,
+      "first_offset_in_captured_prefix": 444405,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 444405,
+      "expanded_end_byte_exclusive": 444782,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-diagnostics/explicit_else_imports_and_inferred_unitary_adjoint_still_execute.txt",
+      "sha256": "4ebe5762d41a9f005fc46611ef0cb57a7dc9affac4dd2ca6f605ae365202a210",
+      "bytes": 530,
+      "first_offset_in_captured_prefix": 449019,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 449019,
+      "expanded_end_byte_exclusive": 449549,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/first-diagnostics/repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller.txt",
+      "sha256": "5fa683d4a301528ea96f06c5ce0a3d7b44a2741d0b4804e8ba9f64000da283fa",
+      "bytes": 303,
+      "first_offset_in_captured_prefix": 444783,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 444783,
+      "expanded_end_byte_exclusive": 445086,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/actual-before-target-excerpt.txt",
+      "sha256": "fa3f9e50bcdf67333c027d0fc42abd7cd1de3a2fd592cb35ce69e754db19d6f0",
+      "bytes": 3015,
+      "first_offset_in_captured_prefix": 61730,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 61730,
+      "expanded_end_byte_exclusive": 64745,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/actual-before-sampling-excerpt.txt",
+      "sha256": "028d0202ba7848ba712d2f00554f5078d54044c7f1daccad6f9f08379403d886",
+      "bytes": 1039,
+      "first_offset_in_captured_prefix": 447015,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 447015,
+      "expanded_end_byte_exclusive": 448054,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-actual-556-576.stdout.txt",
+      "sha256": "da0fc6540c90b90f57ec684db0b3a9401253f11b47ec8993f2a1f41fadf13363",
+      "bytes": 963,
+      "first_offset_in_captured_prefix": 59250,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 59250,
+      "expanded_end_byte_exclusive": 60213,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-canonical_control_zero_power_evaluates_effectful_arguments_in_source_order.stdout.txt",
+      "sha256": "24909f2cf0077f7a3a84584c7853a2e0b0fc1354bdcad4e4725d3e2f94d1314a",
+      "bytes": 359,
+      "first_offset_in_captured_prefix": 67125,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 67125,
+      "expanded_end_byte_exclusive": 67484,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/first-selected_checked_constructor_retains_requests_and_checks_real_provider.stdout.txt",
+      "sha256": "f776285515d797f870346065c70ab43e116a27d9d23dc2831e13b1a6316aecad",
+      "bytes": 373361,
+      "first_offset_in_captured_prefix": 67484,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 67484,
+      "expanded_end_byte_exclusive": 440845,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/first-actual-function-contracts.stdout.txt",
+      "sha256": "30da1cbed21564c1a9898f980c01af52fb21cdb61ef45b9b5cf8a90eec5b23a8",
+      "bytes": 3983,
+      "first_offset_in_captured_prefix": 474188,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 474188,
+      "expanded_end_byte_exclusive": 478171,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/actual-before-excerpt.txt",
+      "sha256": "f20345a39dd5a8655eb87614f30532e7a9136b016533bddd41c27633b2fb2a2d",
+      "bytes": 2556,
+      "first_offset_in_captured_prefix": 460663,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 460663,
+      "expanded_end_byte_exclusive": 463219,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/actual-before-excerpt.txt",
+      "sha256": "9276c42febdb851e725c42d11825fed67ed4aad631d0a324f5d4d3984836cc10",
+      "bytes": 2831,
+      "first_offset_in_captured_prefix": 468764,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 468764,
+      "expanded_end_byte_exclusive": 471595,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/before-observations.json",
+      "json_key": [
+        "test_failure_blocks",
+        "missing_import_reports_the_call_site_even_in_unused_functions"
+      ],
+      "sha256": "224cb5224c94c76907b94fefe8153be3f8ed776bbf77f9c18c1a15034112ae83",
+      "bytes": 333,
+      "first_offset_in_captured_prefix": 452705,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 452705,
+      "expanded_end_byte_exclusive": 453038,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/before-observations.json",
+      "json_key": [
+        "test_failure_blocks",
+        "existing_canonical_t_chain_keeps_its_raw_length_profile"
+      ],
+      "sha256": "92a1f98d9a7cdfaf8a135f30f1a891a680c4048c78aff660029b69df82204d22",
+      "bytes": 676,
+      "first_offset_in_captured_prefix": 454030,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 454030,
+      "expanded_end_byte_exclusive": 454706,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/first-qfor-target.stdout.txt",
+      "sha256": "fe14493e42c7ebb9821577d7bd9e45e885f5aed7ffc0431b9f7bff891406271c",
+      "bytes": 1811,
+      "first_offset_in_captured_prefix": 510507,
+      "prefix_exact_occurrences": 1,
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 510507,
+      "expanded_end_byte_exclusive": 512318,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-review-v019-probability-usccrch1/first-target.stdout.txt",
+      "sha256": "96cd1fe7b5d17fa205048195ba55779bc19db0b7259360b0fef5ff897c2a59fe",
+      "bytes": 869,
+      "exact_prefix_spans": [
+        {
+          "byte_offset": 522795,
+          "bytes": 869,
+          "sha256": "96cd1fe7b5d17fa205048195ba55779bc19db0b7259360b0fef5ff897c2a59fe"
+        }
+      ],
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 522795,
+      "expanded_end_byte_exclusive": 523664,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/first-review024-target.stdout.txt",
+      "sha256": "d2f294dceccb7d90d619069cc768871d41114f0f3de8cbdf735e405c1b6d5ed8",
+      "bytes": 1323,
+      "exact_prefix_spans": [
+        {
+          "byte_offset": 526024,
+          "bytes": 1323,
+          "sha256": "d2f294dceccb7d90d619069cc768871d41114f0f3de8cbdf735e405c1b6d5ed8"
+        }
+      ],
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 526024,
+      "expanded_end_byte_exclusive": 527347,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/first-actual-z-rectangular.stdout.txt",
+      "sha256": "8c00f318fbdb5d86fd713c42610a75064cdcc9b620fbb70630c82d016e73b783",
+      "bytes": 1988,
+      "exact_prefix_spans": [
+        {
+          "byte_offset": 519111,
+          "bytes": 1988,
+          "sha256": "8c00f318fbdb5d86fd713c42610a75064cdcc9b620fbb70630c82d016e73b783"
+        }
+      ],
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 519111,
+      "expanded_end_byte_exclusive": 521099,
+      "full_stdout_exact_occurrences": 1
+    },
+    {
+      "original_external_projection": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/first-target.stdout.txt",
+      "sha256": "e080a2757ba518d135ee91dbe85aff1c558b46f7f6ef8b5f80d46419f5783896",
+      "bytes": 1005,
+      "exact_prefix_spans": [
+        {
+          "byte_offset": 538086,
+          "bytes": 1005,
+          "sha256": "e080a2757ba518d135ee91dbe85aff1c558b46f7f6ef8b5f80d46419f5783896"
+        }
+      ],
+      "scope": "Original completed-target projection is an exact byte interval within the final closed stdout; not a separate command outcome.",
+      "expanded_start_byte": 538086,
+      "expanded_end_byte_exclusive": 539091,
+      "full_stdout_exact_occurrences": 1
+    }
+  ],
+  "repair_packets": {
+    "ordinary-gate": {
+      "patch": {
+        "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+        "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+        "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+      }
+    },
+    "scope-sampling": {
+      "patch": {
+        "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+        "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+        "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+      }
+    },
+    "classical": {
+      "patch": {
+        "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+        "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+        "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+      }
+    },
+    "root-profile": {
+      "patch": {
+        "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/test-profile-v3.patch",
+        "sha256": "5c7db1b7948bc837568b322d344fd7209b0ffaf2675b941e32d2f9d25eac1ac2"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+        "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5"
+      }
+    },
+    "pi8": {
+      "patch": {
+        "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/pi8-current-v1.patch",
+        "sha256": "48c5788eef5a8dbea15a691588a9f9de91ca52a57231d345160b5d9f85c82868"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/MANIFEST-v1.json",
+        "sha256": "ca7beffea5d4cbf0f16c78d7ec8608ec16f802f070f4d07cf9d998fc99dd6599"
+      }
+    },
+    "finite-empty": {
+      "patch": {
+        "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+        "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+        "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+      }
+    },
+    "function-contracts": {
+      "patch": {
+        "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+        "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+        "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+      }
+    },
+    "qfor": {
+      "patch": {
+        "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/qfor-complex-oracle-v2.patch",
+        "sha256": "9179cb72c8ea3936dafceb9b9a24c1a66639ff4fdc4bf25dc336deb04ed0dad3"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+        "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1"
+      }
+    },
+    "review019": {
+      "patch": {
+        "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/review-v019-probability-v1.patch",
+        "sha256": "0301d8f0be47ffb1cb93c54af4382bd4d4925cb7c75c5fac2fb758fb41160bf3"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/MANIFEST-v1.json",
+        "sha256": "b86f974f1917cfa38afbc2a1a373eda9c13ff17fe04f21eabd1a7e103f4236fc"
+      }
+    },
+    "review024": {
+      "patch": {
+        "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/review-v024-import-v1.patch",
+        "sha256": "7eb419725bb36f9bfa95f7b159803348b7fa43451257893f794e5dd2c8e20d51"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/MANIFEST-v1.json",
+        "sha256": "edf4c2c73e18c9ada3b256893cd81e178e2cf6f0b86f30b4838725b167ca1004"
+      }
+    },
+    "z-rectangular": {
+      "patch": {
+        "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/z-rectangular-test-repair-v1.patch",
+        "sha256": "1ad9e75e6ba6faa0be0ae875cdd2b2ae21c736f31b978c6b7e2ca7160436a489"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+        "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f"
+      }
+    },
+    "shared-resolution": {
+      "patch": {
+        "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/shared-resolution-provider-v1.patch",
+        "sha256": "6586b6b03348f6c0459fdaeb3566523ee7b30d01e2644667cf1fe54eca62e729"
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/MANIFEST-v1.json",
+        "sha256": "eba2988b550d1bfa971a741f931f764d12154472476ac24ce43dfab174d697b4"
+      }
+    },
+    "source-snapshots": {
+      "patch": {
+        "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/source-snapshots-probability-v1.patch",
+        "sha256": "98c1eb5763f1bb9c6abe45bc6e08a81b9b076d3903bb1336b4ef2adfdc8f2cd8",
+        "bytes": 1445
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+        "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+        "bytes": 1983
+      }
+    },
+    "static-c3x": {
+      "patch": {
+        "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/static-c3x-selection-v1.patch",
+        "sha256": "ed910fe24f9d66f274c2a33205483383a3ae069779a9945d8df2e0baa6fb5f2f",
+        "bytes": 1139
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/MANIFEST-v1.json",
+        "sha256": "206b12df734c6ef702c8d714c13bf2a34e9ee4b6d2772c022e12cf0443f88bb5",
+        "bytes": 1707
+      }
+    },
+    "tuple": {
+      "patch": {
+        "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/tuple-probability-v1.patch",
+        "sha256": "39b1e26f10b7ef4f03da0e7c6306496524c9f3bce5a7f45655b4f367051ca5c3",
+        "bytes": 812
+      },
+      "manifest": {
+        "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/MANIFEST-v1.json",
+        "sha256": "4344509b4525296b3970fa77c2ce3af611449246c977da920f5913db2ca17659",
+        "bytes": 1657
+      }
+    }
+  },
+  "failed_tests": [
+    {
+      "test": "interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads",
+      "failed_test_line": 440,
+      "target": "Running unittests src/lib.rs (target/debug/deps/qleisli-ec126c744a504ac1)",
+      "group": "environment-only",
+      "status": "Original ps permission failure retained; separate later actual retry is recorded, with no source repair.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 53352,
+        "expanded_end_byte_exclusive": 53739,
+        "sha256": "5bd1777e47fdd84e93e891de00cd13b41ef39616752fbbc05081103f07ae7e89",
+        "bytes": 387,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "private_wrapper_suggestions_do_not_require_an_effect_annotation",
+      "failed_test_line": 556,
+      "target": "Running tests/body_effects.rs (target/debug/deps/body_effects-3c2ad9e3640fd6b1)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 59638,
+        "expanded_end_byte_exclusive": 59975,
+        "sha256": "74dc2a0b686a5fd80290f6508d413bb16ebfa3a15a4b2565f02e6eb31c9e2dca",
+        "bytes": 337,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "requestless_entry_and_mainless_library_have_explicit_success_scopes",
+      "failed_test_line": 607,
+      "target": "Running tests/check_scope_cli.rs (target/debug/deps/check_scope_cli-e14efad839e1598b)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 62154,
+        "expanded_end_byte_exclusive": 62890,
+        "sha256": "90fd9fd41913ee3f4f966b29ea6e667665ddf0337e69ed632f15b4a20b36b33f",
+        "bytes": 736,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "operation_instantiations_stay_within_concrete_roots_and_selected_qrate",
+      "failed_test_line": 638,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 63545,
+        "expanded_end_byte_exclusive": 63903,
+        "sha256": "de79d0a96e975f9671decf9d3e9b796d4e7a3a3059b2598a3c911cc8738f7b67",
+        "bytes": 358,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "entry_and_library_reports_describe_actual_concrete_roots",
+      "failed_test_line": 639,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 63904,
+        "expanded_end_byte_exclusive": 64155,
+        "sha256": "e0a2e76534d19902947360b5a282de981caa5400fef6a1a6d10ac57b67fcb40a",
+        "bytes": 251,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "unused_finite_meaning_is_not_a_native_request",
+      "failed_test_line": 640,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 64156,
+        "expanded_end_byte_exclusive": 64385,
+        "sha256": "b39ebe806bad06993cdd208d0cdbcfbb9efc4ef876c0695e3599c2b62acef42a",
+        "bytes": 229,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "canonical_control_zero_power_evaluates_effectful_arguments_in_source_order",
+      "failed_test_line": 684,
+      "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-480a98f52eb397fc)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 67125,
+        "expanded_end_byte_exclusive": 67483,
+        "sha256": "8da34faa4ff494179631bdd718a90bf056b361ba32d061a63d4f40bf1407f841",
+        "bytes": 358,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_checked_constructor_retains_requests_and_checks_real_provider",
+      "failed_test_line": 695,
+      "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-480a98f52eb397fc)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 67484,
+        "expanded_end_byte_exclusive": 440843,
+        "sha256": "2b3e3dbba0e897cccabdfcc9bd4ef6b9fa05ab943911a0bdd0aad034eba7d68f",
+        "bytes": 373359,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "eager_argument_effects_belong_to_the_caller_in_source_order",
+      "failed_test_line": 748,
+      "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-ccd234b1e1e8482a)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 444405,
+        "expanded_end_byte_exclusive": 444782,
+        "sha256": "c6f6ea49b649c95609de9be5d5b6a6d9a113985d89f0224a7645872a2437d8a3",
+        "bytes": 377,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller",
+      "failed_test_line": 751,
+      "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-ccd234b1e1e8482a)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 444783,
+        "expanded_end_byte_exclusive": 445086,
+        "sha256": "5fa683d4a301528ea96f06c5ce0a3d7b44a2741d0b4804e8ba9f64000da283fa",
+        "bytes": 303,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "seeded_samples_have_atomic_human_and_json_outputs",
+      "failed_test_line": 828,
+      "target": "Running tests/cli_sampling.rs (target/debug/deps/cli_sampling-c9033d991753bb07)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 447316,
+        "expanded_end_byte_exclusive": 447832,
+        "sha256": "9d6f902d8c212fce1909c57456d88b423039628a00da5e5ae5e56c201dfed525",
+        "bytes": 516,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "explicit_else_imports_and_inferred_unitary_adjoint_still_execute",
+      "failed_test_line": 858,
+      "target": "Running tests/common_authoring_diagnostics.rs (target/debug/deps/common_authoring_diagnostics-337f96240e8f31fd)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 449019,
+        "expanded_end_byte_exclusive": 449549,
+        "sha256": "4ebe5762d41a9f005fc46611ef0cb57a7dc9affac4dd2ca6f605ae365202a210",
+        "bytes": 530,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "missing_import_reports_the_call_site_even_in_unused_functions",
+      "failed_test_line": 903,
+      "target": "Running tests/compile.rs (target/debug/deps/compile-9b35c367586c29fd)",
+      "group": "root-profile",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/test-profile-v3.patch",
+          "sha256": "5c7db1b7948bc837568b322d344fd7209b0ffaf2675b941e32d2f9d25eac1ac2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+          "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 452705,
+        "expanded_end_byte_exclusive": 453036,
+        "sha256": "d171a3394dcf2ffd2357eb9e0acf05415930662ada86cbc02c4aef0af446fbf2",
+        "bytes": 331,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "existing_canonical_t_chain_keeps_its_raw_length_profile",
+      "failed_test_line": 946,
+      "target": "Running tests/computed_derived_source.rs (target/debug/deps/computed_derived_source-ade639f939de4be6)",
+      "group": "root-profile",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/test-profile-v3.patch",
+          "sha256": "5c7db1b7948bc837568b322d344fd7209b0ffaf2675b941e32d2f9d25eac1ac2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+          "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 454030,
+        "expanded_end_byte_exclusive": 454704,
+        "sha256": "b44cc964a3611ef8b5b731fd4ab1e77b05cde325e524c67a2cb7c66a78501645",
+        "bytes": 674,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_pi8_profile_retains_exact_integers_and_explicit_refusals",
+      "failed_test_line": 1072,
+      "target": "Running tests/engineering_boundary_baseline.rs (target/debug/deps/engineering_boundary_baseline-0537d504577ddceb)",
+      "group": "pi8",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/pi8-current-v1.patch",
+          "sha256": "48c5788eef5a8dbea15a691588a9f9de91ca52a57231d345160b5d9f85c82868"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/MANIFEST-v1.json",
+          "sha256": "ca7beffea5d4cbf0f16c78d7ec8608ec16f802f070f4d07cf9d998fc99dd6599"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 460963,
+        "expanded_end_byte_exclusive": 462964,
+        "sha256": "008db7b47c601ac9276c01cb208315bb473154139e22621f4a0da6c02b869b46",
+        "bytes": 2001,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_empty_basis_meaning_and_phase_fault_use_the_actual_native_contract",
+      "failed_test_line": 1200,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 469929,
+        "expanded_end_byte_exclusive": 470289,
+        "sha256": "59700c41a2ebbd4336afbf0dd04e47e2f0481ccf56871d0d69f591c83c673818",
+        "bytes": 360,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "empty_register_operation_formal_checks_its_actual_provider_and_exact_ports",
+      "failed_test_line": 1203,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470290,
+        "expanded_end_byte_exclusive": 470576,
+        "sha256": "087492d980825d94e3b44315bca1a5af9ff99354e08a78314258297665ca6e88",
+        "bytes": 286,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_zero_register_product_meaning_keeps_unit_nodes_and_axis_order",
+      "failed_test_line": 1205,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470577,
+        "expanded_end_byte_exclusive": 470849,
+        "sha256": "9ba21d8f6fdf8da4296a5d839e17267fac8eef0a50d839f0d23055460e3c48a0",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "controlled_empty_register_scalar_preserves_the_exact_relative_phase",
+      "failed_test_line": 1207,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470850,
+        "expanded_end_byte_exclusive": 471122,
+        "sha256": "0ce45519d5d46a3265696b78b833f4c1c8c33d5fbb7d24f4f45cd68c89f371e7",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_source_types_declared_effects_and_ordinary_targets_are_required",
+      "failed_test_line": 1303,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476246,
+        "expanded_end_byte_exclusive": 476601,
+        "sha256": "3531e3bbe8695f3f9dcfffe1ac8bff37fa3c7f50d2bf4edd9fbed451b80443e1",
+        "bytes": 355,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "nested_function_evidence_survives_external_inverse_and_control",
+      "failed_test_line": 1310,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476602,
+        "expanded_end_byte_exclusive": 476867,
+        "sha256": "461dab5af3f7c8a6122892fda0854bfd6622e7bec6ba87eb8c6ae4814031b59c",
+        "bytes": 265,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "observing_contracts_compare_complete_instruments_on_the_emitted_call",
+      "failed_test_line": 1315,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476868,
+        "expanded_end_byte_exclusive": 477136,
+        "sha256": "ce61652b09252beac76e22583ecb33d9343bacb17689cd4219659a6a73e53011",
+        "bytes": 268,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "repeated_nested_contracts_share_one_execution_budget",
+      "failed_test_line": 1320,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 477137,
+        "expanded_end_byte_exclusive": 477381,
+        "sha256": "864a354459a631b6e581850f2554c442c8dc7ee9885e6e24764ad39d78d04148",
+        "bytes": 244,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "unchanged_client_requires_one_specification_across_private_layouts",
+      "failed_test_line": 1322,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 477382,
+        "expanded_end_byte_exclusive": 477654,
+        "sha256": "85459500ea748f8977109876ad36e4109af1e6a012a23dbadc370c3417dd5490",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "multiple_carried_owners_keep_the_complete_entangled_interface",
+      "failed_test_line": 1890,
+      "target": "Running tests/qfor.rs (target/debug/deps/qfor-b89ffd0db47d4cd1)",
+      "group": "qfor",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/qfor-complex-oracle-v2.patch",
+          "sha256": "9179cb72c8ea3936dafceb9b9a24c1a66639ff4fdc4bf25dc336deb04ed0dad3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+          "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 510913,
+        "expanded_end_byte_exclusive": 511554,
+        "sha256": "3bb6de26e66e59c7449e76c44ec7c48e750cba3243535c34f4d3030dc8738c02",
+        "bytes": 641,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "quantum_fold_preserves_an_external_reference_and_zero_iteration_identity",
+      "failed_test_line": 1891,
+      "target": "Running tests/qfor.rs (target/debug/deps/qfor-b89ffd0db47d4cd1)",
+      "group": "qfor",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/qfor-complex-oracle-v2.patch",
+          "sha256": "9179cb72c8ea3936dafceb9b9a24c1a66639ff4fdc4bf25dc336deb04ed0dad3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+          "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 511555,
+        "expanded_end_byte_exclusive": 512015,
+        "sha256": "3261b7a7c06033069dbcc943017c54d654c038f30830c13cfb9e29438333dbbb",
+        "bytes": 460,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_z_direct_inverse_and_control_preserve_reference_phase",
+      "failed_test_line": 2004,
+      "target": "Running tests/quantum_unit_source.rs (target/debug/deps/quantum_unit_source-1438ae3e352a846c)",
+      "group": "z-rectangular",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/z-rectangular-test-repair-v1.patch",
+          "sha256": "1ad9e75e6ba6faa0be0ae875cdd2b2ae21c736f31b978c6b7e2ca7160436a489"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+          "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f"
+        }
+      },
+      "source_group_count": 17,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 519111,
+        "expanded_end_byte_exclusive": 519549,
+        "sha256": "c6d2c3665249584d05a11e15ec12ae3e8e2864fe7f248f722b85848d57daf4fe",
+        "bytes": 438,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "ordinary_project_equal_width_distinct_trees_and_inverse",
+      "failed_test_line": 2036,
+      "target": "Running tests/rectangular_meanings.rs (target/debug/deps/rectangular_meanings-20bc1bcd739816d0)",
+      "group": "z-rectangular",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/z-rectangular-test-repair-v1.patch",
+          "sha256": "1ad9e75e6ba6faa0be0ae875cdd2b2ae21c736f31b978c6b7e2ca7160436a489"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+          "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f"
+        }
+      },
+      "source_group_count": 17,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 520350,
+        "expanded_end_byte_exclusive": 520765,
+        "sha256": "a03354c685033b6a82bb7b51c396d9ea2ba10a4c190f3e8806620108f89861b7",
+        "bytes": 415,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset",
+      "failed_test_line": 2091,
+      "target": "Running tests/review_v019.rs (target/debug/deps/review_v019-29825c5cb11ff718)",
+      "group": "review019",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/review-v019-probability-v1.patch",
+          "sha256": "0301d8f0be47ffb1cb93c54af4382bd4d4925cb7c75c5fac2fb758fb41160bf3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/MANIFEST-v1.json",
+          "sha256": "b86f974f1917cfa38afbc2a1a373eda9c13ff17fe04f21eabd1a7e103f4236fc"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 523058,
+        "expanded_end_byte_exclusive": 523423,
+        "sha256": "3e36254cf445282d93ec3929d26e0c64a1f4f9084410b273003c7f669b92133b",
+        "bytes": 365,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "misplaced_public_import_has_a_checked_repair",
+      "failed_test_line": 2148,
+      "target": "Running tests/review_v024.rs (target/debug/deps/review_v024-c5bf1a90be3fdf86)",
+      "group": "review024",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/review-v024-import-v1.patch",
+          "sha256": "7eb419725bb36f9bfa95f7b159803348b7fa43451257893f794e5dd2c8e20d51"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/MANIFEST-v1.json",
+          "sha256": "edf4c2c73e18c9ada3b256893cd81e178e2cf6f0b86f30b4838725b167ca1004"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 526833,
+        "expanded_end_byte_exclusive": 527130,
+        "sha256": "2355c388e109e6d050a4b36641ddfaa4e0a9f3141275a9a4d3747366dbcd9a8c",
+        "bytes": 297,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "same_named_host_providers_keep_distinct_definition_and_instance_identity",
+      "failed_test_line": 2348,
+      "target": "Running tests/shared_resolution.rs (target/debug/deps/shared_resolution-4420cba110fdbb5d)",
+      "group": "shared-resolution",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/shared-resolution-provider-v1.patch",
+          "sha256": "6586b6b03348f6c0459fdaeb3566523ee7b30d01e2644667cf1fe54eca62e729"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/MANIFEST-v1.json",
+          "sha256": "eba2988b550d1bfa971a741f931f764d12154472476ac24ce43dfab174d697b4"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 538459,
+        "expanded_end_byte_exclusive": 538841,
+        "sha256": "63b14e0faac2a1795220fcd2e57953d2ed23a784127f38006897fd85533d33b6",
+        "bytes": 382,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "small_native_specializations_retain_exact_shared_sources",
+      "failed_test_line": 2567,
+      "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-0da74a9eadd276e1)",
+      "group": "source-snapshots",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/source-snapshots-probability-v1.patch",
+          "sha256": "98c1eb5763f1bb9c6abe45bc6e08a81b9b076d3903bb1336b4ef2adfdc8f2cd8",
+          "bytes": 1445
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+          "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+          "bytes": 1983
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 551476,
+        "expanded_end_byte_exclusive": 551823,
+        "sha256": "e352bebb501b75fe8c00c1c9dd9b448712cf8606c31adbe1f9bc4ccec1d9b0dd",
+        "bytes": 347,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "shared_receipts_keep_exact_bindings_and_outlive_source_changes",
+      "failed_test_line": 2568,
+      "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-0da74a9eadd276e1)",
+      "group": "source-snapshots",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/source-snapshots-probability-v1.patch",
+          "sha256": "98c1eb5763f1bb9c6abe45bc6e08a81b9b076d3903bb1336b4ef2adfdc8f2cd8",
+          "bytes": 1445
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+          "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+          "bytes": 1983
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 551824,
+        "expanded_end_byte_exclusive": 552105,
+        "sha256": "1af55dad88950997ccdb796944af847a3a5224128f92a090c5a6ec5a7523cbdc",
+        "bytes": 281,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "review_same_wire_obstructions_do_not_reject_semantic_unitaries",
+      "failed_test_line": 2671,
+      "target": "Running tests/static_semantics.rs (target/debug/deps/static_semantics-296949e68b9a49ec)",
+      "group": "static-c3x",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/static-c3x-selection-v1.patch",
+          "sha256": "ed910fe24f9d66f274c2a33205483383a3ae069779a9945d8df2e0baa6fb5f2f",
+          "bytes": 1139
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/MANIFEST-v1.json",
+          "sha256": "206b12df734c6ef702c8d714c13bf2a34e9ee4b6d2772c022e12cf0443f88bb5",
+          "bytes": 1707
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 557440,
+        "expanded_end_byte_exclusive": 557782,
+        "sha256": "7a7a5ed78a622e4980b1381585f27f3f42fee3d285b30190a15d2bbb012b8bc6",
+        "bytes": 342,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "nary_owners_include_units_pending_fields_and_branch_frames",
+      "failed_test_line": 2730,
+      "target": "Running tests/tuple_shapes.rs (target/debug/deps/tuple_shapes-c0c145aaf394ee7e)",
+      "group": "tuple",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/tuple-probability-v1.patch",
+          "sha256": "39b1e26f10b7ef4f03da0e7c6306496524c9f3bce5a7f45655b4f367051ca5c3",
+          "bytes": 812
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/MANIFEST-v1.json",
+          "sha256": "4344509b4525296b3970fa77c2ce3af611449246c977da920f5913db2ca17659",
+          "bytes": 1657
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 559846,
+        "expanded_end_byte_exclusive": 560193,
+        "sha256": "89974490c35764a03a3cc2f320a711f0e728805a1e395cc4548775fb3e875f58",
+        "bytes": 347,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    }
+  ],
+  "scope": "Retrospective inert archival record of the actual unsuccessful normal run, not a new replay or acceptance decision. HEAD477 identifies Git provenance; whole-working aaa5 includes earlier axis/mixed test repairs and is not clean Git477. The 79 stored QLI inputs are separate historical/current/helper/counterexample inputs, not 79 executions or one project. Original unmet/after-unreached cases receive no negative credit. No full MSRV/current-CI, proof, release, issue completion or new guarantee claim.",
+  "source_role_notes": [
+    "source-snapshots shared-contract-main and providers-four-contract-main are existing second loop variants, unexecuted after the preceding assertion failed.",
+    "classical/eager-argument-existing-effect-negative was not reached after the first actual numerical assertion failure.",
+    "z-rectangular/z/fixed-wrong-x was not reached after the earlier original Z request child-arity failure.",
+    "review019 historical-main and review024 historical-misplaced-measure retain provenance only; selected CR/current empty source distinguish actual current behavior.",
+    "New desired repair controls, compact205 and 256/257 capacity cases are not added to the BEFORE source inventory. The existing count4 comment-pad inputs stay exact."
+  ],
+  "documentation": "README.md"
+}

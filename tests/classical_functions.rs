@@ -940,7 +940,40 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
         assert_eq!(leaf.definition().path(), "main::implementation");
         let accepted = kernel().accept(leaf.proposal()).unwrap();
         leaf.validate_source_steps(&accepted).unwrap();
-        assert_eq!(accepted.raw().operations.len(), count as usize);
+        // The actual selected ordinary X body is H, four T phases, then H.
+        // Retain each requested application, owner transition and full phase.
+        let word = [
+            qleisli::ir::SingleGate::H,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::H,
+        ];
+        assert_eq!(accepted.derived_effect(), Effect::Unitary);
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        let input = &accepted.raw().quantum_inputs[0];
+        assert_eq!(input.wires.len(), 1);
+        assert_eq!(accepted.raw().operations.len(), count as usize * word.len());
+        let mut live = input.token;
+        for (position, operation) in accepted.raw().operations.iter().enumerate() {
+            let RawOp::Gate {
+                gate,
+                input,
+                output,
+            } = operation
+            else {
+                panic!("ordinary X repetition must retain its gate body");
+            };
+            assert_eq!(*gate, word[position % word.len()]);
+            assert_eq!(*input, live);
+            assert_ne!(input, output);
+            live = *output;
+        }
+        assert_eq!(accepted.raw().quantum_outputs, vec![live]);
+        let outputs = accepted.output_ports();
+        assert_eq!(outputs.len(), 1);
+        assert_eq!(outputs[0].wires, input.wires);
         let checker = kernel();
         for (meaning, matches) in [(&flip, count == 1), (&identity, count != 1)] {
             let result =
@@ -1405,10 +1438,23 @@ fn accept(graph: &ElaboratedProgram) -> AcceptedProgram {
 }
 
 fn closed(program: &AcceptedProgram, expected: &[bool]) {
-    assert_eq!(
-        run_closed(program, SimulationLimits::default()).unwrap(),
-        BTreeMap::from([(expected.to_vec(), 1.0)])
-    );
+    let actual = run_closed(program, SimulationLimits::default()).unwrap();
+    // Ordinary H Z H is simulated numerically; retain ordered outcomes and
+    // check mathematical-zero tails without clipping or normalization.
+    assert_eq!(expected.len(), program.raw().classical_outputs.len());
+    let probability = actual.get(expected).expect("expected ordered output");
+    assert!((probability - 1.0).abs() < 1e-12);
+    for (bits, probability) in &actual {
+        let requested = if bits.as_slice() == expected {
+            1.0
+        } else {
+            0.0
+        };
+        assert_eq!(bits.len(), expected.len());
+        assert!(probability.is_finite() && *probability >= 0.0);
+        assert!((probability - requested).abs() < 1e-12);
+    }
+    assert!((actual.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
 fn both_closed(source: &str, expected: &[bool]) -> ElaboratedProgram {

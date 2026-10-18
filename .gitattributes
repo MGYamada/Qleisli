@@ -244,3 +244,42 @@ tests/fixtures/frontend_v030/language-primitives/current/files/client-330.qli -t
 # Exact decoded IMPORTS from the retained bd07 source-IR test keep two trailing
 # spaces; every other whitespace rule still applies to this historical copy.
 tests/fixtures/authoring_sessions/ordinary-primitive-test-regressions-v030/attempt-01/not_main.qli -text whitespace=-blank-at-eol
+
+# Preserve exact retrospective first-source bytes; no broad whitespace waiver.
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/classical/eager_argument_effects_belong_to_the_caller_in_source_order-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/classical/eager_argument_effects_belong_to_the_caller_in_source_order-1.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/finite-empty/controlled_empty.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-1.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-0-2.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/exact_source_types_declared_effects_and_ordinary_targets_are_required-1-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/nested_function_evidence_survives_external_inverse_and_control-0-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/observing_contracts_compare_complete_instruments_on_the_emitted_call-0-1.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/repeated_nested_contracts_share_one_execution_budget-0-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/unchanged_client_requires_one_specification_across_private_layouts-0-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-1.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/function-contracts/unchanged_client_requires_one_specification_across_private_layouts-1-2.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/ordinary-gate/checked-provider.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/review019/explicit-crlf-repair-main.qli -text whitespace=cr-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/review019/historical-main.qli -text
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/review019/selected-cr-main.qli -text
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/scope-sampling/operation_instantiation.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/source-snapshots/providers-four-contract-main.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/source-snapshots/providers-four-static-main.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/source-snapshots/shared-checked-op-main.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/source-snapshots/shared-contract-main.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/static-c3x/complete-c3x-project-main.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/tuple/ordered-quantum-branch-frame.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/11-False.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/11-True.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/13.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/15.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/17.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/19.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/negative-0.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/negative-1.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/negative-2.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/negative-3.qli -text whitespace=-blank-at-eol
+tests/fixtures/authoring_sessions/ordinary-primitive-remaining-tests-v030/attempt-01/z-rectangular/rectangular/negative-4.qli -text whitespace=-blank-at-eol

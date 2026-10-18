@@ -51,7 +51,14 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
         SimulationLimits::default(),
     )
     .unwrap();
-    assert_eq!(distribution[&vec![true]], 1.0);
+    assert!(distribution.contains_key(&vec![true]));
+    for (bits, probability) in &distribution {
+        assert_eq!(bits.len(), 1);
+        assert!(probability.is_finite() && *probability >= 0.0);
+        let expected = if bits[0] { 1.0 } else { 0.0 };
+        assert!((probability - expected).abs() < 1e-12);
+    }
+    assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
 #[cfg_attr(

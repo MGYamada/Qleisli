@@ -378,7 +378,7 @@ jobs:
         working-directory: lean-kernel
         run: |
           lake env lean -DwarningAsError=true Tests.lean
-          lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
+          lake env lean -DwarningAsError=true ../tests/fixtures/hierarchical_prepared_v030/Current.lean
       - name: Replay the compiled project definitions through Lean's kernel
         if: needs.changes.outputs.proof_lane == 'full'
         working-directory: lean-kernel

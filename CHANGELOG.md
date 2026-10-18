@@ -31,6 +31,15 @@ and exactness obligations retain their recorded scopes and status.
   Check ordinary zero preparation separately from NOT in source/IR mutation
   tests. Retain the explicit Bits<0>-to-Unit owner transition before finish,
   untouched reference frames and the existing numerical simulation tolerance.
+  Update regression consumers for ordinary gate bodies, nested scalar evidence,
+  checked bundled requests and actual execution work. Retain exact phase,
+  owner order, observing effects and shared budgets; numerical execution checks
+  compare every complex coordinate without phase normalization. Keep the
+  expanded 1,025-T source's work-limit refusal separate from the accepted compact
+  205-T case whose emitted body exceeds the finite equation step cap.
+  Use a current PreparedContext proof fixture while retaining the immutable
+  v0.2.5 fixture and validation. Historical literal factoring, current helper
+  equations and current successful-check obligations remain distinct claims.
   Refresh current-source evidence for the two existing scoped QLV1 guarantees
   after both Lean packages' builds/audits, fresh kernel/Main replay and fixed
   type/transport extraction checks. Broader QS/PR/RS/EXACT duties remain pending.

@@ -87,6 +87,7 @@ def proof_lane(paths: list[str], policy: dict | None = None,
             "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",
             "lean/Audit.lean", "lean-kernel/Audit.lean",
             "lean/schema-registry.json",
+            "tests/fixtures/hierarchical_prepared_v030/Current.lean",
         } or path.endswith(("lean-toolchain", "lakefile.toml", "lake-manifest.json")):
             return "full"
         if classify([path], policy)[0] == "docs":

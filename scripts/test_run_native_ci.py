@@ -213,9 +213,11 @@ class NativeCI(unittest.TestCase):
     def test_workflow_separates_full_proofs_from_native_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         kernel = workflow.split("  check-lean-kernel:\n")[1].split("  check-distribution:\n")[0]
-        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "kernel-refactoring-equivalence.lean",
+        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "hierarchical_prepared_v030/Current.lean",
                         "leanchecker --fresh QleisliKernel", "leanchecker --fresh Main", "test_check_lean_kernel.py --compiled"):
             self.assertLess(kernel.index(command), kernel.index("run_native_ci.py"))
+        self.assertNotIn("../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean", kernel)
+        self.assertIn("../tests/fixtures/hierarchical_prepared_v030/Current.lean", kernel)
         model = workflow.split("  check-lean:\n")[1].split("  check-lean-kernel:\n")[0]
         self.assertIn("python3 scripts/check_schema_registry.py", model)
         self.assertIn("use-github-cache: 'false'", model)

@@ -1,0 +1,178 @@
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:123:11: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:127:22: error(lean.invalidField): Invalid field `visits`: The environment does not contain `QleisliKernel.State.visits`, so it is not possible to project the field `visits` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:129:48: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:136:24: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:136:17: error: Invalid `⟨...⟩` notation: The expected type `Nat` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:159:9: error: Application type mismatch: The argument
+  Array.replicate artifact.proofs.size false
+has type
+  Array Bool
+but is expected to have type
+  Bool
+in the application
+  State.mk (Array.replicate artifact.proofs.size false)
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:159:8: error: Invalid `⟨...⟩` notation: The expected type `Nat` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:162:15: error(lean.invalidField): Invalid field `visits`: The environment does not contain `QleisliKernel.State.visits`, so it is not possible to project the field `visits` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:163:16: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:163:38: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:165:22: error: Application type mismatch: The argument
+  state
+has type
+  State
+but is expected to have type
+  Conditional.State
+in the application
+  { typed := typed, state := state }
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:178:28: error: Type mismatch
+  HistoricalAfter.step
+has type
+  Artifact → State → Nat → Except Failure State
+but is expected to have type
+  Artifact → Conditional.State → Nat → Except Failure Conditional.State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:181:33: error: Type mismatch
+  HistoricalAfter.typedStep
+has type
+  (artifact : Artifact) → TypedRule.Context artifact → State → Nat → Except Failure State
+but is expected to have type
+  (artifact : Artifact) → TypedRule.Context artifact → Conditional.State → Nat → Except Failure Conditional.State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:184:28: error: Type mismatch
+  HistoricalAfter.scan
+has type
+  Artifact → List Nat → State → Except Failure State
+but is expected to have type
+  Artifact → List Nat → Conditional.State → Except Failure Conditional.State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:187:33: error: Type mismatch
+  HistoricalAfter.typedScan
+has type
+  (artifact : Artifact) → TypedRule.Context artifact → List Nat → State → Except Failure State
+but is expected to have type
+  (artifact : Artifact) → TypedRule.Context artifact → List Nat → Conditional.State → Except Failure Conditional.State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:189:0: error: Not a definitional equality: the left-hand side
+  HistoricalBefore.checkAll
+is not definitionally equal to the right-hand side
+  HistoricalAfter.checkAll
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:190:60: error: Type mismatch
+  rfl
+has type
+  ?m.3 = ?m.3
+but is expected to have type
+  HistoricalBefore.checkAll = HistoricalAfter.checkAll
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:215:11: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:219:22: error(lean.invalidField): Invalid field `visits`: The environment does not contain `QleisliKernel.State.visits`, so it is not possible to project the field `visits` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:221:48: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:228:24: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:228:17: error: Invalid `⟨...⟩` notation: The expected type `Nat` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:251:9: error: Application type mismatch: The argument
+  Array.replicate artifact.proofs.size false
+has type
+  Array Bool
+but is expected to have type
+  Bool
+in the application
+  State.mk (Array.replicate artifact.proofs.size false)
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:251:8: error: Invalid `⟨...⟩` notation: The expected type `Nat` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:254:15: error(lean.invalidField): Invalid field `visits`: The environment does not contain `QleisliKernel.State.visits`, so it is not possible to project the field `visits` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:255:16: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:255:38: error(lean.invalidField): Invalid field `cache`: The environment does not contain `QleisliKernel.State.cache`, so it is not possible to project the field `cache` from an expression
+  state
+of type `State`
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:257:22: error: Application type mismatch: The argument
+  state
+has type
+  State
+but is expected to have type
+  Conditional.State
+in the application
+  { typed := typed, state := state }
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:269:25: error: Type mismatch
+  Conditional.step
+has type
+  Artifact → Conditional.State → Nat → Except Failure Conditional.State
+but is expected to have type
+  Artifact → State → Nat → Except Failure State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:272:30: error: Type mismatch
+  typedStep
+has type
+  (artifact : Artifact) →
+    TypedRule.PreparedContext artifact → Conditional.State → Nat → Except Failure Conditional.State
+but is expected to have type
+  (artifact : Artifact) → TypedRule.PreparedContext artifact → State → Nat → Except Failure State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:275:25: error: Type mismatch
+  scan
+has type
+  Artifact → List Nat → Conditional.State → Except Failure Conditional.State
+but is expected to have type
+  Artifact → List Nat → State → Except Failure State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:278:30: error: Type mismatch
+  typedScan
+has type
+  (artifact : Artifact) →
+    TypedRule.PreparedContext artifact → List Nat → Conditional.State → Except Failure Conditional.State
+but is expected to have type
+  (artifact : Artifact) → TypedRule.PreparedContext artifact → List Nat → State → Except Failure State
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:280:0: error: Not a definitional equality: the left-hand side
+  CurrentBodies.checkAll
+is not definitionally equal to the right-hand side
+  checkAll
+../tests/fixtures/hierarchical_prepared_v030/Current.lean:281:53: error: Type mismatch
+  rfl
+has type
+  ?m.3 = ?m.3
+but is expected to have type
+  CurrentBodies.checkAll = checkAll
+QleisliKernel.Hierarchical.Conditional.scan.eq_1 (artifact : QleisliKernel.Hierarchical.Artifact.Artifact)
+  (order : List Nat) (state : QleisliKernel.Hierarchical.Conditional.State) :
+  QleisliKernel.Hierarchical.Conditional.scan artifact order state =
+    List.foldlM (QleisliKernel.Hierarchical.Conditional.step artifact) state order
+QleisliKernel.Hierarchical.Conditional.typedScan.eq_1 (artifact : QleisliKernel.Hierarchical.Artifact.Artifact)
+  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact) (order : List Nat)
+  (state : QleisliKernel.Hierarchical.Conditional.State) :
+  QleisliKernel.Hierarchical.Conditional.typedScan artifact context order state =
+    List.foldlM (QleisliKernel.Hierarchical.Conditional.typedStep artifact context) state order
+QleisliKernel.Hierarchical.Conditional.typedLocalCheck.congr_simp
+  (artifact artifact✝ : QleisliKernel.Hierarchical.Artifact.Artifact) (e_artifact : artifact = artifact✝)
+  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact) (index index✝ : Nat)
+  (e_index : index = index✝) (remaining remaining✝ : Nat) (e_remaining : remaining = remaining✝) :
+  QleisliKernel.Hierarchical.Conditional.typedLocalCheck artifact context index remaining =
+    QleisliKernel.Hierarchical.Conditional.typedLocalCheck artifact✝ ⋯ index✝ remaining✝
+QleisliKernel.Hierarchical.Conditional.typedStep.congr_simp
+  (artifact artifact✝ : QleisliKernel.Hierarchical.Artifact.Artifact) (e_artifact : artifact = artifact✝)
+  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact)
+  (state state✝ : QleisliKernel.Hierarchical.Conditional.State) (e_state : state = state✝) (index index✝ : Nat)
+  (e_index : index = index✝) :
+  QleisliKernel.Hierarchical.Conditional.typedStep artifact context state index =
+    QleisliKernel.Hierarchical.Conditional.typedStep artifact✝ ⋯ state✝ index✝

@@ -58,10 +58,35 @@ fn run(source: &str) -> std::collections::BTreeMap<Vec<bool>, f64> {
         .unwrap();
     let accepted = kernel.accept(raw.proposal()).unwrap();
     raw.validate_source_steps(&accepted).unwrap();
-    assert_eq!(
-        run_closed(&accepted, SimulationLimits::default()).unwrap(),
-        expected
-    );
+    let actual = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    // Both adapters execute already independently checked exact equations.
+    // Numerical H Z H may retain mathematical-zero outcomes in one adapter;
+    // compare every ordered outcome in both maps at the existing 1e-12 bound.
+    // This neither clips/renormalizes results nor changes native exact equality.
+    let width = program.raw().classical_outputs.len();
+    assert_eq!(accepted.raw().classical_outputs.len(), width);
+    for distribution in [&expected, &actual] {
+        for (bits, probability) in distribution {
+            assert_eq!(bits.len(), width);
+            assert!(probability.is_finite() && *probability >= 0.0);
+        }
+        assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
+    }
+    for (left, right) in [(&expected, &actual), (&actual, &expected)] {
+        for (bits, probability) in left {
+            let compared = right.get(bits).copied().unwrap_or(0.0);
+            assert!(
+                (probability - compared).abs() < 1e-12,
+                "{expected:?} != {actual:?}"
+            );
+            if *probability > 1e-12 {
+                assert!(
+                    right.contains_key(bits),
+                    "missing nonzero ordered outcome {bits:?}"
+                );
+            }
+        }
+    }
     expected
 }
 

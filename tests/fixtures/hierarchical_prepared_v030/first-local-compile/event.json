@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "kind": "first-local-proof-consumer-compile",
+  "scope": "Actual first failed Current.lean compilation, retained as inert history. No source execution, AFTER pass, production proof, native decision or guarantee claim is supplied by this record.",
+  "source": {
+    "file": "Current.lean.txt",
+    "logical_path": "tests/fixtures/hierarchical_prepared_v030/Current.lean",
+    "sha256": "beab40644fc44431dd0be370ae953de8b0731e267e02ae962462059228710b43",
+    "bytes": 17836
+  },
+  "argv": [
+    "env",
+    "ELAN_TOOLCHAIN=leanprover/lean4:v4.30.0",
+    "/bin/sh",
+    "-c",
+    "cd /Users/masa/git/Qleisli/lean-kernel && exec lake env lean -DwarningAsError=true ../tests/fixtures/hierarchical_prepared_v030/Current.lean"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "toolchain_selection": {
+    "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+    "scope": "Explicit command selection only; no separately observed Lean version was captured."
+  },
+  "exit_code": 1,
+  "interrupted": false,
+  "seconds": 12.44957320811227,
+  "whole_working_before": {
+    "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+    "working_inputs_sha256": "f7462806d63f917266ff0ec45e74e37b0bae29f1a71b6f54200929ef0c4720a3"
+  },
+  "whole_working_after": {
+    "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+    "working_inputs_sha256": "f7462806d63f917266ff0ec45e74e37b0bae29f1a71b6f54200929ef0c4720a3"
+  },
+  "whole_working_stable": true,
+  "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+  "kernel_stable": true,
+  "driver_record": {
+    "original_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-prepared-successor-v3.json",
+    "sha256": "59142b7bac5c88d270bac023cc30862ce0e17a7d123f1f553911818ea61ce80c",
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "projection": "The complete record remains external. Repeated Rust/input maps and unrelated environment/compiler fields are omitted here; exact full-record SHA and canonical input-map summaries bind that provenance.",
+    "inputs_before": {
+      "count": 346,
+      "canonical_json_sha256": "a94641c457f4e50d0a00406ba42fbcef7a824c108449e23ff1ad8433d649b5a9"
+    },
+    "inputs_after": {
+      "count": 346,
+      "canonical_json_sha256": "a94641c457f4e50d0a00406ba42fbcef7a824c108449e23ff1ad8433d649b5a9"
+    }
+  },
+  "stdout": {
+    "file": "stdout.txt",
+    "sha256": "a74e7d6be480f7da8af4c99f720f0029cb108a5857a38a12fd5d8678853b633a",
+    "bytes": 11300
+  },
+  "stderr": {
+    "file": "stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "failure": "Unqualified State in copied HistoricalAfter/CurrentBodies type annotations resolved to ancestor QleisliKernel.State instead of Conditional.State. This is a proof-consumer namespace error; the core source/kernel stayed stable.",
+  "documentation": "tests/fixtures/hierarchical_prepared_v030/README.md"
+}

@@ -20,18 +20,44 @@ fn report(source: &str) -> qleisli::frontend::compile::ProjectCheckReport {
 }
 
 fn nested_equation_decisions(source: &str) {
+    // A source with no local Meaning request still checks bundled contracts.
+    let baseline = report("fn main()->Unit{()}");
     let checked = report(source);
+    assert!(baseline.native_decisions().complete());
     assert!(checked.native_decisions().complete());
+    assert_eq!(baseline.entry_request_checked(), Some(false));
     assert_eq!(checked.entry_request_checked(), Some(false));
+    assert!(baseline.native_decisions().requests_checked() > 0);
+    assert!(
+        baseline.native_decisions().requests_checked() <= baseline.native_decisions().decisions()
+    );
+    assert_eq!(
+        checked.concrete_bundled_roots(),
+        baseline.concrete_bundled_roots()
+    );
     // FunctionEvidence is a reachable dependency of an ordinarily checked
-    // QIRF root. Its fresh native equation check has no separate root request.
-    // Counts alone do not prove that equation; the phase/type faults below
-    // exercise its actual independent rejection boundary.
-    assert_eq!(checked.native_decisions().requests_checked(), 0);
+    // QIRF root. Its fresh native equation check adds no separate root request
+    // beyond the common bundled baseline. Counts alone do not prove that
+    // equation; the phase/type faults below check its independent boundary.
+    assert_eq!(
+        checked.native_decisions().requests_checked(),
+        baseline.native_decisions().requests_checked()
+    );
     assert!(
         checked.native_decisions().decisions()
             > checked.concrete_local_roots() + checked.concrete_bundled_roots()
     );
+    // Bundled checks can themselves have nested decisions. The local equation
+    // must add a surplus beyond both ordinary root counts and that baseline.
+    let nested = |report: &qleisli::frontend::compile::ProjectCheckReport| {
+        report
+            .native_decisions()
+            .decisions()
+            .checked_sub(report.concrete_local_roots())
+            .and_then(|count| count.checked_sub(report.concrete_bundled_roots()))
+            .expect("every concrete root has its native decision")
+    };
+    assert!(nested(&checked) > nested(&baseline));
 }
 
 #[test]

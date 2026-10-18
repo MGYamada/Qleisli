@@ -190,12 +190,14 @@ fn invalid_source_is_rejected_before_execution() {
 }
 
 #[test]
-fn missing_import_reports_the_call_site_even_in_unused_functions() {
+fn missing_state_import_reports_the_call_site_even_in_unused_functions() {
     let source = "// 日本語\nobserve fn hidden() -> Bit { measure_z(init0()) }\nobserve fn main() -> Unit { () }";
     let root = SourceRoot::new(source);
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::UnknownName);
-    assert_eq!(error.span.start, source.find("measure_z").unwrap());
+    // measure_z is a bare primitive; ordinary init0 still requires its import.
+    assert_eq!(error.span.start, source.find("init0").unwrap());
+    assert_eq!(&source[error.span.start..error.span.end], "init0");
     assert_eq!(error.line, 2);
 }
 

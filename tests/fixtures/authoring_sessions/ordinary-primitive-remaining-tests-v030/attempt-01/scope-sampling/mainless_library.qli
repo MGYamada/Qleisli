@@ -1,0 +1,1 @@
+pub classical fn identity(x: Bit) -> Bit { x }

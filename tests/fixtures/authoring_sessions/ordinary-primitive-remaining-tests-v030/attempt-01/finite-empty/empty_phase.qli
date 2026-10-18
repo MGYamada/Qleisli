@@ -1,0 +1,8 @@
+
+        classical fn phase_labels(x:Bits<0>)->(Bit,(Bit,Bit)){(1,(0,0))}
+        meaning Scalar:Bits<0> = phase_by(phase_labels);
+        unitary fn implementation(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}
+        unitary fn audited(q:Q<Bits<0>>)->Q<Bits<0>>{
+            apply_contract(implementation,Scalar,q)
+        }
+        fn main()->Unit{()}

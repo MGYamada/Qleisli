@@ -151,10 +151,16 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
         }",
     );
     let ir = compile_project(&root.0).unwrap();
-    assert_eq!(
-        run_closed(&ir, SimulationLimits::default()).unwrap()[&vec![true, true, false]],
-        1.0
-    );
+    let distribution = run_closed(&ir, SimulationLimits::default()).unwrap();
+    let expected = vec![true, true, false];
+    assert!(distribution.contains_key(&expected));
+    for (bits, probability) in &distribution {
+        assert_eq!(bits.len(), 3);
+        assert!(probability.is_finite() && *probability >= 0.0);
+        let mass = if bits == &expected { 1.0 } else { 0.0 };
+        assert!((probability - mass).abs() < 1e-12);
+    }
+    assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
 #[test]

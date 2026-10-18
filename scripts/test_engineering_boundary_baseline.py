@@ -16,6 +16,7 @@ INSTRUMENT = ROOT / 'tests/fixtures/authoring_sessions/engineering-instrument-v0
 INSTRUMENT_NOTES = ROOT / 'tests/fixtures/authoring_sessions/engineering-instrument-v030/README.md'
 PHASE = ROOT / 'tests/fixtures/authoring_sessions/exact-pi8-v030/first-observations.json'
 PHASE_NOTES = ROOT / 'tests/fixtures/authoring_sessions/exact-pi8-v030/README.md'
+PHASE_CURRENT = ROOT / 'tests/fixtures/authoring_sessions/exact-pi8-v030/current-language-primitives'
 
 
 def capture(path, notes, expected_hash, expected_format, count, binaries):
@@ -122,9 +123,44 @@ def phase():
     return files
 
 
+
+def phase_current(files):
+    """Read the two fixed current translations; history remains immutable."""
+    index = json.loads((PHASE_CURRENT / 'translation-index.json').read_bytes())
+    assert index['format'] == 'qleisli.exact-pi8-current-translations'
+    assert index['version'] == 1
+    assert index['history'] == PHASE.relative_to(ROOT).as_posix()
+    assert index['history_sha256'] == hashlib.sha256(PHASE.read_bytes()).hexdigest()
+    names = ['pi8', 'outside-profile']
+    assert [row['name'] for row in index['sources']] == names
+    expected = {name + '/' + leaf for name in names for leaf in ['main.qli', 'Qargo.toml']}
+    assert {path.relative_to(PHASE_CURRENT).as_posix()
+            for path in PHASE_CURRENT.rglob('*') if path.suffix in ['.qli', '.toml']} == expected
+    current = {}
+    for row, name in zip(index['sources'], names):
+        assert row['original_source'] == row['current_source'] == name + '/main.qli'
+        assert row['manifest'] == name + '/Qargo.toml'
+        original = files[row['original_source']]
+        assert hashlib.sha256(original).hexdigest() == row['original_source_sha256']
+        for leaf, hash_field in [('main.qli', 'current_source_sha256'),
+                                 ('Qargo.toml', 'manifest_sha256')]:
+            path = PHASE_CURRENT / name / leaf
+            assert path.resolve() == path and path.is_file()
+            content = path.read_bytes()
+            assert hashlib.sha256(content).hexdigest() == row[hash_field]
+            current[name + '/' + leaf] = content
+        source = current[name + '/main.qli']
+        start, end = row['removed_import_span']
+        assert type(start) is int and type(end) is int and 0 <= start < end <= len(original)
+        assert original[start:end] == b'use std::quantum::phase;'
+        assert source[:start] == original[:start] and source[start:] == original[end:]
+        assert current[name + '/Qargo.toml'] == files[name + '/Qargo.toml']
+    return current
+
+
 def phase_live(cli, kernel):
     """Fresh commands authored here; no historical argv/path is consumed."""
-    files = phase()
+    files = phase_current(phase())
     with tempfile.TemporaryDirectory(prefix='qleisli-exact-pi8-live-') as directory:
         directory = Path(directory)
         for name in ['pi8', 'outside-profile']:

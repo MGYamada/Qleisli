@@ -538,19 +538,54 @@ fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() 
     let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
     assert!((distribution[&vec![false, false]] - 0.5).abs() < 1e-12);
     assert!((distribution[&vec![true, true]] - 0.5).abs() < 1e-12);
-    let (a, r) = accepted
-        .raw()
-        .operations
+    // The initial Bell gate is ordinary CNOT: retain its actual packed action
+    // and full phase, then follow its ordered split outputs into both arguments.
+    let operations = &accepted.raw().operations;
+    let mut initial = operations
         .iter()
-        .find_map(|op| match op {
-            RawOp::Cnot {
-                control_out,
-                target_out,
-                ..
-            } => Some((*control_out, *target_out)),
+        .take_while(|op| !matches!(op, RawOp::MeasureZ { .. }));
+    let applications = initial
+        .clone()
+        .filter_map(|op| match op {
+            RawOp::ApplyUnitary { output, steps, .. } => Some((*output, steps)),
             _ => None,
         })
-        .unwrap();
+        .collect::<Vec<_>>();
+    assert_eq!(applications.len(), 1);
+    assert!(!initial.any(|op| matches!(op, RawOp::Cnot { .. })));
+    let (output, steps) = applications[0];
+    let matrix = qleisli::contract::Circuit::new(
+        BasisType::pair(BasisType::Bit, BasisType::Bit),
+        steps.clone(),
+    )
+    .unwrap()
+    .matrix(&mut qleisli::contract::exact::Budget::new(
+        qleisli::contract::DEFAULT_EXACT_WORK,
+    ))
+    .unwrap();
+    assert_eq!((matrix.rows(), matrix.cols()), (4, 4));
+    for column in 0..4 {
+        for row in 0..4 {
+            let expected = if row == [0, 3, 2, 1][column] {
+                Exact::one()
+            } else {
+                Exact::zero()
+            };
+            assert_eq!(matrix.get(row, column), Some(expected));
+        }
+    }
+    let (a, r) = operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::Split {
+                input,
+                left,
+                right,
+                left_bits: 1,
+            } if *input == output => Some((*left, *right)),
+            _ => None,
+        })
+        .expect("ordinary Bell CNOT returns both owners in control/target order");
     let measured = accepted
         .raw()
         .operations
@@ -1171,18 +1206,16 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
         "{PRELUDE}
         pub unitary fn client(q:Q<Bit>)->Q<Bit>{{use_op[checked_op(provider,ZMeaning)](q)}}"
     );
-    // Preserve the old repeat_static provider's concrete-profile limit;
-    // checked_op itself is now projected with its original request intact.
-    let parsed = ParsedProgram::parse(sources(&source)).unwrap();
-    let instance = parsed
-        .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-        .unwrap();
-    assert_eq!(instance.elaborate().unwrap_err().code(), "unsupported");
-    for honest in [true, false] {
-        let provider = if honest { "phase[1,1](q)" } else { "q" };
-        let text = source
-            .replace("power(t,4)(q)", provider)
-            .replace("use std::state::init0;", "use std::state::init0; ");
+    // Ordinary T power is now supported. Every provider keeps the original Z
+    // request and must reach the same fresh native Meaning/equation gates.
+    for (provider, honest) in [
+        ("power(t,4)(q)", true),
+        ("phase[1,1](q)", true),
+        ("q", false),
+        // X Z X = -Z has the same probabilities but the wrong full scalar phase.
+        ("x(z(x(q)))", false),
+    ] {
+        let text = source.replace("power(t,4)(q)", provider);
         let source = ParsedProgram::parse(sources(&text))
             .unwrap()
             .instantiate("main::client", BTreeMap::new(), BTreeMap::new())

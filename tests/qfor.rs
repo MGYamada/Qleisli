@@ -49,7 +49,21 @@ fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
         let expected: Vec<_> = (0..4)
             .map(|i| input[(i & !1) | ((i & 1) ^ (n as usize & 1))])
             .collect();
-        assert_eq!(output.amplitudes, expected);
+        assert_eq!(output.amplitudes.len(), expected.len());
+        if n == 0 {
+            assert_eq!(output.amplitudes, expected);
+        }
+        for (index, (actual, expected)) in output.amplitudes.iter().zip(&expected).enumerate() {
+            for coordinate in 0..2 {
+                assert!(actual[coordinate].is_finite() && expected[coordinate].is_finite());
+                if n != 0 {
+                    assert!(
+                        (actual[coordinate] - expected[coordinate]).abs() < 1e-12,
+                        "n={n}, amplitude={index}, coordinate={coordinate}: {actual:?} != {expected:?}"
+                    );
+                }
+            }
+        }
     }
 }
 
@@ -90,7 +104,21 @@ fn multiple_carried_owners_keep_the_complete_entangled_interface() {
             .unwrap();
         // Independently, two controlled-X maps compose to identity on both
         // owners and any reference; no separability premise is used.
-        assert_eq!(output.amplitudes, input);
+        assert_eq!(output.amplitudes.len(), input.len());
+        if n == 0 {
+            assert_eq!(output.amplitudes, input);
+        }
+        for (index, (actual, expected)) in output.amplitudes.iter().zip(&input).enumerate() {
+            for coordinate in 0..2 {
+                assert!(actual[coordinate].is_finite() && expected[coordinate].is_finite());
+                if n != 0 {
+                    assert!(
+                        (actual[coordinate] - expected[coordinate]).abs() < 1e-12,
+                        "n={n}, amplitude={index}, coordinate={coordinate}: {actual:?} != {expected:?}"
+                    );
+                }
+            }
+        }
     }
 }
 

@@ -23,13 +23,31 @@ fn misplaced_public_import_has_a_checked_repair() {
     );
     root.write("main.qli", &source.replace("measurement", "transform"));
     check_project(&root.0).unwrap();
+    // Empty libraries are valid; keep the actually observed migrated input as
+    // a positive control, then restore the original intentional wrong import.
     root.write("main.qli", "");
+    check_project(&root.0).unwrap();
+    root.write("main.qli", "use std::quantum::measure_z;");
+    let failure = check_project_diagnostic(&root.0).unwrap_err();
     assert!(
-        check_project_diagnostic(&root.0)
-            .unwrap_err()
+        failure
             .message
-            .contains("")
+            .contains("retired compiler-owned module `std::quantum`"),
+        "{failure:?}"
     );
+    assert!(failure.message.contains("std::quantum is retired"));
+    // The former canonical observation import supplies the specific current
+    // repair. Neither retired namespace is a compatibility lookup path.
+    root.write("main.qli", "use std::observe::measure_z;");
+    let failure = check_project_diagnostic(&root.0).unwrap_err();
+    assert!(
+        failure
+            .message
+            .contains("call the language primitive `measure_z` without an import"),
+        "{failure:?}"
+    );
+    root.write("main.qli", "observe fn run(q:Q<Bit>)->Bit{measure_z(q)}");
+    check_project(&root.0).unwrap();
     root.write("main.qli", "use std::reflection::nonzero2;");
     assert!(
         !check_project_diagnostic(&root.0)
