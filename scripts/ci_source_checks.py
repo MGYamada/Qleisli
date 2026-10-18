@@ -38,8 +38,9 @@ def snapshot(root):
                 working_inputs_sha256=state.hexdigest())
 
 
-def definition(group):
-    manifest = json.loads(MANIFEST.read_text())
+def definition(group, *, root=None, contents=None):
+    manifest = json.loads((MANIFEST if root is None else root / '.github/ci/source-checks.json').read_bytes()
+                          if contents is None else contents)
     if set(manifest) != {'format', 'groups', 'tools'} or manifest['format'] != 2:
         raise ValueError('unknown source-check manifest')
     if group not in manifest['groups']:
@@ -66,10 +67,10 @@ def definition(group):
     return spec | {'tools': {name: manifest['tools'][name] for name in spec['tools']}}
 
 
-def describe(group, ancestors=(), *, partition=None):
+def describe(group, ancestors=(), *, partition=None, root=None, contents=None):
     if group in ancestors:
         raise ValueError('cyclic check preparation')
-    spec = definition(group)
+    spec = definition(group, root=root, contents=contents)
     if partition is not None:
         import check_rust_test_partition
         if group not in {'rust-latest', 'rust-msrv'} or spec['prepare'] != ['native-runtime']:
@@ -81,7 +82,7 @@ def describe(group, ancestors=(), *, partition=None):
                           commands=[spec['commands'][i] for i in indices])
     commands, tools, environment = [], {}, {}
     for name in spec['prepare']:
-        dependency = describe(name, (*ancestors, group))
+        dependency = describe(name, (*ancestors, group), root=root, contents=contents)
         commands.extend(dependency['commands'])
         tools.update(dependency['tools'])
         environment.update(dependency['environment'])

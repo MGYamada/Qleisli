@@ -354,7 +354,7 @@ def record_constitution(root, output, env):
                             ledger_sha256=digest(before), result=result))
 
 
-def record_job(root, output, job, env, *, distribution=None, native=None, constitution=None):
+def record_job(root, output, job, env, *, distribution=None, native=None, constitution=None, rust=None):
     require(job in SUITES and env.get("GITHUB_JOB") == job, "wrong producer job")
     context = hosted_context(root, env)
     require(not output.resolve().is_relative_to(root.resolve()), "receipt must be outside candidate")
@@ -364,7 +364,16 @@ def record_job(root, output, job, env, *, distribution=None, native=None, consti
         data = read_file(path.parent, path.name)
         (output / name).write_bytes(data)
         files[name] = digest(data)
-    if job == "check-distribution":
+    if job in {'check-rust', 'check-rust-msrv'}:
+        from ci_rust_artifacts import validate_aggregate
+        require(rust is not None, 'Rust producer missing complete pair evidence')
+        selected = {name: read_file(rust, name) for name in ('aggregate.json', 'differential.json', 'remaining.json')}
+        needs = json_object(env.get('RUST_NEEDS_JSON', '').encode(), 'trusted Rust dependency outputs')
+        validate_aggregate(root, context, 'latest' if job == 'check-rust' else 'msrv', selected, needs=needs)
+        for name, data in selected.items():
+            (output / ('rust-' + name)).write_bytes(data)
+            files['rust-' + name] = digest(data)
+    elif job == "check-distribution":
         require(distribution is not None, "distribution producer missing report")
         data = json_object(read_file(distribution.parent, distribution.name), "distribution report")
         require(data.get("status") == "passed", "failed distribution validation")
@@ -419,6 +428,12 @@ def archive_bytes(data, *, prefix="", expected=None):
 
 
 def artifacts(root, files, context, version, snapshot):
+    from ci_rust_artifacts import validate_aggregate
+    for profile, job in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
+        require(set(files[job]) == {'rust-aggregate.json', 'rust-differential.json', 'rust-remaining.json'},
+                'missing complete Rust producer pair')
+        validate_aggregate(root, context, profile, {name.removeprefix('rust-'): data for name, data in files[job].items()},
+                           read_source=lambda name: snapshot.read(root, name))
     tracked = tracked_files(root, context["commit"])
     for (directory, name), data in snapshot.files.items():
         if directory == root:
@@ -497,7 +512,7 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     envelope(proof, "release-constitution", {"context", "ledger_sha256", "result"})
     require(proof["context"] == context and proof["ledger_sha256"] == digest(snapshot.read(root, LEDGER)), "stale constitutional replay")
     require(proof["result"] == dict(result, mode="current-Lean-replay"), "source-only or mismatched guarantee replay")
-    for job in set(SUITES) - {*NATIVE_JOBS, "check-lean", "check-distribution"}:
+    for job in set(SUITES) - {*NATIVE_JOBS, "check-lean", "check-distribution", "check-rust", "check-rust-msrv"}:
         require(not files[job], f"{job}: unexpected evidence files")
     artifacts(root, files, context, version, snapshot)
     snapshot.unchanged()
@@ -531,6 +546,7 @@ def main(argv=None):
     parser.add_argument("--distribution", type=Path)
     parser.add_argument("--native", type=Path)
     parser.add_argument("--constitution", type=Path)
+    parser.add_argument("--rust", type=Path)
     args = parser.parse_args(argv)
     try:
         require(not (args.record_job and args.record_constitution), "select only one producer")
@@ -540,7 +556,7 @@ def main(argv=None):
                 record_constitution(args.root, args.output, os.environ)
             else:
                 record_job(args.root, args.output, args.record_job, os.environ,
-                           distribution=args.distribution, native=args.native, constitution=args.constitution)
+                           distribution=args.distribution, native=args.native, constitution=args.constitution, rust=args.rust)
         else:
             result = check(args.root, base_ref=args.base_ref or os.environ.get("RELEASE_TRUSTED_BASE"), evidence=args.evidence)
             print(json.dumps(result, sort_keys=True))

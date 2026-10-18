@@ -7,8 +7,9 @@ development milestones from the scope of their evidence.
 ## 0.3.0-beta — 2026-10-12
 
 - Prepare explicit complete Rust producer partitions from one canonical CI plan,
-  with fresh native preparation and visible omissions. Hosted parallel producer
-  wiring and aggregate release receipts remain unfinished.
+  with fresh native preparation and visible omissions. Run each toolchain's two
+  complete partitions on separate runners and verify both artifact byte streams
+  behind the existing required checks and scoped release receipts.
 - Reject missing, failed, skipped or stale Rust pair dependencies before receipt
   inspection; expected hashes alone do not establish artifact or suite success.
 

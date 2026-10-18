@@ -64,11 +64,28 @@ preparation and explicit omitted indices. Actual latest/MSRV Cargo metadata
 contains 131 targets, including the same two differential and 121 other
 integration targets. This validates partition coverage only; no Rust/native test
 or proof was executed by those metadata/CLI-plan observations. Separate hosted
-producer jobs, same-run aggregation and release receipt binding remain pending.
+producer jobs, same-run aggregation and release receipt binding were still
+pending at that stage.
 
 The [first pair-obligation experiment](producer-obligations-first.json.gz)
 retains the proposed implementation contract, original prototype and its actual
 synthetic output: two complete dependency records and 38 refusals for missing,
 failed, skipped or stale inputs. No artifact bytes or actual hosted jobs were
 validated by that experiment. The current dependency helper returns only the
-expected receipt hashes; independent artifact validation is still mandatory.
+expected receipt hashes; independent artifact validation remains mandatory.
+
+The [first post-wiring refusals](producer-wiring-first.json.gz) retain the
+original action/workflow sources and the actual adapter failures while migrating
+the old two inline jobs to four delegated workers. The
+[first release-payload failure](producer-release-first.json.gz) retains the
+old empty-Rust-payload predicate and its actual 41-test failure classification.
+That predicate now requires and verifies both child artifacts. The reader keeps
+these inert byte records; it never executes historical scripts or commands.
+
+The current implementation verifies the exact child report bytes, selected and
+omitted commands, source/run identity, tool/native/compiler bindings and the
+unchanged corpus profile. Hosted workers run the two complete selections on
+separate runners; stable required checks and scoped release readiness require
+both actual artifacts. Synthetic mutation and file-I/O tests do not establish
+hosted speedup, real Rust/native case execution or release readiness. The final
+candidate still needs complete hosted validation and review.

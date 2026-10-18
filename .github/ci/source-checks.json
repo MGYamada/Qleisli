@@ -47,6 +47,10 @@
         ],
         [
           "python3",
+          "scripts/test_ci_rust_artifacts.py"
+        ],
+        [
+          "python3",
           "scripts/test_rust_test_partition.py"
         ],
         [
@@ -155,8 +159,8 @@
     },
     "source-contracts": {
       "lanes": [
-        "check-rust",
-        "check-rust-msrv"
+        "check-rust-remaining",
+        "check-rust-msrv-remaining"
       ],
       "tools": [
         "python",
@@ -379,7 +383,8 @@
     },
     "rust-latest": {
       "lanes": [
-        "check-rust"
+        "check-rust-differential",
+        "check-rust-remaining"
       ],
       "tools": [
         "python",
@@ -736,7 +741,7 @@
     },
     "rust-latest-lint-research": {
       "lanes": [
-        "check-rust"
+        "check-rust-remaining"
       ],
       "tools": [
         "python",
@@ -796,7 +801,8 @@
     },
     "rust-msrv": {
       "lanes": [
-        "check-rust-msrv"
+        "check-rust-msrv-differential",
+        "check-rust-msrv-remaining"
       ],
       "tools": [
         "python",
@@ -1114,7 +1120,7 @@
     },
     "rust-msrv-lint-research": {
       "lanes": [
-        "check-rust-msrv"
+        "check-rust-msrv-remaining"
       ],
       "tools": [
         "python",
@@ -1166,7 +1172,7 @@
     },
     "source-semantics": {
       "lanes": [
-        "check-rust"
+        "check-rust-remaining"
       ],
       "tools": [
         "python",
@@ -1227,8 +1233,10 @@
     },
     "native-runtime": {
       "lanes": [
-        "check-rust",
-        "check-rust-msrv",
+        "check-rust-differential",
+        "check-rust-remaining",
+        "check-rust-msrv-differential",
+        "check-rust-msrv-remaining",
         "check-macos-source",
         "check-interop",
         "check-distribution",
