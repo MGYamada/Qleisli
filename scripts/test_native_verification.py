@@ -9,7 +9,9 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+import time
 import tomllib
 from native_packet import envelope, inspection_lines
 
@@ -328,6 +330,7 @@ def main():
     args = parser.parse_args()
     binary, kernel = args.binary.resolve(), args.kernel.resolve()
     observations = []
+    started = time.monotonic()
     environment = dict(os.environ, QLEISLI_KERNEL=str(kernel))
 
     def run(command, expected=0, data=None):
@@ -339,6 +342,12 @@ def main():
         observations.append(row)
         assert (result.returncode == 0) == (expected == 0), row
         return result.stdout
+
+    def progress(label):
+        # Flush phase/case progress outside child output and the observation data,
+        # so an outer process-group timeout still retains the last started scope.
+        print(f"VM-28: {label}; completed {len(observations)} process checks; "
+              f"elapsed {time.monotonic() - started:.1f}s", file=sys.stderr, flush=True)
 
     def native(artifact, request=None, accepted=True):
         data = packet(artifact, request)
@@ -354,9 +363,11 @@ def main():
             directory = Path(directory)
             selected = f"--lean-kernel={kernel}"
             absent = {key: value for key, value in environment.items() if key != "QLEISLI_KERNEL"}
+            progress("missing checker")
             missing = subprocess.run([str(binary), "check", str(SOURCE), "--format=json"],
                                      cwd=directory, env=absent, capture_output=True, timeout=60)
             assert missing.returncode == 1 and json.loads(missing.stdout)["diagnostics"][0]["code"] == "project"
+            progress("native mode versions")
             for mode in ["--qirf-native", "--qirf-contract", "--hierarchy-pending",
                          "--hierarchy-request-pending", "--hierarchy-fourier-pending",
                          "--readout-check", "--preparation-check", "--instrument-pending",
@@ -369,10 +380,14 @@ def main():
                 matching_version = run([kernel, mode, VERSION], 1, b"")
                 assert matching_version != b"qleisli.qirf-native 2\nerror\nversion\n"
 
+            progress("control requests")
             test_control_requests(kernel, run)
+            progress("control owner requests")
             test_control_owner_requests(kernel, run)
+            progress("instrument requests")
             test_instrument_requests(kernel, run)
 
+            progress("source selection and CLI failures")
             for command, extra in [("check", []), ("run", []), ("sample", ["--shots=64", "--seed=7"])]:
                 base = json.loads(run([binary, command, SOURCE, "--format=json", *extra]))
                 explicit = json.loads(run([binary, command, SOURCE, "--format=json", *extra, selected]))
@@ -398,6 +413,7 @@ def main():
                 run([binary, "check", SOURCE, *flags], 1)
             run([binary, "doc", SOURCE / "main.qli", selected], 1)
 
+            progress("retained finite artifacts")
             # Untouched VM-22 raw-only forms, empty owners, phases and QIRF1/2.
             for name in ["h", "t", "unit_phase", "toffoli", "raw_qif_unit", "raw_computed_target"]:
                 for version in [1, 2]:
@@ -405,6 +421,7 @@ def main():
                     native(path.read_bytes())
                     run([binary, "verify-ir", path, selected, "--format=json"])
 
+            progress("finite requests and malformed inputs")
             artifact = json.loads((FINITE / "t.v2.qirf").read_bytes())
             request = dict(format="qleisli.request", version=1, signature=dict(tag="bit"),
                            meaning=dict(tag="phase8", table=[0, 1]), source_snapshot=None)
@@ -446,13 +463,16 @@ def main():
 
             # Both selection mechanisms use the same native verifier and execution view.
             # Independent mathematical oracles remain separate tests.
+            progress("corpus manifest validation")
             cases = [case for case in check_manifest(ROOT / "corpus")["cases"]
                      if case["qubits"] <= 4]
             for case in cases:
+                progress("corpus " + case["id"])
                 source = current_project(case, ROOT / "corpus")
                 base = json.loads(run([binary, "run", source, "--format=json"]))
                 explicit = json.loads(run([binary, "run", source, "--format=json", selected]))
                 assert base == explicit, case["id"]
+        progress("complete")
         status = "passed"
     except BaseException:
         status = "failed"
