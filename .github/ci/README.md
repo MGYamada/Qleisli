@@ -376,8 +376,9 @@ fail; adding a target requires updating the explicit selection. The guard record
 the inventory and exact commands in the existing immutable command log. It does
 not execute tests or replace native validation. `run_rust_tests.py` builds each
 selection once, checks every returned root-package harness against Cargo's
-metadata, and schedules at most two harnesses together. Cargo runs each harness
-with its normal runtime environment and unfiltered default arguments. Exact
+metadata, and schedules at most two harnesses together. Cargo retains its normal
+runtime environment. Each harness runs every default case with two test threads,
+fixed across hosts rather than derived from CPU count; no test-name filter is added. Exact
 executable hashes, complete logs, elapsed times, failures, running targets and
 unstarted targets remain in the command artifact. A failed harness stops new
 submissions; every selected harness must pass before later checks can run.
@@ -396,6 +397,9 @@ measures the same 34 small-system tests at 24.17 seconds with the original
 selection and 16.68 seconds in the initial two-worker scheduler window. This is a warm development
 measurement, not a claim about hosted full-CI time. Optimization level 1 was
 measured separately and not adopted; compiler profiles remain unchanged.
+The current fixed two-thread harness configuration is a later validation window,
+distinct from that initial timing comparison. Failed-target reasons are emitted
+last so bounded distribution-log previews retain them after other workers finish.
 
 The shared `rust-suite` action owns the latest/MSRV source-contract and lint
 sequence. Only latest runs source semantics and the existing quick corpus profile.
@@ -409,6 +413,9 @@ remain separate. No checkout test result replaces an extracted-source result.
 
 The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
 infrastructure regressions before the changes job can schedule heavy builds.
+It also runs release-policy/corpus-wiring regressions, so a broken workflow
+adapter fails before scheduling Rust/native jobs. That unchanged test command
+moves from repository integrity into preflight and is not duplicated there.
 It runs for both documentation and full profiles. The same local invocation
 includes unstaged, staged and non-ignored untracked inputs; a clean hosted
 checkout checks the complete committed tree. `check_whitespace.py --committed`
@@ -433,8 +440,9 @@ Cargo arguments. It fixes PATH, rustc, rustdoc and Clippy together. A separately
 queried Rustup version does not establish which compiler Cargo finds on PATH;
 local validation records must identify the tools that actually execute.
 
-The repository-integrity group retains
-all 34 static checks formerly written in the documentation job. Its tools are
+The repository-integrity group retains 33 static checks formerly written in
+the documentation job; the remaining release-policy regression runs earlier in
+preflight. The complete prior 34-command coverage remains enforced. Its tools are
 Python 3.11+ and Git, with full history for the historical archive check; no
 Rust or Lean build is required. Constitutional continuity against the reviewed
 base is a separate `check_constitution.py --base-ref COMMIT` invocation because

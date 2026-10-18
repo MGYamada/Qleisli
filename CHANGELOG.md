@@ -17,6 +17,10 @@ and exactness obligations retain their recorded scopes and status.
   Apply the same scheduler to extracted-source distribution tests while keeping
   offline builds, native skip refusal, all cases and existing deadlines. Preserve
   original timeouts and bounded measurements; hosted speedup remains unverified.
+  Run release-policy and corpus-wiring regressions before scheduling heavy
+  builds; preserve the original shared-action shell checks and complete coverage.
+  Fix harness concurrency at two test threads across hosts and retain failed
+  target identities after other workers finish; preserve original failures.
 
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports

@@ -55,6 +55,10 @@
         ],
         [
           "python3",
+          "scripts/test_check_release_ready.py"
+        ],
+        [
+          "python3",
           "scripts/test_measure_ci.py"
         ],
         [
@@ -259,10 +263,6 @@
         [
           "python3",
           "scripts/test_check_constitution.py"
-        ],
-        [
-          "python3",
-          "scripts/test_check_release_ready.py"
         ],
         [
           "python3",

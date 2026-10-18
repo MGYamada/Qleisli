@@ -21,6 +21,7 @@ import ci_runtime
 import run_kernel_tests
 
 ROOT = Path(__file__).resolve().parents[1]
+TEST_ARGUMENTS = ['--message-format=json', '--', '--test-threads', '2']
 
 
 def selection(command, metadata):
@@ -80,7 +81,7 @@ def harness(row, directory):
     """Let Cargo retain its runtime environment and default harness arguments."""
     started = time.monotonic()
     log = directory / (row['kind'] + '-' + row['name'] + '.log')
-    result = row | dict(status='failed', log=str(log), executed_command=row['command'] + ['--message-format=json'])
+    result = row | dict(status='failed', log=str(log), executed_command=row['command'] + TEST_ARGUMENTS)
     try:
         if digest(row['executable']) != row['sha256']:
             raise ValueError('test executable changed before execution')
@@ -136,6 +137,9 @@ def schedule(rows, workers, directory, update):
                 failed |= result['status'] != 'passed'
                 print(f"Rust harness {result['status']}: {result['kind']} {result['name']} "
                       f"({result['seconds']:.2f}s)", flush=True)
+                if result.get('error'):
+                    print(json.dumps({key: result.get(key) for key in
+                                      ('kind', 'name', 'error', 'exit_code', 'log')}), flush=True)
                 log = Path(result['log'])
                 if log.exists():
                     print(log.read_text(errors='replace'), end='', flush=True)
@@ -146,12 +150,22 @@ def schedule(rows, workers, directory, update):
     return results
 
 
+def failure_details(results):
+    """Keep the failed identities last, after output from successful workers."""
+    failures = [row for row in results if row['status'] == 'failed']
+    for row in failures:
+        if (log := Path(row['log'])).exists():
+            print(log.read_text(errors='replace')[-8192:], file=sys.stderr)
+    print(json.dumps(dict(failed_harnesses=[{key: row.get(key) for key in
+          ('kind', 'name', 'error', 'exit_code', 'log')} for row in failures])), file=sys.stderr)
+
+
 def execute(command, workers, record):
     record.parent.mkdir(parents=True, exist_ok=True)
     directory = record.parent / 'rust-harnesses'
     directory.mkdir()
     started = time.monotonic()
-    report = dict(format=1, status='failed', command=command, workers=workers, harnesses=[],
+    report = dict(format=1, status='failed', command=command, workers=workers, harness_threads=2, harnesses=[],
                   scope='Complete selected harness execution; no semantic acceptance cache.')
     def retain(rows=None):
         if rows is not None:
@@ -198,6 +212,9 @@ def execute(command, workers, record):
         retain(rows)
         results = schedule(rows, workers, directory, retain)
         if not results or any(row['status'] != 'passed' for row in results):
+            # Keep failure identities/reasons last even when another worker
+            # finishes successfully afterwards and the CI preview is bounded.
+            failure_details(results)
             raise ValueError('selected harnesses failed or remain unexecuted')
         if not sum(row['passed'] for row in results):
             raise ValueError('no tests passed')
