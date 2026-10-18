@@ -32,6 +32,14 @@ ORIGINAL = {
 
 
 class OriginalDrivers(unittest.TestCase):
+    def test_session_disclosures_link_inert_records_without_adoption_or_proof_claims(self):
+        text = (bundle.ROOT / 'tests/fixtures/authoring_sessions/ci-native-drivers-v030/README.md').read_text()
+        for name in ('first.json.gz', 'first-compilation.json.gz', 'first-comparison.json.gz', 'first-policy.json.gz'):
+            self.assertIn('](' + name + ')', text)
+        for scope in ('Historical Rust-authority report labels', 'default harness adoption',
+                      'Issue completion', 'proof discharge or release approval'):
+            self.assertIn(scope, text)
+
     def test_first_policy_refusals_preserve_preimages_and_explicit_review(self):
         stored = (bundle.ROOT / 'tests/fixtures/authoring_sessions/ci-native-drivers-v030/first-policy.json.gz').read_bytes()
         self.assertEqual(bundle.digest(stored), '332568ca403e2b7c91a37282afb6259f555618ac5f02f8a1b5eb4ad0eea5110b')
