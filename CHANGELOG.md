@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 - Prepare explicit complete Rust producer partitions from one canonical CI plan,
   with fresh native preparation and visible omissions. Hosted parallel producer
   wiring and aggregate release receipts remain unfinished.
+- Reject missing, failed, skipped or stale Rust pair dependencies before receipt
+  inspection; expected hashes alone do not establish artifact or suite success.
 
 Unpublished development snapshot. Selecting beta does not complete the v0.3.0
 feature or proof gates and does not extend the alpha-only release approval.

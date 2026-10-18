@@ -43,6 +43,10 @@
         ],
         [
           "python3",
+          "scripts/test_ci_rust_producers.py"
+        ],
+        [
+          "python3",
           "scripts/test_rust_test_partition.py"
         ],
         [

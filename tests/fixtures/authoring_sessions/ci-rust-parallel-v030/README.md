@@ -65,3 +65,10 @@ contains 131 targets, including the same two differential and 121 other
 integration targets. This validates partition coverage only; no Rust/native test
 or proof was executed by those metadata/CLI-plan observations. Separate hosted
 producer jobs, same-run aggregation and release receipt binding remain pending.
+
+The [first pair-obligation experiment](producer-obligations-first.json.gz)
+retains the proposed implementation contract, original prototype and its actual
+synthetic output: two complete dependency records and 38 refusals for missing,
+failed, skipped or stale inputs. No artifact bytes or actual hosted jobs were
+validated by that experiment. The current dependency helper returns only the
+expected receipt hashes; independent artifact validation is still mandatory.
